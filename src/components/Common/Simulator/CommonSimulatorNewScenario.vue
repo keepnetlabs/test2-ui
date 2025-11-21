@@ -7,6 +7,7 @@
       class="common-simulator-new-scenario"
       footer-class="common-simulator-new-scenario__footer"
       :showFooter="!isTemplateEditing"
+      :should-remove-overflow="shouldRemoveOverflow"
       @closeOverlay="changeNewScenarioModalStatus"
     >
       <template #overlay-body>
@@ -505,14 +506,12 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import { mapGetters } from 'vuex'
 import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
-import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
-  mixins: [useHtmlOverflowControl],
   components: {
     AppModal,
     EmailTemplateMultipleLanguagePreviewDialog,
@@ -564,6 +563,10 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

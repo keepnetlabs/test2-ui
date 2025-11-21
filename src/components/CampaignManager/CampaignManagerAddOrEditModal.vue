@@ -24,14 +24,28 @@
           @on-close="toggleShowMissingLanguageSupportDialog"
           @on-confirm="onConfirmLanguageSupportDialog"
         />
-        <CommonSimulatorNewScenario
+        <VNavigationDrawer
+          v-click-outside="handleClickOutsidePhishingDrawer"
           v-if="isOpenPhishingDrawer"
-          ref="commonSimulatorNewScenario"
-          :status="isOpenPhishingDrawer"
-          :scenario-details-lookup="scenarioDetailsLookup"
-          @changeNewScenarioModalStatus="handleCloseSimulatorDrawer"
-          @on-new-item-created="handleNewScenarioCreated"
-        />
+          v-model="isOpenPhishingDrawer"
+          class="k-navigation-drawer"
+          fixed
+          overlay-color="rgba(0, 0, 0, 0.17)"
+          overlay-opacity="1"
+          right
+          width="calc(100% - 72px)"
+          height="100%"
+        >
+          <CommonSimulatorNewScenario
+            v-if="isOpenPhishingDrawer"
+            ref="commonSimulatorNewScenario"
+            :status="isOpenPhishingDrawer"
+            :scenario-details-lookup="scenarioDetailsLookup"
+            :should-remove-overflow="false"
+            @changeNewScenarioModalStatus="handleCloseSimulatorDrawer"
+            @on-new-item-created="handleNewScenarioCreated"
+          />
+        </VNavigationDrawer>
         <v-stepper v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
             <v-stepper-step
@@ -1022,6 +1036,32 @@ export default {
     },
     handleCloseSimulatorDrawer() {
       this.isOpenPhishingDrawer = false
+    },
+    handleClickOutsidePhishingDrawer(event) {
+      // Leaving dialog açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+      }
+
+      this.handleCloseSimulatorDrawer()
     },
     handleNewScenarioCreated(resourceId) {
       this.$refs.refCampaignManagerPhishingScenarios
