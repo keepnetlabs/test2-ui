@@ -1303,14 +1303,16 @@ export default {
                   return language?.text || lang
                 })
               } else if (typeof item.preferredLanguage === 'string') {
-                const language = _this.languageFilterOptions.find((opt) => opt.name === item.preferredLanguage)
+                const language = _this.languageFilterOptions.find(
+                  (opt) => opt.name === item.preferredLanguage
+                )
                 item.preferredLanguage = language?.text || item.preferredLanguage
               }
             }
             return item
           })
           _this.tableData = data || []
-          
+
           _this.tableOptions.columns.push(...customFields)
           _this.tableOptions.columns.push({
             property: PROPERTY_STORE.STATUS,

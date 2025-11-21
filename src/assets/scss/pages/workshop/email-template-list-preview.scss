@@ -95,8 +95,7 @@
 
   &-content {
     border-radius: 20px;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    border: 1px solid #e0e0e0;
     background-color: #ffffff;
 
     &--search {
@@ -105,7 +104,7 @@
   }
 
   &__container {
-    padding: 32px 120px 0 0 !important;
+    padding: 24px 120px 0 0 !important;
     width: 100%;
 
     &-main {

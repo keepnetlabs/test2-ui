@@ -170,7 +170,10 @@ export default {
       ) {
         return this.$router.push({
           name: this.type === SCENARIO_TYPES.PHISHING ? 'Campaign Report' : 'Quishing Report',
-          params: { id: this.campaignResourceId, instanceGroup: this.scope.row.instanceGroup }
+          params: {
+            id: this.campaignResourceId,
+            instanceGroup: this.scope.row.instanceGroup
+          }
         })
       }
       let eventName = act.action
@@ -179,8 +182,7 @@ export default {
         eventName = 'on-launch'
       } else if (act.action === ACTION_STATUSES.RUNNING) {
         eventName = 'on-stop'
-      }
-      else if (eventName === ACTION_STATUSES.SCHEDULED) {
+      } else if (eventName === ACTION_STATUSES.SCHEDULED || eventName === ACTION_STATUSES.ERROR) {
         eventName = 'on-preview'
       }
       this.$emit(eventName, this.scope.row)

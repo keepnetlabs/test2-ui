@@ -4,11 +4,7 @@
       <div class="matching-answer-field">
         <label class="matching-answer-label">User's Matches:</label>
         <div class="matching-answer-list">
-          <div
-            v-for="(match, index) in userMatches"
-            :key="index"
-            class="matching-item"
-          >
+          <div v-for="(match, index) in userMatches" :key="index" class="matching-item">
             <div class="matching-left">{{ match.left }}</div>
             <div class="matching-arrow">
               <i class="mdi mdi-arrow-right"></i>
@@ -43,9 +39,9 @@ export default {
       }
 
       // Sadece kullanıcının eşleştirdiği cevapları al (isUserAnswer: true)
-      const userAnswers = this.answerOptions.filter(option => option.isUserAnswer)
+      const userAnswers = this.answerOptions.filter((option) => option.isUserAnswer)
 
-      return userAnswers.map(option => {
+      return userAnswers.map((option) => {
         const text = option.text || option.option || option.answer || ''
 
         // "Item 1 → Match 1" formatını parse et
@@ -58,7 +54,7 @@ export default {
         }
 
         // Eğer arrow formatı yoksa, text'i böl
-        const parts = text.split('→').map(part => part.trim())
+        const parts = text.split('→').map((part) => part.trim())
         if (parts.length >= 2) {
           return {
             left: parts[0],

@@ -29,7 +29,9 @@
       v-if="isTemplateDetails"
       :status="isTemplateDetails"
       :selected-row="selectedLandingPageTemplate"
+      :languages="languageFilterOptions"
       @on-close="isTemplateDetails = false"
+      @on-edit="handleEditFromPreview"
     />
     <data-table
       v-if="getLandingPageTemplatesSearchPermissions"
@@ -456,6 +458,12 @@ export default {
       this.isEdit = true
       this.isDuplicate = isDuplicate
       this.emailTemplateId = row.resourceId
+    },
+    handleEditFromPreview(row) {
+      this.isTemplateDetails = false
+      this.$nextTick(() => {
+        this.handleEdit(row, false)
+      })
     },
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newLandingPage) {

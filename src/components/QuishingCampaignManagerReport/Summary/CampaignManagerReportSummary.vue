@@ -79,6 +79,7 @@
       :methods="methods"
       :form-data="getEmailTemplateData"
       :isFetchingSummary="isLoading"
+      :type="SCENARIO_TYPES.QUISHING"
     />
     <CampaignManagerReportSummaryLandingPage
       v-if="!isAttachment"
@@ -86,6 +87,7 @@
       :methods="methods"
       :form-data="getLandingPageTemplateData"
       :isFetchingSummary="isLoading"
+      :type="SCENARIO_TYPES.QUISHING"
     />
     <CampaignManagerReportSummaryTraining
       v-if="getTrainingInfo"
@@ -113,6 +115,7 @@ import QuishingService from '@/api/quishing'
 import CampaignManagerPrintoutReportSummaryCards from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerPrintoutReportSummaryCards.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -145,6 +148,7 @@ export default {
   },
   data() {
     return {
+      SCENARIO_TYPES,
       targetGroups: [],
       trainingReportDialogItems: [],
       selectedScenarioTab: '',
@@ -237,7 +241,9 @@ export default {
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         const languageCode = scenario.scenarioInfo.languageShortCode
-        const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+        const language = this.languageOptions.find(
+          (lang) => lang.languageShortCode === languageCode
+        )
         languages.add(language?.text || languageCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
@@ -455,6 +461,7 @@ export default {
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,
+            name: emailTemplateInfo?.name,
             languageShortCode: language?.text || languageCode,
             attachment: phishingFileName
               ? {
@@ -468,13 +475,14 @@ export default {
     },
     getLandingPageTemplateData() {
       const { landingPageTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {}
-      const { resourceId } = landingPageTemplateInfo
+      const { resourceId, name } = landingPageTemplateInfo
       const languageCode = scenarioInfo?.languageShortCode
       const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
       return Object.keys(landingPageTemplateInfo).length
         ? {
             languageShortCode: language?.text || languageCode,
             resourceId,
+            name,
             jobResourceId: this.id,
             instanceGroup: this.instanceGroup
           }
@@ -553,7 +561,9 @@ export default {
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
               .map((lang) => {
-                const language = this.languageOptions.find((opt) => opt.languageShortCode === lang.languageShortCode)
+                const language = this.languageOptions.find(
+                  (opt) => opt.languageShortCode === lang.languageShortCode
+                )
                 return language?.text || lang.languageShortCode
               })
               .join(' | ')

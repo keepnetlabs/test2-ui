@@ -154,7 +154,9 @@ export default {
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         const languageCode = scenario.languageShortCode
-        const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+        const language = this.languageOptions.find(
+          (lang) => lang.languageShortCode === languageCode
+        )
         languages.add(language?.text || languageCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
@@ -459,7 +461,9 @@ export default {
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
               .map((lang) => {
-                const language = this.languageOptions.find((opt) => opt.languageShortCode === lang.languageShortCode)
+                const language = this.languageOptions.find(
+                  (opt) => opt.languageShortCode === lang.languageShortCode
+                )
                 return language?.text || lang.languageShortCode
               })
               .join(' | ')

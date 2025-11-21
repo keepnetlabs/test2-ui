@@ -1,747 +1,467 @@
 <template>
-  <AppModal
-    :status="status"
-    :icon-name="getModalIcon"
-    :title="getModalTitle"
-    class="common-simulator-new-scenario"
-    footer-class="common-simulator-new-scenario__footer"
-    :showFooter="!isTemplateEditing"
-  >
-    <template #overlay-body>
-      <VNavigationDrawer
-        v-click-outside="handleClickOutsideNewEmailTemplateModal"
-        v-if="isOpenEmailTemplateDrawer"
-        v-model="isOpenEmailTemplateDrawer"
-        class="k-navigation-drawer k-navigation-drawer--email-template"
-        fixed
-        overlay-color="rgba(0, 0, 0, 0.17)"
-        overlay-opacity="1"
-        right
-        width="calc(100% - 72px)"
-        height="100%"
-      >
-        <NewEmailTemplates
-          v-if="isOpenEmailTemplateDrawer"
-          ref="newEmailTemplate"
-          is-a-i-ally-enabled
-          :status="isOpenEmailTemplateDrawer"
-          :should-remove-overflow="false"
-          :show-leaving-dialog="false"
-          :email-template-id="createdEmailTemplateResourceId"
-          :selected-method-text="getSelectedMethodText"
-          :scenario-details-lookup="scenarioDetailsLookup"
-          @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
+  <div>
+    <AppModal
+      :status="status"
+      :icon-name="getModalIcon"
+      :title="getModalTitle"
+      class="common-simulator-new-scenario"
+      footer-class="common-simulator-new-scenario__footer"
+      :showFooter="!isTemplateEditing"
+      :should-remove-overflow="shouldRemoveOverflow"
+      @closeOverlay="changeNewScenarioModalStatus"
+    >
+      <template #overlay-body>
+        <EmailTemplateMultipleLanguagePreviewDialog
+          v-if="showEmailTemplatePreviewDialog && !isQuishing"
+          ref="emailTemplatePreviewDialog"
+          :status="showEmailTemplatePreviewDialog"
+          :selected-row="emailTemplatePreviewSelectedRow"
+          :type="type"
+          :languages="languageOptions"
+          :api-func="getEmailTemplateApiFuncs.content"
+          is-nested
+          :should-control-html-overflow="false"
+          @on-close="showEmailTemplatePreviewDialog = false"
         />
-      </VNavigationDrawer>
-      <VNavigationDrawer
-        v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
-        v-if="isOpenLandingPageDrawer"
-        v-model="isOpenLandingPageDrawer"
-        class="k-navigation-drawer k-navigation-drawer--landing-page"
-        fixed
-        overlay-color="rgba(0, 0, 0, 0.17)"
-        overlay-opacity="1"
-        right
-        width="calc(100% - 72px)"
-        height="100%"
-      >
-        <NewLandingPage
+        <CommonSimulatorEmailTemplatePreviewDialog
+          v-if="showEmailTemplatePreviewDialog && isQuishing"
+          :status="showEmailTemplatePreviewDialog"
+          :selected-row="emailTemplatePreviewSelectedRow"
+          :type="type"
+          :is-individual-printout-template="isQuishingTypeIndividualPrintOut"
+          :languages="languageOptions"
+          :api-func="getEmailTemplateApiFuncs.content"
+          is-nested
+          :should-control-html-overflow="false"
+          @on-close="showEmailTemplatePreviewDialog = false"
+        />
+        <CommonSimulatorLandingPageTemplatesPreviewDialog
+          v-if="showLandingPagePreviewDialog"
+          ref="landingPagePreviewDialog"
+          :status="showLandingPagePreviewDialog"
+          :selected-row="landingPagePreviewSelectedRow"
+          :type="type"
+          :languages="languageOptions"
+          :api-func="getLandingPageApiFuncs.content"
+          is-nested
+          :should-control-html-overflow="false"
+          @on-close="showLandingPagePreviewDialog = false"
+        />
+        <VNavigationDrawer
+          v-click-outside="handleClickOutsideNewLandingPageTemplateModal"
           v-if="isOpenLandingPageDrawer"
-          ref="newLandingPage"
-          :status="isOpenLandingPageDrawer"
-          :is-a-i-ally-enabled="true"
-          :should-remove-overflow="false"
-          :show-leaving-dialog="false"
-          :landing-page-data="landingPageData"
-          :email-template-id="createdLandingPageResourceId"
-          :selected-method-text="getSelectedMethodText"
-          @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
-        />
-      </VNavigationDrawer>
-      <v-stepper light v-model="step" class="k-stepper">
-        <v-stepper-header class="k-stepper__header">
-          <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
-            >Scenario Info</v-stepper-step
-          >
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2">{{
-            isQuishing ? labels.QuishingTemplate : labels.EmailTemplate
-          }}</v-stepper-step>
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            :class="{
-              'k-stepper__step': true,
-              'k-stepper__step--hidden': isAttachmentBasedScenario
-            }"
-            :complete="isAttachmentBasedScenario ? false : step > 3"
-            :step="isAttachmentBasedScenario ? 10 : 3"
-            >Landing Page</v-stepper-step
-          >
-          <v-divider class="k-stepper__divider" />
-          <v-stepper-step
-            class="k-stepper__step"
-            :complete="isAttachmentBasedScenario ? step > 3 : step > 4"
-            :step="maxStep"
-            >Summary</v-stepper-step
-          >
-        </v-stepper-header>
-        <v-stepper-items class="k-stepper__items">
-          <v-stepper-content class="k-stepper__content" :step="1">
-            <div class="phishing-scenario-info">
-              <ConfigureCompanyStepHeader
-                class="mb-8"
-                :title="labels.ScenarioInfo"
-                :subtitle="labels.ScenarioInfoSub"
-              />
-              <v-form ref="refFormStep1" lazy-validation>
-                <form-group title="Scenario Name" has-hint class-name="mt-8">
-                  <InputEntityName
-                    v-model.trim="formValues.name"
-                    id="input--new-phishing-scenarios-template-name"
-                    entity-name="scenario name"
-                    initial-placeholder="Enter a name"
-                  />
-                </form-group>
-                <FormGroup title="Description" sub-title="Describe the scenario briefly">
-                  <InputDescription
-                    v-model.trim="formValues.description"
-                    id="input--new-phishing-scenarios-description"
-                    entityName="description"
-                    initialPlaceholder="Enter description"
-                    rows="2"
-                    height="100"
-                    :maxLength="300"
-                  />
-                </FormGroup>
-                <FormGroup
-                  v-if="isPhishing"
-                  has-hint
-                  title="Category"
-                  sub-title="Select the phishing category for this scenario"
-                >
-                  <KSelect
-                    :value="formValues.categoryId"
-                    id="input--category-scenario"
-                    outlined
-                    dense
-                    persistent-hint
-                    placeholder="Select category"
-                    hint="*Required"
-                    :rules="[(v) => Validations.required(v, labels.Required)]"
-                    :items="getCategoryItems"
-                    @change="handleCategoryChange"
-                  />
-                </FormGroup>
-                <FormGroup
-                  v-if="isQuishing"
-                  has-hint
-                  title="Quishing Type"
-                  sub-title="Select the quishing type for this scenario"
-                >
-                  <KSelect
-                    v-model.trim="quishingType"
-                    id="input--quishing-type-scenario"
-                    outlined
-                    dense
-                    persistent-hint
-                    placeholder="Select a quishing type"
-                    hint="*Required"
-                    :rules="[(v) => Validations.required(v, labels.Required)]"
-                    :items="quishingTypeItems"
-                  />
-                </FormGroup>
-                <InputPhishingMethod
-                  v-model.trim="formValues.methodTypeId"
-                  item-text-key="text"
-                  item-value-key="value"
-                  :type="type"
-                  :max-length="256"
-                  :subtitle="getInputPhishingMethodSubtitle"
-                  :items="getMethodTypes"
-                />
-
-                <InputSelectRoles
-                  v-if="isPhishing"
-                  v-model="formValues.roleResourceIds"
-                  :items="availableRoleOptions"
-                  :loading="rolesLoading"
-                />
-
-                <FormGroup
-                  v-if="!isPhishing"
-                  has-hint
-                  title="Language"
-                  sub-title="Select the language you are writing this webpage template in"
-                >
-                  <InputSelectLanguage
-                    v-model="formValues.languageTypeResourceId"
-                    v-bind="commonRules"
-                    item-text="text"
-                    item-value="value"
-                    required
-                    :items="languageOptions"
-                    :menu-props="{ offsetY: true }"
-                  />
-                </FormGroup>
-                <FormGroup title="Tags" sub-title="Define tags for the scenario">
-                  <InputTag
-                    v-model="formValues.tags"
-                    ref="refTags"
-                    id="input--action-tags-new-scenario"
-                    :items="[]"
-                    class="hide-caret"
-                  />
-                </FormGroup>
-                <MakeAvailableFor
-                  v-model="availableForRequests"
-                  ref="refMakeAvailableFor"
-                  sub-title="Select companies that should see this scenario in their libraries"
-                />
-              </v-form>
-            </div>
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2">
-            <div class="email-settings">
-              <ConfigureCompanyStepHeader :title="getStep2Title" :subtitle="getStep2Subtitle" />
-              <v-list-item style="margin-top: -10px;">
-                <v-list-item-content>
-                  <EmailTemplateListPreview
-                    v-if="step === 2"
-                    ref="refEmailTemplateListPreview"
-                    show-language-field
-                    select-language-width="250px"
-                    :show-email-template-edit-button="isPhishing"
-                    :type="type"
-                    :scenarioDetailsLookup="scenarioDetailsLookup"
-                    :emailTemplateResourceId="emailTemplateResourceId"
-                    :category-resource-id="formValues.methodTypeId"
-                    :api-funcs="getEmailTemplateApiFuncs"
-                    :quishing-type="quishingType"
-                    :isAttachmentBasedScenario="isAttachmentBasedScenario"
-                    :languages="languageOptions"
-                    @initialEmailTemplateId="getInitialEmailTemplateId"
-                    @selectedEmailTemplateChange="selectedEmailTemplateChange"
-                    @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
-                    @loading="isSubmitDisabled = $event"
-                    @template-edit="handleTemplateEdit"
-                    @edit-mode="handleEditModeChange"
-                    @on-create-email-template="toggleEmailTemplateDrawer"
-                  />
-                </v-list-item-content>
-              </v-list-item>
-            </div>
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="isAttachmentBasedScenario ? 10 : 3">
-            <div class="email-settings">
-              <ConfigureCompanyStepHeader
-                :title="labels.SelectLandingPageTemplate"
-                :subtitle="getStep3Subtitle"
-              />
-              <v-list-item style="margin-top: -10px;">
-                <v-list-item-content>
-                  <LandingPageListPreview
-                    v-if="!isAttachmentBasedScenario && step === 3"
-                    ref="refLandingPageTemplateListPreview"
-                    :scenarioDetailsLookup="scenarioDetailsLookup"
-                    :landingPageTemplateResourceId="landingPageTemplateResourceId"
-                    :category-resource-id="formValues.methodTypeId"
-                    :method="getSelectedMethod"
-                    :is-method-mfa="isMethodMfa"
-                    :mfa-data="mfaData"
-                    :type="type"
-                    :api-funcs="getLandingPageApiFuncs"
-                    :languages="languageOptions"
-                    @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
-                    @selectedLandingPageChange="selectedLandingPageChange"
-                    @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
-                    @loading="isSubmitDisabled = $event"
-                    @template-edit="handleTemplateEdit"
-                    @edit-mode="handleLandingPageEditModeChange"
-                    @on-create-landing-page-template="toggleLandingPageDrawer"
-                /></v-list-item-content>
-              </v-list-item>
-            </div>
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content summary-step" :step="maxStep">
-            <div class="email-settings">
-              <ConfigureCompanyStepHeader
-                class="mb-8"
-                :title="labels.ScenarioSummary"
-                :subtitle="labels.ScenarioSummarySub"
-              />
-              <div :style="getLastStepContainerStyle">
-                <CampaignManagerSummaryCard
-                  icon="mdi-information"
-                  :class="!isMethodMfa ? 'common-simulator-new-scenario-campaign-info' : ''"
+          v-model="isOpenLandingPageDrawer"
+          class="k-navigation-drawer k-navigation-drawer--landing-page"
+          fixed
+          overlay-color="rgba(0, 0, 0, 0.17)"
+          overlay-opacity="1"
+          right
+          width="calc(100% - 72px)"
+          height="100%"
+        >
+          <NewLandingPage
+            v-if="isOpenLandingPageDrawer"
+            ref="newLandingPage"
+            :status="isOpenLandingPageDrawer"
+            :is-a-i-ally-enabled="true"
+            :should-remove-overflow="false"
+            :show-leaving-dialog="false"
+            :landing-page-data="landingPageData"
+            :email-template-id="createdLandingPageResourceId"
+            :is-edit="!!createdLandingPageResourceId"
+            :is-edit-from-preview="!!createdLandingPageResourceId"
+            :selected-method-text="getSelectedMethodText"
+            @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
+          />
+        </VNavigationDrawer>
+        <VNavigationDrawer
+          v-click-outside="handleClickOutsideNewEmailTemplateModal"
+          v-if="isOpenEmailTemplateDrawer"
+          v-model="isOpenEmailTemplateDrawer"
+          class="k-navigation-drawer k-navigation-drawer--email-template"
+          fixed
+          overlay-color="rgba(0, 0, 0, 0.17)"
+          overlay-opacity="1"
+          right
+          width="calc(100% - 72px)"
+          height="100%"
+        >
+          <NewEmailTemplates
+            v-if="isOpenEmailTemplateDrawer"
+            ref="newEmailTemplate"
+            is-a-i-ally-enabled
+            :status="isOpenEmailTemplateDrawer"
+            :should-remove-overflow="false"
+            :show-leaving-dialog="false"
+            :email-template-id="createdEmailTemplateResourceId"
+            :is-edit="!!createdEmailTemplateResourceId"
+            :is-edit-from-preview="!!createdEmailTemplateResourceId"
+            :selected-method-text="getSelectedMethodText"
+            :scenario-details-lookup="scenarioDetailsLookup"
+            @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
+          />
+        </VNavigationDrawer>
+        <v-stepper light v-model="step" class="k-stepper">
+          <v-stepper-header class="k-stepper__header">
+            <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
+              >Scenario Info</v-stepper-step
+            >
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2">{{
+              isQuishing ? labels.QuishingTemplate : labels.EmailTemplate
+            }}</v-stepper-step>
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              :class="{
+                'k-stepper__step': true,
+                'k-stepper__step--hidden': isAttachmentBasedScenario
+              }"
+              :complete="isAttachmentBasedScenario ? false : step > 3"
+              :step="isAttachmentBasedScenario ? 10 : 3"
+              >Landing Page</v-stepper-step
+            >
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step
+              class="k-stepper__step"
+              :complete="isAttachmentBasedScenario ? step > 3 : step > 4"
+              :step="maxStep"
+              >Summary</v-stepper-step
+            >
+          </v-stepper-header>
+          <v-stepper-items class="k-stepper__items">
+            <v-stepper-content class="k-stepper__content" :step="1">
+              <div class="phishing-scenario-info">
+                <ConfigureCompanyStepHeader
+                  class="mb-8"
                   :title="labels.ScenarioInfo"
-                  :items="getScenarioInfoItems"
-                >
-                  <template v-if="isPhishing" #Roles="{ props }">
-                    <div class="campaign-manager-summary-card__body-item-key">
-                      {{ props.key.slice(0, 1).toUpperCase() + props.key.slice(1) }}
-                    </div>
-                    <div class="campaign-manager-summary-card__body-item-value roles-summary">
-                      <span
-                        v-if="!displayRoleSummary.visible.length && !displayRoleSummary.hasExtra"
-                        class="roles-summary__empty"
-                      >
-                        {{ props.val }}
-                      </span>
-                      <template v-else>
-                        <span class="roles-summary__text">
-                          {{ displayRoleSummary.visible.join(', ') }}
-                        </span>
-                        <span
-                          v-if="displayRoleSummary.hasExtra && displayRoleSummary.visible.length"
-                        >
-                          ,
-                        </span>
-                        <VTooltip bottom v-if="displayRoleSummary.hasExtra">
-                          <template #activator="{ on, attrs }">
-                            <span class="roles-summary__more" v-bind="attrs" v-on="on">
-                              +{{ displayRoleSummary.remainingCount }}
-                            </span>
-                          </template>
-                          <span class="roles-summary__tooltip">
-                            {{ displayRoleSummary.extra.join(', ') }}
-                          </span>
-                        </VTooltip>
-                      </template>
-                    </div>
-                  </template>
-                </CampaignManagerSummaryCard>
-                <CampaignManagerSummaryCard
-                  v-if="isMethodMfa && step === 4"
-                  icon="mdi-cog"
-                  :title="labels.MFASettings"
-                  :items="getMfaSettingsItems"
+                  :subtitle="labels.ScenarioInfoSub"
                 />
+                <v-form ref="refFormStep1" lazy-validation>
+                  <form-group title="Scenario Name" has-hint class-name="mt-8">
+                    <InputEntityName
+                      v-model.trim="formValues.name"
+                      id="input--new-phishing-scenarios-template-name"
+                      entity-name="scenario name"
+                      initial-placeholder="Enter a name"
+                    />
+                  </form-group>
+                  <FormGroup title="Description" sub-title="Describe the scenario briefly">
+                    <InputDescription
+                      v-model.trim="formValues.description"
+                      id="input--new-phishing-scenarios-description"
+                      entityName="description"
+                      initialPlaceholder="Enter description"
+                      rows="2"
+                      height="100"
+                      :maxLength="300"
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    v-if="isPhishing"
+                    has-hint
+                    title="Category"
+                    sub-title="Select the phishing category for this scenario"
+                  >
+                    <KSelect
+                      :value="formValues.categoryId"
+                      id="input--category-scenario"
+                      outlined
+                      dense
+                      persistent-hint
+                      placeholder="Select category"
+                      hint="*Required"
+                      :rules="[(v) => Validations.required(v, labels.Required)]"
+                      :items="getCategoryItems"
+                      @change="handleCategoryChange"
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    v-if="isQuishing"
+                    has-hint
+                    title="Quishing Type"
+                    sub-title="Select the quishing type for this scenario"
+                  >
+                    <KSelect
+                      v-model.trim="quishingType"
+                      id="input--quishing-type-scenario"
+                      outlined
+                      dense
+                      persistent-hint
+                      placeholder="Select a quishing type"
+                      hint="*Required"
+                      :rules="[(v) => Validations.required(v, labels.Required)]"
+                      :items="quishingTypeItems"
+                    />
+                  </FormGroup>
+                  <InputPhishingMethod
+                    v-model.trim="formValues.methodTypeId"
+                    item-text-key="text"
+                    item-value-key="value"
+                    :type="type"
+                    :max-length="256"
+                    :subtitle="getInputPhishingMethodSubtitle"
+                    :items="getMethodTypes"
+                  />
+
+                  <InputSelectRoles
+                    v-if="isPhishing"
+                    v-model="formValues.roleResourceIds"
+                    :items="availableRoleOptions"
+                    :loading="rolesLoading"
+                  />
+
+                  <FormGroup
+                    v-if="!isPhishing"
+                    has-hint
+                    title="Language"
+                    sub-title="Select the language you are writing this webpage template in"
+                  >
+                    <InputSelectLanguage
+                      v-model="formValues.languageTypeResourceId"
+                      v-bind="commonRules"
+                      item-text="text"
+                      item-value="value"
+                      required
+                      :items="languageOptions"
+                      :menu-props="{ offsetY: true }"
+                    />
+                  </FormGroup>
+                  <FormGroup title="Tags" sub-title="Define tags for the scenario">
+                    <InputTag
+                      v-model="formValues.tags"
+                      ref="refTags"
+                      id="input--action-tags-new-scenario"
+                      :items="[]"
+                      class="hide-caret"
+                    />
+                  </FormGroup>
+                  <MakeAvailableFor
+                    v-model="availableForRequests"
+                    ref="refMakeAvailableFor"
+                    sub-title="Select companies that should see this scenario in their libraries"
+                  />
+                </v-form>
               </div>
-              <v-list-item>
-                <v-list-item-content>
-                  <div class="summary">
-                    <div class="summary-header">
-                      <div style="color: #2196f3;">
-                        <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          {{ isQuishingTypeIndividualPrintOut ? '$pdf-file' : 'mdi-email' }}
-                        </v-icon>
-                        {{
-                          isQuishingTypeIndividualPrintOut
-                            ? 'Individual printout that will be given to users'
-                            : 'Email that will be sent to users'
-                        }}
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="2">
+              <div class="email-settings">
+                <ConfigureCompanyStepHeader :title="getStep2Title" :subtitle="getStep2Subtitle" />
+                <v-list-item style="margin-top: -10px; padding-left: 0 !important;">
+                  <v-list-item-content>
+                    <EmailTemplateListPreview
+                      v-if="step === 2"
+                      ref="refEmailTemplateListPreview"
+                      show-language-field
+                      select-language-width="250px"
+                      :show-email-template-edit-button="isPhishing"
+                      :type="type"
+                      :scenarioDetailsLookup="scenarioDetailsLookup"
+                      :emailTemplateResourceId="emailTemplateResourceId"
+                      :category-resource-id="formValues.methodTypeId"
+                      :api-funcs="getEmailTemplateApiFuncs"
+                      :quishing-type="quishingType"
+                      :isAttachmentBasedScenario="isAttachmentBasedScenario"
+                      :languages="languageOptions"
+                      @initialEmailTemplateId="getInitialEmailTemplateId"
+                      @selectedEmailTemplateChange="selectedEmailTemplateChange"
+                      @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
+                      @loading="isSubmitDisabled = $event"
+                      @template-edit="handleTemplateEdit"
+                      @edit-mode="handleEditModeChange"
+                      @on-create-email-template="toggleEmailTemplateDrawer"
+                      @on-edit-email-template="handleEditEmailTemplate"
+                    />
+                  </v-list-item-content>
+                </v-list-item>
+              </div>
+            </v-stepper-content>
+            <v-stepper-content
+              class="k-stepper__content"
+              :step="isAttachmentBasedScenario ? 10 : 3"
+            >
+              <div class="email-settings">
+                <ConfigureCompanyStepHeader
+                  :title="labels.SelectLandingPageTemplate"
+                  :subtitle="getStep3Subtitle"
+                />
+                <v-list-item style="margin-top: -10px; padding-left: 0 !important;">
+                  <v-list-item-content>
+                    <LandingPageListPreview
+                      v-if="!isAttachmentBasedScenario && step === 3"
+                      ref="refLandingPageTemplateListPreview"
+                      :scenarioDetailsLookup="scenarioDetailsLookup"
+                      :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                      :category-resource-id="formValues.methodTypeId"
+                      :method="getSelectedMethod"
+                      :is-method-mfa="isMethodMfa"
+                      :mfa-data="mfaData"
+                      :type="type"
+                      :api-funcs="getLandingPageApiFuncs"
+                      :languages="languageOptions"
+                      @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
+                      @selectedLandingPageChange="selectedLandingPageChange"
+                      @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
+                      @loading="isSubmitDisabled = $event"
+                      @template-edit="handleTemplateEdit"
+                      @edit-mode="handleLandingPageEditModeChange"
+                      @on-create-landing-page-template="toggleLandingPageDrawer"
+                      @on-edit-landing-page-template="handleEditLandingPageTemplate"
+                  /></v-list-item-content>
+                </v-list-item>
+              </div>
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content summary-step" :step="maxStep">
+              <div class="email-settings">
+                <ConfigureCompanyStepHeader
+                  class="mb-8"
+                  :title="labels.ScenarioSummary"
+                  :subtitle="labels.ScenarioSummarySub"
+                />
+                <div :style="getLastStepContainerStyle">
+                  <CampaignManagerSummaryCard
+                    icon="mdi-information"
+                    :class="!isMethodMfa ? 'common-simulator-new-scenario-campaign-info' : ''"
+                    :title="labels.ScenarioInfo"
+                    :items="getScenarioInfoItems"
+                  >
+                    <template v-if="isPhishing" #Roles="{ props }">
+                      <div class="campaign-manager-summary-card__body-item-key">
+                        {{ props.key.slice(0, 1).toUpperCase() + props.key.slice(1) }}
                       </div>
-                      <div>
-                        <v-btn
-                          class="campaign-manager-summary-card__button"
-                          rounded
-                          outlined
-                          color="#2196f3"
-                          @click="showTemplate1 = !showTemplate1"
+                      <div class="campaign-manager-summary-card__body-item-value roles-summary">
+                        <span
+                          v-if="!displayRoleSummary.visible.length && !displayRoleSummary.hasExtra"
+                          class="roles-summary__empty"
                         >
-                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
-                          Preview
-                          <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate1 ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                          </v-icon></v-btn
-                        >
-                      </div>
-                    </div>
-                    <div class="summary-content">
-                      <div class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!summaryData">
-                          <div class="template-summary__title">
-                            {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
-                            <VTooltip
-                              v-if="
-                                summaryData.emailTemplate &&
-                                summaryData.emailTemplate.isAssistedByAI
-                              "
-                              bottom
-                            >
-                              <template #activator="{ on }">
-                                <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
-                                  >mdi-creation</VIcon
-                                >
-                              </template>
-                              <span>This template was generated with AI</span>
-                            </VTooltip>
-                          </div>
-                          <div
-                            v-if="!isQuishingTypeIndividualPrintOut && !isPhishing"
-                            class="template-summary__sub-title mt-2"
+                          {{ props.val }}
+                        </span>
+                        <template v-else>
+                          <span class="roles-summary__text">
+                            {{ displayRoleSummary.visible.join(', ') }}
+                          </span>
+                          <span
+                            v-if="displayRoleSummary.hasExtra && displayRoleSummary.visible.length"
                           >
-                            From:
-                            {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
-                          </div>
-                          <div
-                            v-if="hasPhishingFile"
-                            class="attachment-wrapper position-relative mt-2 mb-0"
-                          >
-                            <div class="attachment blue-attach mb-0">
-                              <AttachmentsPreview
-                                :deletable="false"
-                                :att="{
-                                  name: summaryData.emailTemplate.phishingFileName
-                                }"
-                                :isEmailTemplate="true"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="d-flex" v-if="!!summaryData">
-                          <v-chip
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
-                            class="template-list--item template-list--item__chip p mr-2"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                            :color="emailDifficultyChipColor"
-                          >
-                            {{ getSummaryDifficulty }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            {{ getSummaryMethod }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!summaryData && !isPhishing"
-                            class="template-list--item template-list--item__chip"
-                            style="
-                              background-color: #757575;
-                              margin-left: 8px;
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{
-                              summaryData.emailTemplate &&
-                              summaryData.emailTemplate.languageShortCode
-                            }}
-                          </v-chip>
-                          <EmailTemplateListPreviewLanguages
-                            v-if="summaryData.emailTemplate && isPhishing"
-                            :languageShortCode="
-                              typeof summaryData.emailTemplate.languageShortCode === 'string'
-                                ? [summaryData.emailTemplate.languageShortCode]
-                                : summaryData.emailTemplate.languageShortCode
-                            "
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      v-if="showTemplate1"
-                      class="summary-content summary-content__collapsable pt-0"
-                      style="border: none;"
-                    >
-                      <div>
-                        <div class="summary-template">
-                          <div class="my-6">
-                            <InputLanguagePreview
-                              v-model="languagePreview"
-                              persistent-hint
-                              class="max-w-554"
-                              :hint="getEmailTemplatePreviewLanguageHint"
-                              :items="selectedTemplateLanguages"
-                              @input="handleEmailTemplatePreviewLanguageChange"
-                            />
-                            <div class="mb-2">
-                              <span class="fw-600 text-primary-color fs-medium">Subject: </span>
-                              <span class="fw-400 text-primary-color fs-medium">{{
-                                summaryData.emailTemplate && summaryData.emailTemplate.subject
-                              }}</span>
-                            </div>
-                            <div class="mb-2">
-                              <span class="fw-600 text-primary-color fs-medium">From Name: </span>
-                              <span class="fw-400 text-primary-color fs-medium">{{
-                                summaryData.emailTemplate && summaryData.emailTemplate.fromName
-                              }}</span>
-                            </div>
-                            <div class="mb-2">
-                              <span class="fw-600 text-primary-color fs-medium"
-                                >From Email Address:
+                            ,
+                          </span>
+                          <VTooltip bottom v-if="displayRoleSummary.hasExtra">
+                            <template #activator="{ on, attrs }">
+                              <span class="roles-summary__more" v-bind="attrs" v-on="on">
+                                +{{ displayRoleSummary.remainingCount }}
                               </span>
-                              <span class="fw-400 text-primary-color fs-medium">{{
-                                summaryData.emailTemplate &&
-                                summaryData.emailTemplate.fromEmailAddress
-                              }}</span>
-                            </div>
-                            <div>
-                              <span class="fw-600 text-primary-color fs-medium">CC: </span>
-                              <span class="fw-400 text-primary-color fs-medium">{{
-                                summaryData.emailTemplate &&
-                                summaryData.emailTemplate.cc &&
-                                summaryData.emailTemplate.cc.join(',')
-                              }}</span>
-                            </div>
-                          </div>
-                          <KEmailPreview
-                            v-if="!!summaryData.emailTemplate.template"
-                            :key="summaryData.emailTemplate.template"
-                            :html="summaryData.emailTemplate.template"
-                            is-extra-height
-                          />
-                        </div>
+                            </template>
+                            <span class="roles-summary__tooltip">
+                              {{ displayRoleSummary.extra.join(', ') }}
+                            </span>
+                          </VTooltip>
+                        </template>
                       </div>
-                    </div>
-                  </div>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item v-if="!isAttachmentBasedScenario">
-                <v-list-item-content>
-                  <div class="summary">
-                    <div class="summary-header">
-                      <div style="color: #2196f3;">
-                        <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          mdi-application
-                        </v-icon>
-                        {{ getLandingPageCardTitle }}
-                      </div>
-                      <div>
-                        <v-btn
-                          class="campaign-manager-summary-card__button"
-                          rounded
-                          outlined
-                          color="#2196f3"
-                          @click="showTemplate2 = !showTemplate2"
-                        >
-                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
-                          Preview
+                    </template>
+                  </CampaignManagerSummaryCard>
+                  <CampaignManagerSummaryCard
+                    v-if="isMethodMfa && step === 4"
+                    icon="mdi-cog"
+                    :title="labels.MFASettings"
+                    :items="getMfaSettingsItems"
+                  />
+                </div>
+                <v-list-item class="pl-0">
+                  <v-list-item-content>
+                    <div class="summary">
+                      <div class="summary-header py-4 px-6">
+                        <div style="color: #2196f3;">
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate2 ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                          </v-icon></v-btn
-                        >
-                      </div>
-                    </div>
-                    <div v-if="summaryData.landingPageTemplate" class="summary-content">
-                      <ElTabs
-                        v-if="summaryData.landingPageTemplate.landingPages.length > 1"
-                        v-model="selectedTab"
-                      >
-                        <ElTabPane
-                          v-for="(template, index) in summaryData.landingPageTemplate.landingPages"
-                          :key="index"
-                          :name="`${index + 1}`"
-                          :label="`Page ${index + 1}`"
-                        >
-                          <div class="d-flex justify-space-between">
-                            <div class="d-flex flex-column" v-if="!!summaryData">
-                              <div class="template-summary__title">
-                                {{
-                                  summaryData.landingPageTemplate &&
-                                  summaryData.landingPageTemplate.name
-                                }}
-                                <VTooltip
-                                  v-if="
-                                    summaryData.landingPageTemplate &&
-                                    (summaryData.landingPageTemplate.isAssistedByAI ||
-                                      summaryData.landingPageTemplate.isAssistedbyAI)
-                                  "
-                                  bottom
-                                >
-                                  <template #activator="{ on }">
-                                    <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
-                                  </template>
-                                  <span>This template was generated with AI</span>
-                                </VTooltip>
-                              </div>
-                              <div class="template-summary__sub-title mt-2">
-                                <b>{{ getURLText }}:</b>
-                                {{ summaryData.landingPageTemplate.urlTemplate }}
-                              </div>
-                            </div>
-                            <div class="d-flex" v-if="!!summaryData">
-                              <v-chip
-                                v-if="!!summaryData"
-                                class="template-list--item template-list--item__chip p mr-2"
-                                style="
-                                  color: white;
-                                  border-radius: 6px;
-                                  height: 24px;
-                                  font-weight: 600;
-                                  font-size: 12px;
-                                "
-                                :color="getLandingPageDifficultyColor"
-                              >
-                                {{ getLandingPageDifficulty }}
-                              </v-chip>
-                              <v-chip
-                                v-if="!!summaryData"
-                                class="template-list--item template-list--item__chip p"
-                                style="
-                                  border-radius: 6px;
-                                  height: 24px;
-                                  font-weight: 600;
-                                  font-size: 12px;
-                                "
-                              >
-                                {{ getLandingPageMethod }}
-                              </v-chip>
-                              <v-chip
-                                v-if="!!summaryData"
-                                class="template-list--item template-list--item__chip p"
-                                style="
-                                  color: white;
-                                  border-radius: 6px;
-                                  height: 24px;
-                                  font-weight: 600;
-                                  background-color: #757575;
-                                  margin-left: 8px;
-                                  font-size: 12px;
-                                "
-                              >
-                                <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                                >{{
-                                  summaryData.landingPageTemplate &&
-                                  summaryData.landingPageTemplate.languageShortCode
-                                }}
-                              </v-chip>
-                            </div>
-                          </div>
-                        </ElTabPane>
-                      </ElTabs>
-                      <div v-else class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!summaryData">
-                          <div class="template-summary__title">
+                            {{ isQuishingTypeIndividualPrintOut ? '$pdf-file' : 'mdi-email' }}
+                          </v-icon>
+                          <span>
                             {{
-                              summaryData.landingPageTemplate &&
-                              summaryData.landingPageTemplate.name
+                              isQuishingTypeIndividualPrintOut
+                                ? 'Individual printout:'
+                                : 'Email Template:'
                             }}
-                            <VTooltip
-                              v-if="
-                                summaryData.landingPageTemplate &&
-                                summaryData.landingPageTemplate.isAssistedByAI
-                              "
-                              bottom
-                            >
-                              <template #activator="{ on }">
-                                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
-                              </template>
-                              <span>This template was generated with AI</span>
-                            </VTooltip>
-                          </div>
-                          <div class="template-summary__subtitle mt-2">
-                            <b>{{ getLandingPageUrlLabel }}:</b>
-                            {{ summaryData.landingPageTemplate.urlTemplate }}
-                          </div>
+                          </span>
+                          <span>{{
+                            summaryData.emailTemplate && summaryData.emailTemplate.name
+                          }}</span>
                         </div>
-                        <div class="d-flex" v-if="!!summaryData">
-                          <v-chip
-                            v-if="!!summaryData"
-                            class="template-list--item template-list--item__chip p mr-2"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                            :color="getLandingPageDifficultyColor"
+                        <div>
+                          <v-btn
+                            class="campaign-manager-summary-card__button pr-4"
+                            rounded
+                            outlined
+                            color="#2196f3"
+                            @click="showEmailTemplatePreviewDialog = true"
                           >
-                            {{ getLandingPageDifficulty }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!summaryData"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            {{ getLandingPageMethod }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!summaryData"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              background-color: #757575;
-                              margin-left: 8px;
-                              font-size: 12px;
-                            "
-                          >
-                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{
-                              summaryData.landingPageTemplate &&
-                              summaryData.landingPageTemplate.languageShortCode
-                            }}
-                          </v-chip>
+                            <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                            Preview
+                          </v-btn>
                         </div>
                       </div>
                     </div>
-                    <div
-                      v-if="showTemplate2"
-                      class="summary-content summary-content__collapsable"
-                      style="border: none;"
-                    >
-                      <div class="summary-template">
-                        <KEmailPreview
-                          v-if="!!getCurrentLandingPageTemplate"
-                          :html="getCurrentLandingPageTemplate"
-                          :is-red-flagged-template="
-                            isPhishing && checkIsRedFlaggedTemplate(getCurrentLandingPageTemplate)
-                          "
-                          :key="getCurrentLandingPageTemplate"
-                          is-extra-height
-                        />
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item class="pl-0" v-if="!isAttachmentBasedScenario">
+                  <v-list-item-content>
+                    <div class="summary">
+                      <div class="summary-header py-4 px-6">
+                        <div style="color: #2196f3;">
+                          <v-icon :color="'#2196f3'" class="ml-2" left medium>
+                            mdi-application
+                          </v-icon>
+                          <span>Landing Page: </span>
+                          <span>{{
+                            summaryData.landingPageTemplate && summaryData.landingPageTemplate.name
+                          }}</span>
+                        </div>
+                        <div>
+                          <v-btn
+                            class="campaign-manager-summary-card__button pr-4"
+                            rounded
+                            outlined
+                            color="#2196f3"
+                            @click="showLandingPagePreviewDialog = true"
+                          >
+                            <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                            Preview
+                          </v-btn>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </v-list-item-content>
-              </v-list-item>
-            </div>
-          </v-stepper-content>
-        </v-stepper-items>
-      </v-stepper>
-    </template>
-    <template #overlay-footer>
-      <StepperFooter
-        :max-step="maxStep"
-        :step.sync="step"
-        :disabled-statuses="{
-          nextButton:
-            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
-          submitButton:
-            isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
-        }"
-        :disabledNextButtonTooltipText="
-          isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
-            ? 'You’re editing a template. Exit editing to continue.'
-            : ''
-        "
-        :ids="footerButtonsIds"
-        @on-cancel="changeNewScenarioModalStatus"
-        @on-back="backStep"
-        @on-next="nextStep(+1)"
-        @on-submit="submit"
-      />
-    </template>
-  </AppModal>
+                  </v-list-item-content>
+                </v-list-item>
+              </div>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+        <div class="k-overlay__footer k-navigation-drawer__footer">
+          <StepperFooter
+            :max-step="maxStep"
+            :step.sync="step"
+            :disabled-statuses="{
+              nextButton:
+                isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
+              submitButton:
+                isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+            }"
+            :disabledNextButtonTooltipText="
+              isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+                ? 'Please save or discard your changes to the template before proceeding.'
+                : ''
+            "
+            :ids="footerButtonsIds"
+            @on-cancel="changeNewScenarioModalStatus"
+            @on-back="backStep"
+            @on-next="nextStep(+1)"
+            @on-submit="submit"
+          />
+        </div>
+      </template>
+    </AppModal>
+  </div>
 </template>
 <script>
 import labels from '@/model/constants/labels'
+import AppModal from '@/components/AppModal'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
@@ -759,13 +479,11 @@ import {
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import KEmailPreview from '@/components/KEmailPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import {
@@ -775,7 +493,6 @@ import {
 } from '@/components/PhishingScenarios/utils'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import AppModal from '@/components/AppModal'
 import {
   getDifficultyColor,
   quishingTypeItems,
@@ -789,13 +506,17 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import { mapGetters } from 'vuex'
 import NewLandingPage from '@/components/LandingPage/NewLandingPage.vue'
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
-import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
-import EmailTemplateListPreviewLanguages from '@/components/workshop/EmailTemplateListPreviewLanguages.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
 export default {
   name: 'CommonSimulatorNewScenario',
   components: {
-    InputLanguagePreview,
+    AppModal,
+    EmailTemplateMultipleLanguagePreviewDialog,
+    CommonSimulatorEmailTemplatePreviewDialog,
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
     NewEmailTemplates,
     NewLandingPage,
     KSelect,
@@ -803,8 +524,6 @@ export default {
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
     StepperFooter,
-    KEmailPreview,
-    AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplateListPreview,
@@ -813,8 +532,6 @@ export default {
     InputTag,
     InputEntityName,
     InputDescription,
-    AttachmentsPreview,
-    EmailTemplateListPreviewLanguages,
     InputSelectRoles
   },
   props: {
@@ -846,14 +563,21 @@ export default {
     type: {
       type: String,
       default: SCENARIO_TYPES.PHISHING
+    },
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
+      drawerModel: this.status,
       languagePreview: '',
       landingPageData: null,
       isOpenLandingPageDrawer: false,
       isOpenEmailTemplateDrawer: false,
+      showEmailTemplatePreviewDialog: false,
+      showLandingPagePreviewDialog: false,
       isTemplateEditing: false,
       isEmailTemplateInEditMode: false,
       isLandingPageTemplateInEditMode: false,
@@ -872,8 +596,6 @@ export default {
       isFetched: false,
       selectedTab: '1',
       summaryData: {},
-      showTemplate1: false,
-      showTemplate2: false,
       languageOptions: [],
       isSubmitDisabled: false,
       availableForRequests: [],
@@ -984,11 +706,6 @@ export default {
       return this.type === SCENARIO_TYPES.PHISHING
         ? 'Select the phishing technique for this template'
         : 'Select the quishing technique for this template'
-    },
-    getLandingPageCardTitle() {
-      return this.type === SCENARIO_TYPES.PHISHING
-        ? 'Landing Page for users who clicked the phishing link'
-        : 'Landing Page for users who clicked the QR code link'
     },
     getLandingPageUrlLabel() {
       return this.type === SCENARIO_TYPES.PHISHING ? labels.PhishingURL : labels.QuishingURL
@@ -1208,9 +925,32 @@ export default {
         ? this.summaryData.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1]
             .content || ''
         : this.summaryData.landingPageTemplate.landingPages[0].content || ''
+    },
+    emailTemplatePreviewSelectedRow() {
+      if (!this.summaryData?.emailTemplate) return {}
+      return {
+        ...this.summaryData.emailTemplate,
+        resourceId: this.emailTemplateResourceId || this.summaryData.emailTemplate.resourceId
+      }
+    },
+    landingPagePreviewSelectedRow() {
+      if (!this.summaryData?.landingPageTemplate) return {}
+      return {
+        ...this.summaryData.landingPageTemplate,
+        resourceId:
+          this.landingPageTemplateResourceId || this.summaryData.landingPageTemplate.resourceId
+      }
     }
   },
   watch: {
+    status(val) {
+      this.drawerModel = val
+    },
+    drawerModel(val) {
+      if (!val && this.status) {
+        this.changeNewScenarioModalStatus()
+      }
+    },
     landingPageTemplateResourceId() {
       this.selectedTab = '1'
     },
@@ -1271,7 +1011,97 @@ export default {
       this.formValues.languageTypeResourceId =
         this.getCurrentCompany?.preferredLanguageTypeResourceId || '862249c19aad'
   },
+  beforeDestroy() {
+    // Mixin tarafından HTML overflow kontrolü yapılıyor
+  },
   methods: {
+    handleClickOutside(event) {
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // V-menu açıksa ignore et
+        const menuElement = event.target.closest('.v-menu__content, .v-list')
+        if (menuElement) {
+          return
+        }
+
+        // GrapesJS modal açıksa ignore et
+        const grapesModalElement = event.target.closest(
+          '.grapes-container-modal, #gjsNewsletterModal, #threat-sharing-post-incident-grapesjs-modal, .gjs-editor'
+        )
+        if (grapesModalElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+
+        // Leaving dialog açıksa ignore et (AppDialog içindeki tüm elementler)
+        const leavingDialogElement = event.target.closest('.v-dialog, [role="dialog"], .app-dialog')
+        if (leavingDialogElement) {
+          return
+        }
+      }
+
+      // Leaving dialog zaten açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // Preview dialog'lar açıksa, bunları kapat (aynı animasyonla)
+      if (this.showEmailTemplatePreviewDialog) {
+        this.$refs.emailTemplatePreviewDialog?.closeDrawer()
+        return
+      }
+      if (this.showLandingPagePreviewDialog) {
+        this.$refs.landingPagePreviewDialog?.closeDrawer()
+        return
+      }
+
+      // EmailTemplateListPreview'deki preview dialog açıksa
+      if (this.$refs.refEmailTemplateListPreview?.isTemplateDetails) {
+        this.$refs.refEmailTemplateListPreview.$refs.emailTemplatePreviewDialog?.closeDrawer()
+        return
+      }
+
+      // LandingPageTemplateListPreview'deki preview dialog açıksa
+      if (this.$refs.refLandingPageTemplateListPreview?.isTemplateDetails) {
+        this.$refs.refLandingPageTemplateListPreview.$refs.landingPagePreviewDialog?.closeDrawer()
+        return
+      }
+
+      // Email template drawer açıksa ignore et
+      if (this.isOpenEmailTemplateDrawer) {
+        // GrapesJS modal açıksa ignore et
+        if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+          return
+        }
+        return
+      }
+
+      // Landing page drawer açıksa ignore et
+      if (this.isOpenLandingPageDrawer) {
+        // GrapesJS modal açıksa ignore et
+        if (this?.$refs?.newLandingPage?.$refs?.refEmailTemplate?.[0]?.showGrapesModal) {
+          return
+        }
+        return
+      }
+
+      // Drawer'ı kapat
+      this.changeNewScenarioModalStatus()
+    },
     initializeRoleOptions() {
       if (!this.isPhishing) return
       if (Array.isArray(this.roleItems) && this.roleItems.length) {
@@ -1334,34 +1164,38 @@ export default {
         ''
     },
     handleCloseNewEmailTemplateModal(_, forceUpdate = false, createdResourceId = '') {
-      this.createdEmailTemplateResourceId = createdResourceId
+      const isEditMode = !!this.createdEmailTemplateResourceId
+      const isSaveAsNew = isEditMode && !!createdResourceId
+      const resourceIdToUse = createdResourceId || this.createdEmailTemplateResourceId
+
+      if (forceUpdate && this?.$refs?.refEmailTemplateListPreview) {
+        // Clear list to avoid duplicates
+        if (isEditMode && !isSaveAsNew) {
+          this.$refs.refEmailTemplateListPreview.listData = []
+          this.$refs.refEmailTemplateListPreview.defaultListData = []
+        }
+        this.$refs.refEmailTemplateListPreview.getTemplates(true, resourceIdToUse).then(() => {
+          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(resourceIdToUse)
+        })
+      }
+
+      if (isEditMode && !isSaveAsNew) {
+        // Edit mode: Close drawer and keep same template selected
+        this.createdEmailTemplateResourceId = null
+        if (document.querySelector('.k-navigation-drawer--email-template'))
+          document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
+        setTimeout(() => {
+          this.toggleEmailTemplateDrawer()
+        }, 250)
+        return
+      }
+      // Save As New or Create mode: Close drawer and select new template
+      this.createdEmailTemplateResourceId = isSaveAsNew ? null : createdResourceId
       if (document.querySelector('.k-navigation-drawer--email-template'))
         document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
-      if (forceUpdate && this?.$refs?.refEmailTemplateListPreview)
-        this.$refs.refEmailTemplateListPreview.getTemplates(true, createdResourceId).then(() => {
-          this.$refs.refEmailTemplateListPreview.setItemToFirstIndex(createdResourceId)
-        })
       setTimeout(() => {
         this.toggleEmailTemplateDrawer()
       }, 250)
-    },
-    handleClickOutsideNewEmailTemplateModal() {
-      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
-        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
-        return
-      }
-      this.handleCloseNewEmailTemplateModal()
-    },
-    handleClickOutsideNewLandingPageTemplateModal() {
-      if (
-        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
-        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
-      ) {
-        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
-        return
-      }
-      if (this?.$refs?.newLandingPage?.isPageAddMenuOpen?.some(Boolean)) return
-      this.handleCloseNewLandingPageTemplateModal()
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
@@ -1382,6 +1216,85 @@ export default {
     },
     toggleEmailTemplateDrawer() {
       this.isOpenEmailTemplateDrawer = !this.isOpenEmailTemplateDrawer
+      if (!this.isOpenEmailTemplateDrawer) {
+        this.createdEmailTemplateResourceId = null
+      }
+    },
+    handleEditEmailTemplate(selectedRow) {
+      this.createdEmailTemplateResourceId = selectedRow?.resourceId || null
+      if (!this.isOpenEmailTemplateDrawer) {
+        this.isOpenEmailTemplateDrawer = true
+      }
+    },
+    handleEditLandingPageTemplate(selectedRow) {
+      this.createdLandingPageResourceId = selectedRow?.resourceId || null
+      if (!this.isOpenLandingPageDrawer) {
+        this.isOpenLandingPageDrawer = true
+      }
+    },
+    handleClickOutsideNewEmailTemplateModal(event) {
+      // Leaving dialog açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+      }
+
+      if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {
+        this.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal = false
+        return
+      }
+      this.handleCloseNewEmailTemplateModal()
+    },
+    handleClickOutsideNewLandingPageTemplateModal(event) {
+      // Leaving dialog açıksa ignore et
+      if (this.$store.state.common?.isShowLeavingDialog) {
+        return
+      }
+
+      // SnackBar tıklanırsa ignore et
+      if (event && event.target) {
+        const snackbarElement = event.target.closest(
+          '.v-snack__wrapper, .v-snackbar, .v-snackbar__wrapper, .v-snackbar__content, [data-snackbar]'
+        )
+        if (snackbarElement) {
+          return
+        }
+
+        // Leaving dialog butonlarına tıklanırsa ignore et
+        const leavingDialogButton = event.target.closest(
+          '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
+        )
+        if (leavingDialogButton) {
+          return
+        }
+      }
+
+      if (
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0] &&
+        this?.$refs?.newLandingPage?.$refs?.refEmailTemplate[0].showGrapesModal
+      ) {
+        this.$refs.newLandingPage.$refs.refEmailTemplate[0].showGrapesModal = false
+        return
+      }
+      if (this?.$refs?.newLandingPage?.isPageAddMenuOpen?.some(Boolean)) return
+      this.handleCloseNewLandingPageTemplateModal()
     },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
@@ -1608,6 +1521,9 @@ export default {
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
+              // Set template resource IDs from API response
+              this.emailTemplateResourceId = data.emailTemplate.resourceId
+              this.landingPageTemplateResourceId = data.landingPageTemplate.resourceId
               this.setPhishingEmailTemplates(data)
               this.step += 1
             })

@@ -24,9 +24,7 @@ export default {
   name: 'AppendableMergeTag',
   data() {
     return {
-      mergeTags: [
-        { name: 'Email', value: '{EMAIL}' }
-      ]
+      mergeTags: [{ name: 'Email', value: '{EMAIL}' }]
     }
   },
   methods: {

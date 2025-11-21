@@ -823,3 +823,118 @@ export function fileToBase64(file) {
     })
   return toBase64(file)
 }
+
+/**
+ * HTML içeriğini yeni pencerede açar. Title ekler, encoding sorunlarını çözer ve click eventlerini engeller.
+ * @param {string} htmlContent - Açılacak HTML içeriği
+ */
+export function openHtmlInNewWindow(htmlContent) {
+  if (!htmlContent) return
+
+  let processedHtml = htmlContent
+
+  // UTF-8 meta tag ekle (encoding problemi için)
+  if (!processedHtml.includes('charset')) {
+    if (processedHtml.includes('<head>')) {
+      processedHtml = processedHtml.replace('<head>', '<head><meta charset="UTF-8">')
+    } else if (processedHtml.includes('<html>')) {
+      processedHtml = processedHtml.replace('<html>', '<html><head><meta charset="UTF-8"></head>')
+    } else {
+      processedHtml = `<head><meta charset="UTF-8"></head>${processedHtml}`
+    }
+  }
+
+  // Title ekle veya güncelle
+  if (!processedHtml.includes('<title>')) {
+    if (processedHtml.includes('<head>')) {
+      processedHtml = processedHtml.replace(
+        '<head>',
+        '<head><title>Landing Page Template Preview</title>'
+      )
+    } else if (processedHtml.includes('<html>')) {
+      processedHtml = processedHtml.replace(
+        '<html>',
+        '<html><head><title>Landing Page Template Preview</title></head>'
+      )
+    } else {
+      processedHtml = `<head><title>Landing Page Template Preview</title></head>${processedHtml}`
+    }
+  } else {
+    processedHtml = processedHtml.replace(
+      /<title>.*?<\/title>/i,
+      '<title>Landing Page Template Preview</title>'
+    )
+  }
+
+  // Prevent click script'i ekle
+  const { getPreventClickScript } = require('./preventClickScript')
+  const preventScript = getPreventClickScript()
+  if (processedHtml.includes('</body>')) {
+    processedHtml = processedHtml.replace('</body>', `${preventScript}</body>`)
+  } else {
+    processedHtml += preventScript
+  }
+
+  // Blob oluştur ve aç
+  const blob = new Blob([processedHtml], { type: 'text/html;charset=UTF-8' })
+  const url = window.URL.createObjectURL(blob)
+  window.open(url, '_blank')
+  setTimeout(() => window.URL.revokeObjectURL(url), 100)
+}
+
+/**
+ * Red flag göstermek için kullanılan CSS
+ */
+export const FLAGGED_AREA_CSS = `
+  <style>
+    .flagged-area {
+      position: relative;
+      display: inline-block;
+      border: 1px solid #e00;
+      border-radius: 4px;
+      padding-left:2em !important;
+      margin: 0.5em 0.1em;
+    }
+    .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
+      background-color: rgba(255, 0, 0, 0.1);
+      padding: 0.2em 2em;
+    }
+
+    .flagged-area::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0.5em;
+      transform: translateY(-50%);
+      width: 1em;
+      height: 1em;
+      background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
+    }
+    .flagged-area:hover::after {
+      content: attr(data-flag-tooltip);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      margin-top: 0.4em;
+      padding: 4px 8px;
+      background:#B83A3A;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.33;
+      font-family:"Open Sans", sans-serif;
+      white-space: normal;
+      word-break: break-word;
+      max-width: 240px;
+      min-width: 240px;
+      border-radius: 4px;
+      z-index: 9999;
+    }
+    .flagged-area:has(.flagged-area:hover)::after {
+      content: none;
+    }
+    .email-container,.container,.email-container-wrapper{
+      overflow:visible !important;
+    }
+  </style>
+`

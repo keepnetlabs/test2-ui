@@ -3,6 +3,28 @@
     class="emailTemplatePreview campaign-manager-phishing-scenarios pt-0"
     style="min-height: auto !important;"
   >
+    <EmailTemplateMultipleLanguagePreviewDialog
+      v-if="isShowEmailTemplatePreview && emailTemplatePreviewSelectedRow"
+      ref="emailTemplatePreviewDialog"
+      :status="isShowEmailTemplatePreview"
+      :selected-row="emailTemplatePreviewSelectedRow"
+      :type="type"
+      :languages="languages"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isShowEmailTemplatePreview = false"
+    />
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
+      v-if="isShowLandingPagePreview && landingPagePreviewSelectedRow"
+      ref="landingPagePreviewDialog"
+      :status="isShowLandingPagePreview"
+      :selected-row="landingPagePreviewSelectedRow"
+      :type="type"
+      :languages="languages"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isShowLandingPagePreview = false"
+    />
     <CampaignManagerPhishingScenariosPreviewDialog
       v-if="isShowTemplate"
       :status="isShowTemplate"
@@ -577,8 +599,12 @@ import { getDefaultAxiosPayload, createRandomCryptStringNumber } from '@/utils/f
 import TabsWithMfaSettings from '../../PhishingScenarios/TabsWithMfaSettings.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import CampaignManagerPhishingScenariosPreviewDialog from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosPreviewDialog.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import TrainingLibraryCommonComponents from '@/components/TrainingLibrary/TrainingLibraryCommonComponents.vue'
-import TrainingTabModel, { QuishingTrainingTabModel } from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
+import TrainingTabModel, {
+  QuishingTrainingTabModel
+} from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
 import { mapGetters } from 'vuex'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
@@ -599,6 +625,8 @@ export default {
     InputLanguagePreview,
     TrainingLibraryCommonComponents,
     CampaignManagerPhishingScenariosPreviewDialog,
+    EmailTemplateMultipleLanguagePreviewDialog,
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
     CampaignManagerPhishingScenariosTrainingTab,
     TabsWithMfaSettings,
     ShowMoreTags,
@@ -704,7 +732,11 @@ export default {
       selectedTemplateLanguages: [],
       isShowCategoryTrainingDialog: false,
       enumTypes: {},
-      phishingEmailTemplates: []
+      phishingEmailTemplates: [],
+      isShowEmailTemplatePreview: false,
+      emailTemplatePreviewSelectedRow: null,
+      isShowLandingPagePreview: false,
+      landingPagePreviewSelectedRow: null
     }
   },
   computed: {
@@ -1245,7 +1277,8 @@ export default {
             phishingFileName,
             subject,
             ccAddresses,
-            languageTypeName
+            languageTypeName,
+            resourceId: emailTemplateResourceId
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -1262,7 +1295,8 @@ export default {
             languageTypeName:
               this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
               languageTypeName,
-            phishingFileName
+            phishingFileName,
+            resourceId: emailTemplateResourceId
           }
           if (this.isPhishing) {
             this.phishingEmailTemplates = []
@@ -1320,7 +1354,8 @@ export default {
             urlTemplate,
             difficultyTypeId,
             languageTypeResourceId,
-            isInvisibleCaptchaEnabled = false
+            isInvisibleCaptchaEnabled = false,
+            resourceId: landingPageResourceId
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -1331,7 +1366,8 @@ export default {
             languageTypeResourceId,
             mfaSmsSenderNumber,
             mfaTextTemplate,
-            isInvisibleCaptchaEnabled: isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled'
+            isInvisibleCaptchaEnabled: isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled',
+            resourceId: landingPageResourceId
           }
           this.landingPageTemplates = landingPages || []
           this.tab = 'email'
@@ -1446,7 +1482,25 @@ export default {
       }
     },
     handleClickPreview() {
-      this.toggleTemplateDialog()
+      // Email template button
+      if (this.tab === 'email') {
+        if (this.emailTemplateParams && this.emailTemplateParams.resourceId) {
+          this.emailTemplatePreviewSelectedRow = {
+            resourceId: this.emailTemplateParams.resourceId,
+            name: this.emailTemplateParams.name
+          }
+          this.isShowEmailTemplatePreview = true
+        }
+      } else if (this.tab === 'landing-page') {
+        // Landing page button
+        if (this.landingPageParams && this.landingPageParams.resourceId) {
+          this.landingPagePreviewSelectedRow = {
+            resourceId: this.landingPageParams.resourceId,
+            name: this.landingPageParams.name
+          }
+          this.isShowLandingPagePreview = true
+        }
+      }
     },
     resetFilters() {
       this.search = ''

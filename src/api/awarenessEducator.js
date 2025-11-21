@@ -356,9 +356,10 @@ const getTrainingReportCertificateEmailDetails = (enrollmentId, userMailId) => {
 }
 
 const getTrainingReportExamResultSessions = (enrollmentId, targetUserResourceId) => {
-  return testRequest.get(`/training-reports/${enrollmentId}/exam-result-sessions/${targetUserResourceId}`)
+  return testRequest.get(
+    `/training-reports/${enrollmentId}/exam-result-sessions/${targetUserResourceId}`
+  )
 }
-
 
 const getProgressDetailsTable = (enrollmentId, resourceId) => {
   return testRequest.get(`/training-reports/${enrollmentId}/progress-details/${resourceId}`)

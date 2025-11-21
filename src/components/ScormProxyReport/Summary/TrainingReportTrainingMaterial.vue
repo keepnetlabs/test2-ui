@@ -11,7 +11,11 @@
     @previewClicked="handlePreviewClick"
   >
     <template #body>
-      <TrainingLibraryCommonComponents v-if="isFormData" only-preview :should-control-body-scroll="true" />
+      <TrainingLibraryCommonComponents
+        v-if="isFormData"
+        only-preview
+        :should-control-body-scroll="true"
+      />
     </template>
   </CampaignManagerSummaryCard>
 </template>

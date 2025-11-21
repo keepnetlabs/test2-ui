@@ -89,7 +89,7 @@ export default {
   },
   computed: {
     getTitle() {
-      if(this.isSurvey) return labels.SurveySummary
+      if (this.isSurvey) return labels.SurveySummary
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.PosterSummary
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.InfographicSummary
@@ -101,7 +101,7 @@ export default {
       return labels.TrainingSummary
     },
     getSubtitle() {
-      if(this.isSurvey) return labels.SurveySummarySub
+      if (this.isSurvey) return labels.SurveySummarySub
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
         return labels.PosterSummarySub
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
@@ -114,7 +114,7 @@ export default {
       return labels.TrainingSummarySub
     },
     getResendButtonText() {
-      if(this.isSurvey) return labels.ResendSurvey
+      if (this.isSurvey) return labels.ResendSurvey
       if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) return labels.ResendPoster
       else if (this.trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
         return labels.ResendInfographic

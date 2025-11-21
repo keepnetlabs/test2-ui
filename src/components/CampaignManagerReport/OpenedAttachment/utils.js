@@ -411,6 +411,6 @@ export const COLUMNS = {
     width: 200,
     isEditable: false,
     filterableType: 'select',
-    filterableItems: [],
+    filterableItems: []
   }
 }

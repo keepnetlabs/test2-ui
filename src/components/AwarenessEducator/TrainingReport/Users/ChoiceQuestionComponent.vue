@@ -14,11 +14,14 @@
           <span class="choice-option-text">{{ option.text }}</span>
         </div>
         <div class="choice-option-badges">
-          <span v-if="option.isUserAnswer" class="choice-badge choice-badge--selected">Selected</span>
+          <span v-if="option.isUserAnswer" class="choice-badge choice-badge--selected"
+            >Selected</span
+          >
           <span
             v-if="option.isCorrect && showCorrectAnswers"
             class="choice-badge choice-badge--correct"
-          >Correct</span>
+            >Correct</span
+          >
         </div>
       </div>
     </div>

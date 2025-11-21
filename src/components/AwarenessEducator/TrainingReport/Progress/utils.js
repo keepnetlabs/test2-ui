@@ -15,4 +15,3 @@ export function getTrainingReportProgressStatusBadgeProps(progress) {
   }
   return progressMap[progress]
 }
-

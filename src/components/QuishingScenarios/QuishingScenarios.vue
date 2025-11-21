@@ -39,15 +39,18 @@
       :status="isShowPreviewDialog"
       :selected-row="selectedScenario"
       :api-func="getQuishingScenarioLandingPageAndEmailTemplate"
-      @on-close="togglePreviewDialog"
+      :languages="languageOptions"
+      @on-close="toggleShowPreviewDialog"
+      @on-edit-template="handleEditTemplate"
+      @on-fast-launch="handleFastLaunch"
     />
     <QuishingScenariosTable
       ref="refTable"
       :scenario-details-lookup="scenarioDetailsLookup"
-      @on-edit-or-new="toggleNewScenarioModal"
-      @on-fast-launch="toggleFastLaunchDialog"
-      @on-preview="togglePreviewDialog"
-      @on-delete="toggleDeleteDialog"
+      @on-edit-or-new="(row, isDuplicate) => toggleNewScenarioModal(row, isDuplicate)"
+      @on-fast-launch="(row) => toggleFastLaunchDialog(row)"
+      @on-preview="(row) => togglePreviewDialog(row)"
+      @on-delete="(row) => toggleDeleteDialog(row)"
       @on-multiple-delete="handleMultipleDelete"
     />
   </div>
@@ -63,6 +66,7 @@ import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimu
 import labels from '@/model/constants/labels'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch.vue'
 import useQuishingScenarioDetailsLookup from '@/hooks/useQuishingScenarioDetailsLookup'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
   name: 'QuishingScenarios',
@@ -87,7 +91,8 @@ export default {
       isMultipleDelete: false,
       multipleDeletedScenariosCount: 0,
       multipleScenariosPayload: {},
-      isEdit: false
+      isEdit: false,
+      languageOptions: []
     }
   },
   computed: {
@@ -101,7 +106,21 @@ export default {
   created() {
     this.callForScenarioDetails()
   },
+  mounted() {
+    this.callForLanguages()
+  },
   methods: {
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            description: language.description
+          })) || []
+      })
+    },
     deleteScenario: QuishingService.deleteScenario,
     bulkDeleteScenarios: QuishingService.bulkDeleteScenarios,
     getQuishingScenarioLandingPageAndEmailTemplate:
@@ -119,6 +138,22 @@ export default {
     togglePreviewDialog(selectedRow = null) {
       this.selectedScenario = selectedRow
       this.isShowPreviewDialog = !this.isShowPreviewDialog
+    },
+    toggleShowPreviewDialog() {
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
+    },
+    handleFastLaunch(row = {}) {
+      this.selectedScenario = row
+      this.toggleFastLaunchDialog(row)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
+    },
+    handleEditTemplate() {
+      this.toggleNewScenarioModal(this.selectedScenario, false)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
     },
     toggleDeleteDialog(selectedRow = null, forceUpdate = false) {
       this.isMultipleDelete = false

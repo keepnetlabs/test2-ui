@@ -8,6 +8,16 @@
       border-bottom: none;
       padding-bottom: 0;
     }
+
+    // 7 eleman varsa 6. elemanın padding-top'u 0 olmalı
+    .campaign-manager-summary-card__body-item:nth-child(6):nth-last-child(2) {
+      padding-top: 0;
+    }
+
+    // 8 eleman varsa son elemanın padding-top'u 0 olmalı
+    .campaign-manager-summary-card__body-item:nth-child(8):last-child {
+      padding-top: 0;
+    }
   }
 
   &__header {
@@ -177,5 +187,8 @@
   .campaign-manager-summary-card__body-item-one-line:nth-child(6) {
     border-bottom: 1px solid #f2f2f2 !important;
     padding-bottom: 16px !important;
+  }
+  .campaign-manager-summary-card__body-item-one-line:nth-child(8):last-child {
+    padding-top: 16px !important;
   }
 }

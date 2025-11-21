@@ -76,7 +76,11 @@
             <span class="fw-600 ml-1" style="font-size: 14px; color: #43a047;">Access Enabled</span>
           </div>
         </div>
-        <div  v-if="isMicrosoftTeamsActive" class="mt-2" style="border-radius: 8px; background-color: #fafafa; padding: 16px;">
+        <div
+          v-if="isMicrosoftTeamsActive"
+          class="mt-2"
+          style="border-radius: 8px; background-color: #fafafa; padding: 16px;"
+        >
           <div class="d-flex flex-column gap-1 mb-4">
             <span class="fw-600" style="font-size: 14px;"
               >Required Setup: Add the App to a Microsoft Teams Policy</span
@@ -245,15 +249,15 @@
                     <VIcon left small>mdi-send</VIcon>
                     SEND TEST MESSAGE
                     <template #loader>
-                        <img
-                          src="../../../assets/img/spinner.svg"
-                          class="add-in-settings__spinner"
-                          alt="spinner"
-                        />
-                        <span style="font-size: 14px; text-transform: capitalize;">
-                          SENDING...
-                        </span>
-                      </template>
+                      <img
+                        src="../../../assets/img/spinner.svg"
+                        class="add-in-settings__spinner"
+                        alt="spinner"
+                      />
+                      <span style="font-size: 14px; text-transform: capitalize;">
+                        SENDING...
+                      </span>
+                    </template>
                   </VBtn>
                 </VForm>
               </div>

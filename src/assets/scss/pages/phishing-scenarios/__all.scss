@@ -1,0 +1,53 @@
+// Email Template Preview Styles
+.email-template-preview {
+  .email-template-preview__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #383b41;
+    margin-top: 24px;
+  }
+
+  .email-template-preview__container {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .email-template-preview__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .email-template-preview__language-select {
+    max-width: 400px;
+    flex: 1;
+  }
+
+  .email-template-preview__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .email-template-preview__text {
+    // Keys (labels) - From Name:, From Email:, CC:, Subject:
+    .email-template-preview__text--title {
+      color: rgba(56, 59, 65, 0.72);
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 19px;
+    }
+
+    // Values - Tüm değerler aynı (Subject dahil)
+    .email-template-preview__text--body {
+      color: #383b41;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 19px;
+    }
+  }
+}
