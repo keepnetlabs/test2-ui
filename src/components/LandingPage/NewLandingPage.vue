@@ -75,6 +75,21 @@
                   :items="landingPageData.methodTypes"
                   :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                 />
+                <form-group
+                  has-hint
+                  title="Language"
+                  sub-title="Select the language you are writing this webpage template in"
+                >
+                  <input-select-language
+                    v-model="formValues.languageTypeResourceId"
+                    v-bind="commonRules"
+                    item-text="text"
+                    item-value="value"
+                    required
+                    :items="languageOptions"
+                    :menu-props="{ offsetY: true }"
+                  />
+                </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
                     v-model="formValues.tags"
@@ -197,6 +212,7 @@
                           :language-options="languageOptions"
                           :is-notification-template="true"
                           :is-landing-page="true"
+                          :is-show-localize-button="false"
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
                           @on-ai-ally="handleAIAlly"
@@ -422,6 +438,7 @@ import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePrevie
 import NextButton from '@/components/Common/Buttons/NextButton'
 import BackButton from '@/components/Common/Buttons/BackButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 export default {
   name: 'NewLandingPage',
   components: {
@@ -437,7 +454,8 @@ export default {
     InputTag,
     NextButton,
     BackButton,
-    SaveButton
+    SaveButton,
+    InputSelectLanguage
   },
   props: {
     status: {

@@ -8,7 +8,7 @@
     />
 
     <div class="d-flex gap-4">
-      <div class="position-relative">
+      <div v-if="isShowLocalizeButton" class="position-relative">
         <div>
           <VTooltip v-if="!isLocalizeReady || showRedFlags" bottom max-width="260">
             <template #activator="{ on, attrs }">
@@ -375,6 +375,10 @@ export default {
     isLandingPage: {
       type: Boolean,
       default: false
+    },
+    isShowLocalizeButton: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
