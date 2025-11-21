@@ -8,6 +8,7 @@ export default {
     FilterGroups: [
       {
         Condition: 'AND',
+
         FilterItems: [
           {
             FieldName: 'Name',

@@ -116,7 +116,7 @@
           ref="refMakeAvailableFor"
           v-model="formValues.availableForRequests"
         />
-        <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
+        <form-group class-name="email-template mt-2" onsubmit="return false">
           <DatatableLoading v-if="loading" :loading="loading" />
           <EmailTemplate
             v-else
