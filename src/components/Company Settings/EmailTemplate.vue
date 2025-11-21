@@ -651,7 +651,7 @@
         </div>
       </div>
     </div>
-    <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
+    <v-divider v-if="!onlyGrapes && !isNotificationTemplate" class="email-template__divider mb-6" />
     <div v-if="isEmailGenerating">
       <EmailTemplatesAILoader
         :title="getLoaderTitle"
@@ -659,7 +659,12 @@
         :loaderTime="isRedFlagsLoading ? 30 : 20"
       />
     </div>
-    <div v-else id="email-template-content" class="email-template-content">
+    <div
+      v-else
+      id="email-template-content"
+      class="email-template-content"
+      :style="{ 'margin-top': isNotificationTemplate ? '16px' : '24px' }"
+    >
       <div>
         <v-btn
           v-if="(!isPhishingTemplate && templateType !== 'landing') || showEditButton"
