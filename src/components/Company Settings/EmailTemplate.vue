@@ -358,7 +358,7 @@
       </transition>
     </div>
     <div
-      style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px;"
+      style="display: grid; grid-template-columns: 1fr 1fr;"
       :class="!isAiAssistant && !showEditButton ? 'pt-6' : ''"
     >
       <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
@@ -399,15 +399,28 @@
           />
         </FormGroup>
       </div>
-      <div :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : 'pt-0']" v-if="!onlyGrapes">
+      <div
+        :class="[
+          'mx-6',
+          getSubjectSubtitle ? 'mt-6' : '',
+          isHorizontalFormGroups ? 'pt-2' : 'pt-0'
+        ]"
+        v-if="!onlyGrapes"
+      >
         <FormGroup
           title="Subject:"
-          :sub-title="getSubjectSubtitle"
           style="max-width: unset;"
           :className="isHorizontalFormGroups ? 'k-form-group--horizontal' : ''"
           :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
-          <div class="position-relative">
+          <div :class="['position-relative']">
+            <div
+              v-if="getSubjectSubtitle"
+              class="text-primary-color fs-3"
+              style="position: absolute !important; top: -40px; max-width: 554px;"
+            >
+              {{ getSubjectSubtitle }}
+            </div>
             <InputEntityName
               ref="refInputEntityName"
               id="input--notification-template-subject"
@@ -432,7 +445,10 @@
           </div>
         </FormGroup>
       </div>
-      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
+      <div
+        v-if="!onlyGrapes"
+        :class="['mx-6', getSubjectSubtitle ? 'mt-6' : '', isHorizontalFormGroups ? 'pt-2' : '']"
+      >
         <FormGroup
           title="From Name:"
           style="max-width: unset;"
@@ -646,7 +662,7 @@
     <div v-else id="email-template-content" class="email-template-content">
       <div>
         <v-btn
-          v-if="!isPhishingTemplate || showEditButton"
+          v-if="(!isPhishingTemplate && templateType !== 'landing') || showEditButton"
           id="btn-edit--notification-template-email-template"
           style="text-transform: none;"
           :disabled="editItemsDisabled"
@@ -1057,8 +1073,13 @@ export default {
     getLoaderTitle() {
       if (this.isRedFlagsLoading)
         return 'AI Ally is carefully scanning your email template for Red Flags'
-      if (this.isGenerateWithAi)
+      if (this.isGenerateWithAi) {
+        if (this.isNotificationTemplate)
+          return 'The notification template is being localized by AI Ally for the selected language.'
         return `The email template is being localized by AI Ally for the selected languages.`
+      }
+      if (this.isNotificationTemplate)
+        return 'AI Ally is carefully crafting your Notification template'
       return this.templateType === 'landing'
         ? 'AI Ally is carefully crafting your Landing Page template'
         : 'AI Ally is carefully crafting your Email template'
@@ -1066,8 +1087,13 @@ export default {
     getLoaderDescription() {
       if (this.isRedFlagsLoading)
         return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
-      if (this.isGenerateWithAi)
+      if (this.isGenerateWithAi) {
+        if (this.isNotificationTemplate)
+          return 'The process may take some time depending on the number of localizations. Please stay on the page.'
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
+      }
+      if (this.isNotificationTemplate)
+        return 'The process may take some time depending on the number of localizations. Please stay on the page.'
       return 'This process may take some time while the email is being crafted. Please stay on the page during this time.'
     },
     attachmentExtensions() {

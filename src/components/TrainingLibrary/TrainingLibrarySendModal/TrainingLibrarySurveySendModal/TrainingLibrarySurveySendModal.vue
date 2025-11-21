@@ -256,16 +256,21 @@ export default {
       const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
       const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
+      const preferredLanguageLabel =
+        !refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
+          ? 'Company Language'
+          : 'Target Users Language'
       if (
         refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.EMAIL ||
         refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
       ) {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          Reminder: sendReminderEvery,
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
           ),
+          'Preferred Language': preferredLanguageLabel,
+          Reminder: sendReminderEvery,
           'Award Certificate': refSendTrainingSettings.formData.awardCertificate
             ? awardCertificateTypes?.find?.(
                 (item) => item.value === refSendTrainingSettings.formData.certificateConfigSendType
@@ -285,10 +290,11 @@ export default {
       } else if (refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.SMS) {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
-          Reminder: sendReminderEvery,
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod
           ),
+          'Preferred Language': preferredLanguageLabel,
+          Reminder: sendReminderEvery,
           'Sender Phone Number':
             refSendTrainingSettings?.$refs?.refSendTrainingSMSSettings?.formData?.phoneNumber,
           'SMS Text':
@@ -312,6 +318,7 @@ export default {
       } else {
         formData.settings = {
           Languages: languages.includes('All Languages') ? 'All Languages' : languages,
+          'Preferred Language': preferredLanguageLabel,
           'Mark as Test': refSendTrainingSettings.formData.markedAsTest ? 'Yes' : 'No',
           'Delivery Method': getDeliveryMethodLabel(
             refSendTrainingSettings?.formData?.deliveryMethod

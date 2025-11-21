@@ -4,7 +4,7 @@ export const DELIVERY_METHODS = {
   MICROSOFT_TEAMS: 'microsoft-teams',
   SMS: 'sms'
 }
-export const deliveryMethodOptions = (isLMS = false,type='Training') => {
+export const deliveryMethodOptions = (isLMS = false, type = 'Training') => {
   return [
     {
       label: 'Email',
@@ -23,8 +23,7 @@ export const deliveryMethodOptions = (isLMS = false,type='Training') => {
     {
       label: 'Microsoft Teams',
       value: 'microsoft-teams',
-      description:
-        `${type} is sent via Microsoft Teams to users found there and via email to all`
+      description: `${type} is sent via Microsoft Teams to users found there and via email to all`
     },
     {
       label: 'SMS',

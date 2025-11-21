@@ -27,6 +27,9 @@
       :is-individual-printout-template="isIndividualPrintoutTemplate"
       :selected-row="selectedEmailTemplate"
       :api-func="getPreviewDialogApiFunc"
+      :languages="languageOptions"
+      is-nested
+      :should-control-html-overflow="true"
       @on-close="togglePreviewDialog"
     />
     <CommonSimulatorAttachmentRenameDialog
@@ -68,6 +71,7 @@ import QuishingService from '@/api/quishing'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import NewQuishingIndividualPrintoutTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingIndividualPrintoutTemplatesModal.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'QuishingEmailTemplates',
   components: {
@@ -91,8 +95,12 @@ export default {
       multipleTemplatesPayload: {},
       isShowRenameAttachmentDialog: false,
       isShowIndividualPrintoutTemplateModal: false,
-      isEdit: false
+      isEdit: false,
+      languageOptions: []
     }
+  },
+  created() {
+    this.callForLanguages()
   },
   computed: {
     getDeleteApiFunc() {
@@ -117,6 +125,17 @@ export default {
   methods: {
     getEmailTemplatePreviewContent: QuishingService.getEmailTemplatePreviewContent,
     bulkDeleteQuishingTemplates: QuishingService.bulkDeleteQuishingTemplates,
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            code: language.description
+          })) || []
+      })
+    },
     toggleNewEmailTemplateModal(row = null, isDuplicate = false) {
       this.selectedEmailTemplate = row
       this.isDuplicate = isDuplicate

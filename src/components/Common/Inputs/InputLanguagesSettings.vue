@@ -8,7 +8,7 @@
     />
 
     <div class="d-flex gap-4">
-      <div class="position-relative">
+      <div v-if="isShowLocalizeButton" class="position-relative">
         <div>
           <VTooltip v-if="!isLocalizeReady || showRedFlags" bottom max-width="260">
             <template #activator="{ on, attrs }">
@@ -180,7 +180,7 @@
           </div>
         </div>
       </div>
-      <VTooltip v-if="!isLocalizeReady" bottom max-width="260">
+      <VTooltip v-if="!isNotificationTemplate && !isLocalizeReady" bottom max-width="260">
         <template #activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on">
             <VBtn
@@ -203,26 +203,35 @@
           To see red flags, fill in all required fields.
         </span>
       </VTooltip>
-      <VBtn v-else lass="fw-600" rounded outlined color="#2196f3" @click="handleShowRedFlagsClick">
+      <VBtn
+        v-else-if="!isNotificationTemplate && isLocalizeReady"
+        lass="fw-600"
+        rounded
+        outlined
+        color="#2196f3"
+        @click="handleShowRedFlagsClick"
+      >
         <VIcon>mdi-flag</VIcon>
         <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
           redFlagsText
         }}</span>
       </VBtn>
-      <VTextField
-        v-if="false"
-        v-model.trim="getTextFieldValue"
-        ref="refSearchTextField"
-        id="input-language-settings"
-        outlined
-        hide-details
-        readonly
-        autocomplete="off"
-        placeholder="Search languages to manage"
-        :append-icon="appendIcon"
-        :disabled="isGenerateWithAIDisabled"
-        @focus="handleSearchInputFocus"
-      />
+      <VIcon
+        v-if="isLandingPage && false"
+        color="#2196f3"
+        class="executive-reports-card__right-btn"
+        small
+        @click="handleAIAlly"
+        >mdi-lightbulb-on-outline</VIcon
+      >
+      <VIcon
+        v-if="isLandingPage && false"
+        color="#2196f3"
+        class="executive-reports-card__right-btn"
+        small
+        @click="handleLinkChange"
+        >mdi-link-variant</VIcon
+      >
       <VTooltip v-if="showRedFlags" bottom max-width="142">
         <template #activator="{ on }">
           <div v-on="on">
@@ -247,6 +256,7 @@
         >mdi-pencil</VIcon
       >
       <VMenu
+        v-if="!isNotificationTemplate"
         :key="showRedFlags ? 'red-flags' : 'normal'"
         bottom
         :offset="24"
@@ -326,6 +336,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isTemplateTypeSelected: {
+      type: Boolean,
+      default: true
+    },
     languageItems: {
       type: Array,
       default: () => []
@@ -353,6 +367,18 @@ export default {
     initialDisabledLanguageIds: {
       type: Array,
       default: () => []
+    },
+    isNotificationTemplate: {
+      type: Boolean,
+      default: false
+    },
+    isLandingPage: {
+      type: Boolean,
+      default: false
+    },
+    isShowLocalizeButton: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -392,7 +418,8 @@ export default {
         Boolean(this.subject) &&
         Boolean(this.fromName) &&
         Boolean(this.fromAddress) &&
-        this.isFromAddressValid
+        this.isFromAddressValid &&
+        this.isTemplateTypeSelected
       )
     },
     getLocalizeButtonStyle() {
@@ -973,7 +1000,7 @@ export default {
       this.$emit('on-generate-with-ai')
     },
     handleEditModeClick() {
-      this.$emit('on-edit-mode-click')
+      this.$emit('on-edit-mode')
     },
     handleUploadEmailButtonClick() {
       this.$emit('on-upload-email-button-click')
@@ -1026,6 +1053,12 @@ export default {
       })
       this.items = base
       this.treeViewKey = `key-${createRandomCryptStringNumber()}`
+    },
+    handleAIAlly() {
+      this.$emit('on-ai-ally')
+    },
+    handleLinkChange() {
+      this.$emit('on-link-change')
     }
   }
 }

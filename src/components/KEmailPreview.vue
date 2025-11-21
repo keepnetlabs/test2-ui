@@ -39,14 +39,14 @@ export default {
   },
   data() {
     return {
-      height: this.isLandingPage ? 640 : 300,
-      defaultHeight: this.isLandingPage ? 640 : 300,
+      height: this.isLandingPage ? 660 : 300,
+      defaultHeight: this.isLandingPage ? 660 : 300,
       iframeKey: `key-${createRandomCryptStringNumber()}`,
       animationFrame: null,
       isBodyHeightUsed: false,
       stopCalculateFrame: false,
       isInitialResize: true,
-      numberHeight: this.isLandingPage ? 640 : 300
+      numberHeight: this.isLandingPage ? 660 : 300
     }
   },
   watch: {
@@ -109,8 +109,8 @@ export default {
           height += 8
         }
         // Ensure minimum height for landing pages
-        if (this.isLandingPage && height < 640) {
-          height = 640
+        if (this.isLandingPage && height < 660) {
+          height = 660
         }
         if (height > this.numberHeight && height > 300) {
           if (
@@ -180,7 +180,7 @@ export default {
             Number(microsoftEmailContainerStyle.marginTop.replace('px', '')) +
             Number(microsoftEmailContainerStyle.marginBottom.replace('px', ''))
           if (Number.isNaN(numberHeight)) {
-            return 690
+            return 710
           } else {
             return numberHeight
           }

@@ -21,6 +21,11 @@
       sub-title="Select how the infographic will be delivered to the target audience."
       @input="handleDeliveryMethodChange"
     />
+    <InputPreferredLanguage
+      v-model="formData.sendTemplatesInPreferredLanguage"
+      title="Preferred Language"
+      subtitle="Select how to send the notification template by language."
+    />
     <AlertBox
       v-if="deliveryMethodText"
       class="bg-aqua-light mb-4 max-w-554"
@@ -322,6 +327,7 @@ import {
 import { infographicMergeTags } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
 import DeliveryMethod from '@/components/Common/DeliveryMethod/DeliveryMethod.vue'
 import { DELIVERY_METHODS } from '@/components/Common/DeliveryMethod/utils'
+import InputPreferredLanguage from '@/components/TrainingLibrary/TrainingLibrarySendModal/InputPreferredLanguage.vue'
 export default {
   name: 'TrainingLibrarySendInfographicSettings',
   components: {
@@ -333,7 +339,8 @@ export default {
     KSelect,
     FormGroup,
     SendTrainingSMSSettings,
-    DeliveryMethod
+    DeliveryMethod,
+    InputPreferredLanguage
   },
   props: {
     selectedRow: {
@@ -392,6 +399,7 @@ export default {
         senderPhoneNumber: '',
         smsText: '',
         languageIds: [],
+        sendTemplatesInPreferredLanguage: false,
         markedAsTest: false,
         awardCertificate: false,
         certificateConfigSendType: 'SendOnFirstAttempt',

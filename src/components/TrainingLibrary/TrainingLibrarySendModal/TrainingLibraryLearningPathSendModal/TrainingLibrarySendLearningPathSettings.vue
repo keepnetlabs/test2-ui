@@ -15,6 +15,11 @@
       :isLMS="showProxySection"
       @input="handleDeliveryMethodChange"
     />
+    <InputPreferredLanguage
+      v-model="formData.sendTemplatesInPreferredLanguage"
+      title="Preferred Language"
+      subtitle="Select how to send the notification template by language."
+    />
     <AlertBox
       v-if="deliveryMethodText"
       class="bg-aqua-light mb-4 max-w-554"
@@ -350,6 +355,7 @@ import { mapGetters } from 'vuex'
 import { getTimeByTimeZone } from '@/api/company'
 import { DELIVERY_METHODS } from '@/components/Common/DeliveryMethod/utils'
 import DeliveryMethod from '@/components/Common/DeliveryMethod/DeliveryMethod.vue'
+import InputPreferredLanguage from '@/components/TrainingLibrary/TrainingLibrarySendModal/InputPreferredLanguage.vue'
 export default {
   name: 'TrainingLibrarySendLearningPathSettings',
   components: {
@@ -360,7 +366,8 @@ export default {
     KSelect,
     FormGroup,
     SendTrainingSMSSettings,
-    DeliveryMethod
+    DeliveryMethod,
+    InputPreferredLanguage
   },
   props: {
     selectedRow: {
@@ -417,6 +424,7 @@ export default {
         senderPhoneNumber: '',
         smsText: '',
         languageIds: [],
+        sendTemplatesInPreferredLanguage: false,
         markedAsTest: false,
         awardCertificate: false,
         certificateConfigSendType: 'SendOnFirstAttempt',

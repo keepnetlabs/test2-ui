@@ -47,6 +47,8 @@
       :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
       :languages="languageFilterOptions"
       @on-close="toggleShowPreviewDialog"
+      @on-edit-template="handleEditTemplate"
+      @on-fast-launch="handleFastLaunch"
     />
     <data-table
       v-if="getPhishingScenariosSearchPermissions"
@@ -478,6 +480,15 @@ export default {
     handleFastLaunch(row = {}) {
       this.selectedRow = row
       this.toggleShowFastLaunch()
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
+    },
+    handleEditTemplate() {
+      this.handleEdit(this.selectedPhishingScenario, false)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
     },
     handlePreview(row) {
       this.selectedPhishingScenario = row

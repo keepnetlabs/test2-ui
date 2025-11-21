@@ -235,7 +235,7 @@
                             @input="handleSelectedLanguagesChange"
                             @on-active-language-change="handleActiveLanguageChange"
                             @on-generate-with-ai="handleGenerateWithAI"
-                            @on-edit-mode-click="handleEditModeClick"
+                            @on-edit-mode="handleEditModeClick"
                             @on-upload-email-button-click="handleUploadEmailButtonClick"
                             @on-show-red-flags-click="handleShowRedFlagsClick"
                             @on-relocalize-replace="handleRelocalizeReplace"
@@ -259,10 +259,42 @@
         :disabled-statuses="getDisabledStatuses"
         :ids="footerButtonsIds"
         @on-cancel="changeNewEmailTemplateModalStatus"
-        @on-back="backStep(-1)"
-        @on-next="nextStep(+1)"
-        @on-submit="submit"
-      />
+      >
+        <template #right-side>
+          <BackButton
+            v-if="step > 1"
+            :id="footerButtonsIds.backButton"
+            class="mr-6"
+            @click="backStep(-1)"
+          />
+          <NextButton
+            v-if="step !== 2"
+            :id="footerButtonsIds.nextButton"
+            :disabled="getDisabledStatuses.nextButton"
+            @click="nextStep(+1)"
+          />
+          <VBtn
+            v-if="step === 2 && isEditFromPreview"
+            id="btn-save-as-new-email-template"
+            color="#2196F3"
+            outlined
+            rounded
+            class="mr-4"
+            style="font-weight: 600;"
+            :disabled="getDisabledStatuses.submitButton"
+            @click="handleSaveAsNew"
+          >
+            {{ labels.SaveAsNew }}
+          </VBtn>
+          <SaveButton
+            v-if="step === 2"
+            :id="footerButtonsIds.saveButton"
+            :disabled="getDisabledStatuses.submitButton"
+            :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
+            @click="submit"
+          />
+        </template>
+      </StepperFooter>
     </template>
   </app-modal>
 </template>
@@ -282,7 +314,7 @@ import {
   getEmailTemplateTranslation
 } from '@/api/phishingsimulator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, FLAGGED_AREA_CSS } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import EditLanguagesLeavingDialog from '@/components/PhishingScenarios/EditLanguagesLeavingDialog.vue'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
@@ -291,6 +323,9 @@ import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
+import BackButton from '@/components/Common/Buttons/BackButton'
+import NextButton from '@/components/Common/Buttons/NextButton'
+import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
 import { defaultRedFlags } from './utils'
@@ -314,6 +349,9 @@ export default {
     InputLanguagesSettings,
     InputPhishingMethod,
     StepperFooter,
+    BackButton,
+    NextButton,
+    SaveButton,
     AppModal,
     FormGroup,
     MakeAvailableFor,
@@ -330,6 +368,10 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    isEditFromPreview: {
+      type: Boolean,
+      default: false
     },
     isDuplicate: {
       type: Boolean,
@@ -435,57 +477,7 @@ export default {
       isRelocalizeOperation: false,
       relocalizeLanguageName: '',
       redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
-      isFlaggedStylesEnabled: false,
-      flaggedAreaCss: `
-        <style>
-          .flagged-area {
-            position: relative;
-            display: inline-block;
-            border: 1px solid #e00;
-            border-radius: 4px;
-            padding-left:2em !important;
-            margin: 0.5em 0.1em;
-          }
-           .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
-            background-color: rgba(255, 0, 0, 0.1);
-            padding: 0.2em 2em;
-          }
-
-          .flagged-area::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0.5em;
-            transform: translateY(-50%);
-            width: 1em;
-            height: 1em;
-            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
-          }
-          .flagged-area:hover::after {
-            content: attr(data-flag-tooltip);
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, 0);
-            margin-top: 0.4em;
-            padding: 4px 8px;
-            background:#B83A3A;
-            color: #fff;
-            font-size: 12px;
-            line-height: 1.33;
-            font-family:"Open Sans", sans-serif;
-            white-space: normal;
-            word-break: break-word;
-            max-width: 240px;
-            min-width: 240px;
-            border-radius: 4px;
-            z-index: 9999;
-          }
-          .email-container,.container,.email-container-wrapper{
-            overflow:visible !important;
-          }
-        </style>
-      `
+      isFlaggedStylesEnabled: false
     }
   },
   computed: {
@@ -1011,6 +1003,74 @@ export default {
           })
       }
     },
+    handleSaveAsNew() {
+      if (this.isAttachmentBasedTemplate && this?.formValues?.attachmentFiles?.length === 0) {
+        this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
+        return
+      }
+      this.isSubmitDisabled = true
+      let isMakeAvailableForValid = true
+      const { refMakeAvailableFor } = this.$refs
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        isMakeAvailableForValid = refMakeAvailableFor.isAvailableForValid
+      }
+      const isFormValid = this.$refs.refEmailTemplateContent.validate() && isMakeAvailableForValid
+      if (!isFormValid || !this.formValues.languageTypeResourceId) {
+        const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
+        scrollToComponent(el)
+        this.isSubmitDisabled = false
+        return
+      }
+      if (this.isShowRedFlags) {
+        this.isShowRedFlags = false
+        this.isFlaggedStylesEnabled = false
+        this.updateTemplateWithFlaggedStyles()
+      }
+      this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
+      const name =
+        this.formValues.name !== this.initialFormValues.name
+          ? this.formValues.name
+          : `${this.formValues.name} - Copy`
+      let payload = {
+        ...this.formValues,
+        name,
+        isDuplicated: true,
+        duplicatedTemplateResourceId: this.emailTemplateId,
+        description: this.formValues.description || '',
+        attachmentFiles: [
+          ...this.formValues.attachmentFiles,
+          ...this.formValues.importedEmailAttachments
+        ],
+        isAttachmentBasedTemplate: this.isAttachmentBasedTemplate,
+        isPhishingFileModified: this.isPhishingFileModified,
+        isAddedNewPhishingFile: this.isAddedNewPhishingFile,
+        phishingFileName:
+          !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
+            ? this.formValues.attachmentFiles[0]?.fileName
+            : null,
+        availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
+          this.availableForRequests
+        ),
+        isAssistedByAI: this.isAssistedByAI,
+        isPlainText: !this.isPlainText,
+        languages: this.languagesPayload
+      }
+      delete payload.attachments
+      payload.languages = this.setEmptyLanguagesPayload()
+      createPhishingEmailTemplate(payload)
+        .then((response) => {
+          this.$emit(
+            'changeNewEmailTemplateModalStatus',
+            false,
+            true,
+            response?.data?.data?.resourceId
+          )
+        })
+        .finally(() => {
+          this.isSubmitDisabled = false
+        })
+    },
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
@@ -1528,7 +1588,7 @@ export default {
     },
     _addFlaggedStylesToTemplate(template) {
       // Prevent duplicate CSS injection
-      if (template.includes(this.flaggedAreaCss.trim())) {
+      if (template.includes(FLAGGED_AREA_CSS.trim())) {
         return template
       }
 
@@ -1542,20 +1602,20 @@ export default {
     _injectCssIntoHead(template) {
       if (this._hasHeadTag(template)) {
         // CSS'i head'e ekle, script'i body'ye ekle
-        let templateWithCss = template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        let templateWithCss = template.replace(/<\/head>/i, `${FLAGGED_AREA_CSS}</head>`)
         return this._injectScriptIntoBody(templateWithCss)
       }
       // If no head tag, create one
       let templateWithCss = template.replace(
         /<html[\s\S]*?>/i,
-        `$&<head>${this.flaggedAreaCss}</head>`
+        `$&<head>${FLAGGED_AREA_CSS}</head>`
       )
       return this._injectScriptIntoBody(templateWithCss)
     },
 
     _prependCssToBodyContent(template) {
       // CSS'i başa ekle, script'i body'ye ekle
-      let templateWithCss = `${this.flaggedAreaCss}${template}`
+      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`
       return this._injectScriptIntoBody(templateWithCss)
     },
 
@@ -1583,7 +1643,7 @@ export default {
     },
 
     _removeFlaggedStylesFromTemplate(template) {
-      const cssToRemove = this.flaggedAreaCss.trim()
+      const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
       let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')

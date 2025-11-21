@@ -83,7 +83,7 @@
     />
     <CampaignManagerReportSummaryTraining
       v-if="getTrainingInfo"
-      class="mt-6"
+      class="mt-4"
       call-training-preview-api
       :training-params="getTrainingInfo"
       :selected-row="getSelectedRowTrainingInfo"
@@ -535,7 +535,7 @@ export default {
       if (!Object.keys(emailTemplateInfo)?.length) {
         return {}
       }
-      const { resourceId, phishingFileName } = emailTemplateInfo || {}
+      const { resourceId, phishingFileName, name } = emailTemplateInfo || {}
       if (Object.keys(emailTemplateInfos)?.length) {
         const mappedLanguageCodes = emailTemplateInfos?.map((item) => {
           const language = this.languageOptions.find(
@@ -545,6 +545,7 @@ export default {
         })
         return {
           resourceId,
+          name,
           languageShortCode: mappedLanguageCodes,
           attachment: phishingFileName
             ? {
@@ -574,6 +575,7 @@ export default {
       return Object.keys(emailTemplateInfo)?.length
         ? {
             resourceId,
+            name,
             languageShortCode: language?.text || languageCode,
             attachment: phishingFileName
               ? {
@@ -587,13 +589,14 @@ export default {
     },
     getLandingPageTemplateData() {
       const { landingPageTemplateInfo = {}, scenarioInfo = {} } = this.getActiveScenario || {}
-      const { resourceId } = landingPageTemplateInfo
+      const { resourceId, name } = landingPageTemplateInfo
       const languageCode = scenarioInfo?.languageShortCode
       const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
       return Object.keys(landingPageTemplateInfo).length
         ? {
             languageShortCode: language?.text || languageCode,
             resourceId,
+            name,
             jobResourceId: this.id,
             instanceGroup: this.instanceGroup
           }

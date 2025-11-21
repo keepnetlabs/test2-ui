@@ -4,11 +4,7 @@
       <div class="hotspot-answer-field">
         <label class="hotspot-answer-label">User's Answer:</label>
         <div class="hotspot-answer-list">
-          <div
-            v-for="(spot, index) in userHotspots"
-            :key="index"
-            class="hotspot-item"
-          >
+          <div v-for="(spot, index) in userHotspots" :key="index" class="hotspot-item">
             <div class="hotspot-text">{{ spot }}</div>
             <div class="hotspot-badge">{{ index + 1 }}</div>
           </div>
@@ -40,9 +36,9 @@ export default {
       }
 
       // Kullanıcının seçtiği hotspot'ları al (isUserAnswer: true)
-      const userAnswers = this.answerOptions.filter(option => option.isUserAnswer)
+      const userAnswers = this.answerOptions.filter((option) => option.isUserAnswer)
 
-      return userAnswers.map(option => {
+      return userAnswers.map((option) => {
         return option.text || option.option || option.answer || 'Hotspot Area'
       })
     }

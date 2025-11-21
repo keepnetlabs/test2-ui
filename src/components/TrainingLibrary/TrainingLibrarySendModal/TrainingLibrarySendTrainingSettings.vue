@@ -20,6 +20,11 @@
       type="Training"
       @input="handleDeliveryMethodChange"
     />
+    <InputPreferredLanguage
+      v-model="formData.sendTemplatesInPreferredLanguage"
+      title="Preferred Language"
+      subtitle="Select how to send the notification template by language."
+    />
     <AlertBox
       v-if="deliveryMethodText"
       class="bg-aqua-light mb-4 max-w-554"
@@ -317,6 +322,7 @@ import { getTimeByTimeZone } from '@/api/company'
 import AlertBox from '@/components/AlertBox.vue'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 import DeliveryMethod from '@/components/Common/DeliveryMethod/DeliveryMethod.vue'
+import InputPreferredLanguage from '@/components/TrainingLibrary/TrainingLibrarySendModal/InputPreferredLanguage.vue'
 import {
   endTypeItems,
   enrollmentAutoEnrollDayOfWeekItems,
@@ -337,7 +343,8 @@ export default {
     KSelect,
     FormGroup,
     SendTrainingSMSSettings,
-    DeliveryMethod
+    DeliveryMethod,
+    InputPreferredLanguage
   },
   props: {
     selectedRow: {
@@ -395,6 +402,7 @@ export default {
         senderPhoneNumber: '',
         smsText: '',
         languageIds: [],
+        sendTemplatesInPreferredLanguage: false,
         markedAsTest: false,
         awardCertificate: false,
         certificateConfigSendType: 'SendOnFirstAttempt',

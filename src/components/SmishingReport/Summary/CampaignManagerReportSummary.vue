@@ -201,7 +201,9 @@ export default {
       const languages = new Set()
       this?.phishingScenarios?.forEach((scenario) => {
         const languageCode = scenario.scenarioInfo.languageShortCode
-        const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+        const language = this.languageOptions.find(
+          (lang) => lang.languageShortCode === languageCode
+        )
         languages.add(language?.text || languageCode)
       })
       const { duration = '0' } = this.campaignSummary?.settings || {
@@ -382,7 +384,9 @@ export default {
       }
       const { resourceId, name, difficultyResourceId, categoryResourceId, languageShortCode } =
         textTemplateInfo || {}
-      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageShortCode)
+      const language = this.languageOptions.find(
+        (lang) => lang.languageShortCode === languageShortCode
+      )
 
       return Object.keys(textTemplateInfo)?.length
         ? {
@@ -405,7 +409,9 @@ export default {
         resourceId,
         languageShortCode
       } = landingPageTemplateInfo
-      const language = this.languageOptions.find((lang) => lang.languageShortCode === languageShortCode)
+      const language = this.languageOptions.find(
+        (lang) => lang.languageShortCode === languageShortCode
+      )
       return Object.keys(landingPageTemplateInfo).length
         ? {
             languageShortCode: language?.text || languageShortCode,
@@ -498,7 +504,9 @@ export default {
           if (scenario.trainingInfo && scenario.trainingInfo.languageList) {
             scenario.trainingInfo.languages = scenario.trainingInfo.languageList
               .map((lang) => {
-                const language = this.languageOptions.find((opt) => opt.languageShortCode === lang.languageShortCode)
+                const language = this.languageOptions.find(
+                  (opt) => opt.languageShortCode === lang.languageShortCode
+                )
                 return language?.text || lang.languageShortCode
               })
               .join(' | ')

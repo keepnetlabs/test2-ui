@@ -1,31 +1,29 @@
 <template>
   <div :class="`emailTemplatePreview ${isSafari && showGrapesModal ? 'safari-grapes-js-fix' : ''}`">
-    <app-dialog
-      style="overflow: hidden;"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      icon="mdi-eye"
-      :subtitle="getEmailTemplateDialogSubtitle"
-      :title="selectedTemplateHeader"
+    <EmailTemplateMultipleLanguagePreviewDialog
+      v-if="isTemplateDetails && !isQuishing"
+      ref="emailTemplatePreviewDialog"
       :status="isTemplateDetails"
-      @changeStatus="isTemplateDetails = false"
-    >
-      <template #app-dialog-body>
-        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" :key="templateHTML" />
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
+      :selected-row="emailTemplatePreviewSelectedRow"
+      :type="type"
+      :languages="languages"
+      :api-func="apiFuncs.content"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isTemplateDetails = false"
+    />
+    <CommonSimulatorEmailTemplatePreviewDialog
+      v-if="isTemplateDetails && isQuishing"
+      :status="isTemplateDetails"
+      :is-individual-printout-template="isQuishingTypeIndividualPrintOut"
+      :selected-row="emailTemplatePreviewSelectedRow"
+      :api-func="apiFuncs.content"
+      :type="type"
+      :languages="languages"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isTemplateDetails = false"
+    />
     <AppDialog
       :status="isRenameAttachmentModalVisible"
       title="Rename The Attachment"
@@ -514,6 +512,8 @@ import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
 import { handleIsSafari } from '@/utils/functions'
 export default {
   name: 'EmailTemplateListPreview',
@@ -566,6 +566,8 @@ export default {
     'infinite-scroll': InfiniteScroll
   },
   components: {
+    EmailTemplateMultipleLanguagePreviewDialog,
+    CommonSimulatorEmailTemplatePreviewDialog,
     InputLanguagePreview,
     KSelect,
     ShowMoreTags,
@@ -669,6 +671,14 @@ export default {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
         this.selectedTemplateLanguages.length > 1 ? 's' : ''
       }.`
+    },
+    emailTemplatePreviewSelectedRow() {
+      const selectedTemplate = this.listData.find((item) => item.selected)
+      if (!selectedTemplate) return {}
+      return {
+        ...selectedTemplate,
+        resourceId: selectedTemplate.resourceId
+      }
     }
   },
   watch: {
@@ -751,17 +761,7 @@ export default {
       return MERGED_TEXTS[item]
     },
     handleEdit() {
-      this.initialEditData = {
-        name: this.selectedTemplateHeader,
-        fromAddress: this.templateFromEmail,
-        ccAddresses: this.templateCCAddresses,
-        fromName: this.templateFromName,
-        subject: this.templateSubject,
-        template: this.templateHTML,
-        phishingFile: this.phishingFile
-      }
-      this.editData = { ...this.initialEditData }
-      this.isEditMode = true
+      this.$emit('on-edit-email-template', this.emailTemplatePreviewSelectedRow)
     },
     handleSaveTemplate(template) {
       this.editData.template = template

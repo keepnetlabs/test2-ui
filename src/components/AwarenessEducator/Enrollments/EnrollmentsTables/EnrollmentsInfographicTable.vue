@@ -103,7 +103,12 @@ export default {
       default: false
     }
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi,useEnrollmentTableFilters],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi,
+    useEnrollmentTableFilters
+  ],
   data() {
     return {
       CONSTANTS: {

@@ -77,7 +77,7 @@ export const COLUMNS = {
     width: 200,
     isEditable: false,
     filterableType: 'select',
-    filterableItems: [],
+    filterableItems: []
   },
   REPLY_TYPE: {
     property: PROPERTY_STORE.REPLY_TYPE,

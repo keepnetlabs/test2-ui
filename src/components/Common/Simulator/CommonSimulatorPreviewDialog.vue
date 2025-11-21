@@ -1,261 +1,340 @@
 <template>
-  <AppDialog
-    icon="mdi-eye"
-    custom-size="1600"
-    :status="status"
-    :title="getTitle"
-    :subtitle="getSubtitle"
-    max-height
-    max-height-size="900"
-    class-name="campaign-manager-preview-dialog"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <div v-if="isPhishing && !isLoading && !isRedFlagsLoading" class="mb-6">
-        <span class="template-preview__text--title">Category: </span>
-        <span class="template-preview__text--body">{{ category }}</span>
+  <div v-if="isVisible">
+    <div class="common-simulator-preview-overlay" @click="handleOverlayClick"></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
       </div>
-      <EmailTemplatesAILoader
-        v-if="isRedFlagsLoading"
-        :title="getLoaderTitle"
-        :description="getLoaderDescription"
-        :loaderTime="20"
-      />
-      <ElTabs v-if="!isLoading && !isRedFlagsLoading" v-model="tab">
-        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="getFirstTabLabel">
-          <div class="template-preview pt-4">
-            <div class="template-preview__text" v-if="!!emailTemplate && !isRedFlagsLoading">
-              <div v-if="isQuishing">
-                <span class="template-preview__text--title">Quishing Type: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.type || 'Email'
-                }}</span>
-              </div>
-              <div v-if="isPhishing">
-                <InputLanguagePreview
-                  :value="languagePreview"
-                  persistent-hint
-                  class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                  :hint="getEmailTemplatePreviewLanguageHint"
-                  :items="selectedTemplateLanguages"
-                  :languages="languages"
-                  :hide-details="false"
-                  @input="handleEmailTemplatePreviewLanguageChange"
-                />
-              </div>
-              <div class="d-flex align-center justify-space-between" style="max-height: 22px;">
-                <div style="width: calc(100% - 200px);">
-                  <span class="template-preview__text--title">Template Name: </span>
-                  <span class="template-preview__text--body"
-                    >{{ emailTemplateParams.name }}
-                    <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <div
+          class="d-flex align-center justify-space-between mt-4 mb-1"
+          style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+        >
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{ selectedRow.name }}</span>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <VTooltip v-if="!isQuishing" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleFastLaunch">
+                    <VIcon small>mdi-send</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Fast Launch</span>
+            </VTooltip>
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEdit">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+          </div>
+        </div>
+        <EmailTemplatePreviewSkeleton v-if="isLoading" />
+        <EmailTemplatesAILoader
+          v-if="isRedFlagsLoading"
+          :title="getLoaderTitle"
+          :description="getLoaderDescription"
+          :loaderTime="20"
+        />
+        <ElTabs v-if="!isLoading && !isRedFlagsLoading" v-model="tab">
+          <ElTabPane
+            id="campaign-manager-info--email-content"
+            name="email"
+            :label="getFirstTabLabel"
+          >
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ emailTemplateParams.name }}
+              <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                <template #activator="{ on }">
+                  <span v-on="on">
+                    <VIcon color="#2196F3" small>mdi-creation</VIcon>
+                  </span>
+                </template>
+                <span>This template was generated with AI</span>
+              </VTooltip>
+            </div>
+            <div
+              class="template-preview"
+              style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+            >
+              <div
+                class="common-simulator-preview__text"
+                v-if="!!emailTemplate && !isRedFlagsLoading"
+              >
+                <div v-if="isQuishing">
+                  <span class="template-preview__text--title">Quishing Type: </span>
+                  <span class="template-preview__text--body">{{
+                    emailTemplateParams.type || 'Email'
+                  }}</span>
+                </div>
+                <div
+                  v-if="isPhishing"
+                  class="email-template-preview__header d-flex align-center justify-space-between mb-4"
+                >
+                  <InputLanguagePreview
+                    v-if="isPhishing"
+                    :value="languagePreview"
+                    :items="selectedTemplateLanguages"
+                    :label="`Template Language (${selectedTemplateLanguages.length})`"
+                    class="email-template-preview__language-select"
+                    style="max-width: 320px;"
+                    hide-details
+                    @input="handleEmailTemplatePreviewLanguageChange"
+                  />
+                  <div class="email-template-preview__actions d-flex align-center gap-2">
+                    <VTooltip bottom>
                       <template #activator="{ on }">
-                        <VIcon v-on="on" color="#2196F3" style="margin-top: -2px;" small
-                          >mdi-creation</VIcon
-                        >
+                        <div v-on="on">
+                          <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                            <VIcon small>mdi-open-in-new</VIcon>
+                          </VBtn>
+                        </div>
                       </template>
-                      <span>This template was generated with AI</span>
+                      <span>Open in New Tab</span>
                     </VTooltip>
-                  </span>
+                    <VTooltip v-if="false" bottom>
+                      <template #activator="{ on }">
+                        <div v-on="on">
+                          <VBtn icon outlined color="#2196F3" small @click="handleEdit">
+                            <VIcon small>mdi-pencil</VIcon>
+                          </VBtn>
+                        </div>
+                      </template>
+                      <span>Edit Template</span>
+                    </VTooltip>
+                  </div>
                 </div>
-                <!-- Red Flags Button -->
-                <VBtn
-                  v-if="true"
-                  :ripple="false"
-                  class="fw-600"
-                  rounded
-                  outlined
-                  color="#2196f3"
-                  @click="handleShowRedFlagsClick"
-                  :loading="isRedFlagsLoading"
-                >
-                  <VIcon>mdi-flag</VIcon>
-                  <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
-                    redFlagsText
-                  }}</span>
-                </VBtn>
-              </div>
+                <hr class="ml-n4 mb-3 mr-n4" v-if="!!emailTemplate && isPhishing" />
+                <div class="d-flex align-start justify-space-between" style="max-height: 22px;">
+                  <div v-if="!isQuishingTypeIndividualPrintOut" style="width: calc(100% - 200px);">
+                    <div
+                      :class="
+                        redFlags && redFlags.subject && redFlags.subject.isRedFlagged
+                          ? 'red-flag-preview-active'
+                          : ''
+                      "
+                    >
+                      <VIcon
+                        v-if="redFlags && redFlags.subject && redFlags.subject.isRedFlagged"
+                        color="#f56c6c"
+                        style="font-size: 16px;"
+                        >mdi-flag</VIcon
+                      >
+                      <span class="template-preview__text--title text-primary-color"
+                        >Subject:
+                      </span>
+                      <span class="template-preview__text--body text-primary-color">{{
+                        emailTemplateParams.subject
+                      }}</span>
+                      <RedFlagTooltip
+                        v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
+                        :tooltipContent="redFlags.subject.tooltipMessage"
+                      />
+                    </div>
+                  </div>
+                  <!-- Red Flags Button -->
+                  <VBtn
+                    v-if="isPhishing"
+                    :ripple="false"
+                    class="fw-600"
+                    rounded
+                    outlined
+                    color="#2196f3"
+                    @click="handleShowRedFlagsClick"
+                    :loading="isRedFlagsLoading"
+                  >
+                    <VIcon>mdi-flag</VIcon>
+                    <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+                      redFlagsText
+                    }}</span>
+                  </VBtn>
+                </div>
 
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <div
-                  style="width: calc(100% - 200px);"
-                  :class="
-                    redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
-                      ? 'red-flag-preview-active'
-                      : ''
-                  "
-                >
-                  <VIcon
-                    v-if="redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged"
-                    color="#f56c6c"
-                    style="font-size: 16px;"
-                    >mdi-flag</VIcon
+                <div v-if="!isQuishingTypeIndividualPrintOut">
+                  <div
+                    style="width: calc(100% - 200px);"
+                    :class="
+                      redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
+                        ? 'red-flag-preview-active'
+                        : ''
+                    "
                   >
-                  <span class="template-preview__text--title text-primary-color">From Name: </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
-                    emailTemplateParams.fromName
-                  }}</span>
-                  <RedFlagTooltip
-                    v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
-                    :tooltipContent="redFlags.fromName.tooltipMessage"
-                  />
+                    <VIcon
+                      v-if="redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged"
+                      color="#f56c6c"
+                      style="font-size: 16px;"
+                      >mdi-flag</VIcon
+                    >
+                    <span class="template-preview__text--title text-primary-color"
+                      >From Name:
+                    </span>
+                    <span class="template-preview__text--body text-primary-color">{{
+                      emailTemplateParams.fromName
+                    }}</span>
+                    <RedFlagTooltip
+                      v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
+                      :tooltipContent="redFlags.fromName.tooltipMessage"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <div
-                  style="width: calc(100% - 200px);"
-                  :class="
-                    redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
-                      ? 'red-flag-preview-active'
-                      : ''
-                  "
-                >
-                  <VIcon
-                    v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged"
-                    color="#f56c6c"
-                    style="font-size: 16px;"
-                    >mdi-flag</VIcon
+                <div v-if="!isQuishingTypeIndividualPrintOut">
+                  <div
+                    style="width: calc(100% - 200px);"
+                    :class="
+                      redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
+                        ? 'red-flag-preview-active'
+                        : ''
+                    "
                   >
-                  <span class="template-preview__text--title text-primary-color"
-                    >From Email Address:
-                  </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
-                    emailTemplateParams.fromAddress
-                  }}</span>
-                  <RedFlagTooltip
-                    v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
-                    :tooltipContent="redFlags.fromAddress.tooltipMessage"
-                  />
+                    <VIcon
+                      v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged"
+                      color="#f56c6c"
+                      style="font-size: 16px;"
+                      >mdi-flag</VIcon
+                    >
+                    <span class="template-preview__text--title text-primary-color"
+                      >From Email:
+                    </span>
+                    <span class="template-preview__text--body text-primary-color">{{
+                      emailTemplateParams.fromAddress
+                    }}</span>
+                    <RedFlagTooltip
+                      v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
+                      :tooltipContent="redFlags.fromAddress.tooltipMessage"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <div
-                  style="width: calc(100% - 200px);"
-                  :class="
-                    redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged
-                      ? 'red-flag-preview-active'
-                      : ''
-                  "
-                >
-                  <VIcon
-                    v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged"
-                    color="#f56c6c"
-                    style="font-size: 16px;"
-                    >mdi-flag</VIcon
+                <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                  <div
+                    style="width: calc(100% - 200px);"
+                    :class="
+                      redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged
+                        ? 'red-flag-preview-active'
+                        : ''
+                    "
                   >
-                  <span class="template-preview__text--title text-primary-color">CC: </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
-                    emailTemplateParams.ccAddresses.join(', ')
-                  }}</span>
-                  <RedFlagTooltip
-                    v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.tooltipMessage"
-                    :tooltipContent="redFlags.ccAddresses.tooltipMessage"
-                  />
+                    <VIcon
+                      v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged"
+                      color="#f56c6c"
+                      style="font-size: 16px;"
+                      >mdi-flag</VIcon
+                    >
+                    <span class="template-preview__text--title text-primary-color">CC: </span>
+                    <span class="template-preview__text--body text-primary-color">{{
+                      emailTemplateParams.ccAddresses.join(', ')
+                    }}</span>
+                    <RedFlagTooltip
+                      v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.tooltipMessage"
+                      :tooltipContent="redFlags.ccAddresses.tooltipMessage"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
                 <div
-                  style="width: calc(100% - 200px);"
-                  :class="
-                    redFlags && redFlags.subject && redFlags.subject.isRedFlagged
-                      ? 'red-flag-preview-active'
-                      : ''
-                  "
+                  v-if="isQuishingTypeIndividualPrintOut"
+                  class="d-flex justify-space-between align-center"
                 >
-                  <VIcon
-                    v-if="redFlags && redFlags.subject && redFlags.subject.isRedFlagged"
-                    color="#f56c6c"
-                    style="font-size: 16px;"
-                    >mdi-flag</VIcon
+                  <div class="text-primary-color fs-4">
+                    Example Individual Printout
+                  </div>
+                  <VBtn
+                    id="btn-preview-indiviual-printout"
+                    class="white--text btn-util btn-download-add-in"
+                    color="#2196F3"
+                    rounded
+                    :style="getIndividualPrintoutStyle"
+                    @click="handlePreviewIndividualPrintout"
                   >
-                  <span class="template-preview__text--title text-primary-color fw-600"
-                    >Subject:
-                  </span>
-                  <span class="template-preview__text--body fw-400 text-primary-color">{{
-                    emailTemplateParams.subject
-                  }}</span>
-                  <RedFlagTooltip
-                    v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
-                    :tooltipContent="redFlags.subject.tooltipMessage"
-                  />
+                    <v-icon left>mdi-file-eye</v-icon>
+                    {{ labels.PrintPreview }}
+                  </VBtn>
                 </div>
               </div>
               <div
-                v-if="isQuishingTypeIndividualPrintOut"
-                class="d-flex justify-space-between align-center"
+                v-if="emailTemplateParams.attachment"
+                class="attachment-wrapper mt-2 position-relative"
               >
-                <div class="text-primary-color fs-4">
-                  Example Individual Printout
+                <div class="attachment blue-attach mb-0">
+                  <AttachmentsPreview
+                    :deletable="false"
+                    :att="emailTemplateParams.attachment"
+                    :redFlags="redFlags"
+                    :isEmailTemplate="true"
+                  />
                 </div>
-                <VBtn
-                  id="btn-preview-indiviual-printout"
-                  class="white--text btn-util btn-download-add-in"
-                  color="#2196F3"
-                  rounded
-                  :style="getIndividualPrintoutStyle"
-                  @click="handlePreviewIndividualPrintout"
-                >
-                  <v-icon left>mdi-file-eye</v-icon>
-                  {{ labels.PrintPreview }}
-                </VBtn>
               </div>
+              <hr class="mt-4 ml-n4 mr-n4 mb-2" v-if="!!emailTemplate" />
+              <KEmailPreview
+                v-if="!!emailTemplate"
+                ref="refPreview"
+                :html="emailTemplate"
+                :isRedFlaggedTemplate="isFlaggedStylesEnabled"
+              />
             </div>
-            <div
-              v-if="emailTemplateParams.attachment"
-              class="attachment-wrapper mt-2 position-relative"
-            >
-              <div class="attachment blue-attach mb-0">
-                <AttachmentsPreview
-                  :deletable="false"
-                  :att="emailTemplateParams.attachment"
-                  :redFlags="redFlags"
-                  :isEmailTemplate="true"
-                />
-              </div>
-            </div>
-            <hr class="mt-4" v-if="!!emailTemplate" />
-            <KEmailPreview
-              v-if="!!emailTemplate"
-              ref="refPreview"
-              :html="emailTemplate"
-              :isRedFlaggedTemplate="isFlaggedStylesEnabled"
+          </ElTabPane>
+          <ElTabPane
+            v-if="!isAttachmentBasedScenario"
+            :label="labels.LandingPageTemplate"
+            name="landing-page"
+            id="campaign-manager-info--landing-content"
+          >
+            <TabsWithMfaSettingsMultipleLanguages
+              :key="getLandingPageKey"
+              class="mt-n4"
+              :type="type"
+              :is-method-mfa="isMethodMfa"
+              :landing-page-params="landingPageParams"
+              :landing-page-templates="landingPageTemplates"
+              :languages="languages"
+              :phishing-url="landingPageParams.urlTemplate"
+              @on-edit="handleEdit"
             />
-          </div>
-        </ElTabPane>
-        <ElTabPane
-          v-if="!isAttachmentBasedScenario"
-          :label="labels.LandingPage"
-          name="landing-page"
-          id="campaign-manager-info--landing-content"
-        >
-          <TabsWithMfaSettings
-            :key="getLandingPageKey"
-            class="tabs-with-mfa-settings"
-            :type="type"
-            :is-method-mfa="isMethodMfa"
-            :landing-page-params="landingPageParams"
-            :landing-page-templates="landingPageTemplates"
-          />
-        </ElTabPane>
-      </ElTabs>
-    </template>
-    <template #app-dialog-footer>
-      <AppDialogFooterWithClose id="btn-close--scenario-preview" @on-close="handleClose" />
-    </template>
-  </AppDialog>
+          </ElTabPane>
+        </ElTabs>
+      </div>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
-import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
+import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
-import AppDialog from '@/components/AppDialog.vue'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
 import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
@@ -264,22 +343,27 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplat
 import { defaultRedFlags } from '@/components/PhishingScenarios/utils'
 import QuishingService from '@/api/quishing'
 import { checkRedFlags } from '@/api/phishingsimulator'
-import { createRandomCryptStringNumber } from '@/utils/functions'
+import {
+  createRandomCryptStringNumber,
+  FLAGGED_AREA_CSS,
+  openHtmlInNewWindow
+} from '@/utils/functions'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
 export default {
   name: 'CommonSimulatorPreviewDialog',
   components: {
     InputLanguagePreview,
-    AppDialogFooterWithClose,
-    AppDialog,
     AttachmentsPreview,
     KEmailPreview,
-    TabsWithMfaSettings,
-    DatatableLoading,
+    TabsWithMfaSettingsMultipleLanguages,
+    EmailTemplatePreviewSkeleton,
     RedFlagTooltip,
     EmailTemplatesAILoader
   },
+  mixins: [useDrawerAnimation],
   props: {
     status: {
       type: Boolean
@@ -321,60 +405,15 @@ export default {
       isRedFlagsLoading: false,
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
-      lastRedFlags: {},
-      flaggedAreaCss: `
-        <style>
-          .flagged-area {
-            position: relative;
-            display: inline-block;
-            border: 1px solid #e00;
-            border-radius: 4px;
-            padding-left:2em !important;
-            margin: 0.5em 0.1em;
-          }
-           .flagged-area:not(a):not(button):not(.button):not(.flagged-area-img) {
-            background-color: rgba(255, 0, 0, 0.1);
-            padding: 0.2em 2em;
-          }
-
-          .flagged-area::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0.5em;
-            transform: translateY(-50%);
-            width: 1em;
-            height: 1em;
-            background: url('https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/2ef43b16-8d47-46c6-2d2c-e861a3bb6500/public') no-repeat center/contain;
-          }
-          .flagged-area:hover::after {
-            content: attr(data-flag-tooltip);
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, 0);
-            margin-top: 0.4em;
-            padding: 4px 8px;
-            background:#B83A3A;
-            color: #fff;
-            font-size: 12px;
-            line-height: 1.33;
-            font-family:"Open Sans", sans-serif;
-            white-space: normal;
-            word-break: break-word;
-            max-width: 240px;
-            min-width: 240px;
-            border-radius: 4px;
-            z-index: 9999;
-          }
-          .email-container,.container,.email-container-wrapper{
-            overflow:visible !important;
-          }
-        </style>
-      `
+      lastRedFlags: {}
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true
+      }
+    },
     redFlagsText() {
       return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
     },
@@ -391,7 +430,7 @@ export default {
     },
     getFirstTabLabel() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
-        ? labels.JustEmail
+        ? labels.EmailTemplate
         : labels.QuishingTemplate
     },
     getIndividualPrintoutStyle() {
@@ -436,6 +475,9 @@ export default {
     }
   },
   created() {
+    if (!this.languages || this.languages.length === 0) {
+      this.callForLanguages()
+    }
     this.callForData()
   },
   beforeDestroy() {
@@ -446,7 +488,7 @@ export default {
       this.setLoading(true)
       const params = [this.selectedRow.resourceId]
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
-        params.push(this.selectedRow.quishingType.toLowerCase())
+        params.push((this.selectedRow.quishingType || 'email').toLowerCase())
       this.apiFunc(...params)
         .then((response) => {
           const { data: { data = {} } = {} } = response
@@ -552,7 +594,11 @@ export default {
             method: methods[methodTypeId - 1]?.text || '',
             isAttachmentBasedTemplate: methodTypeId === 3,
             mfaTextTemplate: data.mfaTextTemplate,
-            mfaSmsSenderNumber: data.mfaSmsSenderNumber
+            mfaSmsSenderNumber: data.mfaSmsSenderNumber,
+            languages:
+              this.languages.filter((lang) => {
+                return lang.value === landingPageTemplate?.languageTypeResourceId
+              }) || []
           }
           this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4
@@ -566,8 +612,11 @@ export default {
     setLoading(flag = false) {
       this.isLoading = flag
     },
+    handleOverlayClick() {
+      this.closeDrawer()
+    },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
     },
     handlePreviewIndividualPrintout() {
       this.isIndividualPrintoutButtonDisabled = true
@@ -587,6 +636,15 @@ export default {
         .finally(() => {
           this.isIndividualPrintoutButtonDisabled = false
         })
+    },
+    handleExternalLink() {
+      openHtmlInNewWindow(this.emailTemplate)
+    },
+    handleEdit() {
+      this.$emit('on-edit-template')
+    },
+    handleFastLaunch() {
+      this.$emit('on-fast-launch', this.selectedRow)
     },
     handleEmailTemplatePreviewLanguageChange(newLanguageId) {
       // Eski languagePreview için red flags'leri kaydet (sadece red flags aktif ise)
@@ -807,7 +865,7 @@ export default {
     },
 
     _addFlaggedStylesToTemplate(template) {
-      if (template.includes(this.flaggedAreaCss.trim())) {
+      if (template.includes(FLAGGED_AREA_CSS.trim())) {
         return template
       }
 
@@ -820,18 +878,18 @@ export default {
 
     _injectCssIntoHead(template) {
       if (this._hasHeadTag(template)) {
-        let templateWithCss = template.replace(/<\/head>/i, `${this.flaggedAreaCss}</head>`)
+        let templateWithCss = template.replace(/<\/head>/i, `${FLAGGED_AREA_CSS}</head>`)
         return this._injectScriptIntoBody(templateWithCss)
       }
       let templateWithCss = template.replace(
         /<html[\s\S]*?>/i,
-        `$&<head>${this.flaggedAreaCss}</head>`
+        `$&<head>${FLAGGED_AREA_CSS}</head>`
       )
       return this._injectScriptIntoBody(templateWithCss)
     },
 
     _prependCssToBodyContent(template) {
-      let templateWithCss = `${this.flaggedAreaCss}${template}`
+      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`
       return this._injectScriptIntoBody(templateWithCss)
     },
 
@@ -858,7 +916,7 @@ export default {
     },
 
     _removeFlaggedStylesFromTemplate(template) {
-      const cssToRemove = this.flaggedAreaCss.trim()
+      const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
       let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
@@ -927,6 +985,18 @@ export default {
       this.isShowRedFlags = false
       this.isFlaggedStylesEnabled = false
       this._removeFlaggedStylesFromTemplate()
+    },
+
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languages =
+          response?.map((language) => ({
+            text: language.isoFriendlyName || language.name,
+            languageTypeName: language.name,
+            value: language.resourceId,
+            description: language.description
+          })) || []
+      })
     }
   }
 }

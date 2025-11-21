@@ -14,8 +14,12 @@
           <span class="true-false-option-text">{{ option.text }}</span>
         </div>
         <div class="true-false-option-badges">
-          <span v-if="option.isUserAnswer" class="true-false-badge true-false-badge--selected">Selected</span>
-          <span v-if="option.isCorrect && showCorrectAnswers" class="true-false-badge true-false-badge--correct"
+          <span v-if="option.isUserAnswer" class="true-false-badge true-false-badge--selected"
+            >Selected</span
+          >
+          <span
+            v-if="option.isCorrect && showCorrectAnswers"
+            class="true-false-badge true-false-badge--correct"
             >Correct</span
           >
         </div>
@@ -49,4 +53,3 @@ export default {
   }
 }
 </script>
-

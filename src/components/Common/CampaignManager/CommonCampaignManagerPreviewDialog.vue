@@ -1,182 +1,237 @@
 <template>
-  <AppDialog
-    custom-size="1600"
-    max-height
-    max-height-size="900"
-    icon="mdi-eye"
-    :status="status"
-    :title="getTitle"
-    :subtitle="getSubtitle"
-    class-name="campaign-manager-preview-dialog"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <ElTabs
-        v-if="!isLoading"
-        v-model="selectedScenario"
-        class="campaign-manager-last-step__phishing-scenario-tab mb-6"
-        @tab-click="callForScenarioDetail"
-      >
-        <ElTabPane
-          v-for="template in phishingScenarios"
-          :key="template.customKey"
-          :name="template.name"
-          :label="template.name"
-        />
-      </ElTabs>
-      <div v-if="isPhishing && !isLoading" class="my-6">
-        <span class="template-preview__text--title">Category: </span>
-        <span class="template-preview__text--body">{{ category }}</span>
+  <div v-if="isVisible">
+    <div class="common-campaign-manager-preview-overlay" @click="handleOverlayClick"></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
       </div>
-      <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
-        <ElTabPane
-          id="campaign-manager-info--email-content"
-          name="email"
-          :label="getFirstSubTabLabel"
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <EmailTemplatePreviewSkeleton v-if="isLoading" />
+        <div
+          v-if="!isLoading"
+          class="d-flex align-center justify-space-between mt-4"
+          style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
         >
-          <div class="template-preview pt-4">
-            <div v-if="isQuishing" class="mb-2">
-              <span class="template-preview__text--title">Quishing Type: </span>
-              <span class="template-preview__text--body">{{
-                emailTemplateParams.type || 'Email'
-              }}</span>
-            </div>
-            <div v-if="isPhishing">
-              <InputLanguagePreview
-                v-model="languagePreview"
-                persistent-hint
-                class="max-w-554 campaign-manager-phishing-scenario-input-language"
-                :hint="getEmailTemplatePreviewLanguageHint"
-                :items="selectedTemplateLanguages"
-                :hide-details="false"
-                @input="handleEmailTemplatePreviewLanguageChange"
-              />
-            </div>
-            <div v-if="!!emailTemplate" class="template-preview__text">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-                <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
-                  <template #activator="{ on }">
-                    <VIcon v-on="on" class="ml-1" style="margin-top: -2px;" color="#2196F3" small
-                      >mdi-creation</VIcon
-                    >
-                  </template>
-                  <span>This template was generated with AI</span>
-                </VTooltip>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title text-primary-color">From Name: </span>
-                <span class="template-preview__text--body fw-400 text-primary-color">{{
-                  emailTemplateParams.fromName
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut">
-                <span class="template-preview__text--title text-primary-color"
-                  >From Email Address:
-                </span>
-                <span class="template-preview__text--body fw-400 text-primary-color">{{
-                  emailTemplateParams.fromAddress
-                }}</span>
-              </div>
-              <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
-                <span class="template-preview__text--title text-primary-color">CC: </span>
-                <span class="template-preview__text--body fw-400 text-primary-color">{{
-                  emailTemplateParams.ccAddresses.join(', ')
-                }}</span>
-              </div>
-              <div v-if="!isQuishingTypeIndividualPrintOut" class="template-preview__text--title">
-                <span class="fw-600 text-primary-color">Subject: </span>
-                <span class="fw-400 text-primary-color">{{ emailTemplateParams.subject }}</span>
-              </div>
-              <div
-                v-if="isQuishingTypeIndividualPrintOut"
-                class="d-flex justify-space-between align-center"
-              >
-                <div class="text-primary-color fs-4">
-                  Example Individual Printout
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{ selectedRow?.name }}</span>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEditCampaign">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
                 </div>
-                <VBtn
-                  id="btn-preview-indiviual-printout"
-                  class="white--text btn-util btn-download-add-in"
-                  color="#2196F3"
-                  rounded
-                  :style="getIndividualPrintoutStyle"
-                  @click="handlePreviewIndividualPrintout"
-                >
-                  <v-icon left>mdi-file-eye</v-icon>
-                  {{ labels.PrintPreview }}
-                </VBtn>
-              </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+          </div>
+        </div>
+        <ElTabs
+          v-if="!isLoading"
+          v-model="selectedScenario"
+          class="campaign-manager-last-step__phishing-scenario-tab mb-4"
+          @tab-click="callForScenarioDetail"
+        >
+          <ElTabPane
+            v-for="template in phishingScenarios"
+            :key="template.customKey"
+            :name="template.name"
+            :label="template.name"
+          />
+        </ElTabs>
+        <ElTabs v-if="!isLoading" v-model="tab" class="k-sub-tab">
+          <ElTabPane
+            id="campaign-manager-info--email-content"
+            name="email"
+            :label="getFirstSubTabLabel"
+          >
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ emailTemplateParams.name }}
+              <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
+                <template #activator="{ on }">
+                  <span v-on="on">
+                    <VIcon color="#2196F3" small>mdi-creation</VIcon>
+                  </span>
+                </template>
+                <span>This template was generated with AI</span>
+              </VTooltip>
             </div>
             <div
-              v-if="emailTemplateParams.attachment"
-              class="attachment-wrapper mt-2"
-              style="position: relative;"
+              class="template-preview"
+              style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
             >
-              <div class="attachment blue-attach mb-0">
-                <AttachmentsPreview
-                  :deletable="false"
-                  :att="emailTemplateParams.attachment"
-                  :isEmailTemplate="true"
-                />
+              <div class="common-simulator-preview__text" v-if="!!emailTemplate">
+                <div v-if="isQuishing">
+                  <span class="template-preview__text--title">Quishing Type: </span>
+                  <span class="template-preview__text--body">{{
+                    emailTemplateParams.type || 'Email'
+                  }}</span>
+                </div>
+                <div
+                  v-if="isPhishing"
+                  class="email-template-preview__header d-flex align-center justify-space-between mb-4"
+                >
+                  <InputLanguagePreview
+                    :value="languagePreview"
+                    :items="selectedTemplateLanguages"
+                    :label="`Template Language (${selectedTemplateLanguages.length})`"
+                    class="email-template-preview__language-select"
+                    style="max-width: 320px;"
+                    hide-details
+                    @input="handleEmailTemplatePreviewLanguageChange"
+                  />
+                  <div class="email-template-preview__actions d-flex align-center gap-2">
+                    <VTooltip bottom>
+                      <template #activator="{ on }">
+                        <div v-on="on">
+                          <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                            <VIcon small>mdi-open-in-new</VIcon>
+                          </VBtn>
+                        </div>
+                      </template>
+                      <span>Open in New Tab</span>
+                    </VTooltip>
+                  </div>
+                </div>
+                <hr class="ml-n4 mb-3 mr-n4" v-if="!!emailTemplate && isPhishing" />
+                <div v-if="!isQuishingTypeIndividualPrintOut">
+                  <span class="template-preview__text--title text-primary-color">Subject: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.subject
+                  }}</span>
+                </div>
+
+                <div v-if="!isQuishingTypeIndividualPrintOut">
+                  <span class="template-preview__text--title text-primary-color">From Name: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.fromName
+                  }}</span>
+                </div>
+
+                <div v-if="!isQuishingTypeIndividualPrintOut">
+                  <span class="template-preview__text--title text-primary-color">From Email: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.fromAddress
+                  }}</span>
+                </div>
+                <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                  <span class="template-preview__text--title text-primary-color">CC: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.ccAddresses.join(', ')
+                  }}</span>
+                </div>
+                <div
+                  v-if="isQuishingTypeIndividualPrintOut"
+                  class="d-flex justify-space-between align-center"
+                >
+                  <div class="text-primary-color fs-4">
+                    Example Individual Printout
+                  </div>
+                  <VBtn
+                    id="btn-preview-indiviual-printout"
+                    class="white--text btn-util btn-download-add-in"
+                    color="#2196F3"
+                    rounded
+                    :style="getIndividualPrintoutStyle"
+                    @click="handlePreviewIndividualPrintout"
+                  >
+                    <v-icon left>mdi-file-eye</v-icon>
+                    {{ labels.PrintPreview }}
+                  </VBtn>
+                </div>
               </div>
+              <div
+                v-if="emailTemplateParams.attachment"
+                class="attachment-wrapper mt-2 position-relative"
+              >
+                <div class="attachment blue-attach mb-0">
+                  <AttachmentsPreview
+                    :deletable="false"
+                    :att="emailTemplateParams.attachment"
+                    :isEmailTemplate="true"
+                  />
+                </div>
+              </div>
+              <hr class="mt-4 ml-n4 mr-n4 mb-2" v-if="!!emailTemplate" />
+              <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
             </div>
-            <hr class="mt-4" v-if="!!emailTemplate" />
-            <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
-          </div>
-        </ElTabPane>
-        <ElTabPane
-          v-if="!isAttachmentBasedScenario"
-          :label="labels.LandingPage"
-          name="landing-page"
-          id="campaign-manager-info--landing-content"
-        >
-          <TabsWithMfaSettings
-            :key="getLandingPageKey"
-            :type="type"
-            :is-method-mfa="isMethodMfa"
-            :landing-page-params="landingPageParams"
-            :landing-page-templates="landingPageTemplates"
-          />
-        </ElTabPane>
-        <ElTabPane
-          v-if="isTrainingScenario"
-          :label="labels.Training"
-          name="training"
-          id="campaign-manager-info--training-content"
-        >
-          <TrainingLibraryPreview
-            v-if="selectedLanguages.length"
-            v-show="!isLoading"
-            class="mt-6 campaign-manager-phishing-training-preview"
-            iframe-class="w-100"
-            :has-api="false"
-            :name="getTrainingName"
-            :training-id="getTrainingId"
-            :languages="selectedLanguages"
-            :training-params="trainingParams"
-          />
-        </ElTabPane>
-      </ElTabs>
-    </template>
-    <template #app-dialog-footer>
-      <AppDialogFooterWithClose @on-close="handleClose" />
-    </template>
-  </AppDialog>
+          </ElTabPane>
+          <ElTabPane
+            v-if="!isAttachmentBasedScenario"
+            :label="labels.LandingPageTemplate"
+            name="landing-page"
+            id="campaign-manager-info--landing-content"
+          >
+            <TabsWithMfaSettingsMultipleLanguages
+              :key="getLandingPageKey"
+              :type="type"
+              :is-method-mfa="isMethodMfa"
+              :landing-page-params="landingPageParams"
+              :landing-page-templates="landingPageTemplates"
+              :languages="globalLanguages"
+              :phishing-url="landingPageParams.urlTemplate"
+              :is-phishing-scenario="isPhishing"
+            />
+          </ElTabPane>
+          <ElTabPane
+            v-if="isTrainingScenario"
+            :label="labels.Training"
+            name="training"
+            id="campaign-manager-info--training-content"
+          >
+            <TrainingLibraryPreview
+              v-if="selectedLanguages.length"
+              v-show="!isLoading"
+              class="mt-6 campaign-manager-phishing-training-preview"
+              iframe-class="w-100"
+              :has-api="false"
+              :name="getTrainingName"
+              :training-id="getTrainingId"
+              :languages="selectedLanguages"
+              :training-params="trainingParams"
+            />
+          </ElTabPane>
+        </ElTabs>
+      </div>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
+import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
 import { getCampaignManagerPreview } from '@/api/phishingsimulator'
 import labels from '@/model/constants/labels'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
+import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
 import { createRandomCryptStringNumber } from '@/utils/functions'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
@@ -185,19 +240,20 @@ import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibra
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
+import { openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
   components: {
     InputLanguagePreview,
     TrainingLibraryPreview,
-    AppDialogFooterWithClose,
-    TabsWithMfaSettings,
+    TabsWithMfaSettingsMultipleLanguages,
     AttachmentsPreview,
     KEmailPreview,
-    DatatableLoading,
-    AppDialog
+    EmailTemplatePreviewSkeleton
   },
+  mixins: [useDrawerAnimation],
   props: {
     status: {
       type: Boolean
@@ -241,13 +297,18 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--campaign-manager-preview': true
+      }
+    },
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
         this.selectedTemplateLanguages.length > 1 ? 's' : ''
       }.`
     },
     getFirstSubTabLabel() {
-      return this.isQuishing ? labels.QuishingTemplate : labels.JustEmail
+      return this.isQuishing ? labels.QuishingTemplate : labels.EmailTemplate
     },
     getIndividualPrintoutStyle() {
       const style = {
@@ -349,6 +410,8 @@ export default {
       this.isTrainingScenario = !!phishingScenarioPreviewDto?.trainingDetail
       this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
       this.category = phishingScenarioPreviewDto?.category
+      // Reset training languages array before populating
+      this.selectedLanguages = []
       if (this.isTrainingScenario)
         this.callForTrainingLanguages(this.trainingParams.trainingContents)
       this.emailTemplateParams = {
@@ -366,6 +429,9 @@ export default {
         type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
         isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
       }
+      // Reset arrays before populating with new scenario data
+      this.selectedTemplateLanguages = []
+      this.phishingEmailTemplates = []
       if (this.isPhishing) {
         const mainLanguage = this.globalLanguages.find(
           (lang) => lang.value === phishingScenarioPreviewDto?.[templateKey]?.languageTypeResourceId
@@ -404,6 +470,8 @@ export default {
       }
       this.landingPageTemplates =
         phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
+      const landingPageLanguageTypeResourceId =
+        phishingScenarioPreviewDto?.landingPageTemplate?.languageTypeResourceId
       this.landingPageParams = {
         mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
         mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
@@ -412,9 +480,17 @@ export default {
         urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
         isAssistedByAI:
           phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
-          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI
+          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI,
+        languages: landingPageLanguageTypeResourceId
+          ? this.globalLanguages.filter((lang) => {
+              return (
+                lang.value === landingPageLanguageTypeResourceId ||
+                lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
+              )
+            }) || []
+          : []
       }
-      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId.toString() === '4'
+      this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId?.toString() === '4'
       this.tab = 'email'
     },
     callForScenarioDetail(event) {
@@ -423,8 +499,11 @@ export default {
     setLoading(flag = false) {
       this.isLoading = flag
     },
+    handleOverlayClick() {
+      this.closeDrawer()
+    },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
     },
     handlePreviewIndividualPrintout() {
       this.isIndividualPrintoutButtonDisabled = true
@@ -450,6 +529,8 @@ export default {
         acc.push(item.languageId)
         return acc
       }, [])
+      // Reset trainingParams.languages array
+      this.trainingParams.languages = []
       languageIds.forEach((lang) => {
         const language = this.languages.find((item) => item.id === lang)
         if (language) {
@@ -457,17 +538,20 @@ export default {
             text: language.isoFriendlyName || language.name,
             value: language.id
           })
-          if (!this.trainingParams.languages)
-            this.trainingParams.languages = [language.isoFriendlyName || language.name]
-          else this.trainingParams.languages.push(language.isoFriendlyName || language.name)
+          this.trainingParams.languages.push(language.isoFriendlyName || language.name)
         }
       })
-      if (this.trainingParams.languages)
+      if (this.trainingParams.languages.length > 0)
         this.trainingParams.languages = this.trainingParams.languages.join(', ')
     },
-    handleEmailTemplatePreviewLanguageChange() {
+    handleEditCampaign() {
+      this.$emit('on-edit-campaign', this.selectedRow)
+    },
+    handleEmailTemplatePreviewLanguageChange(newLanguageId) {
+      this.languagePreview = newLanguageId
+
       const findedTemplate = this.phishingEmailTemplates.find(
-        (item) => item.languageTypeResourceId === this.languagePreview
+        (item) => item.languageTypeResourceId === newLanguageId
       )
       if (!findedTemplate) return
       this.emailTemplateParams = {
@@ -475,9 +559,13 @@ export default {
         ccAddresses: findedTemplate.ccAddresses,
         fromName: findedTemplate.fromName,
         fromAddress: findedTemplate.fromAddress,
-        subject: findedTemplate.subject
+        subject: findedTemplate.subject,
+        template: findedTemplate.template
       }
       this.emailTemplate = findedTemplate.template
+    },
+    handleExternalLink() {
+      openHtmlInNewWindow(this.emailTemplate)
     }
   }
 }

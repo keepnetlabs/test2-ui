@@ -631,6 +631,12 @@ export default {
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
       const languageId = language.value
 
+      // Poster, Screensaver, Infographic için scormPlayerUrl boş gelirse direkt blob download yap
+      const isPosterLikeType =
+        this.type === TRAINING_LIBRARY_TYPES.POSTER ||
+        this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER ||
+        this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
           const previewData = response?.data?.data || response?.data
@@ -638,6 +644,7 @@ export default {
           const splittedUrl = previewUrl.split('/')
           const fileName = splittedUrl[splittedUrl.length - 1]
           const isPdf = fileName.includes('.pdf')
+
           if (isPdf) {
             this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
               status: true,

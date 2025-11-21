@@ -11,6 +11,9 @@
       :selectedItem="selectedItem"
       :isDuplicate="isDuplicate"
       :status="newNotificationTemplateStatus"
+      :language-items="languageItems"
+      :preferred-language-types="preferredLanguageTypes"
+      :company-language-type-resource-id="companyLanguageTypeResourceId"
       @closeOverlay="toggleNewNotificationTemplate"
       @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
     />
@@ -135,10 +138,12 @@ import {
   getTemplateTypes,
   makeDefaultTemplate
 } from '@/api/company'
+import { getScenarioDataDetails } from '@/api/scenarios'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
@@ -166,6 +171,9 @@ export default {
       showNotificationTemplatePreviewDialog: false,
       isDuplicate: false,
       categories: [],
+      languageItems: [],
+      preferredLanguageTypes: [],
+      companyLanguageTypeResourceId: '',
       tableData: [],
       editItemsDisabled: false,
       tableOptions: {
@@ -216,6 +224,20 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text'
+          },
+          {
+            property: PROPERTY_STORE.LANGUAGE,
+            align: 'left',
+            editable: false,
+            label: labels.Languages,
+            sortable: true,
+            show: true,
+            type: 'multiText',
+            fixed: false,
+            width: 175,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'languageTypeResourceId'
           },
           {
             property: PROPERTY_STORE.TAGS,
@@ -451,15 +473,23 @@ export default {
     callForTemplateTypes() {
       return getTemplateTypes()
     },
+    callForLanguages() {
+      return LookupLocalStorage.getSingle(21)
+    },
+    callForFormDetails() {
+      return getScenarioDataDetails()
+    },
     callForData() {
       this.setLoading(true)
       Promise.all([
         this.callForCategories(),
         this.callForSearchEmailTemplate(),
-        this.callForTemplateTypes()
+        this.callForTemplateTypes(),
+        this.callForLanguages(),
+        this.callForFormDetails()
       ])
         .then((response) => {
-          const [categories, emailTemplates, templateTypes] = response
+          const [categories, emailTemplates, templateTypes, languages, formDetails] = response
           const {
             data: { data: templateData }
           } = emailTemplates
@@ -484,6 +514,25 @@ export default {
           this.templateTypeItems = templateTypesData.map((type) => {
             return { text: type.name, value: type.resourceId }
           })
+          this.languageItems =
+            languages?.map((language) => ({
+              text: language.isoFriendlyName || language.name,
+              value: language.resourceId
+            })) || []
+
+          // Form details for preferred languages
+          const formDetailsData = formDetails?.data?.data || {}
+          const preferredLanguageTypes = formDetailsData.preferredLanguageTypes || []
+
+          // Map preferred language resource IDs to full language objects from languageItems
+          this.preferredLanguageTypes = preferredLanguageTypes
+            .map(({ value }) => {
+              return this.languageItems.find((lang) => lang.value === value)
+            })
+            .filter(Boolean) // Remove undefined values if any resourceId doesn't match
+
+          this.companyLanguageTypeResourceId = formDetailsData.companyLanguageTypeResourceId || ''
+
           this.$set(this.tableOptions.columns, 1, {
             ...this.tableOptions.columns[1],
             filterableItems: this.categories
@@ -491,6 +540,10 @@ export default {
           this.$set(this.tableOptions.columns, 2, {
             ...this.tableOptions.columns[2],
             filterableItems: this.templateTypeItems
+          })
+          this.$set(this.tableOptions.columns, 4, {
+            ...this.tableOptions.columns[4],
+            filterableItems: this.languageItems
           })
           this?.$refs?.refNotificationList?.reRenderFilters()
         })

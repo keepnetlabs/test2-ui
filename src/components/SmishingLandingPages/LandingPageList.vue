@@ -169,7 +169,7 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import LandingPageTemplateModalPreview from '@/components/SmishingLandingPages/LandingPageTemplateModalPreview'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
