@@ -382,10 +382,32 @@ export default {
         const {
           data: { data }
         } = response
+        const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+        const languages = data.template.languages || []
+        const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+
+        if (data.template.languageTypeResourceId && data.template.languageTypeName) {
+          languages.unshift({
+            languageTypeResourceId: data.template.languageTypeResourceId,
+            languageTypeName: data.template.languageTypeName,
+            template: mainTemplate
+          })
+        }
+
+        // Replace logo in other languages
+        languages.forEach((lang) => {
+          if (lang.template) {
+            lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+          }
+        })
+
         this.reminderData = {
           createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-          template: data.template.template,
-          name: data.template.name || 'Default Reminder Email'
+          template: mainTemplate,
+          name: data.template.name || 'Default Reminder Email',
+          languages: languages,
+          selectedLanguageResourceId: data.template.languageTypeResourceId,
+          selectedLanguageName: data.template.languageTypeName
         }
       })
       //get certificate email
@@ -394,10 +416,32 @@ export default {
           const {
             data: { data }
           } = response
+          const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+          const certificateLanguages = data.template.languages || []
+          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+
+          if (data.template.languageTypeResourceId && data.template.languageTypeName) {
+            certificateLanguages.unshift({
+              languageTypeResourceId: data.template.languageTypeResourceId,
+              languageTypeName: data.template.languageTypeName,
+              template: mainTemplate
+            })
+          }
+
+          // Replace logo in other languages
+          certificateLanguages.forEach((lang) => {
+            if (lang.template) {
+              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+            }
+          })
+
           this.certificateData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template.template,
-            name: data.template.name || 'Default Certificate Email'
+            template: mainTemplate,
+            name: data.template.name || 'Default Certificate Email',
+            languages: certificateLanguages,
+            selectedLanguageResourceId: data.template.languageTypeResourceId,
+            selectedLanguageName: data.template.languageTypeName
           }
         }
       )
@@ -407,10 +451,32 @@ export default {
           const {
             data: { data }
           } = response
+          const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
+          const enrollmentLanguages = data.template.languages || []
+          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+
+          if (data.template.languageTypeResourceId && data.template.languageTypeName) {
+            enrollmentLanguages.unshift({
+              languageTypeResourceId: data.template.languageTypeResourceId,
+              languageTypeName: data.template.languageTypeName,
+              template: mainTemplate
+            })
+          }
+
+          // Replace logo in other languages
+          enrollmentLanguages.forEach((lang) => {
+            if (lang.template) {
+              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+            }
+          })
+
           this.enrollmentData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
-            template: data.template.template,
-            name: data.template.name || 'Default Training Email'
+            template: mainTemplate,
+            name: data.template.name || 'Default Training Email',
+            languages: enrollmentLanguages,
+            selectedLanguageResourceId: data.template.languageTypeResourceId,
+            selectedLanguageName: data.template.languageTypeName
           }
         }
       )

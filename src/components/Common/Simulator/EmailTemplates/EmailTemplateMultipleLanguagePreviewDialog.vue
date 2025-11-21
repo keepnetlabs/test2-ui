@@ -60,7 +60,7 @@
               <InputLanguagePreview
                 :value="activeLanguage"
                 :items="selectedLanguages"
-                :label="`Template Language (${selectedLanguages.length})`"
+                :label="templateLanguageLabel"
                 class="email-template-preview__language-select"
                 hide-details
                 @input="handleLanguageChange"
@@ -363,6 +363,10 @@ export default {
     },
     getLoaderDescription() {
       return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
+    },
+    templateLanguageLabel() {
+      const count = this.selectedLanguages.length
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
     }
   },
   created() {

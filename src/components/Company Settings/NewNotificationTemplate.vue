@@ -497,13 +497,15 @@ export default {
       if (!!this.selectedItem || this.editItemsDisabled) {
         return true
       }
-      // Disable only if AI is actively generating (not on initial load)
-      // Check if this is initial load - if no template type selected yet, don't disable
-      if (!this.formValues.emailTemplateCategoryResourceId) {
-        return false
+      // Create mode'da, categories yüklenene kadar disable
+      if (!this.selectedItem && this.categoryItems.length === 0) {
+        return true
       }
-      // Check if AI is generating (use isGenerateWithAIDisabled which is already reactive)
-      return this.isGenerateWithAIDisabled || this.isEmailGenerating
+      // Disable if AI is generating
+      if (this.isGenerateWithAIDisabled || this.isEmailGenerating) {
+        return true
+      }
+      return false
     }
   },
   watch: {
@@ -780,7 +782,13 @@ export default {
           this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
             JSON.stringify(this.getSelectedLanguagePayload)
           )
-          if (this.getSelectedLanguagePayload.template && !this.selectedItem) {
+          const isCompanyLanguageEnglish = findedLanguage?.text?.toLowerCase().includes('english')
+          // Eğer dil İngilizce DEĞİLSE API çağrısı yap
+          if (
+            this.getSelectedLanguagePayload.template &&
+            !this.selectedItem &&
+            !isCompanyLanguageEnglish
+          ) {
             this.isDefault = true
             this.handleGenerateWithAI()
           }
@@ -816,11 +824,7 @@ export default {
       }, {})
     },
     handleCategoryChange(resourceId = '') {
-      // İptal et mevcut API çağrısını (eğer varsa)
-      if (this.timeoutId) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
+      // ⚠️ Bu fonksiyon çalışmaz çünkü template type select disabled olur polling sırasında
       this.isEverythingLocalized = false
       // Eğer AI generation devam ediyorsa, reset et
       if (this.isGenerateWithAIDisabled || this.isEmailGenerating) {
@@ -849,8 +853,16 @@ export default {
         }
 
         // Auto-localize for selected languages when template type changes
-        // Only if not in edit mode and there are selected languages
+        // Only if not in edit mode, there are selected languages, and company language is NOT English
         if (!this.selectedItem && this.selectedLanguages.length > 0 && newTemplate) {
+          const companyLanguage = this.languageItems.find(
+            (lang) => lang.value === this.companyLanguageTypeResourceId
+          )
+          const isEnglish = companyLanguage?.text?.toLowerCase().includes('english')
+          // Eğer dil İngilizce İSE, çağrı yapma
+          if (isEnglish) {
+            return
+          }
           // Set states immediately to disable template type
           this.$nextTick(() => {
             // Update all selected languages' templates with new default template
