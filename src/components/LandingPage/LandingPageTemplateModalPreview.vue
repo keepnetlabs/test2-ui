@@ -10,7 +10,7 @@
           v-if="!isQuishing"
           v-model="selectedLanguageId"
           :items="languageItems"
-          :label="`Template Language (${languageItems.length})`"
+          :label="templateLanguageLabel"
           class="landing-page-template-preview__language-select"
           hide-details
           @input="handleLanguageChange"
@@ -158,6 +158,10 @@ export default {
     isRedFlaggedTemplate() {
       const html = this.getCurrentLandingPageTemplate || ''
       return typeof html === 'string' && html.includes('data-redflag')
+    },
+    templateLanguageLabel() {
+      const count = this.languageItems.length
+      return `Template Language${count > 1 ? 's' : ''} (${count})`
     }
   },
   watch: {
