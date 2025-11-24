@@ -146,48 +146,6 @@
               <v-list-item class="mt-4">
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
-                    <InputPhishingLink
-                      ref="refInputPhishingLink"
-                      v-model="formValues.phishingLink"
-                      :url-schema-types="getUrlSchemaTypes"
-                      :domain-records="getDomainRecordTypes"
-                      :extension-types="getExtensionTypes"
-                      :parameter-types="getParameterTypes"
-                      :path-types="getPathTypes"
-                      :is-edit="isEdit"
-                      @invisible-captcha="isInvisibleCaptchaDisabled = $event"
-                      @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
-                    />
-                    <VCheckbox
-                      v-model="formValues.isInvisibleCaptchaEnabled"
-                      color="#2196f3"
-                      hide-details
-                      :class="[
-                        'mb-10',
-                        isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
-                      ]"
-                      :ripple="false"
-                      :readonly="isInvisibleCaptchaDisabled"
-                      :style="
-                        isInvisibleCaptchaDisabled
-                          ? { opacity: 0.38, cursor: 'default !important' }
-                          : ''
-                      "
-                    >
-                      <template #label>
-                        Stop bots to prevent false clicks.
-                        <VTooltip bottom max-width="260" z-index="9999999">
-                          <template #activator="{ on }">
-                            <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
-                          </template>
-                          <span
-                            >Once enabled, bot activity is automatically detected and stopped to
-                            prevent false clicks, ensuring genuine traffic to the landing
-                            page.</span
-                          >
-                        </VTooltip>
-                      </template>
-                    </VCheckbox>
                     <div class="landing-page-tab-content">
                       <div class="d-flex align-center justify-space-between">
                         <div class="d-flex align-center">
@@ -213,6 +171,7 @@
                           :is-notification-template="true"
                           :is-landing-page="true"
                           :is-show-localize-button="false"
+                          :is-phishing-link-open="isPhishingLinkOpen"
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
                           @on-ai-ally="handleAIAlly"
@@ -223,12 +182,16 @@
 
                       <div v-if="isPhishingLinkOpen" class="mt-3">
                         <InputPhishingLinkMini
+                          ref="refInputPhishingLinkMini"
                           v-model="formValues.phishingLink"
                           :parameter-types="getParameterTypes"
                           :extension-types="getExtensionTypes"
                           :path-types="getPathTypes"
                           :domain-records="getDomainRecordTypes"
                           :url-schema-types="getUrlSchemaTypes"
+                          :is-edit="isEdit"
+                          @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                          @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                         />
                       </div>
 
@@ -443,7 +406,6 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import { MERGED_TEXTS_MAP, processTemplateWithCustomScripts } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
-import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
@@ -458,7 +420,6 @@ export default {
     InputLanguagesSettings,
     InputLanguagePreview,
     InputPhishingMethod,
-    InputPhishingLink,
     StepperFooter,
     AppModal,
     FormGroup,
@@ -1071,7 +1032,11 @@ export default {
         this.editedLandingPages = JSON.parse(JSON.stringify(data.landingPages))
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
-        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId, true)
+        this.$nextTick(() => {
+          if (this.$refs.refInputPhishingLinkMini && phishingLink.domainRecordId) {
+            this.$refs.refInputPhishingLinkMini.checkSchemaTypes(phishingLink.domainRecordId)
+          }
+        })
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`

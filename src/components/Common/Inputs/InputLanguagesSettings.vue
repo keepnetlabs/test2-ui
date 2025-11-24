@@ -226,11 +226,14 @@
       >
       <VIcon
         v-if="isLandingPage"
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
+        :color="isPhishingLinkOpen ? '#fff' : '#2196f3'"
+        :class="[
+          'executive-reports-card__right-btn',
+          { 'input-languages-settings__link-icon--active': isPhishingLinkOpen }
+        ]"
         small
         @click="handleLinkChange"
-        >mdi-link-variant</VIcon
+        >{{ isPhishingLinkOpen ? 'mdi-close' : 'mdi-link-variant' }}</VIcon
       >
       <VTooltip v-if="showRedFlags" bottom max-width="142">
         <template #activator="{ on }">
@@ -379,6 +382,10 @@ export default {
     isShowLocalizeButton: {
       type: Boolean,
       default: true
+    },
+    isPhishingLinkOpen: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -1067,6 +1074,12 @@ export default {
 /* Disabled treeview node - pointer events açık hover için */
 .input-languages-settings-treeview .v-treeview-node--disabled {
   pointer-events: auto;
+}
+
+.input-languages-settings__link-icon--active {
+  background-color: #2196f3 !important;
+  border-radius: 4px;
+  padding: 4px;
 }
 
 /* Checkbox button pointer-events açık override Vuetify */
