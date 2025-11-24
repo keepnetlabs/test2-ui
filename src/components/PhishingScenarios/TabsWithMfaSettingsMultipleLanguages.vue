@@ -31,7 +31,23 @@
             @input="handleLanguageChange"
           />
           <div class="email-template-preview__actions d-flex align-center gap-2">
-            <VTooltip bottom>
+            <VTooltip v-if="isMfaSettingsTab" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn
+                    icon
+                    outlined
+                    color="#2196F3"
+                    small
+                    :style="{ opacity: '0.5', pointerEvents: 'none', cursor: 'default' }"
+                  >
+                    <VIcon small>mdi-open-in-new</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Preview not available for configuration settings</span>
+            </VTooltip>
+            <VTooltip v-else bottom>
               <template #activator="{ on }">
                 <div v-on="on">
                   <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
@@ -224,6 +240,9 @@ export default {
     templateLanguageLabel() {
       const count = this.selectedLanguages.length
       return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    isMfaSettingsTab() {
+      return this.landingPageTab === String(this.landingPageTemplates.length + 1)
     }
   },
   watch: {

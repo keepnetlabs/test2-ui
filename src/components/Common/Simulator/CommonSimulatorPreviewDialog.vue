@@ -137,7 +137,13 @@
                   </div>
                 </div>
                 <hr class="ml-n4 mb-3 mr-n4" v-if="!!emailTemplate && isPhishing" />
-                <div class="d-flex align-start justify-space-between" style="max-height: 22px;">
+                <div
+                  class="d-flex align-start justify-space-between"
+                  :style="{
+                    'max-height': '22px',
+                    'margin-bottom': isShowRedFlags ? '2px' : '0'
+                  }"
+                >
                   <div v-if="!isQuishingTypeIndividualPrintOut" style="width: calc(100% - 200px);">
                     <div
                       :class="
@@ -184,7 +190,10 @@
 
                 <div v-if="!isQuishingTypeIndividualPrintOut">
                   <div
-                    style="width: calc(100% - 200px);"
+                    :style="{
+                      'width': 'calc(100% - 200px)',
+                      'margin-bottom': isShowRedFlags ? '2px' : '0'
+                    }"
                     :class="
                       redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
                         ? 'red-flag-preview-active'
