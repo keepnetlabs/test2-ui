@@ -690,7 +690,8 @@ export default {
                 ccAddresses: item.ccAddresses || [],
                 template: item.template,
                 resourceId: item.resourceId,
-                isTranslated: true
+                isTranslated: true,
+                ...(this.isDuplicate && { detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD })
               })
             })
           }
@@ -933,6 +934,8 @@ export default {
           this.formValues.template = mainLanguage.template || this.formValues.template || ''
           this.formValues.languageTypeResourceId =
             mainLanguage.languageTypeResourceId || this.formValues.languageTypeResourceId || ''
+          this.formValues.languageTypeName =
+            mainLanguage.languageTypeName || this.formValues.languageTypeName || ''
 
           // Ana dili formValues'e atadık, şimdi array'den çıkar
           // Hem create hem edit modda ana dil array'de olmamalı (formValues'de zaten var)
@@ -1038,9 +1041,13 @@ export default {
         const item = this.languagesPayload.find(
           (item) => item.languageTypeResourceId === language.value
         )
-        if (item) return item
+        if (item) {
+          item.languageTypeName = language.text
+          return item
+        }
         return {
           languageTypeResourceId: language.value,
+          languageTypeName: language.text,
           subject: this.getSelectedLanguagePayload.subject,
           fromName: this.getSelectedLanguagePayload.fromName,
           fromAddress: this.getSelectedLanguagePayload.fromAddress,

@@ -475,6 +475,12 @@ export default {
         ) {
           // Var olan red flags'leri restore et
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
+          if (
+            this.lastRedFlags[this.activeLanguage].templates &&
+            this.lastRedFlags[this.activeLanguage].templates[0]
+          ) {
+            this.templateHTML = this.lastRedFlags[this.activeLanguage].templates[0]
+          }
           this.updateTemplateWithFlaggedStyles()
           return
         }
@@ -512,7 +518,7 @@ export default {
             this.templateHTML = template
             this.lastRedFlags[this.activeLanguage] = {
               flags: JSON.parse(JSON.stringify(redFlags)),
-              templates: [],
+              templates: [template],
               textfieldValues: {
                 fromName: this.emailTemplateParams.fromName,
                 fromAddress: this.emailTemplateParams.fromAddress,
@@ -574,7 +580,7 @@ export default {
       if (this.activeLanguage && this.isShowRedFlags) {
         this.lastRedFlags[this.activeLanguage] = {
           flags: JSON.parse(JSON.stringify(this.redFlags)),
-          templates: [],
+          templates: [this.templateHTML],
           textfieldValues: {
             fromName: this.emailTemplateParams.fromName,
             fromAddress: this.emailTemplateParams.fromAddress,
@@ -597,6 +603,11 @@ export default {
         if (this.lastRedFlags[val] && this.lastRedFlags[val].flags) {
           this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[val].flags))
           this.isFlaggedStylesEnabled = true
+
+          if (this.lastRedFlags[val].templates && this.lastRedFlags[val].templates[0]) {
+            this.templateHTML = this.lastRedFlags[val].templates[0]
+          }
+
           this.updateTemplateWithFlaggedStyles()
         } else {
           // Yeni dilde red flags yok, isShowRedFlags'i false yap
