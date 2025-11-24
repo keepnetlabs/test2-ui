@@ -13,3 +13,8 @@
   transition: right 0.25s ease-in-out;
   z-index: 251 !important;
 }
+
+.campaign-manager-last-step__phishing-scenario-tab.campaign-manager-last-step__phishing-scenario-tab--wide
+  .el-tabs__item {
+  max-width: initial !important;
+}
