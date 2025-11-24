@@ -669,7 +669,8 @@ export default {
         awardCertificate,
         certificateConfigSendType,
         languageIds: newLanguageIds,
-        distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null
+        distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null,
+        sendTemplatesInPreferredLanguage: refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
       }
 
       if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {
