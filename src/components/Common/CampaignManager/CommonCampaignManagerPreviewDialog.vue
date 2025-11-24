@@ -56,7 +56,7 @@
         <ElTabs
           v-if="!isLoading"
           v-model="selectedScenario"
-          class="campaign-manager-last-step__phishing-scenario-tab mb-4"
+          class="campaign-manager-last-step__phishing-scenario-tab campaign-manager-last-step__phishing-scenario-tab--wide mb-4"
           @tab-click="callForScenarioDetail"
         >
           <ElTabPane
