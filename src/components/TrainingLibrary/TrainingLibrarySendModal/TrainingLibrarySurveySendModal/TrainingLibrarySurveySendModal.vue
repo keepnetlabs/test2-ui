@@ -716,7 +716,8 @@ export default {
         markedAsTest,
         awardCertificate,
         certificateConfigSendType,
-        languageIds: newLanguageIds
+        languageIds: newLanguageIds,
+        sendTemplatesInPreferredLanguage: refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
       }
 
       if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {
