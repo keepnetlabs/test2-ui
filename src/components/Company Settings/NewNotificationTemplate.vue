@@ -668,6 +668,7 @@ export default {
             template: this.formValues.template,
             isTranslated: true
           })
+
           this.selectedLanguages.push({
             text: this.formValues.languageTypeName || '',
             value: this.formValues.languageTypeResourceId
@@ -684,14 +685,16 @@ export default {
               })
               this.languagesPayload.push({
                 languageTypeResourceId: item.languageTypeResourceId,
+                ...(!this.isDuplicate && { resourceId: item.resourceId }),
                 subject: item.subject,
                 fromName: item.fromName,
                 fromAddress: item.fromAddress,
                 ccAddresses: item.ccAddresses || [],
                 template: item.template,
-                resourceId: item.resourceId,
                 isTranslated: true,
-                ...(this.isDuplicate && { detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD })
+                ...(this.isDuplicate && {
+                  detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD
+                })
               })
             })
           }
@@ -709,7 +712,6 @@ export default {
                 .map((item) => item.languageTypeResourceId)
             ]
           }
-          console.log('this.languagesPayload', this.languagesPayload)
         })
         .finally(() => {
           this.loading = false
@@ -936,12 +938,7 @@ export default {
             mainLanguage.languageTypeResourceId || this.formValues.languageTypeResourceId || ''
           this.formValues.languageTypeName =
             mainLanguage.languageTypeName || this.formValues.languageTypeName || ''
-
-          // Ana dili formValues'e atadık, şimdi array'den çıkar
-          // Hem create hem edit modda ana dil array'de olmamalı (formValues'de zaten var)
-          languagesPayload = languagesPayload.filter(
-            (lang) => lang.languageTypeResourceId !== mainLanguage.languageTypeResourceId
-          )
+          mainLanguage.detailActionType = EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.DELETE
         }
 
         // Company Logo kontrolü - formValues.template'de
@@ -994,7 +991,6 @@ export default {
                 ? EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.NO_CHANGE
                 : EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT
             } else {
-              // Silinen diller
               payload.languages.push({
                 ...item,
                 detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.DELETE
@@ -1157,6 +1153,7 @@ export default {
       const languagesToProcess = languages || this.languagesPayload
       const preferredLanguagePayload = this.getPreferredLanguagePayload()
       return languagesToProcess.map((item) => {
+        console.log('item in setEmptyLanguagesPayload', item)
         return {
           ...item,
           fromName: item.fromName || preferredLanguagePayload.fromName,
