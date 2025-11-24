@@ -807,6 +807,17 @@ export default {
     },
     submit() {
       this.isSubmitDisabled = true
+
+      // Check if phishing link subDomain is filled
+      if (!this.formValues.phishingLink?.subDomain) {
+        this.isSubmitDisabled = false
+        this.isPhishingLinkOpen = true
+        this.$nextTick(() => {
+          this.$refs.refInputPhishingLinkMini?.$el?.scrollIntoView({ behavior: 'smooth' })
+        })
+        return
+      }
+
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {

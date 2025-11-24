@@ -72,6 +72,7 @@
               </VList>
             </VMenu>
             <KSelect
+              v-if="false"
               v-model="formatType"
               class="ai-ally-mini__format-select"
               :class="{
@@ -86,7 +87,6 @@
               placeholder="Format"
               :menu-props="{ offsetY: true }"
               :slots="{ selection: true }"
-              @input="handleFormatChange"
             >
               <template #selection="{ item }">
                 <span class="ai-ally-mini__format-selection">
@@ -304,19 +304,18 @@ export default {
         this.suggestionsMenuOpen = false
       }
     },
-    handleFormatChange(value) {
-      this.formatType = value
-    },
     handleGenerateEmail() {
       this.isEmailGenerating = true
-      const isPlainText = this.formatType === 'plain'
+      // Ensure formatType is correctly set - v-model should handle this
+      const currentFormatType = this.formatType || 'html'
+      const isPlainText = currentFormatType === 'plain'
       const payload = {
         name: this.name,
         languageTypeResourceId: this.languageTypeResourceId,
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
         methodTypeId: parseInt(this.methodTypeId),
-        isPlainText: !isPlainText
+        isPlainText: isPlainText
       }
       this.$emit('update:isAssistedByAITemplate', true)
       generateAILandingPageTemplate(payload)
