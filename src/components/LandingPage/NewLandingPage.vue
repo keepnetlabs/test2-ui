@@ -307,7 +307,8 @@
                             <v-menu
                               :min-width="128"
                               :nudge-right="83"
-                              :nudge-bottom="240"
+                              :nudge-bottom="menuNudgeBottom"
+                              :offset-y="true"
                               id="add-page-menu"
                               attach="#landing-page-tab-content"
                               :z-index="10000"
@@ -813,7 +814,9 @@ export default {
         this.isSubmitDisabled = false
         this.isPhishingLinkOpen = true
         this.$nextTick(() => {
-          this.$refs.refInputPhishingLinkMini?.$el?.scrollIntoView({ behavior: 'smooth' })
+          this.$refs.refInputPhishingLinkMini?.$el?.scrollIntoView({
+            behavior: 'smooth'
+          })
         })
         return
       }
@@ -966,6 +969,15 @@ export default {
     getTitle() {
       if (!this.isEdit) return 'New Landing Page Template'
       return this.isDuplicate ? 'Duplicate Landing Page Template' : 'Edit Landing Page Template'
+    },
+    menuNudgeBottom() {
+      if (this.isPhishingLinkOpen && this.isAIAllyOpen) {
+        return 380
+      }
+      if (this.isPhishingLinkOpen || this.isAIAllyOpen) {
+        return 220
+      }
+      return 92
     },
     isRenderMakeAvailableFor() {
       if (this.editItemsDisabled) {
