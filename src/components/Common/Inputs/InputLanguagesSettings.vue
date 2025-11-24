@@ -217,7 +217,7 @@
         }}</span>
       </VBtn>
       <VIcon
-        v-if="isLandingPage && false"
+        v-if="isLandingPage"
         color="#2196f3"
         class="executive-reports-card__right-btn"
         small
@@ -225,7 +225,7 @@
         >mdi-lightbulb-on-outline</VIcon
       >
       <VIcon
-        v-if="isLandingPage && false"
+        v-if="isLandingPage"
         color="#2196f3"
         class="executive-reports-card__right-btn"
         small

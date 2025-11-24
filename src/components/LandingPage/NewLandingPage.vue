@@ -220,6 +220,18 @@
                           @on-link-change="handleLinkChange"
                         />
                       </div>
+
+                      <div v-if="isPhishingLinkOpen" class="mt-3">
+                        <InputPhishingLinkMini
+                          v-model="formValues.phishingLink"
+                          :parameter-types="getParameterTypes"
+                          :extension-types="getExtensionTypes"
+                          :path-types="getPathTypes"
+                          :domain-records="getDomainRecordTypes"
+                          :url-schema-types="getUrlSchemaTypes"
+                        />
+                      </div>
+
                       <hr class="mt-4 ml-n4 mr-n4" />
                       <el-tabs
                         v-model="tab"
@@ -439,6 +451,7 @@ import NextButton from '@/components/Common/Buttons/NextButton'
 import BackButton from '@/components/Common/Buttons/BackButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
+import InputPhishingLinkMini from '@/components/Common/Inputs/InputPhishingLinkMini.vue'
 export default {
   name: 'NewLandingPage',
   components: {
@@ -455,7 +468,8 @@ export default {
     NextButton,
     BackButton,
     SaveButton,
-    InputSelectLanguage
+    InputSelectLanguage,
+    InputPhishingLinkMini
   },
   props: {
     status: {
@@ -556,7 +570,8 @@ export default {
       },
       editItemsDisabled: false,
       aiAssistantRemainingRights: 0,
-      aiAssistantTotalRights: 0
+      aiAssistantTotalRights: 0,
+      isPhishingLinkOpen: false
     }
   },
   watch: {
@@ -605,7 +620,7 @@ export default {
       // AI Ally ile template generate etme işlemi
     },
     handleLinkChange() {
-      // Linkleri değiştirme işlemi
+      this.isPhishingLinkOpen = !this.isPhishingLinkOpen
     },
     handleEditMode() {
       const index = parseInt(this.tab.replace('page', '')) - 1

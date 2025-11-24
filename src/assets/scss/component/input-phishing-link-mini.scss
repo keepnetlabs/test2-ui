@@ -1,0 +1,55 @@
+.input-phishing-link-mini-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-phishing-link-mini {
+  border: 1px solid #b3d4fc;
+  border-radius: 8px;
+  padding: 8px;
+  background: #f1f8fe;
+  margin-top: 8px;
+}
+
+.input-phishing-link-mini__inputs {
+  display: grid;
+  grid-template-columns: 120px 2fr 2fr 120px 120px 120px;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.input-phishing-link-mini__input-group {
+  display: flex;
+  flex-direction: column;
+  grid-column: span 1;
+}
+
+.input-phishing-link-mini__input-group--narrow {
+  max-width: 120px;
+}
+
+.input-phishing-link-mini__inputs {
+  .v-select,
+  .v-text-field {
+    width: 100%;
+  }
+}
+.input-phishing-link-mini__simulation-link {
+  margin-top: 8px;
+}
+.input-phishing-link-mini__simulation-link-input fieldset {
+  border-radius: 8px;
+  border: 1px solid #1173c1;
+  background: #fafafa !important;
+}
+
+#app {
+  .input-phishing-link-mini__simulation-link-input {
+    .v-label,
+    .v-label--active,
+    .v-input__slot label {
+      color: #1173c1 !important;
+    }
+  }
+}
