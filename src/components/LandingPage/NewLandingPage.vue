@@ -171,7 +171,9 @@
                           :is-notification-template="true"
                           :is-landing-page="true"
                           :is-show-localize-button="false"
+                          :is-ai-ally-enabled="isAIAllyEnabled"
                           :is-phishing-link-open="isPhishingLinkOpen"
+                          :isAIAllyOpen="isAIAllyOpen"
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
                           @on-ai-ally="handleAIAlly"
@@ -180,7 +182,27 @@
                         />
                       </div>
 
-                      <div v-if="isPhishingLinkOpen" class="mt-3">
+                      <div v-if="isAIAllyOpen" class="mt-3">
+                        <AIAllyMini
+                          :language-type-resource-id="formValues.languageTypeResourceId"
+                          :language-options="languageOptions"
+                          :selected-method="getSelectedMethod"
+                          :is-show-red-flags="isShowRedFlags"
+                          :method-type-id="formValues.methodTypeId"
+                          :name="formValues.name"
+                          :ai-assistant-remaining-right="aiAssistantRemainingRights"
+                          @update:language-type-resource-id="
+                            formValues.languageTypeResourceId = $event
+                          "
+                          @update:template="handleAITemplateUpdate"
+                          @update:is-assisted-by-ai-template="
+                            formValues.isAssistedByAITemplate = $event
+                          "
+                          @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
+                        />
+                      </div>
+
+                      <div v-show="isPhishingLinkOpen" class="mt-3">
                         <InputPhishingLinkMini
                           ref="refInputPhishingLinkMini"
                           v-model="formValues.phishingLink"
@@ -414,6 +436,7 @@ import BackButton from '@/components/Common/Buttons/BackButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import InputPhishingLinkMini from '@/components/Common/Inputs/InputPhishingLinkMini.vue'
+import AIAllyMini from '@/components/Common/Inputs/AIAllyMini.vue'
 export default {
   name: 'NewLandingPage',
   components: {
@@ -430,7 +453,8 @@ export default {
     BackButton,
     SaveButton,
     InputSelectLanguage,
-    InputPhishingLinkMini
+    InputPhishingLinkMini,
+    AIAllyMini
   },
   props: {
     status: {
@@ -532,7 +556,9 @@ export default {
       editItemsDisabled: false,
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
-      isPhishingLinkOpen: false
+      isPhishingLinkOpen: false,
+      isAIAllyOpen: false,
+      isShowRedFlags: false
     }
   },
   watch: {
@@ -578,7 +604,20 @@ export default {
       this.activeLanguage = languageId
     },
     handleAIAlly() {
-      // AI Ally ile template generate etme işlemi
+      this.isAIAllyOpen = !this.isAIAllyOpen
+    },
+    handleAITemplateUpdate(template) {
+      const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
+      if (this.formValues.landingPages[currentPageIndex]) {
+        this.$set(this.formValues.landingPages[currentPageIndex], 'content', template)
+      }
+      // Also update languagesPayload if activeLanguage is selected
+      const selectedLanguagePayload = this.languagesPayload.find(
+        (item) => item.languageTypeResourceId === this.activeLanguage
+      )
+      if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
+        this.$set(selectedLanguagePayload.landingPages[currentPageIndex], 'content', template)
+      }
     },
     handleLinkChange() {
       this.isPhishingLinkOpen = !this.isPhishingLinkOpen
