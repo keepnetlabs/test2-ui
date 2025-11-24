@@ -146,48 +146,6 @@
               <v-list-item class="mt-4">
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
-                    <InputPhishingLink
-                      ref="refInputPhishingLink"
-                      v-model="formValues.phishingLink"
-                      :url-schema-types="getUrlSchemaTypes"
-                      :domain-records="getDomainRecordTypes"
-                      :extension-types="getExtensionTypes"
-                      :parameter-types="getParameterTypes"
-                      :path-types="getPathTypes"
-                      :is-edit="isEdit"
-                      @invisible-captcha="isInvisibleCaptchaDisabled = $event"
-                      @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
-                    />
-                    <VCheckbox
-                      v-model="formValues.isInvisibleCaptchaEnabled"
-                      color="#2196f3"
-                      hide-details
-                      :class="[
-                        'mb-10',
-                        isInvisibleCaptchaDisabled ? 'invisible-captcha-checkbox' : ''
-                      ]"
-                      :ripple="false"
-                      :readonly="isInvisibleCaptchaDisabled"
-                      :style="
-                        isInvisibleCaptchaDisabled
-                          ? { opacity: 0.38, cursor: 'default !important' }
-                          : ''
-                      "
-                    >
-                      <template #label>
-                        Stop bots to prevent false clicks.
-                        <VTooltip bottom max-width="260" z-index="9999999">
-                          <template #activator="{ on }">
-                            <v-icon v-on="on" class="ml-2" color="#757575">mdi-information</v-icon>
-                          </template>
-                          <span
-                            >Once enabled, bot activity is automatically detected and stopped to
-                            prevent false clicks, ensuring genuine traffic to the landing
-                            page.</span
-                          >
-                        </VTooltip>
-                      </template>
-                    </VCheckbox>
                     <div class="landing-page-tab-content">
                       <div class="d-flex align-center justify-space-between">
                         <div class="d-flex align-center">
@@ -213,6 +171,9 @@
                           :is-notification-template="true"
                           :is-landing-page="true"
                           :is-show-localize-button="false"
+                          :is-ai-ally-enabled="isAIAllyEnabled"
+                          :is-phishing-link-open="isPhishingLinkOpen"
+                          :isAIAllyOpen="isAIAllyOpen"
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
                           @on-ai-ally="handleAIAlly"
@@ -220,6 +181,42 @@
                           @on-link-change="handleLinkChange"
                         />
                       </div>
+
+                      <div v-if="isAIAllyOpen" class="mt-3">
+                        <AIAllyMini
+                          :language-type-resource-id="formValues.languageTypeResourceId"
+                          :language-options="languageOptions"
+                          :selected-method="getSelectedMethod"
+                          :is-show-red-flags="isShowRedFlags"
+                          :method-type-id="formValues.methodTypeId"
+                          :name="formValues.name"
+                          :ai-assistant-remaining-right="aiAssistantRemainingRights"
+                          @update:language-type-resource-id="
+                            formValues.languageTypeResourceId = $event
+                          "
+                          @update:template="handleAITemplateUpdate"
+                          @update:is-assisted-by-ai-template="
+                            formValues.isAssistedByAITemplate = $event
+                          "
+                          @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
+                        />
+                      </div>
+
+                      <div v-show="isPhishingLinkOpen" class="mt-3">
+                        <InputPhishingLinkMini
+                          ref="refInputPhishingLinkMini"
+                          v-model="formValues.phishingLink"
+                          :parameter-types="getParameterTypes"
+                          :extension-types="getExtensionTypes"
+                          :path-types="getPathTypes"
+                          :domain-records="getDomainRecordTypes"
+                          :url-schema-types="getUrlSchemaTypes"
+                          :is-edit="isEdit"
+                          @invisible-captcha="isInvisibleCaptchaDisabled = $event"
+                          @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
+                        />
+                      </div>
+
                       <hr class="mt-4 ml-n4 mr-n4" />
                       <el-tabs
                         v-model="tab"
@@ -431,7 +428,6 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import { MERGED_TEXTS_MAP, processTemplateWithCustomScripts } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
-import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
@@ -439,13 +435,14 @@ import NextButton from '@/components/Common/Buttons/NextButton'
 import BackButton from '@/components/Common/Buttons/BackButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
+import InputPhishingLinkMini from '@/components/Common/Inputs/InputPhishingLinkMini.vue'
+import AIAllyMini from '@/components/Common/Inputs/AIAllyMini.vue'
 export default {
   name: 'NewLandingPage',
   components: {
     InputLanguagesSettings,
     InputLanguagePreview,
     InputPhishingMethod,
-    InputPhishingLink,
     StepperFooter,
     AppModal,
     FormGroup,
@@ -455,7 +452,9 @@ export default {
     NextButton,
     BackButton,
     SaveButton,
-    InputSelectLanguage
+    InputSelectLanguage,
+    InputPhishingLinkMini,
+    AIAllyMini
   },
   props: {
     status: {
@@ -556,7 +555,10 @@ export default {
       },
       editItemsDisabled: false,
       aiAssistantRemainingRights: 0,
-      aiAssistantTotalRights: 0
+      aiAssistantTotalRights: 0,
+      isPhishingLinkOpen: false,
+      isAIAllyOpen: false,
+      isShowRedFlags: false
     }
   },
   watch: {
@@ -602,10 +604,23 @@ export default {
       this.activeLanguage = languageId
     },
     handleAIAlly() {
-      // AI Ally ile template generate etme işlemi
+      this.isAIAllyOpen = !this.isAIAllyOpen
+    },
+    handleAITemplateUpdate(template) {
+      const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
+      if (this.formValues.landingPages[currentPageIndex]) {
+        this.$set(this.formValues.landingPages[currentPageIndex], 'content', template)
+      }
+      // Also update languagesPayload if activeLanguage is selected
+      const selectedLanguagePayload = this.languagesPayload.find(
+        (item) => item.languageTypeResourceId === this.activeLanguage
+      )
+      if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
+        this.$set(selectedLanguagePayload.landingPages[currentPageIndex], 'content', template)
+      }
     },
     handleLinkChange() {
-      // Linkleri değiştirme işlemi
+      this.isPhishingLinkOpen = !this.isPhishingLinkOpen
     },
     handleEditMode() {
       const index = parseInt(this.tab.replace('page', '')) - 1
@@ -792,6 +807,17 @@ export default {
     },
     submit() {
       this.isSubmitDisabled = true
+
+      // Check if phishing link subDomain is filled
+      if (!this.formValues.phishingLink?.subDomain) {
+        this.isSubmitDisabled = false
+        this.isPhishingLinkOpen = true
+        this.$nextTick(() => {
+          this.$refs.refInputPhishingLinkMini?.$el?.scrollIntoView({ behavior: 'smooth' })
+        })
+        return
+      }
+
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
@@ -1056,7 +1082,11 @@ export default {
         this.editedLandingPages = JSON.parse(JSON.stringify(data.landingPages))
         this.formValues = data
         this.$set(this.formValues, 'phishingLink', phishingLink)
-        this?.$refs?.refInputPhishingLink?.checkSchemaTypes(phishingLink.domainRecordId, true)
+        this.$nextTick(() => {
+          if (this.$refs.refInputPhishingLinkMini && phishingLink.domainRecordId) {
+            this.$refs.refInputPhishingLinkMini.checkSchemaTypes(phishingLink.domainRecordId)
+          }
+        })
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`

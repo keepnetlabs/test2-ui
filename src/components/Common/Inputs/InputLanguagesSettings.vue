@@ -217,20 +217,28 @@
         }}</span>
       </VBtn>
       <VIcon
-        v-if="isLandingPage && false"
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
+        v-if="isLandingPage && isAIAllyEnabled"
+        :color="isAIAllyOpen ? '#fff' : '#2196f3'"
+        :class="[
+          'executive-reports-card__right-btn',
+          {
+            'input-languages-settings__ai-ally-icon--active': isAIAllyOpen
+          }
+        ]"
         small
         @click="handleAIAlly"
-        >mdi-lightbulb-on-outline</VIcon
+        >{{ aiAllyIconName }}</VIcon
       >
       <VIcon
-        v-if="isLandingPage && false"
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
+        v-if="isLandingPage"
+        :color="isPhishingLinkOpen ? '#fff' : '#2196f3'"
+        :class="[
+          'executive-reports-card__right-btn',
+          { 'input-languages-settings__link-icon--active': isPhishingLinkOpen }
+        ]"
         small
         @click="handleLinkChange"
-        >mdi-link-variant</VIcon
+        >{{ phishingLinkIconName }}</VIcon
       >
       <VTooltip v-if="showRedFlags" bottom max-width="142">
         <template #activator="{ on }">
@@ -379,6 +387,18 @@ export default {
     isShowLocalizeButton: {
       type: Boolean,
       default: true
+    },
+    isPhishingLinkOpen: {
+      type: Boolean,
+      default: false
+    },
+    isAIAllyEnabled: {
+      type: Boolean,
+      default: true
+    },
+    isAIAllyOpen: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -524,6 +544,12 @@ export default {
         style.cursor = 'default'
       }
       return style
+    },
+    aiAllyIconName() {
+      return this.isAIAllyOpen ? 'mdi-close' : 'mdi-lightbulb-on-outline'
+    },
+    phishingLinkIconName() {
+      return this.isPhishingLinkOpen ? 'mdi-close' : 'mdi-link-variant'
     }
   },
   watch: {
@@ -1067,6 +1093,18 @@ export default {
 /* Disabled treeview node - pointer events açık hover için */
 .input-languages-settings-treeview .v-treeview-node--disabled {
   pointer-events: auto;
+}
+
+.input-languages-settings__link-icon--active {
+  background-color: #2196f3 !important;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.input-languages-settings__ai-ally-icon--active {
+  background-color: #2196f3 !important;
+  border-radius: 4px;
+  padding: 4px;
 }
 
 /* Checkbox button pointer-events açık override Vuetify */

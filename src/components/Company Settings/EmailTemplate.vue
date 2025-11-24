@@ -35,7 +35,7 @@
       </template>
     </app-modal>
     <div
-      v-if="isAiAssistant && isAIAllyEnabled"
+      v-if="isAiAssistant && isAIAllyEnabled && templateType !== 'landing'"
       :class="[
         'email-template__ai-assistant',
         templateType === 'landing' ? 'email-template__ai-assistant--landing' : ''
