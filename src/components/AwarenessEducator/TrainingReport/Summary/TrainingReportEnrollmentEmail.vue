@@ -37,7 +37,7 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <KEmailPreview :html="formData.template" is-extra-height />
+          <KEmailPreview :html="selectedTemplate" is-extra-height />
         </div>
       </div>
     </template>
@@ -80,7 +80,8 @@ export default {
   data() {
     return {
       isShowEmailTemplate: false,
-      labels
+      labels,
+      selectedTemplate: ''
     }
   },
   computed: {
@@ -108,15 +109,35 @@ export default {
       })) || []
     }
   },
+  watch: {
+    'formData.selectedLanguageResourceId': {
+      immediate: true,
+      handler(val) {
+        this.updateSelectedTemplate()
+      }
+    },
+    'formData.languages': {
+      deep: true,
+      handler() {
+        this.updateSelectedTemplate()
+      }
+    }
+  },
   methods: {
+    updateSelectedTemplate() {
+      const selectedLanguage = this.formData.languages?.find(
+        (lang) => lang.languageTypeResourceId === this.formData.selectedLanguageResourceId
+      )
+      this.selectedTemplate = selectedLanguage?.template || this.formData.template || ''
+    },
     handleLanguageChange(languageResourceId) {
-      this.formData.selectedLanguageResourceId = languageResourceId
       const selectedLanguage = this.formData.languages.find(
         (lang) => lang.languageTypeResourceId === languageResourceId
       )
       if (selectedLanguage) {
-        this.formData.selectedLanguageName = selectedLanguage.languageTypeName
-        this.formData.template = selectedLanguage.template
+        this.$set(this.formData, 'selectedLanguageResourceId', languageResourceId)
+        this.$set(this.formData, 'selectedLanguageName', selectedLanguage.languageTypeName)
+        this.selectedTemplate = selectedLanguage.template
       }
     }
   }
