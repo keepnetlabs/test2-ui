@@ -138,8 +138,36 @@ export default {
       }, 500)
     },
     handleLoadMore() {
-      // TODO: Implement load more logic
-      console.log('Load more clicked')
+      // Generate 5 new mock activities
+      const newActivities = []
+      const statuses = ['Reported', 'Clicked Link', 'Opened Email']
+      const difficulties = ['easy', 'medium', 'hard']
+      const campaignNames = [
+        'Q4 Security Awareness Campaign',
+        'Phishing Simulation Test',
+        'Security Training Program',
+        'Email Security Challenge',
+        'Cyber Awareness Month'
+      ]
+
+      for (let i = 0; i < 5; i++) {
+        const status = statuses[Math.floor(Math.random() * statuses.length)]
+        const difficulty = difficulties[Math.floor(Math.random() * difficulties.length)]
+        const campaignName = campaignNames[Math.floor(Math.random() * campaignNames.length)]
+        const points = status === 'Reported' ? 200 : status === 'Clicked Link' ? -200 : -50
+        const campaignPerformance = 80 + Math.floor(Math.random() * 10)
+
+        newActivities.push({
+          status,
+          points,
+          campaignName,
+          difficulty,
+          campaignPerformance,
+          timestamp: '05/12/2024 11:09 UTC-12:00'
+        })
+      }
+
+      this.activities = [...this.activities, ...newActivities]
     },
     getActivityColor(status) {
       const colorMap = {

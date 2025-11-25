@@ -24,6 +24,12 @@ const usersDashboardLabels = {
     recentBadgesSubtitle: 'View your last 3 badges earned from your actions and behaviours.',
     recentBadgesSeeAll: 'See All Badges',
 
+    // Your Badges
+    yourBadgesTitle: 'Your Badges',
+    yourBadgesSubtitle: 'See all your earned and available badges in one place.',
+    yourBadgesEarnedOn: (date) => `Earned on ${date}`,
+    yourBadgesNotEarnedYet: 'Not earned yet',
+
     // Your Learning
     yourLearningTitle: 'Your Learning',
     yourLearningSubtitle: 'See all your completed and assigned trainings in one place.',
@@ -41,6 +47,16 @@ const usersDashboardLabels = {
     yourLearningStartTraining: 'Start Training',
     yourLearningRedoTraining: 'Redo Training',
     yourLearningNoTrainingMaterials: 'No training materials found',
+
+    // Your Certificates
+    yourCertificatesTitle: 'Your Certificates',
+    yourCertificatesSubtitle: 'See all your earned and pending certificates in one place.',
+    yourCertificatesCertificateName: 'Certificate Name',
+    yourCertificatesCertificateDate: 'Certificate Date',
+    yourCertificatesTrainingStatus: 'Training Status',
+    yourCertificatesActions: 'Actions',
+    yourCertificatesNoCertificates: 'No certificates found',
+    yourCertificatesDownloadCertificate: 'Download Certificate',
 
     // Leaderboard
     leaderboardTitle: 'Leaderboard',
@@ -103,6 +119,12 @@ const usersDashboardLabels = {
     recentBadgesSubtitle: 'View your last 3 badges earned from your actions and behaviors.',
     recentBadgesSeeAll: 'See All Badges',
 
+    // Your Badges
+    yourBadgesTitle: 'Your Badges',
+    yourBadgesSubtitle: 'See all your earned and available badges in one place.',
+    yourBadgesEarnedOn: (date) => `Earned on ${date}`,
+    yourBadgesNotEarnedYet: 'Not earned yet',
+
     // Your Learning
     yourLearningTitle: 'Your Learning',
     yourLearningSubtitle: 'See all your completed and assigned trainings in one place.',
@@ -120,6 +142,16 @@ const usersDashboardLabels = {
     yourLearningStartTraining: 'Start Training',
     yourLearningRedoTraining: 'Redo Training',
     yourLearningNoTrainingMaterials: 'No training materials found',
+
+    // Your Certificates
+    yourCertificatesTitle: 'Your Certificates',
+    yourCertificatesSubtitle: 'See all your earned and pending certificates in one place.',
+    yourCertificatesCertificateName: 'Certificate Name',
+    yourCertificatesCertificateDate: 'Certificate Date',
+    yourCertificatesTrainingStatus: 'Training Status',
+    yourCertificatesActions: 'Actions',
+    yourCertificatesNoCertificates: 'No certificates found',
+    yourCertificatesDownloadCertificate: 'Download Certificate',
 
     // Leaderboard
     leaderboardTitle: 'Leaderboard',
@@ -190,6 +222,12 @@ const usersDashboardLabels = {
       'Eylemleriniz ve davranışlarınızdan kazandığınız son 3 rozeti görüntüleyin.',
     recentBadgesSeeAll: 'Tüm Rozetleri Gör',
 
+    // Your Badges
+    yourBadgesTitle: 'Rozetleriniz',
+    yourBadgesSubtitle: 'Kazandığınız ve mevcut tüm rozetleri tek bir yerde görün.',
+    yourBadgesEarnedOn: (date) => `${date} tarihinde kazanıldı`,
+    yourBadgesNotEarnedYet: 'Henüz kazanılmadı',
+
     // Your Learning
     yourLearningTitle: 'Öğrenmeleriniz',
     yourLearningSubtitle: 'Tamamladığınız ve atanan tüm eğitimleri tek bir yerde görün.',
@@ -207,6 +245,16 @@ const usersDashboardLabels = {
     yourLearningStartTraining: 'Eğitimi Başlat',
     yourLearningRedoTraining: 'Eğitimi Tekrarla',
     yourLearningNoTrainingMaterials: 'Eğitim materyali bulunamadı',
+
+    // Your Certificates
+    yourCertificatesTitle: 'Sertifikalarınız',
+    yourCertificatesSubtitle: 'Kazandığınız ve bekleyen tüm sertifikalarınızı tek bir yerde görün.',
+    yourCertificatesCertificateName: 'Sertifika Adı',
+    yourCertificatesCertificateDate: 'Sertifika Tarihi',
+    yourCertificatesTrainingStatus: 'Eğitim Durumu',
+    yourCertificatesActions: 'İşlemler',
+    yourCertificatesNoCertificates: 'Sertifika bulunamadı',
+    yourCertificatesDownloadCertificate: 'Sertifikayı İndir',
 
     // Leaderboard
     leaderboardTitle: 'Liderlik Tablosu',
@@ -277,6 +325,12 @@ const usersDashboardLabels = {
       'Zeigen Sie Ihre letzten 3 Abzeichen an, die Sie durch Ihre Aktionen und Verhaltensweisen verdient haben.',
     recentBadgesSeeAll: 'Alle Abzeichen anzeigen',
 
+    // Your Badges
+    yourBadgesTitle: 'Ihre Abzeichen',
+    yourBadgesSubtitle: 'Sehen Sie alle Ihre verdienten und verfügbaren Abzeichen an einem Ort.',
+    yourBadgesEarnedOn: (date) => `Verdient am ${date}`,
+    yourBadgesNotEarnedYet: 'Noch nicht verdient',
+
     // Your Learning
     yourLearningTitle: 'Ihr Lernen',
     yourLearningSubtitle:
@@ -295,6 +349,17 @@ const usersDashboardLabels = {
     yourLearningStartTraining: 'Schulung starten',
     yourLearningRedoTraining: 'Schulung wiederholen',
     yourLearningNoTrainingMaterials: 'Keine Schulungsmaterialien gefunden',
+
+    // Your Certificates
+    yourCertificatesTitle: 'Ihre Zertifikate',
+    yourCertificatesSubtitle:
+      'Sehen Sie alle Ihre verdienten und ausstehenden Zertifikate an einem Ort.',
+    yourCertificatesCertificateName: 'Zertifikatsname',
+    yourCertificatesCertificateDate: 'Zertifikatsdatum',
+    yourCertificatesTrainingStatus: 'Schulungsstatus',
+    yourCertificatesActions: 'Aktionen',
+    yourCertificatesNoCertificates: 'Keine Zertifikate gefunden',
+    yourCertificatesDownloadCertificate: 'Zertifikat herunterladen',
 
     // Leaderboard
     leaderboardTitle: 'Bestenliste',
@@ -368,6 +433,12 @@ const usersDashboardLabels = {
       'Affichez vos 3 derniers badges gagnés grâce à vos actions et comportements.',
     recentBadgesSeeAll: 'Voir tous les badges',
 
+    // Your Badges
+    yourBadgesTitle: 'Vos badges',
+    yourBadgesSubtitle: 'Consultez tous vos badges gagnés et disponibles en un seul endroit.',
+    yourBadgesEarnedOn: (date) => `Gagné le ${date}`,
+    yourBadgesNotEarnedYet: 'Pas encore gagné',
+
     // Your Learning
     yourLearningTitle: 'Votre apprentissage',
     yourLearningSubtitle:
@@ -386,6 +457,17 @@ const usersDashboardLabels = {
     yourLearningStartTraining: 'Démarrer la formation',
     yourLearningRedoTraining: 'Refaire la formation',
     yourLearningNoTrainingMaterials: 'Aucun matériel de formation trouvé',
+
+    // Your Certificates
+    yourCertificatesTitle: 'Vos certificats',
+    yourCertificatesSubtitle:
+      'Consultez tous vos certificats obtenus et en attente en un seul endroit.',
+    yourCertificatesCertificateName: 'Nom du certificat',
+    yourCertificatesCertificateDate: 'Date du certificat',
+    yourCertificatesTrainingStatus: 'Statut de la formation',
+    yourCertificatesActions: 'Actions',
+    yourCertificatesNoCertificates: 'Aucun certificat trouvé',
+    yourCertificatesDownloadCertificate: 'Télécharger le certificat',
 
     // Leaderboard
     leaderboardTitle: 'Classement',
@@ -458,6 +540,12 @@ const usersDashboardLabels = {
       'Vea sus últimas 3 insignias obtenidas por sus acciones y comportamientos.',
     recentBadgesSeeAll: 'Ver todas las insignias',
 
+    // Your Badges
+    yourBadgesTitle: 'Sus insignias',
+    yourBadgesSubtitle: 'Vea todas sus insignias obtenidas y disponibles en un solo lugar.',
+    yourBadgesEarnedOn: (date) => `Obtenido el ${date}`,
+    yourBadgesNotEarnedYet: 'Aún no obtenido',
+
     // Your Learning
     yourLearningTitle: 'Su aprendizaje',
     yourLearningSubtitle: 'Vea todas sus capacitaciones completadas y asignadas en un solo lugar.',
@@ -475,6 +563,16 @@ const usersDashboardLabels = {
     yourLearningStartTraining: 'Iniciar capacitación',
     yourLearningRedoTraining: 'Rehacer capacitación',
     yourLearningNoTrainingMaterials: 'No se encontraron materiales de capacitación',
+
+    // Your Certificates
+    yourCertificatesTitle: 'Sus certificados',
+    yourCertificatesSubtitle: 'Vea todos sus certificados obtenidos y pendientes en un solo lugar.',
+    yourCertificatesCertificateName: 'Nombre del certificado',
+    yourCertificatesCertificateDate: 'Fecha del certificado',
+    yourCertificatesTrainingStatus: 'Estado de la capacitación',
+    yourCertificatesActions: 'Acciones',
+    yourCertificatesNoCertificates: 'No se encontraron certificados',
+    yourCertificatesDownloadCertificate: 'Descargar certificado',
 
     // Leaderboard
     leaderboardTitle: 'Tabla de clasificación',

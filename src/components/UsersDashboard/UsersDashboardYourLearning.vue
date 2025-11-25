@@ -120,7 +120,8 @@ export default {
           type: 'slot',
           show: true,
           width: '180',
-          hideSort: true
+          hideSort: true,
+          align: 'center'
         },
         {
           label: this.labels.yourLearningCertificate,

@@ -125,10 +125,14 @@
   }
 
   &__load-more-btn {
-    color: #2196f3 !important;
+    color: var(--Primary-Primary-1, #2196f3) !important;
+    font-feature-settings: "liga" off, "clig" off;
     font-family: "Open Sans", sans-serif;
-    font-size: 14px;
+    font-size: 12px;
+    font-style: normal;
     font-weight: 600;
+    line-height: normal;
     text-transform: none !important;
   }
 }
+

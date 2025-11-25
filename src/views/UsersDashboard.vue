@@ -38,6 +38,16 @@
           <UsersDashboardActivityTimeline />
         </VCol>
       </v-row>
+      <v-row>
+        <VCol cols="12">
+          <UsersDashboardYourCertificates />
+        </VCol>
+      </v-row>
+      <v-row>
+        <VCol cols="12">
+          <UsersDashboardYourBadges />
+        </VCol>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -51,6 +61,8 @@ import UsersDashboardPhishingTestResults from '@/components/UsersDashboard/Users
 import UsersDashboardYourLearning from '@/components/UsersDashboard/UsersDashboardYourLearning'
 import UsersDashboardLeaderboard from '@/components/UsersDashboard/UsersDashboardLeaderboard'
 import UsersDashboardActivityTimeline from '@/components/UsersDashboard/UsersDashboardActivityTimeline'
+import UsersDashboardYourCertificates from '@/components/UsersDashboard/UsersDashboardYourCertificates'
+import UsersDashboardYourBadges from '@/components/UsersDashboard/UsersDashboardYourBadges'
 
 export default {
   name: 'UsersDashboard',
@@ -61,7 +73,9 @@ export default {
     UsersDashboardPhishingTestResults,
     UsersDashboardYourLearning,
     UsersDashboardLeaderboard,
-    UsersDashboardActivityTimeline
+    UsersDashboardActivityTimeline,
+    UsersDashboardYourCertificates,
+    UsersDashboardYourBadges
   },
   computed: {
     ...mapGetters({
