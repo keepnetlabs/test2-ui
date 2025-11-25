@@ -97,19 +97,17 @@ export default {
     this.$store.dispatch('usersDashboard/initializeFromStorage')
     // Get whitelabel info
     this.$store.dispatch('login/getWhiteLabelByUrl')
+    // TEMPORARILY DISABLED: Allow access without login for development
     // Check if authenticated
-    if (!this.isAuthenticated) {
-      this.$router.push('/users-dashboard-login')
-    }
-    // TODO: Fetch user info from API
-    // For now, set mock data
-    this.$store.dispatch('usersDashboard/setUserInfo', {
-      name: 'John Doe',
-      email: 'john@example.com',
-      department: 'Management',
-      phoneNumber: '+15555555555',
-      preferredLanguage: ''
-    })
+    // if (!this.isAuthenticated) {
+    //   this.$router.push('/users-dashboard-login')
+    // }
+    // Fetch top performance data (used by OverallPerformance and Leaderboard components)
+    // This will also update userInfo with name, email, and department from API response
+    const targetUserResourceId = '4BCeEWHwAKME'
+    this.$store.dispatch('usersDashboard/fetchTopPerformance', targetUserResourceId)
+    // Fetch my learning data (used by YourLearning component)
+    this.$store.dispatch('usersDashboard/fetchMyLearning', targetUserResourceId)
   },
   methods: {
     ...mapActions({

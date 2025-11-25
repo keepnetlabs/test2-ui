@@ -54,32 +54,34 @@
                 </span>
                 <span class="users-dashboard-activity-timeline__item-description">
                   <template v-if="item.productType === 'Incident Responder'.toUpperCase()">
-                    The reported email with
+                    {{ labels.activityTimelineIncidentResponderReportedEmail }}
                     <strong>{{ item.name }}</strong>
-                    <span> subject </span>
-                    was analyzed by the incident responder and resulted in
+                    {{ labels.activityTimelineIncidentResponderSubject }}
                     <strong>{{ item.result }}.</strong>
                   </template>
                   <template v-else-if="ACTIVITY_TYPES_NEUTRAL_MAP[item.ActionType]">
                     <template v-if="isProductAwareness(item)">
-                      Enrollment email sent to
-                      <span>{{ userInfo.name }} </span>
-                      for
-                      <strong>{{ item.name }}</strong>
-                      <span> enrollment </span>
-                      in the
-                      <strong>{{ item.categoryDescription }}</strong>
-                      category.
+                      <span
+                        v-html="
+                          labels.activityTimelineEnrollmentEmailSentTo(
+                            userInfo.name,
+                            item.name,
+                            item.categoryDescription || ''
+                          )
+                        "
+                      ></span>
                     </template>
                     <template v-else>
                       <strong>{{ item.name }}</strong>
-                      <span> {{ getProductType(item) }} </span>
-                      with
+                      {{ getProductType(item) }}
+                      {{ labels.activityTimelineWith }}
                       <strong>{{
-                        isProductAwareness(item) ? item.categoryDescription : item.difficultyType
+                        isProductAwareness(item)
+                          ? item.categoryDescription || ''
+                          : item.difficultyType
                       }}</strong>
-                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }}
-                      has been sent to
+                      {{ isProductAwareness(item) ? categoryLabel : difficultyLabel }}
+                      {{ labels.activityTimelineHasBeenSentTo }}
                       <span> {{ userInfo.name }}. </span>
                     </template>
                   </template>
@@ -92,64 +94,69 @@
                   >
                     <strong>{{ item.name }}</strong>
                     {{ ` ${item.campaignType} ` }}
-                    at
+                    {{ labels.activityTimelineAt }}
                     <strong>{{
-                      isProductAwareness(item) ? item.categoryDescription : item.difficultyType
+                      isProductAwareness(item)
+                        ? item.categoryDescription || ''
+                        : item.difficultyType
                     }}</strong>
-                    {{ isProductAwareness(item) ? 'category' : 'difficulity' }}.
+                    {{ isProductAwareness(item) ? categoryLabel : difficulityLabel }}.
                   </template>
                   <template v-else>
                     <template
                       v-if="isProductAwareness(item) && ACTIVITY_TYPES_OPENED_MAP[item.ActionType]"
                     >
-                      {{ userInfo.name }}
-                      <span> opened the email for </span>
-                      <strong>{{ item.name }}</strong>
-                      <span> enrollment </span>
-                      in the
-                      <strong>{{ item.categoryDescription }}</strong>
-                      <span> category. </span>
+                      <span
+                        v-html="
+                          labels.activityTimelineAwarenessOpened(
+                            userInfo.name,
+                            item.name,
+                            item.categoryDescription || ''
+                          )
+                        "
+                      ></span>
                     </template>
                     <template v-else-if="isProductAwareness(item)">
-                      {{ userInfo.name }}
-                      <strong>
-                        {{ item.points > 0 ? 'earned' : 'lost' }}
-                      </strong>
-                      <strong>{{ item?.points?.toString().replace('-', '') }} points</strong>
-                      in the
-                      <strong>{{ item.name }}</strong>
-                      <span> enrollment </span>
-                      in the
-                      <strong>{{ item.categoryDescription }}</strong>
-                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }}, with an enrollment
-                      performance of
-                      <strong>{{ item.campaignPerformance }}%.</strong>
+                      <span
+                        v-html="
+                          labels.activityTimelineAwarenessPoints(
+                            userInfo.name,
+                            item.points,
+                            item.name,
+                            item.categoryDescription || '',
+                            item.campaignPerformance,
+                            item.pointRule
+                          )
+                        "
+                      ></span>
                     </template>
                     <template v-else-if="ACTIVITY_TYPES_OPENED_MAP[item.ActionType]">
-                      {{ userInfo.name }}
-                      <span> opened the email for </span>
-                      <strong>{{ item.name }}</strong>
-                      <span> {{ getProductType(item) }} </span>
-                      with
-                      <strong>{{ item.difficultyType }}</strong>
-                      <span> difficulty. </span>
+                      <span
+                        v-html="
+                          labels.activityTimelineCampaignOpened(
+                            userInfo.name,
+                            item.name,
+                            getProductType(item),
+                            item.difficultyType
+                          )
+                        "
+                      ></span>
                     </template>
                     <template v-else>
-                      {{ userInfo.name }}
-                      <strong>
-                        {{ item.points > 0 ? 'earned' : 'lost' }}
-                      </strong>
-                      <strong>{{ item?.points?.toString().replace('-', '') }} points</strong>
-                      in the
-                      <strong>{{ item.name }}</strong>
-                      <span> {{ getProductType(item) }} </span>
-                      at
-                      <strong>{{
-                        isProductAwareness(item) ? item.categoryDescription : item.difficultyType
-                      }}</strong>
-                      {{ isProductAwareness(item) ? 'category' : 'difficulty' }}, with a campaign
-                      performance of
-                      <strong>{{ item.campaignPerformance }}%.</strong>
+                      <span
+                        v-html="
+                          labels.activityTimelineCampaignPoints(
+                            userInfo.name,
+                            item.points,
+                            item.name,
+                            getProductType(item),
+                            isProductAwareness(item)
+                              ? item.categoryDescription || ''
+                              : item.difficultyType,
+                            item.campaignPerformance
+                          )
+                        "
+                      ></span>
                     </template>
                   </template>
                 </span>
@@ -166,20 +173,18 @@
       v-if="isLoadMoreVisible"
       class="users-dashboard-activity-timeline__load-more-button-container"
     >
-      <VHover v-slot="{ hover }" class="users-dashboard-activity-timeline__load-more-button">
-        <VBtn
-          block
-          outlined
-          text
-          style="border: none;"
-          :style="getLoadMoreButtonStyle(hover)"
-          @click="handleLoadMore"
-        >
-          <span style="color: #2196f3; font-weight: 600;">{{
-            labels.activityTimelineLoadMore
-          }}</span>
-        </VBtn>
-      </VHover>
+      <VBtn
+        block
+        outlined
+        text
+        :ripple="false"
+        class="users-dashboard-activity-timeline__load-more-button"
+        @click="handleLoadMore"
+      >
+        <span class="users-dashboard-activity-timeline__load-more-button-text">{{
+          labels.activityTimelineLoadMore
+        }}</span>
+      </VBtn>
     </div>
   </VCard>
 </template>
@@ -210,13 +215,21 @@ export default {
       return ACTIVITY_TYPES_FAIL_MAP
     },
     isLoadMoreVisible() {
-      return (
-        this.serverSideProps.totalNumberOfPages > 0 &&
-        this.serverSideProps.pageNumber < this.serverSideProps.totalNumberOfPages
-      )
+      const allItems = this.timeline.filter((item) => item.type !== 'header')
+      return this.displayedItemsCount < allItems.length
     },
     filteredTimeline() {
-      return this.timeline.filter((item) => item.type !== 'header')
+      const allItems = this.timeline.filter((item) => item.type !== 'header')
+      return allItems.slice(0, this.displayedItemsCount)
+    },
+    categoryLabel() {
+      return this.labels.activityTimelineCategory.replace('.', '')
+    },
+    difficultyLabel() {
+      return this.labels.activityTimelineDifficulty.replace('.', '')
+    },
+    difficulityLabel() {
+      return this.labels.activityTimelineDifficulity
     }
   },
   data() {
@@ -226,6 +239,7 @@ export default {
       isTimelineLoading: false,
       serverSideProps,
       timeline: [],
+      displayedItemsCount: 3,
       ACTIVITY_TYPES_NEUTRAL_MAP,
       ACTIVITY_TYPE_COLOR_MAP,
       ACTIVITY_TYPES_OPENED_MAP
@@ -245,8 +259,8 @@ export default {
         startDate: null,
         endDate: null,
         pagination: {
-          pageNumber: this.serverSideProps.pageNumber,
-          pageSize: 3,
+          pageNumber: 1,
+          pageSize: 1000,
           orderBy: 'ActionTime',
           ascending: true
         },
@@ -254,6 +268,7 @@ export default {
       }
       if (!isAppend) {
         this.isTimelineLoading = true
+        this.displayedItemsCount = 3
       }
       getUserTimeline(payload)
         .then((res) => {
@@ -261,6 +276,7 @@ export default {
           this.serverSideProps.totalNumberOfPages = res?.data?.data?.totalNumberOfPages || 0
           this.serverSideProps.pageNumber = res?.data?.data?.pageNumber || 1
           if (isAppend) {
+            // This should not happen with pageSize 1000, but keep for safety
             const newTimeline = this.addDateHeaders(res?.data?.data?.results || [])
             this.timeline = [...this.timeline, ...newTimeline]
           } else {
@@ -283,9 +299,8 @@ export default {
       return timeline
     },
     getCurrentUserResourceId() {
-      // TODO: Get actual resourceId from API or store
-      // For now, use mock resourceId or get from localStorage
-      return '8jDsE5UzS1rd'
+      // Use static resourceId like other components
+      return '4BCeEWHwAKME'
     },
     isProductAwareness(item) {
       return (
@@ -380,14 +395,7 @@ export default {
       return ''
     },
     handleLoadMore() {
-      this.serverSideProps.pageNumber += 1
-      this.callForTimeline(true)
-    },
-    getLoadMoreButtonStyle(hover) {
-      return {
-        'background-color': hover ? '#F2F2F2' : '#FFFFFF',
-        marginBottom: '16px'
-      }
+      this.displayedItemsCount += 3
     }
   }
 }

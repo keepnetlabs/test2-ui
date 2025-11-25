@@ -126,6 +126,23 @@
 
   &__load-more-button {
     width: 100%;
+    border: none !important;
+    background-color: #ffffff !important;
+    text-transform: none !important;
+
+    &::before {
+      background-color: #ffffff !important;
+    }
+  }
+
+  &__load-more-button-text {
+    color: #2196f3;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-transform: none;
   }
 }
 

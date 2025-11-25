@@ -1,0 +1,51 @@
+import testRequest from '@/utils/testRequest'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+
+/**
+ * Get phishing result data for security growth dashboard
+ * @param {string} targetUserResourceId - The resource ID of the target user
+ * @returns {Promise} API response with phishing result data
+ */
+export const getPhishingResult = (targetUserResourceId) => {
+  return testRequest.get(`/securitygrowthdashboard/phishing-result/${targetUserResourceId}`, {
+    headers: {
+      accept: 'application/json'
+    }
+  })
+}
+
+/**
+ * Get top performance data for security growth dashboard
+ * @param {string} targetUserResourceId - The resource ID of the target user
+ * @returns {Promise} API response with top performance data
+ */
+export const getTopPerformance = (targetUserResourceId) => {
+  return testRequest.get(`/securitygrowthdashboard/top-performance/${targetUserResourceId}`, {
+    headers: {
+      accept: 'application/json'
+    }
+  })
+}
+
+/**
+ * Get my learning data for security growth dashboard
+ * @param {string} targetUserResourceId - The resource ID of the target user
+ * @returns {Promise} API response with learning data
+ */
+export const getMyLearning = (targetUserResourceId) => {
+  const defaultPayload = getDefaultAxiosPayload({ orderBy: 'StartDate' })
+  const payload = {
+    pagination: {
+      pageNumber: defaultPayload.pageNumber || 1,
+      pageSize: 1000,
+      orderBy: 'StartDate',
+      ascending: defaultPayload.ascending !== undefined ? defaultPayload.ascending : false
+    }
+  }
+  return testRequest.post(`/securitygrowthdashboard/my-learning/${targetUserResourceId}`, payload, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json-patch+json'
+    }
+  })
+}

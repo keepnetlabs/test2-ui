@@ -47,11 +47,11 @@
             class="users-dashboard-your-learning__points-column"
           >
             <VIcon
-              :color="scope.row.points.includes('(max)') ? '#FFC107' : '#217124'"
+              :color="getPointsIconColor(scope.row.points)"
               size="18"
               class="users-dashboard-your-learning__points-icon"
             >
-              {{ scope.row.points.includes('(max)') ? 'mdi-star' : 'mdi-check-circle' }}
+              {{ getPointsIcon(scope.row.points) }}
             </VIcon>
             <span class="users-dashboard-your-learning__points-text">
               {{ scope.row.points }}
@@ -94,8 +94,55 @@ export default {
   },
   computed: {
     ...mapGetters({
-      labels: 'usersDashboard/getLabels'
+      labels: 'usersDashboard/getLabels',
+      myLearning: 'usersDashboard/getMyLearning',
+      myLearningLoading: 'usersDashboard/getMyLearningLoading'
     }),
+    isLoading() {
+      return this.myLearningLoading
+    },
+    tableData() {
+      // Transform API data to table format
+      if (!this.myLearning || this.myLearning.length === 0) {
+        return []
+      }
+      return this.myLearning.map((item) => {
+        // Map status from API format to component format
+        let status = 'Not Started'
+        if (item.status === 'NotStarted') {
+          status = 'Not Started'
+        } else if (item.status === 'NotCompleted') {
+          status = 'Not Completed'
+        } else if (item.status === 'Completed') {
+          status = 'Completed'
+        }
+
+        // Format points - keep negative values as is
+        // If points is undefined or null, default to 0, otherwise use the actual value (including negatives)
+        let pointsValue = 0
+        if (typeof item.points === 'number') {
+          pointsValue = item.points
+        } else if (item.points !== undefined && item.points !== null) {
+          // Handle string or other types
+          const parsed = Number(item.points)
+          pointsValue = isNaN(parsed) ? 0 : parsed
+        }
+        const pointsString = String(pointsValue)
+
+        return {
+          id: item.enrollmentId || Math.random(),
+          name: item.trainingName || '',
+          startDate: item.enrollmentStartDate || '',
+          status: status,
+          certificate: item.certificate
+            ? this.labels.yourLearningAvailable
+            : this.labels.yourLearningNotAvailable,
+          points: pointsString,
+          pointsEarned: item.status === 'Completed' && pointsValue > 0,
+          trainingUrl: item.trainingUrl || ''
+        }
+      })
+    },
     tableColumns() {
       return [
         {
@@ -150,8 +197,6 @@ export default {
   data() {
     return {
       tableId: 'users-dashboard-your-learning-table',
-      isLoading: false,
-      tableData: [],
       rowActions: [
         {
           name: 'Action',
@@ -162,138 +207,7 @@ export default {
       ]
     }
   },
-  created() {
-    // Simulate API call
-    this.fetchTrainingMaterials()
-  },
   methods: {
-    fetchTrainingMaterials() {
-      this.isLoading = true
-      // Simulate API delay
-      setTimeout(() => {
-        // TODO: Replace with actual API call
-        this.tableData = [
-          {
-            id: 1,
-            name: 'MFA-Security',
-            startDate: '2025-11-14T12:00:00',
-            status: 'Not Started',
-            certificate: 'Available',
-            points: '200 (max)',
-            pointsEarned: false
-          },
-          {
-            id: 2,
-            name: 'AWARE S06 | E07',
-            startDate: '2025-11-07T12:00:00',
-            status: 'Not Completed',
-            certificate: 'Available',
-            points: '100 (max)',
-            pointsEarned: false
-          },
-          {
-            id: 3,
-            name: 'QR Cyber Security',
-            startDate: '2025-10-28T12:00:00',
-            status: 'Completed',
-            certificate: 'Not Available',
-            points: '150',
-            pointsEarned: true
-          },
-          {
-            id: 4,
-            name: 'Advanced Persistent Threats',
-            startDate: '2025-10-21T12:00:00',
-            status: 'Completed',
-            certificate: 'Not Available',
-            points: '120',
-            pointsEarned: true
-          },
-          {
-            id: 5,
-            name: 'Entain Digital Security Training',
-            startDate: '2025-10-14T12:00:00',
-            status: 'Completed',
-            certificate: 'Available',
-            points: '200',
-            pointsEarned: true
-          },
-          {
-            id: 6,
-            name: 'Phishing Awareness Training',
-            startDate: '2025-10-07T12:00:00',
-            status: 'Completed',
-            certificate: 'Available',
-            points: '180',
-            pointsEarned: true
-          },
-          {
-            id: 7,
-            name: 'Social Engineering Basics',
-            startDate: '2025-09-30T12:00:00',
-            status: 'Not Started',
-            certificate: 'Not Available',
-            points: '150 (max)',
-            pointsEarned: false
-          },
-          {
-            id: 8,
-            name: 'Password Security Best Practices',
-            startDate: '2025-09-23T12:00:00',
-            status: 'Not Completed',
-            certificate: 'Available',
-            points: '100 (max)',
-            pointsEarned: false
-          },
-          {
-            id: 9,
-            name: 'Data Protection Fundamentals',
-            startDate: '2025-09-16T12:00:00',
-            status: 'Completed',
-            certificate: 'Available',
-            points: '220',
-            pointsEarned: true
-          },
-          {
-            id: 10,
-            name: 'Incident Response Training',
-            startDate: '2025-09-09T12:00:00',
-            status: 'Completed',
-            certificate: 'Not Available',
-            points: '190',
-            pointsEarned: true
-          },
-          {
-            id: 11,
-            name: 'Network Security Essentials',
-            startDate: '2025-09-02T12:00:00',
-            status: 'Not Started',
-            certificate: 'Available',
-            points: '170 (max)',
-            pointsEarned: false
-          },
-          {
-            id: 12,
-            name: 'Cloud Security Basics',
-            startDate: '2025-08-26T12:00:00',
-            status: 'Not Completed',
-            certificate: 'Not Available',
-            points: '140 (max)',
-            pointsEarned: false
-          },
-          {
-            id: 13,
-            name: 'Security Compliance Training',
-            startDate: '2025-08-19T12:00:00',
-            status: 'Completed',
-            certificate: 'Available',
-            points: '210',
-            pointsEarned: true
-          }
-        ]
-        this.isLoading = false
-      }, 500) // Simulate 500ms API delay
-    },
     getActionIcon(status) {
       if (status === 'Completed') {
         return 'mdi-replay'
@@ -322,8 +236,45 @@ export default {
       }
       return statusMap[status] || '#757575'
     },
+    getPointsIcon(points) {
+      const pointsValue = parseInt(points)
+      if (isNaN(pointsValue)) {
+        return 'mdi-check-circle'
+      }
+      if (pointsValue < 0) {
+        return 'mdi-close-circle'
+      }
+      if (pointsValue === 0) {
+        return 'mdi-minus-circle'
+      }
+      if (points && points.includes('(max)')) {
+        return 'mdi-star'
+      }
+      return 'mdi-check-circle'
+    },
+    getPointsIconColor(points) {
+      const pointsValue = parseInt(points)
+      if (isNaN(pointsValue)) {
+        return '#217124'
+      }
+      if (pointsValue < 0) {
+        return '#B83A3A' // Red for negative points
+      }
+      if (pointsValue === 0) {
+        return '#757575' // Gray for zero points
+      }
+      if (points && points.includes('(max)')) {
+        return '#FFC107' // Yellow for max points
+      }
+      return '#217124' // Green for positive points
+    },
     handleAction(row) {
-      // TODO: Implement action handler
+      // If trainingUrl exists, open it in a new window
+      if (row.trainingUrl) {
+        window.open(row.trainingUrl, '_blank')
+        return
+      }
+
       if (row.status === 'Completed') {
         console.log('Redo training:', row)
       } else {

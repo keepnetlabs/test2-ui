@@ -1,10 +1,7 @@
 <template>
-  <VCard class="users-dashboard-your-badges">
+  <VCard id="users-dashboard-your-badges" class="users-dashboard-your-badges">
     <div class="users-dashboard-your-badges__header">
-      <h2
-        id="text--users-dashboard-your-badges-title"
-        class="users-dashboard-your-badges__title"
-      >
+      <h2 id="text--users-dashboard-your-badges-title" class="users-dashboard-your-badges__title">
         {{ labels.yourBadgesTitle }}
       </h2>
       <p
@@ -20,19 +17,26 @@
         :key="badge.id || index"
         :class="[
           'users-dashboard-your-badges__badge-card',
-          badge.isEarned ? 'users-dashboard-your-badges__badge-card--earned' : 'users-dashboard-your-badges__badge-card--not-earned'
+          badge.isEarned
+            ? 'users-dashboard-your-badges__badge-card--earned'
+            : 'users-dashboard-your-badges__badge-card--not-earned'
         ]"
       >
         <div
           :class="[
             'users-dashboard-your-badges__badge-icon',
-            badge.isEarned ? 'users-dashboard-your-badges__badge-icon--earned' : 'users-dashboard-your-badges__badge-icon--not-earned'
+            badge.isEarned
+              ? 'users-dashboard-your-badges__badge-icon--earned'
+              : 'users-dashboard-your-badges__badge-icon--not-earned'
           ]"
         >
-          <VIcon
-            :size="48"
-            :color="badge.isEarned ? '#2196F3' : '#757575'"
-          >
+          <img
+            v-if="getBadgeImage(badge)"
+            :src="getBadgeImage(badge)"
+            :alt="badge.name"
+            class="users-dashboard-your-badges__badge-image"
+          />
+          <VIcon v-else :size="48" :color="badge.isEarned ? '#2196F3' : '#757575'">
             {{ getBadgeIcon(badge.type) }}
           </VIcon>
         </div>
@@ -55,44 +59,34 @@ export default {
   computed: {
     ...mapGetters({
       labels: 'usersDashboard/getLabels'
-    })
-  },
-  data() {
-    return {
-      badges: []
+    }),
+    badges() {
+      // Badge data structure - names are reactive to language changes
+      return [
+        {
+          id: 1,
+          name: this.labels.badgeEliteSecurityChampion,
+          type: 'security-champion',
+          isEarned: true,
+          earnedDate: '2025-11-02'
+        },
+        {
+          id: 2,
+          name: this.labels.badgeEngagementStar,
+          type: 'engagement-star',
+          isEarned: true,
+          earnedDate: '2025-11-02'
+        },
+        {
+          id: 3,
+          name: this.labels.badgeSecurityAmbassador,
+          type: 'security-ambassador',
+          isEarned: false
+        }
+      ]
     }
   },
-  created() {
-    this.fetchBadges()
-  },
   methods: {
-    fetchBadges() {
-      // TODO: Replace with actual API call
-      setTimeout(() => {
-        this.badges = [
-          {
-            id: 1,
-            name: 'Elite Security Champion',
-            type: 'security-champion',
-            isEarned: true,
-            earnedDate: '2025-11-02'
-          },
-          {
-            id: 2,
-            name: 'Engagement Star',
-            type: 'engagement-star',
-            isEarned: true,
-            earnedDate: '2025-11-02'
-          },
-          {
-            id: 3,
-            name: 'Security Ambassador',
-            type: 'security-ambassador',
-            isEarned: false
-          }
-        ]
-      }, 300)
-    },
     getBadgeIcon(type) {
       const iconMap = {
         'security-champion': 'mdi-shield-check',
@@ -100,6 +94,16 @@ export default {
         'security-ambassador': 'mdi-account-group'
       }
       return iconMap[type] || 'mdi-trophy'
+    },
+    getBadgeImage(badge) {
+      const imageMap = {
+        'security-champion': require('@/assets/img/elite-security-champion.png'),
+        'engagement-star': require('@/assets/img/engagement-star.png'),
+        'security-ambassador': badge.isEarned
+          ? null // Security Ambassador earned image will be added later if needed
+          : require('@/assets/img/security-ambassador-not-earned.png')
+      }
+      return imageMap[badge.type] || null
     },
     getBadgeStatus(badge) {
       if (badge.isEarned && badge.earnedDate) {
@@ -116,4 +120,3 @@ export default {
   }
 }
 </script>
-

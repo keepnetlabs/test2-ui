@@ -1,5 +1,5 @@
 <template>
-  <VCard class="users-dashboard-leaderboard">
+  <VCard id="users-dashboard-leaderboard" class="users-dashboard-leaderboard">
     <div class="users-dashboard-leaderboard__header">
       <h2 id="text--users-dashboard-leaderboard-title" class="users-dashboard-leaderboard__title">
         {{ labels.leaderboardTitle }}
@@ -81,8 +81,47 @@ export default {
   computed: {
     ...mapGetters({
       labels: 'usersDashboard/getLabels',
-      userInfo: 'usersDashboard/getUserInfo'
+      userInfo: 'usersDashboard/getUserInfo',
+      topPerformance: 'usersDashboard/getTopPerformance',
+      topPerformanceLoading: 'usersDashboard/getTopPerformanceLoading'
     }),
+    isLoading() {
+      return this.topPerformanceLoading
+    },
+    isTableLoading() {
+      return this.topPerformanceLoading
+    },
+    topPerformers() {
+      // Get top 3 performers
+      if (!this.topPerformance || this.topPerformance.length === 0) {
+        return []
+      }
+      return this.topPerformance.slice(0, 3).map((user) => ({
+        rank: user.rank,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        department: user.department || '',
+        performance: user.performance,
+        totalPoints: user.points
+      }))
+    },
+    tableData() {
+      if (!this.topPerformance || this.topPerformance.length === 0) {
+        return []
+      }
+      const currentUserId = '4BCeEWHwAKME'
+      return this.topPerformance.map((user) => ({
+        rank: user.rank,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        department: user.department || '',
+        performance: `${user.performance}%`,
+        totalPoints: user.points,
+        isUser: user.targetUserResourceId === currentUserId
+      }))
+    },
     tableColumns() {
       return [
         {
@@ -152,103 +191,10 @@ export default {
   },
   data() {
     return {
-      tableId: 'users-dashboard-leaderboard-table',
-      isLoading: false,
-      isTableLoading: false,
-      topPerformers: [],
-      tableData: []
+      tableId: 'users-dashboard-leaderboard-table'
     }
   },
-  created() {
-    this.fetchLeaderboardData()
-  },
   methods: {
-    fetchLeaderboardData() {
-      this.isLoading = true
-      this.isTableLoading = true
-      // Simulate API call
-      setTimeout(() => {
-        // TODO: Replace with actual API call
-        this.topPerformers = [
-          {
-            rank: 1,
-            firstName: 'Justin',
-            lastName: 'Saris',
-            email: 'justin@example.com',
-            department: 'Sales',
-            performance: 95,
-            totalPoints: 18300
-          },
-          {
-            rank: 2,
-            firstName: 'Darrel',
-            lastName: 'Warren',
-            email: 'darrel@example.com',
-            department: 'Management',
-            performance: 90,
-            totalPoints: 16400
-          },
-          {
-            rank: 3,
-            firstName: 'Mitchell',
-            lastName: 'Edwards',
-            email: 'mitchell@example.com',
-            department: 'Management',
-            performance: 88,
-            totalPoints: 14200
-          }
-        ]
-
-        this.tableData = [
-          {
-            rank: 1,
-            firstName: 'Justin',
-            lastName: 'Saris',
-            email: 'justin@example.com',
-            department: 'Sales',
-            performance: '95%',
-            totalPoints: 18300,
-            isCurrentUser: false,
-            isUser: false
-          },
-          {
-            rank: 2,
-            firstName: 'Darrel',
-            lastName: 'Warren',
-            email: 'darrel@example.com',
-            department: 'Accounts',
-            performance: '85%',
-            totalPoints: 16400,
-            isCurrentUser: false,
-            isUser: false
-          },
-          {
-            rank: 3,
-            firstName: 'Mitchell',
-            lastName: 'Edwards',
-            email: 'mitchell@example.com',
-            department: 'IT',
-            performance: '80%',
-            totalPoints: 14200,
-            isCurrentUser: false,
-            isUser: false
-          },
-          {
-            rank: 15,
-            firstName: 'Jhon',
-            lastName: 'Doe',
-            email: 'jhon@example.com',
-            department: 'Management',
-            performance: '85%',
-            totalPoints: 12500,
-            isCurrentUser: true,
-            isUser: true
-          }
-        ]
-        this.isLoading = false
-        this.isTableLoading = false
-      }, 500)
-    },
     getRankBadgeClass(rank) {
       if (rank === 1) return 'gold'
       if (rank === 2) return 'silver'

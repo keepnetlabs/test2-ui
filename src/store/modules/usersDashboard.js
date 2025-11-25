@@ -1,5 +1,6 @@
 import { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
 import usersDashboardLabels from '@/model/constants/usersDashboardLabels'
+import { getTopPerformance, getMyLearning, getPhishingResult } from '@/api/usersDashboard'
 
 const USERS_DASHBOARD_AUTH_KEY = 'usersDashboardAuth'
 
@@ -20,6 +21,21 @@ const usersDashboard = {
       department: '',
       phoneNumber: '',
       preferredLanguage: ''
+    },
+    topPerformance: {
+      data: [],
+      isLoading: false,
+      error: null
+    },
+    myLearning: {
+      data: [],
+      isLoading: false,
+      error: null
+    },
+    phishingResult: {
+      data: null,
+      isLoading: false,
+      error: null
     }
   },
   getters: {
@@ -30,6 +46,15 @@ const usersDashboard = {
     getPermissions: (state) => state.permissions,
     getLanguage: (state) => state.language,
     getUserInfo: (state) => state.userInfo,
+    getTopPerformance: (state) => state.topPerformance.data,
+    getTopPerformanceLoading: (state) => state.topPerformance.isLoading,
+    getTopPerformanceError: (state) => state.topPerformance.error,
+    getMyLearning: (state) => state.myLearning.data,
+    getMyLearningLoading: (state) => state.myLearning.isLoading,
+    getMyLearningError: (state) => state.myLearning.error,
+    getPhishingResult: (state) => state.phishingResult.data,
+    getPhishingResultLoading: (state) => state.phishingResult.isLoading,
+    getPhishingResultError: (state) => state.phishingResult.error,
     getLabels: (state) => {
       return new Proxy(
         {},
@@ -87,6 +112,30 @@ const usersDashboard = {
     SET_USER_INFO(state, payload) {
       state.userInfo = { ...state.userInfo, ...payload }
     },
+    SET_TOP_PERFORMANCE(state, payload) {
+      state.topPerformance.data = payload || []
+      state.topPerformance.isLoading = false
+      state.topPerformance.error = null
+    },
+    SET_TOP_PERFORMANCE_LOADING(state, payload) {
+      state.topPerformance.isLoading = payload
+    },
+    SET_TOP_PERFORMANCE_ERROR(state, payload) {
+      state.topPerformance.error = payload
+      state.topPerformance.isLoading = false
+    },
+    SET_MY_LEARNING(state, payload) {
+      state.myLearning.data = payload || []
+      state.myLearning.isLoading = false
+      state.myLearning.error = null
+    },
+    SET_MY_LEARNING_LOADING(state, payload) {
+      state.myLearning.isLoading = payload
+    },
+    SET_MY_LEARNING_ERROR(state, payload) {
+      state.myLearning.error = payload
+      state.myLearning.isLoading = false
+    },
     RESET_STATE(state) {
       state.token = null
       state.expiredIn = null
@@ -102,6 +151,21 @@ const usersDashboard = {
         department: '',
         phoneNumber: '',
         preferredLanguage: ''
+      }
+      state.topPerformance = {
+        data: [],
+        isLoading: false,
+        error: null
+      }
+      state.myLearning = {
+        data: [],
+        isLoading: false,
+        error: null
+      }
+      state.phishingResult = {
+        data: null,
+        isLoading: false,
+        error: null
       }
 
       // Remove from localStorage
@@ -128,6 +192,86 @@ const usersDashboard = {
     },
     setUserInfo({ commit }, payload) {
       commit('SET_USER_INFO', payload)
+    },
+    async fetchTopPerformance({ commit }, targetUserResourceId) {
+      commit('SET_TOP_PERFORMANCE_LOADING', true)
+      commit('SET_TOP_PERFORMANCE_ERROR', null)
+
+      try {
+        const response = await getTopPerformance(targetUserResourceId)
+        if (response && response.data && response.data.data) {
+          const topPerformanceData = response.data.data
+          commit('SET_TOP_PERFORMANCE', topPerformanceData)
+
+          // Find current user in the response and update userInfo
+          const currentUser = topPerformanceData.find(
+            (user) => user.targetUserResourceId === targetUserResourceId
+          )
+
+          if (currentUser) {
+            commit('SET_USER_INFO', {
+              name: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
+              email: currentUser.email || '',
+              department: currentUser.department || ''
+            })
+          }
+        } else {
+          // Set empty array on invalid response instead of error
+          commit('SET_TOP_PERFORMANCE', [])
+        }
+        return response
+      } catch (error) {
+        // On error, set empty array instead of throwing
+        // This prevents component from breaking when API fails
+        commit('SET_TOP_PERFORMANCE', [])
+        commit('SET_TOP_PERFORMANCE_ERROR', error.message || 'Failed to fetch top performance data')
+        console.error('Error fetching top performance:', error)
+        return null
+      }
+    },
+    async fetchMyLearning({ commit }, targetUserResourceId) {
+      commit('SET_MY_LEARNING_LOADING', true)
+      commit('SET_MY_LEARNING_ERROR', null)
+
+      try {
+        const response = await getMyLearning(targetUserResourceId)
+        if (response && response.data && response.data.data && response.data.data.results) {
+          commit('SET_MY_LEARNING', response.data.data.results)
+        } else {
+          // Set empty array on invalid response instead of error
+          commit('SET_MY_LEARNING', [])
+        }
+        return response
+      } catch (error) {
+        // On error, set empty array instead of throwing
+        // This prevents component from breaking when API fails
+        commit('SET_MY_LEARNING', [])
+        commit('SET_MY_LEARNING_ERROR', error.message || 'Failed to fetch my learning data')
+        console.error('Error fetching my learning:', error)
+        return null
+      }
+    },
+    async fetchPhishingResult({ commit }, targetUserResourceId) {
+      commit('SET_PHISHING_RESULT_LOADING', true)
+      commit('SET_PHISHING_RESULT_ERROR', null)
+
+      try {
+        const response = await getPhishingResult(targetUserResourceId)
+        if (response && response.data && response.data.data) {
+          commit('SET_PHISHING_RESULT', response.data.data)
+        } else {
+          // Set null on invalid response instead of error
+          commit('SET_PHISHING_RESULT', null)
+        }
+        return response
+      } catch (error) {
+        // On error, set null instead of throwing
+        // This prevents component from breaking when API fails
+        commit('SET_PHISHING_RESULT', null)
+        commit('SET_PHISHING_RESULT_ERROR', error.message || 'Failed to fetch phishing result data')
+        console.error('Error fetching phishing result:', error)
+        return null
+      }
     },
     login({ commit, dispatch }, payload) {
       // Set company email and login method

@@ -29,6 +29,9 @@ const usersDashboardLabels = {
     yourBadgesSubtitle: 'See all your earned and available badges in one place.',
     yourBadgesEarnedOn: (date) => `Earned on ${date}`,
     yourBadgesNotEarnedYet: 'Not earned yet',
+    badgeEliteSecurityChampion: 'Elite Security Champion',
+    badgeEngagementStar: 'Engagement Star',
+    badgeSecurityAmbassador: 'Security Ambassador',
 
     // Your Learning
     yourLearningTitle: 'Your Learning',
@@ -77,12 +80,104 @@ const usersDashboardLabels = {
       'A timeline of your recent activities and their outcomes from the last 30 days.',
     activityTimelineLoadMore: 'Load More Activities',
     activityTimelineEmptyMessage: 'No activities found.',
+    // Incident Responder
+    activityTimelineIncidentResponderReportedEmail: 'The reported email with',
+    activityTimelineIncidentResponderSubject:
+      'subject was analyzed by the incident responder and resulted in',
+    // Neutral + Awareness
+    activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
+      if (category) {
+        return `Enrollment email sent to ${userName} for <strong>${enrollmentName}</strong> enrollment in the <strong>${category}</strong> category.`
+      }
+      return `Enrollment email sent to ${userName} for <strong>${enrollmentName}</strong> enrollment.`
+    },
+    activityTimelineFor: 'for',
+    activityTimelineEnrollment: 'enrollment in the',
+    activityTimelineCategory: 'category.',
+    // Neutral + Other
+    activityTimelineWith: 'with',
+    activityTimelineHasBeenSentTo: 'has been sent to',
+    // Smishing/Vishing/Quishing + Fail
+    activityTimelineAt: 'at',
+    activityTimelineDifficulity: 'difficulity',
+    // Opened
+    activityTimelineOpenedTheEmailFor: 'opened the email for',
+    activityTimelineDifficulty: 'difficulty.',
+    // Points
+    activityTimelineEarned: 'earned',
+    activityTimelineLost: 'lost',
+    activityTimelinePoints: 'points',
+    activityTimelineInThe: 'in the',
+    activityTimelineWithAnEnrollmentPerformance: 'with an enrollment performance of',
+    activityTimelineWithACampaignPerformance: 'with a campaign performance of',
+    // Point Rule
+    activityTimelineAnd: 'and',
+    activityTimelineReceived: 'received',
+    activityTimelineExtra: 'extra',
+    activityTimelineForJoiningTheTraining: 'for joining the training',
+    activityTimelineMoreThan3Days: 'more than 3 days after invitation.',
+    activityTimeline1To3Days: '1–3 days after invitation.',
+    activityTimelineWithin24Hours: 'within 24 hours.',
+    // Function labels for proper word order in each language
+    activityTimelineAwarenessPoints: (
+      userName,
+      points,
+      enrollmentName,
+      category,
+      performance,
+      pointRule
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'earned' : 'lost'
+      let text = `${userName} <strong>${action}</strong> <strong>${pointsAbs} points</strong> in the <strong>${enrollmentName}</strong> enrollment in the <strong>${category}</strong> category, with an enrollment performance of <strong>${performance}%</strong>`
+      if (pointRule) {
+        const rulePoints = Math.abs(pointRule.rulePoint)
+        const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'lost' : 'received'
+        const extra = pointRule.ruleName === 'Joined After 3 Days' ? '' : 'extra'
+        const prefix =
+          pointRule.ruleName === 'Joined After 3 Days'
+            ? ''
+            : pointRule.ruleName === 'Joined 1–3 Days'
+            ? ''
+            : '+'
+        let ruleText = ''
+        if (pointRule.ruleName === 'Joined After 3 Days') {
+          ruleText = ` and <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} points</strong> for joining the training more than 3 days after the invitation.`
+        } else if (pointRule.ruleName === 'Joined 1–3 Days') {
+          ruleText = ` and <strong>${ruleAction}</strong> <strong>${prefix}${rulePoints} ${extra} points</strong> for joining the training 1–3 days after the invitation.`
+        } else {
+          ruleText = ` and <strong>${ruleAction}</strong> <strong>${prefix}${rulePoints} ${extra} points</strong> for joining the training within 24 hours of the invitation.`
+        }
+        text += ruleText
+      } else {
+        text += '.'
+      }
+      return text
+    },
+    activityTimelineCampaignPoints: (
+      userName,
+      points,
+      campaignName,
+      campaignType,
+      difficulty,
+      performance
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'earned' : 'lost'
+      return `${userName} <strong>${action}</strong> <strong>${pointsAbs} points</strong> in the <strong>${campaignName}</strong> ${campaignType} at <strong>${difficulty}</strong> difficulty, with a campaign performance of <strong>${performance}%</strong>.`
+    },
+    activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
+      return `${userName} opened the email for <strong>${enrollmentName}</strong> enrollment in the <strong>${category}</strong> category.`
+    },
+    activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
+      return `${userName} opened the email for <strong>${campaignName}</strong> ${campaignType} with <strong>${difficulty}</strong> difficulty.`
+    },
+    // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Earned ${points} points`,
     activityTimelineLostPoints: (points) => `Lost ${points} points`,
     activityTimelineInCampaign: 'in the',
     activityTimelinePhishingCampaign: 'phishing campaign',
     activityTimelineAtDifficulty: 'at',
-    activityTimelineDifficulty: 'difficulty',
     activityTimelineWithPerformance: 'with a campaign performance of',
     activityTimelineEasy: 'easy',
     activityTimelineMedium: 'medium',
@@ -97,8 +192,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Detection Accuracy:',
     phishingTestResultsEarnedPoints: (points) => `You earned +${points} points for your reports.`,
     phishingTestResultsLostPoints: (points) => `You lost -${points} points for missed reports.`,
-    phishingTestResultsAccuracyUp: (percentage) =>
-      `Detection accuracy up by ${percentage}% from last month.`,
+    phishingTestResultsAccuracyUp: (percentage) => {
+      const absPercentage = Math.abs(percentage)
+      if (percentage < 0) {
+        return `Detection accuracy down by ${absPercentage}% from last month.`
+      } else if (percentage > 0) {
+        return `Detection accuracy up by ${absPercentage}% from last month.`
+      }
+      return 'Detection accuracy unchanged from last month.'
+    },
     phishingTestResultsSuccessRate: 'success rate'
   },
   'en-US': {
@@ -124,6 +226,9 @@ const usersDashboardLabels = {
     yourBadgesSubtitle: 'See all your earned and available badges in one place.',
     yourBadgesEarnedOn: (date) => `Earned on ${date}`,
     yourBadgesNotEarnedYet: 'Not earned yet',
+    badgeEliteSecurityChampion: 'Elite Security Champion',
+    badgeEngagementStar: 'Engagement Star',
+    badgeSecurityAmbassador: 'Security Ambassador',
 
     // Your Learning
     yourLearningTitle: 'Your Learning',
@@ -172,12 +277,50 @@ const usersDashboardLabels = {
       'A timeline of your recent activities and their outcomes from the last 30 days.',
     activityTimelineLoadMore: 'Load More Activities',
     activityTimelineEmptyMessage: 'No activities found.',
+    // Incident Responder
+    activityTimelineIncidentResponderReportedEmail: 'The reported email with',
+    activityTimelineIncidentResponderSubject:
+      'subject was analyzed by the incident responder and resulted in',
+    // Neutral + Awareness
+    activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
+      if (category) {
+        return `Enrollment email sent to ${userName} for <strong>${enrollmentName}</strong> enrollment in the <strong>${category}</strong> category.`
+      }
+      return `Enrollment email sent to ${userName} for <strong>${enrollmentName}</strong> enrollment.`
+    },
+    activityTimelineFor: 'for',
+    activityTimelineEnrollment: 'enrollment in the',
+    activityTimelineCategory: 'category.',
+    // Neutral + Other
+    activityTimelineWith: 'with',
+    activityTimelineHasBeenSentTo: 'has been sent to',
+    // Smishing/Vishing/Quishing + Fail
+    activityTimelineAt: 'at',
+    activityTimelineDifficulity: 'difficulity',
+    // Opened
+    activityTimelineOpenedTheEmailFor: 'opened the email for',
+    activityTimelineDifficulty: 'difficulty.',
+    // Points
+    activityTimelineEarned: 'earned',
+    activityTimelineLost: 'lost',
+    activityTimelinePoints: 'points',
+    activityTimelineInThe: 'in the',
+    activityTimelineWithAnEnrollmentPerformance: 'with an enrollment performance of',
+    activityTimelineWithACampaignPerformance: 'with a campaign performance of',
+    // Point Rule
+    activityTimelineAnd: 'and',
+    activityTimelineReceived: 'received',
+    activityTimelineExtra: 'extra',
+    activityTimelineForJoiningTheTraining: 'for joining the training',
+    activityTimelineMoreThan3Days: 'more than 3 days after invitation.',
+    activityTimeline1To3Days: '1–3 days after invitation.',
+    activityTimelineWithin24Hours: 'within 24 hours.',
+    // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Earned ${points} points`,
     activityTimelineLostPoints: (points) => `Lost ${points} points`,
     activityTimelineInCampaign: 'in the',
     activityTimelinePhishingCampaign: 'phishing campaign',
     activityTimelineAtDifficulty: 'at',
-    activityTimelineDifficulty: 'difficulty',
     activityTimelineWithPerformance: 'with a campaign performance of',
     activityTimelineEasy: 'easy',
     activityTimelineMedium: 'medium',
@@ -198,13 +341,20 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Detection Accuracy:',
     phishingTestResultsEarnedPoints: (points) => `You earned +${points} points for your reports.`,
     phishingTestResultsLostPoints: (points) => `You lost -${points} points for missed reports.`,
-    phishingTestResultsAccuracyUp: (percentage) =>
-      `Detection accuracy up by ${percentage}% from last month.`,
+    phishingTestResultsAccuracyUp: (percentage) => {
+      const absPercentage = Math.abs(percentage)
+      if (percentage < 0) {
+        return `Detection accuracy down by ${absPercentage}% from last month.`
+      } else if (percentage > 0) {
+        return `Detection accuracy up by ${absPercentage}% from last month.`
+      }
+      return 'Detection accuracy unchanged from last month.'
+    },
     phishingTestResultsSuccessRate: 'success rate'
   },
   'tr-TR': {
     // Header
-    welcomeTitle: (name) => `${name}, Güvenlik Büyüme Paneline Hoş Geldiniz!`,
+    welcomeTitle: (name) => `${name}, Güvenlik Gelişim Paneline Hoş Geldiniz!`,
     welcomeDescription:
       'İlerlemenizi takip edin ve eylemlerinizin güvenlik kültürümüzü nasıl güçlendirdiğini görün.',
 
@@ -227,6 +377,9 @@ const usersDashboardLabels = {
     yourBadgesSubtitle: 'Kazandığınız ve mevcut tüm rozetleri tek bir yerde görün.',
     yourBadgesEarnedOn: (date) => `${date} tarihinde kazanıldı`,
     yourBadgesNotEarnedYet: 'Henüz kazanılmadı',
+    badgeEliteSecurityChampion: 'Elite Güvenlik Şampiyonu',
+    badgeEngagementStar: 'Katılım Yıldızı',
+    badgeSecurityAmbassador: 'Güvenlik Elçisi',
 
     // Your Learning
     yourLearningTitle: 'Öğrenmeleriniz',
@@ -275,12 +428,98 @@ const usersDashboardLabels = {
       'Son 30 gündeki son aktivitelerinizin ve sonuçlarının zaman çizelgesi.',
     activityTimelineLoadMore: 'Daha Fazla Aktivite Yükle',
     activityTimelineEmptyMessage: 'Aktivite bulunamadı.',
+    // Incident Responder
+    activityTimelineIncidentResponderReportedEmail: 'Bildirilen e-posta',
+    activityTimelineIncidentResponderSubject:
+      'konusu olay müdahale ekibi tarafından analiz edildi ve sonuçlandı',
+    // Neutral + Awareness
+    activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
+      if (category) {
+        return `<strong>${userName}</strong> için <strong>${category}</strong> kategorisindeki <strong>${enrollmentName}</strong> kaydına kayıt e-postası gönderildi.`
+      }
+      return `<strong>${userName}</strong> için <strong>${enrollmentName}</strong> kaydına kayıt e-postası gönderildi.`
+    },
+    activityTimelineFor: 'için',
+    activityTimelineEnrollment: 'kayıt',
+    activityTimelineCategory: 'kategorisinde.',
+    // Neutral + Other
+    activityTimelineWith: 'ile',
+    activityTimelineHasBeenSentTo: 'gönderildi',
+    // Smishing/Vishing/Quishing + Fail
+    activityTimelineAt: 'seviyesinde',
+    activityTimelineDifficulity: 'zorluk',
+    // Opened
+    activityTimelineOpenedTheEmailFor: 'e-postasını açtı',
+    activityTimelineDifficulty: 'zorluk.',
+    // Points
+    activityTimelineEarned: 'kazandı',
+    activityTimelineLost: 'kaybetti',
+    activityTimelinePoints: 'puan',
+    activityTimelineInThe: 'içinde',
+    activityTimelineWithAnEnrollmentPerformance: 'kayıt performansı ile',
+    activityTimelineWithACampaignPerformance: 'kampanya performansı ile',
+    // Point Rule
+    activityTimelineAnd: 've',
+    activityTimelineReceived: 'aldı',
+    activityTimelineExtra: 'ekstra',
+    activityTimelineForJoiningTheTraining: 'eğitime katıldığı için',
+    activityTimelineMoreThan3Days: 'davetten 3 günden fazla sonra.',
+    activityTimeline1To3Days: 'davetten 1–3 gün sonra.',
+    activityTimelineWithin24Hours: '24 saat içinde.',
+    // Function labels for proper word order in each language
+    activityTimelineAwarenessPoints: (
+      userName,
+      points,
+      enrollmentName,
+      category,
+      performance,
+      pointRule
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'kazandı' : 'kaybetti'
+      let text = `${userName}, <strong>${category}</strong> kategorisindeki <strong>${enrollmentName}</strong> kaydında <strong>%${performance}</strong> kayıt performansı nedeniyle <strong>${pointsAbs} puan</strong> <strong>${action}</strong>`
+      if (pointRule) {
+        const rulePoints = Math.abs(pointRule.rulePoint)
+        const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'kaybetti' : 'aldı'
+        const extra = pointRule.ruleName === 'Joined After 3 Days' ? '' : 'ekstra'
+        let ruleText = ''
+        if (pointRule.ruleName === 'Joined After 3 Days') {
+          ruleText = ` ve davetten 3 günden daha geç eğitime katıldığı için <strong>${rulePoints} ${extra} puan</strong> <strong>${ruleAction}</strong>.`
+        } else if (pointRule.ruleName === 'Joined 1–3 Days') {
+          ruleText = ` ve davetten 1–3 gün sonra eğitime katıldığı için <strong>${rulePoints} ${extra} puan</strong> <strong>${ruleAction}</strong>.`
+        } else {
+          ruleText = ` ve davetten 24 saat içinde eğitime katıldığı için <strong>${rulePoints} ${extra} puan</strong> <strong>${ruleAction}</strong>.`
+        }
+        text += ruleText
+      } else {
+        text += '.'
+      }
+      return text
+    },
+    activityTimelineCampaignPoints: (
+      userName,
+      points,
+      campaignName,
+      campaignType,
+      difficulty,
+      performance
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'kazandı' : 'kaybetti'
+      return `${userName}, <strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignType} kampanyasında <strong>${pointsAbs} puan</strong> <strong>${action}</strong>, kampanya performansı <strong>%${performance}</strong> ile.`
+    },
+    activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
+      return `${userName}, <strong>${category}</strong> kategorisindeki <strong>${enrollmentName}</strong> kaydı için e-postayı açtı.`
+    },
+    activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
+      return `${userName}, <strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignType} kampanyası için e-postayı açtı.`
+    },
+    // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `${points} puan kazandınız`,
     activityTimelineLostPoints: (points) => `${points} puan kaybettiniz`,
     activityTimelineInCampaign: 'kampanyasında',
     activityTimelinePhishingCampaign: 'oltalama',
     activityTimelineAtDifficulty: 'zorluk seviyesinde',
-    activityTimelineDifficulty: 'zorluk',
     activityTimelineWithPerformance: 'kampanya performansı',
     activityTimelineEasy: 'kolay',
     activityTimelineMedium: 'orta',
@@ -301,8 +540,15 @@ const usersDashboardLabels = {
     phishingTestResultsEarnedPoints: (points) => `Raporlarınız için +${points} puan kazandınız.`,
     phishingTestResultsLostPoints: (points) =>
       `Kaçırılan raporlar için -${points} puan kaybettiniz.`,
-    phishingTestResultsAccuracyUp: (percentage) =>
-      `Tespit doğruluğu geçen aya göre %${percentage} arttı.`,
+    phishingTestResultsAccuracyUp: (percentage) => {
+      const absPercentage = Math.abs(percentage)
+      if (percentage < 0) {
+        return `Tespit doğruluğu geçen aya göre %${absPercentage} azaldı.`
+      } else if (percentage > 0) {
+        return `Tespit doğruluğu geçen aya göre %${absPercentage} arttı.`
+      }
+      return 'Tespit doğruluğu geçen aya göre değişmedi.'
+    },
     phishingTestResultsSuccessRate: 'başarı oranı'
   },
   'de-DE': {
@@ -330,6 +576,9 @@ const usersDashboardLabels = {
     yourBadgesSubtitle: 'Sehen Sie alle Ihre verdienten und verfügbaren Abzeichen an einem Ort.',
     yourBadgesEarnedOn: (date) => `Verdient am ${date}`,
     yourBadgesNotEarnedYet: 'Noch nicht verdient',
+    badgeEliteSecurityChampion: 'Elite-Sicherheits-Champion',
+    badgeEngagementStar: 'Engagement-Stern',
+    badgeSecurityAmbassador: 'Sicherheits-Botschafter',
 
     // Your Learning
     yourLearningTitle: 'Ihr Lernen',
@@ -380,12 +629,104 @@ const usersDashboardLabels = {
       'Eine Zeitleiste Ihrer letzten Aktivitäten und ihrer Ergebnisse aus den letzten 30 Tagen.',
     activityTimelineLoadMore: 'Weitere Aktivitäten laden',
     activityTimelineEmptyMessage: 'Keine Aktivitäten gefunden.',
+    // Incident Responder
+    activityTimelineIncidentResponderReportedEmail: 'Die gemeldete E-Mail mit',
+    activityTimelineIncidentResponderSubject:
+      'Betreff wurde vom Incident Responder analysiert und führte zu',
+    // Neutral + Awareness
+    activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
+      if (category) {
+        return `Anmelde-E-Mail an ${userName} für <strong>${enrollmentName}</strong>-Anmeldung in der <strong>${category}</strong>-Kategorie gesendet.`
+      }
+      return `Anmelde-E-Mail an ${userName} für <strong>${enrollmentName}</strong>-Anmeldung gesendet.`
+    },
+    activityTimelineFor: 'für',
+    activityTimelineEnrollment: 'Anmeldung in der',
+    activityTimelineCategory: 'Kategorie.',
+    // Neutral + Other
+    activityTimelineWith: 'mit',
+    activityTimelineHasBeenSentTo: 'wurde gesendet an',
+    // Smishing/Vishing/Quishing + Fail
+    activityTimelineAt: 'bei',
+    activityTimelineDifficulity: 'Schwierigkeit',
+    // Opened
+    activityTimelineOpenedTheEmailFor: 'öffnete die E-Mail für',
+    activityTimelineDifficulty: 'Schwierigkeit.',
+    // Points
+    activityTimelineEarned: 'verdient',
+    activityTimelineLost: 'verloren',
+    activityTimelinePoints: 'Punkte',
+    activityTimelineInThe: 'in der',
+    activityTimelineWithAnEnrollmentPerformance: 'mit einer Anmeldeleistung von',
+    activityTimelineWithACampaignPerformance: 'mit einer Kampagnenleistung von',
+    // Point Rule
+    activityTimelineAnd: 'und',
+    activityTimelineReceived: 'erhalten',
+    activityTimelineExtra: 'zusätzliche',
+    activityTimelineForJoiningTheTraining: 'für die Teilnahme am Training',
+    activityTimelineMoreThan3Days: 'mehr als 3 Tage nach Einladung.',
+    activityTimeline1To3Days: '1–3 Tage nach Einladung.',
+    activityTimelineWithin24Hours: 'innerhalb von 24 Stunden.',
+    // Function labels for proper word order in each language
+    activityTimelineAwarenessPoints: (
+      userName,
+      points,
+      enrollmentName,
+      category,
+      performance,
+      pointRule
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'verdient' : 'verloren'
+      let text = `${userName} hat <strong>${pointsAbs} Punkte</strong> in der <strong>${enrollmentName}</strong>-Anmeldung in der <strong>${category}</strong>-Kategorie <strong>${action}</strong>, mit einer Anmeldeleistung von <strong>${performance}%</strong>`
+      if (pointRule) {
+        const rulePoints = Math.abs(pointRule.rulePoint)
+        const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'verloren' : 'erhalten'
+        const extra = pointRule.ruleName === 'Joined After 3 Days' ? '' : 'zusätzliche'
+        const prefix =
+          pointRule.ruleName === 'Joined After 3 Days'
+            ? ''
+            : pointRule.ruleName === 'Joined 1–3 Days'
+            ? ''
+            : '+'
+        let ruleText = ''
+        if (pointRule.ruleName === 'Joined After 3 Days') {
+          ruleText = ` und <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} Punkte</strong>, da die Teilnahme am Training mehr als 3 Tage nach der Einladung erfolgte.`
+        } else if (pointRule.ruleName === 'Joined 1–3 Days') {
+          ruleText = ` und <strong>${ruleAction}</strong> <strong>${prefix}${rulePoints} ${extra} Punkte</strong>, da die Teilnahme am Training 1–3 Tage nach der Einladung erfolgte.`
+        } else {
+          ruleText = ` und <strong>${ruleAction}</strong> <strong>${prefix}${rulePoints} ${extra} Punkte</strong>, da die Teilnahme am Training innerhalb von 24 Stunden nach der Einladung erfolgte.`
+        }
+        text += ruleText
+      } else {
+        text += '.'
+      }
+      return text
+    },
+    activityTimelineCampaignPoints: (
+      userName,
+      points,
+      campaignName,
+      campaignType,
+      difficulty,
+      performance
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'verdient' : 'verloren'
+      return `${userName} hat <strong>${pointsAbs} Punkte</strong> in der <strong>${campaignName}</strong> ${campaignType} bei <strong>${difficulty}</strong> Schwierigkeit <strong>${action}</strong>, mit einer Kampagnenleistung von <strong>${performance}%</strong>.`
+    },
+    activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
+      return `${userName} hat die E-Mail für <strong>${enrollmentName}</strong>-Anmeldung in der <strong>${category}</strong>-Kategorie geöffnet.`
+    },
+    activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
+      return `${userName} hat die E-Mail für <strong>${campaignName}</strong> ${campaignType} mit <strong>${difficulty}</strong> Schwierigkeit geöffnet.`
+    },
+    // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `${points} Punkte verdient`,
     activityTimelineLostPoints: (points) => `${points} Punkte verloren`,
     activityTimelineInCampaign: 'in der',
     activityTimelinePhishingCampaign: 'Phishing-Kampagne',
     activityTimelineAtDifficulty: 'bei',
-    activityTimelineDifficulty: 'Schwierigkeit',
     activityTimelineWithPerformance: 'mit einer Kampagnenleistung von',
     activityTimelineEasy: 'einfach',
     activityTimelineMedium: 'mittel',
@@ -408,8 +749,15 @@ const usersDashboardLabels = {
       `Sie haben +${points} Punkte für Ihre Berichte verdient.`,
     phishingTestResultsLostPoints: (points) =>
       `Sie haben -${points} Punkte für verpasste Berichte verloren.`,
-    phishingTestResultsAccuracyUp: (percentage) =>
-      `Erkennungsgenauigkeit um ${percentage}% gegenüber dem Vormonat gestiegen.`,
+    phishingTestResultsAccuracyUp: (percentage) => {
+      const absPercentage = Math.abs(percentage)
+      if (percentage < 0) {
+        return `Erkennungsgenauigkeit um ${absPercentage}% gegenüber dem Vormonat gesunken.`
+      } else if (percentage > 0) {
+        return `Erkennungsgenauigkeit um ${absPercentage}% gegenüber dem Vormonat gestiegen.`
+      }
+      return 'Erkennungsgenauigkeit gegenüber dem Vormonat unverändert.'
+    },
     phishingTestResultsSuccessRate: 'Erfolgsrate'
   },
   'fr-FR': {
@@ -438,6 +786,9 @@ const usersDashboardLabels = {
     yourBadgesSubtitle: 'Consultez tous vos badges gagnés et disponibles en un seul endroit.',
     yourBadgesEarnedOn: (date) => `Gagné le ${date}`,
     yourBadgesNotEarnedYet: 'Pas encore gagné',
+    badgeEliteSecurityChampion: "Champion de sécurité d'élite",
+    badgeEngagementStar: "Étoile d'engagement",
+    badgeSecurityAmbassador: 'Ambassadeur de sécurité',
 
     // Your Learning
     yourLearningTitle: 'Votre apprentissage',
@@ -488,12 +839,96 @@ const usersDashboardLabels = {
       'Une chronologie de vos activités récentes et de leurs résultats au cours des 30 derniers jours.',
     activityTimelineLoadMore: "Charger plus d'activités",
     activityTimelineEmptyMessage: 'Aucune activité trouvée.',
+    // Incident Responder
+    activityTimelineIncidentResponderReportedEmail: "L'e-mail signalé avec",
+    activityTimelineIncidentResponderSubject:
+      "objet a été analysé par le répondeur d'incident et a abouti à",
+    // Neutral + Awareness
+    activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
+      if (category) {
+        return `E-mail d'inscription envoyé à ${userName} pour l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>.`
+      }
+      return `E-mail d'inscription envoyé à ${userName} pour l'inscription <strong>${enrollmentName}</strong>.`
+    },
+    activityTimelineFor: 'pour',
+    activityTimelineEnrollment: 'inscription dans la',
+    activityTimelineCategory: 'catégorie.',
+    // Neutral + Other
+    activityTimelineWith: 'avec',
+    activityTimelineHasBeenSentTo: 'a été envoyé à',
+    // Smishing/Vishing/Quishing + Fail
+    activityTimelineAt: 'à',
+    activityTimelineDifficulity: 'difficulté',
+    // Opened
+    activityTimelineOpenedTheEmailFor: "a ouvert l'e-mail pour",
+    activityTimelineDifficulty: 'difficulté.',
+    // Points
+    activityTimelineEarned: 'gagné',
+    activityTimelineLost: 'perdu',
+    activityTimelinePoints: 'points',
+    activityTimelineInThe: 'dans la',
+    activityTimelineWithAnEnrollmentPerformance: "avec une performance d'inscription de",
+    activityTimelineWithACampaignPerformance: 'avec une performance de campagne de',
+    // Point Rule
+    activityTimelineAnd: 'et',
+    activityTimelineReceived: 'reçu',
+    activityTimelineExtra: 'supplémentaire',
+    activityTimelineForJoiningTheTraining: 'pour avoir rejoint la formation',
+    activityTimelineMoreThan3Days: "plus de 3 jours après l'invitation.",
+    activityTimeline1To3Days: "1–3 jours après l'invitation.",
+    activityTimelineWithin24Hours: 'dans les 24 heures.',
+    // Function labels for proper word order in each language
+    activityTimelineAwarenessPoints: (
+      userName,
+      points,
+      enrollmentName,
+      category,
+      performance,
+      pointRule
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'gagné' : 'perdu'
+      let text = `${userName} a <strong>${action}</strong> <strong>${pointsAbs} points</strong> dans l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>, avec une performance d'inscription de <strong>${performance}%</strong>.`
+      if (pointRule) {
+        const rulePoints = Math.abs(pointRule.rulePoint)
+        const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'perdu' : 'reçu'
+        const extra = pointRule.ruleName === 'Joined After 3 Days' ? '' : 'supplémentaires'
+        let ruleText = ''
+        if (pointRule.ruleName === 'Joined After 3 Days') {
+          ruleText = ` et a <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} points</strong> car la participation à la formation a eu lieu plus de 3 jours après l'invitation.`
+        } else if (pointRule.ruleName === 'Joined 1–3 Days') {
+          ruleText = ` et a <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} points</strong> car la participation à la formation a eu lieu 1–3 jours après l'invitation.`
+        } else {
+          ruleText = ` et a <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} points</strong> car la participation à la formation a eu lieu dans les 24 heures suivant l'invitation.`
+        }
+        text += ruleText
+      }
+      return text
+    },
+    activityTimelineCampaignPoints: (
+      userName,
+      points,
+      campaignName,
+      campaignType,
+      difficulty,
+      performance
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'gagné' : 'perdu'
+      return `${userName} a <strong>${action}</strong> <strong>${pointsAbs} points</strong> dans la campagne <strong>${campaignName}</strong> ${campaignType} de difficulté <strong>${difficulty}</strong>, avec une performance de campagne de <strong>${performance}%</strong>.`
+    },
+    activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
+      return `${userName} a ouvert l'e-mail pour l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>.`
+    },
+    activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
+      return `${userName} a ouvert l'e-mail pour la campagne <strong>${campaignName}</strong> ${campaignType} de difficulté <strong>${difficulty}</strong>.`
+    },
+    // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Gagné ${points} points`,
     activityTimelineLostPoints: (points) => `Perdu ${points} points`,
     activityTimelineInCampaign: 'dans la',
     activityTimelinePhishingCampaign: 'campagne de phishing',
     activityTimelineAtDifficulty: 'à',
-    activityTimelineDifficulty: 'difficulté',
     activityTimelineWithPerformance: 'avec une performance de campagne de',
     activityTimelineEasy: 'facile',
     activityTimelineMedium: 'moyen',
@@ -516,8 +951,15 @@ const usersDashboardLabels = {
       `Vous avez gagné +${points} points pour vos rapports.`,
     phishingTestResultsLostPoints: (points) =>
       `Vous avez perdu -${points} points pour les rapports manqués.`,
-    phishingTestResultsAccuracyUp: (percentage) =>
-      `La précision de détection a augmenté de ${percentage}% par rapport au mois dernier.`,
+    phishingTestResultsAccuracyUp: (percentage) => {
+      const absPercentage = Math.abs(percentage)
+      if (percentage < 0) {
+        return `La précision de détection a diminué de ${absPercentage}% par rapport au mois dernier.`
+      } else if (percentage > 0) {
+        return `La précision de détection a augmenté de ${absPercentage}% par rapport au mois dernier.`
+      }
+      return 'La précision de détection est inchangée par rapport au mois dernier.'
+    },
     phishingTestResultsSuccessRate: 'taux de réussite'
   },
   'es-ES': {
@@ -545,6 +987,9 @@ const usersDashboardLabels = {
     yourBadgesSubtitle: 'Vea todas sus insignias obtenidas y disponibles en un solo lugar.',
     yourBadgesEarnedOn: (date) => `Obtenido el ${date}`,
     yourBadgesNotEarnedYet: 'Aún no obtenido',
+    badgeEliteSecurityChampion: 'Campeón de Seguridad de Élite',
+    badgeEngagementStar: 'Estrella de Compromiso',
+    badgeSecurityAmbassador: 'Embajador de Seguridad',
 
     // Your Learning
     yourLearningTitle: 'Su aprendizaje',
@@ -593,12 +1038,96 @@ const usersDashboardLabels = {
       'Una línea de tiempo de sus actividades recientes y sus resultados de los últimos 30 días.',
     activityTimelineLoadMore: 'Cargar más actividades',
     activityTimelineEmptyMessage: 'No se encontraron actividades.',
+    // Incident Responder
+    activityTimelineIncidentResponderReportedEmail: 'El correo electrónico reportado con',
+    activityTimelineIncidentResponderSubject:
+      'asunto fue analizado por el respondedor de incidentes y resultó en',
+    // Neutral + Awareness
+    activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
+      if (category) {
+        return `Correo electrónico de inscripción enviado a ${userName} para la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>.`
+      }
+      return `Correo electrónico de inscripción enviado a ${userName} para la inscripción <strong>${enrollmentName}</strong>.`
+    },
+    activityTimelineFor: 'para',
+    activityTimelineEnrollment: 'inscripción en la',
+    activityTimelineCategory: 'categoría.',
+    // Neutral + Other
+    activityTimelineWith: 'con',
+    activityTimelineHasBeenSentTo: 'ha sido enviado a',
+    // Smishing/Vishing/Quishing + Fail
+    activityTimelineAt: 'a',
+    activityTimelineDifficulity: 'dificultad',
+    // Opened
+    activityTimelineOpenedTheEmailFor: 'abrió el correo electrónico para',
+    activityTimelineDifficulty: 'dificultad.',
+    // Points
+    activityTimelineEarned: 'ganó',
+    activityTimelineLost: 'perdió',
+    activityTimelinePoints: 'puntos',
+    activityTimelineInThe: 'en la',
+    activityTimelineWithAnEnrollmentPerformance: 'con un rendimiento de inscripción de',
+    activityTimelineWithACampaignPerformance: 'con un rendimiento de campaña de',
+    // Point Rule
+    activityTimelineAnd: 'y',
+    activityTimelineReceived: 'recibió',
+    activityTimelineExtra: 'extra',
+    activityTimelineForJoiningTheTraining: 'por unirse a la capacitación',
+    activityTimelineMoreThan3Days: 'más de 3 días después de la invitación.',
+    activityTimeline1To3Days: '1–3 días después de la invitación.',
+    activityTimelineWithin24Hours: 'dentro de las 24 horas.',
+    // Function labels for proper word order in each language
+    activityTimelineAwarenessPoints: (
+      userName,
+      points,
+      enrollmentName,
+      category,
+      performance,
+      pointRule
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'ganó' : 'perdió'
+      let text = `${userName} <strong>${action}</strong> <strong>${pointsAbs} puntos</strong> en la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>, con un rendimiento de inscripción del <strong>${performance}%</strong>.`
+      if (pointRule) {
+        const rulePoints = Math.abs(pointRule.rulePoint)
+        const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'perdió' : 'recibió'
+        const extra = pointRule.ruleName === 'Joined After 3 Days' ? '' : 'extra'
+        let ruleText = ''
+        if (pointRule.ruleName === 'Joined After 3 Days') {
+          ruleText = ` y <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} puntos</strong> porque la participación en la capacitación ocurrió más de 3 días después de la invitación.`
+        } else if (pointRule.ruleName === 'Joined 1–3 Days') {
+          ruleText = ` y <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} puntos</strong> porque la participación en la capacitación ocurrió 1–3 días después de la invitación.`
+        } else {
+          ruleText = ` y <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} puntos</strong> porque la participación en la capacitación ocurrió dentro de las 24 horas posteriores a la invitación.`
+        }
+        text += ruleText
+      }
+      return text
+    },
+    activityTimelineCampaignPoints: (
+      userName,
+      points,
+      campaignName,
+      campaignType,
+      difficulty,
+      performance
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'ganó' : 'perdió'
+      return `${userName} <strong>${action}</strong> <strong>${pointsAbs} puntos</strong> en la campaña <strong>${campaignName}</strong> ${campaignType} de dificultad <strong>${difficulty}</strong>, con un rendimiento de campaña del <strong>${performance}%</strong>.`
+    },
+    activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
+      return `${userName} abrió el correo electrónico para la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>.`
+    },
+    activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
+      return `${userName} abrió el correo electrónico para la campaña <strong>${campaignName}</strong> ${campaignType} de dificultad <strong>${difficulty}</strong>.`
+    },
+    // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Ganó ${points} puntos`,
     activityTimelineLostPoints: (points) => `Perdió ${points} puntos`,
     activityTimelineInCampaign: 'en la',
     activityTimelinePhishingCampaign: 'campaña de phishing',
     activityTimelineAtDifficulty: 'a',
-    activityTimelineDifficulty: 'dificultad',
     activityTimelineWithPerformance: 'con un rendimiento de campaña de',
     activityTimelineEasy: 'fácil',
     activityTimelineMedium: 'medio',
@@ -619,8 +1148,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Precisión de detección:',
     phishingTestResultsEarnedPoints: (points) => `Ganó +${points} puntos por sus informes.`,
     phishingTestResultsLostPoints: (points) => `Perdió -${points} puntos por informes perdidos.`,
-    phishingTestResultsAccuracyUp: (percentage) =>
-      `La precisión de detección aumentó un ${percentage}% desde el mes pasado.`,
+    phishingTestResultsAccuracyUp: (percentage) => {
+      const absPercentage = Math.abs(percentage)
+      if (percentage < 0) {
+        return `La precisión de detección disminuyó un ${absPercentage}% desde el mes pasado.`
+      } else if (percentage > 0) {
+        return `La precisión de detección aumentó un ${absPercentage}% desde el mes pasado.`
+      }
+      return 'La precisión de detección no cambió desde el mes pasado.'
+    },
     phishingTestResultsSuccessRate: 'tasa de éxito'
   }
 }

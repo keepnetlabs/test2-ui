@@ -94,36 +94,46 @@ export default {
   name: 'UsersDashboardPhishingTestResults',
   computed: {
     ...mapGetters({
-      labels: 'usersDashboard/getLabels'
-    })
-  },
-  data() {
-    return {
-      // TODO: Replace with actual API data
-      phishingData: {
-        reportedPhishingEmails: 46,
-        totalPhishingEmails: 50,
-        phishingSimulations: 4,
-        totalSimulations: 50,
-        detectionAccuracy: 92,
-        earnedPoints: 1250,
-        lostPoints: 500,
-        accuracyIncrease: 14
+      labels: 'usersDashboard/getLabels',
+      phishingResult: 'usersDashboard/getPhishingResult',
+      phishingResultLoading: 'usersDashboard/getPhishingResultLoading'
+    }),
+    phishingData() {
+      if (!this.phishingResult) {
+        return {
+          reportedPhishingEmails: 0,
+          totalPhishingEmails: 0,
+          phishingSimulations: 0,
+          totalSimulations: 0,
+          detectionAccuracy: 0,
+          earnedPoints: 0,
+          lostPoints: 0,
+          accuracyIncrease: 0
+        }
+      }
+
+      const last30Days = this.phishingResult.last30Days || {}
+      const totalCount = last30Days.totalCount || 0
+      const reportedCount = last30Days.reportedCount || 0
+      // phishingSimulations = total - reported (clicked/failed ones)
+      const phishingSimulations = totalCount - reportedCount
+
+      return {
+        reportedPhishingEmails: reportedCount,
+        totalPhishingEmails: totalCount,
+        phishingSimulations: phishingSimulations,
+        totalSimulations: totalCount,
+        detectionAccuracy: this.phishingResult.successRate || 0,
+        earnedPoints: last30Days.earnedPoints || 0,
+        lostPoints: last30Days.missedPoints || 0,
+        accuracyIncrease: this.phishingResult.accuracyChangePercentage || 0
       }
     }
   },
   created() {
-    // Simulate API call
-    this.fetchPhishingTestResults()
-  },
-  methods: {
-    fetchPhishingTestResults() {
-      // TODO: Replace with actual API call
-      // Example:
-      // getPhishingTestResults().then((response) => {
-      //   this.phishingData = response.data
-      // })
-    }
+    // Fetch phishing result data
+    const targetUserResourceId = '4BCeEWHwAKME' // Static resource ID
+    this.$store.dispatch('usersDashboard/fetchPhishingResult', targetUserResourceId)
   }
 }
 </script>

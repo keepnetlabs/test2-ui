@@ -66,31 +66,35 @@ export default {
     }),
     badgeCount() {
       return Math.min(this.recentBadges.length, 3)
-    }
-  },
-  data() {
-    return {
-      // TODO: Replace with actual API data
-      recentBadges: [
+    },
+    recentBadges() {
+      return [
         {
           id: 1,
-          name: 'Elite Security Champion',
+          name: this.labels.badgeEliteSecurityChampion,
           type: 'security-champion',
-          imageUrl: null // Will be loaded based on type
+          imageUrl: require('@/assets/img/elite-security-champion.png')
         },
         {
           id: 2,
-          name: 'Engagement Star',
+          name: this.labels.badgeEngagementStar,
           type: 'engagement-star',
-          imageUrl: null // Will be loaded based on type
+          imageUrl: require('@/assets/img/engagement-star.png')
         }
       ]
     }
   },
+  data() {
+    return {
+      // Badge data is now in computed property to use labels
+    }
+  },
   methods: {
     handleSeeAllBadges() {
-      // TODO: Navigate to all badges page or show modal
-      console.log('See All Badges clicked')
+      const yourBadgesElement = document.getElementById('users-dashboard-your-badges')
+      if (yourBadgesElement) {
+        yourBadgesElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
   }
 }

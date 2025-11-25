@@ -68,24 +68,53 @@ export default {
   name: 'UsersDashboardOverallPerformance',
   computed: {
     ...mapGetters({
-      labels: 'usersDashboard/getLabels'
-    })
-  },
-  data() {
-    return {
-      // TODO: Replace with actual API data
-      performanceData: {
-        percentage: 85,
-        points: 12500,
-        rank: 15
+      labels: 'usersDashboard/getLabels',
+      topPerformance: 'usersDashboard/getTopPerformance',
+      topPerformanceLoading: 'usersDashboard/getTopPerformanceLoading'
+    }),
+    performanceData() {
+      // Get current user's data from topPerformance array
+      if (!this.topPerformance || this.topPerformance.length === 0) {
+        return {
+          percentage: 0,
+          points: 0,
+          rank: 0
+        }
+      }
+
+      const currentUserId = '4BCeEWHwAKME'
+      const currentUser = this.topPerformance.find(
+        (user) => user.targetUserResourceId === currentUserId
+      )
+
+      if (currentUser) {
+        return {
+          percentage: currentUser.performance || 0,
+          points: currentUser.points || 0,
+          rank: currentUser.rank || 0
+        }
+      }
+
+      // Fallback to default values
+      return {
+        percentage: 0,
+        points: 0,
+        rank: 0
       }
     }
   },
+  data() {
+    return {}
+  },
   methods: {
     handleSeeRankingDetails() {
-      // TODO: Scroll to ranking details component when it's added
-      // For now, just a placeholder
-      console.log('See Ranking Details clicked')
+      const leaderboardElement = document.getElementById('users-dashboard-leaderboard')
+      if (leaderboardElement) {
+        leaderboardElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
     }
   }
 }
