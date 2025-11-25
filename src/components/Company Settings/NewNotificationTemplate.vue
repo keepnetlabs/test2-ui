@@ -527,6 +527,9 @@ export default {
         const isInSelected = val.find((item) => item.value === this.activeLanguage)
         if (!isInSelected) {
           this.activeLanguage = val[0].value
+          this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+            JSON.stringify(this.getSelectedLanguagePayload)
+          )
         }
       } else {
         this.activeLanguage = val[0].value
@@ -827,13 +830,6 @@ export default {
       }, {})
     },
     handleCategoryChange(resourceId = '') {
-      // ⚠️ Bu fonksiyon çalışmaz çünkü template type select disabled olur polling sırasında
-      this.isEverythingLocalized = false
-      // Eğer AI generation devam ediyorsa, reset et
-      if (this.isGenerateWithAIDisabled || this.isEmailGenerating) {
-        this.resetGenerateWithAIDisabled()
-      }
-
       const categoryIndex = this.categoryItems.findIndex((item) => item.value === resourceId)
       if (categoryIndex !== -1) {
         this.isSelectedNotificationEnrollment = this.categoryItems[categoryIndex].text
@@ -844,7 +840,10 @@ export default {
         this.formValues.template = newTemplate
         // initialFormValues'a da set et (handleSelectedLanguagesChange için gerekli)
         this.initialFormValues.template = newTemplate
-
+        // Reset isTranslated flag for all languages when category changes
+        this.languagesPayload.forEach((payload) => {
+          payload.isTranslated = false
+        })
         // Update active language's template in languagesPayload if exists
         if (this.activeLanguage && this.languagesPayload.length > 0) {
           const activePayload = this.languagesPayload.find(
@@ -852,6 +851,9 @@ export default {
           )
           if (activePayload) {
             activePayload.template = newTemplate
+            if (this.selectedLanguagePayloadItemBeforeSave) {
+              this.selectedLanguagePayloadItemBeforeSave.template = newTemplate
+            }
           }
         }
 
@@ -1071,9 +1073,11 @@ export default {
       this.beforeSaveLanguage = value
     },
     handleCloseEditLanguagesLeavingDialog() {
+      console.log('handleCloseEditLanguagesLeavingDialog')
       this.showEditLanguagesLeavingDialog = false
     },
     handleDiscardEditLanguagesLeavingDialog(beforeSaveLanguage) {
+      console.log('handleDiscardEditLanguagesLeavingDialog')
       this.showEditLanguagesLeavingDialog = false
       let selectedTemplateIndex = this.languagesPayload.findIndex(
         (item) => item.languageTypeResourceId === this.activeLanguage
@@ -1089,6 +1093,7 @@ export default {
       )
     },
     handleConfirmEditLanguagesLeavingDialog(beforeSaveLanguage) {
+      console.log('handleConfirmEditLanguagesLeavingDialog')
       this.showEditLanguagesLeavingDialog = false
       this.activeLanguage = beforeSaveLanguage
       this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
@@ -1096,8 +1101,12 @@ export default {
       )
     },
     handleSaveTemplate(template) {
-      // Template değiştiğinde tracking için kullanılabilir
-      // Notification template'de red flags olmadığı için basit tutuyoruz
+      if (this.getSelectedLanguagePayload.template.trim() !== template.trim()) {
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
+        this.getSelectedLanguagePayload.isTranslated = false
+      }
     },
     handleGenerateEmailTemplateSuccess({ template, subject }) {
       this.getSelectedLanguagePayload.isTranslated = true
@@ -1219,21 +1228,13 @@ export default {
               }
             })
 
-            if (!errorLanguages.length && !successLanguages.length) {
-              this.isEverythingLocalized = false
-              this.askForNotificationTemplateTranslation(count + 1, effectiveMax, timeoutId)
-              return
-            }
-
-            errorLanguages.forEach((item) => {
-              this.showLocalizationErrorMessage(item)
-            })
-
             if (this.isDefault) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
               this.selectedLanguagePayloadItemBeforeSave.subject = data[0]?.subject
             }
-
+            errorLanguages.forEach((item) => {
+              this.showLocalizationErrorMessage(item)
+            })
             successLanguages.forEach((item) => {
               const languagePayload = this.languagesPayload.find(
                 (language) => language.languageTypeResourceId === item.languageResourceId
@@ -1245,15 +1246,8 @@ export default {
               languagePayload.fromAddress = item.fromAddress || languagePayload.fromAddress
               languagePayload.isTranslated = true
             })
-
             // Show success snackbar with dynamic message based on language count
             this.showLocalizationSuccessMessage(data)
-
-            if (this.isRelocalizeOperation) {
-              this.isRelocalizeOperation = false
-              this.relocalizeLanguageName = ''
-            }
-
             this.resetGenerateWithAIDisabled(timeoutId)
             const lastData = data[data.length - 1]
             if (lastData) {
@@ -1261,7 +1255,6 @@ export default {
             }
           })
           .catch(() => {
-            this.isEverythingLocalized = false
             this.askForNotificationTemplateTranslation(count + 1, effectiveMax, timeoutId)
           })
       }, 3000)
@@ -1328,17 +1321,10 @@ export default {
       let template = this.getSelectedLanguagePayload.template
       let subject = this.getSelectedLanguagePayload.subject
       this.saveDisable = true
-      const prevTemplate = (this.selectedLanguagePayloadItemBeforeSave?.template || '').trim()
-      const currTemplate = (template || '').trim()
-      const shouldFilterTranslated = prevTemplate === currTemplate
-      const languagesToLocalize = shouldFilterTranslated
-        ? this.selectedLanguages.filter((lang) => {
-            const payload = this.languagesPayload.find(
-              (p) => p.languageTypeResourceId === lang.value
-            )
-            return !(payload && payload.isTranslated)
-          })
-        : this.selectedLanguages
+      const languagesToLocalize = this.selectedLanguages.filter((lang) => {
+        const payload = this.languagesPayload.find((p) => p.languageTypeResourceId === lang.value)
+        return !(payload && payload.isTranslated)
+      })
       // İlk açılışta (isDefault) scroll yapma
       if (!this.isDefault) {
         scrollToEmailTemplateContent()
