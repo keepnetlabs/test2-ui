@@ -31,6 +31,12 @@
     min-height: 100px;
   }
 
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
   &__empty {
     display: flex;
     justify-content: center;
@@ -43,12 +49,6 @@
     font-size: 14px;
     font-weight: 400;
     color: #757575;
-  }
-
-  &__items {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
   }
 
   &__item {
@@ -119,20 +119,13 @@
     flex-shrink: 0;
   }
 
-  &__load-more {
+  &__load-more-button-container {
     margin-top: 24px;
     text-align: center;
   }
 
-  &__load-more-btn {
-    color: var(--Primary-Primary-1, #2196f3) !important;
-    font-feature-settings: "liga" off, "clig" off;
-    font-family: "Open Sans", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    text-transform: none !important;
+  &__load-more-button {
+    width: 100%;
   }
 }
 
