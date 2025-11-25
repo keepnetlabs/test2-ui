@@ -92,6 +92,7 @@ import {
   getCampaignManagerFormDetails,
   getDefaultCompanySmtpSetting,
   getDefaultEmailDeliverySetting,
+  getEmailDeliveries,
   getPhishingScenarioLandingPageAndEmailTemplate
 } from '@/api/phishingsimulator'
 import { getTargetGroupCountDetail } from '@/api/targetUsers'
@@ -252,8 +253,18 @@ export default {
           this.directEmailSettingResourceId = res?.data?.data?.resourceId
           this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
         } else {
-          this.smtpSettingResourceId = res?.data?.data?.resourceId
-          this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+          // SMTP ise api den getirilecek
+          getEmailDeliveries().then((res) => {
+            const {
+              data: {
+                data: { results = [] }
+              }
+            } = res
+            //first smtp item
+            const smtpItem = results.find((item) => item.type === EMAIL_DELIVERY_TYPES.SMTP)
+            this.smtpSettingResourceId = smtpItem.resourceId
+            this.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP
+          })
         }
       })
     },
