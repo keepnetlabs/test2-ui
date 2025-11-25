@@ -434,6 +434,9 @@ export default {
   },
   computed: {
     isLocalizeReady() {
+      if (this.isLandingPage) {
+        return this.isTemplateTypeSelected
+      }
       return (
         Boolean(this.subject) &&
         Boolean(this.fromName) &&
