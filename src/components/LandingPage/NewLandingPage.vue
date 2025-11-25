@@ -1180,12 +1180,35 @@ export default {
         return pagePayload
       })
     },
-    getLanguageObject(languageTypeResourceId) {
-      const langObj = this.languageItems.find((item) => item.value === languageTypeResourceId)
-      if (langObj) {
-        return langObj
+    getLanguageObject(languageTypeResourceId, languageTypeName = null) {
+      // Önce languageItems'de ara (children array'lerinde)
+      for (const group of this.languageItems || []) {
+        if (Array.isArray(group.children)) {
+          const langObj = group.children.find((item) => item.value === languageTypeResourceId)
+          if (langObj) {
+            return langObj
+          }
+        }
       }
-      // Fallback: eğer languageItems'de bulamazsa, manuel obje oluştur
+
+      // Sonra languageOptions'da ara
+      const langOption = this.languageOptions?.find((item) => item.value === languageTypeResourceId)
+      if (langOption) {
+        return {
+          text: langOption.text || langOption.languageTypeName,
+          value: languageTypeResourceId
+        }
+      }
+
+      // Fallback: eğer hiçbirinde bulamazsa, languageTypeName varsa onu kullan
+      if (languageTypeName) {
+        return {
+          text: languageTypeName,
+          value: languageTypeResourceId
+        }
+      }
+
+      // Son fallback: resourceId'yi text olarak kullan
       return {
         text: languageTypeResourceId,
         value: languageTypeResourceId
@@ -1414,7 +1437,10 @@ export default {
           landingPages: JSON.parse(JSON.stringify(mainLandingPages)),
           isTranslated: true
         })
-        const mainLanguageObj = this.getLanguageObject(data.languageTypeResourceId)
+        const mainLanguageObj = this.getLanguageObject(
+          data.languageTypeResourceId,
+          data.languageTypeName
+        )
         this.selectedLanguages.push(mainLanguageObj)
 
         // landingPages içindeki languages array'lerinden diğer dilleri çıkar
@@ -1429,7 +1455,8 @@ export default {
                 otherLanguagesMap.set(langId, {
                   languageTypeResourceId: langId,
                   landingPages: [],
-                  resourceId: langPage.resourceId || null // resourceId'yi sakla
+                  resourceId: langPage.resourceId || null, // resourceId'yi sakla
+                  languageTypeName: langPage.languageTypeName || null // languageTypeName'i sakla
                 })
               }
               // Aynı order'a sahip sayfayı ekle
@@ -1446,7 +1473,10 @@ export default {
 
         // otherLanguagesMap'teki dilleri languagesPayload'a ekle
         otherLanguagesMap.forEach((langPayload) => {
-          const langObj = this.getLanguageObject(langPayload.languageTypeResourceId)
+          const langObj = this.getLanguageObject(
+            langPayload.languageTypeResourceId,
+            langPayload.languageTypeName
+          )
           this.selectedLanguages.push(langObj)
           this.languagesPayload.push({
             ...langPayload,
