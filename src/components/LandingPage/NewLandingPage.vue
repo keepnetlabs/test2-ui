@@ -199,6 +199,7 @@
                             formValues.isAssistedByAITemplate = $event
                           "
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
+                          @update:isEmailGenerating="handleEmailGeneratingChange"
                         />
                       </div>
 
@@ -618,6 +619,12 @@ export default {
       )
       if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
         this.$set(selectedLanguagePayload.landingPages[currentPageIndex], 'content', template)
+      }
+    },
+    handleEmailGeneratingChange(isGenerating) {
+      const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
+      if (this.$refs.refEmailTemplate && this.$refs.refEmailTemplate[currentPageIndex]) {
+        this.$refs.refEmailTemplate[currentPageIndex].isEmailGenerating = isGenerating
       }
     },
     handleLinkChange() {
