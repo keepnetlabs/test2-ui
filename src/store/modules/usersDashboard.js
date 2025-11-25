@@ -1,3 +1,6 @@
+import { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
+import usersDashboardLabels from '@/model/constants/usersDashboardLabels'
+
 const USERS_DASHBOARD_AUTH_KEY = 'usersDashboardAuth'
 
 const usersDashboard = {
@@ -10,10 +13,13 @@ const usersDashboard = {
     loginMethod: null, // 'microsoft', 'google', 'magic-link'
     isAuthenticated: false,
     permissions: [],
-    language: 'en-US', // Default language
+    language: 'en-GB', // Default language
     userInfo: {
       name: '',
-      department: ''
+      email: '',
+      department: '',
+      phoneNumber: '',
+      preferredLanguage: ''
     }
   },
   getters: {
@@ -23,7 +29,26 @@ const usersDashboard = {
     getLoginMethod: (state) => state.loginMethod,
     getPermissions: (state) => state.permissions,
     getLanguage: (state) => state.language,
-    getUserInfo: (state) => state.userInfo
+    getUserInfo: (state) => state.userInfo,
+    getLabels: (state) => {
+      return new Proxy(
+        {},
+        {
+          get(target, key) {
+            // Get the label value to check if it's a function or string
+            const langLabels = usersDashboardLabels[state.language] || usersDashboardLabels['en-GB']
+            const label = langLabels[key]
+
+            // If label is a function, return a callable function
+            if (typeof label === 'function') {
+              return (...args) => getUsersDashboardLabel(state.language, key, ...args)
+            }
+            // If label is a string, return it directly
+            return label || key
+          }
+        }
+      )
+    }
   },
   mutations: {
     SET_TOKEN(state, payload) {
@@ -70,10 +95,13 @@ const usersDashboard = {
       state.loginMethod = null
       state.isAuthenticated = false
       state.permissions = []
-      state.language = 'en-US'
+      state.language = 'en-GB'
       state.userInfo = {
         name: '',
-        department: ''
+        email: '',
+        department: '',
+        phoneNumber: '',
+        preferredLanguage: ''
       }
 
       // Remove from localStorage

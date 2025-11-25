@@ -11,13 +11,24 @@
 
     <div v-if="isMenuOpen" class="UsersDashboardUserMenu__dropdown">
       <div class="UsersDashboardUserMenu__content">
-        <div v-if="userInfo.name" class="UsersDashboardUserMenu__item">
-          <span class="UsersDashboardUserMenu__label">Name:</span>
-          <span class="UsersDashboardUserMenu__value">{{ userInfo.name }}</span>
+        <div v-if="userInfo.name" class="UsersDashboardUserMenu__name">
+          {{ userInfo.name }}
+        </div>
+        <div v-if="userInfo.email" class="UsersDashboardUserMenu__item">
+          <span class="UsersDashboardUserMenu__label">{{ labels.userMenuEmail }}</span>
+          <span class="UsersDashboardUserMenu__value">{{ userInfo.email }}</span>
         </div>
         <div v-if="userInfo.department" class="UsersDashboardUserMenu__item">
-          <span class="UsersDashboardUserMenu__label">Department:</span>
+          <span class="UsersDashboardUserMenu__label">{{ labels.userMenuDepartment }}</span>
           <span class="UsersDashboardUserMenu__value">{{ userInfo.department }}</span>
+        </div>
+        <div v-if="userInfo.phoneNumber" class="UsersDashboardUserMenu__item">
+          <span class="UsersDashboardUserMenu__label">{{ labels.userMenuPhoneNumber }}</span>
+          <span class="UsersDashboardUserMenu__value">{{ userInfo.phoneNumber }}</span>
+        </div>
+        <div class="UsersDashboardUserMenu__item">
+          <span class="UsersDashboardUserMenu__label">{{ labels.userMenuPreferredLanguage }}</span>
+          <span class="UsersDashboardUserMenu__value">{{ preferredLanguageText }}</span>
         </div>
       </div>
     </div>
@@ -36,8 +47,26 @@ export default {
   },
   computed: {
     ...mapGetters({
-      userInfo: 'usersDashboard/getUserInfo'
-    })
+      userInfo: 'usersDashboard/getUserInfo',
+      language: 'usersDashboard/getLanguage',
+      labels: 'usersDashboard/getLabels'
+    }),
+    preferredLanguageText() {
+      if (!this.userInfo.preferredLanguage) {
+        // Get language text from available languages
+        const languages = [
+          { text: 'English (United Kingdom)', value: 'en-GB' },
+          { text: 'English (United States)', value: 'en-US' },
+          { text: 'Türkçe (Türkiye)', value: 'tr-TR' },
+          { text: 'Deutsch (Deutschland)', value: 'de-DE' },
+          { text: 'Français (France)', value: 'fr-FR' },
+          { text: 'Español (España)', value: 'es-ES' }
+        ]
+        const lang = languages.find((l) => l.value === this.language)
+        return lang ? lang.text : 'English (United Kingdom)'
+      }
+      return this.userInfo.preferredLanguage
+    }
   },
   mounted() {
     // Close menu when clicking outside

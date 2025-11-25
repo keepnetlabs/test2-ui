@@ -6,13 +6,13 @@
           id="text--users-dashboard-overall-performance-title"
           class="users-dashboard-overall-performance__title"
         >
-          Overall Performance
+          {{ labels.overallPerformanceTitle }}
         </h2>
         <p
           id="text--users-dashboard-overall-performance-subtitle"
           class="users-dashboard-overall-performance__subtitle"
         >
-          Track your performance, points, and rank for the last 30 days.
+          {{ labels.overallPerformanceSubtitle }}
         </p>
       </div>
       <a
@@ -21,7 +21,7 @@
         class="users-dashboard-overall-performance__link"
         @click.prevent="handleSeeRankingDetails"
       >
-        See Ranking Details
+        {{ labels.overallPerformanceSeeRanking }}
       </a>
     </div>
     <div class="users-dashboard-overall-performance__content">
@@ -35,7 +35,9 @@
       </div>
       <div class="users-dashboard-overall-performance__metrics">
         <div class="users-dashboard-overall-performance__metric-item">
-          <span class="users-dashboard-overall-performance__metric-label">Points:</span>
+          <span class="users-dashboard-overall-performance__metric-label">{{
+            labels.overallPerformancePoints
+          }}</span>
           <span
             id="text--users-dashboard-overall-performance-points"
             class="users-dashboard-overall-performance__metric-value"
@@ -44,7 +46,9 @@
           </span>
         </div>
         <div class="users-dashboard-overall-performance__metric-item">
-          <span class="users-dashboard-overall-performance__metric-label">Rank:</span>
+          <span class="users-dashboard-overall-performance__metric-label">{{
+            labels.overallPerformanceRank
+          }}</span>
           <span
             id="text--users-dashboard-overall-performance-rank"
             class="users-dashboard-overall-performance__metric-value"
@@ -58,8 +62,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'UsersDashboardOverallPerformance',
+  computed: {
+    ...mapGetters({
+      labels: 'usersDashboard/getLabels'
+    })
+  },
   data() {
     return {
       // TODO: Replace with actual API data

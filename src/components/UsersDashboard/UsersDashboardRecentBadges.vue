@@ -6,13 +6,13 @@
           id="text--users-dashboard-recent-badges-title"
           class="users-dashboard-recent-badges__title"
         >
-          Recent Badges
+          {{ labels.recentBadgesTitle }}
         </h2>
         <p
           id="text--users-dashboard-recent-badges-subtitle"
           class="users-dashboard-recent-badges__subtitle"
         >
-          View your last 3 badges earned from your actions and behaviors.
+          {{ labels.recentBadgesSubtitle }}
         </p>
       </div>
       <a
@@ -21,7 +21,7 @@
         class="users-dashboard-recent-badges__link"
         @click.prevent="handleSeeAllBadges"
       >
-        See All Badges
+        {{ labels.recentBadgesSeeAll }}
       </a>
     </div>
     <div class="users-dashboard-recent-badges__content">
@@ -56,8 +56,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'UsersDashboardRecentBadges',
+  computed: {
+    ...mapGetters({
+      labels: 'usersDashboard/getLabels'
+    }),
+    badgeCount() {
+      return Math.min(this.recentBadges.length, 3)
+    }
+  },
   data() {
     return {
       // TODO: Replace with actual API data
@@ -75,11 +85,6 @@ export default {
           imageUrl: null // Will be loaded based on type
         }
       ]
-    }
-  },
-  computed: {
-    badgeCount() {
-      return Math.min(this.recentBadges.length, 3)
     }
   },
   methods: {

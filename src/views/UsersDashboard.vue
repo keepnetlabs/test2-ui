@@ -7,7 +7,7 @@
           {{ welcomeTitle }}
         </h1>
         <p class="users-dashboard__description">
-          Track your progress and see how your actions strengthen our security culture.
+          {{ welcomeDescription }}
         </p>
       </div>
       <v-row>
@@ -16,6 +16,26 @@
         </VCol>
         <VCol cols="12" md="6">
           <UsersDashboardRecentBadges />
+        </VCol>
+      </v-row>
+      <v-row>
+        <VCol cols="12">
+          <UsersDashboardYourLearning />
+        </VCol>
+      </v-row>
+      <v-row>
+        <VCol cols="12">
+          <UsersDashboardPhishingTestResults />
+        </VCol>
+      </v-row>
+      <v-row>
+        <VCol cols="12">
+          <UsersDashboardLeaderboard />
+        </VCol>
+      </v-row>
+      <v-row>
+        <VCol cols="12">
+          <UsersDashboardActivityTimeline />
         </VCol>
       </v-row>
     </v-container>
@@ -27,24 +47,35 @@ import { mapGetters, mapActions } from 'vuex'
 import UsersDashboardHeader from '@/components/UsersDashboard/UsersDashboardHeader'
 import UsersDashboardOverallPerformance from '@/components/UsersDashboard/UsersDashboardOverallPerformance'
 import UsersDashboardRecentBadges from '@/components/UsersDashboard/UsersDashboardRecentBadges'
+import UsersDashboardPhishingTestResults from '@/components/UsersDashboard/UsersDashboardPhishingTestResults'
+import UsersDashboardYourLearning from '@/components/UsersDashboard/UsersDashboardYourLearning'
+import UsersDashboardLeaderboard from '@/components/UsersDashboard/UsersDashboardLeaderboard'
+import UsersDashboardActivityTimeline from '@/components/UsersDashboard/UsersDashboardActivityTimeline'
 
 export default {
   name: 'UsersDashboard',
   components: {
     UsersDashboardHeader,
     UsersDashboardOverallPerformance,
-    UsersDashboardRecentBadges
+    UsersDashboardRecentBadges,
+    UsersDashboardPhishingTestResults,
+    UsersDashboardYourLearning,
+    UsersDashboardLeaderboard,
+    UsersDashboardActivityTimeline
   },
   computed: {
     ...mapGetters({
       isAuthenticated: 'usersDashboard/isAuthenticated',
       companyEmail: 'usersDashboard/getCompanyEmail',
       loginMethod: 'usersDashboard/getLoginMethod',
-      userInfo: 'usersDashboard/getUserInfo'
+      userInfo: 'usersDashboard/getUserInfo',
+      labels: 'usersDashboard/getLabels'
     }),
     welcomeTitle() {
-      const userName = this.userInfo.name || 'User'
-      return `${userName}, Welcome to Your Security Growth Dashboard!`
+      return this.labels.welcomeTitle(this.userInfo.name || 'User')
+    },
+    welcomeDescription() {
+      return this.labels.welcomeDescription
     }
   },
   created() {
@@ -59,8 +90,11 @@ export default {
     // TODO: Fetch user info from API
     // For now, set mock data
     this.$store.dispatch('usersDashboard/setUserInfo', {
-      name: 'John Duran',
-      department: 'IT'
+      name: 'John Doe',
+      email: 'john@example.com',
+      department: 'Management',
+      phoneNumber: '+15555555555',
+      preferredLanguage: ''
     })
   },
   methods: {

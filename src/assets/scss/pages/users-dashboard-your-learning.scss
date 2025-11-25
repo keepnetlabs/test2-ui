@@ -1,0 +1,71 @@
+.users-dashboard-your-learning {
+  border-radius: 12px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #fff !important;
+  padding: 24px;
+  box-shadow: none !important;
+
+  &__header {
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-family: "Open Sans", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #383b41;
+    line-height: 1.2;
+    margin: 0 0 8px 0;
+    margin-bottom: 0;
+  }
+
+  &__subtitle {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #383b41;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__status-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .k-badge {
+      min-width: 140px !important;
+    }
+  }
+
+  &__points-column {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__points-icon {
+    flex-shrink: 0;
+  }
+
+  &__points-text {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    color: #383b41;
+  }
+
+  &__table {
+    .table-wrapper {
+      padding-top: 24px !important;
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 960px) {
+  .users-dashboard-your-learning {
+    &__header {
+      margin-bottom: 16px;
+    }
+  }
+}

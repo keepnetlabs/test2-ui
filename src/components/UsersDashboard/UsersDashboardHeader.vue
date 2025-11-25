@@ -53,11 +53,12 @@ export default {
   data() {
     return {
       availableLanguages: [
+        { text: 'English (United Kingdom)', value: 'en-GB' },
         { text: 'English (United States)', value: 'en-US' },
-        { text: 'Turkish', value: 'tr-TR' },
-        { text: 'German', value: 'de-DE' },
-        { text: 'French', value: 'fr-FR' },
-        { text: 'Spanish', value: 'es-ES' }
+        { text: 'Türkçe (Türkiye)', value: 'tr-TR' },
+        { text: 'Deutsch (Deutschland)', value: 'de-DE' },
+        { text: 'Français (France)', value: 'fr-FR' },
+        { text: 'Español (España)', value: 'es-ES' }
       ]
     }
   },
@@ -68,7 +69,7 @@ export default {
     }),
     currentLanguageLabel() {
       const lang = this.availableLanguages.find((l) => l.value === this.language)
-      return lang ? lang.text : 'English (United States)'
+      return lang ? lang.text : 'English (United Kingdom)'
     }
   },
   methods: {
