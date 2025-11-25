@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/views/Login.vue'
+import UsersDashboardLogin from '@/views/UsersDashboardLogin.vue'
+import UsersDashboard from '@/views/UsersDashboard.vue'
 import DashBoard from '@/views/DashBoard'
 import Main from '@/layout/Main'
 import ThreatSharing from '@/views/ThreatSharing'
@@ -94,6 +96,23 @@ const router = new Router({
       component: Login,
       meta: {
         isAuthenticated: false
+      }
+    },
+    {
+      path: '/users-dashboard-login',
+      name: 'users-dashboard-login',
+      component: UsersDashboardLogin,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/users-dashboard',
+      name: 'users-dashboard',
+      component: UsersDashboard,
+      meta: {
+        isAuthenticated: true,
+        requiresUsersDashboardLogin: true
       }
     },
     {
@@ -887,6 +906,19 @@ router.beforeEach((to, from, next) => {
   try {
     const storeRef = store
     if (to.meta.isAuthenticated) {
+      // Check if route requires users-dashboard-login
+      if (to.meta.requiresUsersDashboardLogin) {
+        // Initialize usersDashboard store from storage
+        store.dispatch('usersDashboard/initializeFromStorage')
+        const isAuthenticated = store.getters['usersDashboard/isAuthenticated']
+        if (!isAuthenticated) {
+          return next('/users-dashboard-login')
+        }
+        next()
+        return
+      }
+
+      // Regular authentication check
       let authenticationStatus = AuthenticationService.getAuthenticationStatus()
       if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
         if (storeRef.state.common.downloadModalStatus) {

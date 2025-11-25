@@ -1,0 +1,137 @@
+.users-dashboard-overall-performance {
+  border-radius: 12px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #fff;
+  padding: 24px;
+  box-shadow: none !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  &__header-left {
+    flex: 1;
+  }
+
+  &__title {
+    font-family: "Open Sans", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #383b41;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #383b41;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__link {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2196f3;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 16px;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+      text-decoration: none;
+    }
+  }
+
+  &__content {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    flex: 1;
+  }
+
+  &__percentage-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #f2f2f2;
+    background: #fff !important;
+  }
+
+  &__percentage {
+    font-family: "Open Sans", sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: #383b41;
+    line-height: 1;
+  }
+
+  &__metrics {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__metric-item {
+    border: 1px solid #f2f2f2;
+    background: #fff !important;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+  }
+
+  &__metric-label {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #383b41;
+  }
+
+  &__metric-value {
+    font-family: "Open Sans", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #383b41;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 960px) {
+  .users-dashboard-overall-performance {
+    &__content {
+      flex-direction: column;
+    }
+
+    &__percentage-box {
+      min-height: 100px;
+    }
+
+    &__header {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    &__link {
+      margin-left: 0;
+      align-self: flex-start;
+    }
+  }
+}
