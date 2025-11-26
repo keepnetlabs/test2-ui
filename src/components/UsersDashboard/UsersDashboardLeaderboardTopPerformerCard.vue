@@ -1,9 +1,19 @@
 <template>
   <VCard class="users-dashboard-leaderboard-top-performer-card">
-    <figure class="users-dashboard-leaderboard-top-performer-card__ribbon">
+    <figure
+      :class="[
+        'users-dashboard-leaderboard-top-performer-card__ribbon',
+        `users-dashboard-leaderboard-top-performer-card__ribbon--${getRankClass}`
+      ]"
+    >
       <img :src="getRibbonImgSrc" :alt="getRibbonAlt" />
     </figure>
-    <figure class="users-dashboard-leaderboard-top-performer-card__medal">
+    <figure
+      :class="[
+        'users-dashboard-leaderboard-top-performer-card__medal',
+        `users-dashboard-leaderboard-top-performer-card__medal--${getRankClass}`
+      ]"
+    >
       <img :src="getMedalImgSrc" :alt="getMedalAlt" />
     </figure>
     <div class="users-dashboard-leaderboard-top-performer-card__content">
@@ -78,6 +88,11 @@ export default {
       if (this.performer.rank === 1) return 'gold ribbon'
       if (this.performer.rank === 2) return 'silver ribbon'
       return 'bronze ribbon'
+    },
+    getRankClass() {
+      if (this.performer.rank === 1) return 'gold'
+      if (this.performer.rank === 2) return 'silver'
+      return 'bronze'
     }
   }
 }

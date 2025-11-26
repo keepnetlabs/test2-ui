@@ -96,6 +96,11 @@
     justify-content: space-between;
     align-items: center;
     flex: 1;
+
+    &--rank {
+      position: relative;
+      overflow: visible;
+    }
   }
 
   &__metric-label {
@@ -111,6 +116,81 @@
     font-weight: 600;
     color: #383b41;
   }
+
+  &__ribbon {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+
+    img {
+      display: block;
+      width: 82px;
+      height: auto;
+    }
+
+    &--gold {
+      -webkit-animation: ribbon-glow-gold 3.5s ease-in-out infinite;
+      animation: ribbon-glow-gold 3.5s ease-in-out infinite;
+    }
+
+    &--silver {
+      -webkit-animation: ribbon-glow-silver 3.5s ease-in-out infinite;
+      animation: ribbon-glow-silver 3.5s ease-in-out infinite;
+    }
+
+    &--bronze {
+      -webkit-animation: ribbon-glow-bronze 3.5s ease-in-out infinite;
+      animation: ribbon-glow-bronze 3.5s ease-in-out infinite;
+    }
+  }
+}
+
+// Animations - Gold
+@-webkit-keyframes ribbon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+  25% { filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5)); }
+  75% { filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.3)); }
+}
+@keyframes ribbon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+  25% { filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5)); }
+  75% { filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.3)); }
+}
+
+// Animations - Silver
+@-webkit-keyframes ribbon-glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(192, 192, 192, 0)); }
+  25% { filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.5)); }
+  75% { filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.3)); }
+}
+@keyframes ribbon-glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(192, 192, 192, 0)); }
+  25% { filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.5)); }
+  75% { filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.3)); }
+}
+
+// Animations - Bronze
+@-webkit-keyframes ribbon-glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(205, 127, 50, 0)); }
+  25% { filter: drop-shadow(0 0 4px rgba(205, 127, 50, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.5)); }
+  75% { filter: drop-shadow(0 0 4px rgba(205, 127, 50, 0.3)); }
+}
+@keyframes ribbon-glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(205, 127, 50, 0)); }
+  25% { filter: drop-shadow(0 0 4px rgba(205, 127, 50, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.5)); }
+  75% { filter: drop-shadow(0 0 4px rgba(205, 127, 50, 0.3)); }
 }
 
 // Mobile responsive

@@ -45,7 +45,16 @@
             {{ performanceData.points }}
           </span>
         </div>
-        <div class="users-dashboard-overall-performance__metric-item">
+        <div class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank">
+          <figure
+            v-if="performanceData.rank >= 1 && performanceData.rank <= 3"
+            :class="[
+              'users-dashboard-overall-performance__ribbon',
+              `users-dashboard-overall-performance__ribbon--${getRankClass(performanceData.rank)}`
+            ]"
+          >
+            <img :src="getRibbonImgSrc(performanceData.rank)" :alt="getRibbonAlt(performanceData.rank)" />
+          </figure>
           <span class="users-dashboard-overall-performance__metric-label">{{
             labels.overallPerformanceRank
           }}</span>
@@ -104,7 +113,11 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      goldRibbonImg: require('@/assets/img/leaderboard-gold-ribbon.svg'),
+      silverRibbonImg: require('@/assets/img/leaderboard-silver-ribbon.svg'),
+      bronzeRibbonImg: require('@/assets/img/leaderboard-bronze-ribbon.svg')
+    }
   },
   methods: {
     handleSeeRankingDetails() {
@@ -115,6 +128,21 @@ export default {
           block: 'start'
         })
       }
+    },
+    getRibbonImgSrc(rank) {
+      if (rank === 1) return this.goldRibbonImg
+      if (rank === 2) return this.silverRibbonImg
+      return this.bronzeRibbonImg
+    },
+    getRibbonAlt(rank) {
+      if (rank === 1) return 'gold ribbon'
+      if (rank === 2) return 'silver ribbon'
+      return 'bronze ribbon'
+    },
+    getRankClass(rank) {
+      if (rank === 1) return 'gold'
+      if (rank === 2) return 'silver'
+      return 'bronze'
     }
   }
 }

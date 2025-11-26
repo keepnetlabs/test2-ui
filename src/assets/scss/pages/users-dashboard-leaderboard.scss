@@ -127,6 +127,21 @@
     img {
       display: block;
     }
+
+    &--gold {
+      -webkit-animation: ribbon-glow-gold 3.5s ease-in-out infinite;
+      animation: ribbon-glow-gold 3.5s ease-in-out infinite;
+    }
+
+    &--silver {
+      -webkit-animation: ribbon-glow-silver 3.5s ease-in-out infinite;
+      animation: ribbon-glow-silver 3.5s ease-in-out infinite;
+    }
+
+    &--bronze {
+      -webkit-animation: ribbon-glow-bronze 3.5s ease-in-out infinite;
+      animation: ribbon-glow-bronze 3.5s ease-in-out infinite;
+    }
   }
 
   &__medal {
@@ -134,9 +149,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 
     img {
       display: block;
+      -webkit-filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    &--gold {
+      -webkit-animation: medal-glow-gold 3.5s ease-in-out infinite;
+      animation: medal-glow-gold 3.5s ease-in-out infinite;
+    }
+
+    &--silver {
+      -webkit-animation: medal-glow-silver 3.5s ease-in-out infinite;
+      animation: medal-glow-silver 3.5s ease-in-out infinite;
+    }
+
+    &--bronze {
+      -webkit-animation: medal-glow-bronze 3.5s ease-in-out infinite;
+      animation: medal-glow-bronze 3.5s ease-in-out infinite;
     }
   }
 
@@ -186,6 +219,159 @@
     text-transform: uppercase;
     max-width: 180px;
     max-height: 24px;
+  }
+}
+
+// Animations - Gold
+@-webkit-keyframes ribbon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+}
+@keyframes ribbon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+}
+
+@-webkit-keyframes medal-glow-gold {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+@keyframes medal-glow-gold {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+
+// Animations - Silver
+@-webkit-keyframes ribbon-glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(192, 192, 192, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(192, 192, 192, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+}
+@keyframes ribbon-glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(192, 192, 192, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(192, 192, 192, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+}
+
+@-webkit-keyframes medal-glow-silver {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(192, 192, 192, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+@keyframes medal-glow-silver {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(192, 192, 192, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+
+// Animations - Bronze
+@-webkit-keyframes ribbon-glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(205, 127, 50, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+}
+@keyframes ribbon-glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(205, 127, 50, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+}
+
+@-webkit-keyframes medal-glow-bronze {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(205, 127, 50, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+@keyframes medal-glow-bronze {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(205, 127, 50, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
   }
 }
 
