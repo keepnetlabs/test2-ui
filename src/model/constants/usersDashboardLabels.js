@@ -172,6 +172,9 @@ const usersDashboardLabels = {
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
       return `${userName} opened the email for <strong>${campaignName}</strong> ${campaignType} with <strong>${difficulty}</strong> difficulty.`
     },
+    activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
+      return `The <strong>${campaignName}</strong> ${campaignType} with <strong>${difficulty}</strong> difficulty has been sent to ${userName}.`
+    },
     // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Earned ${points} points`,
     activityTimelineLostPoints: (points) => `Lost ${points} points`,
@@ -190,8 +193,18 @@ const usersDashboardLabels = {
     phishingTestResultsReportedPhishingEmails: 'Reported Phishing Emails:',
     phishingTestResultsPhishingSimulations: 'Phishing Simulations:',
     phishingTestResultsDetectionAccuracy: 'Detection Accuracy:',
-    phishingTestResultsEarnedPoints: (points) => `You earned +${points} points for your reports.`,
-    phishingTestResultsLostPoints: (points) => `You lost -${points} points for missed reports.`,
+    phishingTestResultsEarnedPoints: (points) => {
+      if (points === 0) {
+        return 'No points earned for your reports yet.'
+      }
+      return `You earned +${points} points for your reports.`
+    },
+    phishingTestResultsLostPoints: (points) => {
+      if (points === 0) {
+        return 'No points lost for missed reports.'
+      }
+      return `You lost -${points} points for missed reports.`
+    },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
       if (percentage < 0) {
@@ -201,7 +214,17 @@ const usersDashboardLabels = {
       }
       return 'Detection accuracy unchanged from last month.'
     },
-    phishingTestResultsSuccessRate: 'success rate'
+    phishingTestResultsSuccessRate: 'success rate',
+
+    // Activity Action Types
+    actionTypeClickedTraining: 'Clicked Training',
+    actionTypeEmailOpened: 'Email Opened',
+    actionTypeEmailSent: 'Email Sent',
+    actionTypeDownloadedPoster: 'Downloaded Poster',
+    actionTypeExamPassed: 'Exam Passed',
+    actionTypeClickedLink: 'Clicked Link',
+    actionTypeSMSSent: 'SMS Sent',
+    actionTypeOpenedAttachment: 'Opened Attachment'
   },
   'en-US': {
     // Header
@@ -315,6 +338,63 @@ const usersDashboardLabels = {
     activityTimelineMoreThan3Days: 'more than 3 days after invitation.',
     activityTimeline1To3Days: '1–3 days after invitation.',
     activityTimelineWithin24Hours: 'within 24 hours.',
+    // Function labels for proper word order in each language
+    activityTimelineAwarenessPoints: (
+      userName,
+      points,
+      enrollmentName,
+      category,
+      performance,
+      pointRule
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'earned' : 'lost'
+      let text = `${userName} <strong>${action}</strong> <strong>${pointsAbs} points</strong> in the <strong>${enrollmentName}</strong> enrollment in the <strong>${category}</strong> category, with an enrollment performance of <strong>${performance}%</strong>`
+      if (pointRule) {
+        const rulePoints = Math.abs(pointRule.rulePoint)
+        const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'lost' : 'received'
+        const extra = pointRule.ruleName === 'Joined After 3 Days' ? '' : 'extra'
+        const prefix =
+          pointRule.ruleName === 'Joined After 3 Days'
+            ? ''
+            : pointRule.ruleName === 'Joined 1–3 Days'
+            ? ''
+            : '+'
+        let ruleText = ''
+        if (pointRule.ruleName === 'Joined After 3 Days') {
+          ruleText = ` and <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} points</strong> for joining the training more than 3 days after the invitation.`
+        } else if (pointRule.ruleName === 'Joined 1–3 Days') {
+          ruleText = ` and <strong>${ruleAction}</strong> <strong>${prefix}${rulePoints} ${extra} points</strong> for joining the training 1–3 days after the invitation.`
+        } else {
+          ruleText = ` and <strong>${ruleAction}</strong> <strong>${prefix}${rulePoints} ${extra} points</strong> for joining the training within 24 hours of the invitation.`
+        }
+        text += ruleText
+      } else {
+        text += '.'
+      }
+      return text
+    },
+    activityTimelineCampaignPoints: (
+      userName,
+      points,
+      campaignName,
+      campaignType,
+      difficulty,
+      performance
+    ) => {
+      const pointsAbs = Math.abs(points)
+      const action = points > 0 ? 'earned' : 'lost'
+      return `${userName} <strong>${action}</strong> <strong>${pointsAbs} points</strong> in the <strong>${campaignName}</strong> ${campaignType} at <strong>${difficulty}</strong> difficulty, with a campaign performance of <strong>${performance}%</strong>.`
+    },
+    activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
+      return `${userName} opened the email for <strong>${enrollmentName}</strong> enrollment in the <strong>${category}</strong> category.`
+    },
+    activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
+      return `${userName} opened the email for <strong>${campaignName}</strong> ${campaignType} with <strong>${difficulty}</strong> difficulty.`
+    },
+    activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
+      return `The <strong>${campaignName}</strong> ${campaignType} with <strong>${difficulty}</strong> difficulty has been sent to ${userName}.`
+    },
     // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Earned ${points} points`,
     activityTimelineLostPoints: (points) => `Lost ${points} points`,
@@ -339,8 +419,18 @@ const usersDashboardLabels = {
     phishingTestResultsReportedPhishingEmails: 'Reported Phishing Emails:',
     phishingTestResultsPhishingSimulations: 'Phishing Simulations:',
     phishingTestResultsDetectionAccuracy: 'Detection Accuracy:',
-    phishingTestResultsEarnedPoints: (points) => `You earned +${points} points for your reports.`,
-    phishingTestResultsLostPoints: (points) => `You lost -${points} points for missed reports.`,
+    phishingTestResultsEarnedPoints: (points) => {
+      if (points === 0) {
+        return 'No points earned for your reports yet.'
+      }
+      return `You earned +${points} points for your reports.`
+    },
+    phishingTestResultsLostPoints: (points) => {
+      if (points === 0) {
+        return 'No points lost for missed reports.'
+      }
+      return `You lost -${points} points for missed reports.`
+    },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
       if (percentage < 0) {
@@ -350,7 +440,17 @@ const usersDashboardLabels = {
       }
       return 'Detection accuracy unchanged from last month.'
     },
-    phishingTestResultsSuccessRate: 'success rate'
+    phishingTestResultsSuccessRate: 'success rate',
+
+    // Activity Action Types
+    actionTypeClickedTraining: 'Clicked Training',
+    actionTypeEmailOpened: 'Email Opened',
+    actionTypeEmailSent: 'Email Sent',
+    actionTypeDownloadedPoster: 'Downloaded Poster',
+    actionTypeExamPassed: 'Exam Passed',
+    actionTypeClickedLink: 'Clicked Link',
+    actionTypeSMSSent: 'SMS Sent',
+    actionTypeOpenedAttachment: 'Opened Attachment'
   },
   'tr-TR': {
     // Header
@@ -431,7 +531,7 @@ const usersDashboardLabels = {
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: 'Bildirilen e-posta',
     activityTimelineIncidentResponderSubject:
-      'konusu olay müdahale ekibi tarafından analiz edildi ve sonuçlandı',
+      ' konusu olay müdahale ekibi tarafından analiz edildi ve sonuçlandı',
     // Neutral + Awareness
     activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
       if (category) {
@@ -506,13 +606,49 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'kazandı' : 'kaybetti'
-      return `${userName}, <strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignType} kampanyasında <strong>${pointsAbs} puan</strong> <strong>${action}</strong>, kampanya performansı <strong>%${performance}</strong> ile.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to Turkish equivalents
+      const campaignTypeMap = {
+        'phishing': 'oltalama',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'geri arama',
+        'quishing': 'quishing'
+      }
+      const campaignTypeTR = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName}, <strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignTypeTR} kampanyasında <strong>${pointsAbs} puan</strong> <strong>${action}</strong>, kampanya performansı <strong>%${performance}</strong> ile.`
     },
     activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
       return `${userName}, <strong>${category}</strong> kategorisindeki <strong>${enrollmentName}</strong> kaydı için e-postayı açtı.`
     },
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      return `${userName}, <strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignType} kampanyası için e-postayı açtı.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to Turkish equivalents
+      const campaignTypeMap = {
+        'phishing': 'oltalama',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'geri arama',
+        'quishing': 'quishing'
+      }
+      const campaignTypeTR = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName}, <strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignTypeTR} kampanyası için e-postayı açtı.`
+    },
+    activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to Turkish equivalents
+      const campaignTypeMap = {
+        'phishing': 'oltalama',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'geri arama',
+        'quishing': 'quishing'
+      }
+      const campaignTypeTR = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `<strong>${difficulty}</strong> zorluk seviyesindeki <strong>${campaignName}</strong> ${campaignTypeTR} kampanyası ${userName} kullanıcısına gönderildi.`
     },
     // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `${points} puan kazandınız`,
@@ -537,9 +673,18 @@ const usersDashboardLabels = {
     phishingTestResultsReportedPhishingEmails: 'Bildirilen Oltalama E-postaları:',
     phishingTestResultsPhishingSimulations: 'Oltalama Simülasyonları:',
     phishingTestResultsDetectionAccuracy: 'Tespit Doğruluğu:',
-    phishingTestResultsEarnedPoints: (points) => `Raporlarınız için +${points} puan kazandınız.`,
-    phishingTestResultsLostPoints: (points) =>
-      `Kaçırılan raporlar için -${points} puan kaybettiniz.`,
+    phishingTestResultsEarnedPoints: (points) => {
+      if (points === 0) {
+        return 'Raporlarınız için henüz puan kazanmadınız.'
+      }
+      return `Raporlarınız için +${points} puan kazandınız.`
+    },
+    phishingTestResultsLostPoints: (points) => {
+      if (points === 0) {
+        return 'Kaçırılan raporlar için puan kaybetmediniz.'
+      }
+      return `Kaçırılan raporlar için -${points} puan kaybettiniz.`
+    },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
       if (percentage < 0) {
@@ -549,11 +694,21 @@ const usersDashboardLabels = {
       }
       return 'Tespit doğruluğu geçen aya göre değişmedi.'
     },
-    phishingTestResultsSuccessRate: 'başarı oranı'
+    phishingTestResultsSuccessRate: 'başarı oranı',
+
+    // Activity Action Types
+    actionTypeClickedTraining: 'Eğitime Tıklandı',
+    actionTypeEmailOpened: 'E-posta Açıldı',
+    actionTypeEmailSent: 'E-posta Gönderildi',
+    actionTypeDownloadedPoster: 'Poster İndirildi',
+    actionTypeExamPassed: 'Sınav Geçildi',
+    actionTypeClickedLink: 'Bağlantıya Tıklandı',
+    actionTypeSMSSent: 'SMS Gönderildi',
+    actionTypeOpenedAttachment: 'Ek Açıldı'
   },
   'de-DE': {
     // Header
-    welcomeTitle: (name) => `${name}, Willkommen zu Ihrem Sicherheitswachstums-Dashboard!`,
+    welcomeTitle: (name) => `${name}, willkommen in Ihrem Sicherheitswachstums-Dashboard!`,
     welcomeDescription:
       'Verfolgen Sie Ihren Fortschritt und sehen Sie, wie Ihre Aktionen unsere Sicherheitskultur stärken.',
 
@@ -630,15 +785,15 @@ const usersDashboardLabels = {
     activityTimelineLoadMore: 'Weitere Aktivitäten laden',
     activityTimelineEmptyMessage: 'Keine Aktivitäten gefunden.',
     // Incident Responder
-    activityTimelineIncidentResponderReportedEmail: 'Die gemeldete E-Mail mit',
+    activityTimelineIncidentResponderReportedEmail: 'Die gemeldete E-Mail mit dem',
     activityTimelineIncidentResponderSubject:
-      'Betreff wurde vom Incident Responder analysiert und führte zu',
+      'Betreff wurde vom Vorfallbearbeiter analysiert und führte zu',
     // Neutral + Awareness
     activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
       if (category) {
-        return `Anmelde-E-Mail an ${userName} für <strong>${enrollmentName}</strong>-Anmeldung in der <strong>${category}</strong>-Kategorie gesendet.`
+        return `An ${userName} wurde eine Anmelde-E-Mail für die <strong>${enrollmentName}</strong>-Anmeldung in der Kategorie <strong>${category}</strong> gesendet.`
       }
-      return `Anmelde-E-Mail an ${userName} für <strong>${enrollmentName}</strong>-Anmeldung gesendet.`
+      return `An ${userName} wurde eine Anmelde-E-Mail für die <strong>${enrollmentName}</strong>-Anmeldung gesendet.`
     },
     activityTimelineFor: 'für',
     activityTimelineEnrollment: 'Anmeldung in der',
@@ -678,7 +833,7 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'verdient' : 'verloren'
-      let text = `${userName} hat <strong>${pointsAbs} Punkte</strong> in der <strong>${enrollmentName}</strong>-Anmeldung in der <strong>${category}</strong>-Kategorie <strong>${action}</strong>, mit einer Anmeldeleistung von <strong>${performance}%</strong>`
+      let text = `${userName} hat <strong>${pointsAbs} Punkte</strong> in der <strong>${enrollmentName}</strong>-Anmeldung der Kategorie <strong>${category}</strong> <strong>${action}</strong>, mit einer Anmeldeleistung von <strong>${performance}%</strong>`
       if (pointRule) {
         const rulePoints = Math.abs(pointRule.rulePoint)
         const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'verloren' : 'erhalten'
@@ -713,13 +868,49 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'verdient' : 'verloren'
-      return `${userName} hat <strong>${pointsAbs} Punkte</strong> in der <strong>${campaignName}</strong> ${campaignType} bei <strong>${difficulty}</strong> Schwierigkeit <strong>${action}</strong>, mit einer Kampagnenleistung von <strong>${performance}%</strong>.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to German equivalents
+      const campaignTypeMap = {
+        'phishing': 'Phishing',
+        'smishing': 'Smishing',
+        'vishing': 'Vishing',
+        'callback': 'Rückruf',
+        'quishing': 'Quishing'
+      }
+      const campaignTypeDE = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName} hat <strong>${pointsAbs} Punkte</strong> in der <strong>${campaignName}</strong> ${campaignTypeDE}-Kampagne mit <strong>${difficulty}</strong> Schwierigkeitsgrad <strong>${action}</strong>, mit einer Kampagnenleistung von <strong>${performance}%</strong>.`
     },
     activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
-      return `${userName} hat die E-Mail für <strong>${enrollmentName}</strong>-Anmeldung in der <strong>${category}</strong>-Kategorie geöffnet.`
+      return `${userName} hat die E-Mail für die <strong>${enrollmentName}</strong>-Anmeldung der Kategorie <strong>${category}</strong> geöffnet.`
     },
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      return `${userName} hat die E-Mail für <strong>${campaignName}</strong> ${campaignType} mit <strong>${difficulty}</strong> Schwierigkeit geöffnet.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to German equivalents
+      const campaignTypeMap = {
+        'phishing': 'Phishing',
+        'smishing': 'Smishing',
+        'vishing': 'Vishing',
+        'callback': 'Rückruf',
+        'quishing': 'Quishing'
+      }
+      const campaignTypeDE = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName} hat die E-Mail für die <strong>${campaignName}</strong> ${campaignTypeDE}-Kampagne mit <strong>${difficulty}</strong> Schwierigkeitsgrad geöffnet.`
+    },
+    activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to German equivalents
+      const campaignTypeMap = {
+        'phishing': 'Phishing',
+        'smishing': 'Smishing',
+        'vishing': 'Vishing',
+        'callback': 'Rückruf',
+        'quishing': 'Quishing'
+      }
+      const campaignTypeDE = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `Die <strong>${campaignName}</strong> ${campaignTypeDE}-Kampagne mit <strong>${difficulty}</strong> Schwierigkeitsgrad wurde an ${userName} gesendet.`
     },
     // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `${points} Punkte verdient`,
@@ -745,10 +936,18 @@ const usersDashboardLabels = {
     phishingTestResultsReportedPhishingEmails: 'Gemeldete Phishing-E-Mails:',
     phishingTestResultsPhishingSimulations: 'Phishing-Simulationen:',
     phishingTestResultsDetectionAccuracy: 'Erkennungsgenauigkeit:',
-    phishingTestResultsEarnedPoints: (points) =>
-      `Sie haben +${points} Punkte für Ihre Berichte verdient.`,
-    phishingTestResultsLostPoints: (points) =>
-      `Sie haben -${points} Punkte für verpasste Berichte verloren.`,
+    phishingTestResultsEarnedPoints: (points) => {
+      if (points === 0) {
+        return 'Sie haben noch keine Punkte für Ihre Berichte verdient.'
+      }
+      return `Sie haben +${points} Punkte für Ihre Berichte verdient.`
+    },
+    phishingTestResultsLostPoints: (points) => {
+      if (points === 0) {
+        return 'Sie haben keine Punkte für verpasste Berichte verloren.'
+      }
+      return `Sie haben -${points} Punkte für verpasste Berichte verloren.`
+    },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
       if (percentage < 0) {
@@ -758,7 +957,17 @@ const usersDashboardLabels = {
       }
       return 'Erkennungsgenauigkeit gegenüber dem Vormonat unverändert.'
     },
-    phishingTestResultsSuccessRate: 'Erfolgsrate'
+    phishingTestResultsSuccessRate: 'Erfolgsrate',
+
+    // Activity Action Types
+    actionTypeClickedTraining: 'Training angeklickt',
+    actionTypeEmailOpened: 'E-Mail geöffnet',
+    actionTypeEmailSent: 'E-Mail gesendet',
+    actionTypeDownloadedPoster: 'Poster heruntergeladen',
+    actionTypeExamPassed: 'Prüfung bestanden',
+    actionTypeClickedLink: 'Link angeklickt',
+    actionTypeSMSSent: 'SMS gesendet',
+    actionTypeOpenedAttachment: 'Anhang geöffnet'
   },
   'fr-FR': {
     // Header
@@ -840,15 +1049,15 @@ const usersDashboardLabels = {
     activityTimelineLoadMore: "Charger plus d'activités",
     activityTimelineEmptyMessage: 'Aucune activité trouvée.',
     // Incident Responder
-    activityTimelineIncidentResponderReportedEmail: "L'e-mail signalé avec",
+    activityTimelineIncidentResponderReportedEmail: "L'e-mail signalé avec l'",
     activityTimelineIncidentResponderSubject:
-      "objet a été analysé par le répondeur d'incident et a abouti à",
+      "objet a été analysé par le répondeur aux incidents et a abouti à",
     // Neutral + Awareness
     activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
       if (category) {
-        return `E-mail d'inscription envoyé à ${userName} pour l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>.`
+        return `Un e-mail d'inscription a été envoyé à ${userName} pour l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>.`
       }
-      return `E-mail d'inscription envoyé à ${userName} pour l'inscription <strong>${enrollmentName}</strong>.`
+      return `Un e-mail d'inscription a été envoyé à ${userName} pour l'inscription <strong>${enrollmentName}</strong>.`
     },
     activityTimelineFor: 'pour',
     activityTimelineEnrollment: 'inscription dans la',
@@ -888,7 +1097,7 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'gagné' : 'perdu'
-      let text = `${userName} a <strong>${action}</strong> <strong>${pointsAbs} points</strong> dans l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>, avec une performance d'inscription de <strong>${performance}%</strong>.`
+      let text = `${userName} a <strong>${action}</strong> <strong>${pointsAbs} points</strong> dans l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>, avec une performance d'inscription de <strong>${performance}%</strong>`
       if (pointRule) {
         const rulePoints = Math.abs(pointRule.rulePoint)
         const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'perdu' : 'reçu'
@@ -902,6 +1111,8 @@ const usersDashboardLabels = {
           ruleText = ` et a <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} points</strong> car la participation à la formation a eu lieu dans les 24 heures suivant l'invitation.`
         }
         text += ruleText
+      } else {
+        text += '.'
       }
       return text
     },
@@ -915,19 +1126,55 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'gagné' : 'perdu'
-      return `${userName} a <strong>${action}</strong> <strong>${pointsAbs} points</strong> dans la campagne <strong>${campaignName}</strong> ${campaignType} de difficulté <strong>${difficulty}</strong>, avec une performance de campagne de <strong>${performance}%</strong>.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to French equivalents
+      const campaignTypeMap = {
+        'phishing': 'hameçonnage',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'rappel',
+        'quishing': 'quishing'
+      }
+      const campaignTypeFR = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName} a <strong>${action}</strong> <strong>${pointsAbs} points</strong> dans la campagne <strong>${campaignName}</strong> de <strong>${campaignTypeFR}</strong> de difficulté <strong>${difficulty}</strong>, avec une performance de campagne de <strong>${performance}%</strong>.`
     },
     activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
       return `${userName} a ouvert l'e-mail pour l'inscription <strong>${enrollmentName}</strong> de la catégorie <strong>${category}</strong>.`
     },
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      return `${userName} a ouvert l'e-mail pour la campagne <strong>${campaignName}</strong> ${campaignType} de difficulté <strong>${difficulty}</strong>.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to French equivalents
+      const campaignTypeMap = {
+        'phishing': 'hameçonnage',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'rappel',
+        'quishing': 'quishing'
+      }
+      const campaignTypeFR = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName} a ouvert l'e-mail pour la campagne <strong>${campaignName}</strong> de <strong>${campaignTypeFR}</strong> de difficulté <strong>${difficulty}</strong>.`
+    },
+    activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to French equivalents
+      const campaignTypeMap = {
+        'phishing': 'hameçonnage',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'rappel',
+        'quishing': 'quishing'
+      }
+      const campaignTypeFR = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `La campagne <strong>${campaignName}</strong> de <strong>${campaignTypeFR}</strong> de difficulté <strong>${difficulty}</strong> a été envoyée à ${userName}.`
     },
     // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Gagné ${points} points`,
     activityTimelineLostPoints: (points) => `Perdu ${points} points`,
     activityTimelineInCampaign: 'dans la',
-    activityTimelinePhishingCampaign: 'campagne de phishing',
+    activityTimelinePhishingCampaign: 'campagne d\'hameçonnage',
     activityTimelineAtDifficulty: 'à',
     activityTimelineWithPerformance: 'avec une performance de campagne de',
     activityTimelineEasy: 'facile',
@@ -941,16 +1188,24 @@ const usersDashboardLabels = {
     userMenuPreferredLanguage: 'Langue préférée :',
 
     // Phishing Test Results
-    phishingTestResultsTitle: 'Vos résultats de test de phishing',
+    phishingTestResultsTitle: 'Vos résultats de test d\'hameçonnage',
     phishingTestResultsSubtitle:
-      'Aperçu des résultats de vos activités de phishing des 30 derniers jours.',
-    phishingTestResultsReportedPhishingEmails: 'E-mails de phishing signalés :',
-    phishingTestResultsPhishingSimulations: 'Simulations de phishing :',
+      'Aperçu des résultats de vos activités d\'hameçonnage des 30 derniers jours.',
+    phishingTestResultsReportedPhishingEmails: 'E-mails d\'hameçonnage signalés :',
+    phishingTestResultsPhishingSimulations: 'Simulations d\'hameçonnage :',
     phishingTestResultsDetectionAccuracy: 'Précision de détection :',
-    phishingTestResultsEarnedPoints: (points) =>
-      `Vous avez gagné +${points} points pour vos rapports.`,
-    phishingTestResultsLostPoints: (points) =>
-      `Vous avez perdu -${points} points pour les rapports manqués.`,
+    phishingTestResultsEarnedPoints: (points) => {
+      if (points === 0) {
+        return "Vous n'avez pas encore gagné de points pour vos rapports."
+      }
+      return `Vous avez gagné +${points} points pour vos rapports.`
+    },
+    phishingTestResultsLostPoints: (points) => {
+      if (points === 0) {
+        return "Vous n'avez perdu aucun point pour les rapports manqués."
+      }
+      return `Vous avez perdu -${points} points pour les rapports manqués.`
+    },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
       if (percentage < 0) {
@@ -960,7 +1215,17 @@ const usersDashboardLabels = {
       }
       return 'La précision de détection est inchangée par rapport au mois dernier.'
     },
-    phishingTestResultsSuccessRate: 'taux de réussite'
+    phishingTestResultsSuccessRate: 'taux de réussite',
+
+    // Activity Action Types
+    actionTypeClickedTraining: 'Formation cliquée',
+    actionTypeEmailOpened: 'E-mail ouvert',
+    actionTypeEmailSent: 'E-mail envoyé',
+    actionTypeDownloadedPoster: 'Affiche téléchargée',
+    actionTypeExamPassed: 'Examen réussi',
+    actionTypeClickedLink: 'Lien cliqué',
+    actionTypeSMSSent: 'SMS envoyé',
+    actionTypeOpenedAttachment: 'Pièce jointe ouverte'
   },
   'es-ES': {
     // Header
@@ -1039,15 +1304,15 @@ const usersDashboardLabels = {
     activityTimelineLoadMore: 'Cargar más actividades',
     activityTimelineEmptyMessage: 'No se encontraron actividades.',
     // Incident Responder
-    activityTimelineIncidentResponderReportedEmail: 'El correo electrónico reportado con',
+    activityTimelineIncidentResponderReportedEmail: 'El correo electrónico reportado con el',
     activityTimelineIncidentResponderSubject:
       'asunto fue analizado por el respondedor de incidentes y resultó en',
     // Neutral + Awareness
     activityTimelineEnrollmentEmailSentTo: (userName, enrollmentName, category) => {
       if (category) {
-        return `Correo electrónico de inscripción enviado a ${userName} para la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>.`
+        return `Se ha enviado un correo electrónico de inscripción a ${userName} para la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>.`
       }
-      return `Correo electrónico de inscripción enviado a ${userName} para la inscripción <strong>${enrollmentName}</strong>.`
+      return `Se ha enviado un correo electrónico de inscripción a ${userName} para la inscripción <strong>${enrollmentName}</strong>.`
     },
     activityTimelineFor: 'para',
     activityTimelineEnrollment: 'inscripción en la',
@@ -1087,7 +1352,7 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'ganó' : 'perdió'
-      let text = `${userName} <strong>${action}</strong> <strong>${pointsAbs} puntos</strong> en la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>, con un rendimiento de inscripción del <strong>${performance}%</strong>.`
+      let text = `${userName} <strong>${action}</strong> <strong>${pointsAbs} puntos</strong> en la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>, con un rendimiento de inscripción del <strong>${performance}%</strong>`
       if (pointRule) {
         const rulePoints = Math.abs(pointRule.rulePoint)
         const ruleAction = pointRule.ruleName === 'Joined After 3 Days' ? 'perdió' : 'recibió'
@@ -1101,6 +1366,8 @@ const usersDashboardLabels = {
           ruleText = ` y <strong>${ruleAction}</strong> <strong>${rulePoints} ${extra} puntos</strong> porque la participación en la capacitación ocurrió dentro de las 24 horas posteriores a la invitación.`
         }
         text += ruleText
+      } else {
+        text += '.'
       }
       return text
     },
@@ -1114,13 +1381,49 @@ const usersDashboardLabels = {
     ) => {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'ganó' : 'perdió'
-      return `${userName} <strong>${action}</strong> <strong>${pointsAbs} puntos</strong> en la campaña <strong>${campaignName}</strong> ${campaignType} de dificultad <strong>${difficulty}</strong>, con un rendimiento de campaña del <strong>${performance}%</strong>.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to Spanish equivalents
+      const campaignTypeMap = {
+        'phishing': 'phishing',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'devolución de llamada',
+        'quishing': 'quishing'
+      }
+      const campaignTypeES = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName} <strong>${action}</strong> <strong>${pointsAbs} puntos</strong> en la campaña <strong>${campaignName}</strong> de <strong>${campaignTypeES}</strong> de dificultad <strong>${difficulty}</strong>, con un rendimiento de campaña del <strong>${performance}%</strong>.`
     },
     activityTimelineAwarenessOpened: (userName, enrollmentName, category) => {
       return `${userName} abrió el correo electrónico para la inscripción <strong>${enrollmentName}</strong> de la categoría <strong>${category}</strong>.`
     },
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      return `${userName} abrió el correo electrónico para la campaña <strong>${campaignName}</strong> ${campaignType} de dificultad <strong>${difficulty}</strong>.`
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to Spanish equivalents
+      const campaignTypeMap = {
+        'phishing': 'phishing',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'devolución de llamada',
+        'quishing': 'quishing'
+      }
+      const campaignTypeES = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `${userName} abrió el correo electrónico para la campaña <strong>${campaignName}</strong> de <strong>${campaignTypeES}</strong> de dificultad <strong>${difficulty}</strong>.`
+    },
+    activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
+      // Remove "campaign" from campaignType to avoid duplication (e.g., "phishing campaign" -> "phishing")
+      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      // Map to Spanish equivalents
+      const campaignTypeMap = {
+        'phishing': 'phishing',
+        'smishing': 'smishing',
+        'vishing': 'vishing',
+        'callback': 'devolución de llamada',
+        'quishing': 'quishing'
+      }
+      const campaignTypeES = campaignTypeMap[campaignTypeClean.toLowerCase()] || campaignTypeClean
+      return `La campaña <strong>${campaignName}</strong> de <strong>${campaignTypeES}</strong> de dificultad <strong>${difficulty}</strong> ha sido enviada a ${userName}.`
     },
     // Legacy (keeping for backward compatibility)
     activityTimelineEarnedPoints: (points) => `Ganó ${points} puntos`,
@@ -1146,8 +1449,18 @@ const usersDashboardLabels = {
     phishingTestResultsReportedPhishingEmails: 'Correos electrónicos de phishing reportados:',
     phishingTestResultsPhishingSimulations: 'Simulaciones de phishing:',
     phishingTestResultsDetectionAccuracy: 'Precisión de detección:',
-    phishingTestResultsEarnedPoints: (points) => `Ganó +${points} puntos por sus informes.`,
-    phishingTestResultsLostPoints: (points) => `Perdió -${points} puntos por informes perdidos.`,
+    phishingTestResultsEarnedPoints: (points) => {
+      if (points === 0) {
+        return 'Aún no ha ganado puntos por sus informes.'
+      }
+      return `Ganó +${points} puntos por sus informes.`
+    },
+    phishingTestResultsLostPoints: (points) => {
+      if (points === 0) {
+        return 'No ha perdido puntos por informes perdidos.'
+      }
+      return `Perdió -${points} puntos por informes perdidos.`
+    },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
       if (percentage < 0) {
@@ -1157,7 +1470,17 @@ const usersDashboardLabels = {
       }
       return 'La precisión de detección no cambió desde el mes pasado.'
     },
-    phishingTestResultsSuccessRate: 'tasa de éxito'
+    phishingTestResultsSuccessRate: 'tasa de éxito',
+
+    // Activity Action Types
+    actionTypeClickedTraining: 'Formación clicada',
+    actionTypeEmailOpened: 'Correo electrónico abierto',
+    actionTypeEmailSent: 'Correo electrónico enviado',
+    actionTypeDownloadedPoster: 'Póster descargado',
+    actionTypeExamPassed: 'Examen aprobado',
+    actionTypeClickedLink: 'Enlace clicado',
+    actionTypeSMSSent: 'SMS enviado',
+    actionTypeOpenedAttachment: 'Adjunto abierto'
   }
 }
 

@@ -30,9 +30,23 @@
             dense
             hide-details
             :menu-props="{ offsetY: true }"
+            :slots="{ selection: true, item: true }"
             class="users-dashboard-header__language-select"
             @input="handleLanguageChange"
-          />
+          >
+            <template #selection="{ item }">
+              <div class="users-dashboard-header__language-selection">
+                <span class="users-dashboard-header__language-flag">{{ item.flag }}</span>
+                <span class="users-dashboard-header__language-text">{{ item.text }}</span>
+              </div>
+            </template>
+            <template #item="{ item }">
+              <div class="users-dashboard-header__language-item">
+                <span class="users-dashboard-header__language-flag">{{ item.flag }}</span>
+                <span class="users-dashboard-header__language-text">{{ item.text }}</span>
+              </div>
+            </template>
+          </KSelect>
         </div>
       </div>
     </div>
@@ -53,12 +67,12 @@ export default {
   data() {
     return {
       availableLanguages: [
-        { text: 'English (United Kingdom)', value: 'en-GB' },
-        { text: 'English (United States)', value: 'en-US' },
-        { text: 'Türkçe (Türkiye)', value: 'tr-TR' },
-        { text: 'Deutsch (Deutschland)', value: 'de-DE' },
-        { text: 'Français (France)', value: 'fr-FR' },
-        { text: 'Español (España)', value: 'es-ES' }
+        { text: 'English (United Kingdom)', value: 'en-GB', flag: '🇬🇧' },
+        { text: 'English (United States)', value: 'en-US', flag: '🇺🇸' },
+        { text: 'Türkçe (Türkiye)', value: 'tr-TR', flag: '🇹🇷' },
+        { text: 'Deutsch (Deutschland)', value: 'de-DE', flag: '🇩🇪' },
+        { text: 'Français (France)', value: 'fr-FR', flag: '🇫🇷' },
+        { text: 'Español (España)', value: 'es-ES', flag: '🇪🇸' }
       ]
     }
   },

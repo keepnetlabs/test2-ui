@@ -49,3 +49,16 @@ export const getMyLearning = (targetUserResourceId) => {
     }
   })
 }
+
+/**
+ * Get user info for security growth dashboard
+ * @param {string} targetUserResourceId - The resource ID of the target user
+ * @returns {Promise} API response with user info data
+ */
+export const getUserInfo = (targetUserResourceId) => {
+  return testRequest.get(`/securitygrowthdashboard/user-info/${targetUserResourceId}`, {
+    headers: {
+      accept: 'application/json'
+    }
+  })
+}

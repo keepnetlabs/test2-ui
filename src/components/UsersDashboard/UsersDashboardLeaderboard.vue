@@ -176,6 +176,7 @@ export default {
         {
           label: this.labels.leaderboardTotalPoints,
           property: 'totalPoints',
+          minWidth: 150,
           type: 'text',
           show: true,
           hideSort: true,

@@ -95,8 +95,6 @@ export default {
   created() {
     // Initialize from storage
     this.$store.dispatch('usersDashboard/initializeFromStorage')
-    // Get whitelabel info
-    this.$store.dispatch('login/getWhiteLabelByUrl')
     // TEMPORARILY DISABLED: Allow access without login for development
     // Check if authenticated
     // if (!this.isAuthenticated) {
@@ -104,7 +102,9 @@ export default {
     // }
     // Fetch top performance data (used by OverallPerformance and Leaderboard components)
     // This will also update userInfo with name, email, and department from API response
-    const targetUserResourceId = '4BCeEWHwAKME'
+    const targetUserResourceId = this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
+    // Fetch user info (email, department, phoneNumber, preferredLanguage)
+    this.$store.dispatch('usersDashboard/fetchUserInfo', targetUserResourceId)
     this.$store.dispatch('usersDashboard/fetchTopPerformance', targetUserResourceId)
     // Fetch my learning data (used by YourLearning component)
     this.$store.dispatch('usersDashboard/fetchMyLearning', targetUserResourceId)

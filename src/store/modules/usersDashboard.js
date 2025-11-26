@@ -1,6 +1,11 @@
 import { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
 import usersDashboardLabels from '@/model/constants/usersDashboardLabels'
-import { getTopPerformance, getMyLearning, getPhishingResult } from '@/api/usersDashboard'
+import {
+  getTopPerformance,
+  getMyLearning,
+  getPhishingResult,
+  getUserInfo
+} from '@/api/usersDashboard'
 
 const USERS_DASHBOARD_AUTH_KEY = 'usersDashboardAuth'
 
@@ -20,7 +25,8 @@ const usersDashboard = {
       email: '',
       department: '',
       phoneNumber: '',
-      preferredLanguage: ''
+      preferredLanguage: '',
+      preferredLanguageResourceId: ''
     },
     topPerformance: {
       data: [],
@@ -136,6 +142,18 @@ const usersDashboard = {
       state.myLearning.error = payload
       state.myLearning.isLoading = false
     },
+    SET_PHISHING_RESULT(state, payload) {
+      state.phishingResult.data = payload
+      state.phishingResult.isLoading = false
+      state.phishingResult.error = null
+    },
+    SET_PHISHING_RESULT_LOADING(state, payload) {
+      state.phishingResult.isLoading = payload
+    },
+    SET_PHISHING_RESULT_ERROR(state, payload) {
+      state.phishingResult.error = payload
+      state.phishingResult.isLoading = false
+    },
     RESET_STATE(state) {
       state.token = null
       state.expiredIn = null
@@ -150,7 +168,8 @@ const usersDashboard = {
         email: '',
         department: '',
         phoneNumber: '',
-        preferredLanguage: ''
+        preferredLanguage: '',
+        preferredLanguageResourceId: ''
       }
       state.topPerformance = {
         data: [],
@@ -270,6 +289,25 @@ const usersDashboard = {
         commit('SET_PHISHING_RESULT', null)
         commit('SET_PHISHING_RESULT_ERROR', error.message || 'Failed to fetch phishing result data')
         console.error('Error fetching phishing result:', error)
+        return null
+      }
+    },
+    async fetchUserInfo({ commit }, targetUserResourceId) {
+      try {
+        const response = await getUserInfo(targetUserResourceId)
+        if (response && response.data && response.data.data) {
+          const userData = response.data.data
+          commit('SET_USER_INFO', {
+            email: userData.email || '',
+            department: userData.department || '',
+            phoneNumber: userData.phoneNumber || '',
+            preferredLanguage: userData.preferredLanguage || '',
+            preferredLanguageResourceId: userData.preferredLanguageResourceId || ''
+          })
+        }
+        return response
+      } catch (error) {
+        console.error('Error fetching user info:', error)
         return null
       }
     },

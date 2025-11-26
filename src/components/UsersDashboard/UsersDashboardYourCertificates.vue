@@ -85,6 +85,7 @@ export default {
           property: 'certificateName',
           label: this.labels.yourCertificatesCertificateName,
           type: 'text',
+          minWidth:200,
           show: true,
           hideSort: true
         },
@@ -92,6 +93,7 @@ export default {
           property: 'certificateDate',
           label: this.labels.yourCertificatesCertificateDate,
           type: 'text',
+          minWidth:200,
           show: true,
           hideSort: true
         },

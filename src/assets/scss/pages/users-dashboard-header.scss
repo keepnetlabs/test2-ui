@@ -88,8 +88,8 @@
   }
 
   &__language-select {
-    min-width: 180px;
-
+    min-width: 250px;
+    max-width: 250px;
     .v-input__control {
       min-height: 40px !important;
     }
@@ -98,7 +98,7 @@
       min-height: 40px !important;
       height: 40px !important;
       border-radius: 8px !important;
-      border: 1px solid #e0e0e0 !important;
+      color: #e0e0e0 !important;
       background: #fff !important;
     }
 
@@ -128,6 +128,32 @@
     .v-list-item__title {
       font-family: "Open Sans", sans-serif !important;
     }
+  }
+
+  &__language-selection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__language-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+  }
+
+  &__language-flag {
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__language-text {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    color: #383b41;
+    font-weight: 400;
   }
 }
 
@@ -165,8 +191,25 @@
     }
 
     &__language-select {
-      max-width: 160px;
-      min-width: 160px;
+      max-width: 80px;
+      min-width: 80px;
+
+      .v-input__slot {
+        padding: 0 8px !important;
+        justify-content: center !important;
+      }
+    }
+
+    &__language-selection {
+      justify-content: center;
+    }
+
+    &__language-text {
+      display: none;
+    }
+
+    &__language-flag {
+      font-size: 24px;
     }
   }
 }

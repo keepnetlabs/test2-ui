@@ -50,7 +50,7 @@
                     color: ACTIVITY_TYPE_COLOR_MAP[item.ActionType] || '#757575'
                   }"
                 >
-                  {{ item.ActionType }}
+                  {{ getActionTypeLabel(item.ActionType) }}
                 </span>
                 <span class="users-dashboard-activity-timeline__item-description">
                   <template v-if="item.productType === 'Incident Responder'.toUpperCase()">
@@ -72,17 +72,18 @@
                       ></span>
                     </template>
                     <template v-else>
-                      <strong>{{ item.name }}</strong>
-                      {{ getProductType(item) }}
-                      {{ labels.activityTimelineWith }}
-                      <strong>{{
-                        isProductAwareness(item)
-                          ? item.categoryDescription || ''
-                          : item.difficultyType
-                      }}</strong>
-                      {{ isProductAwareness(item) ? categoryLabel : difficultyLabel }}
-                      {{ labels.activityTimelineHasBeenSentTo }}
-                      <span> {{ userInfo.name }}. </span>
+                      <span
+                        v-html="
+                          labels.activityTimelineCampaignSentTo(
+                            item.name,
+                            getProductType(item),
+                            isProductAwareness(item)
+                              ? item.categoryDescription || ''
+                              : item.difficultyType,
+                            userInfo.name
+                          )
+                        "
+                      ></span>
                     </template>
                   </template>
                   <template
@@ -379,6 +380,22 @@ export default {
     handleImageError(event) {
       // Fallback to default icon if image fails to load
       event.target.src = require('@/assets/img/timeline-phishing-success-icon.png')
+    },
+    getActionTypeLabel(actionType) {
+      if (!actionType) return ''
+      // Map backend ActionType to label key
+      const actionTypeMap = {
+        'Clicked Training': 'actionTypeClickedTraining',
+        'Email Opened': 'actionTypeEmailOpened',
+        'Email Sent': 'actionTypeEmailSent',
+        'Downloaded Poster': 'actionTypeDownloadedPoster',
+        'Exam Passed': 'actionTypeExamPassed',
+        'Clicked Link': 'actionTypeClickedLink',
+        'SMS Sent': 'actionTypeSMSSent',
+        'Opened Attachment': 'actionTypeOpenedAttachment'
+      }
+      const labelKey = actionTypeMap[actionType]
+      return labelKey ? this.labels[labelKey] || actionType : actionType
     },
     getProductType(product) {
       if (product.productType.split(' - ')[0] === 'PHISHING SIMULATOR') {
