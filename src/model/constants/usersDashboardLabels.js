@@ -1304,6 +1304,12 @@ const usersDashboardLabels = {
     welcomeDescription:
       'Siga su progreso y observe cómo sus acciones fortalecen nuestra cultura de seguridad.',
 
+    // User Menu
+    userMenuEmail: 'Correo electrónico:',
+    userMenuDepartment: 'Departamento:',
+    userMenuPhoneNumber: 'Número de teléfono:',
+    userMenuPreferredLanguage: 'Idioma preferido:',
+
     // Overall Performance
     overallPerformanceTitle: 'Rendimiento General',
     overallPerformanceSubtitle:
