@@ -64,6 +64,6 @@ export function generateLandingPageTranslation(payload) {
 
 export function getLandingPageTranslation(temporaryKey) {
   return testRequest.get(
-    `phishing-simulator/landing-page-template/translate-content/${temporaryKey}`
+    `phishing-simulator/landing-page-template/translated-content/${temporaryKey}`
   )
 }
