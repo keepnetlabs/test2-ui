@@ -669,7 +669,7 @@
               :min-width="109"
               align="right"
               class-name="actions-container"
-              label="Actions"
+              :label="actionsLabel"
               label-class-name="actions-label"
               v-if="rowActions && rowActions.length > 2"
             >
@@ -771,7 +771,7 @@
               :min-width="110"
               align="right"
               class-name="actions-container--first"
-              label="Actions"
+              :label="actionsLabel"
               label-class-name="actions-label"
               v-if="rowActions && rowActions.length === 1"
             >
@@ -802,7 +802,7 @@
               :min-width="110"
               align="right"
               class-name="actions-container"
-              label="Actions"
+              :label="actionsLabel"
               label-class-name="actions-label"
               v-if="rowActions && rowActions.length === 2"
             >
@@ -920,7 +920,7 @@
         >
           <template>
             <span class="el-pagination__text el-pagination__text--1" v-if="showPageSize"
-              >Rows per page:
+              >{{ rowsPerPageText }}
             </span>
             <span class="el-pagination__text el-pagination__text--2">
               {{
@@ -955,7 +955,7 @@
           layout="sizes, prev, pager, next,slot"
         >
           <template>
-            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--1">{{ rowsPerPageText }} </span>
             <span class="el-pagination__text el-pagination__text--2">
               {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount + 1 }}-{{
                 this.currentPage * this.rowCount > initialData.length
@@ -979,7 +979,7 @@
           layout="sizes, prev, pager, next,slot"
         >
           <template>
-            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--1">{{ rowsPerPageText }} </span>
             <span class="el-pagination__text el-pagination__text--2">
               {{
                 filteredDataLength === 0
@@ -1403,8 +1403,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isWantToDownload: 'common/getDownloadModalStatus' // for using getters
+      isWantToDownload: 'common/getDownloadModalStatus', // for using getters
+      dashboardLabels: 'usersDashboard/getLabels' // for pagination labels
     }),
+    rowsPerPageText() {
+      return this.dashboardLabels?.dataTableRowsPerPage || 'Rows per page:'
+    },
+    actionsLabel() {
+      return this.dashboardLabels?.dataTableActions || 'Actions'
+    },
     isRenderSelectAllButton() {
       if (this.isServerSideSelection) return !this.search && !this.isSearchActive
       return this.isServerSideSelection || !this.isServerSide

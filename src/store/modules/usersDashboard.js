@@ -38,6 +38,7 @@ const usersDashboard = {
       isLoading: false,
       error: null
     },
+    myLearningLoading: false, // Separate loading state for better reactivity
     phishingResult: {
       data: null,
       isLoading: false,
@@ -56,7 +57,7 @@ const usersDashboard = {
     getTopPerformanceLoading: (state) => state.topPerformance.isLoading,
     getTopPerformanceError: (state) => state.topPerformance.error,
     getMyLearning: (state) => state.myLearning.data,
-    getMyLearningLoading: (state) => state.myLearning.isLoading,
+    getMyLearningLoading: (state) => state.myLearningLoading, // Use separate loading state
     getMyLearningError: (state) => state.myLearning.error,
     getPhishingResult: (state) => state.phishingResult.data,
     getPhishingResultLoading: (state) => state.phishingResult.isLoading,
@@ -133,14 +134,17 @@ const usersDashboard = {
     SET_MY_LEARNING(state, payload) {
       state.myLearning.data = payload || []
       state.myLearning.isLoading = false
+      state.myLearningLoading = false // Update separate loading state
       state.myLearning.error = null
     },
     SET_MY_LEARNING_LOADING(state, payload) {
       state.myLearning.isLoading = payload
+      state.myLearningLoading = payload // Update separate loading state
     },
     SET_MY_LEARNING_ERROR(state, payload) {
       state.myLearning.error = payload
       state.myLearning.isLoading = false
+      state.myLearningLoading = false // Update separate loading state
     },
     SET_PHISHING_RESULT(state, payload) {
       state.phishingResult.data = payload
@@ -181,6 +185,7 @@ const usersDashboard = {
         isLoading: false,
         error: null
       }
+      state.myLearningLoading = false // Reset separate loading state
       state.phishingResult = {
         data: null,
         isLoading: false,

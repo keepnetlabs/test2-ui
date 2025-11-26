@@ -21,7 +21,7 @@
         :table="tableData"
         :columns="tableColumns"
         :empty="emptyOptions"
-        :loading="isLoading"
+        :loading="myLearningLoading"
         :row-actions="rowActions"
         :count-row="5"
         :show-refresh-button="false"
@@ -47,14 +47,14 @@
             class="users-dashboard-your-learning__points-column"
           >
             <VIcon
-              :color="getPointsIconColor(scope.row.points)"
+              :color="getPointsIconColor(scope.row.points, scope.row.isMaxPoints)"
               size="18"
               class="users-dashboard-your-learning__points-icon"
             >
-              {{ getPointsIcon(scope.row.points) }}
+              {{ getPointsIcon(scope.row.points, scope.row.isMaxPoints) }}
             </VIcon>
             <span class="users-dashboard-your-learning__points-text">
-              {{ scope.row.points }}
+              {{ scope.row.points }}<template v-if="scope.row.isMaxPoints"> ({{ labels.yourLearningMaxPoints }})</template>
             </span>
           </div>
         </template>
@@ -98,9 +98,6 @@ export default {
       myLearning: 'usersDashboard/getMyLearning',
       myLearningLoading: 'usersDashboard/getMyLearningLoading'
     }),
-    isLoading() {
-      return this.myLearningLoading
-    },
     tableData() {
       // Transform API data to table format
       if (!this.myLearning || this.myLearning.length === 0) {
@@ -138,6 +135,7 @@ export default {
             ? this.labels.yourLearningAvailable
             : this.labels.yourLearningNotAvailable,
           points: pointsString,
+          isMaxPoints: item.isMaxPoints || false, // Backend'den gelen isMaxPoints değeri
           pointsEarned: item.status === 'Completed' && pointsValue > 0,
           trainingUrl: item.trainingUrl || ''
         }
@@ -236,7 +234,11 @@ export default {
       }
       return statusMap[status] || '#757575'
     },
-    getPointsIcon(points) {
+    getPointsIcon(points, isMaxPoints) {
+      // Backend'den gelen isMaxPoints kontrolü
+      if (isMaxPoints === true) {
+        return 'mdi-star'
+      }
       const pointsValue = parseInt(points)
       if (isNaN(pointsValue)) {
         return 'mdi-check-circle'
@@ -247,12 +249,17 @@ export default {
       if (pointsValue === 0) {
         return 'mdi-minus-circle'
       }
+      // Fallback: Eski (max) kontrolü (geriye dönük uyumluluk için)
       if (points && points.includes('(max)')) {
         return 'mdi-star'
       }
       return 'mdi-check-circle'
     },
-    getPointsIconColor(points) {
+    getPointsIconColor(points, isMaxPoints) {
+      // Backend'den gelen isMaxPoints kontrolü
+      if (isMaxPoints === true) {
+        return '#D1AD0C' // Gold color for max points
+      }
       const pointsValue = parseInt(points)
       if (isNaN(pointsValue)) {
         return '#217124'
@@ -263,8 +270,9 @@ export default {
       if (pointsValue === 0) {
         return '#757575' // Gray for zero points
       }
+      // Fallback: Eski (max) kontrolü (geriye dönük uyumluluk için)
       if (points && points.includes('(max)')) {
-        return '#FFC107' // Yellow for max points
+        return '#D1AD0C' // Gold color for max points
       }
       return '#217124' // Green for positive points
     },

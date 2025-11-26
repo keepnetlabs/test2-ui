@@ -199,7 +199,7 @@ import {
   ACTIVITY_TYPES_OPENED_MAP
 } from '@/components/GamificationReport/utils'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getUserTimeline } from '@/api/reports'
+import { getUserTimeline } from '@/api/usersDashboard'
 import ThreeListItemLoading from '@/components/SkeletonLoading/ThreeListItemLoading'
 
 export default {
@@ -300,8 +300,8 @@ export default {
       return timeline
     },
     getCurrentUserResourceId() {
-      // Use static resourceId like other components
-      return '4BCeEWHwAKME'
+      // Get from URL query, fallback to default
+      return this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
     },
     isProductAwareness(item) {
       return (

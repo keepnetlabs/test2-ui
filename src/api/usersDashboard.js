@@ -62,3 +62,17 @@ export const getUserInfo = (targetUserResourceId) => {
     }
   })
 }
+
+/**
+ * Get user timeline data for security growth dashboard
+ * @param {Object} payload - The payload containing filters and pagination
+ * @returns {Promise} API response with timeline data
+ */
+export const getUserTimeline = (payload) => {
+  return testRequest.post(`/securitygrowthdashboard/user-timeline/${payload.targetUserResourceId}`, payload, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json-patch+json'
+    }
+  })
+}

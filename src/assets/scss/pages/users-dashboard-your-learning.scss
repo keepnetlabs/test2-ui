@@ -50,8 +50,14 @@
 
   &__points-text {
     font-family: "Open Sans", sans-serif;
-    font-size: 14px;
+    font-size: 12px;
     color: #383b41;
+    display: inline;
+  }
+
+  &__points-max {
+    display: inline;
+    margin-left: 2px;
   }
 
   &__table {
