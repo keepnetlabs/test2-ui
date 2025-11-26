@@ -163,6 +163,7 @@
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
                           @on-generate-with-ai="handleGenerateWithAI"
+                          @on-relocalize-replace="handleRelocalizeReplace"
                           @on-ai-ally="handleAIAlly"
                           @on-edit-mode="handleEditMode"
                           @on-link-change="handleLinkChange"
@@ -286,6 +287,7 @@
                             @on-custom-head-scripts-change="
                               (value) => onCustomHeadScriptsChange(value, index)
                             "
+                            @on-save-template="(template) => handleSaveTemplate(template, index)"
                             @setAttachmentFile="setAttachmentFile"
                           />
                         </el-tab-pane>
@@ -592,6 +594,18 @@ export default {
     }
   },
   methods: {
+    handleSaveTemplate(template, pageIndex) {
+      const currentPageIndex = typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
+      const selectedLanguagePayload = this.languagesPayload.find(
+        (item) => item.languageTypeResourceId === this.activeLanguage
+      )
+      if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
+        const currentTemplate = selectedLanguagePayload.landingPages[currentPageIndex].content || ''
+        if (currentTemplate.trim() !== template.trim()) {
+          selectedLanguagePayload.isTranslated = false
+        }
+      }
+    },
     handleActiveLanguageChange(languageId) {
       // Yeni dilin sayfalarını yükle
       const newLangPayload = this.languagesPayload.find(
@@ -643,6 +657,47 @@ export default {
       this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
         JSON.stringify(this.getSelectedLanguagePayload)
       )
+    },
+    handleRelocalizeReplace({ language }) {
+      const selectedLanguagePayload = this.getSelectedLanguagePayload
+      const landingPages = selectedLanguagePayload.landingPages || []
+
+      const payload = {
+        landingPages: landingPages.map((page) => ({
+          name: page.name || '',
+          content: page.content || '',
+          order: page.order || 0
+        })),
+        targetLanguages: [
+          {
+            languageResourceId: language.value
+          }
+        ]
+      }
+
+      this.isGenerateWithAi = true
+      this.isGenerateWithAIDisabled = true
+      this.isSubmitDisabled = true
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true
+        })
+      }
+
+      generateLandingPageTranslation(payload)
+        .then((response) => {
+          if (!response?.data?.data || response?.data?.status !== 'SUCCESS') {
+            this.resetGenerateWithAIDisabled()
+            return
+          }
+
+          this.translationTempKey = response.data.data
+          this.isEverythingLocalized = false
+          this.askForLandingPageTranslation()
+        })
+        .catch(() => {
+          this.resetGenerateWithAIDisabled()
+        })
     },
     handleGenerateWithAI() {
       this.isGenerateWithAi = true

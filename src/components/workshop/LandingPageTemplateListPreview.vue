@@ -444,6 +444,21 @@
                             <span class="template-preview__text--title">Template Name: </span>
                             <span class="template-preview__text--body">{{ templateName }}</span>
                           </div>
+                          <div
+                            v-if="selectedTemplateLanguages.length > 1"
+                            class="mt-4"
+                            style="max-width: 554px;"
+                          >
+                            <InputLanguagePreview
+                              v-model="languagePreview"
+                              persistent-hint
+                              class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                              :hint="landingPagePreviewLanguageHint"
+                              :items="selectedTemplateLanguages"
+                              :hide-details="false"
+                              @input="handleLandingPagePreviewLanguageChange"
+                            />
+                          </div>
                           <div>
                             <span class="template-preview__text--title"
                               >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }}
@@ -476,8 +491,10 @@
                             is-extra-height
                             is-landing-page
                             :key="template.content"
-                            :html="getPreviewLandingHtml(template.content)"
-                            :is-red-flagged-template="checkIsRedFlaggedTemplate(template.content)"
+                            :html="getPreviewLandingHtml(getLandingPageContent(template))"
+                            :is-red-flagged-template="
+                              checkIsRedFlaggedTemplate(getLandingPageContent(template))
+                            "
                           />
                         </ElTabPane>
                       </ElTabs>
@@ -825,7 +842,10 @@
                           is-extra-height
                           is-landing-page
                           :key="template.content"
-                          :html="template.content"
+                          :html="getPreviewLandingHtml(getLandingPageContent(template))"
+                          :is-red-flagged-template="
+                            checkIsRedFlaggedTemplate(getLandingPageContent(template))
+                          "
                         />
                       </ElTabPane>
                     </ElTabs>
@@ -884,6 +904,7 @@ import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { isDifferent } from '@/utils/functions'
 import { handleIsSafari } from '@/utils/functions'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
@@ -902,6 +923,7 @@ export default {
     MultipaneResizer,
     InputPhishingLink,
     InputEntityName,
+    InputLanguagePreview,
     EmailTemplate
   },
   directives: {
@@ -945,6 +967,8 @@ export default {
       isSafari: handleIsSafari(),
       showGrapesModal: false,
       landingPageTemplates: [],
+      selectedTemplateLanguages: [],
+      languagePreview: '',
       search: null,
       listData: [],
       totalNumberOfPages: 1,
@@ -998,12 +1022,14 @@ export default {
       return this.type === SCENARIO_TYPES.PHISHING
     },
     getSelectedTemplateDetails() {
-      return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.content || ''
-        : this.landingPageTemplates?.[0]?.content || ''
+      if (!this.landingPageTemplates?.length) return ''
+      const template = this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]
+      return this.getLandingPageContent(template)
     },
     getSingleTemplateDetails() {
-      return this.landingPageTemplates?.[0]?.content || ''
+      if (!this.landingPageTemplates?.length) return ''
+      const template = this.landingPageTemplates?.[0]
+      return this.getLandingPageContent(template)
     },
     getLandingPageHtmlKey() {
       return `${this.getSingleTemplateDetails}-${this.templateName}`
@@ -1038,6 +1064,10 @@ export default {
         ...selectedTemplate,
         resourceId: selectedTemplate.resourceId
       }
+    },
+    landingPagePreviewLanguageHint() {
+      if (this.selectedTemplateLanguages.length <= 1) return ''
+      return 'Select a language to preview the landing page'
     }
   },
   watch: {
@@ -1254,8 +1284,7 @@ export default {
         this.templateName = newTemplate.name
         this.isInvisibleCaptchaEnabled = newTemplate.isInvisibleCaptchaEnabled
         this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
-        let templates = newTemplate.landingPages || []
-        this.landingPageTemplates = templates
+        this.applyLandingPageTemplatePayload(newTemplate)
         this.loadingTemplatePreview = false
         this.selectedLandingPageTab = '1'
       }
@@ -1265,8 +1294,7 @@ export default {
       this.isInvisibleCaptchaEnabled = newTemplate.isInvisibleCaptchaEnabled
       this.templateName = newTemplate.name
       this.selectedTemplateHeader = newTemplate.landingPages[0]?.name || ''
-      let templates = newTemplate.landingPages || []
-      this.landingPageTemplates = templates
+      this.applyLandingPageTemplatePayload(newTemplate)
       this.loadingTemplatePreview = false
       this.selectedLandingPageTab = '1'
       this.listData.unshift(newTemplate)
@@ -1446,6 +1474,91 @@ export default {
       }
       return html
     },
+    getLanguageOptionById(languageId = '') {
+      if (!languageId) return null
+      const languageValues = this.languages || []
+      const normalizedId = languageId.toString()
+      return languageValues.find(
+        (language) =>
+          (language.value && language.value.toString() === normalizedId) ||
+          (language.languageTypeResourceId &&
+            language.languageTypeResourceId.toString() === normalizedId) ||
+          (language.id && language.id.toString() === normalizedId)
+      )
+    },
+    getLandingPageContent(template = {}) {
+      if (!template) return ''
+      const languageId = this.languagePreview || template.languageTypeResourceId
+      if (languageId && template.languages && template.languages[languageId]) {
+        return template.languages[languageId]
+      }
+      if (template.content) return template.content
+      const availableTranslations = Object.values(template.languages || {})
+      return availableTranslations.length ? availableTranslations[0] : ''
+    },
+    transformLandingPages(landingPages = [], mainLanguageId = '') {
+      const languagesMap = new Map()
+      const addLanguageOption = (langId, label = '') => {
+        if (!langId) return
+        const key = langId.toString()
+        if (languagesMap.has(key)) return
+        const option = this.getLanguageOptionById(langId)
+        const text = option?.text || option?.name || label || langId || langId.toString()
+        languagesMap.set(key, {
+          value: langId,
+          text
+        })
+      }
+      addLanguageOption(mainLanguageId)
+      const templates = (landingPages || []).map((page) => {
+        const languages = {}
+        if (mainLanguageId && page.content) {
+          languages[mainLanguageId] = page.content
+        }
+        if (Array.isArray(page.languages)) {
+          page.languages.forEach((langPage) => {
+            const langId = langPage.languageTypeResourceId
+            if (!langId) return
+            languages[langId] = langPage.content || ''
+            addLanguageOption(langId, langPage.languageTypeName)
+          })
+        }
+        return {
+          ...page,
+          languages,
+          languageTypeResourceId: mainLanguageId || page.languageTypeResourceId
+        }
+      })
+
+      return {
+        templates,
+        languages: Array.from(languagesMap.values())
+      }
+    },
+    applyLandingPageTemplatePayload(payload = {}) {
+      const landingPages = payload.landingPages || []
+      const mainLanguageId =
+        payload.languageTypeResourceId ||
+        landingPages[0]?.languageTypeResourceId ||
+        this.languagePreview
+      const { templates, languages } = this.transformLandingPages(landingPages, mainLanguageId)
+
+      this.landingPageTemplates = templates
+      this.selectedTemplateLanguages = languages
+
+      if (languages.length) {
+        const hasCurrentLang = languages.some((lang) => lang.value === this.languagePreview)
+        if (!hasCurrentLang) {
+          this.languagePreview = languages[0].value
+        }
+      } else {
+        this.languagePreview = mainLanguageId || ''
+      }
+    },
+    handleLandingPagePreviewLanguageChange(languageId) {
+      if (!languageId) return
+      this.languagePreview = languageId
+    },
     setSelectedTemplate(item, index, isInitial = false) {
       if (this.isSaving) return
       const isChanged = isDifferent(this.editData, this.initialEditData)
@@ -1480,8 +1593,7 @@ export default {
           this.newUrlTemplate = this.templateURL
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
-          let templates = response?.data?.data?.landingPages || []
-          this.landingPageTemplates = templates
+          this.applyLandingPageTemplatePayload(this.landingPageTemplateData)
         })
         .finally(() => {
           this.loadingTemplatePreview = false
