@@ -1069,7 +1069,6 @@ export default {
       }
       this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.initialValue = this.activeLanguage
       this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.lazyValue = this.activeLanguage
-      this.showEditLanguagesLeavingDialog = true
       this.beforeSaveLanguage = value
     },
     handleCloseEditLanguagesLeavingDialog() {
