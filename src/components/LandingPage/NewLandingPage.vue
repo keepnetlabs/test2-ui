@@ -648,6 +648,11 @@ export default {
       this.isGenerateWithAi = true
       this.isGenerateWithAIDisabled = true
       this.isSubmitDisabled = true
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true
+        })
+      }
 
       // Aktif dilin landing pages'lerini al
       const selectedLanguagePayload = this.getSelectedLanguagePayload
@@ -847,6 +852,11 @@ export default {
     resetGenerateWithAIDisabled(timeoutId) {
       this.isGenerateWithAi = false
       this.isGenerateWithAIDisabled = false
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = false
+        })
+      }
       this.isSubmitDisabled = false
       if (timeoutId) {
         clearTimeout(timeoutId)
