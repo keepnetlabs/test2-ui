@@ -22,6 +22,7 @@
       @input="handleDeliveryMethodChange"
     />
     <InputPreferredLanguage
+      v-if="!isDeliveryMethodLMS"
       v-model="formData.sendTemplatesInPreferredLanguage"
       title="Preferred Language"
       subtitle="Select how to send the notification template by language."
