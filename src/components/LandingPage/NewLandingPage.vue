@@ -595,8 +595,7 @@ export default {
   },
   methods: {
     handleSaveTemplate(template, pageIndex) {
-      const currentPageIndex =
-        typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
+      const currentPageIndex = typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
       const selectedLanguagePayload = this.languagesPayload.find(
         (item) => item.languageTypeResourceId === this.activeLanguage
       )
@@ -1155,56 +1154,30 @@ export default {
       // Ana dil (default language) - formValues.languageTypeResourceId
       let mainLanguageId = this.formValues.languageTypeResourceId || this.activeLanguage
 
-      // Ana dilin seçili dillerde olup olmadığını kontrol et
-      const isMainLanguageInSelected = mainLanguageId
-        ? this.selectedLanguages.find((item) => item.value === mainLanguageId)
-        : null
-
-      // Eğer ana dil seçili dillerde yoksa veya hiç ana dil yoksa, ilk seçili dili ana dil yap
-      if (!isMainLanguageInSelected && this.selectedLanguages.length > 0) {
-        mainLanguageId = this.selectedLanguages[0].value
-        // formValues.languageTypeResourceId'yi güncelle (submit için ana dil)
-        this.formValues.languageTypeResourceId = mainLanguageId
-        // Yeni ana dilin landingPages'lerini formValues'a kopyala
-        const newMainLanguagePayload = this.languagesPayload.find(
-          (p) => p.languageTypeResourceId === mainLanguageId
-        )
-        if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
-          this.formValues.landingPages = JSON.parse(
-            JSON.stringify(newMainLanguagePayload.landingPages)
-          )
-        }
-      } else if (!mainLanguageId && this.selectedLanguages.length > 0) {
-        // Hiç ana dil yoksa, ilk seçili dili ana dil yap
-        mainLanguageId = this.selectedLanguages[0].value
-        this.formValues.languageTypeResourceId = mainLanguageId
-        // Yeni ana dilin landingPages'lerini formValues'a kopyala
-        const newMainLanguagePayload = this.languagesPayload.find(
-          (p) => p.languageTypeResourceId === mainLanguageId
-        )
-        if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
-          this.formValues.landingPages = JSON.parse(
-            JSON.stringify(newMainLanguagePayload.landingPages)
-          )
-        }
-      }
-
-      // Ana dilin payload'ını bul - eğer languagesPayload'da yoksa, formValues.landingPages'i kullan
-      let mainLanguagePayload = this.languagesPayload.find(
-        (p) => p.languageTypeResourceId === mainLanguageId
+      // selectedLanguages'de ana dil var mı kontrol et
+      const isMainLanguageInSelected = this.selectedLanguages.find(
+        (item) => item.value === mainLanguageId
       )
 
-      // Eğer payload bulunamadıysa, yeni ana dil için payload oluştur
-      if (!mainLanguagePayload && mainLanguageId) {
-        mainLanguagePayload = {
-          languageTypeResourceId: mainLanguageId,
-          landingPages: JSON.parse(JSON.stringify(this.formValues.landingPages)),
-          isTranslated: true
+      // Ana dil yoksa ya da seçili dillerde değilse, ilk seçili dili kullan
+      if (!isMainLanguageInSelected && this.selectedLanguages.length > 0) {
+        mainLanguageId = this.selectedLanguages[0].value
+        this.formValues.languageTypeResourceId = mainLanguageId
+
+        // Yeni ana dilin landingPages'lerini formValues'a kopyala
+        const newMainLanguagePayload = this.languagesPayload.find(
+          (p) => p.languageTypeResourceId === mainLanguageId
+        )
+        if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
+          this.formValues.landingPages = JSON.parse(
+            JSON.stringify(newMainLanguagePayload.landingPages)
+          )
         }
-      } else if (!mainLanguagePayload) {
-        // Son çare: formValues.landingPages'i kullan
-        mainLanguagePayload = { landingPages: this.formValues.landingPages }
       }
+
+      const mainLanguagePayload = this.languagesPayload.find(
+        (p) => p.languageTypeResourceId === mainLanguageId
+      ) || { landingPages: this.formValues.landingPages }
 
       // Diğer diller (translated languages)
       const otherLanguagesPayload = this.languagesPayload.filter(
