@@ -25,32 +25,49 @@
       </a>
     </div>
     <div class="users-dashboard-recent-badges__content">
-      <div
-        v-for="(badge, index) in recentBadges"
-        :key="index"
-        :class="[
-          'users-dashboard-recent-badges__badge-item',
-          `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
-        ]"
-      >
-        <div class="users-dashboard-recent-badges__badge-icon">
-          <img
-            v-if="badge.imageUrl"
-            :src="badge.imageUrl"
-            :alt="badge.name"
-            class="users-dashboard-recent-badges__badge-image"
-          />
-          <div v-else class="users-dashboard-recent-badges__badge-placeholder">
-            <VIcon size="48" color="#2196F3">mdi-trophy</VIcon>
-          </div>
-        </div>
-        <span
-          :id="`text--users-dashboard-recent-badges-name-${index}`"
-          class="users-dashboard-recent-badges__badge-name"
+      <template v-if="topPerformanceLoading">
+        <div
+          v-for="n in badgeCount"
+          :key="`skeleton-${n}`"
+          :class="[
+            'users-dashboard-recent-badges__badge-item',
+            `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
+          ]"
         >
-          {{ badge.name }}
-        </span>
-      </div>
+          <div class="users-dashboard-recent-badges__badge-icon">
+            <v-skeleton-loader type="avatar" size="80" />
+          </div>
+          <v-skeleton-loader type="text, text" width="90" />
+        </div>
+      </template>
+      <template v-else>
+        <div
+          v-for="(badge, index) in recentBadges"
+          :key="index"
+          :class="[
+            'users-dashboard-recent-badges__badge-item',
+            `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
+          ]"
+        >
+          <div class="users-dashboard-recent-badges__badge-icon">
+            <img
+              v-if="badge.imageUrl"
+              :src="badge.imageUrl"
+              :alt="badge.name"
+              class="users-dashboard-recent-badges__badge-image"
+            />
+            <div v-else class="users-dashboard-recent-badges__badge-placeholder">
+              <VIcon size="48" color="#2196F3">mdi-trophy</VIcon>
+            </div>
+          </div>
+          <span
+            :id="`text--users-dashboard-recent-badges-name-${index}`"
+            class="users-dashboard-recent-badges__badge-name"
+          >
+            {{ badge.name }}
+          </span>
+        </div>
+      </template>
     </div>
   </v-card>
 </template>
@@ -62,7 +79,8 @@ export default {
   name: 'UsersDashboardRecentBadges',
   computed: {
     ...mapGetters({
-      labels: 'usersDashboard/getLabels'
+      labels: 'usersDashboard/getLabels',
+      topPerformanceLoading: 'usersDashboard/getTopPerformanceLoading'
     }),
     badgeCount() {
       return Math.min(this.recentBadges.length, 3)

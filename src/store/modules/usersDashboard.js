@@ -4,7 +4,8 @@ import {
   getTopPerformance,
   getMyLearning,
   getPhishingResult,
-  getUserInfo
+  getUserInfo,
+  getMyCertificates
 } from '@/api/usersDashboard'
 
 const USERS_DASHBOARD_AUTH_KEY = 'usersDashboardAuth'
@@ -30,7 +31,7 @@ const usersDashboard = {
     },
     topPerformance: {
       data: [],
-      isLoading: false,
+      isLoading: true, // Start as true to show loading initially
       error: null
     },
     myLearning: {
@@ -38,7 +39,12 @@ const usersDashboard = {
       isLoading: false,
       error: null
     },
-    myLearningLoading: false, // Separate loading state for better reactivity
+    myLearningLoading: true, // Start as true to show loading initially
+    myCertificates: {
+      data: [],
+      isLoading: true, // Start as true to show loading initially
+      error: null
+    },
     phishingResult: {
       data: null,
       isLoading: false,
@@ -59,6 +65,9 @@ const usersDashboard = {
     getMyLearning: (state) => state.myLearning.data,
     getMyLearningLoading: (state) => state.myLearningLoading, // Use separate loading state
     getMyLearningError: (state) => state.myLearning.error,
+    getMyCertificates: (state) => state.myCertificates.data,
+    getMyCertificatesLoading: (state) => state.myCertificates.isLoading,
+    getMyCertificatesError: (state) => state.myCertificates.error,
     getPhishingResult: (state) => state.phishingResult.data,
     getPhishingResultLoading: (state) => state.phishingResult.isLoading,
     getPhishingResultError: (state) => state.phishingResult.error,
@@ -129,7 +138,7 @@ const usersDashboard = {
     },
     SET_TOP_PERFORMANCE_ERROR(state, payload) {
       state.topPerformance.error = payload
-      state.topPerformance.isLoading = false
+      // Note: Don't reset isLoading state here, let the SET_TOP_PERFORMANCE mutation handle it
     },
     SET_MY_LEARNING(state, payload) {
       state.myLearning.data = payload || []
@@ -144,7 +153,19 @@ const usersDashboard = {
     SET_MY_LEARNING_ERROR(state, payload) {
       state.myLearning.error = payload
       state.myLearning.isLoading = false
-      state.myLearningLoading = false // Update separate loading state
+    },
+    SET_MY_CERTIFICATES(state, payload) {
+      state.myCertificates.data = payload || []
+      state.myCertificates.isLoading = false
+      state.myCertificates.error = null
+    },
+    SET_MY_CERTIFICATES_LOADING(state, payload) {
+      state.myCertificates.isLoading = payload
+    },
+    SET_MY_CERTIFICATES_ERROR(state, payload) {
+      state.myCertificates.error = payload
+      state.myCertificates.isLoading = false
+      // Note: Don't reset loading state here, let the action handle it
     },
     SET_PHISHING_RESULT(state, payload) {
       state.phishingResult.data = payload
@@ -177,7 +198,7 @@ const usersDashboard = {
       }
       state.topPerformance = {
         data: [],
-        isLoading: false,
+        isLoading: true, // Reset to initial loading state
         error: null
       }
       state.myLearning = {
@@ -185,7 +206,12 @@ const usersDashboard = {
         isLoading: false,
         error: null
       }
-      state.myLearningLoading = false // Reset separate loading state
+      state.myLearningLoading = true // Reset to initial loading state
+      state.myCertificates = {
+        data: [],
+        isLoading: true,
+        error: null
+      }
       state.phishingResult = {
         data: null,
         isLoading: false,
@@ -223,6 +249,8 @@ const usersDashboard = {
 
       try {
         const response = await getTopPerformance(targetUserResourceId)
+        // Minimum 800ms loading duration for better UX
+        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data) {
           const topPerformanceData = response.data.data
           commit('SET_TOP_PERFORMANCE', topPerformanceData)
@@ -259,6 +287,8 @@ const usersDashboard = {
 
       try {
         const response = await getMyLearning(targetUserResourceId)
+        // Minimum 800ms loading duration for better UX
+        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data && response.data.data.results) {
           commit('SET_MY_LEARNING', response.data.data.results)
         } else {
@@ -272,6 +302,30 @@ const usersDashboard = {
         commit('SET_MY_LEARNING', [])
         commit('SET_MY_LEARNING_ERROR', error.message || 'Failed to fetch my learning data')
         console.error('Error fetching my learning:', error)
+        return null
+      }
+    },
+    async fetchMyCertificates({ commit }, targetUserResourceId) {
+      commit('SET_MY_CERTIFICATES_LOADING', true)
+      commit('SET_MY_CERTIFICATES_ERROR', null)
+
+      try {
+        const response = await getMyCertificates(targetUserResourceId)
+        // Minimum 800ms loading duration for better UX
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        if (response && response.data && response.data.data && response.data.data.results) {
+          commit('SET_MY_CERTIFICATES', response.data.data.results)
+        } else {
+          // Set empty array on invalid response instead of error
+          commit('SET_MY_CERTIFICATES', [])
+        }
+        return response
+      } catch (error) {
+        // On error, set empty array instead of throwing
+        // This prevents component from breaking when API fails
+        commit('SET_MY_CERTIFICATES', [])
+        commit('SET_MY_CERTIFICATES_ERROR', error.message || 'Failed to fetch my certificates data')
+        console.error('Error fetching my certificates:', error)
         return null
       }
     },

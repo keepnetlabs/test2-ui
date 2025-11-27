@@ -76,3 +76,25 @@ export const getUserTimeline = (payload) => {
     }
   })
 }
+
+/**
+ * Get my certificates data for security growth dashboard
+ * @param {string} targetUserResourceId - The resource ID of the target user
+ * @returns {Promise} API response with certificates data
+ */
+export const getMyCertificates = (targetUserResourceId) => {
+  const payload = {
+    pagination: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'StartDate',
+      ascending: false
+    }
+  }
+  return testRequest.post(`/securitygrowthdashboard/my-certificates/${targetUserResourceId}`, payload, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json-patch+json'
+    }
+  })
+}

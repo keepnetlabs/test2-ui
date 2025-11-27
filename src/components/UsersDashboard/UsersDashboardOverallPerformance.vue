@@ -25,47 +25,64 @@
       </a>
     </div>
     <div class="users-dashboard-overall-performance__content">
-      <div class="users-dashboard-overall-performance__percentage-box">
-        <span
-          id="text--users-dashboard-overall-performance-percentage"
-          class="users-dashboard-overall-performance__percentage"
-        >
-          {{ performanceData.percentage }}%
-        </span>
-      </div>
-      <div class="users-dashboard-overall-performance__metrics">
-        <div class="users-dashboard-overall-performance__metric-item">
-          <span class="users-dashboard-overall-performance__metric-label">{{
-            labels.overallPerformancePoints
-          }}</span>
+      <template v-if="topPerformanceLoading">
+        <div class="users-dashboard-overall-performance__percentage-box">
+          <v-skeleton-loader type="avatar" size="120" />
+        </div>
+        <div class="users-dashboard-overall-performance__metrics">
+          <div class="users-dashboard-overall-performance__metric-item">
+            <v-skeleton-loader type="text" width="80" />
+            <v-skeleton-loader type="text" width="60" />
+          </div>
+          <div class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank">
+            <v-skeleton-loader type="text" width="80" />
+            <v-skeleton-loader type="text" width="60" />
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="users-dashboard-overall-performance__percentage-box">
           <span
-            id="text--users-dashboard-overall-performance-points"
-            class="users-dashboard-overall-performance__metric-value"
+            id="text--users-dashboard-overall-performance-percentage"
+            class="users-dashboard-overall-performance__percentage"
           >
-            {{ performanceData.points }}
+            {{ performanceData.percentage }}%
           </span>
         </div>
-        <div class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank">
-          <figure
-            v-if="performanceData.rank >= 1 && performanceData.rank <= 3"
-            :class="[
-              'users-dashboard-overall-performance__ribbon',
-              `users-dashboard-overall-performance__ribbon--${getRankClass(performanceData.rank)}`
-            ]"
-          >
-            <img :src="getRibbonImgSrc(performanceData.rank)" :alt="getRibbonAlt(performanceData.rank)" />
-          </figure>
-          <span class="users-dashboard-overall-performance__metric-label">{{
-            labels.overallPerformanceRank
-          }}</span>
-          <span
-            id="text--users-dashboard-overall-performance-rank"
-            class="users-dashboard-overall-performance__metric-value"
-          >
-            {{ performanceData.rank }}
-          </span>
+        <div class="users-dashboard-overall-performance__metrics">
+          <div class="users-dashboard-overall-performance__metric-item">
+            <span class="users-dashboard-overall-performance__metric-label">{{
+              labels.overallPerformancePoints
+            }}</span>
+            <span
+              id="text--users-dashboard-overall-performance-points"
+              class="users-dashboard-overall-performance__metric-value"
+            >
+              {{ performanceData.points }}
+            </span>
+          </div>
+          <div class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank">
+            <figure
+              v-if="performanceData.rank >= 1 && performanceData.rank <= 3"
+              :class="[
+                'users-dashboard-overall-performance__ribbon',
+                `users-dashboard-overall-performance__ribbon--${getRankClass(performanceData.rank)}`
+              ]"
+            >
+              <img :src="getRibbonImgSrc(performanceData.rank)" :alt="getRibbonAlt(performanceData.rank)" />
+            </figure>
+            <span class="users-dashboard-overall-performance__metric-label">{{
+              labels.overallPerformanceRank
+            }}</span>
+            <span
+              id="text--users-dashboard-overall-performance-rank"
+              class="users-dashboard-overall-performance__metric-value"
+            >
+              {{ performanceData.rank }}
+            </span>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </v-card>
 </template>
@@ -91,7 +108,7 @@ export default {
         }
       }
 
-      const currentUserId = '4BCeEWHwAKME'
+      const currentUserId = this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
       const currentUser = this.topPerformance.find(
         (user) => user.targetUserResourceId === currentUserId
       )

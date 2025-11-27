@@ -108,6 +108,8 @@ export default {
     this.$store.dispatch('usersDashboard/fetchTopPerformance', targetUserResourceId)
     // Fetch my learning data (used by YourLearning component)
     this.$store.dispatch('usersDashboard/fetchMyLearning', targetUserResourceId)
+    // Fetch my certificates data (used by YourCertificates component)
+    this.$store.dispatch('usersDashboard/fetchMyCertificates', targetUserResourceId)
   },
   methods: {
     ...mapActions({

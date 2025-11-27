@@ -77,7 +77,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      labels: 'usersDashboard/getLabels'
+      labels: 'usersDashboard/getLabels',
+      myCertificates: 'usersDashboard/getMyCertificates',
+      myCertificatesLoading: 'usersDashboard/getMyCertificatesLoading'
     }),
     tableColumns() {
       return [
@@ -108,6 +110,17 @@ export default {
         }
       ]
     },
+    tableData() {
+      return this.myCertificates.map((cert) => ({
+        certificateName: cert.certificateName,
+        certificateDate: cert.enrollmentStartDate,
+        trainingStatus: cert.trainingStatus,
+        trainingUrl: cert.trainingUrl
+      }))
+    },
+    isLoading() {
+      return this.myCertificatesLoading
+    },
     rowActions() {
       return [
         {
@@ -126,50 +139,10 @@ export default {
   },
   data() {
     return {
-      tableId: 'users-dashboard-your-certificates-table',
-      tableData: [],
-      isLoading: false
+      tableId: 'users-dashboard-your-certificates-table'
     }
   },
-  created() {
-    this.fetchCertificates()
-  },
   methods: {
-    fetchCertificates() {
-      this.isLoading = true
-      // TODO: Replace with actual API call
-      setTimeout(() => {
-        // Mock data
-        this.tableData = [
-          {
-            certificateName: 'MFA Security',
-            certificateDate: '08/06/2025 16:30',
-            trainingStatus: 'Not Started'
-          },
-          {
-            certificateName: 'AWARE S06 | E07',
-            certificateDate: '08/06/2025 16:30',
-            trainingStatus: 'Not Completed'
-          },
-          {
-            certificateName: 'QR Cyber Security',
-            certificateDate: '08/06/2025 16:30',
-            trainingStatus: 'Completed'
-          },
-          {
-            certificateName: 'Advanced Persistent Threats',
-            certificateDate: '05/06/2025 16:30',
-            trainingStatus: 'Completed'
-          },
-          {
-            certificateName: 'Entain Digital Security Training',
-            certificateDate: '04/06/2025 16:30',
-            trainingStatus: 'Completed'
-          }
-        ]
-        this.isLoading = false
-      }, 500)
-    },
     getStatusColor(status) {
       const statusMap = {
         'Not Started': '#757575',
