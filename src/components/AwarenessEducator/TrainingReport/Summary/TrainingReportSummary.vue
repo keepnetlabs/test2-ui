@@ -265,7 +265,8 @@ export default {
         targetGroupCount = 0,
         autoEnrollDescription = 'No',
         languages = ['EN'],
-        targetGroupNames = []
+        targetGroupNames = [],
+        sendTemplatesInPreferredLanguage = false
       } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN'],
@@ -300,6 +301,10 @@ export default {
         Languages: {
           show: true,
           value: languageNames?.join(', ')
+        },
+        'Preferred Language': {
+          show: true,
+          value: sendTemplatesInPreferredLanguage ? "User's Preferred Language" : 'Company Language'
         }
       }
     },
