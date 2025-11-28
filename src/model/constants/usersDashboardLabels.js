@@ -61,6 +61,7 @@ const usersDashboardLabels = {
     yourCertificatesActions: 'Actions',
     yourCertificatesNoCertificates: 'No certificates found',
     yourCertificatesDownloadCertificate: 'Download Certificate',
+    yourCertificatesInQueue: 'In Queue',
 
     // Leaderboard
     leaderboardTitle: 'Leaderboard',
@@ -229,7 +230,8 @@ const usersDashboardLabels = {
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Rows per page:',
-    dataTableActions: 'Actions'
+    dataTableActions: 'Actions',
+    dataTablePaginationOf: 'of'
   },
   'en-US': {
     // Header
@@ -286,6 +288,7 @@ const usersDashboardLabels = {
     yourCertificatesActions: 'Actions',
     yourCertificatesNoCertificates: 'No certificates found',
     yourCertificatesDownloadCertificate: 'Download Certificate',
+    yourCertificatesInQueue: 'In Queue',
 
     // Leaderboard
     leaderboardTitle: 'Leaderboard',
@@ -460,7 +463,8 @@ const usersDashboardLabels = {
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Rows per page:',
-    dataTableActions: 'Actions'
+    dataTableActions: 'Actions',
+    dataTablePaginationOf: 'of'
   },
  'tr-TR': {
     // Header
@@ -525,6 +529,7 @@ const usersDashboardLabels = {
     yourCertificatesActions: 'İşlemler',
     yourCertificatesNoCertificates: 'Sertifika bulunamadı',
     yourCertificatesDownloadCertificate: 'Sertifikayı İndir',
+    yourCertificatesInQueue: 'Kuyrukta',
 
     // Leaderboard
     leaderboardTitle: 'Liderlik Tablosu',
@@ -737,7 +742,8 @@ const usersDashboardLabels = {
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Sayfa başına satır:',
-    dataTableActions: 'İşlemler'
+    dataTableActions: 'İşlemler',
+    dataTablePaginationOf: '/'
   },
  'de-DE': {
     // Header
@@ -804,6 +810,7 @@ const usersDashboardLabels = {
     yourCertificatesActions: 'Aktionen',
     yourCertificatesNoCertificates: 'Keine Zertifikate gefunden',
     yourCertificatesDownloadCertificate: 'Zertifikat herunterladen',
+    yourCertificatesInQueue: 'In Warteschlange',
 
     // Leaderboard
     leaderboardTitle: 'Bestenliste',
@@ -1018,7 +1025,8 @@ const usersDashboardLabels = {
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Zeilen pro Seite:',
-    dataTableActions: 'Aktionen'
+    dataTableActions: 'Aktionen',
+    dataTablePaginationOf: 'von'
   },
 'fr-FR': {
     // Header
@@ -1086,6 +1094,7 @@ const usersDashboardLabels = {
     yourCertificatesActions: 'Actions',
     yourCertificatesNoCertificates: 'Aucun certificat trouvé',
     yourCertificatesDownloadCertificate: 'Télécharger le certificat',
+    yourCertificatesInQueue: 'En attente',
 
     // Leaderboard
     leaderboardTitle: 'Classement',
@@ -1296,7 +1305,8 @@ const usersDashboardLabels = {
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Lignes par page :',
-    dataTableActions: 'Actions'
+    dataTableActions: 'Actions',
+    dataTablePaginationOf: 'sur'
   },
 'es-ES': {
     // Header
@@ -1361,6 +1371,7 @@ const usersDashboardLabels = {
     yourCertificatesActions: 'Acciones',
     yourCertificatesNoCertificates: 'No se encontraron certificados',
     yourCertificatesDownloadCertificate: 'Descargar certificado',
+    yourCertificatesInQueue: 'En cola',
 
     // Leaderboard
     leaderboardTitle: 'Clasificación',
@@ -1570,7 +1581,8 @@ const usersDashboardLabels = {
     
     // DataTable Pagination
     dataTableRowsPerPage: 'Filas por página:',
-    dataTableActions: 'Acciones'
+    dataTableActions: 'Acciones',
+    dataTablePaginationOf: 'de'
   }
 }
 

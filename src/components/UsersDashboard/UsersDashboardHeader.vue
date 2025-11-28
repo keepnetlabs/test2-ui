@@ -3,13 +3,22 @@
     <div class="users-dashboard-header__content">
       <!-- Logo Section -->
       <div class="users-dashboard-header__logo">
-        <img
-          v-if="loginWhiteLabel.mainLogoUrl"
-          id="img--users-dashboard-header-logo"
-          :src="loginWhiteLabel.mainLogoUrl"
-          alt="Keepnet Logo"
-          class="users-dashboard-header__logo-img"
-        />
+        <template v-if="loginWhiteLabel.mainLogoUrl">
+          <v-skeleton-loader
+            v-if="!logoLoaded"
+            type="image"
+            width="120"
+            height="40"
+          />
+          <img
+            v-show="logoLoaded"
+            id="img--users-dashboard-header-logo"
+            :src="loginWhiteLabel.mainLogoUrl"
+            alt="Keepnet Logo"
+            class="users-dashboard-header__logo-img"
+            @load="logoLoaded = true"
+          />
+        </template>
         <span v-else class="users-dashboard-header__logo-text">keepnet</span>
       </div>
 
@@ -66,6 +75,7 @@ export default {
   },
   data() {
     return {
+      logoLoaded: false,
       availableLanguages: [
         { text: 'English (United Kingdom)', value: 'en-GB', flag: '🇬🇧' },
         { text: 'English (United States)', value: 'en-US', flag: '🇺🇸' },

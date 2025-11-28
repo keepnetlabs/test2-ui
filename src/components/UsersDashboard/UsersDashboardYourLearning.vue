@@ -29,6 +29,7 @@
         :filterable="false"
         :options="false"
         :show-filter-options="false"
+        :isUseLocales="true"
       >
         <template #datatable-custom-column="{ scope, col }">
           <div

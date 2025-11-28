@@ -47,7 +47,7 @@ const usersDashboard = {
     },
     phishingResult: {
       data: null,
-      isLoading: false,
+      isLoading: true, // Start as true to show loading initially
       error: null
     }
   },
@@ -177,7 +177,7 @@ const usersDashboard = {
     },
     SET_PHISHING_RESULT_ERROR(state, payload) {
       state.phishingResult.error = payload
-      state.phishingResult.isLoading = false
+      // Note: Don't reset isLoading state here, let the SET_PHISHING_RESULT mutation handle it
     },
     RESET_STATE(state) {
       state.token = null
@@ -214,7 +214,7 @@ const usersDashboard = {
       }
       state.phishingResult = {
         data: null,
-        isLoading: false,
+        isLoading: true, // Reset to initial loading state
         error: null
       }
 
@@ -335,6 +335,8 @@ const usersDashboard = {
 
       try {
         const response = await getPhishingResult(targetUserResourceId)
+        // Minimum 800ms loading duration for better UX
+        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data) {
           commit('SET_PHISHING_RESULT', response.data.data)
         } else {

@@ -910,6 +910,7 @@
       >
         <el-pagination
           v-if="showPagination"
+          :key="isUseLocales ? `server-pagination-${currentLanguage}` : null"
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
           :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
@@ -935,7 +936,7 @@
                   ? serverSideProps.totalNumberOfRecords
                   : serverSideProps.pageNumber * serverSideProps.pageSize
               }}
-              of
+              {{ dashboardLabels.dataTablePaginationOf }}
               {{ serverSideProps.totalNumberOfRecords }}
             </span>
           </template>
@@ -946,6 +947,7 @@
         v-if="pageSizes.length && tableData.length > 0 && !showfilteredData && !isServerSide"
       >
         <el-pagination
+          :key="isUseLocales ? `client-pagination-${currentLanguage}` : null"
           :current-page.sync="currentPage"
           :page-size="rowCount"
           :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
@@ -962,7 +964,7 @@
                   ? initialData.length
                   : this.currentPage * this.rowCount
               }}
-              of
+              {{ dashboardLabels.dataTablePaginationOf }}
               {{ dataLength || initialData.length }}
             </span>
           </template>
@@ -970,6 +972,7 @@
       </div>
       <div class="pagination block" v-if="showfilteredData && !isServerSide">
         <el-pagination
+          :key="isUseLocales ? `filtered-pagination-${currentLanguage}` : null"
           :current-page.sync="currentPage"
           :page-size="rowCount"
           :page-sizes="pageSizes || [5, 10, 25, 50, 100]"
@@ -994,7 +997,7 @@
                   ? filteredDataLength
                   : this.currentPage * this.rowCount
               }}
-              of
+              {{ dashboardLabels.dataTablePaginationOf }}
               {{ filteredDataLength }}
             </span>
           </template>
@@ -1031,10 +1034,25 @@ import RowColorHandler from '@/directives/datatable-row-color-handler'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en'
+import enLocale from 'element-ui/lib/locale/lang/en'
+import trLocale from 'element-ui/lib/locale/lang/tr-TR'
+import deLocale from 'element-ui/lib/locale/lang/de'
+import frLocale from 'element-ui/lib/locale/lang/fr'
+import esLocale from 'element-ui/lib/locale/lang/es'
 import { mapGetters } from 'vuex'
+import locale from 'element-ui/lib/locale'
 
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, { locale: enLocale })
+
+// Language to Element-UI locale mapping
+const languageLocaleMap = {
+  'en-GB': enLocale,
+  'en-US': enLocale,
+  'tr-TR': trLocale,
+  'de-DE': deLocale,
+  'fr-FR': frLocale,
+  'es-ES': esLocale
+}
 import {
   getBtnPriorityColor,
   getBtnStatusColor,
@@ -1399,12 +1417,17 @@ export default {
     extendedViewCallingApi: {
       type: Boolean,
       default: false
+    },
+    isUseLocales: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus', // for using getters
-      dashboardLabels: 'usersDashboard/getLabels' // for pagination labels
+      dashboardLabels: 'usersDashboard/getLabels', // for pagination labels
+      currentLanguage: 'usersDashboard/getLanguage' // for locale watcher
     }),
     rowsPerPageText() {
       return this.dashboardLabels?.dataTableRowsPerPage || 'Rows per page:'
@@ -1755,6 +1778,11 @@ export default {
         this.setRenderedColumns()
         this.allHidden = !val.some((col) => col && col.show)
       }
+    },
+    // Watch for language changes and update Element-UI locale
+    currentLanguage(newLanguage) {
+      const elementLocale = languageLocaleMap[newLanguage] || languageLocaleMap['en-GB']
+      locale.use(elementLocale)
     }
   },
   created() {
@@ -1779,6 +1807,10 @@ export default {
     }
   },
   mounted() {
+    // Set initial locale based on current language
+    const elementLocale = languageLocaleMap[this.currentLanguage] || languageLocaleMap['en-GB']
+    locale.use(elementLocale)
+
     //persistent state sorting
     if (this.persistentState && this.persistentState.sortProps) {
       //this is for client side or persistent state

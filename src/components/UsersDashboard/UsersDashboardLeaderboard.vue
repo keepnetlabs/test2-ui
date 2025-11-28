@@ -40,6 +40,7 @@
           :options="false"
           :show-filter-options="false"
           :page-sizes="[]"
+          :isUseLocales="true"
         >
           <template #datatable-custom-column="{ scope, col }">
             <div
@@ -110,7 +111,7 @@ export default {
       if (!this.topPerformance || this.topPerformance.length === 0) {
         return []
       }
-      const currentUserId = '4BCeEWHwAKME'
+      const currentUserId = this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
       return this.topPerformance.map((user) => ({
         rank: user.rank,
         firstName: user.firstName,

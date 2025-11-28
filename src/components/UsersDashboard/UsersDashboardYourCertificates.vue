@@ -29,6 +29,7 @@
         :filterable="false"
         :options="false"
         :show-filter-options="false"
+        :isUseLocales="true"
       >
         <template #datatable-custom-column="{ scope, col }">
           <div
@@ -147,7 +148,8 @@ export default {
       const statusMap = {
         'Not Started': '#757575',
         'Not Completed': '#B83A3A',
-        Completed: '#217124'
+        Completed: '#217124',
+        'In Queue': '#1173C1'
       }
       return statusMap[status] || '#757575'
     },
@@ -155,7 +157,8 @@ export default {
       const statusMap = {
         'Not Started': this.labels.yourLearningNotStarted,
         'Not Completed': this.labels.yourLearningNotCompleted,
-        Completed: this.labels.yourLearningCompleted
+        Completed: this.labels.yourLearningCompleted,
+        'In Queue': this.labels.yourCertificatesInQueue
       }
       return statusMap[status] || status
     },

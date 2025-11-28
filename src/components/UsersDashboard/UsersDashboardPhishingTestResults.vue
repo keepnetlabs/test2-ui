@@ -20,7 +20,10 @@
           <VCard
             class="users-dashboard-phishing-test-results__metric-card users-dashboard-phishing-test-results__metric-card--green"
           >
-            <VCardText class="users-dashboard-phishing-test-results__metric-content">
+            <VCardText v-if="phishingResultLoading" class="users-dashboard-phishing-test-results__metric-content">
+              <v-skeleton-loader type="text, text" width="100" />
+            </VCardText>
+            <VCardText v-else class="users-dashboard-phishing-test-results__metric-content">
               <div class="users-dashboard-phishing-test-results__metric-header">
                 <div class="users-dashboard-phishing-test-results__metric-label-wrapper">
                   <span class="users-dashboard-phishing-test-results__metric-label">
@@ -43,7 +46,10 @@
           <VCard
             class="users-dashboard-phishing-test-results__metric-card users-dashboard-phishing-test-results__metric-card--red"
           >
-            <VCardText class="users-dashboard-phishing-test-results__metric-content">
+            <VCardText v-if="phishingResultLoading" class="users-dashboard-phishing-test-results__metric-content">
+              <v-skeleton-loader type="text, text" width="100" />
+            </VCardText>
+            <VCardText v-else class="users-dashboard-phishing-test-results__metric-content">
               <div class="users-dashboard-phishing-test-results__metric-header">
                 <span class="users-dashboard-phishing-test-results__metric-label">
                   {{ labels.phishingTestResultsPhishingSimulations }}
@@ -64,7 +70,10 @@
           <VCard
             class="users-dashboard-phishing-test-results__metric-card users-dashboard-phishing-test-results__metric-card--gray"
           >
-            <VCardText class="users-dashboard-phishing-test-results__metric-content">
+            <VCardText v-if="phishingResultLoading" class="users-dashboard-phishing-test-results__metric-content">
+              <v-skeleton-loader type="text, text" width="100" />
+            </VCardText>
+            <VCardText v-else class="users-dashboard-phishing-test-results__metric-content">
               <div class="users-dashboard-phishing-test-results__metric-header">
                 <span class="users-dashboard-phishing-test-results__metric-label">
                   {{ labels.phishingTestResultsDetectionAccuracy }}
