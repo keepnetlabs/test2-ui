@@ -57,3 +57,13 @@ export function bulkDeleteLandingPages(payload) {
 export function getLandingPageTemplate(id) {
   return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
 }
+
+export function generateLandingPageTranslation(payload) {
+  return testRequest.post(`phishing-simulator/landing-page-template/translate-content`, payload)
+}
+
+export function getLandingPageTranslation(temporaryKey) {
+  return testRequest.get(
+    `phishing-simulator/landing-page-template/translated-content/${temporaryKey}`
+  )
+}

@@ -39,7 +39,11 @@
                     outlined
                     color="#2196F3"
                     small
-                    :style="{ opacity: '0.5', pointerEvents: 'none', cursor: 'default' }"
+                    :style="{
+                      opacity: '0.5',
+                      pointerEvents: 'none',
+                      cursor: 'default'
+                    }"
                   >
                     <VIcon small>mdi-open-in-new</VIcon>
                   </VBtn>
@@ -80,7 +84,7 @@
           :name="`${index + 1}`"
         >
           <div class="template-preview mt-4 pt-0">
-            <hr class="mt-4 ml-n4 mr-n4" v-if="!!template.content" />
+            <hr class="mt-4 ml-n4 mr-n4" v-if="!!getCurrentPageTemplate(template)" />
             <BrowserToolbar
               v-if="!!getCurrentLandingPageTemplate && isPhishingScenario"
               :url="phishingUrl"
@@ -88,10 +92,10 @@
               :show-toolbar="!!getCurrentLandingPageTemplate"
             />
             <KEmailPreview
-              v-if="!!template.content"
+              v-if="!!getCurrentPageTemplate(template)"
               is-landing-page
-              :html="template.content"
-              :is-red-flagged-template="checkIsRedFlaggedTemplate(template.content)"
+              :html="getCurrentPageTemplate(template)"
+              :is-red-flagged-template="checkIsRedFlaggedTemplate(getCurrentPageTemplate(template))"
             />
           </div>
         </ElTabPane>
@@ -235,7 +239,21 @@ export default {
       return this.languages
     },
     getCurrentLandingPageTemplate() {
-      return this.landingPageTemplates[this.landingPageTab - 1]?.content
+      const currentPage = this.landingPageTemplates[this.landingPageTab - 1]
+      if (!currentPage) return null
+
+      // Phishing durumunda ve languages objesi varsa, seçili dile göre content döndür
+      if (
+        this.isPhishing &&
+        this.isPhishingScenario &&
+        currentPage.languages &&
+        this.languagePreview
+      ) {
+        return currentPage.languages[this.languagePreview] || currentPage.content
+      }
+
+      // Diğer durumlar için eski mantık
+      return currentPage.content
     },
     templateLanguageLabel() {
       const count = this.selectedLanguages.length
@@ -279,10 +297,24 @@ export default {
       return typeof html === 'string' && html.includes('data-redflag')
     },
     handleExternalLink() {
-      const currentTemplate = this.landingPageTemplates[this.landingPageTab - 1]
-      if (currentTemplate && currentTemplate.content) {
-        openHtmlInNewWindow(currentTemplate.content)
+      const currentTemplate = this.getCurrentLandingPageTemplate
+      if (currentTemplate) {
+        openHtmlInNewWindow(currentTemplate)
       }
+    },
+    getCurrentPageTemplate(template) {
+      // Phishing durumunda ve languages objesi varsa, seçili dile göre content döndür
+      if (
+        this.isPhishing &&
+        this.isPhishingScenario &&
+        template.languages &&
+        this.languagePreview
+      ) {
+        return template.languages[this.languagePreview] || template.content
+      }
+
+      // Diğer durumlar için eski mantık
+      return template.content
     },
     handleEdit() {
       this.$emit('on-edit')
