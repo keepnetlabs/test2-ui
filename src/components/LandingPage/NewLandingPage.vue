@@ -132,7 +132,12 @@
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
                     <div class="landing-page-tab-content">
-                      <div class="d-flex align-center justify-space-between">
+                      <div
+                        v-show="!isGenerateWithAIDisabled"
+                        :class="{
+                          'd-flex align-center justify-space-between': !isGenerateWithAIDisabled
+                        }"
+                      >
                         <div class="d-flex align-center">
                           <InputLanguagePreview
                             :value="activeLanguage"
@@ -205,7 +210,7 @@
                         />
                       </div>
 
-                      <hr class="mt-4 ml-n4 mr-n4" />
+                      <hr v-show="!isGenerateWithAIDisabled" class="mt-4 ml-n4 mr-n4" />
                       <el-tabs
                         v-model="tab"
                         :key="getLandingPageKey"
@@ -677,7 +682,7 @@ export default {
       }
     },
     handleAssistedByAITemplateFinished() {
-       if (this.$refs.refEmailTemplate) {
+      if (this.$refs.refEmailTemplate) {
         this.$refs.refEmailTemplate.forEach((ref) => {
           if (ref) ref.isEmailGenerating = false
         })
