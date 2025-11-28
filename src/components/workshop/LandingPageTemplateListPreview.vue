@@ -445,8 +445,10 @@
                             <span class="template-preview__text--body">{{ templateName }}</span>
                           </div>
                           <div
+                            style="background: rgb(224, 224, 224); height: 1px; max-width: 554px;"
+                          ></div>
+                          <div
                             v-if="selectedTemplateLanguages.length > 1"
-                            class="mt-4"
                             style="max-width: 554px;"
                           >
                             <InputLanguagePreview
@@ -490,7 +492,7 @@
                             v-if="!!template.content"
                             is-extra-height
                             is-landing-page
-                            :key="template.content"
+                            :key="`${template.content}-${languagePreview}`"
                             :html="getPreviewLandingHtml(getLandingPageContent(template))"
                             :is-red-flagged-template="
                               checkIsRedFlaggedTemplate(getLandingPageContent(template))
@@ -811,6 +813,20 @@
                         <span class="template-preview__text--title">Template Name: </span>
                         <span class="template-preview__text--body">{{ templateName }}</span>
                       </div>
+                      <div
+                        style="background: rgb(224, 224, 224); height: 1px; max-width: 554px;"
+                      ></div>
+                      <div v-if="selectedTemplateLanguages.length > 1" style="max-width: 554px;">
+                        <InputLanguagePreview
+                          v-model="languagePreview"
+                          persistent-hint
+                          class="max-w-554 campaign-manager-phishing-scenario-input-language"
+                          :hint="landingPagePreviewLanguageHint"
+                          :items="selectedTemplateLanguages"
+                          :hide-details="false"
+                          @input="handleLandingPagePreviewLanguageChange"
+                        />
+                      </div>
                       <div>
                         <span class="template-preview__text--title"
                           >{{ type === SCENARIO_TYPES.PHISHING ? 'Phishing' : 'Quishing' }}
@@ -841,7 +857,7 @@
                           v-if="!!template.content"
                           is-extra-height
                           is-landing-page
-                          :key="template.content"
+                          :key="`${template.content}-${languagePreview}`"
                           :html="getPreviewLandingHtml(getLandingPageContent(template))"
                           :is-red-flagged-template="
                             checkIsRedFlaggedTemplate(getLandingPageContent(template))
@@ -1066,8 +1082,12 @@ export default {
       }
     },
     landingPagePreviewLanguageHint() {
-      if (this.selectedTemplateLanguages.length <= 1) return ''
-      return 'Select a language to preview the landing page'
+      const languageCount = this.selectedTemplateLanguages.length
+      if (languageCount === 0) return ''
+      if (languageCount === 1) {
+        return 'This template is available in 1 language.'
+      }
+      return `This template is available in ${languageCount} languages.`
     }
   },
   watch: {
@@ -1489,50 +1509,87 @@ export default {
     getLandingPageContent(template = {}) {
       if (!template) return ''
       const languageId = this.languagePreview || template.languageTypeResourceId
+
+      // If template has languages object and languageId is set, get content for that language
       if (languageId && template.languages && template.languages[languageId]) {
         return template.languages[languageId]
       }
+
+      // Fallback to current template's content (main language)
       if (template.content) return template.content
-      const availableTranslations = Object.values(template.languages || {})
-      return availableTranslations.length ? availableTranslations[0] : ''
-    },
-    transformLandingPages(landingPages = [], mainLanguageId = '') {
-      const languagesMap = new Map()
-      const addLanguageOption = (langId, label = '') => {
-        if (!langId) return
-        const key = langId.toString()
-        if (languagesMap.has(key)) return
-        const option = this.getLanguageOptionById(langId)
-        const text = option?.text || option?.name || label || langId || langId.toString()
-        languagesMap.set(key, {
-          value: langId,
-          text
-        })
+
+      // If no content found, try to get first available language content
+      if (template.languages && Object.keys(template.languages).length > 0) {
+        const firstLanguageId = Object.keys(template.languages)[0]
+        return template.languages[firstLanguageId]
       }
-      addLanguageOption(mainLanguageId)
-      const templates = (landingPages || []).map((page) => {
-        const languages = {}
-        if (mainLanguageId && page.content) {
-          languages[mainLanguageId] = page.content
+
+      return ''
+    },
+    transformLandingPages(landingPages = [], mainLanguageId = '', mainLanguageTypeName = '') {
+      const languages = []
+      const landingPageTemplates = []
+      const languageMap = new Map()
+
+      // Add main language to language options
+      if (mainLanguageId && mainLanguageTypeName) {
+        languages.push({
+          value: mainLanguageId,
+          text: mainLanguageTypeName
+        })
+        languageMap.set(mainLanguageId, mainLanguageTypeName)
+      }
+
+      // Process each landing page (each page can have multiple language versions)
+      landingPages.forEach((landingPage) => {
+        // Create languages object for this page (languageId -> content mapping)
+        const pageLanguages = {}
+
+        // Add main language content
+        if (landingPage.languageTypeResourceId && landingPage.content) {
+          pageLanguages[landingPage.languageTypeResourceId] = landingPage.content
+          if (!languageMap.has(landingPage.languageTypeResourceId)) {
+            languages.push({
+              value: landingPage.languageTypeResourceId,
+              text: landingPage.languageTypeName || mainLanguageTypeName
+            })
+            languageMap.set(
+              landingPage.languageTypeResourceId,
+              landingPage.languageTypeName || mainLanguageTypeName
+            )
+          }
         }
-        if (Array.isArray(page.languages)) {
-          page.languages.forEach((langPage) => {
-            const langId = langPage.languageTypeResourceId
-            if (!langId) return
-            languages[langId] = langPage.content || ''
-            addLanguageOption(langId, langPage.languageTypeName)
+
+        // Add other language versions from languages array
+        if (landingPage.languages && Array.isArray(landingPage.languages)) {
+          landingPage.languages.forEach((languagePage) => {
+            if (languagePage.languageTypeResourceId && languagePage.content) {
+              pageLanguages[languagePage.languageTypeResourceId] = languagePage.content
+              if (!languageMap.has(languagePage.languageTypeResourceId)) {
+                languages.push({
+                  value: languagePage.languageTypeResourceId,
+                  text: languagePage.languageTypeName
+                })
+                languageMap.set(languagePage.languageTypeResourceId, languagePage.languageTypeName)
+              }
+            }
           })
         }
-        return {
-          ...page,
-          languages,
-          languageTypeResourceId: mainLanguageId || page.languageTypeResourceId
-        }
+
+        // Create template object for this page
+        landingPageTemplates.push({
+          name: landingPage.name,
+          order: landingPage.order,
+          prompt: landingPage.prompt,
+          content: landingPage.content, // Default content (main language)
+          languageTypeResourceId: landingPage.languageTypeResourceId || mainLanguageId,
+          languages: pageLanguages // All language versions for this page
+        })
       })
 
       return {
-        templates,
-        languages: Array.from(languagesMap.values())
+        templates: landingPageTemplates,
+        languages
       }
     },
     applyLandingPageTemplatePayload(payload = {}) {
@@ -1541,7 +1598,13 @@ export default {
         payload.languageTypeResourceId ||
         landingPages[0]?.languageTypeResourceId ||
         this.languagePreview
-      const { templates, languages } = this.transformLandingPages(landingPages, mainLanguageId)
+      const mainLanguageTypeName =
+        payload.languageTypeName || landingPages[0]?.languageTypeName || ''
+      const { templates, languages } = this.transformLandingPages(
+        landingPages,
+        mainLanguageId,
+        mainLanguageTypeName
+      )
 
       this.landingPageTemplates = templates
       this.selectedTemplateLanguages = languages

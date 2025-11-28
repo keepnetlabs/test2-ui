@@ -141,12 +141,9 @@ export default {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
           this.landingPageParams.name = data.name
-
-          // Phishing durumunda backend'den gelen yapı farklı - languages array'i içinde
-          if (this.type === PREVIEW_DIALOG_TYPES.PHISHING) {
+          if (this.type.toLowerCase() === PREVIEW_DIALOG_TYPES.PHISHING.toLowerCase()) {
             // Tüm dilleri topla (ana dil + diğer diller)
             const allLanguagesMap = new Map()
-
             // Ana dili ekle
             if (data.languageTypeResourceId) {
               const mainLanguageObj = this.languages.find(

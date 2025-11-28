@@ -136,7 +136,7 @@ export default {
       return this?.landingPageTemplates?.length > 0
     },
     isPhishing() {
-      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+      return this.type.toLowerCase() === PREVIEW_DIALOG_TYPES.PHISHING.toLowerCase()
     },
     isQuishing() {
       return this.isQuishingProp || this.type === PREVIEW_DIALOG_TYPES.QUISHING

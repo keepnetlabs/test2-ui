@@ -1073,11 +1073,9 @@ export default {
       this.beforeSaveLanguage = value
     },
     handleCloseEditLanguagesLeavingDialog() {
-      console.log('handleCloseEditLanguagesLeavingDialog')
       this.showEditLanguagesLeavingDialog = false
     },
     handleDiscardEditLanguagesLeavingDialog(beforeSaveLanguage) {
-      console.log('handleDiscardEditLanguagesLeavingDialog')
       this.showEditLanguagesLeavingDialog = false
       let selectedTemplateIndex = this.languagesPayload.findIndex(
         (item) => item.languageTypeResourceId === this.activeLanguage
@@ -1093,7 +1091,6 @@ export default {
       )
     },
     handleConfirmEditLanguagesLeavingDialog(beforeSaveLanguage) {
-      console.log('handleConfirmEditLanguagesLeavingDialog')
       this.showEditLanguagesLeavingDialog = false
       this.activeLanguage = beforeSaveLanguage
       this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
@@ -1162,7 +1159,6 @@ export default {
       const languagesToProcess = languages || this.languagesPayload
       const preferredLanguagePayload = this.getPreferredLanguagePayload()
       return languagesToProcess.map((item) => {
-        console.log('item in setEmptyLanguagesPayload', item)
         return {
           ...item,
           fromName: item.fromName || preferredLanguagePayload.fromName,

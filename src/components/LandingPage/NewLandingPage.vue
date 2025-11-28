@@ -157,7 +157,7 @@
                           :is-landing-page="true"
                           :is-show-localize-button="true"
                           :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
-                          :is-ai-ally-enabled="isAIAllyEnabled"
+                          :isAIAllyEnabled="isAIAllyEnabled"
                           :is-phishing-link-open="isPhishingLinkOpen"
                           :isAIAllyOpen="isAIAllyOpen"
                           @input="handleSelectedLanguagesChange"
@@ -183,10 +183,9 @@
                             formValues.languageTypeResourceId = $event
                           "
                           @update:template="handleAITemplateUpdate"
-                          @update:is-assisted-by-ai-template="
-                            formValues.isAssistedByAITemplate = $event
-                          "
+                          @on-assisted-by-ai-template="handleAssistedByAITemplate"
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
+                          @on-assisted-by-ai-template-finished="handleAssistedByAITemplateFinished"
                         />
                       </div>
 
@@ -211,6 +210,9 @@
                         :key="getLandingPageKey"
                         id="landing-page-tab-content"
                         class="mt-2"
+                        :class="{
+                          'tabs-header-hidden': isDefault || isGenerateWithAi
+                        }"
                       >
                         <el-tab-pane
                           v-for="(page, index) in formValues.landingPages"
@@ -351,10 +353,7 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{
-          nextButton: isSubmitDisabled,
-          submitButton: isSubmitDisabled
-        }"
+        :disabled-statuses="getDisabledStatuses"
         :ids="footerButtonsIds"
         :save-button-text="isEditFromPreview ? labels.SaveChanges : labels.Save"
         @on-cancel="changeNewEmailTemplateModalStatus"
@@ -372,7 +371,7 @@
           <NextButton
             v-if="step !== 2"
             :id="footerButtonsIds.nextButton"
-            :disabled="isSubmitDisabled"
+            :disabled="getDisabledStatuses.nextButton"
             @click="nextStep(+1)"
           />
           <VBtn
@@ -383,7 +382,7 @@
             rounded
             class="mr-4"
             style="font-weight: 600;"
-            :disabled="isSubmitDisabled"
+            :disabled="getDisabledStatuses.submitButton"
             @click="handleSaveAsNew"
           >
             {{ labels.SaveAsNew }}
@@ -391,7 +390,7 @@
           <SaveButton
             v-if="step === 2"
             :id="footerButtonsIds.saveButton"
-            :disabled="isSubmitDisabled"
+            :disabled="getDisabledStatuses.submitButton"
             :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
             @click="submit"
           />
@@ -432,6 +431,7 @@ import BackButton from '@/components/Common/Buttons/BackButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputPhishingLinkMini from '@/components/Common/Inputs/InputPhishingLinkMini.vue'
 import AIAllyMini from '@/components/Common/Inputs/AIAllyMini.vue'
+import '@/styles/landing-page-tabs.css'
 export default {
   name: 'NewLandingPage',
   components: {
@@ -526,6 +526,7 @@ export default {
       initialDisabledLanguageIds: [],
       formValues: {
         canRemoveLanguages: true,
+        isAssistedByAITemplate: false,
         isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
@@ -561,10 +562,18 @@ export default {
       isGenerateWithAIDisabled: false,
       translationTempKey: null,
       timeoutId: null,
-      isEverythingLocalized: false
+      isEverythingLocalized: false,
+      isDefault: false
     }
   },
   watch: {
+    scenarioDetailsLookup: {
+      immediate: true,
+      handler(val) {
+        if (!val || this.isDefault) return
+        this.setLanguageItems()
+      }
+    },
     selectedLanguages(newVal) {
       // Dil silinmişse activeLanguage'i reset et
       if (!newVal.length) {
@@ -591,11 +600,22 @@ export default {
         // İlk kez dil seçiliyorsa
         this.activeLanguage = newVal[0].value
       }
+    },
+    step(newVal) {
+      // Step 2'ye geçildiğinde çeviri devam ediyorsa ref'i set et
+      this.$nextTick(() => {
+        if (newVal === 2 && this.isSubmitDisabled && this.$refs.refEmailTemplate) {
+          this.$refs.refEmailTemplate.forEach((ref) => {
+            if (ref) ref.isEmailGenerating = true
+          })
+        }
+      })
     }
   },
   methods: {
     handleSaveTemplate(template, pageIndex) {
-      const currentPageIndex = typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
+      const currentPageIndex =
+        typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
       const selectedLanguagePayload = this.languagesPayload.find(
         (item) => item.languageTypeResourceId === this.activeLanguage
       )
@@ -640,6 +660,21 @@ export default {
     handleEditMode() {
       const index = parseInt(this.tab.replace('page', '')) - 1
       this.$refs.refEmailTemplate?.[index]?.editHtmlTemplate()
+    },
+    handleAssistedByAITemplate(isAssistedByAITemplate) {
+      this.formValues.isAssistedByAITemplate = isAssistedByAITemplate
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true
+        })
+      }
+    },
+    handleAssistedByAITemplateFinished() {
+       if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = false
+        })
+      }
     },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {
@@ -876,7 +911,7 @@ export default {
       })
     },
     showLocalizationSuccessMessage(translatedContents) {
-      if (!Array.isArray(translatedContents)) return
+      if (!Array.isArray(translatedContents) || this.isDefault) return
 
       // Başarılı item'ları filtrele
       const successItems = translatedContents.filter((item) => item.success && !item.error)
@@ -913,6 +948,7 @@ export default {
         })
       }
       this.isSubmitDisabled = false
+      this.isDefault = false
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
@@ -1117,11 +1153,11 @@ export default {
         const payload = {
           ...formValues,
           isAssistedByAI: this.isAssistedByAI,
-          landingPages: this.buildLandingPagesPayload(),
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
         }
+        payload.landingPages = this.buildLandingPagesPayload(payload)
         if (this.isEdit && !this.isDuplicate) {
           updateLandingPage(payload, this.emailTemplateId)
             .then(() => {
@@ -1150,7 +1186,7 @@ export default {
         this.isSubmitDisabled = false
       }
     },
-    buildLandingPagesPayload() {
+    buildLandingPagesPayload(payload) {
       // Ana dil (default language) - formValues.languageTypeResourceId
       let mainLanguageId = this.formValues.languageTypeResourceId || this.activeLanguage
 
@@ -1163,7 +1199,7 @@ export default {
       if (!isMainLanguageInSelected && this.selectedLanguages.length > 0) {
         mainLanguageId = this.selectedLanguages[0].value
         this.formValues.languageTypeResourceId = mainLanguageId
-
+        payload.languageTypeResourceId = mainLanguageId
         // Yeni ana dilin landingPages'lerini formValues'a kopyala
         const newMainLanguagePayload = this.languagesPayload.find(
           (p) => p.languageTypeResourceId === mainLanguageId
@@ -1172,12 +1208,13 @@ export default {
           this.formValues.landingPages = JSON.parse(
             JSON.stringify(newMainLanguagePayload.landingPages)
           )
+          payload.landingPages = JSON.parse(JSON.stringify(newMainLanguagePayload.landingPages))
         }
       }
 
       const mainLanguagePayload = this.languagesPayload.find(
         (p) => p.languageTypeResourceId === mainLanguageId
-      ) || { landingPages: this.formValues.landingPages }
+      ) || { landingPages: payload.landingPages }
 
       // Diğer diller (translated languages)
       const otherLanguagesPayload = this.languagesPayload.filter(
@@ -1274,7 +1311,6 @@ export default {
             languageTypeName: language.name,
             value: language.resourceId
           })) || []
-        this.setLanguageItems()
       })
     },
     setLanguageItems() {
@@ -1321,10 +1357,27 @@ export default {
       this.activeLanguage = companyLanguageTypeResourceId
       // Ana dil olarak company language'ı set et
       this.formValues.languageTypeResourceId = companyLanguageTypeResourceId
-      this.languagesPayload.push({
-        languageTypeResourceId: companyLanguageTypeResourceId,
-        landingPages: JSON.parse(JSON.stringify(this.formValues.landingPages)),
-        isTranslated: true
+      this.$nextTick(() => {
+        this.handleSelectedLanguagesChange(this.selectedLanguages)
+        // İngilizce ise translated olarak işaretle
+        const isEnglish = findedLanguage.text?.toLowerCase().includes('english')
+        if (isEnglish) {
+          const companyLanguagePayload = this.languagesPayload.find(
+            (item) => item.languageTypeResourceId === companyLanguageTypeResourceId
+          )
+          if (companyLanguagePayload) {
+            companyLanguagePayload.isTranslated = true
+          }
+        }
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
+        this.$refs?.refEmailTemplateContent?.resetValidation()
+        // İngilizce değilse ve başka dil varsa çeviri yap
+        if (!isEnglish && this.getSelectedLanguagePayload.landingPages && !this.isEdit) {
+          this.isDefault = true
+          this.handleGenerateWithAI()
+        }
       })
     },
     callForMergedTags() {
@@ -1412,6 +1465,12 @@ export default {
       return this.landingPageData.methodTypes?.find(
         (item) => item.value === this.formValues.methodTypeId
       )?.text
+    },
+    getDisabledStatuses() {
+      return {
+        nextButton: !this.isDefault && this.isSubmitDisabled,
+        submitButton: this.isSubmitDisabled
+      }
     }
   },
   created() {

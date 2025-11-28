@@ -317,7 +317,7 @@ export default {
         methodTypeId: parseInt(this.methodTypeId),
         isPlainText: isPlainText
       }
-      this.$emit('update:isAssistedByAITemplate', true)
+      this.$emit('on-assisted-by-ai-template', true)
       generateAILandingPageTemplate(payload)
         .then((response) => {
           if (response?.data?.data?.isSuccess) {
@@ -349,6 +349,8 @@ export default {
             return
           }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
+        }).finally(() => {
+          this.$emit('on-assisted-by-ai-template-finished')
         })
     },
     setActiveGeneratedTemplate(index) {
