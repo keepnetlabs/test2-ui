@@ -18,6 +18,7 @@ import trainingLibrary from '@/store/modules/trainingLibrary'
 import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
 import learningPath from '@/store/modules/learningPath'
 import executiveReports from '@/store/modules/executiveReports'
+import usersDashboard from '@/store/modules/usersDashboard'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
@@ -38,7 +39,8 @@ const store = new Vuex.Store({
     trainingLibrary,
     trainingLibraryHelpers,
     learningPath,
-    executiveReports
+    executiveReports,
+    usersDashboard
   }
 })
 

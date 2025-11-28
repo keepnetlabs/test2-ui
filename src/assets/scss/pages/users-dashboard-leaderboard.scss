@@ -1,0 +1,386 @@
+.users-dashboard-leaderboard {
+  border-radius: 12px !important;
+  border: 1px solid var(--Gray-Gray, #e0e0e0) !important;
+  background: var(--white-white-100, #fff) !important;
+  box-shadow: none !important;
+  padding: 24px;
+
+  &__header {
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    color: #383b41;
+    font-family: "Open Sans", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  &__subtitle {
+    color: #383b41;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+  }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+  }
+
+  &__top-performers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  &__table {
+    margin-top: 24px;
+
+    .table-wrapper {
+      padding-bottom: 24px;
+      padding-top: 24px;
+    }
+  }
+
+  &__rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 14px;
+    color: #383b41;
+
+    &--gold {
+      background-color: #ffd700;
+      color: #383b41;
+    }
+
+    &--silver {
+      background-color: #c0c0c0;
+      color: #383b41;
+    }
+
+    &--bronze {
+      background-color: #cd7f32;
+      color: #fff;
+    }
+
+    &--default {
+      background-color: #e0e0e0;
+      color: #383b41;
+    }
+
+    &--user {
+      background-color: #b3d4fc;
+      color: #383b41;
+    }
+  }
+
+  &__first-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__you-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: #2196f3;
+    color: #fff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: normal;
+  }
+}
+
+.users-dashboard-leaderboard-top-performer-card {
+  position: relative;
+  border-radius: 12px !important;
+  border: 1px solid var(--Gray-Gray, #e0e0e0) !important;
+  background: var(--white-white-100, #fff) !important;
+  box-shadow: none !important;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  &__ribbon {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+
+    img {
+      display: block;
+    }
+
+    &--gold {
+      -webkit-animation: ribbon-glow-gold 3.5s ease-in-out infinite;
+      animation: ribbon-glow-gold 3.5s ease-in-out infinite;
+    }
+
+    &--silver {
+      -webkit-animation: ribbon-glow-silver 3.5s ease-in-out infinite;
+      animation: ribbon-glow-silver 3.5s ease-in-out infinite;
+    }
+
+    &--bronze {
+      -webkit-animation: ribbon-glow-bronze 3.5s ease-in-out infinite;
+      animation: ribbon-glow-bronze 3.5s ease-in-out infinite;
+    }
+  }
+
+  &__medal {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    img {
+      display: block;
+      -webkit-filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    &--gold {
+      -webkit-animation: medal-glow-gold 3.5s ease-in-out infinite;
+      animation: medal-glow-gold 3.5s ease-in-out infinite;
+    }
+
+    &--silver {
+      -webkit-animation: medal-glow-silver 3.5s ease-in-out infinite;
+      animation: medal-glow-silver 3.5s ease-in-out infinite;
+    }
+
+    &--bronze {
+      -webkit-animation: medal-glow-bronze 3.5s ease-in-out infinite;
+      animation: medal-glow-bronze 3.5s ease-in-out infinite;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+  }
+
+  &__name {
+    color: #383b41;
+    font-family: "Open Sans", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  &__email {
+    color: #383b41b8;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    line-height: 19px;
+  }
+
+  &__department {
+    color: #383b41b8;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    line-height: 19px;
+    min-height: 19px;
+  }
+
+  &__performance {
+    margin-top: 8px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--Gray-Gray, #e0e0e0);
+    background: var(--Gray-Very-Light-Gray, #fafafa);
+    color: var(--Gray-Dark-Gray, #757575);
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-transform: uppercase;
+    max-width: 180px;
+    max-height: 24px;
+  }
+}
+
+// Animations - Gold
+@-webkit-keyframes ribbon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+}
+@keyframes ribbon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3)); }
+}
+
+@-webkit-keyframes medal-glow-gold {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+@keyframes medal-glow-gold {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+
+// Animations - Silver
+@-webkit-keyframes ribbon-glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(192, 192, 192, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(192, 192, 192, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+}
+@keyframes ribbon-glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(192, 192, 192, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(192, 192, 192, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.3)); }
+}
+
+@-webkit-keyframes medal-glow-silver {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(192, 192, 192, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+@keyframes medal-glow-silver {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(192, 192, 192, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+
+// Animations - Bronze
+@-webkit-keyframes ribbon-glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(205, 127, 50, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+}
+@keyframes ribbon-glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(205, 127, 50, 0)); }
+  25% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+  50% { filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5)); }
+  75% { filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.3)); }
+}
+
+@-webkit-keyframes medal-glow-bronze {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(205, 127, 50, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+@keyframes medal-glow-bronze {
+  0%, 100% {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(205, 127, 50, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.03);
+  }
+  75% {
+    filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.3)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+  }
+}
+
+// Mobile responsive
+@media (max-width: 960px) {
+  .users-dashboard-leaderboard {
+    &__top-performers {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+}
