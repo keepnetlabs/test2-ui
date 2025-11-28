@@ -1597,7 +1597,6 @@ export default {
     transformLandingPages(landingPages = [], mainLanguageId = '', mainLanguageTypeName = '') {
       const languages = []
       const landingPageTemplates = []
-      const languageMap = new Map()
 
       // Add main language to language options
       if (mainLanguageId && mainLanguageTypeName) {
@@ -1611,7 +1610,6 @@ export default {
           value: mainLanguageId,
           text: mainLanguage?.text || mainLanguage?.isoFriendlyName || mainLanguageTypeName
         })
-        languageMap.set(mainLanguageId, mainLanguageTypeName)
       }
 
       // Process each landing page (each page can have multiple language versions)
@@ -1622,7 +1620,7 @@ export default {
         // Add main language content
         if (landingPage.languageTypeResourceId && landingPage.content) {
           pageLanguages[landingPage.languageTypeResourceId] = landingPage.content
-          if (!languageMap.has(landingPage.languageTypeResourceId)) {
+          if (!languages.find((lang) => lang.value === landingPage.languageTypeResourceId)) {
             const lang = this.languages.find(
               (l) =>
                 l.value === landingPage.languageTypeResourceId ||
@@ -1637,10 +1635,6 @@ export default {
                 landingPage.languageTypeName ||
                 mainLanguageTypeName
             })
-            languageMap.set(
-              landingPage.languageTypeResourceId,
-              landingPage.languageTypeName || mainLanguageTypeName
-            )
           }
         }
 
@@ -1649,7 +1643,7 @@ export default {
           landingPage.languages.forEach((languagePage) => {
             if (languagePage.languageTypeResourceId && languagePage.content) {
               pageLanguages[languagePage.languageTypeResourceId] = languagePage.content
-              if (!languageMap.has(languagePage.languageTypeResourceId)) {
+              if (!languages.find((lang) => lang.value === languagePage.languageTypeResourceId)) {
                 const lang = this.languages.find(
                   (l) =>
                     l.value === languagePage.languageTypeResourceId ||
@@ -1660,7 +1654,6 @@ export default {
                   value: languagePage.languageTypeResourceId,
                   text: lang?.text || lang?.isoFriendlyName || languagePage.languageTypeName
                 })
-                languageMap.set(languagePage.languageTypeResourceId, languagePage.languageTypeName)
               }
             }
           })
@@ -1689,7 +1682,7 @@ export default {
         landingPages[0]?.languageTypeResourceId ||
         this.landingPageLanguagePreview
       const mainLanguageTypeName =
-        payload.languageTypeName || landingPages[0]?.languageTypeName || ''
+        landingPages[0]?.languageTypeName || payload.languageTypeName || ''
       const { templates, languages } = this.transformLandingPages(
         landingPages,
         mainLanguageId,
