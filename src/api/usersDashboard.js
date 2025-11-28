@@ -98,3 +98,21 @@ export const getMyCertificates = (targetUserResourceId) => {
     }
   })
 }
+
+/**
+ * Download certificate PDF for security growth dashboard
+ * @param {string} targetUserResourceId - The resource ID of the target user
+ * @param {string} enrollmentId - The enrollment ID of the certificate
+ * @returns {Promise} API response with PDF blob
+ */
+export const downloadCertificate = (targetUserResourceId, enrollmentId) => {
+  return testRequest.get(
+    `/securitygrowthdashboard/certificate-download/${targetUserResourceId}/${enrollmentId}`,
+    {
+      responseType: 'blob',
+      headers: {
+        accept: 'application/pdf'
+      }
+    }
+  )
+}

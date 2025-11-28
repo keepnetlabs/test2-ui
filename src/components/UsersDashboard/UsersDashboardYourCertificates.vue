@@ -69,6 +69,7 @@
 import { mapGetters } from 'vuex'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
+import { downloadCertificate } from '@/api/usersDashboard'
 
 export default {
   name: 'UsersDashboardYourCertificates',
@@ -116,7 +117,8 @@ export default {
         certificateName: cert.certificateName,
         certificateDate: cert.enrollmentStartDate,
         trainingStatus: cert.trainingStatus,
-        trainingUrl: cert.trainingUrl
+        trainingUrl: cert.trainingUrl,
+        enrollmentId: cert.enrollmentId
       }))
     },
     isLoading() {
@@ -162,9 +164,23 @@ export default {
       }
       return statusMap[status] || status
     },
-    handleDownload(row) {
-      // TODO: Implement download certificate
-      console.log('Download certificate:', row.certificateName)
+    async handleDownload(row) {
+      try {
+        const targetUserResourceId = this.$route.query?.targetUserResourceId || '4BCeEWHwAKME'
+        const response = await downloadCertificate(targetUserResourceId, row.enrollmentId)
+
+        // Create blob URL and trigger download
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${row.certificateName}.pdf`)
+        document.body.appendChild(link)
+        link.click()
+        link.parentNode.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error('Error downloading certificate:', error)
+      }
     }
   }
 }
