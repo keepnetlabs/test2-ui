@@ -491,10 +491,13 @@
                       v-if="isLandingPageTabsVisible || isMethodMfa"
                       class="tabs-with-mfa-settings"
                       :is-sub-tab="false"
-                      :is-phishing-scenario="false"
+                      :is-phishing-scenario="true"
                       :isMethodMfa="isMethodMfa"
                       :landing-page-params="landingPageParams"
                       :landing-page-templates="landingPageTemplates"
+                      :selected-languages="selectedLandingPageLanguages"
+                      :language-preview="landingPageLanguagePreview"
+                      @language-change="handleLandingPageLanguageChange"
                     />
                     <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
@@ -736,7 +739,9 @@ export default {
       isShowEmailTemplatePreview: false,
       emailTemplatePreviewSelectedRow: null,
       isShowLandingPagePreview: false,
-      landingPagePreviewSelectedRow: null
+      landingPagePreviewSelectedRow: null,
+      landingPageLanguagePreview: '',
+      selectedLandingPageLanguages: []
     }
   },
   computed: {
@@ -1369,7 +1374,11 @@ export default {
             isInvisibleCaptchaEnabled: isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled',
             resourceId: landingPageResourceId
           }
-          this.landingPageTemplates = landingPages || []
+          this.applyLandingPageTemplatePayload({
+            landingPages: landingPages || [],
+            languageTypeResourceId,
+            languageTypeName: landingPageTemplate?.languageTypeName || ''
+          })
           this.tab = 'email'
           this.isMethodMfa = data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.MFA
         })
@@ -1582,8 +1591,143 @@ export default {
       this.emailTemplateParams.fromAddress = findedTemplate.fromAddress
       this.emailTemplateParams.subject = findedTemplate.subject
       this.emailTemplateParams.template = findedTemplate.template
-      this.emailTemplate = findedTemplate.template
       this.emailTemplateParams.ccAddresses = findedTemplate.ccAddresses
+      this.emailTemplate = findedTemplate.template
+    },
+    transformLandingPages(landingPages = [], mainLanguageId = '', mainLanguageTypeName = '') {
+      const languages = []
+      const landingPageTemplates = []
+
+      // Add main language to language options
+      if (mainLanguageId && mainLanguageTypeName) {
+        const mainLanguage = this.languages.find(
+          (lang) =>
+            lang.value === mainLanguageId ||
+            lang.languageTypeResourceId === mainLanguageId ||
+            lang.id === mainLanguageId
+        )
+        languages.push({
+          value: mainLanguageId,
+          text: mainLanguage?.text || mainLanguage?.isoFriendlyName || mainLanguageTypeName
+        })
+      }
+
+      // Process each landing page (each page can have multiple language versions)
+      landingPages.forEach((landingPage) => {
+        // Create languages object for this page (languageId -> content mapping)
+        const pageLanguages = {}
+
+        // Add main language content
+        if (landingPage.languageTypeResourceId && landingPage.content) {
+          pageLanguages[landingPage.languageTypeResourceId] = landingPage.content
+          if (!languages.find((lang) => lang.value === landingPage.languageTypeResourceId)) {
+            const lang = this.languages.find(
+              (l) =>
+                l.value === landingPage.languageTypeResourceId ||
+                l.languageTypeResourceId === landingPage.languageTypeResourceId ||
+                l.id === landingPage.languageTypeResourceId
+            )
+            languages.push({
+              value: landingPage.languageTypeResourceId,
+              text:
+                lang?.text ||
+                lang?.isoFriendlyName ||
+                landingPage.languageTypeName ||
+                mainLanguageTypeName
+            })
+          }
+        }
+
+        // Add other language versions from languages array
+        if (landingPage.languages && Array.isArray(landingPage.languages)) {
+          landingPage.languages.forEach((languagePage) => {
+            if (languagePage.languageTypeResourceId && languagePage.content) {
+              pageLanguages[languagePage.languageTypeResourceId] = languagePage.content
+              if (!languages.find((lang) => lang.value === languagePage.languageTypeResourceId)) {
+                const lang = this.languages.find(
+                  (l) =>
+                    l.value === languagePage.languageTypeResourceId ||
+                    l.languageTypeResourceId === languagePage.languageTypeResourceId ||
+                    l.id === languagePage.languageTypeResourceId
+                )
+                languages.push({
+                  value: languagePage.languageTypeResourceId,
+                  text: lang?.text || lang?.isoFriendlyName || languagePage.languageTypeName
+                })
+              }
+            }
+          })
+        }
+
+        // Create template object for this page
+        landingPageTemplates.push({
+          name: landingPage.name,
+          order: landingPage.order,
+          prompt: landingPage.prompt,
+          content: landingPage.content, // Default content (main language)
+          languageTypeResourceId: landingPage.languageTypeResourceId || mainLanguageId,
+          languages: pageLanguages // All language versions for this page
+        })
+      })
+
+      return {
+        templates: landingPageTemplates,
+        languages
+      }
+    },
+    applyLandingPageTemplatePayload(payload = {}) {
+      const landingPages = payload.landingPages || []
+      const mainLanguageId =
+        payload.languageTypeResourceId ||
+        landingPages[0]?.languageTypeResourceId ||
+        this.landingPageLanguagePreview
+      const mainLanguageTypeName =
+        landingPages[0]?.languageTypeName || payload.languageTypeName || ''
+      const { templates, languages } = this.transformLandingPages(
+        landingPages,
+        mainLanguageId,
+        mainLanguageTypeName
+      )
+
+      this.landingPageTemplates = templates
+      this.selectedLandingPageLanguages = languages
+
+      if (languages.length) {
+        const hasCurrentLang = languages.some(
+          (lang) =>
+            lang.value === this.landingPageLanguagePreview ||
+            lang.value?.toString() === this.landingPageLanguagePreview?.toString()
+        )
+        if (!hasCurrentLang) {
+          this.landingPageLanguagePreview = languages[0].value
+        }
+      } else {
+        this.landingPageLanguagePreview = mainLanguageId || ''
+      }
+    },
+    getLandingPageContent(template = {}) {
+      if (!template) return ''
+      const languageId = this.landingPageLanguagePreview || template.languageTypeResourceId
+
+      // If template has languages object and languageId is set, get content for that language
+      if (languageId && template.languages && template.languages[languageId]) {
+        return template.languages[languageId]
+      }
+
+      // Fallback to current template's content (main language)
+      if (template.content) return template.content
+
+      // If no content found, try to get first available language content
+      if (template.languages && Object.keys(template.languages).length > 0) {
+        const firstLanguageId = Object.keys(template.languages)[0]
+        return template.languages[firstLanguageId]
+      }
+
+      return ''
+    },
+    handleLandingPageLanguageChange(languageId) {
+      if (!languageId) return
+      this.landingPageLanguagePreview = languageId
     }
   }
 }

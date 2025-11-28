@@ -9,6 +9,7 @@
       :is-duplicate="isDuplicate"
       :isAIAllyEnabled="isAIAllyEnabled"
       :landing-page-data="landingPageData"
+      :scenario-details-lookup="scenarioDetailsLookup"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
     <CommonSimulatorEmailTemplateDeleteDialog
@@ -175,6 +176,10 @@ export default {
   props: {
     isAIAllyEnabled: {
       type: Boolean
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {

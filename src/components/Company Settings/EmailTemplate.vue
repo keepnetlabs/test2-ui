@@ -1081,6 +1081,8 @@ export default {
       if (this.isGenerateWithAi) {
         if (this.isNotificationTemplate)
           return 'The notification template is being localized by AI Ally for the selected language.'
+        if (this.templateType === 'landing')
+          return 'The landing page is being localized by AI Ally for the selected languages.'
         return `The email template is being localized by AI Ally for the selected languages.`
       }
       if (this.isNotificationTemplate)
@@ -1095,6 +1097,8 @@ export default {
       if (this.isGenerateWithAi) {
         if (this.isNotificationTemplate)
           return 'The process may take some time depending on the number of localizations. Please stay on the page.'
+        if (this.templateType === 'landing')
+          return 'This process may take some time depending on the number of localizations. Please stay on the page while the landing page is being localized.'
         return 'This process may take some time depending on the number of localizations. Please stay on the page.'
       }
       if (this.isNotificationTemplate)

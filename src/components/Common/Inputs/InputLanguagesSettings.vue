@@ -216,30 +216,40 @@
           redFlagsText
         }}</span>
       </VBtn>
-      <VIcon
-        v-if="isLandingPage && isAIAllyEnabled"
-        :color="isAIAllyOpen ? '#fff' : '#2196f3'"
-        :class="[
-          'executive-reports-card__right-btn',
-          {
-            'input-languages-settings__ai-ally-icon--active': isAIAllyOpen
-          }
-        ]"
-        small
-        @click="handleAIAlly"
-        >{{ aiAllyIconName }}</VIcon
-      >
-      <VIcon
-        v-if="isLandingPage"
-        :color="isPhishingLinkOpen ? '#fff' : '#2196f3'"
-        :class="[
-          'executive-reports-card__right-btn',
-          { 'input-languages-settings__link-icon--active': isPhishingLinkOpen }
-        ]"
-        small
-        @click="handleLinkChange"
-        >{{ phishingLinkIconName }}</VIcon
-      >
+      <VTooltip v-if="isLandingPage && isAIAllyEnabled" bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            :color="isAIAllyOpen ? '#fff' : '#2196f3'"
+            :class="[
+              'executive-reports-card__right-btn',
+              {
+                'input-languages-settings__ai-ally-icon--active': isAIAllyOpen
+              }
+            ]"
+            small
+            @click="handleAIAlly"
+            >{{ aiAllyIconName }}</VIcon
+          >
+        </template>
+        <span>AI Ally</span>
+      </VTooltip>
+      <VTooltip v-if="isLandingPage" bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            :color="isPhishingLinkOpen ? '#fff' : '#2196f3'"
+            :class="[
+              'executive-reports-card__right-btn',
+              { 'input-languages-settings__link-icon--active': isPhishingLinkOpen }
+            ]"
+            small
+            @click="handleLinkChange"
+            >{{ phishingLinkIconName }}</VIcon
+          >
+        </template>
+        <span>Simulation Link</span>
+      </VTooltip>
       <VTooltip v-if="showRedFlags" bottom max-width="142">
         <template #activator="{ on }">
           <div v-on="on">
@@ -255,14 +265,19 @@
         </template>
         <span>To use this action, first hide the Red Flag.</span>
       </VTooltip>
-      <VIcon
-        v-else
-        color="#2196f3"
-        class="executive-reports-card__right-btn"
-        small
-        @click="handleEditModeClick"
-        >mdi-pencil</VIcon
-      >
+      <VTooltip v-else bottom>
+        <template #activator="{ on }">
+          <VIcon
+            v-on="on"
+            color="#2196f3"
+            class="executive-reports-card__right-btn"
+            small
+            @click="handleEditModeClick"
+            >mdi-pencil</VIcon
+          >
+        </template>
+        <span>Edit</span>
+      </VTooltip>
       <VMenu
         v-if="!isNotificationTemplate"
         :key="showRedFlags ? 'red-flags' : 'normal'"
@@ -434,6 +449,9 @@ export default {
   },
   computed: {
     isLocalizeReady() {
+      if (this.isLandingPage) {
+        return this.isTemplateTypeSelected
+      }
       return (
         Boolean(this.subject) &&
         Boolean(this.fromName) &&
@@ -546,10 +564,10 @@ export default {
       return style
     },
     aiAllyIconName() {
-      return this.isAIAllyOpen ? 'mdi-close' : 'mdi-lightbulb-on-outline'
+      return this.isAIAllyOpen ? 'mdi-close' : 'mdi-creation'
     },
     phishingLinkIconName() {
-      return this.isPhishingLinkOpen ? 'mdi-close' : 'mdi-link-variant'
+      return this.isPhishingLinkOpen ? 'mdi-close' : 'mdi-link'
     }
   },
   watch: {

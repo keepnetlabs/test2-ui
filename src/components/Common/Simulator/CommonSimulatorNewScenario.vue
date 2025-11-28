@@ -67,6 +67,7 @@
             :should-remove-overflow="false"
             :show-leaving-dialog="false"
             :landing-page-data="landingPageData"
+            :scenario-details-lookup="scenarioDetailsLookup"
             :email-template-id="createdLandingPageResourceId"
             :is-edit="!!createdLandingPageResourceId"
             :is-edit-from-preview="!!createdLandingPageResourceId"

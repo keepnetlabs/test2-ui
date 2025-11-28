@@ -141,16 +141,84 @@ export default {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
           this.landingPageParams.name = data.name
+          if (this.type.toLowerCase() === PREVIEW_DIALOG_TYPES.PHISHING.toLowerCase()) {
+            // Tüm dilleri topla (ana dil + diğer diller)
+            const allLanguagesMap = new Map()
+            // Ana dili ekle
+            if (data.languageTypeResourceId) {
+              const mainLanguageObj = this.languages.find(
+                (lang) => lang.value === data.languageTypeResourceId
+              )
+              if (mainLanguageObj) {
+                allLanguagesMap.set(data.languageTypeResourceId, {
+                  text: mainLanguageObj.text || mainLanguageObj.name,
+                  value: data.languageTypeResourceId,
+                  languageTypeName: data.languageTypeName || mainLanguageObj.text
+                })
+              }
+            }
 
-          this.landingPageParams.languages =
-            this.languages.filter((lang) => {
-              return lang.value === data.languageTypeResourceId
-            }) || []
+            // Her landingPage için languages array'inden diğer dilleri ekle
+            if (Array.isArray(data.landingPages)) {
+              data.landingPages.forEach((page) => {
+                if (Array.isArray(page.languages)) {
+                  page.languages.forEach((langPage) => {
+                    if (!allLanguagesMap.has(langPage.languageTypeResourceId)) {
+                      const langObj = this.languages.find(
+                        (lang) => lang.value === langPage.languageTypeResourceId
+                      )
+                      allLanguagesMap.set(langPage.languageTypeResourceId, {
+                        text:
+                          langObj?.text ||
+                          langPage.languageTypeName ||
+                          langPage.languageTypeResourceId,
+                        value: langPage.languageTypeResourceId,
+                        languageTypeName: langPage.languageTypeName
+                      })
+                    }
+                  })
+                }
+              })
+            }
 
-          this.landingPageTemplates = data.landingPages
+            this.landingPageParams.languages = Array.from(allLanguagesMap.values())
+
+            // landingPages'i dönüştür - her sayfa için tüm dilleri içeren yapı
+            this.landingPageTemplates = (data.landingPages || []).map((page) => {
+              const transformedPage = {
+                name: page.name,
+                order: page.order,
+                prompt: page.prompt,
+                content: page.content, // Ana dilin content'i
+                languageTypeResourceId: data.languageTypeResourceId, // Ana dil
+                languages: {} // Her dil için content saklanacak
+              }
+
+              // Ana dilin content'ini languages objesine ekle
+              transformedPage.languages[data.languageTypeResourceId] = page.content
+
+              // Diğer dillerin content'lerini ekle
+              if (Array.isArray(page.languages)) {
+                page.languages.forEach((langPage) => {
+                  transformedPage.languages[langPage.languageTypeResourceId] = langPage.content
+                })
+              }
+
+              return transformedPage
+            })
+          } else {
+            // Diğer durumlar için eski mantık
+            this.landingPageParams.languages =
+              this.languages.filter((lang) => {
+                return lang.value === data.languageTypeResourceId
+              }) || []
+
+            this.landingPageTemplates = data.landingPages
+          }
+
           this.selectedTemplateHeader = data.name
-          this.templateHTML = data.landingPages?.length
-            ? data.landingPages[0]?.content || null
+          this.templateHTML = this.landingPageTemplates?.length
+            ? this.landingPageTemplates[0]?.content || null
             : null
         })
         .finally(() => {

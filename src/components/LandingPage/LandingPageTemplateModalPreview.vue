@@ -124,12 +124,19 @@ export default {
       selectedLanguageId: null
     }
   },
+  mounted() {
+    // İlk yüklemede ilk dili seç
+    if (this.languages.length > 0 && !this.selectedLanguageId) {
+      this.selectedLanguageId =
+        this.languages[0].value || this.languages[0].languageTypeResourceId || this.languages[0].id
+    }
+  },
   computed: {
     hasLandingPageTemplate() {
       return this?.landingPageTemplates?.length > 0
     },
     isPhishing() {
-      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+      return this.type.toLowerCase() === PREVIEW_DIALOG_TYPES.PHISHING.toLowerCase()
     },
     isQuishing() {
       return this.isQuishingProp || this.type === PREVIEW_DIALOG_TYPES.QUISHING
@@ -141,7 +148,16 @@ export default {
       }))
     },
     getCurrentLandingPageTemplate() {
-      return this?.landingPageTemplates[this.selectedLandingPageIndex]?.content
+      const currentPage = this?.landingPageTemplates[this.selectedLandingPageIndex]
+      if (!currentPage) return null
+
+      // Phishing durumunda ve languages objesi varsa, seçili dile göre content döndür
+      if (this.isPhishing && currentPage.languages && this.selectedLanguageId) {
+        return currentPage.languages[this.selectedLanguageId] || currentPage.content
+      }
+
+      // Diğer durumlar için eski mantık
+      return currentPage.content
     },
     previewHtml() {
       const html = this.getCurrentLandingPageTemplate || ''
@@ -166,8 +182,8 @@ export default {
   },
   watch: {
     languages(newVal) {
-      if (newVal.length > 0) {
-        this.selectedLanguageId = newVal[0].value
+      if (newVal.length > 0 && !this.selectedLanguageId) {
+        this.selectedLanguageId = newVal[0].value || newVal[0].languageTypeResourceId
       }
     }
   },

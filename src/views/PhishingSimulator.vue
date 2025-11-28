@@ -35,6 +35,7 @@
         <LandingPageList
           v-if="tab === 'landingPage'"
           ref="refLandingPageList"
+          :scenario-details-lookup="scenarioDetailsLookup"
           :isAIAllyEnabled="aiAllySettings.landingPageTemplateGenerationAssistant"
         />
       </el-tab-pane>
