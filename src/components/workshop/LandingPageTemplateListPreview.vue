@@ -1529,15 +1529,12 @@ export default {
     transformLandingPages(landingPages = [], mainLanguageId = '', mainLanguageTypeName = '') {
       const languages = []
       const landingPageTemplates = []
-      const languageMap = new Map()
 
-      // Add main language to language options
       if (mainLanguageId && mainLanguageTypeName) {
         languages.push({
           value: mainLanguageId,
           text: mainLanguageTypeName
         })
-        languageMap.set(mainLanguageId, mainLanguageTypeName)
       }
 
       // Process each landing page (each page can have multiple language versions)
@@ -1548,15 +1545,11 @@ export default {
         // Add main language content
         if (landingPage.languageTypeResourceId && landingPage.content) {
           pageLanguages[landingPage.languageTypeResourceId] = landingPage.content
-          if (!languageMap.has(landingPage.languageTypeResourceId)) {
+          if (!languages.find((lang) => lang.value === landingPage.languageTypeResourceId)) {
             languages.push({
               value: landingPage.languageTypeResourceId,
               text: landingPage.languageTypeName || mainLanguageTypeName
             })
-            languageMap.set(
-              landingPage.languageTypeResourceId,
-              landingPage.languageTypeName || mainLanguageTypeName
-            )
           }
         }
 
@@ -1565,12 +1558,11 @@ export default {
           landingPage.languages.forEach((languagePage) => {
             if (languagePage.languageTypeResourceId && languagePage.content) {
               pageLanguages[languagePage.languageTypeResourceId] = languagePage.content
-              if (!languageMap.has(languagePage.languageTypeResourceId)) {
+              if (!languages.find((lang) => lang.value === languagePage.languageTypeResourceId)) {
                 languages.push({
                   value: languagePage.languageTypeResourceId,
                   text: languagePage.languageTypeName
                 })
-                languageMap.set(languagePage.languageTypeResourceId, languagePage.languageTypeName)
               }
             }
           })
@@ -1599,7 +1591,7 @@ export default {
         landingPages[0]?.languageTypeResourceId ||
         this.languagePreview
       const mainLanguageTypeName =
-        payload.languageTypeName || landingPages[0]?.languageTypeName || ''
+        landingPages[0]?.languageTypeName || payload.languageTypeName || ''
       const { templates, languages } = this.transformLandingPages(
         landingPages,
         mainLanguageId,
@@ -1617,6 +1609,7 @@ export default {
       } else {
         this.languagePreview = mainLanguageId || ''
       }
+
     },
     handleLandingPagePreviewLanguageChange(languageId) {
       if (!languageId) return
