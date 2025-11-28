@@ -186,6 +186,7 @@
                           @on-assisted-by-ai-template="handleAssistedByAITemplate"
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
                           @on-assisted-by-ai-template-finished="handleAssistedByAITemplateFinished"
+                          @update:isEmailGenerating="handleEmailGeneratingChange"
                         />
                       </div>
 
@@ -652,6 +653,12 @@ export default {
       )
       if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
         this.$set(selectedLanguagePayload.landingPages[currentPageIndex], 'content', template)
+      }
+    },
+    handleEmailGeneratingChange(isGenerating) {
+      const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
+      if (this.$refs.refEmailTemplate && this.$refs.refEmailTemplate[currentPageIndex]) {
+        this.$refs.refEmailTemplate[currentPageIndex].isEmailGenerating = isGenerating
       }
     },
     handleLinkChange() {

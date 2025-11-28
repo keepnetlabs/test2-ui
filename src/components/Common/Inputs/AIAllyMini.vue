@@ -306,6 +306,7 @@ export default {
     },
     handleGenerateEmail() {
       this.isEmailGenerating = true
+      this.$emit('update:isEmailGenerating', true)
       // Ensure formatType is correctly set - v-model should handle this
       const currentFormatType = this.formatType || 'html'
       const isPlainText = currentFormatType === 'plain'
@@ -327,6 +328,7 @@ export default {
         })
         .catch(() => {
           this.isEmailGenerating = false
+          this.$emit('update:isEmailGenerating', false)
         })
     },
     callForGetGeneratedAILandingPageTemplate() {
@@ -341,11 +343,13 @@ export default {
           this.activeGeneratedTemplateIndex = this.generatedTemplates.length - 1
           this.$emit('update:template', template)
           this.isEmailGenerating = false
+          this.$emit('update:isEmailGenerating', false)
         })
         .catch((error) => {
           if (error?.response?.status === 500) {
             if (this.timeoutId) clearTimeout(this.timeoutId)
             this.isEmailGenerating = false
+            this.$emit('update:isEmailGenerating', false)
             return
           }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
