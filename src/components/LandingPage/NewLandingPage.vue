@@ -175,7 +175,7 @@
                         />
                       </div>
 
-                      <div v-if="isAIAllyOpen" class="mt-3">
+                      <div v-if="isAIAllyOpen && !isGenerateWithAIDisabled" class="mt-3">
                         <AIAllyMini
                           :language-type-resource-id="formValues.languageTypeResourceId"
                           :language-options="languageOptions"
@@ -195,7 +195,7 @@
                         />
                       </div>
 
-                      <div v-show="isPhishingLinkOpen" class="mt-3">
+                      <div v-show="isPhishingLinkOpen && !isGenerateWithAIDisabled" class="mt-3">
                         <InputPhishingLinkMini
                           ref="refInputPhishingLinkMini"
                           v-model="formValues.phishingLink"
