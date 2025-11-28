@@ -1,0 +1,175 @@
+.users-dashboard-recent-badges {
+  border-radius: 12px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #fff;
+  padding: 24px;
+  box-shadow: none !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  &__header-left {
+    flex: 1;
+  }
+
+  &__title {
+    font-family: "Open Sans", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #383b41;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #383b41;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__link {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2196f3;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 16px;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+      text-decoration: none;
+    }
+  }
+
+  &__content {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  &__badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #f2f2f2;
+    background: #fff;
+    flex: 1;
+  }
+
+  // Badge count specific styles
+  &__badge-item--count-1 {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  &__badge-item--count-2 {
+    flex: 1;
+    max-width: calc(50% - 8px); // 50% minus half of gap
+  }
+
+  &__badge-item--count-3 {
+    flex: 1;
+    max-width: calc(33.333% - 11px); // 33.333% minus gap calculation
+  }
+
+  &__badge-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+
+    // Shine animation overlay
+    &::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.8) 50%,
+        transparent 70%
+      );
+      animation: badge-shine 3s ease-in-out infinite;
+    }
+  }
+
+  &__badge-image {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+  }
+
+  &__badge-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__badge-name {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #383b41;
+    text-align: center;
+    line-height: 1.4;
+  }
+}
+
+// Animations
+@keyframes badge-shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+// Mobile responsive
+@media (max-width: 960px) {
+  .users-dashboard-recent-badges {
+    &__header {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    &__link {
+      margin-left: 0;
+      align-self: flex-start;
+    }
+
+    &__content {
+      justify-content: center;
+    }
+
+    &__badge-item {
+      flex: 1;
+    }
+  }
+}
