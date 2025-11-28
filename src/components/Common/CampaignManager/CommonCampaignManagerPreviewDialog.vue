@@ -472,27 +472,111 @@ export default {
           })
         }
       }
-      this.landingPageTemplates =
-        phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
+      const rawLandingPages = phishingScenarioPreviewDto?.landingPageTemplate?.landingPages || []
       const landingPageLanguageTypeResourceId =
         phishingScenarioPreviewDto?.landingPageTemplate?.languageTypeResourceId
-      this.landingPageParams = {
-        mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
-        mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
-        name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
-        description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
-        urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
-        isAssistedByAI:
-          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
-          phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI,
-        languages: landingPageLanguageTypeResourceId
-          ? this.globalLanguages.filter((lang) => {
-              return (
-                lang.value === landingPageLanguageTypeResourceId ||
-                lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
-              )
-            }) || []
-          : []
+
+      // Phishing durumunda backend'den gelen yapı farklı - languages array'i içinde
+      if (this.isPhishing) {
+        // Tüm dilleri topla (ana dil + diğer diller)
+        const allLanguagesMap = new Map()
+
+        // Ana dili ekle
+        if (landingPageLanguageTypeResourceId) {
+          const mainLanguageObj = this.globalLanguages.find(
+            (lang) =>
+              lang.value === landingPageLanguageTypeResourceId ||
+              lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
+          )
+          if (mainLanguageObj) {
+            allLanguagesMap.set(landingPageLanguageTypeResourceId, {
+              text: mainLanguageObj.text || mainLanguageObj.name,
+              value: landingPageLanguageTypeResourceId,
+              languageTypeName: mainLanguageObj.text
+            })
+          }
+        }
+
+        // Her landingPage için languages array'inden diğer dilleri ekle
+        if (Array.isArray(rawLandingPages)) {
+          rawLandingPages.forEach((page) => {
+            if (Array.isArray(page.languages)) {
+              page.languages.forEach((langPage) => {
+                if (!allLanguagesMap.has(langPage.languageTypeResourceId)) {
+                  const langObj = this.globalLanguages.find(
+                    (lang) => lang.value === langPage.languageTypeResourceId
+                  )
+                  allLanguagesMap.set(langPage.languageTypeResourceId, {
+                    text:
+                      langObj?.text || langPage.languageTypeName || langPage.languageTypeResourceId,
+                    value: langPage.languageTypeResourceId,
+                    languageTypeName: langPage.languageTypeName
+                  })
+                }
+              })
+            }
+          })
+        }
+
+        // landingPages'i dönüştür - her sayfa için tüm dilleri içeren yapı
+        this.landingPageTemplates = (rawLandingPages || []).map((page) => {
+          const transformedPage = {
+            name: page.name,
+            order: page.order,
+            prompt: page.prompt,
+            content: page.content, // Ana dilin content'i
+            languageTypeResourceId: landingPageLanguageTypeResourceId, // Ana dil
+            languages: {} // Her dil için content saklanacak
+          }
+
+          // Ana dilin content'ini languages objesine ekle
+          if (landingPageLanguageTypeResourceId) {
+            transformedPage.languages[landingPageLanguageTypeResourceId] = page.content
+          }
+
+          // Diğer dillerin content'lerini ekle
+          if (Array.isArray(page.languages)) {
+            page.languages.forEach((langPage) => {
+              transformedPage.languages[langPage.languageTypeResourceId] = langPage.content
+            })
+          }
+
+          return transformedPage
+        })
+
+        this.landingPageParams = {
+          mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
+          mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
+          name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
+          description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
+          urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
+          isAssistedByAI:
+            phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
+            phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI,
+          languages: Array.from(allLanguagesMap.values())
+        }
+      } else {
+        // Diğer durumlar için eski mantık (Quishing, Smishing vb.)
+        this.landingPageTemplates = rawLandingPages
+
+        this.landingPageParams = {
+          mfaSmsSenderNumber: phishingScenarioPreviewDto?.mfaSmsSenderNumber || '',
+          mfaTextTemplate: phishingScenarioPreviewDto?.mfaTextTemplate || '',
+          name: phishingScenarioPreviewDto?.landingPageTemplate?.name || '',
+          description: phishingScenarioPreviewDto?.landingPageTemplate?.description || '',
+          urlTemplate: phishingScenarioPreviewDto?.landingPageTemplate?.urlTemplate || '',
+          isAssistedByAI:
+            phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedByAI ||
+            phishingScenarioPreviewDto?.landingPageTemplate?.isAssistedbyAI,
+          languages: landingPageLanguageTypeResourceId
+            ? this.globalLanguages.filter((lang) => {
+                return (
+                  lang.value === landingPageLanguageTypeResourceId ||
+                  lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
+                )
+              }) || []
+            : []
+        }
       }
       this.isMethodMfa = phishingScenarioPreviewDto?.methodTypeId?.toString() === '4'
       this.tab = 'email'

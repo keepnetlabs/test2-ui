@@ -191,7 +191,7 @@
                 <div v-if="!isQuishingTypeIndividualPrintOut">
                   <div
                     :style="{
-                      'width': 'calc(100% - 200px)',
+                      width: 'calc(100% - 200px)',
                       'margin-bottom': isShowRedFlags ? '2px' : '0'
                     }"
                     :class="
@@ -595,25 +595,112 @@ export default {
             difficultyTypeId,
             methodTypeId,
             isAssistedByAI: isLandingPageAi = false,
-            isAssistedbyAI: isLandingPageAi2 = false
+            isAssistedbyAI: isLandingPageAi2 = false,
+            languageTypeResourceId: landingPageLanguageTypeResourceId
           } = landingPageTemplate || []
 
-          this.landingPageParams = {
-            name: landingPageName,
-            isAssistedByAI: isLandingPageAi || isLandingPageAi2,
-            description,
-            urlTemplate,
-            difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-            method: methods[methodTypeId - 1]?.text || '',
-            isAttachmentBasedTemplate: methodTypeId === 3,
-            mfaTextTemplate: data.mfaTextTemplate,
-            mfaSmsSenderNumber: data.mfaSmsSenderNumber,
-            languages:
-              this.languages.filter((lang) => {
-                return lang.value === landingPageTemplate?.languageTypeResourceId
-              }) || []
+          // Phishing durumunda backend'den gelen yapı farklı - languages array'i içinde
+          if (this.isPhishing) {
+            // Tüm dilleri topla (ana dil + diğer diller)
+            const allLanguagesMap = new Map()
+
+            // Ana dili ekle
+            if (landingPageLanguageTypeResourceId) {
+              const mainLanguageObj = this.languages.find(
+                (lang) =>
+                  lang.value === landingPageLanguageTypeResourceId ||
+                  lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
+              )
+              if (mainLanguageObj) {
+                allLanguagesMap.set(landingPageLanguageTypeResourceId, {
+                  text: mainLanguageObj.text || mainLanguageObj.name,
+                  value: landingPageLanguageTypeResourceId,
+                  languageTypeName: mainLanguageObj.text
+                })
+              }
+            }
+
+            // Her landingPage için languages array'inden diğer dilleri ekle
+            if (Array.isArray(landingPages)) {
+              landingPages.forEach((page) => {
+                if (Array.isArray(page.languages)) {
+                  page.languages.forEach((langPage) => {
+                    if (!allLanguagesMap.has(langPage.languageTypeResourceId)) {
+                      const langObj = this.languages.find(
+                        (lang) => lang.value === langPage.languageTypeResourceId
+                      )
+                      allLanguagesMap.set(langPage.languageTypeResourceId, {
+                        text:
+                          langObj?.text ||
+                          langPage.languageTypeName ||
+                          langPage.languageTypeResourceId,
+                        value: langPage.languageTypeResourceId,
+                        languageTypeName: langPage.languageTypeName
+                      })
+                    }
+                  })
+                }
+              })
+            }
+
+            // landingPages'i dönüştür - her sayfa için tüm dilleri içeren yapı
+            this.landingPageTemplates = (landingPages || []).map((page) => {
+              const transformedPage = {
+                name: page.name,
+                order: page.order,
+                prompt: page.prompt,
+                content: page.content, // Ana dilin content'i
+                languageTypeResourceId: landingPageLanguageTypeResourceId, // Ana dil
+                languages: {} // Her dil için content saklanacak
+              }
+
+              // Ana dilin content'ini languages objesine ekle
+              if (landingPageLanguageTypeResourceId) {
+                transformedPage.languages[landingPageLanguageTypeResourceId] = page.content
+              }
+
+              // Diğer dillerin content'lerini ekle
+              if (Array.isArray(page.languages)) {
+                page.languages.forEach((langPage) => {
+                  transformedPage.languages[langPage.languageTypeResourceId] = langPage.content
+                })
+              }
+
+              return transformedPage
+            })
+
+            this.landingPageParams = {
+              name: landingPageName,
+              isAssistedByAI: isLandingPageAi || isLandingPageAi2,
+              description,
+              urlTemplate,
+              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+              method: methods[methodTypeId - 1]?.text || '',
+              isAttachmentBasedTemplate: methodTypeId === 3,
+              mfaTextTemplate: data.mfaTextTemplate,
+              mfaSmsSenderNumber: data.mfaSmsSenderNumber,
+              languages: Array.from(allLanguagesMap.values())
+            }
+          } else {
+            // Diğer durumlar için eski mantık (Quishing, Smishing vb.)
+            this.landingPageTemplates = landingPages
+
+            this.landingPageParams = {
+              name: landingPageName,
+              isAssistedByAI: isLandingPageAi || isLandingPageAi2,
+              description,
+              urlTemplate,
+              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
+              method: methods[methodTypeId - 1]?.text || '',
+              isAttachmentBasedTemplate: methodTypeId === 3,
+              mfaTextTemplate: data.mfaTextTemplate,
+              mfaSmsSenderNumber: data.mfaSmsSenderNumber,
+              languages:
+                this.languages.filter((lang) => {
+                  return lang.value === landingPageLanguageTypeResourceId
+                }) || []
+            }
           }
-          this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4
         })
         .finally(() => {

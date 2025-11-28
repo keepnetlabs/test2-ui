@@ -75,21 +75,6 @@
                   :items="landingPageData.methodTypes"
                   :disabled="selectedMethodText ? selectedMethodText !== 'MFA' : false"
                 />
-                <form-group
-                  has-hint
-                  title="Language"
-                  sub-title="Select the language you are writing this webpage template in"
-                >
-                  <input-select-language
-                    v-model="formValues.languageTypeResourceId"
-                    v-bind="commonRules"
-                    item-text="text"
-                    item-value="value"
-                    required
-                    :items="languageOptions"
-                    :menu-props="{ offsetY: true }"
-                  />
-                </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
                     v-model="formValues.tags"
@@ -147,7 +132,12 @@
                 <v-list-item-content>
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
                     <div class="landing-page-tab-content">
-                      <div class="d-flex align-center justify-space-between">
+                      <div
+                        v-show="!isGenerateWithAIDisabled"
+                        :class="{
+                          'd-flex align-center justify-space-between': !isGenerateWithAIDisabled
+                        }"
+                      >
                         <div class="d-flex align-center">
                           <InputLanguagePreview
                             :value="activeLanguage"
@@ -170,12 +160,15 @@
                           :language-options="languageOptions"
                           :is-notification-template="true"
                           :is-landing-page="true"
-                          :is-show-localize-button="false"
-                          :is-ai-ally-enabled="isAIAllyEnabled"
+                          :is-show-localize-button="true"
+                          :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
+                          :isAIAllyEnabled="isAIAllyEnabled"
                           :is-phishing-link-open="isPhishingLinkOpen"
                           :isAIAllyOpen="isAIAllyOpen"
                           @input="handleSelectedLanguagesChange"
                           @on-active-language-change="handleActiveLanguageChange"
+                          @on-generate-with-ai="handleGenerateWithAI"
+                          @on-relocalize-replace="handleRelocalizeReplace"
                           @on-ai-ally="handleAIAlly"
                           @on-edit-mode="handleEditMode"
                           @on-link-change="handleLinkChange"
@@ -195,10 +188,9 @@
                             formValues.languageTypeResourceId = $event
                           "
                           @update:template="handleAITemplateUpdate"
-                          @update:is-assisted-by-ai-template="
-                            formValues.isAssistedByAITemplate = $event
-                          "
+                          @on-assisted-by-ai-template="handleAssistedByAITemplate"
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
+                          @on-assisted-by-ai-template-finished="handleAssistedByAITemplateFinished"
                           @update:isEmailGenerating="handleEmailGeneratingChange"
                         />
                       </div>
@@ -218,12 +210,15 @@
                         />
                       </div>
 
-                      <hr class="mt-4 ml-n4 mr-n4" />
+                      <hr v-show="!isGenerateWithAIDisabled" class="mt-4 ml-n4 mr-n4" />
                       <el-tabs
                         v-model="tab"
                         :key="getLandingPageKey"
                         id="landing-page-tab-content"
                         class="mt-2"
+                        :class="{
+                          'tabs-header-hidden': isDefault || isGenerateWithAi
+                        }"
                       >
                         <el-tab-pane
                           v-for="(page, index) in formValues.landingPages"
@@ -300,6 +295,7 @@
                             @on-custom-head-scripts-change="
                               (value) => onCustomHeadScriptsChange(value, index)
                             "
+                            @on-save-template="(template) => handleSaveTemplate(template, index)"
                             @setAttachmentFile="setAttachmentFile"
                           />
                         </el-tab-pane>
@@ -363,10 +359,7 @@
       <StepperFooter
         max-step="2"
         :step.sync="step"
-        :disabled-statuses="{
-          nextButton: isSubmitDisabled,
-          submitButton: isSubmitDisabled
-        }"
+        :disabled-statuses="getDisabledStatuses"
         :ids="footerButtonsIds"
         :save-button-text="isEditFromPreview ? labels.SaveChanges : labels.Save"
         @on-cancel="changeNewEmailTemplateModalStatus"
@@ -384,7 +377,7 @@
           <NextButton
             v-if="step !== 2"
             :id="footerButtonsIds.nextButton"
-            :disabled="isSubmitDisabled"
+            :disabled="getDisabledStatuses.nextButton"
             @click="nextStep(+1)"
           />
           <VBtn
@@ -395,7 +388,7 @@
             rounded
             class="mr-4"
             style="font-weight: 600;"
-            :disabled="isSubmitDisabled"
+            :disabled="getDisabledStatuses.submitButton"
             @click="handleSaveAsNew"
           >
             {{ labels.SaveAsNew }}
@@ -403,7 +396,7 @@
           <SaveButton
             v-if="step === 2"
             :id="footerButtonsIds.saveButton"
-            :disabled="isSubmitDisabled"
+            :disabled="getDisabledStatuses.submitButton"
             :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
             @click="submit"
           />
@@ -423,7 +416,13 @@ import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import { scrollToComponent, isDifferent, createRandomCryptStringNumber } from '@/utils/functions'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
+import {
+  createLandingPage,
+  getLandingPageTemplate,
+  updateLandingPage,
+  generateLandingPageTranslation,
+  getLandingPageTranslation
+} from '@/api/landingPage'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
@@ -436,9 +435,9 @@ import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePrevie
 import NextButton from '@/components/Common/Buttons/NextButton'
 import BackButton from '@/components/Common/Buttons/BackButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
-import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage.vue'
 import InputPhishingLinkMini from '@/components/Common/Inputs/InputPhishingLinkMini.vue'
 import AIAllyMini from '@/components/Common/Inputs/AIAllyMini.vue'
+import '@/styles/landing-page-tabs.css'
 export default {
   name: 'NewLandingPage',
   components: {
@@ -454,7 +453,6 @@ export default {
     NextButton,
     BackButton,
     SaveButton,
-    InputSelectLanguage,
     InputPhishingLinkMini,
     AIAllyMini
   },
@@ -494,6 +492,10 @@ export default {
     selectedMethodText: {
       type: String,
       default: ''
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -530,6 +532,7 @@ export default {
       initialDisabledLanguageIds: [],
       formValues: {
         canRemoveLanguages: true,
+        isAssistedByAITemplate: false,
         isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
@@ -560,10 +563,23 @@ export default {
       aiAssistantTotalRights: 0,
       isPhishingLinkOpen: false,
       isAIAllyOpen: false,
-      isShowRedFlags: false
+      isShowRedFlags: false,
+      isGenerateWithAi: false,
+      isGenerateWithAIDisabled: false,
+      translationTempKey: null,
+      timeoutId: null,
+      isEverythingLocalized: false,
+      isDefault: false
     }
   },
   watch: {
+    scenarioDetailsLookup: {
+      immediate: true,
+      handler(val) {
+        if (!val || this.isDefault) return
+        this.setLanguageItems()
+      }
+    },
     selectedLanguages(newVal) {
       // Dil silinmişse activeLanguage'i reset et
       if (!newVal.length) {
@@ -590,9 +606,32 @@ export default {
         // İlk kez dil seçiliyorsa
         this.activeLanguage = newVal[0].value
       }
+    },
+    step(newVal) {
+      // Step 2'ye geçildiğinde çeviri devam ediyorsa ref'i set et
+      this.$nextTick(() => {
+        if (newVal === 2 && this.isSubmitDisabled && this.$refs.refEmailTemplate) {
+          this.$refs.refEmailTemplate.forEach((ref) => {
+            if (ref) ref.isEmailGenerating = true
+          })
+        }
+      })
     }
   },
   methods: {
+    handleSaveTemplate(template, pageIndex) {
+      const currentPageIndex =
+        typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
+      const selectedLanguagePayload = this.languagesPayload.find(
+        (item) => item.languageTypeResourceId === this.activeLanguage
+      )
+      if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
+        const currentTemplate = selectedLanguagePayload.landingPages[currentPageIndex].content || ''
+        if (currentTemplate.trim() !== template.trim()) {
+          selectedLanguagePayload.isTranslated = false
+        }
+      }
+    },
     handleActiveLanguageChange(languageId) {
       // Yeni dilin sayfalarını yükle
       const newLangPayload = this.languagesPayload.find(
@@ -634,6 +673,21 @@ export default {
       const index = parseInt(this.tab.replace('page', '')) - 1
       this.$refs.refEmailTemplate?.[index]?.editHtmlTemplate()
     },
+    handleAssistedByAITemplate(isAssistedByAITemplate) {
+      this.formValues.isAssistedByAITemplate = isAssistedByAITemplate
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true
+        })
+      }
+    },
+    handleAssistedByAITemplateFinished() {
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = false
+        })
+      }
+    },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {
         const item = this.languagesPayload.find(
@@ -650,6 +704,270 @@ export default {
       this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
         JSON.stringify(this.getSelectedLanguagePayload)
       )
+    },
+    handleRelocalizeReplace({ language }) {
+      const selectedLanguagePayload = this.getSelectedLanguagePayload
+      const landingPages = selectedLanguagePayload.landingPages || []
+
+      const payload = {
+        landingPages: landingPages.map((page) => ({
+          name: page.name || '',
+          content: page.content || '',
+          order: page.order || 0
+        })),
+        targetLanguages: [
+          {
+            languageResourceId: language.value
+          }
+        ]
+      }
+
+      this.isGenerateWithAi = true
+      this.isGenerateWithAIDisabled = true
+      this.isSubmitDisabled = true
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true
+        })
+      }
+
+      generateLandingPageTranslation(payload)
+        .then((response) => {
+          if (!response?.data?.data || response?.data?.status !== 'SUCCESS') {
+            this.resetGenerateWithAIDisabled()
+            return
+          }
+
+          this.translationTempKey = response.data.data
+          this.isEverythingLocalized = false
+          this.askForLandingPageTranslation()
+        })
+        .catch(() => {
+          this.resetGenerateWithAIDisabled()
+        })
+    },
+    handleGenerateWithAI() {
+      this.isGenerateWithAi = true
+      this.isGenerateWithAIDisabled = true
+      this.isSubmitDisabled = true
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true
+        })
+      }
+
+      // Aktif dilin landing pages'lerini al
+      const selectedLanguagePayload = this.getSelectedLanguagePayload
+      const landingPages = selectedLanguagePayload.landingPages || []
+
+      // Sadece translate edilmemiş dilleri filtrele
+      const languagesToLocalize = this.selectedLanguages.filter((lang) => {
+        const payload = this.languagesPayload.find((p) => p.languageTypeResourceId === lang.value)
+        return !(payload && payload.isTranslated)
+      })
+
+      // Payload'ı hazırla
+      const payload = {
+        landingPages: landingPages.map((page) => ({
+          name: page.name || '',
+          content: page.content || '',
+          order: page.order || 0
+        })),
+        targetLanguages: languagesToLocalize.map((item) => ({
+          languageResourceId: item.value
+        }))
+      }
+
+      generateLandingPageTranslation(payload)
+        .then((response) => {
+          if (!response?.data?.data || response?.data?.status !== 'SUCCESS') {
+            this.resetGenerateWithAIDisabled()
+            return
+          }
+
+          // Temp key'i sakla (sonra polling için kullanılacak)
+          this.translationTempKey = response.data.data
+          this.isEverythingLocalized = false
+          this.askForLandingPageTranslation()
+        })
+        .catch(() => {
+          this.resetGenerateWithAIDisabled()
+        })
+    },
+    askForLandingPageTranslation(count = 0, maxCount = null, timeoutId = 0) {
+      if (this.isEverythingLocalized || !this.translationTempKey) return
+
+      const languagesLength = Array.isArray(this.selectedLanguages)
+        ? this.selectedLanguages.length
+        : 0
+      const calculatedMax = Math.max((languagesLength || 1) * 20, 20)
+      const effectiveMax = typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
+
+      if (count >= effectiveMax) {
+        this.resetGenerateWithAIDisabled(timeoutId)
+        this.languagesPayload.forEach((lPayload) => {
+          if (!lPayload.isTranslated) {
+            // Boş içerik ekle
+            lPayload.landingPages = lPayload.landingPages.map((page) => ({
+              ...page,
+              content: '<div style="height:300px"></div>'
+            }))
+          }
+        })
+        return
+      }
+
+      if (this.timeoutId) clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        getLandingPageTranslation(this.translationTempKey)
+          .then((response) => {
+            if (this.timeoutId) {
+              clearTimeout(this.timeoutId)
+            }
+
+            const { data } = response?.data || {}
+            if (!data) {
+              this.askForLandingPageTranslation(count + 1, effectiveMax, timeoutId)
+              return
+            }
+
+            // İşlem tamamlandı mı kontrol et
+            if (data.isCompleted) {
+              this.isEverythingLocalized = true
+              const errorLanguages = []
+              const successLanguages = []
+
+              // translatedContents array'ini işle
+              if (Array.isArray(data.translatedContents)) {
+                data.translatedContents.forEach((item) => {
+                  if (item.error || !item.success) {
+                    errorLanguages.push(item)
+                  } else {
+                    successLanguages.push(item)
+                  }
+                })
+
+                // Hataları göster
+                errorLanguages.forEach((item) => {
+                  this.showLocalizationErrorMessage(item)
+                })
+
+                // Başarılı çevirileri güncelle - her dil için bir kez işlem yap
+                const processedLanguageIds = new Set()
+                successLanguages.forEach((item) => {
+                  // Bu dil daha önce işlendi mi?
+                  if (processedLanguageIds.has(item.languageResourceId)) return
+
+                  const languagePayload = this.languagesPayload.find(
+                    (language) => language.languageTypeResourceId === item.languageResourceId
+                  )
+                  if (!languagePayload) return
+
+                  // Bu dil için tüm çevirileri bul
+                  const languageTranslations = successLanguages.filter(
+                    (t) => t.languageResourceId === item.languageResourceId
+                  )
+
+                  // Her sayfa için çeviriyi bul ve güncelle
+                  languageTranslations.forEach((translation) => {
+                    const pageIndex = languagePayload.landingPages.findIndex(
+                      (page) => page.order === translation.order
+                    )
+                    if (pageIndex !== -1) {
+                      this.$set(
+                        languagePayload.landingPages[pageIndex],
+                        'content',
+                        translation.translatedContent || ''
+                      )
+                      // sourceName'i de güncelle
+                      if (translation.sourceName) {
+                        this.$set(
+                          languagePayload.landingPages[pageIndex],
+                          'name',
+                          translation.sourceName
+                        )
+                      }
+                    }
+                  })
+
+                  languagePayload.isTranslated = true
+                  processedLanguageIds.add(item.languageResourceId)
+                })
+
+                // Başarı mesajını göster
+                this.showLocalizationSuccessMessage(data.translatedContents)
+                this.resetGenerateWithAIDisabled(timeoutId)
+
+                // Son çevrilen dile geç
+                const lastTranslation = successLanguages[successLanguages.length - 1]
+                if (lastTranslation) {
+                  this.handleActiveLanguageChange(lastTranslation.languageResourceId)
+                }
+              }
+            } else {
+              // İşlem henüz tamamlanmadı, tekrar dene
+              this.askForLandingPageTranslation(count + 1, effectiveMax, timeoutId)
+            }
+          })
+          .catch(() => {
+            this.askForLandingPageTranslation(count + 1, effectiveMax, timeoutId)
+          })
+      }, 5000)
+    },
+    showLocalizationErrorMessage(item) {
+      const languageName = item.targetLanguage || item.languageResourceId || 'Unknown'
+      const errorMessage = item.error || 'Translation failed'
+      this.$store.dispatch('common/createSnackBar', {
+        message: `${languageName}: ${errorMessage}`,
+        color: 'error'
+      })
+    },
+    showLocalizationSuccessMessage(translatedContents) {
+      if (!Array.isArray(translatedContents) || this.isDefault) return
+
+      // Başarılı item'ları filtrele
+      const successItems = translatedContents.filter((item) => item.success && !item.error)
+      if (successItems.length === 0) return
+
+      // Unique dil sayısını hesapla (her dil için birden fazla sayfa olabilir)
+      const uniqueLanguageIds = new Set(
+        successItems.map((item) => item.languageResourceId).filter(Boolean)
+      )
+      const successCount = uniqueLanguageIds.size
+
+      if (successCount === 0) return
+
+      let message = ''
+      if (successCount === 1) {
+        const item = successItems.find((i) => i.success && !i.error)
+        const languageName = item?.targetLanguage || 'language'
+        message = `The ${languageName} language was successfully localized.`
+      } else {
+        message = `${successCount} languages were successfully localized.`
+      }
+
+      this.$store.dispatch('common/createSnackBar', {
+        message: message,
+        color: 'success'
+      })
+    },
+    resetGenerateWithAIDisabled(timeoutId) {
+      this.isGenerateWithAi = false
+      this.isGenerateWithAIDisabled = false
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = false
+        })
+      }
+      this.isSubmitDisabled = false
+      this.isDefault = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId)
+        this.timeoutId = null
+      }
     },
     handleAddBlankPage() {
       let newPageText
@@ -847,11 +1165,11 @@ export default {
         const payload = {
           ...formValues,
           isAssistedByAI: this.isAssistedByAI,
-          landingPages: this.getSelectedLanguagePayload.landingPages,
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
         }
+        payload.landingPages = this.buildLandingPagesPayload(payload)
         if (this.isEdit && !this.isDuplicate) {
           updateLandingPage(payload, this.emailTemplateId)
             .then(() => {
@@ -880,12 +1198,118 @@ export default {
         this.isSubmitDisabled = false
       }
     },
-    getLanguageObject(languageTypeResourceId) {
-      const langObj = this.languageItems.find((item) => item.value === languageTypeResourceId)
-      if (langObj) {
-        return langObj
+    buildLandingPagesPayload(payload) {
+      // Ana dil (default language) - formValues.languageTypeResourceId
+      let mainLanguageId = this.formValues.languageTypeResourceId || this.activeLanguage
+
+      // selectedLanguages'de ana dil var mı kontrol et
+      const isMainLanguageInSelected = this.selectedLanguages.find(
+        (item) => item.value === mainLanguageId
+      )
+
+      // Ana dil yoksa ya da seçili dillerde değilse, ilk seçili dili kullan
+      if (!isMainLanguageInSelected && this.selectedLanguages.length > 0) {
+        mainLanguageId = this.selectedLanguages[0].value
+        this.formValues.languageTypeResourceId = mainLanguageId
+        payload.languageTypeResourceId = mainLanguageId
+        // Yeni ana dilin landingPages'lerini formValues'a kopyala
+        const newMainLanguagePayload = this.languagesPayload.find(
+          (p) => p.languageTypeResourceId === mainLanguageId
+        )
+        if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
+          this.formValues.landingPages = JSON.parse(
+            JSON.stringify(newMainLanguagePayload.landingPages)
+          )
+          payload.landingPages = JSON.parse(JSON.stringify(newMainLanguagePayload.landingPages))
+        }
       }
-      // Fallback: eğer languageItems'de bulamazsa, manuel obje oluştur
+
+      const mainLanguagePayload = this.languagesPayload.find(
+        (p) => p.languageTypeResourceId === mainLanguageId
+      ) || { landingPages: payload.landingPages }
+
+      // Diğer diller (translated languages)
+      const otherLanguagesPayload = this.languagesPayload.filter(
+        (p) => p.languageTypeResourceId !== mainLanguageId && p.isTranslated
+      )
+
+      // Ana dilin landing pages'lerini al
+      const mainLandingPages = mainLanguagePayload.landingPages || []
+
+      // Her sayfa için languages array'i oluştur
+      return mainLandingPages.map((mainPage) => {
+        const pagePayload = {
+          name: mainPage.name || '',
+          content: mainPage.content || '',
+          order: mainPage.order || 0,
+          prompt: mainPage.prompt || ''
+        }
+
+        // Bu sayfa için diğer dillerin çevirilerini bul
+        const languages = otherLanguagesPayload
+          .map((langPayload) => {
+            // Aynı order'a sahip sayfayı bul
+            const translatedPage = (langPayload.landingPages || []).find(
+              (page) => page.order === mainPage.order
+            )
+
+            if (!translatedPage) return null
+
+            const languagePayload = {
+              languageTypeResourceId: langPayload.languageTypeResourceId,
+              name: translatedPage.name || mainPage.name || '',
+              content: translatedPage.content || '',
+              order: translatedPage.order || mainPage.order || 0,
+              prompt: translatedPage.prompt || mainPage.prompt || ''
+            }
+
+            // Duplicate durumunda resourceId gönderme (yeni kayıt oluşturuluyor)
+            // Sadece edit durumunda resourceId gönder
+            if (this.isEdit && !this.isDuplicate && langPayload.resourceId) {
+              languagePayload.resourceId = langPayload.resourceId
+            }
+
+            return languagePayload
+          })
+          .filter(Boolean) // null değerleri temizle
+
+        // Eğer çevrilmiş dil varsa languages array'ini ekle
+        if (languages.length > 0) {
+          pagePayload.languages = languages
+        }
+
+        return pagePayload
+      })
+    },
+    getLanguageObject(languageTypeResourceId, languageTypeName = null) {
+      // Önce languageItems'de ara (children array'lerinde)
+      for (const group of this.languageItems || []) {
+        if (Array.isArray(group.children)) {
+          const langObj = group.children.find((item) => item.value === languageTypeResourceId)
+          if (langObj) {
+            return langObj
+          }
+        }
+      }
+
+      // Sonra languageOptions'da ara
+      const langOption = this.languageOptions?.find((item) => item.value === languageTypeResourceId)
+      if (langOption) {
+        return {
+          text: langOption.text || langOption.languageTypeName,
+          value: languageTypeResourceId
+        }
+      }
+
+      // Fallback: eğer hiçbirinde bulamazsa, languageTypeName varsa onu kullan
+      if (languageTypeName) {
+        return {
+          text: languageTypeName,
+          value: languageTypeResourceId
+        }
+      }
+
+      // Son fallback: resourceId'yi text olarak kullan
       return {
         text: languageTypeResourceId,
         value: languageTypeResourceId
@@ -899,21 +1323,72 @@ export default {
             languageTypeName: language.name,
             value: language.resourceId
           })) || []
-        this.languageItems = this.languageOptions
-        if (!this.isEdit && this.languageOptions.length > 0) {
-          const defaultLanguage = this.languageOptions.find(
-            (lang) => lang.value === this.formValues.languageTypeResourceId
+      })
+    },
+    setLanguageItems() {
+      const languageTypes =
+        this.scenarioDetailsLookup?.languageTypes ||
+        this.landingPageData?.languageTypes ||
+        this.languageOptions ||
+        []
+      const preferredLanguageTypes =
+        this.scenarioDetailsLookup?.preferredLanguageTypes ||
+        this.landingPageData?.preferredLanguageTypes ||
+        []
+      const companyLanguageTypeResourceId =
+        this.scenarioDetailsLookup?.companyLanguageTypeResourceId ||
+        this.landingPageData?.companyLanguageTypeResourceId ||
+        this.getCurrentCompany?.preferredLanguageTypeResourceId ||
+        ''
+
+      // NewEmailTemplates'deki gibi her zaman gruplandırılmış yapı oluştur
+      const languageItems = []
+      languageItems.push({
+        value: 1,
+        text: 'Preferred Languages',
+        children: preferredLanguageTypes
+      })
+      languageItems.push({
+        value: 5,
+        text: 'All Languages',
+        children: languageTypes.filter(
+          (item) => !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
+        )
+      })
+      this.languageItems = languageItems
+
+      if (this.isEdit) return
+      const findedLanguage =
+        languageTypes?.find((item) => item.value === companyLanguageTypeResourceId) ||
+        this.languageOptions?.find((item) => item.value === companyLanguageTypeResourceId)
+      if (!findedLanguage) return
+      this.selectedLanguages.push({
+        text: findedLanguage.text,
+        value: companyLanguageTypeResourceId
+      })
+      this.activeLanguage = companyLanguageTypeResourceId
+      // Ana dil olarak company language'ı set et
+      this.formValues.languageTypeResourceId = companyLanguageTypeResourceId
+      this.$nextTick(() => {
+        this.handleSelectedLanguagesChange(this.selectedLanguages)
+        // İngilizce ise translated olarak işaretle
+        const isEnglish = findedLanguage.text?.toLowerCase().includes('english')
+        if (isEnglish) {
+          const companyLanguagePayload = this.languagesPayload.find(
+            (item) => item.languageTypeResourceId === companyLanguageTypeResourceId
           )
-          if (defaultLanguage) {
-            this.selectedLanguages.push(defaultLanguage)
-            this.activeLanguage = defaultLanguage.value
-            this.languagesPayload.push({
-              languageTypeResourceId: defaultLanguage.value,
-              landingPages: JSON.parse(JSON.stringify(this.formValues.landingPages)),
-              isTranslated: true
-            })
-            this.initialDisabledLanguageIds = [defaultLanguage.value]
+          if (companyLanguagePayload) {
+            companyLanguagePayload.isTranslated = true
           }
+        }
+        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+          JSON.stringify(this.getSelectedLanguagePayload)
+        )
+        this.$refs?.refEmailTemplateContent?.resetValidation()
+        // İngilizce değilse ve başka dil varsa çeviri yap
+        if (!isEnglish && this.getSelectedLanguagePayload.landingPages && !this.isEdit) {
+          this.isDefault = true
+          this.handleGenerateWithAI()
         }
       })
     },
@@ -1002,6 +1477,12 @@ export default {
       return this.landingPageData.methodTypes?.find(
         (item) => item.value === this.formValues.methodTypeId
       )?.text
+    },
+    getDisabledStatuses() {
+      return {
+        nextButton: !this.isDefault && this.isSubmitDisabled,
+        submitButton: this.isSubmitDisabled
+      }
     }
   },
   created() {
@@ -1068,32 +1549,72 @@ export default {
         delete data.isAssistedByAI
 
         // Dilleri yükle ve languagesPayload'u doldur (formValues set edilmeden ÖNCE)
+        // Ana dil için landingPages'i hazırla (languages array'i olmadan)
+        const mainLandingPages = (data.landingPages || []).map((page) => {
+          const { languages, ...pageWithoutLanguages } = page
+          return pageWithoutLanguages
+        })
+
         this.languagesPayload.push({
           languageTypeResourceId: data.languageTypeResourceId,
-          landingPages: JSON.parse(JSON.stringify(data.landingPages)),
+          landingPages: JSON.parse(JSON.stringify(mainLandingPages)),
           isTranslated: true
         })
-        const mainLanguageObj = this.getLanguageObject(data.languageTypeResourceId)
+        const mainLanguageObj = this.getLanguageObject(
+          data.languageTypeResourceId,
+          data.languageTypeName
+        )
         this.selectedLanguages.push(mainLanguageObj)
 
-        if (response?.data?.data?.languages && response.data.data.languages.length) {
-          response.data.data.languages.forEach((item) => {
-            const langObj = this.getLanguageObject(item.languageTypeResourceId)
-            this.selectedLanguages.push(langObj)
-            this.languagesPayload.push({
-              languageTypeResourceId: item.languageTypeResourceId,
-              landingPages: JSON.parse(JSON.stringify(item.landingPages)),
-              isTranslated: true
+        // landingPages içindeki languages array'lerinden diğer dilleri çıkar
+        const otherLanguagesMap = new Map()
+
+        // Her landingPage için languages array'ini kontrol et
+        ;(data.landingPages || []).forEach((page) => {
+          if (Array.isArray(page.languages) && page.languages.length > 0) {
+            page.languages.forEach((langPage) => {
+              const langId = langPage.languageTypeResourceId
+              if (!otherLanguagesMap.has(langId)) {
+                otherLanguagesMap.set(langId, {
+                  languageTypeResourceId: langId,
+                  landingPages: [],
+                  resourceId: langPage.resourceId || null, // resourceId'yi sakla
+                  languageTypeName: langPage.languageTypeName || null // languageTypeName'i sakla
+                })
+              }
+              // Aynı order'a sahip sayfayı ekle
+              const langPayload = otherLanguagesMap.get(langId)
+              langPayload.landingPages.push({
+                name: langPage.name || page.name || '',
+                content: langPage.content || '',
+                order: langPage.order || page.order || 0,
+                prompt: langPage.prompt || page.prompt || ''
+              })
             })
+          }
+        })
+
+        // otherLanguagesMap'teki dilleri languagesPayload'a ekle
+        otherLanguagesMap.forEach((langPayload) => {
+          const langObj = this.getLanguageObject(
+            langPayload.languageTypeResourceId,
+            langPayload.languageTypeName
+          )
+          this.selectedLanguages.push(langObj)
+          this.languagesPayload.push({
+            ...langPayload,
+            isTranslated: true
           })
-        }
+        })
 
         this.activeLanguage = data.languageTypeResourceId
         this.editedLanguagePayload = JSON.parse(JSON.stringify(this.languagesPayload))
-        this.initialDisabledLanguageIds = [
-          data.languageTypeResourceId,
-          ...this.languagesPayload.map((item) => item.languageTypeResourceId)
-        ]
+        if (!this.formValues.canRemoveLanguages) {
+          this.initialDisabledLanguageIds = [
+            data.languageTypeResourceId,
+            ...this.languagesPayload.map((item) => item.languageTypeResourceId)
+          ]
+        }
         this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
           JSON.stringify(this.getSelectedLanguagePayload)
         )
