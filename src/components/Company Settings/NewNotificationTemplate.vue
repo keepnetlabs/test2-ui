@@ -864,8 +864,9 @@ export default {
             (lang) => lang.value === this.companyLanguageTypeResourceId
           )
           const isEnglish = companyLanguage?.text?.toLowerCase().includes('english')
-          // Eğer dil İngilizce İSE, çağrı yapma
-          if (isEnglish) {
+          // Eğer sadece bir dil seçiliyse VE İngilizce ise, translate etme
+          // Birden fazla dil varsa, İngilizce olsa bile translate et
+          if (isEnglish && this.selectedLanguages.length === 1) {
             return
           }
           // Set states immediately to disable template type
