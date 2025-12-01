@@ -1185,6 +1185,13 @@ export default {
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
+        // Add new merge tags if they don't exist
+        const newTags = ['{USERLANGUAGE}', '{USERDEPARTMENT}']
+        newTags.forEach((tag) => {
+          if (!this.blockManagerComponents.includes(tag)) {
+            this.blockManagerComponents.push(tag)
+          }
+        })
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })
     },
@@ -1609,7 +1616,6 @@ export default {
       } else {
         this.languagePreview = mainLanguageId || ''
       }
-
     },
     handleLandingPagePreviewLanguageChange(languageId) {
       if (!languageId) return
