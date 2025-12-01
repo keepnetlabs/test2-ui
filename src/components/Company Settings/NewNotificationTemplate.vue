@@ -380,7 +380,12 @@ export default {
         'Infographic Enrollment',
         'Enrollment after Failed in a Simulation',
         'Enrollment Reminder',
-        'Certificate'
+        'Certificate',
+        'Suspicious Email Analysis Report',
+        'Suspicious Email Analysis Report Update',
+        'Investigation Started',
+        'Investigation Expired',
+        'Investigation Finished'
       ].includes(selectedTemplateCategoryName)
     },
     getEnrollmentTemplateResourceId() {
