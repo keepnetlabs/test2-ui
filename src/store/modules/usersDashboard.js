@@ -42,9 +42,10 @@ const usersDashboard = {
     myLearningLoading: true, // Start as true to show loading initially
     myCertificates: {
       data: [],
-      isLoading: true, // Start as true to show loading initially
+      isLoading: false,
       error: null
     },
+    myCertificatesLoading: true, // Start as true to show loading initially
     phishingResult: {
       data: null,
       isLoading: true, // Start as true to show loading initially
@@ -66,7 +67,7 @@ const usersDashboard = {
     getMyLearningLoading: (state) => state.myLearningLoading, // Use separate loading state
     getMyLearningError: (state) => state.myLearning.error,
     getMyCertificates: (state) => state.myCertificates.data,
-    getMyCertificatesLoading: (state) => state.myCertificates.isLoading,
+    getMyCertificatesLoading: (state) => state.myCertificatesLoading, // Use separate loading state
     getMyCertificatesError: (state) => state.myCertificates.error,
     getPhishingResult: (state) => state.phishingResult.data,
     getPhishingResultLoading: (state) => state.phishingResult.isLoading,
@@ -157,10 +158,12 @@ const usersDashboard = {
     SET_MY_CERTIFICATES(state, payload) {
       state.myCertificates.data = payload || []
       state.myCertificates.isLoading = false
+      state.myCertificatesLoading = false // Update separate loading state
       state.myCertificates.error = null
     },
     SET_MY_CERTIFICATES_LOADING(state, payload) {
       state.myCertificates.isLoading = payload
+      state.myCertificatesLoading = payload // Update separate loading state
     },
     SET_MY_CERTIFICATES_ERROR(state, payload) {
       state.myCertificates.error = payload
@@ -209,9 +212,10 @@ const usersDashboard = {
       state.myLearningLoading = true // Reset to initial loading state
       state.myCertificates = {
         data: [],
-        isLoading: true,
+        isLoading: false,
         error: null
       }
+      state.myCertificatesLoading = true // Reset to initial loading state
       state.phishingResult = {
         data: null,
         isLoading: true, // Reset to initial loading state

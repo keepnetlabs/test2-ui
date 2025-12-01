@@ -243,6 +243,7 @@
                           :template.sync="page.content"
                           :is-edit="!!isEdit"
                           :onlyGrapes="true"
+                          :show-edit-button="true"
                           @setAttachmentFile="setAttachmentFile"
                         />
                       </el-tab-pane>

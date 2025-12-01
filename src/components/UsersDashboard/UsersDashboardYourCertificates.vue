@@ -15,6 +15,7 @@
       </p>
     </div>
     <div class="users-dashboard-your-certificates__table">
+      <DatatableLoading :loading="isLoading" />
       <DataTable
         ref="refTable"
         :id="tableId"
@@ -52,12 +53,14 @@
                 :id="`btn-action--your-certificates-${scope.$index}`"
                 class="btn-hover"
                 icon
-                @click="handleDownload(scope.row)"
+                @click="handleAction(scope.row)"
               >
-                <VIcon>mdi-download</VIcon>
+                <VIcon>
+                  {{ getActionIcon(scope.row.trainingStatus) }}
+                </VIcon>
               </VBtn>
             </template>
-            <span>{{ labels.yourCertificatesDownloadCertificate }}</span>
+            <span>{{ getActionTooltip(scope.row.trainingStatus) }}</span>
           </VTooltip>
         </template>
       </DataTable>
@@ -69,13 +72,15 @@
 import { mapGetters } from 'vuex'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading.vue'
 import { downloadCertificate } from '@/api/usersDashboard'
 
 export default {
   name: 'UsersDashboardYourCertificates',
   components: {
     DataTable,
-    Badge
+    Badge,
+    DatatableLoading
   },
   computed: {
     ...mapGetters({
@@ -89,7 +94,7 @@ export default {
           property: 'certificateName',
           label: this.labels.yourCertificatesCertificateName,
           type: 'text',
-          minWidth:200,
+          minWidth: 200,
           show: true,
           hideSort: true
         },
@@ -97,7 +102,7 @@ export default {
           property: 'certificateDate',
           label: this.labels.yourCertificatesCertificateDate,
           type: 'text',
-          minWidth:200,
+          minWidth: 200,
           show: true,
           hideSort: true
         },
@@ -163,6 +168,30 @@ export default {
         'In Queue': this.labels.yourCertificatesInQueue
       }
       return statusMap[status] || status
+    },
+    getActionIcon(status) {
+      if (status === 'Completed') {
+        return 'mdi-download'
+      }
+      return 'mdi-play-circle'
+    },
+    getActionTooltip(status) {
+      if (status === 'Completed') {
+        return this.labels.yourCertificatesDownloadCertificate
+      }
+      return this.labels.yourLearningStartTraining
+    },
+    handleAction(row) {
+      if (row.trainingStatus === 'Completed') {
+        this.handleDownload(row)
+      } else {
+        // If trainingUrl exists, open it in a new window
+        if (row.trainingUrl) {
+          window.open(row.trainingUrl, '_blank')
+          return
+        }
+        console.log('Start training:', row)
+      }
     },
     async handleDownload(row) {
       try {
