@@ -2,6 +2,14 @@
   <div class="landing-page-template-preview" v-if="hasLandingPageTemplate">
     <div class="landing-page-template-preview__title">
       {{ templateName }}
+      <VTooltip v-if="isAssistedByAI" bottom>
+        <template #activator="{ on }">
+          <span v-on="on">
+            <VIcon color="#2196F3" small>mdi-creation</VIcon>
+          </span>
+        </template>
+        <span>This template was generated with AI</span>
+      </VTooltip>
     </div>
     <div class="landing-page-template-preview__container">
       <!-- Language Selection and Actions Header -->
@@ -112,6 +120,10 @@ export default {
       default: false
     },
     disableEdit: {
+      type: Boolean,
+      default: false
+    },
+    isAssistedByAI: {
       type: Boolean,
       default: false
     }
