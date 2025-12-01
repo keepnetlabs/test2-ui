@@ -11,10 +11,17 @@
         {{ labels.leaderboardSubtitle }}
       </p>
     </div>
-    <div v-if="isLoading" class="users-dashboard-leaderboard__loading">
-      <VProgressCircular indeterminate color="#2196F3" />
+    <div v-if="isLoading" class="users-dashboard-leaderboard__top-performers">
+      <v-skeleton-loader
+        v-for="n in 3"
+        :key="`skeleton-${n}`"
+        type="card"
+        class="users-dashboard-leaderboard__skeleton-card"
+        boilerplate
+      ></v-skeleton-loader>
     </div>
-    <div v-else>
+    <DatatableLoading :loading="isLoading" />
+    <div v-show="!isLoading">
       <div
         v-if="topPerformers && topPerformers.length > 0"
         class="users-dashboard-leaderboard__top-performers"
@@ -71,12 +78,14 @@
 <script>
 import { mapGetters } from 'vuex'
 import DataTable from '@/components/DataTable'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading.vue'
 import UsersDashboardLeaderboardTopPerformerCard from './UsersDashboardLeaderboardTopPerformerCard'
 
 export default {
   name: 'UsersDashboardLeaderboard',
   components: {
     DataTable,
+    DatatableLoading,
     UsersDashboardLeaderboardTopPerformerCard
   },
   computed: {

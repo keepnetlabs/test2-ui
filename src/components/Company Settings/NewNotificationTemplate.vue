@@ -1058,19 +1058,10 @@ export default {
       })
     },
     handleActiveLanguageChange(value) {
-      if (
-        JSON.stringify(this.selectedLanguagePayloadItemBeforeSave?.template?.trim()) ===
-        JSON.stringify(this.getSelectedLanguagePayload?.template?.trim())
-      ) {
-        this.activeLanguage = value
-        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-          JSON.stringify(this.getSelectedLanguagePayload)
-        )
-        return
-      }
-      this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.initialValue = this.activeLanguage
-      this.$refs.refInputLanguagePreview.$refs.refSelect.$refs.refComponent.lazyValue = this.activeLanguage
-      this.beforeSaveLanguage = value
+      this.activeLanguage = value
+      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+        JSON.stringify(this.getSelectedLanguagePayload)
+      )
     },
     handleCloseEditLanguagesLeavingDialog() {
       this.showEditLanguagesLeavingDialog = false
