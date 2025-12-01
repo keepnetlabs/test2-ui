@@ -353,8 +353,6 @@ export default {
             return
           }
           this.timeoutId = setTimeout(() => this.callForGetGeneratedAILandingPageTemplate(), 5000)
-        }).finally(() => {
-          this.$emit('on-assisted-by-ai-template-finished')
         })
     },
     setActiveGeneratedTemplate(index) {

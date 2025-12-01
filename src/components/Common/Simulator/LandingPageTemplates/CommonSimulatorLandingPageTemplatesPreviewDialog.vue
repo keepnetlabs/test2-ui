@@ -46,6 +46,7 @@
           :is-nested="isNested"
           :is-quishing-prop="isQuishing"
           :disable-edit="disableEdit"
+          :is-assisted-by-a-i="landingPageParams.isAssistedByAI"
           @edit="handleEdit"
         />
       </div>
@@ -141,6 +142,7 @@ export default {
           const data = response.data.data
           this.landingPageParams.urlTemplate = data.urlTemplate
           this.landingPageParams.name = data.name
+          this.landingPageParams.isAssistedByAI = data.isAssistedByAI || false
           if (this.type.toLowerCase() === PREVIEW_DIALOG_TYPES.PHISHING.toLowerCase()) {
             // Tüm dilleri topla (ana dil + diğer diller)
             const allLanguagesMap = new Map()
