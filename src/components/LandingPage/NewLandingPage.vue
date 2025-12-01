@@ -172,6 +172,7 @@
                           @on-ai-ally="handleAIAlly"
                           @on-edit-mode="handleEditMode"
                           @on-link-change="handleLinkChange"
+                          @on-language-removed="handleLanguageRemoved"
                         />
                       </div>
 
@@ -674,6 +675,17 @@ export default {
     },
     handleAssistedByAITemplate(isAssistedByAI) {
       this.isAssistedByAI = isAssistedByAI
+    },
+    handleLanguageRemoved({ languageName }) {
+      this.showLanguageRemovedMessage(languageName)
+    },
+    showLanguageRemovedMessage(languageName) {
+      const message = `The ${languageName} language has been removed.`
+      this.$store.dispatch('common/createSnackBar', {
+        message: message,
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
     },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {
