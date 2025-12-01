@@ -532,7 +532,6 @@ export default {
       initialDisabledLanguageIds: [],
       formValues: {
         canRemoveLanguages: true,
-        isAssistedByAITemplate: false,
         isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
@@ -673,20 +672,8 @@ export default {
       const index = parseInt(this.tab.replace('page', '')) - 1
       this.$refs.refEmailTemplate?.[index]?.editHtmlTemplate()
     },
-    handleAssistedByAITemplate(isAssistedByAITemplate) {
-      this.formValues.isAssistedByAITemplate = isAssistedByAITemplate
-      if (this.$refs.refEmailTemplate) {
-        this.$refs.refEmailTemplate.forEach((ref) => {
-          if (ref) ref.isEmailGenerating = true
-        })
-      }
-    },
-    handleAssistedByAITemplateFinished() {
-      if (this.$refs.refEmailTemplate) {
-        this.$refs.refEmailTemplate.forEach((ref) => {
-          if (ref) ref.isEmailGenerating = false
-        })
-      }
+    handleAssistedByAITemplate(isAssistedByAI) {
+      this.isAssistedByAI = isAssistedByAI
     },
     handleSelectedLanguagesChange(languages) {
       this.languagesPayload = languages.map((language) => {
