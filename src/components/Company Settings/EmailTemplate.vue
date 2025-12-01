@@ -1109,16 +1109,33 @@ export default {
       return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
     },
     attachments() {
+      // If both exist, check if they're the same (to avoid duplicates)
       if (
         !!this.attachmentFiles &&
         this.attachmentFiles?.length &&
         !!this.importedEmailAttachments &&
         this.importedEmailAttachments?.length
       ) {
-        return [...this.attachmentFiles, ...this.importedEmailAttachments]
+        // Check if first items are the same (same fileName/name)
+        const attachmentFile = this.attachmentFiles[0]
+        const importedAttachment = this.importedEmailAttachments[0]
+        const isSame =
+          (attachmentFile?.fileName || attachmentFile?.name) ===
+          (importedAttachment?.fileName || importedAttachment?.name)
+
+        // If same, return only attachmentFiles to avoid duplicate
+        // If different, merge them (old behavior for backward compatibility)
+        return isSame
+          ? [...this.attachmentFiles]
+          : [...this.attachmentFiles, ...this.importedEmailAttachments]
       }
+      // If only attachmentFiles exists
       if (!!this.attachmentFiles && this.attachmentFiles?.length) {
         return [...this.attachmentFiles]
+      }
+      // If only importedEmailAttachments exists
+      if (!!this.importedEmailAttachments && this.importedEmailAttachments?.length) {
+        return [...this.importedEmailAttachments]
       }
       return []
     },
