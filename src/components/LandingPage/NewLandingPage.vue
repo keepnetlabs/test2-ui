@@ -133,9 +133,9 @@
                   <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
                     <div class="landing-page-tab-content">
                       <div
-                        v-show="!isGenerateWithAIDisabled"
+                        v-show="!isGenerateWithAIDisabled && !isAIAllyGenerating"
                         :class="{
-                          'd-flex align-center justify-space-between': !isGenerateWithAIDisabled
+                          'd-flex align-center justify-space-between': !isGenerateWithAIDisabled && !isAIAllyGenerating
                         }"
                       >
                         <div class="d-flex align-center">
@@ -191,7 +191,6 @@
                           @update:template="handleAITemplateUpdate"
                           @on-assisted-by-ai-template="handleAssistedByAITemplate"
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
-                          @on-assisted-by-ai-template-finished="handleAssistedByAITemplateFinished"
                           @update:isEmailGenerating="handleEmailGeneratingChange"
                         />
                       </div>
@@ -218,7 +217,7 @@
                         id="landing-page-tab-content"
                         class="mt-2"
                         :class="{
-                          'tabs-header-hidden': isDefault || isGenerateWithAi
+                          'tabs-header-hidden': isDefault || isGenerateWithAi || isAIAllyGenerating
                         }"
                       >
                         <el-tab-pane
@@ -290,6 +289,7 @@
                             :is-phishing-template="false"
                             :onlyGrapes="true"
                             :prompt.sync="getSelectedLanguagePayload.landingPages[index].prompt"
+                            :is-generate-with-ai="isGenerateWithAi"
                             :custom-head-scripts="customHeadScripts[index] || ''"
                             :current-page-index="index"
                             :is-protocol-http="isProtocolHttp"
@@ -507,6 +507,7 @@ export default {
         nextButton: 'btn-next--add-or-edit-landing-page-templates-modal',
         saveButton: 'btn-save--add-or-edit-landing-page-templates-modal'
       },
+      isAIAllyGenerating: false,
       customHeadScripts: {},
       isInvisibleCaptchaDisabled: false,
       languageOptions: [],
@@ -661,6 +662,7 @@ export default {
       }
     },
     handleEmailGeneratingChange(isGenerating) {
+      this.isAIAllyGenerating = isGenerating
       const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
       if (this.$refs.refEmailTemplate && this.$refs.refEmailTemplate[currentPageIndex]) {
         this.$refs.refEmailTemplate[currentPageIndex].isEmailGenerating = isGenerating
