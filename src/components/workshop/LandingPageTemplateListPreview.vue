@@ -140,12 +140,7 @@
                 <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
-                  <div class="d-flex align-center">
-                    <div class="template-list--item__narrator mr-2">
-                      <v-icon :size="16" color="#757575" class="mr-1">mdi-web</v-icon>
-                      <span class="template-list--item__language">{{ item.languageTypeName }}</span>
-                    </div>
-                  </div>
+                  <EmailTemplateListLeftSideLanguages :item="item" />
                 </div>
               </div>
               <div
@@ -195,11 +190,11 @@
                           @click="handleEdit"
                         >
                           <v-icon left color="#2196f3" medium>
-                            mdi-pencil
+                            {{ isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil' }}
                           </v-icon>
-                          <span class="landingPagePreview__edit-button-text"
-                            >Edit Landing Page</span
-                          >
+                          <span class="landingPagePreview__edit-button-text">
+                            {{ isSystemTemplateForNonSystemUser ? 'Duplicate Landing Page' : 'Edit Landing Page' }}
+                          </span>
                         </v-btn>
                         <VBtn
                           v-if="!!getSingleTemplateDetails"
@@ -572,9 +567,11 @@
                         @click="handleEdit"
                       >
                         <v-icon left color="#2196f3" medium>
-                          mdi-pencil
+                          {{ isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil' }}
                         </v-icon>
-                        <span class="landingPagePreview__edit-button-text">Edit Landing Page</span>
+                        <span class="landingPagePreview__edit-button-text">
+                          {{ isSystemTemplateForNonSystemUser ? 'Duplicate Landing Page' : 'Edit Landing Page' }}
+                        </span>
                       </v-btn>
                       <VBtn
                         v-if="!!getSingleTemplateDetails"
@@ -924,10 +921,12 @@ import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePrevie
 import { isDifferent } from '@/utils/functions'
 import { handleIsSafari } from '@/utils/functions'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 export default {
   name: 'LandingPageListPreview',
   mixins: [useDebounce],
   components: {
+    EmailTemplateListLeftSideLanguages,
     CommonSimulatorLandingPageTemplatesPreviewDialog,
     FormGroup,
     InputCallerPhoneNumber,
@@ -1034,6 +1033,13 @@ export default {
     }
   },
   computed: {
+    isSystemUser() {
+      const company = this.$store.state.login?.company
+      return company?.name === 'System' || company?.companyName === 'System'
+    },
+    isSystemTemplateForNonSystemUser() {
+      return this.landingPageTemplateData.createdBy === 'System' && !this.isSystemUser
+    },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
     },
@@ -1216,7 +1222,7 @@ export default {
       })
     },
     handleEdit() {
-      this.$emit('on-edit-landing-page-template', this.landingPagePreviewSelectedRow)
+      this.$emit('on-edit-landing-page-template', this.landingPagePreviewSelectedRow, this.isSystemTemplateForNonSystemUser)
     },
     handleExitEditing() {
       const isChanged = isDifferent(this.editData, this.initialEditData)
@@ -1358,12 +1364,22 @@ export default {
               this.listData = []
             } else {
               data.data.results = data.data.results.map((item) => {
-                const language = this.languages.find(
-                  (lang) => lang.languageTypeName === item.languageTypeName
-                )
+                let languageTypeName
+                if (Array.isArray(item.languageTypeName)) {
+                  languageTypeName = item.languageTypeName.map(
+                    (language) =>
+                      this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                      language
+                  )
+                } else if (typeof item.languageTypeName === 'string') {
+                  const language = this.languages.find(
+                    (lang) => lang.languageTypeName === item.languageTypeName
+                  )
+                  languageTypeName = language?.text || item.languageTypeName
+                }
                 return {
                   ...item,
-                  languageTypeName: language?.text || item.languageTypeName,
+                  languageTypeName: languageTypeName,
                   selected: item.resourceId === this.landingPageTemplateResourceId
                 }
               })
@@ -1413,12 +1429,22 @@ export default {
             this.templateHTML = null
           } else {
             data.data.results = data.data.results.map((item) => {
-              const language = this.languages.find(
-                (lang) => lang.languageTypeName === item.languageTypeName
-              )
+              let languageTypeName
+              if (Array.isArray(item.languageTypeName)) {
+                languageTypeName = item.languageTypeName.map(
+                  (language) =>
+                    this.languages.find((lang) => lang.languageTypeName === language)?.text ||
+                    language
+                )
+              } else if (typeof item.languageTypeName === 'string') {
+                const language = this.languages.find(
+                  (lang) => lang.languageTypeName === item.languageTypeName
+                )
+                languageTypeName = language?.text || item.languageTypeName
+              }
               return {
                 ...item,
-                languageTypeName: language?.text || item.languageTypeName,
+                languageTypeName: languageTypeName,
                 selected: false
               }
             })

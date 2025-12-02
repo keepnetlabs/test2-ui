@@ -287,7 +287,7 @@
             {{ labels.SaveAsNew }}
           </VBtn>
           <SaveButton
-            v-if="step === 2"
+            v-if="step === 2 && !isEditingSystemTemplate"
             :id="footerButtonsIds.saveButton"
             :disabled="getDisabledStatuses.submitButton"
             :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
@@ -374,6 +374,10 @@ export default {
       default: false
     },
     isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isEditingSystemTemplate: {
       type: Boolean,
       default: false
     },
@@ -496,6 +500,10 @@ export default {
       )
     },
     getTitle() {
+      if (this.isEditingSystemTemplate) {
+        return 'Duplicate Email Template'
+      }
+
       if (this.isEdit && this.isDuplicate) {
         return 'Duplicate Email Template'
       }
