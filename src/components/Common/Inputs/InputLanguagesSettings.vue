@@ -133,7 +133,7 @@
                         item.text !== 'Preferred Languages' &&
                         item.text !== 'All Languages' &&
                         isLanguageAlreadyLocalized(item) &&
-                        !hiddenRelocalizeLanguageIds.includes(item.value)
+                        isLanguageSelected(item)
                       "
                       class="d-flex align-center cursor-pointer"
                       style="color: #2196f3; font-size: 12px; font-weight: 600;"
@@ -241,7 +241,9 @@
             :color="isPhishingLinkOpen ? '#fff' : '#2196f3'"
             :class="[
               'executive-reports-card__right-btn',
-              { 'input-languages-settings__link-icon--active': isPhishingLinkOpen }
+              {
+                'input-languages-settings__link-icon--active': isPhishingLinkOpen
+              }
             ]"
             small
             @click="handleLinkChange"
@@ -442,7 +444,6 @@ export default {
       confirmRowEl: null,
       confirmRowWrapper: null,
       confirmMode: null,
-      hiddenRelocalizeLanguageIds: [],
       pendingRemoveConfirm: {},
       pendingRelocalizeConfirm: {}
     }
@@ -662,6 +663,10 @@ export default {
         return false
       return this.translatedLanguageResourceIds.includes(item.value)
     },
+    isLanguageSelected(item) {
+      if (!item || !this.selectedLanguages) return false
+      return this.selectedLanguages.some((lang) => lang.value === item.value)
+    },
     handleRelocalizeClick(item, event) {
       this.relocalizeConfirmFor = item?.value || null
       // Do not remove other relocalize rows; add per-language inline confirm
@@ -736,10 +741,6 @@ export default {
       if (removeBtn && !isLastTranslated) {
         removeBtn.addEventListener('click', (e) => {
           e.stopPropagation()
-          // Keep deselected, just close row
-          if (!this.hiddenRelocalizeLanguageIds.includes(item.value)) {
-            this.hiddenRelocalizeLanguageIds = [...this.hiddenRelocalizeLanguageIds, item.value]
-          }
           // If active language removed, switch preview to another selected language
           if (this.activeLanguage === item.value) {
             const fallback =
