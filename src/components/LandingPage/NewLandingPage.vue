@@ -179,16 +179,14 @@
 
                       <div v-if="isAIAllyOpen && !isGenerateWithAIDisabled" class="mt-3">
                         <AIAllyMini
-                          :language-type-resource-id="formValues.languageTypeResourceId"
+                          :language-type-resource-id="activeLanguage"
                           :language-options="languageOptions"
                           :selected-method="getSelectedMethod"
                           :is-show-red-flags="isShowRedFlags"
                           :method-type-id="formValues.methodTypeId"
                           :name="formValues.name"
                           :ai-assistant-remaining-right="aiAssistantRemainingRights"
-                          @update:language-type-resource-id="
-                            formValues.languageTypeResourceId = $event
-                          "
+                          @update:language-type-resource-id="activeLanguage = $event"
                           @update:template="handleAITemplateUpdate"
                           @on-assisted-by-ai-template="handleAssistedByAITemplate"
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
