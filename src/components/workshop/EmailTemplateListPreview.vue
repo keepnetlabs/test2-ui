@@ -270,10 +270,12 @@
                       rounded
                       @click="handleEdit"
                     >
-                      <v-icon left color="#2196f3" medium> mdi-pencil </v-icon>
-                      <span class="emailTemplatePreview__edit-button-text"
-                        >Edit Email Template</span
-                      >
+                      <v-icon left color="#2196f3" medium>
+                        {{ isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil' }}
+                      </v-icon>
+                      <span class="emailTemplatePreview__edit-button-text">
+                        {{ isSystemTemplateForNonSystemUser ? 'Duplicate Email Template' : 'Edit Email Template' }}
+                      </span>
                     </v-btn>
                     <v-btn
                       v-if="!!templateHTML"
@@ -643,6 +645,13 @@ export default {
     }
   },
   computed: {
+    isSystemUser() {
+      const company = this.$store.state.login?.company
+      return company?.name === 'System' || company?.companyName === 'System'
+    },
+    isSystemTemplateForNonSystemUser() {
+      return this.emailTemplateData.createdBy === 'System' && !this.isSystemUser && !this.emailTemplateData.isOwner
+    },
     getEmailTemplateDialogSubtitle() {
       if (this.isQuishing)
         return this.isQuishingTypeIndividualPrintOut
@@ -761,7 +770,7 @@ export default {
       return MERGED_TEXTS[item]
     },
     handleEdit() {
-      this.$emit('on-edit-email-template', this.emailTemplatePreviewSelectedRow)
+      this.$emit('on-edit-email-template', this.emailTemplatePreviewSelectedRow, this.isSystemTemplateForNonSystemUser)
     },
     handleSaveTemplate(template) {
       this.editData.template = template

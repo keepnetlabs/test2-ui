@@ -515,22 +515,68 @@
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!getSingleTemplateDetails">
                         <div>
-                          <span class="template-preview__text--title">Name: </span>
-                          <span class="template-preview__text--body">{{
-                            landingPageParams.name
-                          }}</span>
+                          <span
+                            class="template-preview__text--title"
+                            :style="isPhishing ? { 'font-size': '16px', 'font-weight': '600' } : {}"
+                            >Template Name:
+                          </span>
+                          <span
+                            class="template-preview__text--body"
+                            :style="isPhishing ? { 'font-size': '16px', 'font-weight': '400' } : {}"
+                            >{{ landingPageParams.name }}
+                          </span>
+                        </div>
+                        <div
+                          v-if="
+                            isPhishing &&
+                            selectedLandingPageLanguages &&
+                            selectedLandingPageLanguages.length > 1
+                          "
+                          style="background: rgb(224, 224, 224); height: 1px; max-width: 554px;"
+                        ></div>
+                        <div
+                          v-if="
+                            isPhishing &&
+                            selectedLandingPageLanguages &&
+                            selectedLandingPageLanguages.length > 1
+                          "
+                          style="max-width: 554px; margin-top: 8px; margin-bottom: 8px;"
+                        >
+                          <InputLanguagePreview
+                            v-model="landingPageLanguagePreview"
+                            class="campaign-manager-phishing-scenario-input-language"
+                            persistent-hint
+                            :hint="`This template is available in ${
+                              selectedLandingPageLanguages.length
+                            } language${selectedLandingPageLanguages.length > 1 ? 's' : ''}.`"
+                            :items="selectedLandingPageLanguages"
+                            :hide-details="false"
+                            @input="handleLandingPageLanguageChange"
+                          />
+                        </div>
+                        <div :class="isPhishing ? 'mt-n3' : ''">
+                          <span
+                            class="template-preview__text--title"
+                            :style="isPhishing ? { 'font-size': '16px', 'font-weight': '600' } : {}"
+                            >Phishing URL:
+                          </span>
+                          <span
+                            class="template-preview__text--body"
+                            :style="isPhishing ? { 'font-size': '16px', 'font-weight': '400' } : {}"
+                            >{{ landingPageParams.urlTemplate }}
+                          </span>
                         </div>
                         <div>
-                          <span class="template-preview__text--title">Phishing URL: </span>
-                          <span class="template-preview__text--body">{{
-                            landingPageParams.urlTemplate
-                          }}</span>
-                        </div>
-                        <div>
-                          <span class="template-preview__text--title">Stop Bot Activity: </span>
-                          <span class="template-preview__text--body">{{
-                            landingPageParams.isInvisibleCaptchaEnabled
-                          }}</span>
+                          <span
+                            class="template-preview__text--title"
+                            :style="isPhishing ? { 'font-size': '16px', 'font-weight': '600' } : {}"
+                            >Stop Bot Activity:
+                          </span>
+                          <span
+                            class="template-preview__text--body"
+                            :style="isPhishing ? { 'font-size': '16px', 'font-weight': '400' } : {}"
+                            >{{ landingPageParams.isInvisibleCaptchaEnabled }}
+                          </span>
                         </div>
                       </div>
                       <hr class="mt-4" v-if="!!getSingleTemplateDetails" />

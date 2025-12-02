@@ -71,6 +71,7 @@
             :email-template-id="createdLandingPageResourceId"
             :is-edit="!!createdLandingPageResourceId"
             :is-edit-from-preview="!!createdLandingPageResourceId"
+            :is-editing-system-template="isEditingSystemLandingPage"
             :selected-method-text="getSelectedMethodText"
             @changeNewEmailTemplateModalStatus="handleCloseNewLandingPageTemplateModal"
           />
@@ -97,6 +98,7 @@
             :email-template-id="createdEmailTemplateResourceId"
             :is-edit="!!createdEmailTemplateResourceId"
             :is-edit-from-preview="!!createdEmailTemplateResourceId"
+            :is-editing-system-template="isEditingSystemTemplate"
             :selected-method-text="getSelectedMethodText"
             :scenario-details-lookup="scenarioDetailsLookup"
             @changeNewEmailTemplateModalStatus="handleCloseNewEmailTemplateModal"
@@ -582,6 +584,8 @@ export default {
       isTemplateEditing: false,
       isEmailTemplateInEditMode: false,
       isLandingPageTemplateInEditMode: false,
+      isEditingSystemTemplate: false,
+      isEditingSystemLandingPage: false,
       createdEmailTemplateResourceId: '',
       createdLandingPageResourceId: '',
       quishingTypeItems,
@@ -1221,14 +1225,16 @@ export default {
         this.createdEmailTemplateResourceId = null
       }
     },
-    handleEditEmailTemplate(selectedRow) {
+    handleEditEmailTemplate(selectedRow, isSystemTemplate = false) {
       this.createdEmailTemplateResourceId = selectedRow?.resourceId || null
+      this.isEditingSystemTemplate = isSystemTemplate
       if (!this.isOpenEmailTemplateDrawer) {
         this.isOpenEmailTemplateDrawer = true
       }
     },
-    handleEditLandingPageTemplate(selectedRow) {
+    handleEditLandingPageTemplate(selectedRow, isSystemTemplate = false) {
       this.createdLandingPageResourceId = selectedRow?.resourceId || null
+      this.isEditingSystemLandingPage = isSystemTemplate
       if (!this.isOpenLandingPageDrawer) {
         this.isOpenLandingPageDrawer = true
       }

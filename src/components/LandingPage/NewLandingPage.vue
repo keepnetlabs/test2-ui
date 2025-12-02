@@ -179,16 +179,14 @@
 
                       <div v-if="isAIAllyOpen && !isGenerateWithAIDisabled" class="mt-3">
                         <AIAllyMini
-                          :language-type-resource-id="formValues.languageTypeResourceId"
+                          :language-type-resource-id="activeLanguage"
                           :language-options="languageOptions"
                           :selected-method="getSelectedMethod"
                           :is-show-red-flags="isShowRedFlags"
                           :method-type-id="formValues.methodTypeId"
                           :name="formValues.name"
                           :ai-assistant-remaining-right="aiAssistantRemainingRights"
-                          @update:language-type-resource-id="
-                            formValues.languageTypeResourceId = $event
-                          "
+                          @update:language-type-resource-id="activeLanguage = $event"
                           @update:template="handleAITemplateUpdate"
                           @on-assisted-by-ai-template="handleAssistedByAITemplate"
                           @update:ai-assistant-remaining-right="aiAssistantRemainingRights = $event"
@@ -396,7 +394,7 @@
             {{ labels.SaveAsNew }}
           </VBtn>
           <SaveButton
-            v-if="step === 2"
+            v-if="step === 2 && !isEditingSystemTemplate"
             :id="footerButtonsIds.saveButton"
             :disabled="getDisabledStatuses.submitButton"
             :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
@@ -475,6 +473,10 @@ export default {
       default: true
     },
     isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isEditingSystemTemplate: {
       type: Boolean,
       default: false
     },
@@ -1446,6 +1448,9 @@ export default {
       )
     },
     getTitle() {
+      if (this.isEditingSystemTemplate) {
+        return 'Duplicate Landing Page Template'
+      }
       if (!this.isEdit) return 'New Landing Page Template'
       return this.isDuplicate ? 'Duplicate Landing Page Template' : 'Edit Landing Page Template'
     },

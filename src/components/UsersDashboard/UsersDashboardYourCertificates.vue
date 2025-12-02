@@ -190,7 +190,6 @@ export default {
           window.open(row.trainingUrl, '_blank')
           return
         }
-        console.log('Start training:', row)
       }
     },
     async handleDownload(row) {
