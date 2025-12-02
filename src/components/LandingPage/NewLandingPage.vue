@@ -135,7 +135,8 @@
                       <div
                         v-show="!isGenerateWithAIDisabled && !isAIAllyGenerating"
                         :class="{
-                          'd-flex align-center justify-space-between': !isGenerateWithAIDisabled && !isAIAllyGenerating
+                          'd-flex align-center justify-space-between':
+                            !isGenerateWithAIDisabled && !isAIAllyGenerating
                         }"
                       >
                         <div class="d-flex align-center">
@@ -620,19 +621,7 @@ export default {
     }
   },
   methods: {
-    handleSaveTemplate(template, pageIndex) {
-      const currentPageIndex =
-        typeof pageIndex === 'number' ? pageIndex : parseInt(this.tab.replace('page', '')) - 1
-      const selectedLanguagePayload = this.languagesPayload.find(
-        (item) => item.languageTypeResourceId === this.activeLanguage
-      )
-      if (selectedLanguagePayload && selectedLanguagePayload.landingPages[currentPageIndex]) {
-        const currentTemplate = selectedLanguagePayload.landingPages[currentPageIndex].content || ''
-        if (currentTemplate.trim() !== template.trim()) {
-          selectedLanguagePayload.isTranslated = false
-        }
-      }
-    },
+
     handleActiveLanguageChange(languageId) {
       // Yeni dilin sayfalarını yükle
       const newLangPayload = this.languagesPayload.find(
