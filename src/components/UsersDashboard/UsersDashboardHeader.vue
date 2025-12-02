@@ -45,13 +45,13 @@
           >
             <template #selection="{ item }">
               <div class="users-dashboard-header__language-selection">
-                <span class="users-dashboard-header__language-flag">{{ item.flag }}</span>
+                <span :class="`vti__flag ${item.countryCode}`"></span>
                 <span class="users-dashboard-header__language-text">{{ item.text }}</span>
               </div>
             </template>
             <template #item="{ item }">
               <div class="users-dashboard-header__language-item">
-                <span class="users-dashboard-header__language-flag">{{ item.flag }}</span>
+                <span :class="`vti__flag ${item.countryCode}`"></span>
                 <span class="users-dashboard-header__language-text">{{ item.text }}</span>
               </div>
             </template>
@@ -59,6 +59,8 @@
         </div>
       </div>
     </div>
+    <!-- Hidden component to load vue-tel-input CSS for flag icons -->
+    <InputPhone v-show="false" value="" />
   </header>
 </template>
 
@@ -66,23 +68,25 @@
 import { mapGetters, mapActions } from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import UsersDashboardUserMenu from './UsersDashboardUserMenu'
+import InputPhone from '@/components/Common/Inputs/InputPhone'
 
 export default {
   name: 'UsersDashboardHeader',
   components: {
     KSelect,
-    UsersDashboardUserMenu
+    UsersDashboardUserMenu,
+    InputPhone
   },
   data() {
     return {
       logoLoaded: false,
       availableLanguages: [
-        { text: 'English (United Kingdom)', value: 'en-GB', flag: '🇬🇧' },
-        { text: 'English (United States)', value: 'en-US', flag: '🇺🇸' },
-        { text: 'Türkçe (Türkiye)', value: 'tr-TR', flag: '🇹🇷' },
-        { text: 'Deutsch (Deutschland)', value: 'de-DE', flag: '🇩🇪' },
-        { text: 'Français (France)', value: 'fr-FR', flag: '🇫🇷' },
-        { text: 'Español (España)', value: 'es-ES', flag: '🇪🇸' }
+        { text: 'English (United Kingdom)', value: 'en-GB', countryCode: 'gb' },
+        { text: 'English (United States)', value: 'en-US', countryCode: 'us' },
+        { text: 'Türkçe (Türkiye)', value: 'tr-TR', countryCode: 'tr' },
+        { text: 'Deutsch (Deutschland)', value: 'de-DE', countryCode: 'de' },
+        { text: 'Français (France)', value: 'fr-FR', countryCode: 'fr' },
+        { text: 'Español (España)', value: 'es-ES', countryCode: 'es' }
       ]
     }
   },
