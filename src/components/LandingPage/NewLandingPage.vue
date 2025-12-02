@@ -396,7 +396,7 @@
             {{ labels.SaveAsNew }}
           </VBtn>
           <SaveButton
-            v-if="step === 2"
+            v-if="step === 2 && !isEditingSystemTemplate"
             :id="footerButtonsIds.saveButton"
             :disabled="getDisabledStatuses.submitButton"
             :label="isEditFromPreview ? labels.SaveChanges : labels.Save"
@@ -475,6 +475,10 @@ export default {
       default: true
     },
     isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    isEditingSystemTemplate: {
       type: Boolean,
       default: false
     },
@@ -1439,6 +1443,9 @@ export default {
       )
     },
     getTitle() {
+      if (this.isEditingSystemTemplate) {
+        return 'Duplicate Landing Page Template'
+      }
       if (!this.isEdit) return 'New Landing Page Template'
       return this.isDuplicate ? 'Duplicate Landing Page Template' : 'Edit Landing Page Template'
     },
