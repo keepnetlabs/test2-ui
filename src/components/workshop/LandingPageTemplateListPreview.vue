@@ -190,10 +190,16 @@
                           @click="handleEdit"
                         >
                           <v-icon left color="#2196f3" medium>
-                            {{ isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil' }}
+                            {{
+                              isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil'
+                            }}
                           </v-icon>
                           <span class="landingPagePreview__edit-button-text">
-                            {{ isSystemTemplateForNonSystemUser ? 'Duplicate Landing Page' : 'Edit Landing Page' }}
+                            {{
+                              isSystemTemplateForNonSystemUser
+                                ? 'Duplicate Landing Page'
+                                : 'Edit Landing Page'
+                            }}
                           </span>
                         </v-btn>
                         <VBtn
@@ -570,7 +576,11 @@
                           {{ isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil' }}
                         </v-icon>
                         <span class="landingPagePreview__edit-button-text">
-                          {{ isSystemTemplateForNonSystemUser ? 'Duplicate Landing Page' : 'Edit Landing Page' }}
+                          {{
+                            isSystemTemplateForNonSystemUser
+                              ? 'Duplicate Landing Page'
+                              : 'Edit Landing Page'
+                          }}
                         </span>
                       </v-btn>
                       <VBtn
@@ -1038,7 +1048,12 @@ export default {
       return company?.name === 'System' || company?.companyName === 'System'
     },
     isSystemTemplateForNonSystemUser() {
-      return this.landingPageTemplateData.createdBy === 'System' && !this.isSystemUser
+      console.log('this.landingPageTemplateData', this.landingPageTemplateData)
+      return (
+        this.landingPageTemplateData.createdBy === 'System' &&
+        !this.isSystemUser &&
+        !this.landingPageTemplateData.isOwner
+      )
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
@@ -1222,7 +1237,11 @@ export default {
       })
     },
     handleEdit() {
-      this.$emit('on-edit-landing-page-template', this.landingPagePreviewSelectedRow, this.isSystemTemplateForNonSystemUser)
+      this.$emit(
+        'on-edit-landing-page-template',
+        this.landingPagePreviewSelectedRow,
+        this.isSystemTemplateForNonSystemUser
+      )
     },
     handleExitEditing() {
       const isChanged = isDifferent(this.editData, this.initialEditData)
@@ -1635,7 +1654,6 @@ export default {
       } else {
         this.languagePreview = mainLanguageId || ''
       }
-
     },
     handleLandingPagePreviewLanguageChange(languageId) {
       if (!languageId) return
