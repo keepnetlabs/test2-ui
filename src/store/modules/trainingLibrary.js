@@ -688,7 +688,7 @@ const trainingLibrary = {
       commit('RESET_PAGINATION')
       commit('SET_SORT_BY', 'Date Created - New to old')
       commit('SET_SORT_BY_TO_PAYLOAD', {
-        ascending: true,
+        ascending: state.isListView,
         orderBy: 'createTime'
       })
       dispatch('callForTableData')
