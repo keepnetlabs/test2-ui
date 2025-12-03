@@ -672,7 +672,17 @@ export default {
       this.isShowSamlError = true
     }
     if (this.$route.query.authcode && !this.$route.query.bypasssaml) {
-      const { authcode, uid } = this.$route.query
+      const { authcode, uid, state } = this.$route.query
+
+      // Check if state starts with "sg_" - redirect to users-dashboard-login
+      if (state && state.startsWith('sg_')) {
+        this.$router.push({
+          name: 'users-dashboard-login',
+          query: { authcode, uid, state }
+        })
+        return
+      }
+
       const newAuthCode = encodeURIComponent(authcode)
       const username = uid
       this.isSamlLoading = true
