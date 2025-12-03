@@ -650,7 +650,6 @@ export default {
       return company?.name === 'System' || company?.companyName === 'System'
     },
     isSystemTemplateForNonSystemUser() {
-      console.log('this.emailTemplateData', this.emailTemplateData)
       return  !this.emailTemplateData.isOwner
     },
     getEmailTemplateDialogSubtitle() {
