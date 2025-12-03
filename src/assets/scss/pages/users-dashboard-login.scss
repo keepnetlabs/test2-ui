@@ -1,7 +1,6 @@
 .social-login-btn {
-  height: 48px !important;
+  height: 56px !important;
   border: 1px solid #e0e0e0 !important;
-  border-radius: 16px !important;
   background: #fff !important;
   text-transform: none !important;
   box-shadow: none !important;
@@ -68,7 +67,7 @@
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #383b41;
+  color: #383b41 !important;
   text-decoration: none;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -81,6 +80,9 @@
 
 .back-button__icon {
   font-size: 18px;
-  color: #383b41;
+  color: #383b41 !important;
 }
 
+.users-dashboard-login-page .login-user-pass-wrapper > .row > div {
+  min-width: 400px;
+}

@@ -1048,12 +1048,7 @@ export default {
       return company?.name === 'System' || company?.companyName === 'System'
     },
     isSystemTemplateForNonSystemUser() {
-      console.log('this.landingPageTemplateData', this.landingPageTemplateData)
-      return (
-        this.landingPageTemplateData.createdBy === 'System' &&
-        !this.isSystemUser &&
-        !this.landingPageTemplateData.isOwner
-      )
+      return !this.landingPageTemplateData.isOwner
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
