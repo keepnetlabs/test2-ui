@@ -111,8 +111,8 @@ const router = new Router({
       name: 'users-dashboard',
       component: UsersDashboard,
       meta: {
-        isAuthenticated: false, // TEMPORARILY DISABLED: Allow access without login for development
-        requiresUsersDashboardLogin: false // TEMPORARILY DISABLED
+        isAuthenticated: false,
+        requiresUsersDashboardLogin: true
       }
     },
     {
@@ -905,25 +905,20 @@ router.beforeEach((to, from, next) => {
   }
   try {
     const storeRef = store
-    // TEMPORARILY DISABLED: Allow /users-dashboard access without any authentication
-    if (to.path === '/users-dashboard' || to.name === 'users-dashboard') {
+
+    // Check if route requires users-dashboard-login (independent authentication)
+    if (to.meta.requiresUsersDashboardLogin) {
+      // Initialize usersDashboard store from storage
+      store.dispatch('usersDashboard/initializeFromStorage')
+      const isAuthenticated = store.getters['usersDashboard/isAuthenticated']
+      if (!isAuthenticated) {
+        return next('/users-dashboard-login')
+      }
       next()
       return
     }
-    if (to.meta.isAuthenticated) {
-      // Check if route requires users-dashboard-login
-      // TEMPORARILY DISABLED: Allow access without login for development
-      // if (to.meta.requiresUsersDashboardLogin) {
-      //   // Initialize usersDashboard store from storage
-      //   store.dispatch('usersDashboard/initializeFromStorage')
-      //   const isAuthenticated = store.getters['usersDashboard/isAuthenticated']
-      //   if (!isAuthenticated) {
-      //     return next('/users-dashboard-login')
-      //   }
-      //   next()
-      //   return
-      // }
 
+    if (to.meta.isAuthenticated) {
       // Regular authentication check
       let authenticationStatus = AuthenticationService.getAuthenticationStatus()
       if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
