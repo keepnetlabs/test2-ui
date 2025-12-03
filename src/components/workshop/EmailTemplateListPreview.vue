@@ -1196,7 +1196,12 @@ export default {
             if (isSearch) {
               this.listData = data.data.results
             } else {
-              this.listData = [...this.listData, ...data.data.results]
+              // Filter out duplicates based on resourceId to avoid Vue duplicate key errors
+              const existingResourceIds = new Set(this.listData.map((item) => item.resourceId))
+              const newTemplates = data.data.results.filter(
+                (item) => !existingResourceIds.has(item.resourceId)
+              )
+              this.listData = [...this.listData, ...newTemplates]
               this.defaultListData = [...this.listData]
             }
             if (!emailTemplateResourceId) {
