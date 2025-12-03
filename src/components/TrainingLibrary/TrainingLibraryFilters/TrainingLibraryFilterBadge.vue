@@ -2,7 +2,7 @@
   <Fragment v-if="isRenderComponent">
     <div v-if="isFilterTypeSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
-        <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
+        <span class="training-library-filter-badge-type">{{ filter.text }} ({{ getOperatorLabel(filter.activeOperator) }}):</span>
         <span class="training-library-filter-badge-value">{{ filter.activeValue }}</span>
       </div>
       <div>
@@ -18,11 +18,11 @@
     <div
       v-else-if="isFilterTypeSearch"
       v-for="(filterVal, fIndex) in filter.activeValue"
-      :key="fIndex"
+      :key="'search-' + fIndex"
       class="training-library-filter-badge"
     >
       <div class="training-library-filter-badge__left-side">
-        <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
+        <span class="training-library-filter-badge-type">{{ filter.text }} ({{ getOperatorLabel(filter.activeOperator) }}):</span>
         <span class="training-library-filter-badge-value">{{
           getFilterValue(filter, filterVal)
         }}</span>
@@ -40,11 +40,11 @@
     <div
       v-else-if="isFilterTypeLongTextSearch"
       v-for="(filterVal, fIndex) in filter.activeValue"
-      :key="fIndex"
+      :key="'longtext-' + fIndex"
       class="training-library-filter-badge training-library-filter-badge-long-text-search"
     >
       <div class="training-library-filter-badge__left-side">
-        <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
+        <span class="training-library-filter-badge-type">{{ filter.text }} ({{ getOperatorLabel(filter.activeOperator) }}):</span>
         <VTooltip bottom content-class="training-library-long-text-search__tooltip">
           <template #activator="{ on }">
             <span v-on="on" class="training-library-filter-badge-value">{{
@@ -66,7 +66,7 @@
     </div>
     <div v-else-if="isFilterTypeDateSelect" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
-        <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
+        <span class="training-library-filter-badge-type">{{ filter.text }} ({{ getOperatorLabel(filter.activeOperator) }}):</span>
         <span class="training-library-filter-badge-value">{{ getDateFilterValue(filter) }}</span>
       </div>
       <div>
@@ -140,6 +140,17 @@ export default {
       removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload',
       removeLearningPathFilterFromPayload: 'learningPath/removeLearningPathFilterFromPayload'
     }),
+    getOperatorLabel(operator) {
+      const operatorMap = {
+        'Include': 'Equal',
+        '!=': 'Not Equal',
+        '>=': 'After',
+        '<=': 'Before',
+        '=': 'Equal',
+        'between': 'Between'
+      }
+      return operatorMap[operator] || operator
+    },
     getFilterValue(filter, filterVal) {
       if (filter.key === PROPERTY_STORE.LANGUAGES) return this.getLanguageFilterValue(filterVal)
       else if (filter.key === PROPERTY_STORE.COMPLIANCE)
