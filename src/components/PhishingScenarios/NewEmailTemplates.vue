@@ -807,6 +807,7 @@ export default {
       if (files.length) {
         const formData = new FormData()
         formData.append('File', files[0])
+        console.log('files', files)
         parseEmailOrMessageFile(formData).then((response) => {
           const {
             data: { data }
@@ -821,14 +822,26 @@ export default {
           })
           this.selectedLanguagePayloadItemBeforeSave.template = body
           this.selectedLanguagePayloadItemBeforeSave.subject = subject
-          if (attachments) {
-            attachments = attachments.map((item) => ({
-              ...item,
-              fileName: item.name,
+          if (attachments && attachments.length > 0) {
+            // Only take the first attachment (system supports only 1 attachment)
+            const firstAttachment = {
+              ...attachments[0],
+              fileName: attachments[0].name || attachments[0].fileName,
+              name: attachments[0].name || attachments[0].fileName,
               isDeletable: true
-            }))
-            this.formValues.importedEmailAttachments = attachments
-            this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
+            }
+            // Add imported attachment directly to attachmentFiles (for UI display)
+            this.$set(this.formValues, 'attachmentFiles', [firstAttachment])
+            this.$set(
+              this.formValues,
+              'attachmentFilesFromApi',
+              JSON.parse(JSON.stringify([firstAttachment]))
+            )
+            // Keep importedEmailAttachments for backend API
+            this.$set(this.formValues, 'importedEmailAttachments', [firstAttachment])
+            // Set flags for imported attachment
+            this.isPhishingFileModified = false
+            this.isAddedNewPhishingFile = true
           }
           delete this.lastRedFlags[this.activeLanguage]
           this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
@@ -840,15 +853,39 @@ export default {
     },
     handleAttachmentRemove({ item, index }) {
       this.formValues.attachmentFilesToRemove = item.fileName
+      const itemFileName = item?.fileName || item?.name
+
+      // Remove from attachmentFiles (now contains imported attachments)
+      if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length > 0) {
+        const attachmentIndex = this.formValues.attachmentFiles.findIndex(
+          (att) => (att?.fileName || att?.name) === itemFileName
+        )
+        if (attachmentIndex !== -1) {
+          this.formValues.attachmentFiles.splice(attachmentIndex, 1)
+        }
+      }
+
+      // Remove from importedEmailAttachments (for backward compatibility)
+      if (
+        this.formValues.importedEmailAttachments &&
+        this.formValues.importedEmailAttachments.length > 0
+      ) {
+        const importedIndex = this.formValues.importedEmailAttachments.findIndex(
+          (att) => (att?.fileName || att?.name) === itemFileName
+        )
+        if (importedIndex !== -1) {
+          this.formValues.importedEmailAttachments.splice(importedIndex, 1)
+        }
+      }
+
+      // Remove from attachmentFilesFromApi
       const newAttachmentFilesFromApi = JSON.parse(
         JSON.stringify(this.formValues.attachmentFilesFromApi)
       )
       if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length === 1) {
         newAttachmentFilesFromApi.splice(index - 1, 1)
-        this.formValues.importedEmailAttachments.splice(index - 1, 1)
       } else {
         newAttachmentFilesFromApi.splice(index, 1)
-        this.formValues.importedEmailAttachments.splice(index, 1)
       }
       this.formValues.attachmentFilesFromApi = newAttachmentFilesFromApi
     },
