@@ -28,60 +28,56 @@
                 </div>
               </v-card-title>
               <v-card-text class="pa-0">
-                <!-- Step 1: Email Input -->
-                <template v-if="!showSignInMethods">
-                  <div id="text--users-dashboard-login-title" class="login-title">
-                    Access Your Security Growth Dashboard
+                <!-- Step 3: Email Verification -->
+                <template v-if="showEmailVerification">
+                  <div id="text--users-dashboard-login-email-verification-title" class="login-title">
+                    Check Your Email
                   </div>
                   <div
-                    id="text--users-dashboard-login-description"
+                    id="text--users-dashboard-login-email-verification-description"
                     class="login-desc users-dashboard-login-desc"
                   >
-                    We'll identify your organization's sign-in method securely.
+                    Check your inbox at {{ companyEmail }} to continue.
                   </div>
-                  <div v-if="isErrorActive" class="login-error-container">
-                    <div v-if="isErrorActive" class="login-error-wrapper">
-                      <div class="login-error-icon dark pr-2">
-                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
-                      </div>
-                      <div id="text--users-dashboard-login-error" class="login-error-message pr-1">
-                        {{ getErrors }}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="login-user-pass-wrapper">
+                  <div class="login-user-pass-wrapper mt-8">
                     <v-row align="center" justify="center">
-                      <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
-                        <v-form
-                          v-model.trim="validForm"
-                          autocomplete="off"
-                          data-sentry-mask
-                          ref="loginForm"
-                          @submit.prevent="handleContinue"
+                      <v-col class="pt-0 pl-0 pr-0 pb-0" md="6" sm="12">
+                        <v-btn
+                          id="btn--users-dashboard-login-resend-email"
+                          class="social-login-btn"
+                          outlined
+                          block
+                          :style="{ opacity: countdown > 0 ? '0.7' : '1', pointerEvents: countdown > 0 ? 'none' : 'auto' }"
                         >
-                          <v-text-field
-                            v-model.trim="companyEmail"
-                            :class="{ 'input-error': isErrorActive }"
-                            id="input--users-dashboard-login-company-email"
-                            data-sentry-mask
-                            name="companyEmail"
-                            ref="companyEmail"
-                            class="username-field"
-                            placeholder="Enter Company Email"
-                            outlined
-                            validate-on-blur
-                            autocomplete="disabled"
-                            :rules="[rules.required, rules.email]"
-                            @keyup.enter="handleContinue"
-                          ></v-text-field>
-                        </v-form>
+                          <div class="social-login-btn__content">
+                            <v-icon class="social-login-btn__icon">mdi-email-outline</v-icon>
+                            <span class="social-login-btn__text">
+                              {{ countdown > 0 ? `Resend sign-in email (${countdown}s)` : 'Resend sign-in email' }}
+                            </span>
+                          </div>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                    <v-row align="center" justify="center">
+                      <v-col class="pt-10 pl-0 pr-0 pb-0" md="6" sm="12">
+                        <div class="back-button-wrapper">
+                          <a
+                            id="btn--users-dashboard-login-email-verification-back"
+                            class="back-button"
+                            href="#"
+                            @click.prevent="handleBackFromEmailVerification"
+                          >
+                            <v-icon left class="back-button__icon">mdi-arrow-left</v-icon>
+                            BACK
+                          </a>
+                        </div>
                       </v-col>
                     </v-row>
                   </div>
                 </template>
 
                 <!-- Step 2: Sign-In Methods -->
-                <template v-else>
+                <template v-else-if="showSignInMethods">
                   <div id="text--users-dashboard-login-title" class="login-title">
                     Choose Your Sign-In Method
                   </div>
@@ -104,7 +100,7 @@
                         ></v-text-field>
                       </v-col>
                     </v-row>
-                    <v-row align="center" justify="center">
+                    <v-row v-if="samlProvider === 'microsoft'" align="center" justify="center">
                       <v-col class="pt-4 pl-0 pr-0 pb-0" md="6" sm="12">
                         <v-btn
                           id="btn--users-dashboard-login-microsoft"
@@ -124,7 +120,7 @@
                         </v-btn>
                       </v-col>
                     </v-row>
-                    <v-row align="center" justify="center">
+                    <v-row v-if="samlProvider === 'google'" align="center" justify="center">
                       <v-col class="pt-4 pl-0 pr-0 pb-0" md="6" sm="12">
                         <v-btn
                           id="btn--users-dashboard-login-google"
@@ -177,8 +173,60 @@
                     </v-row>
                   </div>
                 </template>
+
+                <!-- Step 1: Email Input -->
+                <template v-else>
+                  <div id="text--users-dashboard-login-title" class="login-title">
+                    Access Your Security Growth Dashboard
+                  </div>
+                  <div
+                    id="text--users-dashboard-login-description"
+                    class="login-desc users-dashboard-login-desc"
+                  >
+                    We'll identify your organization's sign-in method securely.
+                  </div>
+                  <div v-if="isErrorActive" class="login-error-container">
+                    <div v-if="isErrorActive" class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div id="text--users-dashboard-login-error" class="login-error-message pr-1">
+                        {{ getErrors }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="login-user-pass-wrapper">
+                    <v-row align="center" justify="center">
+                      <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
+                        <v-form
+                          v-model.trim="validForm"
+                          autocomplete="off"
+                          data-sentry-mask
+                          ref="loginForm"
+                          @submit.prevent="handleContinue"
+                        >
+                          <v-text-field
+                            v-model.trim="companyEmail"
+                            :class="{ 'input-error': isErrorActive }"
+                            id="input--users-dashboard-login-company-email"
+                            data-sentry-mask
+                            name="companyEmail"
+                            ref="companyEmail"
+                            class="username-field"
+                            placeholder="Enter Company Email"
+                            outlined
+                            validate-on-blur
+                            autocomplete="disabled"
+                            :rules="[rules.required, rules.email]"
+                            @keyup.enter="handleContinue"
+                          ></v-text-field>
+                        </v-form>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </template>
               </v-card-text>
-              <v-card-actions v-if="!showSignInMethods" class="justify-center login-button mt-0">
+              <v-card-actions v-if="!showSignInMethods && !showEmailVerification" class="justify-center login-button mt-0">
                 <v-btn
                   color="blue"
                   id="btn--users-dashboard-login-continue"
@@ -204,6 +252,7 @@ import { mapGetters, mapActions } from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { loginWithSaml } from '@/api/usersDashboard'
 
 export default {
   name: 'UsersDashboardLogin',
@@ -211,6 +260,9 @@ export default {
     return {
       companyEmail: '',
       showSignInMethods: false,
+      showEmailVerification: false,
+      countdown: 30,
+      countdownInterval: null,
       rules: {
         email: (v) => Validations.email(v),
         required: (value) => !!value || 'Required'
@@ -226,9 +278,23 @@ export default {
     this.$store.dispatch('whitelabel/resetState')
     // Get whitelabel info
     this.$store.dispatch('login/getWhiteLabelByUrl')
+
+    // Check for SAML callback
+    if (this.$route.query.authcode && this.$route.query.uid && this.$route.query.state) {
+      this.handleSamlCallback()
+      return
+    }
+
     // Check if already authenticated
     if (this.isUsersDashboardAuthenticated) {
       this.$router.push('/users-dashboard')
+    }
+  },
+  beforeDestroy() {
+    // Clear countdown interval
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval)
+      this.countdownInterval = null
     }
   },
   computed: {
@@ -237,7 +303,10 @@ export default {
       getErrors: 'common/getErrors',
       isErrorActive: 'common/getErrorStatus',
       loginWhiteLabel: 'login/loginWhiteLabel',
-      isUsersDashboardAuthenticated: 'usersDashboard/isAuthenticated'
+      isUsersDashboardAuthenticated: 'usersDashboard/isAuthenticated',
+      samlProvider: 'usersDashboard/getSamlProvider',
+      samlRedirectUrl: 'usersDashboard/getSamlRedirectUrl',
+      userEmail: 'usersDashboard/getUserInfo'
     }),
     isLoading: {
       get() {
@@ -249,8 +318,39 @@ export default {
   methods: {
     ...mapActions({
       usersDashboardLogin: 'usersDashboard/login',
-      setCompanyEmail: 'usersDashboard/setCompanyEmail'
+      setCompanyEmail: 'usersDashboard/setCompanyEmail',
+      setToken: 'usersDashboard/setToken'
     }),
+    async handleSamlCallback() {
+      const { authcode, uid } = this.$route.query
+
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+
+      try {
+        const response = await loginWithSaml({
+          authcode: authcode,
+          username: uid
+        })
+
+        if (response && response.data) {
+          // Set token in store
+          this.setToken({
+            token: response.data.access_token || response.data.token,
+            expiredIn: response.data.expiredIn || response.data.expired,
+            status: response.data.status
+          })
+
+          // Redirect to users-dashboard
+          this.$router.push('/users-dashboard')
+        }
+      } catch (error) {
+        this.onErrorLogin(error)
+      } finally {
+        this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+          root: true
+        })
+      }
+    },
     handleContinue() {
       if (!this.$refs.loginForm.validate()) {
         return
@@ -258,35 +358,25 @@ export default {
       this.clearError()
       // Set company email in store
       this.setCompanyEmail(this.companyEmail)
-      // TODO: Implement company email verification logic
-      // For now, show sign-in methods
-      this.showSignInMethods = true
-    },
-    handleMicrosoftLogin() {
-      this.performLogin('microsoft')
-    },
-    handleGoogleLogin() {
-      this.performLogin('google')
-    },
-    handleMagicLink() {
-      this.performLogin('magic-link')
-    },
-    performLogin(loginMethod) {
-      this.clearError()
+
+      // Call login API with email
       this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
 
       const payload = {
         companyEmail: this.companyEmail,
-        loginMethod: loginMethod
+        loginMethod: 'email'
       }
 
       this.usersDashboardLogin(payload)
-        .then(() => {
-          // Redirect to users-dashboard
+        .then((response) => {
+          console.log('response', response)
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
             root: true
           })
-          this.$router.push('/users-dashboard')
+          // Show sign-in methods based on SAML provider
+          if (response && response.data && response.data.data && response.data.data.saml) {
+            this.showSignInMethods = true
+          }
         })
         .catch((error) => {
           this.onErrorLogin(error)
@@ -296,6 +386,48 @@ export default {
             root: true
           })
         })
+    },
+    handleMicrosoftLogin() {
+      if (this.samlRedirectUrl) {
+        window.location.href = this.samlRedirectUrl
+      }
+    },
+    handleGoogleLogin() {
+      if (this.samlRedirectUrl) {
+        window.location.href = this.samlRedirectUrl
+      }
+    },
+    handleMagicLink() {
+      // Show email verification screen
+      this.showEmailVerification = true
+      this.showSignInMethods = false
+
+      // Start countdown
+      this.countdown = 30
+      this.startCountdown()
+    },
+    startCountdown() {
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval)
+      }
+
+      this.countdownInterval = setInterval(() => {
+        this.countdown--
+        if (this.countdown <= 0) {
+          clearInterval(this.countdownInterval)
+          this.countdownInterval = null
+        }
+      }, 1000)
+    },
+    handleBackFromEmailVerification() {
+      this.showEmailVerification = false
+      this.showSignInMethods = true
+      // Clear countdown
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval)
+        this.countdownInterval = null
+      }
+      this.countdown = 30
     },
     onErrorLogin(error) {
       this.$store.commit('common/SET_ERROR_STATE', true, { root: true })

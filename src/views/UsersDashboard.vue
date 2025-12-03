@@ -95,21 +95,14 @@ export default {
   created() {
     // Initialize from storage
     this.$store.dispatch('usersDashboard/initializeFromStorage')
-    // TEMPORARILY DISABLED: Allow access without login for development
-    // Check if authenticated
-    // if (!this.isAuthenticated) {
-    //   this.$router.push('/users-dashboard-login')
-    // }
-    // Fetch top performance data (used by OverallPerformance and Leaderboard components)
-    // This will also update userInfo with name, email, and department from API response
-    const targetUserResourceId = this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
     // Fetch user info (email, department, phoneNumber, preferredLanguage)
-    this.$store.dispatch('usersDashboard/fetchUserInfo', targetUserResourceId)
-    this.$store.dispatch('usersDashboard/fetchTopPerformance', targetUserResourceId)
+    this.$store.dispatch('usersDashboard/fetchUserInfo')
+    // Fetch top performance data (used by OverallPerformance and Leaderboard components)
+    this.$store.dispatch('usersDashboard/fetchTopPerformance')
     // Fetch my learning data (used by YourLearning component)
-    this.$store.dispatch('usersDashboard/fetchMyLearning', targetUserResourceId)
+    this.$store.dispatch('usersDashboard/fetchMyLearning')
     // Fetch my certificates data (used by YourCertificates component)
-    this.$store.dispatch('usersDashboard/fetchMyCertificates', targetUserResourceId)
+    this.$store.dispatch('usersDashboard/fetchMyCertificates')
   },
   methods: {
     ...mapActions({

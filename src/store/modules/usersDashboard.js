@@ -1,6 +1,7 @@
 import { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
 import usersDashboardLabels from '@/model/constants/usersDashboardLabels'
 import {
+  login as loginAPI,
   getTopPerformance,
   getMyLearning,
   getPhishingResult,
@@ -21,6 +22,8 @@ const usersDashboard = {
     isAuthenticated: false,
     permissions: [],
     language: 'en-GB', // Default language
+    samlProvider: null, // 'google', 'microsoft', null
+    samlRedirectUrl: null,
     userInfo: {
       name: '',
       email: '',
@@ -59,6 +62,8 @@ const usersDashboard = {
     getLoginMethod: (state) => state.loginMethod,
     getPermissions: (state) => state.permissions,
     getLanguage: (state) => state.language,
+    getSamlProvider: (state) => state.samlProvider,
+    getSamlRedirectUrl: (state) => state.samlRedirectUrl,
     getUserInfo: (state) => state.userInfo,
     getTopPerformance: (state) => state.topPerformance.data,
     getTopPerformanceLoading: (state) => state.topPerformance.isLoading,
@@ -117,6 +122,10 @@ const usersDashboard = {
     },
     SET_LOGIN_METHOD(state, payload) {
       state.loginMethod = payload
+    },
+    SET_SAML_INFO(state, payload) {
+      state.samlProvider = payload.provider || null
+      state.samlRedirectUrl = payload.redirectUrl || null
     },
     SET_PERMISSIONS(state, payload) {
       state.permissions = payload || []
@@ -376,51 +385,37 @@ const usersDashboard = {
         return null
       }
     },
-    login({ commit, dispatch }, payload) {
+    async login({ commit, dispatch }, payload) {
       // Set company email and login method
       commit('SET_COMPANY_EMAIL', payload.companyEmail)
       commit('SET_LOGIN_METHOD', payload.loginMethod)
 
-      // TODO: Replace with actual API call
-      // For now, simulate login
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const mockResponse = {
-            data: {
-              access_token: 'users-dashboard-token-' + Date.now(),
-              expiredIn: Date.now() + 3600000, // 1 hour
-              status: 1,
-              permissions: []
-            }
+      try {
+        // Call the actual login API
+        const response = await loginAPI(payload.companyEmail)
+
+        if (response && response.data && response.data.data) {
+          const { email, saml } = response.data.data
+
+          // Update email in userInfo if provided
+          if (email) {
+            commit('SET_USER_INFO', { email })
           }
 
-          commit('SET_TOKEN', {
-            token: mockResponse.data.access_token,
-            expiredIn: mockResponse.data.expiredIn,
-            status: mockResponse.data.status
-          })
-
-          if (mockResponse.data.permissions) {
-            commit('SET_PERMISSIONS', mockResponse.data.permissions)
+          // Store SAML info (provider and redirectUrl)
+          if (saml) {
+            commit('SET_SAML_INFO', {
+              provider: saml.provider,
+              redirectUrl: saml.redirectUrl
+            })
           }
+        }
 
-          resolve(mockResponse)
-        }, 1000)
-      })
-
-      // TODO: Uncomment when backend is ready
-      // return loginAction(payload)
-      //   .then((response) => {
-      //     commit('SET_TOKEN', {
-      //       token: response.data.access_token,
-      //       expiredIn: response.data.expiredIn,
-      //       status: response.data.status
-      //     })
-      //     if (response.data.permissions) {
-      //       commit('SET_PERMISSIONS', response.data.permissions)
-      //     }
-      //     return response
-      //   })
+        return response
+      } catch (error) {
+        console.error('Login error:', error)
+        throw error
+      }
     },
     logout({ commit }) {
       commit('RESET_STATE')
