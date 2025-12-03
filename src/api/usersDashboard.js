@@ -1,4 +1,5 @@
 import usersDashboardRequest from '@/utils/usersDashboardRequest'
+import authTestRequest from '@/utils/authTestRequest'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 /**
@@ -31,7 +32,7 @@ export const loginWithSaml = (payload) => {
   params.append('client_secret', 'SiZl6JK2jy')
   params.append('client_id', 'security_growth_client')
   params.append('authcode', authcode)
-  return usersDashboardRequest.post('connect/token', params, {
+  return authTestRequest.post('connect/token', params, {
     loading: true,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -51,7 +52,7 @@ export const loginWithMagicLink = (magicLinkToken) => {
   params.append('client_secret', 'SiZl6JK2jy')
   params.append('client_id', 'security_growth_client')
   params.append('magic_link_token', magicLinkToken)
-  return usersDashboardRequest.post('connect/token', params, {
+  return authTestRequest.post('connect/token', params, {
     loading: true,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'

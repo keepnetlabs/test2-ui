@@ -48,6 +48,7 @@
                           outlined
                           block
                           :style="{ opacity: countdown > 0 ? '0.7' : '1', pointerEvents: countdown > 0 ? 'none' : 'auto' }"
+                          @click="handleResendEmail"
                         >
                           <div class="social-login-btn__content">
                             <v-icon class="social-login-btn__icon">mdi-email-outline</v-icon>
@@ -436,6 +437,11 @@ export default {
       this.showSignInMethods = false
 
       // Start countdown
+      this.countdown = 30
+      this.startCountdown()
+    },
+    handleResendEmail() {
+      // Restart countdown
       this.countdown = 30
       this.startCountdown()
     },
