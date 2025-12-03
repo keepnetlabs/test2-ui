@@ -1,5 +1,5 @@
 <template>
-  <v-app class="login-page">
+  <v-app class="login-page users-dashboard-login-page">
     <v-overlay :value="isLoading > 0" z-index="999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
@@ -146,16 +146,18 @@
                     </v-row>
                     <v-row align="center" justify="center">
                       <v-col class="pt-4 pl-0 pr-0 pb-0" md="6" sm="12">
-                        <div class="magic-link-wrapper">
-                          <a
-                            id="link--users-dashboard-login-magic-link"
-                            class="magic-link"
-                            href="#"
-                            @click.prevent="handleMagicLink"
-                          >
-                            Use a magic link instead
-                          </a>
-                        </div>
+                        <v-btn
+                          id="btn--users-dashboard-login-email"
+                          class="social-login-btn"
+                          outlined
+                          block
+                          @click="handleMagicLink"
+                        >
+                          <div class="social-login-btn__content">
+                            <v-icon class="social-login-btn__icon">mdi-email-outline</v-icon>
+                            <span class="social-login-btn__text">Continue with Email</span>
+                          </div>
+                        </v-btn>
                       </v-col>
                     </v-row>
                     <v-row align="center" justify="center">
