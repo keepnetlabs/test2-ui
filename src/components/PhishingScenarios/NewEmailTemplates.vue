@@ -831,6 +831,7 @@ export default {
               isDeletable: true
             }
             // Add imported attachment directly to attachmentFiles (for UI display)
+            /*
             this.$set(this.formValues, 'attachmentFiles', [firstAttachment])
             this.$set(
               this.formValues,
@@ -842,6 +843,7 @@ export default {
             // Set flags for imported attachment
             this.isPhishingFileModified = false
             this.isAddedNewPhishingFile = true
+                        */
           }
           delete this.lastRedFlags[this.activeLanguage]
           this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
