@@ -40,6 +40,26 @@ export const loginWithSaml = (payload) => {
 }
 
 /**
+ * Login with Magic Link for security growth dashboard
+ * @param {string} magicLinkToken - The magic link token from URL
+ * @returns {Promise} API response with authentication token
+ */
+export const loginWithMagicLink = (magicLinkToken) => {
+  const params = new URLSearchParams()
+  params.append('grant_type', 'security_growth_oauth')
+  params.append('scope', 'security_growth')
+  params.append('client_secret', 'SiZl6JK2jy')
+  params.append('client_id', 'security_growth_client')
+  params.append('magic_link_token', magicLinkToken)
+  return usersDashboardRequest.post('connect/token', params, {
+    loading: true,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
+/**
  * Get phishing result data for security growth dashboard
  * @param {string} targetUserResourceId - The resource ID of the target user
  * @returns {Promise} API response with phishing result data

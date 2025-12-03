@@ -252,7 +252,7 @@ import { mapGetters, mapActions } from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { loginWithSaml } from '@/api/usersDashboard'
+import { loginWithSaml, loginWithMagicLink } from '@/api/usersDashboard'
 
 export default {
   name: 'UsersDashboardLogin',
@@ -278,6 +278,12 @@ export default {
     this.$store.dispatch('whitelabel/resetState')
     // Get whitelabel info
     this.$store.dispatch('login/getWhiteLabelByUrl')
+
+    // Check for Magic Link callback
+    if (this.$route.query.ml) {
+      this.handleMagicLinkCallback()
+      return
+    }
 
     // Check for SAML callback
     if (this.$route.query.authcode && this.$route.query.uid && this.$route.query.state) {
@@ -331,6 +337,33 @@ export default {
           authcode: authcode,
           username: uid
         })
+
+        if (response && response.data) {
+          // Set token in store
+          this.setToken({
+            token: response.data.access_token || response.data.token,
+            expiredIn: response.data.expiredIn || response.data.expired,
+            status: response.data.status
+          })
+
+          // Redirect to users-dashboard
+          this.$router.push('/users-dashboard')
+        }
+      } catch (error) {
+        this.onErrorLogin(error)
+      } finally {
+        this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+          root: true
+        })
+      }
+    },
+    async handleMagicLinkCallback() {
+      const magicLinkToken = this.$route.query.ml
+
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+
+      try {
+        const response = await loginWithMagicLink(magicLinkToken)
 
         if (response && response.data) {
           // Set token in store
