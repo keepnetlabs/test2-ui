@@ -653,6 +653,19 @@ const trainingLibrary = {
     setListView({ commit, dispatch, state }, payload) {
       if (state.isListView === payload) return
       commit('SET_LIST_VIEW', payload)
+      if(!payload){
+        commit('SET_SORT_BY', 'Date Created - New to old')
+        commit('SET_SORT_BY_TO_PAYLOAD', {
+          ascending: false,
+          orderBy: 'createTime'
+        })
+      } else {
+        commit('SET_SORT_BY', 'Date Created - Old to new')
+        commit('SET_SORT_BY_TO_PAYLOAD', {
+          ascending: true,
+          orderBy: 'createTime'
+        })
+      }
       dispatch('callForTableData')
     },
     initDefaultTableSettings({ commit }) {
