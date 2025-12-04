@@ -133,10 +133,7 @@
                 <div class="template-list--item d-flex justify-space-between align-center mt-2">
                   <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
-                  <div class="template-list--item__narrator">
-                    <v-icon :size="16" color="#757575">mdi-web</v-icon>
-                    <span class="template-list--item__language">{{ item.languageTypeName }}</span>
-                  </div>
+                  <EmailTemplateListLeftSideLanguages :item="item" />
                 </div>
               </div>
               <div
@@ -305,6 +302,7 @@ import FormGroup from '../SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getItemDifficultyClass } from '@/components/Common/Simulator/utils'
+import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 
 export default {
   name: 'LandingPageListPreview',
@@ -318,7 +316,8 @@ export default {
     KEmailPreview,
     Multipane,
     MultipaneResizer,
-    AppDialog
+    AppDialog,
+    EmailTemplateListLeftSideLanguages
   },
   directives: {
     'infinite-scroll': InfiniteScroll

@@ -114,7 +114,7 @@ export const COMMON_SIMULATOR_COLUMNS = {
     label: labels.LANGUAGE,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'multiText',
     fixed: false,
     width: 175,
     filterableType: 'select',
