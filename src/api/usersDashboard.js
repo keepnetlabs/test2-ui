@@ -128,16 +128,12 @@ export const getUserInfo = () => {
  * @returns {Promise} API response with timeline data
  */
 export const getUserTimeline = (payload) => {
-  return usersDashboardRequest.post(
-    `/securitygrowthdashboard/user-timeline/${payload.targetUserResourceId}`,
-    payload,
-    {
-      headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json-patch+json'
-      }
+  return usersDashboardRequest.post(`/securitygrowthdashboard/user-timeline`, payload, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json-patch+json'
     }
-  )
+  })
 }
 
 /**

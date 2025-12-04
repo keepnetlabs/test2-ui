@@ -256,7 +256,7 @@ const usersDashboard = {
     setUserInfo({ commit }, payload) {
       commit('SET_USER_INFO', payload)
     },
-    async fetchTopPerformance({ commit }, targetUserResourceId) {
+    async fetchTopPerformance({ commit, getters }) {
       commit('SET_TOP_PERFORMANCE_LOADING', true)
       commit('SET_TOP_PERFORMANCE_ERROR', null)
 
@@ -269,9 +269,11 @@ const usersDashboard = {
           commit('SET_TOP_PERFORMANCE', topPerformanceData)
 
           // Find current user in the response and update userInfo
-          const currentUser = topPerformanceData.find(
-            (user) => user.targetUserResourceId === targetUserResourceId
-          )
+          // Try to find user by email from userInfo, or use first user if not found
+          const userInfo = getters.getUserInfo
+          const currentUser =
+            topPerformanceData.find((user) => user.email === userInfo?.email) ||
+            topPerformanceData[0]
 
           if (currentUser) {
             commit('SET_USER_INFO', {
@@ -294,7 +296,7 @@ const usersDashboard = {
         return null
       }
     },
-    async fetchMyLearning({ commit }, targetUserResourceId) {
+    async fetchMyLearning({ commit }) {
       commit('SET_MY_LEARNING_LOADING', true)
       commit('SET_MY_LEARNING_ERROR', null)
 
@@ -318,7 +320,7 @@ const usersDashboard = {
         return null
       }
     },
-    async fetchMyCertificates({ commit }, targetUserResourceId) {
+    async fetchMyCertificates({ commit }) {
       commit('SET_MY_CERTIFICATES_LOADING', true)
       commit('SET_MY_CERTIFICATES_ERROR', null)
 
@@ -342,7 +344,7 @@ const usersDashboard = {
         return null
       }
     },
-    async fetchPhishingResult({ commit }, targetUserResourceId) {
+    async fetchPhishingResult({ commit }) {
       commit('SET_PHISHING_RESULT_LOADING', true)
       commit('SET_PHISHING_RESULT_ERROR', null)
 
@@ -366,7 +368,7 @@ const usersDashboard = {
         return null
       }
     },
-    async fetchUserInfo({ commit }, targetUserResourceId) {
+    async fetchUserInfo({ commit }) {
       try {
         const response = await getUserInfo()
         if (response && response.data && response.data.data) {
