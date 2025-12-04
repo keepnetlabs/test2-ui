@@ -266,7 +266,7 @@ import { mapGetters, mapActions } from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { loginWithSaml, loginWithMagicLink } from '@/api/usersDashboard'
+import { loginWithSaml, loginWithMagicLink, sendMagicLink } from '@/api/usersDashboard'
 
 export default {
   name: 'UsersDashboardLogin',
@@ -421,7 +421,7 @@ export default {
             root: true
           })
           // Show sign-in methods based on SAML provider
-          if (response && response.data && response.data.data && response.data.data.saml) {
+          if (response && response.data && response.data.data) {
             this.showSignInMethods = true
           }
         })
@@ -444,19 +444,47 @@ export default {
         window.location.href = this.samlRedirectUrl
       }
     },
-    handleMagicLink() {
-      // Show email verification screen
-      this.showEmailVerification = true
-      this.showSignInMethods = false
+    async handleMagicLink() {
+      this.clearError()
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {
+        root: true
+      })
 
-      // Start countdown
-      this.countdown = 30
-      this.startCountdown()
+      try {
+        await sendMagicLink(this.companyEmail)
+        // Show email verification screen
+        this.showEmailVerification = true
+        this.showSignInMethods = false
+
+        // Start countdown
+        this.countdown = 30
+        this.startCountdown()
+      } catch (error) {
+        this.onErrorLogin(error)
+      } finally {
+        this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+          root: true
+        })
+      }
     },
-    handleResendEmail() {
-      // Restart countdown
-      this.countdown = 30
-      this.startCountdown()
+    async handleResendEmail() {
+      this.clearError()
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {
+        root: true
+      })
+
+      try {
+        await sendMagicLink(this.companyEmail)
+        // Restart countdown
+        this.countdown = 30
+        this.startCountdown()
+      } catch (error) {
+        this.onErrorLogin(error)
+      } finally {
+        this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+          root: true
+        })
+      }
     },
     startCountdown() {
       if (this.countdownInterval) {
@@ -486,6 +514,7 @@ export default {
       const errorMessage =
         error?.response?.data?.error_description ||
         error?.response?.data?.Message ||
+        error?.response?.data?.message ||
         error?.response?.data?.errors?.[0]?.message ||
         labels.ServiceUnavailable
       this.$store.commit('common/SET_ERROR_MESSAGE', errorMessage, {
