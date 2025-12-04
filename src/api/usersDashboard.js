@@ -45,6 +45,26 @@ export const loginWithSaml = (payload) => {
 }
 
 /**
+ * Send Magic Link email for security growth dashboard
+ * @param {string} email - The user's email address
+ * @returns {Promise} API response
+ */
+export const sendMagicLink = (email) => {
+  return usersDashboardRequest.post(
+    '/securitygrowthauth/send-magic-link',
+    {
+      email
+    },
+    {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json-patch+json'
+      }
+    }
+  )
+}
+
+/**
  * Login with Magic Link for security growth dashboard
  * @param {string} magicLinkToken - The magic link token from URL
  * @returns {Promise} API response with authentication token
