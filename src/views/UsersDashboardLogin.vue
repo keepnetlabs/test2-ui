@@ -30,7 +30,10 @@
               <v-card-text class="pa-0">
                 <!-- Step 3: Email Verification -->
                 <template v-if="showEmailVerification">
-                  <div id="text--users-dashboard-login-email-verification-title" class="login-title">
+                  <div
+                    id="text--users-dashboard-login-email-verification-title"
+                    class="login-title"
+                  >
                     Check Your Email
                   </div>
                   <div
@@ -47,12 +50,20 @@
                           class="social-login-btn"
                           outlined
                           block
-                          :style="{ opacity: countdown > 0 ? '0.7' : '1', pointerEvents: countdown > 0 ? 'none' : 'auto' }"
+                          :style="{
+                            opacity: countdown > 0 ? '0.7' : '1',
+                            pointerEvents: countdown > 0 ? 'none' : 'auto'
+                          }"
+                          @click="handleResendEmail"
                         >
                           <div class="social-login-btn__content">
                             <v-icon class="social-login-btn__icon">mdi-email-outline</v-icon>
                             <span class="social-login-btn__text">
-                              {{ countdown > 0 ? `Resend sign-in email (${countdown}s)` : 'Resend sign-in email' }}
+                              {{
+                                countdown > 0
+                                  ? `Resend sign-in email (${countdown}s)`
+                                  : 'Resend sign-in email'
+                              }}
                             </span>
                           </div>
                         </v-btn>
@@ -226,7 +237,10 @@
                   </div>
                 </template>
               </v-card-text>
-              <v-card-actions v-if="!showSignInMethods && !showEmailVerification" class="justify-center login-button mt-0">
+              <v-card-actions
+                v-if="!showSignInMethods && !showEmailVerification"
+                class="justify-center login-button mt-0"
+              >
                 <v-btn
                   color="blue"
                   id="btn--users-dashboard-login-continue"
@@ -252,7 +266,7 @@ import { mapGetters, mapActions } from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { loginWithSaml } from '@/api/usersDashboard'
+import { loginWithSaml, loginWithMagicLink } from '@/api/usersDashboard'
 
 export default {
   name: 'UsersDashboardLogin',
@@ -278,6 +292,12 @@ export default {
     this.$store.dispatch('whitelabel/resetState')
     // Get whitelabel info
     this.$store.dispatch('login/getWhiteLabelByUrl')
+
+    // Check for Magic Link callback
+    if (this.$route.query.ml) {
+      this.handleMagicLinkCallback()
+      return
+    }
 
     // Check for SAML callback
     if (this.$route.query.authcode && this.$route.query.uid && this.$route.query.state) {
@@ -351,6 +371,33 @@ export default {
         })
       }
     },
+    async handleMagicLinkCallback() {
+      const magicLinkToken = this.$route.query.ml
+
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+
+      try {
+        const response = await loginWithMagicLink(magicLinkToken)
+
+        if (response && response.data) {
+          // Set token in store
+          this.setToken({
+            token: response.data.access_token || response.data.token,
+            expiredIn: response.data.expiredIn || response.data.expired,
+            status: response.data.status
+          })
+
+          // Redirect to users-dashboard
+          this.$router.push('/users-dashboard')
+        }
+      } catch (error) {
+        this.onErrorLogin(error)
+      } finally {
+        this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+          root: true
+        })
+      }
+    },
     handleContinue() {
       if (!this.$refs.loginForm.validate()) {
         return
@@ -403,6 +450,11 @@ export default {
       this.showSignInMethods = false
 
       // Start countdown
+      this.countdown = 30
+      this.startCountdown()
+    },
+    handleResendEmail() {
+      // Restart countdown
       this.countdown = 30
       this.startCountdown()
     },
