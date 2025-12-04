@@ -424,7 +424,7 @@
                         <div style="background: #e0e0e0; height: 1px; max-width: 554px;"></div>
                         <div class="mb-4">
                           <InputLanguagePreview
-                            v-model="languagePreview"
+                            :value="languagePreview"
                             persistent-hint
                             class="max-w-554 campaign-manager-phishing-scenario-input-language"
                             :hint="getEmailTemplatePreviewLanguageHint"
@@ -554,7 +554,15 @@
                             @input="handleLandingPageLanguageChange"
                           />
                         </div>
-                        <div :class="isPhishing ? 'mt-n3' : ''">
+                        <div
+                          :class="
+                            isPhishing &&
+                            selectedLandingPageLanguages &&
+                            selectedLandingPageLanguages.length > 1
+                              ? 'mt-n3'
+                              : ''
+                          "
+                        >
                           <span
                             class="template-preview__text--title"
                             :style="isPhishing ? { 'font-size': '16px', 'font-weight': '600' } : {}"
@@ -906,7 +914,11 @@ export default {
       return this.landingPageTemplates?.length > 1
     },
     getSingleTemplateDetails() {
-      return this.landingPageTemplates?.[0]?.content || ''
+      const template = this.landingPageTemplates?.[0]
+      if (!template) return ''
+
+      // Use getLandingPageContent to get content based on selected language
+      return this.getLandingPageContent(template) || template.content || ''
     },
     isSelectedLandingTemplateRedFlagged() {
       const html = this.getSingleTemplateDetails || ''
@@ -1632,13 +1644,26 @@ export default {
       const findedTemplate = this.phishingEmailTemplates.find(
         (item) => item.languageTypeResourceId === val
       )
+
       if (!findedTemplate) return
-      this.emailTemplateParams.fromName = findedTemplate.fromName
-      this.emailTemplateParams.fromAddress = findedTemplate.fromAddress
-      this.emailTemplateParams.subject = findedTemplate.subject
-      this.emailTemplateParams.template = findedTemplate.template
-      this.emailTemplateParams.ccAddresses = findedTemplate.ccAddresses
+
+      // Use Vue.set for reactivity
+      this.$set(this.emailTemplateParams, 'fromName', findedTemplate.fromName)
+      this.$set(this.emailTemplateParams, 'fromAddress', findedTemplate.fromAddress)
+      this.$set(this.emailTemplateParams, 'subject', findedTemplate.subject)
+      this.$set(this.emailTemplateParams, 'template', findedTemplate.template)
+      this.$set(this.emailTemplateParams, 'ccAddresses', findedTemplate.ccAddresses)
+      this.$set(this.emailTemplateParams, 'cc', findedTemplate.ccAddresses) // Also set cc for template
+      this.$set(
+        this.emailTemplateParams,
+        'languageTypeResourceId',
+        findedTemplate.languageTypeResourceId
+      )
+      this.$set(this.emailTemplateParams, 'languageTypeName', findedTemplate.languageTypeName)
       this.emailTemplate = findedTemplate.template
+
+      // Update languagePreview to sync with selected language
+      this.languagePreview = val
     },
     transformLandingPages(landingPages = [], mainLanguageId = '', mainLanguageTypeName = '') {
       const languages = []
