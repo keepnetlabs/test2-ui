@@ -49,10 +49,12 @@
   }
 
   &__empty-text {
-    font-family: "Open Sans", sans-serif;
-    font-size: 14px;
+    font-size: 24px;
     font-weight: 400;
-    color: #757575;
+    line-height: 1.29;
+    letter-spacing: normal;
+    padding-bottom: 6px;
+    margin-bottom: 0 !important;
   }
 
   &__item {
@@ -175,4 +177,3 @@
     letter-spacing: 0.5px;
   }
 }
-
