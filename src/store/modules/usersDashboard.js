@@ -261,7 +261,7 @@ const usersDashboard = {
       commit('SET_TOP_PERFORMANCE_ERROR', null)
 
       try {
-        const response = await getTopPerformance(targetUserResourceId)
+        const response = await getTopPerformance()
         // Minimum 800ms loading duration for better UX
         await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data) {
@@ -299,7 +299,7 @@ const usersDashboard = {
       commit('SET_MY_LEARNING_ERROR', null)
 
       try {
-        const response = await getMyLearning(targetUserResourceId)
+        const response = await getMyLearning()
         // Minimum 800ms loading duration for better UX
         await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data && response.data.data.results) {
@@ -323,7 +323,7 @@ const usersDashboard = {
       commit('SET_MY_CERTIFICATES_ERROR', null)
 
       try {
-        const response = await getMyCertificates(targetUserResourceId)
+        const response = await getMyCertificates()
         // Minimum 800ms loading duration for better UX
         await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data && response.data.data.results) {
@@ -347,7 +347,7 @@ const usersDashboard = {
       commit('SET_PHISHING_RESULT_ERROR', null)
 
       try {
-        const response = await getPhishingResult(targetUserResourceId)
+        const response = await getPhishingResult()
         // Minimum 800ms loading duration for better UX
         await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data) {
@@ -368,7 +368,7 @@ const usersDashboard = {
     },
     async fetchUserInfo({ commit }, targetUserResourceId) {
       try {
-        const response = await getUserInfo(targetUserResourceId)
+        const response = await getUserInfo()
         if (response && response.data && response.data.data) {
           const userData = response.data.data
           commit('SET_USER_INFO', {

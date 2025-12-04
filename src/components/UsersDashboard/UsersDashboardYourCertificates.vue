@@ -194,8 +194,7 @@ export default {
     },
     async handleDownload(row) {
       try {
-        const targetUserResourceId = this.$route.query?.targetUserResourceId || '4BCeEWHwAKME'
-        const response = await downloadCertificate(targetUserResourceId, row.enrollmentId)
+        const response = await downloadCertificate(row.enrollmentId)
 
         // Create blob URL and trigger download
         const url = window.URL.createObjectURL(new Blob([response.data]))

@@ -30,7 +30,10 @@
               <v-card-text class="pa-0">
                 <!-- Step 3: Email Verification -->
                 <template v-if="showEmailVerification">
-                  <div id="text--users-dashboard-login-email-verification-title" class="login-title">
+                  <div
+                    id="text--users-dashboard-login-email-verification-title"
+                    class="login-title"
+                  >
                     Check Your Email
                   </div>
                   <div
@@ -47,13 +50,20 @@
                           class="social-login-btn"
                           outlined
                           block
-                          :style="{ opacity: countdown > 0 ? '0.7' : '1', pointerEvents: countdown > 0 ? 'none' : 'auto' }"
+                          :style="{
+                            opacity: countdown > 0 ? '0.7' : '1',
+                            pointerEvents: countdown > 0 ? 'none' : 'auto'
+                          }"
                           @click="handleResendEmail"
                         >
                           <div class="social-login-btn__content">
                             <v-icon class="social-login-btn__icon">mdi-email-outline</v-icon>
                             <span class="social-login-btn__text">
-                              {{ countdown > 0 ? `Resend sign-in email (${countdown}s)` : 'Resend sign-in email' }}
+                              {{
+                                countdown > 0
+                                  ? `Resend sign-in email (${countdown}s)`
+                                  : 'Resend sign-in email'
+                              }}
                             </span>
                           </div>
                         </v-btn>
@@ -227,7 +237,10 @@
                   </div>
                 </template>
               </v-card-text>
-              <v-card-actions v-if="!showSignInMethods && !showEmailVerification" class="justify-center login-button mt-0">
+              <v-card-actions
+                v-if="!showSignInMethods && !showEmailVerification"
+                class="justify-center login-button mt-0"
+              >
                 <v-btn
                   color="blue"
                   id="btn--users-dashboard-login-continue"
