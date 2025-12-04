@@ -1,4 +1,5 @@
 import usersDashboardRequest from '@/utils/usersDashboardRequest'
+import authTestRequest from '@/utils/authTestRequest'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 /**
@@ -7,14 +8,18 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
  * @returns {Promise} API response with authentication token
  */
 export const login = (username) => {
-  return usersDashboardRequest.post('/securitygrowthauth/login', {
-    username
-  }, {
-    headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json'
+  return usersDashboardRequest.post(
+    '/securitygrowthauth/login',
+    {
+      username
+    },
+    {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     }
-  })
+  )
 }
 
 /**
@@ -31,7 +36,27 @@ export const loginWithSaml = (payload) => {
   params.append('client_secret', 'SiZl6JK2jy')
   params.append('client_id', 'security_growth_client')
   params.append('authcode', authcode)
-  return usersDashboardRequest.post('connect/token', params, {
+  return authTestRequest.post('connect/token', params, {
+    loading: true,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
+/**
+ * Login with Magic Link for security growth dashboard
+ * @param {string} magicLinkToken - The magic link token from URL
+ * @returns {Promise} API response with authentication token
+ */
+export const loginWithMagicLink = (magicLinkToken) => {
+  const params = new URLSearchParams()
+  params.append('grant_type', 'security_growth_oauth')
+  params.append('scope', 'security_growth')
+  params.append('client_secret', 'SiZl6JK2jy')
+  params.append('client_id', 'security_growth_client')
+  params.append('magic_link_token', magicLinkToken)
+  return authTestRequest.post('connect/token', params, {
     loading: true,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -41,11 +66,10 @@ export const loginWithSaml = (payload) => {
 
 /**
  * Get phishing result data for security growth dashboard
- * @param {string} targetUserResourceId - The resource ID of the target user
  * @returns {Promise} API response with phishing result data
  */
-export const getPhishingResult = (targetUserResourceId) => {
-  return usersDashboardRequest.get(`/securitygrowthdashboard/phishing-result/${targetUserResourceId}`, {
+export const getPhishingResult = () => {
+  return usersDashboardRequest.get(`/securitygrowthdashboard/phishing-result`, {
     headers: {
       accept: 'application/json'
     }
@@ -54,11 +78,10 @@ export const getPhishingResult = (targetUserResourceId) => {
 
 /**
  * Get top performance data for security growth dashboard
- * @param {string} targetUserResourceId - The resource ID of the target user
  * @returns {Promise} API response with top performance data
  */
-export const getTopPerformance = (targetUserResourceId) => {
-  return usersDashboardRequest.get(`/securitygrowthdashboard/top-performance/${targetUserResourceId}`, {
+export const getTopPerformance = () => {
+  return usersDashboardRequest.get(`/securitygrowthdashboard/top-performance`, {
     headers: {
       accept: 'application/json'
     }
@@ -67,10 +90,9 @@ export const getTopPerformance = (targetUserResourceId) => {
 
 /**
  * Get my learning data for security growth dashboard
- * @param {string} targetUserResourceId - The resource ID of the target user
  * @returns {Promise} API response with learning data
  */
-export const getMyLearning = (targetUserResourceId) => {
+export const getMyLearning = () => {
   const defaultPayload = getDefaultAxiosPayload({ orderBy: 'StartDate' })
   const payload = {
     pagination: {
@@ -80,7 +102,7 @@ export const getMyLearning = (targetUserResourceId) => {
       ascending: defaultPayload.ascending !== undefined ? defaultPayload.ascending : false
     }
   }
-  return usersDashboardRequest.post(`/securitygrowthdashboard/my-learning/${targetUserResourceId}`, payload, {
+  return usersDashboardRequest.post(`/securitygrowthdashboard/my-learning`, payload, {
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json-patch+json'
@@ -90,11 +112,10 @@ export const getMyLearning = (targetUserResourceId) => {
 
 /**
  * Get user info for security growth dashboard
- * @param {string} targetUserResourceId - The resource ID of the target user
  * @returns {Promise} API response with user info data
  */
-export const getUserInfo = (targetUserResourceId) => {
-  return usersDashboardRequest.get(`/securitygrowthdashboard/user-info/${targetUserResourceId}`, {
+export const getUserInfo = () => {
+  return usersDashboardRequest.get(`/securitygrowthdashboard/user-info`, {
     headers: {
       accept: 'application/json'
     }
@@ -107,20 +128,23 @@ export const getUserInfo = (targetUserResourceId) => {
  * @returns {Promise} API response with timeline data
  */
 export const getUserTimeline = (payload) => {
-  return usersDashboardRequest.post(`/securitygrowthdashboard/user-timeline/${payload.targetUserResourceId}`, payload, {
-    headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json-patch+json'
+  return usersDashboardRequest.post(
+    `/securitygrowthdashboard/user-timeline/${payload.targetUserResourceId}`,
+    payload,
+    {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json-patch+json'
+      }
     }
-  })
+  )
 }
 
 /**
  * Get my certificates data for security growth dashboard
- * @param {string} targetUserResourceId - The resource ID of the target user
  * @returns {Promise} API response with certificates data
  */
-export const getMyCertificates = (targetUserResourceId) => {
+export const getMyCertificates = () => {
   const payload = {
     pagination: {
       pageNumber: 1,
@@ -129,7 +153,7 @@ export const getMyCertificates = (targetUserResourceId) => {
       ascending: false
     }
   }
-  return usersDashboardRequest.post(`/securitygrowthdashboard/my-certificates/${targetUserResourceId}`, payload, {
+  return usersDashboardRequest.post(`/securitygrowthdashboard/my-certificates`, payload, {
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json-patch+json'
@@ -139,13 +163,12 @@ export const getMyCertificates = (targetUserResourceId) => {
 
 /**
  * Download certificate PDF for security growth dashboard
- * @param {string} targetUserResourceId - The resource ID of the target user
  * @param {string} enrollmentId - The enrollment ID of the certificate
  * @returns {Promise} API response with PDF blob
  */
-export const downloadCertificate = (targetUserResourceId, enrollmentId) => {
+export const downloadCertificate = (enrollmentId) => {
   return usersDashboardRequest.get(
-    `/securitygrowthdashboard/certificate-download/${targetUserResourceId}/${enrollmentId}`,
+    `/securitygrowthdashboard/certificate-download/${enrollmentId}`,
     {
       responseType: 'blob',
       headers: {
