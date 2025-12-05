@@ -234,6 +234,22 @@
                         </v-form>
                       </v-col>
                     </v-row>
+                    <v-row align="center" justify="center">
+                      <v-col class="pt-0 pl-0 pr-0 pb-0" md="6" sm="12">
+                        <div
+                          v-if="showCaptcha && !showSignInMethods && !showEmailVerification"
+                          class="captcha-wrapper mt-0"
+                        >
+                          <vue-recaptcha
+                            ref="recaptcha"
+                            :sitekey="recaptcha"
+                            :loadRecaptchaScript="true"
+                            @verify="onCaptchaVerified"
+                            @expired="onCaptchaExpired"
+                          ></vue-recaptcha>
+                        </div>
+                      </v-col>
+                    </v-row>
                   </div>
                 </template>
               </v-card-text>
@@ -247,7 +263,8 @@
                   class="pl-4 white--text login-btn"
                   rounded
                   :loading="isLoading > 0"
-                  @click="handleContinue"
+                  :style="isContinueDisabled ? { opacity: 0.5, pointerEvents: 'none' } : {}"
+                  @click="!isContinueDisabled && handleContinue()"
                 >
                   CONTINUE
                   <v-icon right dark>mdi-arrow-right</v-icon>
@@ -262,6 +279,7 @@
 </template>
 
 <script>
+import VueRecaptcha from 'vue-recaptcha'
 import { mapGetters, mapActions } from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
@@ -270,19 +288,25 @@ import { loginWithSaml, loginWithMagicLink, sendMagicLink } from '@/api/usersDas
 
 export default {
   name: 'UsersDashboardLogin',
+  components: {
+    VueRecaptcha
+  },
   data() {
     return {
+      verifiedCaptchaResponse: null,
       companyEmail: '',
       showSignInMethods: false,
       showEmailVerification: false,
       countdown: 30,
       countdownInterval: null,
+      loginErrorCount: 0,
       rules: {
         email: (v) => Validations.email(v),
         required: (value) => !!value || 'Required'
       },
       validForm: false,
-      labels
+      labels,
+      recaptcha: APP_CONFIG.VUE_APP_RECAPTCHA_SITEKEY
     }
   },
   created() {
@@ -328,6 +352,14 @@ export default {
       samlRedirectUrl: 'usersDashboard/getSamlRedirectUrl',
       userEmail: 'usersDashboard/getUserInfo'
     }),
+    showCaptcha() {
+      // Show captcha after 2 failed attempts or if captcha is already verified
+      return this.loginErrorCount >= 2 || !!this.verifiedCaptchaResponse
+    },
+    isContinueDisabled() {
+      // Disable continue button if captcha is shown but not verified
+      return this.showCaptcha && !this.verifiedCaptchaResponse
+    },
     isLoading: {
       get() {
         return this.isLoadingFromStore
@@ -353,6 +385,9 @@ export default {
         })
 
         if (response && response.data) {
+          // Reset error count on successful login
+          this.loginErrorCount = 0
+
           // Set token in store
           this.setToken({
             token: response.data.access_token || response.data.token,
@@ -380,6 +415,9 @@ export default {
         const response = await loginWithMagicLink(magicLinkToken)
 
         if (response && response.data) {
+          // Reset error count on successful login
+          this.loginErrorCount = 0
+
           // Set token in store
           this.setToken({
             token: response.data.access_token || response.data.token,
@@ -402,6 +440,12 @@ export default {
       if (!this.$refs.loginForm.validate()) {
         return
       }
+
+      // Extra check: if captcha is shown but not verified, don't proceed
+      if (this.showCaptcha && !this.verifiedCaptchaResponse) {
+        return
+      }
+
       this.clearError()
       // Set company email in store
       this.setCompanyEmail(this.companyEmail)
@@ -411,12 +455,15 @@ export default {
 
       const payload = {
         companyEmail: this.companyEmail,
-        loginMethod: 'email'
+        loginMethod: 'email',
+        captchaResponse: this.verifiedCaptchaResponse
       }
 
       this.usersDashboardLogin(payload)
         .then((response) => {
           console.log('response', response)
+          // Reset error count on successful login
+          this.loginErrorCount = 0
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
             root: true
           })
@@ -432,6 +479,8 @@ export default {
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
             root: true
           })
+          // Reset captcha
+          this.$refs?.recaptcha?.reset()
         })
     },
     handleMicrosoftLogin() {
@@ -510,6 +559,9 @@ export default {
       this.countdown = 30
     },
     onErrorLogin(error) {
+      // Increment error count for captcha logic
+      this.loginErrorCount++
+
       this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
       const errorMessage =
         error?.response?.data?.error_description ||
@@ -523,9 +575,22 @@ export default {
     },
     handleBack() {
       this.showSignInMethods = false
+      // Reset captcha states when going back
+      this.verifiedCaptchaResponse = null
+      this.loginErrorCount = 0
+      // Reset captcha component if it exists
+      if (this.$refs.recaptcha) {
+        this.$refs.recaptcha.reset()
+      }
     },
     clearError() {
       this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+    },
+    onCaptchaVerified(response) {
+      this.verifiedCaptchaResponse = response
+    },
+    onCaptchaExpired() {
+      this.verifiedCaptchaResponse = null
     }
   }
 }
