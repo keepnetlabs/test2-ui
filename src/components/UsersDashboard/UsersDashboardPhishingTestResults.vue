@@ -20,7 +20,10 @@
           <VCard
             class="users-dashboard-phishing-test-results__metric-card users-dashboard-phishing-test-results__metric-card--green"
           >
-            <VCardText v-if="phishingResultLoading" class="users-dashboard-phishing-test-results__metric-content">
+            <VCardText
+              v-if="phishingResultLoading"
+              class="users-dashboard-phishing-test-results__metric-content"
+            >
               <v-skeleton-loader type="text, text" width="100" />
             </VCardText>
             <VCardText v-else class="users-dashboard-phishing-test-results__metric-content">
@@ -46,7 +49,10 @@
           <VCard
             class="users-dashboard-phishing-test-results__metric-card users-dashboard-phishing-test-results__metric-card--red"
           >
-            <VCardText v-if="phishingResultLoading" class="users-dashboard-phishing-test-results__metric-content">
+            <VCardText
+              v-if="phishingResultLoading"
+              class="users-dashboard-phishing-test-results__metric-content"
+            >
               <v-skeleton-loader type="text, text" width="100" />
             </VCardText>
             <VCardText v-else class="users-dashboard-phishing-test-results__metric-content">
@@ -70,7 +76,10 @@
           <VCard
             class="users-dashboard-phishing-test-results__metric-card users-dashboard-phishing-test-results__metric-card--gray"
           >
-            <VCardText v-if="phishingResultLoading" class="users-dashboard-phishing-test-results__metric-content">
+            <VCardText
+              v-if="phishingResultLoading"
+              class="users-dashboard-phishing-test-results__metric-content"
+            >
               <v-skeleton-loader type="text, text" width="100" />
             </VCardText>
             <VCardText v-else class="users-dashboard-phishing-test-results__metric-content">

@@ -304,15 +304,6 @@
           </div>
         </div>
       </template>
-      <template #datatable-custom-column="{ scope, col }">
-        <span v-if="col.property === 'manager'">
-          {{
-            scope.row.managerFirstName || scope.row.managerLastName
-              ? `${scope.row.managerFirstName || ''} ${scope.row.managerLastName || ''}`.trim()
-              : ''
-          }}
-        </span>
-      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[0].icon"
@@ -613,17 +604,16 @@ export default {
             filterableCustomFieldName: 'TimeZoneId'
           },
           {
-            property: 'manager',
+            property: 'managerFullName',
             align: 'left',
             editable: false,
             label: 'Manager',
-            sortable: false,
-            hideSort: true,
+            sortable: true,
             show: true,
-            type: 'slot',
+            type: 'text',
             width: 200,
             filterableType: 'text',
-            dbName: 'ManagerFirstName'
+            dbName: 'ManagerFullName'
           },
           {
             property: 'managerEmail',

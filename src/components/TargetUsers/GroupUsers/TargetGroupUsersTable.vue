@@ -63,15 +63,6 @@
         <span class="tooltip-span">Remove Users</span>
       </v-tooltip>
     </template>
-    <template #datatable-custom-column="{ scope, col }">
-      <span v-if="col.property === 'manager'">
-        {{
-          scope.row.managerFirstName || scope.row.managerLastName
-            ? `${scope.row.managerFirstName || ''} ${scope.row.managerLastName || ''}`.trim()
-            : ''
-        }}
-      </span>
-    </template>
     <template v-if="hasRowActions" #datatable-row-actions="{ scope }">
       <TargetUserRowActionsEditButton
         :id="tableOptions.rowActions[0].id"
@@ -285,17 +276,16 @@ export default {
           filterableCustomFieldName: 'TimeZoneId'
         },
         {
-          property: 'manager',
+          property: 'managerFullName',
           align: 'left',
           editable: false,
           label: 'Manager',
-          sortable: false,
-          hideSort: true,
+          sortable: true,
           show: true,
-          type: 'slot',
+          type: 'text',
           width: 200,
           filterableType: 'text',
-          dbName: 'ManagerFirstName'
+          dbName: 'ManagerFullName'
         },
         {
           property: 'managerEmail',

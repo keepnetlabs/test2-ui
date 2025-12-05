@@ -41,16 +41,23 @@
         </div>
       </template>
       <template v-else>
-        <VTooltip v-for="(badge, index) in recentBadges" :key="badge.id || index" bottom>
-          <template #activator="{ on }">
-            <div
-              v-on="on"
-              :class="[
-                'users-dashboard-recent-badges__badge-item',
-                `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
-              ]"
-            >
-              <div class="users-dashboard-recent-badges__badge-icon">
+        <div v-if="recentBadges.length === 0" class="users-dashboard-recent-badges__empty">
+          <span class="users-dashboard-recent-badges__empty-text">
+            {{ labels.recentBadgesNoBadges }}
+          </span>
+        </div>
+        <div
+          v-else
+          v-for="(badge, index) in recentBadges"
+          :key="badge.id || index"
+          :class="[
+            'users-dashboard-recent-badges__badge-item',
+            `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
+          ]"
+        >
+          <v-tooltip bottom opacity="1" :disabled="!getBadgeDescription(badge)">
+            <template #activator="{ on, attrs }">
+              <div v-bind="attrs" v-on="on" class="users-dashboard-recent-badges__badge-icon">
                 <img
                   v-if="getBadgeImage(badge)"
                   :src="getBadgeImage(badge)"
@@ -61,16 +68,16 @@
                   <VIcon size="48" color="#2196F3">mdi-trophy</VIcon>
                 </div>
               </div>
-              <span
-                :id="`text--users-dashboard-recent-badges-name-${index}`"
-                class="users-dashboard-recent-badges__badge-name"
-              >
-                {{ badge.name }}
-              </span>
-            </div>
-          </template>
-          <span>{{ getBadgeDescription(badge) }}</span>
-        </VTooltip>
+            </template>
+            <span>{{ getBadgeDescription(badge) }}</span>
+          </v-tooltip>
+          <span
+            :id="`text--users-dashboard-recent-badges-name-${index}`"
+            class="users-dashboard-recent-badges__badge-name"
+          >
+            {{ getBadgeName(badge) }}
+          </span>
+        </div>
       </template>
     </div>
   </v-card>
@@ -94,6 +101,10 @@ export default {
       return this.myBadgesLoading
     },
     badgeCount() {
+      // During loading, show 3 skeletons. Otherwise show actual badge count (max 3)
+      if (this.isLoading) {
+        return 3
+      }
       return Math.min(this.recentBadges.length, 3)
     },
     recentBadges() {
@@ -130,3 +141,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.v-tooltip {
+  display: block !important;
+}
+
+::v-deep .v-tooltip__content {
+  max-width: 300px;
+}
+</style>
