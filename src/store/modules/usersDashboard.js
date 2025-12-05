@@ -6,7 +6,8 @@ import {
   getMyLearning,
   getPhishingResult,
   getUserInfo,
-  getMyCertificates
+  getMyCertificates,
+  getMyBadges
 } from '@/api/usersDashboard'
 
 const USERS_DASHBOARD_AUTH_KEY = 'usersDashboardAuth'
@@ -49,6 +50,12 @@ const usersDashboard = {
       error: null
     },
     myCertificatesLoading: true, // Start as true to show loading initially
+    myBadges: {
+      data: [],
+      isLoading: false,
+      error: null
+    },
+    myBadgesLoading: true, // Start as true to show loading initially
     phishingResult: {
       data: null,
       isLoading: true, // Start as true to show loading initially
@@ -74,6 +81,9 @@ const usersDashboard = {
     getMyCertificates: (state) => state.myCertificates.data,
     getMyCertificatesLoading: (state) => state.myCertificatesLoading, // Use separate loading state
     getMyCertificatesError: (state) => state.myCertificates.error,
+    getMyBadges: (state) => state.myBadges.data,
+    getMyBadgesLoading: (state) => state.myBadgesLoading, // Use separate loading state
+    getMyBadgesError: (state) => state.myBadges.error,
     getPhishingResult: (state) => state.phishingResult.data,
     getPhishingResultLoading: (state) => state.phishingResult.isLoading,
     getPhishingResultError: (state) => state.phishingResult.error,
@@ -179,6 +189,21 @@ const usersDashboard = {
       state.myCertificates.isLoading = false
       // Note: Don't reset loading state here, let the action handle it
     },
+    SET_MY_BADGES(state, payload) {
+      state.myBadges.data = payload || []
+      state.myBadges.isLoading = false
+      state.myBadgesLoading = false // Update separate loading state
+      state.myBadges.error = null
+    },
+    SET_MY_BADGES_LOADING(state, payload) {
+      state.myBadges.isLoading = payload
+      state.myBadgesLoading = payload // Update separate loading state
+    },
+    SET_MY_BADGES_ERROR(state, payload) {
+      state.myBadges.error = payload
+      state.myBadges.isLoading = false
+      // Note: Don't reset loading state here, let the action handle it
+    },
     SET_PHISHING_RESULT(state, payload) {
       state.phishingResult.data = payload
       state.phishingResult.isLoading = false
@@ -225,6 +250,12 @@ const usersDashboard = {
         error: null
       }
       state.myCertificatesLoading = true // Reset to initial loading state
+      state.myBadges = {
+        data: [],
+        isLoading: false,
+        error: null
+      }
+      state.myBadgesLoading = true // Reset to initial loading state
       state.phishingResult = {
         data: null,
         isLoading: true, // Reset to initial loading state
@@ -341,6 +372,30 @@ const usersDashboard = {
         commit('SET_MY_CERTIFICATES', [])
         commit('SET_MY_CERTIFICATES_ERROR', error.message || 'Failed to fetch my certificates data')
         console.error('Error fetching my certificates:', error)
+        return null
+      }
+    },
+    async fetchMyBadges({ commit }) {
+      commit('SET_MY_BADGES_LOADING', true)
+      commit('SET_MY_BADGES_ERROR', null)
+
+      try {
+        const response = await getMyBadges()
+        // Minimum 800ms loading duration for better UX
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        if (response && response.data && response.data.data && Array.isArray(response.data.data)) {
+          commit('SET_MY_BADGES', response.data.data)
+        } else {
+          // Set empty array on invalid response instead of error
+          commit('SET_MY_BADGES', [])
+        }
+        return response
+      } catch (error) {
+        // On error, set empty array instead of throwing
+        // This prevents component from breaking when API fails
+        commit('SET_MY_BADGES', [])
+        commit('SET_MY_BADGES_ERROR', error.message || 'Failed to fetch my badges data')
+        console.error('Error fetching my badges:', error)
         return null
       }
     },

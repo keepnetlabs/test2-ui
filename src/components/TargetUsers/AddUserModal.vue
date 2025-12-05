@@ -92,6 +92,17 @@
             <InputTimezone v-model="formValues.timeZoneId" class="black-placeholder" isBlock />
           </FormGroup>
           <FormGroup
+            class="mb-6"
+            title="Manager"
+            subTitle="Enter all details of the manager to be associated with the user."
+          >
+            <InputManager
+              ref="refInputManager"
+              v-model="formValues.manager"
+              id="input--target-user-manager"
+            />
+          </FormGroup>
+          <FormGroup
             v-if="!editData"
             title="Target Group"
             sub-title="Select a target group to add users to"
@@ -304,6 +315,7 @@ import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroup
 import countryDefaultValues from '@/utils/countryDefaultValues'
 import { mapGetters } from 'vuex'
 import useCachableDialog from '@/mixins/useCachableDialog'
+import InputManager from '@/components/Common/Inputs/InputManager'
 export default {
   name: 'AddUserModal',
   components: {
@@ -321,7 +333,8 @@ export default {
     InputDepartment,
     TargetUsersCheckLicenseDialog,
     InputTimezone,
-    Fragment
+    Fragment,
+    InputManager
   },
   props: {
     status: {
@@ -367,7 +380,12 @@ export default {
         department: '',
         priority: 'Medium',
         isActive: true,
-        timeZoneId: null
+        timeZoneId: null,
+        manager: {
+          managerFirstName: '',
+          managerLastName: '',
+          managerEmail: ''
+        }
       },
       isPickersValidated: {},
       customFieldsModels: {},
@@ -562,9 +580,10 @@ export default {
       this.$forceUpdate()
       this.$refs.refPhone.validatePhoneNumber()
       const isNumberValid = this.$refs.refPhone.isPhoneNumberValid
-      if (!this.$refs.refForm.validate() || !isPickersValid || !isNumberValid) {
+      const isManagerValid = this.$refs.refInputManager ? this.$refs.refInputManager.isValid : true
+      if (!this.$refs.refForm.validate() || !isPickersValid || !isNumberValid || !isManagerValid) {
         return this.$nextTick(() => {
-          const el = this.$el.querySelector('.error--text')
+          const el = this.$el.querySelector('.error--text, .input-manager--error')
           scrollToComponent(el)
         })
       } else if (this.editData) {
@@ -652,8 +671,16 @@ export default {
     },
     getCustomFieldsPayload() {
       const keys = Object.keys(this.customFieldsModels)
+      const { manager, ...restFormValues } = this.formValues
       return {
-        ...this.formValues,
+        ...restFormValues,
+        ...(manager?.managerFirstName || manager?.managerLastName || manager?.managerEmail
+          ? {
+              managerFirstName: manager.managerFirstName || '',
+              managerLastName: manager.managerLastName || '',
+              managerEmail: manager.managerEmail || ''
+            }
+          : {}),
         customFields: keys.reduce((acc, key) => {
           const item = this.customFields.find((item) => item.resourceId === key)
           let value = this.customFieldsModels[key]
@@ -733,7 +760,12 @@ export default {
           timeZoneId:
             this.getTimeZoneList.find((tz) => tz.text === editedData.timeZone)?.value || null,
           isActive: editedData.status === 'Active',
-          preferredLanguageId: preferredLanguage?.value
+          preferredLanguageId: preferredLanguage?.value,
+          manager: {
+            managerFirstName: editedData.managerFirstName || '',
+            managerLastName: editedData.managerLastName || '',
+            managerEmail: editedData.managerEmail || ''
+          }
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       }

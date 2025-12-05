@@ -103,6 +103,8 @@ export default {
     this.$store.dispatch('usersDashboard/fetchMyLearning')
     // Fetch my certificates data (used by YourCertificates component)
     this.$store.dispatch('usersDashboard/fetchMyCertificates')
+    // Fetch my badges data (used by YourBadges component)
+    this.$store.dispatch('usersDashboard/fetchMyBadges')
   },
   methods: {
     ...mapActions({
