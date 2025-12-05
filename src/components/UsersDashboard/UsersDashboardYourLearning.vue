@@ -226,6 +226,7 @@ export default {
       const statusMap = {
         'Not Started': this.labels.yourLearningNotStarted,
         'Not Completed': this.labels.yourLearningNotCompleted,
+        'In Progress': this.labels.yourLearningInProgress,
         Completed: this.labels.yourLearningCompleted
       }
       return statusMap[status] || status
@@ -234,6 +235,7 @@ export default {
       const statusMap = {
         'Not Started': '#757575', // Light gray
         'Not Completed': '#B83A3A', // Red
+        'In Progress': '#FF9800', // Orange
         Completed: '#217124' // Green
       }
       return statusMap[status] || '#757575'

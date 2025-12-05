@@ -155,6 +155,7 @@ export default {
       const statusMap = {
         'Not Started': '#757575',
         'Not Completed': '#B83A3A',
+        'In Progress': '#FF9800',
         Completed: '#217124',
         'In Queue': '#1173C1'
       }
@@ -164,6 +165,7 @@ export default {
       const statusMap = {
         'Not Started': this.labels.yourLearningNotStarted,
         'Not Completed': this.labels.yourLearningNotCompleted,
+        'In Progress': this.labels.yourLearningInProgress,
         Completed: this.labels.yourLearningCompleted,
         'In Queue': this.labels.yourCertificatesInQueue
       }
