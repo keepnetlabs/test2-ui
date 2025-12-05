@@ -13,6 +13,9 @@
   justify-content: center;
   width: 100%;
   gap: 12px;
+  i {
+    font-size: 24px !important;
+  }
 }
 
 .social-login-btn__icon {
@@ -22,7 +25,7 @@
 }
 
 .social-login-btn__text {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 400;
   color: #383b41;
@@ -36,7 +39,7 @@
 }
 
 .magic-link {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: #2196f3;
@@ -64,7 +67,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: #383b41 !important;
