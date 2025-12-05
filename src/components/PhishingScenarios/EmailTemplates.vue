@@ -410,10 +410,17 @@ export default {
     deleteEmailTemplate,
     bulkDeleteEmailTemplates,
     onShowRenameAttachmentModal() {
-      this.attachmentName = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
-        '.'
-      )[0]
-      this.isShowRenameAttachmentDialog = true
+      const attachmentFiles = this.$refs.newEmailTemplate.formValues.attachmentFiles
+      // Check if attachmentFiles exists and has at least one file
+      if (attachmentFiles && attachmentFiles.length > 0) {
+        const file = attachmentFiles[0]
+        // Handle both file.name and file.fileName
+        const fileName = file.name || file.fileName || ''
+        if (fileName) {
+          this.attachmentName = fileName.split('.')[0]
+          this.isShowRenameAttachmentDialog = true
+        }
+      }
     },
     onCloseRenameAttachmentModal() {
       this.isShowRenameAttachmentDialog = false
