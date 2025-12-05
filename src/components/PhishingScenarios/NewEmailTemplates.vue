@@ -824,6 +824,7 @@ export default {
           this.selectedLanguagePayloadItemBeforeSave.subject = subject
           if (attachments && attachments.length > 0) {
             // Only take the first attachment (system supports only 1 attachment)
+            /*
             const firstAttachment = {
               ...attachments[0],
               fileName: attachments[0].name || attachments[0].fileName,
@@ -842,6 +843,7 @@ export default {
             // Set flags for imported attachment
             this.isPhishingFileModified = false
             this.isAddedNewPhishingFile = true
+            */
           }
           delete this.lastRedFlags[this.activeLanguage]
           this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
