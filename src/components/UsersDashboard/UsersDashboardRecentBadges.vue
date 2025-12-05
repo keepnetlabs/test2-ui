@@ -25,7 +25,7 @@
       </a>
     </div>
     <div class="users-dashboard-recent-badges__content">
-      <template v-if="topPerformanceLoading">
+      <template v-if="isLoading">
         <div
           v-for="n in badgeCount"
           :key="`skeleton-${n}`"
@@ -41,32 +41,36 @@
         </div>
       </template>
       <template v-else>
-        <div
-          v-for="(badge, index) in recentBadges"
-          :key="index"
-          :class="[
-            'users-dashboard-recent-badges__badge-item',
-            `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
-          ]"
-        >
-          <div class="users-dashboard-recent-badges__badge-icon">
-            <img
-              v-if="badge.imageUrl"
-              :src="badge.imageUrl"
-              :alt="badge.name"
-              class="users-dashboard-recent-badges__badge-image"
-            />
-            <div v-else class="users-dashboard-recent-badges__badge-placeholder">
-              <VIcon size="48" color="#2196F3">mdi-trophy</VIcon>
+        <VTooltip v-for="(badge, index) in recentBadges" :key="badge.id || index" bottom>
+          <template #activator="{ on }">
+            <div
+              v-on="on"
+              :class="[
+                'users-dashboard-recent-badges__badge-item',
+                `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
+              ]"
+            >
+              <div class="users-dashboard-recent-badges__badge-icon">
+                <img
+                  v-if="getBadgeImage(badge)"
+                  :src="getBadgeImage(badge)"
+                  :alt="badge.name"
+                  class="users-dashboard-recent-badges__badge-image"
+                />
+                <div v-else class="users-dashboard-recent-badges__badge-placeholder">
+                  <VIcon size="48" color="#2196F3">mdi-trophy</VIcon>
+                </div>
+              </div>
+              <span
+                :id="`text--users-dashboard-recent-badges-name-${index}`"
+                class="users-dashboard-recent-badges__badge-name"
+              >
+                {{ badge.name }}
+              </span>
             </div>
-          </div>
-          <span
-            :id="`text--users-dashboard-recent-badges-name-${index}`"
-            class="users-dashboard-recent-badges__badge-name"
-          >
-            {{ badge.name }}
-          </span>
-        </div>
+          </template>
+          <span>{{ getBadgeDescription(badge) }}</span>
+        </VTooltip>
       </template>
     </div>
   </v-card>
@@ -74,37 +78,46 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import usersDashboardBadgeMixin from '@/mixins/usersDashboardBadgeMixin'
 
 export default {
   name: 'UsersDashboardRecentBadges',
+  mixins: [usersDashboardBadgeMixin],
   computed: {
     ...mapGetters({
       labels: 'usersDashboard/getLabels',
-      topPerformanceLoading: 'usersDashboard/getTopPerformanceLoading'
+      myBadges: 'usersDashboard/getMyBadges',
+      myBadgesLoading: 'usersDashboard/getMyBadgesLoading',
+      language: 'usersDashboard/getLanguage'
     }),
+    isLoading() {
+      return this.myBadgesLoading
+    },
     badgeCount() {
       return Math.min(this.recentBadges.length, 3)
     },
     recentBadges() {
-      return [
-        {
-          id: 1,
-          name: this.labels.badgeEliteSecurityChampion,
-          type: 'security-champion',
-          imageUrl: require('@/assets/img/elite-security-champion.png')
-        },
-        {
-          id: 2,
-          name: this.labels.badgeEngagementStar,
-          type: 'engagement-star',
-          imageUrl: require('@/assets/img/engagement-star.png')
-        }
-      ]
-    }
-  },
-  data() {
-    return {
-      // Badge data is now in computed property to use labels
+      // Get earned badges from API, sorted by earnedDate (most recent first)
+      if (this.myBadges && this.myBadges.length > 0) {
+        const earnedBadges = this.myBadges
+          .filter((badge) => badge.earned === true && badge.earnedDate)
+          .map((badge, index) => ({
+            id: `${badge.badgeType}-${badge.level || 0}-${index}`,
+            name: badge.badgeName,
+            type: badge.badgeType,
+            level: badge.level || null,
+            description: badge.description || '',
+            earnedDate: badge.earnedDate
+          }))
+          .sort((a, b) => {
+            // Sort by earnedDate descending (most recent first)
+            return new Date(b.earnedDate) - new Date(a.earnedDate)
+          })
+          .slice(0, 3) // Take only first 3
+
+        return earnedBadges
+      }
+      return []
     }
   },
   methods: {

@@ -178,6 +178,18 @@ export const getMyCertificates = () => {
 }
 
 /**
+ * Get my badges data for security growth dashboard
+ * @returns {Promise} API response with badges data
+ */
+export const getMyBadges = () => {
+  return usersDashboardRequest.get(`/securitygrowthdashboard/my-badges`, {
+    headers: {
+      accept: 'application/json'
+    }
+  })
+}
+
+/**
  * Download certificate PDF for security growth dashboard
  * @param {string} enrollmentId - The enrollment ID of the certificate
  * @returns {Promise} API response with PDF blob

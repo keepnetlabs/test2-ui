@@ -32,6 +32,7 @@ const usersDashboardLabels = {
     badgeEliteSecurityChampion: 'Elite Security Champion',
     badgeEngagementStar: 'Engagement Star',
     badgeSecurityAmbassador: 'Security Ambassador',
+    // Badge Descriptions: en-GB and en-US use API description directly, no labels needed
 
     // Your Learning
     yourLearningTitle: 'Your Learning',
@@ -500,6 +501,19 @@ const usersDashboardLabels = {
     badgeEliteSecurityChampion: 'Elit Güvenlik Şampiyonu', // "Elite" -> "Elit"
     badgeEngagementStar: 'Katılım Yıldızı',
     badgeSecurityAmbassador: 'Güvenlik Elçisi',
+    // Badge Descriptions
+    badgeDescription_1_0: 'İlk eğitiminizi tamamladığınızda kazanırsınız.',
+    badgeDescription_2_1: '20 eğitimi tamamladığınızda kazanırsınız.',
+    badgeDescription_2_2: '40 eğitimi tamamladığınızda kazanırsınız.',
+    badgeDescription_2_3: '60 eğitimi tamamladığınızda kazanırsınız.',
+    badgeDescription_3_1: '3 eğitim sınavında 100 puan aldığınızda kazanırsınız.',
+    badgeDescription_3_2: '5 eğitim sınavında 100 puan aldığınızda kazanırsınız.',
+    badgeDescription_3_3: '10 eğitim sınavında tutarlı olarak 100 puan aldığınızda kazanırsınız.',
+    badgeDescription_5_1:
+      'Liderlik tablosunda 10. sıra veya daha yüksek bir sıraya ulaştığınızda kazanırsınız.',
+    badgeDescription_5_2:
+      'Liderlik tablosunda 3. sıra veya daha yüksek bir sıraya ulaştığınızda kazanırsınız.',
+    badgeDescription_5_3: 'Liderlik tablosunda 1. sıraya ulaştığınızda kazanırsınız.',
 
     // Your Learning
     yourLearningTitle: 'Eğitimleriniz', // "Öğrenmeleriniz" yerine "Eğitimleriniz" daha doğal.
@@ -779,6 +793,24 @@ const usersDashboardLabels = {
     badgeEliteSecurityChampion: 'Elite-Sicherheitschampion',
     badgeEngagementStar: 'Engagement-Stern',
     badgeSecurityAmbassador: 'Sicherheitsbotschafter',
+    // Badge Descriptions
+    badgeDescription_1_0:
+      'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste Schulung abschließen.',
+    badgeDescription_2_1: 'Sie erhalten dieses Abzeichen, wenn Sie 20 Schulungen abschließen.',
+    badgeDescription_2_2: 'Sie erhalten dieses Abzeichen, wenn Sie 40 Schulungen abschließen.',
+    badgeDescription_2_3: 'Sie erhalten dieses Abzeichen, wenn Sie 60 Schulungen abschließen.',
+    badgeDescription_3_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie bei 3 Schulungsquizzen 100 Punkte erreichen.',
+    badgeDescription_3_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie bei 5 Schulungsquizzen 100 Punkte erreichen.',
+    badgeDescription_3_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie bei 10 Schulungsquizzen durchgehend 100 Punkte erreichen.',
+    badgeDescription_5_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie Rang 10 oder höher in der Bestenliste erreichen.',
+    badgeDescription_5_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie Rang 3 oder höher in der Bestenliste erreichen.',
+    badgeDescription_5_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie Rang #1 in der Bestenliste erreichen.',
 
     // Your Learning
     yourLearningTitle: 'Ihre Schulungen', // "Ihr Lernen" yerine "Schulungen" (Eğitimler) daha doğal.
@@ -1059,6 +1091,23 @@ const usersDashboardLabels = {
     badgeEliteSecurityChampion: 'Champion de Sécurité Élite',
     badgeEngagementStar: "Étoile de l'Engagement",
     badgeSecurityAmbassador: 'Ambassadeur de Sécurité',
+    // Badge Descriptions
+    badgeDescription_1_0: 'Vous obtenez ce badge lorsque vous terminez votre première formation.',
+    badgeDescription_2_1: 'Vous obtenez ce badge lorsque vous terminez 20 formations.',
+    badgeDescription_2_2: 'Vous obtenez ce badge lorsque vous terminez 40 formations.',
+    badgeDescription_2_3: 'Vous obtenez ce badge lorsque vous terminez 60 formations.',
+    badgeDescription_3_1:
+      'Vous obtenez ce badge lorsque vous obtenez 100 points sur 3 quiz de formation.',
+    badgeDescription_3_2:
+      'Vous obtenez ce badge lorsque vous obtenez 100 points sur 5 quiz de formation.',
+    badgeDescription_3_3:
+      'Vous obtenez ce badge lorsque vous obtenez systématiquement 100 points sur 10 quiz de formation.',
+    badgeDescription_5_1:
+      'Vous obtenez ce badge lorsque vous atteignez le rang 10 ou plus sur le classement.',
+    badgeDescription_5_2:
+      'Vous obtenez ce badge lorsque vous atteignez le rang 3 ou plus sur le classement.',
+    badgeDescription_5_3:
+      'Vous obtenez ce badge lorsque vous devenez le rang #1 sur le classement.',
 
     // Your Learning
     yourLearningTitle: 'Vos Formations', // "Votre apprentissage" yerine daha kurumsal
@@ -1337,6 +1386,18 @@ const usersDashboardLabels = {
     badgeEliteSecurityChampion: 'Campeón de Seguridad Élite',
     badgeEngagementStar: 'Estrella del Compromiso', // Mejor flujo con 'del'
     badgeSecurityAmbassador: 'Embajador de Seguridad',
+    // Badge Descriptions
+    badgeDescription_1_0: 'La obtienes cuando completas tu primera formación.',
+    badgeDescription_2_1: 'La obtienes cuando completas 20 formaciones.',
+    badgeDescription_2_2: 'La obtienes cuando completas 40 formaciones.',
+    badgeDescription_2_3: 'La obtienes cuando completas 60 formaciones.',
+    badgeDescription_3_1: 'La obtienes cuando obtienes 100 puntos en 3 cuestionarios de formación.',
+    badgeDescription_3_2: 'La obtienes cuando obtienes 100 puntos en 5 cuestionarios de formación.',
+    badgeDescription_3_3:
+      'La obtienes cuando obtienes consistentemente 100 puntos en 10 cuestionarios de formación.',
+    badgeDescription_5_1: 'La obtienes cuando alcanzas el Rango 10 o superior en la clasificación.',
+    badgeDescription_5_2: 'La obtienes cuando alcanzas el Rango 3 o superior en la clasificación.',
+    badgeDescription_5_3: 'La obtienes cuando te conviertes en el Rango #1 en la clasificación.',
 
     // Your Learning
     yourLearningTitle: 'Sus Formaciones', // 'Aprendizaje' es demasiado literal.

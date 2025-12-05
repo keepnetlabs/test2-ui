@@ -669,7 +669,7 @@ export const INTEGRATION_TYPES = {
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
-  USTA:'USTA',
+  USTA: 'USTA',
   IBMXFORCE: 'IBM X-Force',
   GOOGLESAFEBROWSER: 'Google Safe Browsing',
   SPAMHOUSE: 'Zen Spamhaus',

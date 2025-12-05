@@ -185,7 +185,8 @@ export default {
               INTEGRATION_TYPES.CyberXRay,
               INTEGRATION_TYPES.GOOGLEWEBRISK,
               INTEGRATION_TYPES.OPSWAT,
-              INTEGRATION_TYPES.ANYRUN
+              INTEGRATION_TYPES.ANYRUN,
+              INTEGRATION_TYPES.USTA
             ]
           },
           {
