@@ -142,8 +142,8 @@
   }
 
   &__badge-image {
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
     object-fit: contain;
   }
 
@@ -160,6 +160,16 @@
     color: #383b41;
     text-align: center;
     line-height: 1.4;
+  }
+
+  &__badge-earned-date {
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #757575;
+    text-align: center;
+    line-height: 1.4;
+    margin-top: 2px;
   }
 }
 

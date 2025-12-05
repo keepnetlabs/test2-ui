@@ -19,7 +19,8 @@
     top: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
-    min-width: 320px;
+    min-width: 220px;
+    max-width: 320px;
     background: #fff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -66,6 +67,38 @@
     color: #383b41;
     font-weight: 400;
     word-break: break-word;
+  }
+
+  &__logout {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  &__logout-btn {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    border-color: #383b41 !important;
+    color: #383b41 !important;
+
+    .v-icon {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background-color: rgba(56, 59, 65, 0.04) !important;
+      border-color: #383b41 !important;
+    }
+  }
+}
+
+// Tablet and Desktop responsive
+@media (min-width: 768px) {
+  .UsersDashboardUserMenu {
+    &__dropdown {
+      min-width: 320px;
+    }
   }
 }
 

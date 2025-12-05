@@ -59,6 +59,19 @@ export default {
         )
       }
 
+      // Zero Click Champion has level-based images
+      if (badge.name === 'Zero Click Champion' && badge.level) {
+        const zeroClickChampionLevelMap = {
+          1: require('@/assets/img/zero-level-champion-level-1.svg'),
+          2: require('@/assets/img/zero-level-champion-level-2.svg'),
+          3: require('@/assets/img/zero-level-champion-level-3.svg')
+        }
+        return (
+          zeroClickChampionLevelMap[badge.level] ||
+          require('@/assets/img/zero-level-champion-level-1.svg')
+        )
+      }
+
       // Map by badgeName first (more flexible)
       const nameImageMap = {
         'First Training Completed': require('@/assets/img/first-training-completed.svg'),
@@ -66,7 +79,8 @@ export default {
         'Perfect Score': require('@/assets/img/perfect-score-level-1.svg'), // Fallback if no level
         'Security Champion': require('@/assets/img/security-champion-level-1.svg'), // Fallback if no level
         'First Phishing Report': require('@/assets/img/first-phishing-report.svg'),
-        'Phishing Hunter': require('@/assets/img/phishing-hunter-level-1.svg') // Fallback if no level
+        'Phishing Hunter': require('@/assets/img/phishing-hunter-level-1.svg'), // Fallback if no level
+        'Zero Click Champion': require('@/assets/img/zero-level-champion-level-1.svg') // Fallback if no level
       }
 
       if (nameImageMap[badge.name]) {
@@ -80,7 +94,8 @@ export default {
         3: require('@/assets/img/perfect-score-level-1.svg'), // Default level 1 for Perfect Score
         5: require('@/assets/img/security-champion-level-1.svg'), // Default level 1 for Security Champion
         6: require('@/assets/img/first-phishing-report.svg'), // First Phishing Report
-        7: require('@/assets/img/phishing-hunter-level-1.svg') // Default level 1 for Phishing Hunter
+        7: require('@/assets/img/phishing-hunter-level-1.svg'), // Default level 1 for Phishing Hunter
+        8: require('@/assets/img/zero-level-champion-level-1.svg') // Default level 1 for Zero Click Champion
       }
 
       return typeImageMap[badge.type] || null
@@ -143,7 +158,8 @@ export default {
         3: 'mdi-star', // Perfect Score
         5: 'mdi-shield-check', // Security Champion
         6: 'mdi-email-alert', // First Phishing Report
-        7: 'mdi-shield-search' // Phishing Hunter
+        7: 'mdi-shield-search', // Phishing Hunter
+        8: 'mdi-mouse-off' // Zero Click Champion
       }
       return iconMap[badgeType] || 'mdi-trophy'
     }
