@@ -836,7 +836,10 @@ export default {
             if (firstAttachment.content && !(firstAttachment instanceof File)) {
               const fileObject = convertContentToFile(firstAttachment)
               // Keep original attachment data for UI, but use File object for API
-              firstAttachment.fileObject = fileObject
+              // Ensure fileObject is a valid File instance before assigning
+              if (fileObject instanceof File) {
+                firstAttachment.fileObject = fileObject
+              }
             }
             // Add imported attachment directly to attachmentFiles (for UI display)
             this.$set(this.formValues, 'attachmentFiles', [firstAttachment])

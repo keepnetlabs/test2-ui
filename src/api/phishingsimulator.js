@@ -7,7 +7,7 @@ import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
  * @param {Object|File} attachment - Attachment object with content or File object
  * @returns {File} File object
  */
-const convertContentToFile = (attachment) => {
+export const convertContentToFile = (attachment) => {
   // If already a File object, return as is
   if (attachment instanceof File) {
     return attachment
@@ -126,7 +126,7 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
           : convertContentToFile(payload.attachmentFiles[0])
     }
 
-    formData.append('attachmentFiles', payload.importedEmailAttachments[0])
+    formData.append('attachmentFiles', undefined)
     formData.append('phishingFile', payload.isAddedNewPhishingFile ? attachmentFile : null)
     formData.append('phishingFileType', phishingFileType)
     formData.append('isPhishingFileModified', payload.isPhishingFileModified)

@@ -55,7 +55,10 @@
               {{ getPointsIcon(scope.row.points, scope.row.isMaxPoints) }}
             </VIcon>
             <span class="users-dashboard-your-learning__points-text">
-              {{ scope.row.points }}<template v-if="scope.row.isMaxPoints"> ({{ labels.yourLearningMaxPoints }})</template>
+              {{ scope.row.points
+              }}<template v-if="scope.row.isMaxPoints">
+                ({{ labels.yourLearningMaxPoints }})</template
+              >
             </span>
           </div>
         </template>
