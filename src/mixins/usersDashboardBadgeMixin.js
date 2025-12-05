@@ -65,7 +65,7 @@ export default {
         'Training Master': require('@/assets/img/training-master-level-1.svg'), // Fallback if no level
         'Perfect Score': require('@/assets/img/perfect-score-level-1.svg'), // Fallback if no level
         'Security Champion': require('@/assets/img/security-champion-level-1.svg'), // Fallback if no level
-        'First Phishing Report': null, // No image yet, will use icon
+        'First Phishing Report': require('@/assets/img/first-phishing-report.svg'),
         'Phishing Hunter': require('@/assets/img/phishing-hunter-level-1.svg') // Fallback if no level
       }
 
@@ -79,7 +79,7 @@ export default {
         2: require('@/assets/img/training-master-level-1.svg'), // Default level 1 for Training Master
         3: require('@/assets/img/perfect-score-level-1.svg'), // Default level 1 for Perfect Score
         5: require('@/assets/img/security-champion-level-1.svg'), // Default level 1 for Security Champion
-        6: null, // First Phishing Report - no image yet, will use icon
+        6: require('@/assets/img/first-phishing-report.svg'), // First Phishing Report
         7: require('@/assets/img/phishing-hunter-level-1.svg') // Default level 1 for Phishing Hunter
       }
 

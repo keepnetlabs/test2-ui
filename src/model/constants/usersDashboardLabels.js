@@ -104,7 +104,7 @@ const usersDashboardLabels = {
     activityTimelineHasBeenSentTo: 'has been sent to',
     // Smishing/Vishing/Quishing + Fail
     activityTimelineAt: 'at',
-    activityTimelineDifficulity: 'difficulity',
+    activityTimelineDifficulity: 'difficulty',
     // Opened
     activityTimelineOpenedTheEmailFor: 'opened the email for',
     activityTimelineDifficulty: 'difficulty.',
@@ -333,7 +333,7 @@ const usersDashboardLabels = {
     activityTimelineHasBeenSentTo: 'has been sent to',
     // Smishing/Vishing/Quishing + Fail
     activityTimelineAt: 'at',
-    activityTimelineDifficulity: 'difficulity',
+    activityTimelineDifficulity: 'difficulty',
     // Opened
     activityTimelineOpenedTheEmailFor: 'opened the email for',
     activityTimelineDifficulty: 'difficulty.',
