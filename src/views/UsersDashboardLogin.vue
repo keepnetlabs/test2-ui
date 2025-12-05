@@ -122,7 +122,7 @@
                         >
                           <div class="social-login-btn__content">
                             <img
-                              src="../assets/img/microsoft-icon-logo.png"
+                              src="../assets/img/microsoft-mini.svg"
                               alt="Microsoft"
                               class="social-login-btn__icon"
                             />
@@ -142,7 +142,7 @@
                         >
                           <div class="social-login-btn__content">
                             <img
-                              src="../assets/img/google.svg"
+                              src="../assets/img/google-mini.svg"
                               alt="Google"
                               class="social-login-btn__icon"
                             />

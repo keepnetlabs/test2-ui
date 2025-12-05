@@ -47,12 +47,26 @@ export default {
         )
       }
 
+      // Phishing Hunter has level-based images
+      if (badge.name === 'Phishing Hunter' && badge.level) {
+        const phishingHunterLevelMap = {
+          1: require('@/assets/img/phishing-hunter-level-1.svg'),
+          2: require('@/assets/img/phishing-hunter-level-2.svg'),
+          3: require('@/assets/img/phishing-hunter-level-3.svg')
+        }
+        return (
+          phishingHunterLevelMap[badge.level] || require('@/assets/img/phishing-hunter-level-1.svg')
+        )
+      }
+
       // Map by badgeName first (more flexible)
       const nameImageMap = {
         'First Training Completed': require('@/assets/img/first-training-completed.svg'),
         'Training Master': require('@/assets/img/training-master-level-1.svg'), // Fallback if no level
         'Perfect Score': require('@/assets/img/perfect-score-level-1.svg'), // Fallback if no level
-        'Security Champion': require('@/assets/img/security-champion-level-1.svg') // Fallback if no level
+        'Security Champion': require('@/assets/img/security-champion-level-1.svg'), // Fallback if no level
+        'First Phishing Report': null, // No image yet, will use icon
+        'Phishing Hunter': require('@/assets/img/phishing-hunter-level-1.svg') // Fallback if no level
       }
 
       if (nameImageMap[badge.name]) {
@@ -64,10 +78,34 @@ export default {
         1: require('@/assets/img/first-training-completed.svg'),
         2: require('@/assets/img/training-master-level-1.svg'), // Default level 1 for Training Master
         3: require('@/assets/img/perfect-score-level-1.svg'), // Default level 1 for Perfect Score
-        5: require('@/assets/img/security-champion-level-1.svg') // Default level 1 for Security Champion
+        5: require('@/assets/img/security-champion-level-1.svg'), // Default level 1 for Security Champion
+        6: null, // First Phishing Report - no image yet, will use icon
+        7: require('@/assets/img/phishing-hunter-level-1.svg') // Default level 1 for Phishing Hunter
       }
 
       return typeImageMap[badge.type] || null
+    },
+
+    /**
+     * Get badge name based on language
+     * For en-GB and en-US: uses API badgeName directly
+     * For other languages: uses label translations
+     * @param {Object} badge - Badge object with type, level, badgeName
+     * @returns {string} Badge name
+     */
+    getBadgeName(badge) {
+      // For en-GB and en-US, use API badgeName directly
+      if (this.language === 'en-GB' || this.language === 'en-US') {
+        return badge.badgeName || badge.name || ''
+      }
+
+      // For other languages, use label translations
+      const level = badge.level || 0
+      const labelKey = `badgeName_${badge.type}_${level}`
+      const name = this.labels[labelKey]
+
+      // Fallback to API badgeName if label not found
+      return name || badge.badgeName || badge.name || ''
     },
 
     /**
@@ -103,7 +141,9 @@ export default {
         1: 'mdi-school', // First Training Completed
         2: 'mdi-book-open-variant', // Training Master
         3: 'mdi-star', // Perfect Score
-        5: 'mdi-shield-check' // Security Champion
+        5: 'mdi-shield-check', // Security Champion
+        6: 'mdi-email-alert', // First Phishing Report
+        7: 'mdi-shield-search' // Phishing Hunter
       }
       return iconMap[badgeType] || 'mdi-trophy'
     }
