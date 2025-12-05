@@ -34,7 +34,9 @@
             <v-skeleton-loader type="text" width="80" />
             <v-skeleton-loader type="text" width="60" />
           </div>
-          <div class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank">
+          <div
+            class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank"
+          >
             <v-skeleton-loader type="text" width="80" />
             <v-skeleton-loader type="text" width="60" />
           </div>
@@ -61,7 +63,9 @@
               {{ performanceData.points }}
             </span>
           </div>
-          <div class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank">
+          <div
+            class="users-dashboard-overall-performance__metric-item users-dashboard-overall-performance__metric-item--rank"
+          >
             <figure
               v-if="performanceData.rank >= 1 && performanceData.rank <= 3"
               :class="[
@@ -69,7 +73,10 @@
                 `users-dashboard-overall-performance__ribbon--${getRankClass(performanceData.rank)}`
               ]"
             >
-              <img :src="getRibbonImgSrc(performanceData.rank)" :alt="getRibbonAlt(performanceData.rank)" />
+              <img
+                :src="getRibbonImgSrc(performanceData.rank)"
+                :alt="getRibbonAlt(performanceData.rank)"
+              />
             </figure>
             <span class="users-dashboard-overall-performance__metric-label">{{
               labels.overallPerformanceRank
@@ -96,7 +103,8 @@ export default {
     ...mapGetters({
       labels: 'usersDashboard/getLabels',
       topPerformance: 'usersDashboard/getTopPerformance',
-      topPerformanceLoading: 'usersDashboard/getTopPerformanceLoading'
+      topPerformanceLoading: 'usersDashboard/getTopPerformanceLoading',
+      userInfo: 'usersDashboard/getUserInfo'
     }),
     performanceData() {
       // Get current user's data from topPerformance array
@@ -108,11 +116,7 @@ export default {
         }
       }
 
-      const currentUserId = this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
-      const currentUser = this.topPerformance.find(
-        (user) => user.targetUserResourceId === currentUserId
-      )
-
+      const currentUser = this?.topPerformance?.find((user) => user.email === this.userInfo?.email)
       if (currentUser) {
         return {
           percentage: currentUser.performance || 0,
