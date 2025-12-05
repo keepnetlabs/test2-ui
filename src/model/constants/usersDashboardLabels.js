@@ -84,7 +84,7 @@ const usersDashboardLabels = {
     activityTimelineSubtitle:
       'A timeline of your recent activities and their outcomes from the last 30 days.',
     activityTimelineLoadMore: 'Load More Activities',
-    activityTimelineEmptyMessage: 'No activities found.',
+    activityTimelineEmptyMessage: 'No activities found in 30 days.',
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: 'The reported email with',
     activityTimelineIncidentResponderSubject:
@@ -313,7 +313,7 @@ const usersDashboardLabels = {
     activityTimelineSubtitle:
       'A timeline of your recent activities and their outcomes from the last 30 days.',
     activityTimelineLoadMore: 'Load More Activities',
-    activityTimelineEmptyMessage: 'No activities found.',
+    activityTimelineEmptyMessage: 'No activities found in 30 days.',
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: 'The reported email with',
     activityTimelineIncidentResponderSubject:
@@ -522,6 +522,9 @@ const usersDashboardLabels = {
     badgeName_7_1: 'Oltalama Avcısı',
     badgeName_7_2: 'Oltalama Avcısı',
     badgeName_7_3: 'Oltalama Avcısı',
+    badgeName_8_1: 'Sıfır Tıklama Şampiyonu',
+    badgeName_8_2: 'Sıfır Tıklama Şampiyonu',
+    badgeName_8_3: 'Sıfır Tıklama Şampiyonu',
     // Badge Descriptions
     badgeDescription_1_0: 'İlk eğitiminizi tamamladığınızda kazanırsınız.',
     badgeDescription_2_1: '20 eğitimi tamamladığınızda kazanırsınız.',
@@ -539,6 +542,12 @@ const usersDashboardLabels = {
     badgeDescription_7_1: '3 oltalama e-postası bildirdiğinizde kazanırsınız.',
     badgeDescription_7_2: '10 oltalama e-postası bildirdiğinizde kazanırsınız.',
     badgeDescription_7_3: '25 oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_8_1:
+      '2 kampanya boyunca herhangi bir oltalama simülasyonuna tıklamaktan başarıyla kaçındığınızda kazanırsınız.',
+    badgeDescription_8_2:
+      '4 kampanya boyunca herhangi bir oltalama simülasyonuna tıklamaktan başarıyla kaçındığınızda kazanırsınız.',
+    badgeDescription_8_3:
+      '6 kampanya boyunca herhangi bir oltalama simülasyonuna tıklamaktan başarıyla kaçındığınızda kazanırsınız.',
 
     // Your Learning
     yourLearningTitle: 'Eğitimleriniz', // "Öğrenmeleriniz" yerine "Eğitimleriniz" daha doğal.
@@ -587,7 +596,7 @@ const usersDashboardLabels = {
     activityTimelineTitle: 'Aktivite Zaman Çizelgesi',
     activityTimelineSubtitle: 'Son 30 gündeki aktivitelerinizin ve sonuçlarının zaman akışı.',
     activityTimelineLoadMore: 'Daha Fazla Aktivite Yükle',
-    activityTimelineEmptyMessage: 'Herhangi bir aktivite bulunamadı.',
+    activityTimelineEmptyMessage: 'Son 30 günde herhangi bir aktivite bulunamadı.',
 
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: 'Bildirilen e-posta',
@@ -835,6 +844,9 @@ const usersDashboardLabels = {
     badgeName_7_1: 'Phishing-Jäger',
     badgeName_7_2: 'Phishing-Jäger',
     badgeName_7_3: 'Phishing-Jäger',
+    badgeName_8_1: 'Null-Klick-Champion',
+    badgeName_8_2: 'Null-Klick-Champion',
+    badgeName_8_3: 'Null-Klick-Champion',
     // Badge Descriptions
     badgeDescription_1_0:
       'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste Schulung abschließen.',
@@ -858,6 +870,12 @@ const usersDashboardLabels = {
     badgeDescription_7_1: 'Sie erhalten dieses Abzeichen, wenn Sie 3 Phishing-E-Mails melden.',
     badgeDescription_7_2: 'Sie erhalten dieses Abzeichen, wenn Sie 10 Phishing-E-Mails melden.',
     badgeDescription_7_3: 'Sie erhalten dieses Abzeichen, wenn Sie 25 Phishing-E-Mails melden.',
+    badgeDescription_8_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie erfolgreich das Anklicken jeglicher Phishing-Simulationen über 2 Kampagnen vermeiden.',
+    badgeDescription_8_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie erfolgreich das Anklicken jeglicher Phishing-Simulationen über 4 Kampagnen vermeiden.',
+    badgeDescription_8_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie erfolgreich das Anklicken jeglicher Phishing-Simulationen über 6 Kampagnen vermeiden.',
 
     // Your Learning
     yourLearningTitle: 'Ihre Schulungen', // "Ihr Lernen" yerine "Schulungen" (Eğitimler) daha doğal.
@@ -907,7 +925,7 @@ const usersDashboardLabels = {
     activityTimelineSubtitle:
       'Ein Zeitstrahl Ihrer Aktivitäten und Ergebnisse der letzten 30 Tage.',
     activityTimelineLoadMore: 'Mehr Aktivitäten laden',
-    activityTimelineEmptyMessage: 'Keine Aktivitäten gefunden.',
+    activityTimelineEmptyMessage: 'Keine Aktivitäten in den letzten 30 Tagen gefunden.',
 
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: 'Die gemeldete E-Mail mit dem',
@@ -1155,6 +1173,9 @@ const usersDashboardLabels = {
     badgeName_7_1: 'Chasseur de Hameçonnage',
     badgeName_7_2: 'Chasseur de Hameçonnage',
     badgeName_7_3: 'Chasseur de Hameçonnage',
+    badgeName_8_1: 'Champion Zéro Clic',
+    badgeName_8_2: 'Champion Zéro Clic',
+    badgeName_8_3: 'Champion Zéro Clic',
     // Badge Descriptions
     badgeDescription_1_0: 'Vous obtenez ce badge lorsque vous terminez votre première formation.',
     badgeDescription_2_1: 'Vous obtenez ce badge lorsque vous terminez 20 formations.',
@@ -1177,6 +1198,12 @@ const usersDashboardLabels = {
     badgeDescription_7_1: 'Vous obtenez ce badge lorsque vous signalez 3 e-mails de hameçonnage.',
     badgeDescription_7_2: 'Vous obtenez ce badge lorsque vous signalez 10 e-mails de hameçonnage.',
     badgeDescription_7_3: 'Vous obtenez ce badge lorsque vous signalez 25 e-mails de hameçonnage.',
+    badgeDescription_8_1:
+      'Vous obtenez ce badge lorsque vous évitez avec succès de cliquer sur toute simulation de hameçonnage sur 2 campagnes.',
+    badgeDescription_8_2:
+      'Vous obtenez ce badge lorsque vous évitez avec succès de cliquer sur toute simulation de hameçonnage sur 4 campagnes.',
+    badgeDescription_8_3:
+      'Vous obtenez ce badge lorsque vous évitez avec succès de cliquer sur toute simulation de hameçonnage sur 6 campagnes.',
 
     // Your Learning
     yourLearningTitle: 'Vos Formations', // "Votre apprentissage" yerine daha kurumsal
@@ -1228,7 +1255,7 @@ const usersDashboardLabels = {
     activityTimelineSubtitle:
       'Chronologie de vos activités récentes et de leurs résultats au cours des 30 derniers jours.',
     activityTimelineLoadMore: "Charger plus d'activités",
-    activityTimelineEmptyMessage: 'Aucune activité trouvée.',
+    activityTimelineEmptyMessage: 'Aucune activité trouvée au cours des 30 derniers jours.',
 
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: "L'e-mail signalé avec pour",
@@ -1472,6 +1499,9 @@ const usersDashboardLabels = {
     badgeName_7_1: 'Cazador de Phishing',
     badgeName_7_2: 'Cazador de Phishing',
     badgeName_7_3: 'Cazador de Phishing',
+    badgeName_8_1: 'Campeón Cero Clic',
+    badgeName_8_2: 'Campeón Cero Clic',
+    badgeName_8_3: 'Campeón Cero Clic',
     // Badge Descriptions
     badgeDescription_1_0: 'La obtienes cuando completas tu primera formación.',
     badgeDescription_2_1: 'La obtienes cuando completas 20 formaciones.',
@@ -1488,6 +1518,12 @@ const usersDashboardLabels = {
     badgeDescription_7_1: 'La obtienes cuando reportas 3 correos electrónicos de phishing.',
     badgeDescription_7_2: 'La obtienes cuando reportas 10 correos electrónicos de phishing.',
     badgeDescription_7_3: 'La obtienes cuando reportas 25 correos electrónicos de phishing.',
+    badgeDescription_8_1:
+      'La obtienes cuando evitas con éxito hacer clic en cualquier simulación de phishing a través de 2 campañas.',
+    badgeDescription_8_2:
+      'La obtienes cuando evitas con éxito hacer clic en cualquier simulación de phishing a través de 4 campañas.',
+    badgeDescription_8_3:
+      'La obtienes cuando evitas con éxito hacer clic en cualquier simulación de phishing a través de 6 campañas.',
 
     // Your Learning
     yourLearningTitle: 'Sus Formaciones', // 'Aprendizaje' es demasiado literal.
@@ -1537,7 +1573,7 @@ const usersDashboardLabels = {
     activityTimelineSubtitle:
       'Una cronología de sus actividades recientes y sus resultados de los últimos 30 días.',
     activityTimelineLoadMore: 'Cargar más actividades',
-    activityTimelineEmptyMessage: 'No se encontraron actividades.',
+    activityTimelineEmptyMessage: 'No se encontraron actividades en los últimos 30 días.',
 
     // Incident Responder
     activityTimelineIncidentResponderReportedEmail: 'El correo electrónico reportado con el',

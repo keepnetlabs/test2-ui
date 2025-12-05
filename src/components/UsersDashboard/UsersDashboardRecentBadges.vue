@@ -77,6 +77,16 @@
           >
             {{ getBadgeName(badge) }}
           </span>
+          <span
+            :id="`text--users-dashboard-recent-badges-earned-date-${index}`"
+            class="users-dashboard-recent-badges__badge-earned-date"
+          >
+            {{
+              labels.yourBadgesEarnedOn(
+                formatBadgeEarnedDate(badge.earnedDate || badge.earnedOn || badge.createdAt)
+              )
+            }}
+          </span>
         </div>
       </template>
     </div>
@@ -136,6 +146,22 @@ export default {
       const yourBadgesElement = document.getElementById('users-dashboard-your-badges')
       if (yourBadgesElement) {
         yourBadgesElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    },
+    formatBadgeEarnedDate(dateString) {
+      if (!dateString) return ''
+
+      try {
+        const date = new Date(dateString)
+        // Format as DD/MM/YYYY or MM/DD/YYYY based on locale, but for simplicity use a standard format
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+
+        return `${day}/${month}/${year}`
+      } catch (error) {
+        console.warn('Invalid date format for badge:', dateString)
+        return ''
       }
     }
   }

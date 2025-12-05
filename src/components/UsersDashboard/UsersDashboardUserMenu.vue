@@ -30,6 +30,21 @@
           <span class="UsersDashboardUserMenu__label">{{ labels.userMenuPreferredLanguage }}</span>
           <span class="UsersDashboardUserMenu__value">{{ preferredLanguageText }}</span>
         </div>
+
+        <!-- Logout Button -->
+        <div class="UsersDashboardUserMenu__logout">
+          <v-btn
+            id="btn--users-dashboard-logout"
+            class="UsersDashboardUserMenu__logout-btn"
+            outlined
+            block
+            color="error"
+            @click="handleLogout"
+          >
+            <v-icon left>mdi-logout</v-icon>
+            Logout
+          </v-btn>
+        </div>
       </div>
     </div>
   </div>
@@ -83,6 +98,16 @@ export default {
       if (!this.$el.contains(event.target)) {
         this.isMenuOpen = false
       }
+    },
+    handleLogout() {
+      // Close menu
+      this.isMenuOpen = false
+
+      // Dispatch logout action
+      this.$store.dispatch('usersDashboard/logout')
+
+      // Redirect to login page
+      this.$router.push('/users-dashboard-login')
     }
   }
 }
