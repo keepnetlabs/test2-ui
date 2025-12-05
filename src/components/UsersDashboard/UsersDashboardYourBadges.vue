@@ -12,18 +12,27 @@
       </p>
     </div>
     <div class="users-dashboard-your-badges__content">
-      <VTooltip v-for="(badge, index) in badges" :key="badge.id || index" bottom>
-        <template #activator="{ on }">
-          <div
-            v-on="on"
-            :class="[
-              'users-dashboard-your-badges__badge-card',
-              badge.isEarned
-                ? 'users-dashboard-your-badges__badge-card--earned'
-                : 'users-dashboard-your-badges__badge-card--not-earned'
-            ]"
-          >
+      <div v-if="!isLoading && badges.length === 0" class="users-dashboard-your-badges__empty">
+        <span class="users-dashboard-your-badges__empty-text">
+          {{ labels.yourBadgesNoBadges }}
+        </span>
+      </div>
+      <div
+        v-else
+        v-for="(badge, index) in badges"
+        :key="badge.id || index"
+        :class="[
+          'users-dashboard-your-badges__badge-card',
+          badge.isEarned
+            ? 'users-dashboard-your-badges__badge-card--earned'
+            : 'users-dashboard-your-badges__badge-card--not-earned'
+        ]"
+      >
+        <v-tooltip bottom opacity="1" :disabled="!getBadgeDescription(badge)">
+          <template #activator="{ on, attrs }">
             <div
+              v-bind="attrs"
+              v-on="on"
               :class="[
                 'users-dashboard-your-badges__badge-icon',
                 badge.isEarned
@@ -42,16 +51,16 @@
                 {{ getBadgeIcon(badge.type) }}
               </VIcon>
             </div>
-            <h3 class="users-dashboard-your-badges__badge-name">
-              {{ badge.name }}
-            </h3>
-            <p class="users-dashboard-your-badges__badge-status">
-              {{ getBadgeStatus(badge) }}
-            </p>
-          </div>
-        </template>
-        <span>{{ getBadgeDescription(badge) }}</span>
-      </VTooltip>
+          </template>
+          <span>{{ getBadgeDescription(badge) }}</span>
+        </v-tooltip>
+        <h3 class="users-dashboard-your-badges__badge-name">
+          {{ getBadgeName(badge) }}
+        </h3>
+        <p class="users-dashboard-your-badges__badge-status">
+          {{ getBadgeStatus(badge) }}
+        </p>
+      </div>
     </div>
   </VCard>
 </template>
@@ -116,3 +125,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.v-tooltip {
+  display: block !important;
+}
+
+::v-deep .v-tooltip__content {
+  max-width: 300px;
+}
+</style>

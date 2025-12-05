@@ -23,12 +23,14 @@ const usersDashboardLabels = {
     recentBadgesTitle: 'Recent Badges',
     recentBadgesSubtitle: 'View your last 3 badges earned from your actions and behaviours.',
     recentBadgesSeeAll: 'See All Badges',
+    recentBadgesNoBadges: 'No recent badges found.',
 
     // Your Badges
     yourBadgesTitle: 'Your Badges',
     yourBadgesSubtitle: 'See all your earned and available badges in one place.',
     yourBadgesEarnedOn: (date) => `Earned on ${date}`,
     yourBadgesNotEarnedYet: 'Not earned yet',
+    yourBadgesNoBadges: 'No badges found.',
     badgeEliteSecurityChampion: 'Elite Security Champion',
     badgeEngagementStar: 'Engagement Star',
     badgeSecurityAmbassador: 'Security Ambassador',
@@ -251,12 +253,14 @@ const usersDashboardLabels = {
     recentBadgesTitle: 'Recent Badges',
     recentBadgesSubtitle: 'View your last 3 badges earned from your actions and behaviors.',
     recentBadgesSeeAll: 'See All Badges',
+    recentBadgesNoBadges: 'No recent badges found.',
 
     // Your Badges
     yourBadgesTitle: 'Your Badges',
     yourBadgesSubtitle: 'See all your earned and available badges in one place.',
     yourBadgesEarnedOn: (date) => `Earned on ${date}`,
     yourBadgesNotEarnedYet: 'Not earned yet',
+    yourBadgesNoBadges: 'No badges found.',
     badgeEliteSecurityChampion: 'Elite Security Champion',
     badgeEngagementStar: 'Engagement Star',
     badgeSecurityAmbassador: 'Security Ambassador',
@@ -492,15 +496,32 @@ const usersDashboardLabels = {
     recentBadgesSubtitle:
       'Eylemleriniz ve davranışlarınızla kazandığınız son 3 rozeti görüntüleyin.',
     recentBadgesSeeAll: 'Tüm Rozetleri Gör',
+    recentBadgesNoBadges: 'Henüz kazanılmış rozet yok.',
 
     // Your Badges
     yourBadgesTitle: 'Rozetleriniz',
     yourBadgesSubtitle: 'Kazandığınız ve kazanabileceğiniz tüm rozetleri tek bir yerde görün.',
     yourBadgesEarnedOn: (date) => `${date} tarihinde kazanıldı`,
     yourBadgesNotEarnedYet: 'Henüz kazanılmadı',
+    yourBadgesNoBadges: 'Henüz rozet bulunmuyor.',
     badgeEliteSecurityChampion: 'Elit Güvenlik Şampiyonu', // "Elite" -> "Elit"
     badgeEngagementStar: 'Katılım Yıldızı',
     badgeSecurityAmbassador: 'Güvenlik Elçisi',
+    // Badge Names
+    badgeName_1_0: 'İlk Eğitim Tamamlandı',
+    badgeName_2_1: 'Eğitim Ustası',
+    badgeName_2_2: 'Eğitim Ustası',
+    badgeName_2_3: 'Eğitim Ustası',
+    badgeName_3_1: 'Mükemmel Puan',
+    badgeName_3_2: 'Mükemmel Puan',
+    badgeName_3_3: 'Mükemmel Puan',
+    badgeName_5_1: 'Güvenlik Şampiyonu',
+    badgeName_5_2: 'Güvenlik Şampiyonu',
+    badgeName_5_3: 'Güvenlik Şampiyonu',
+    badgeName_6_0: 'İlk Oltalama Raporu',
+    badgeName_7_1: 'Oltalama Avcısı',
+    badgeName_7_2: 'Oltalama Avcısı',
+    badgeName_7_3: 'Oltalama Avcısı',
     // Badge Descriptions
     badgeDescription_1_0: 'İlk eğitiminizi tamamladığınızda kazanırsınız.',
     badgeDescription_2_1: '20 eğitimi tamamladığınızda kazanırsınız.',
@@ -514,6 +535,10 @@ const usersDashboardLabels = {
     badgeDescription_5_2:
       'Liderlik tablosunda 3. sıra veya daha yüksek bir sıraya ulaştığınızda kazanırsınız.',
     badgeDescription_5_3: 'Liderlik tablosunda 1. sıraya ulaştığınızda kazanırsınız.',
+    badgeDescription_6_0: 'İlk oltalama e-postanızı bildirdiğinizde kazanırsınız.',
+    badgeDescription_7_1: '3 oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_7_2: '10 oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_7_3: '25 oltalama e-postası bildirdiğinizde kazanırsınız.',
 
     // Your Learning
     yourLearningTitle: 'Eğitimleriniz', // "Öğrenmeleriniz" yerine "Eğitimleriniz" daha doğal.
@@ -784,15 +809,32 @@ const usersDashboardLabels = {
     recentBadgesSubtitle:
       'Ihre letzten 3 Abzeichen, die Sie durch Ihre Aktionen und Ihr Verhalten verdient haben.',
     recentBadgesSeeAll: 'Alle Abzeichen ansehen',
+    recentBadgesNoBadges: 'Keine neuesten Abzeichen gefunden.',
 
     // Your Badges
     yourBadgesTitle: 'Ihre Abzeichen',
     yourBadgesSubtitle: 'Alle Ihre verdienten und verfügbaren Abzeichen auf einen Blick.',
     yourBadgesEarnedOn: (date) => `Erhalten am ${date}`,
     yourBadgesNotEarnedYet: 'Noch nicht erhalten',
+    yourBadgesNoBadges: 'Keine Abzeichen gefunden.',
     badgeEliteSecurityChampion: 'Elite-Sicherheitschampion',
     badgeEngagementStar: 'Engagement-Stern',
     badgeSecurityAmbassador: 'Sicherheitsbotschafter',
+    // Badge Names
+    badgeName_1_0: 'Erste Schulung abgeschlossen',
+    badgeName_2_1: 'Schulungsmeister',
+    badgeName_2_2: 'Schulungsmeister',
+    badgeName_2_3: 'Schulungsmeister',
+    badgeName_3_1: 'Perfekte Punktzahl',
+    badgeName_3_2: 'Perfekte Punktzahl',
+    badgeName_3_3: 'Perfekte Punktzahl',
+    badgeName_5_1: 'Sicherheitschampion',
+    badgeName_5_2: 'Sicherheitschampion',
+    badgeName_5_3: 'Sicherheitschampion',
+    badgeName_6_0: 'Erster Phishing-Bericht',
+    badgeName_7_1: 'Phishing-Jäger',
+    badgeName_7_2: 'Phishing-Jäger',
+    badgeName_7_3: 'Phishing-Jäger',
     // Badge Descriptions
     badgeDescription_1_0:
       'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste Schulung abschließen.',
@@ -811,6 +853,11 @@ const usersDashboardLabels = {
       'Sie erhalten dieses Abzeichen, wenn Sie Rang 3 oder höher in der Bestenliste erreichen.',
     badgeDescription_5_3:
       'Sie erhalten dieses Abzeichen, wenn Sie Rang #1 in der Bestenliste erreichen.',
+    badgeDescription_6_0:
+      'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste Phishing-E-Mail melden.',
+    badgeDescription_7_1: 'Sie erhalten dieses Abzeichen, wenn Sie 3 Phishing-E-Mails melden.',
+    badgeDescription_7_2: 'Sie erhalten dieses Abzeichen, wenn Sie 10 Phishing-E-Mails melden.',
+    badgeDescription_7_3: 'Sie erhalten dieses Abzeichen, wenn Sie 25 Phishing-E-Mails melden.',
 
     // Your Learning
     yourLearningTitle: 'Ihre Schulungen', // "Ihr Lernen" yerine "Schulungen" (Eğitimler) daha doğal.
@@ -1082,15 +1129,32 @@ const usersDashboardLabels = {
     recentBadgesSubtitle:
       'Affichez vos 3 derniers badges obtenus grâce à vos actions et comportements.',
     recentBadgesSeeAll: 'Voir tous les badges',
+    recentBadgesNoBadges: 'Aucun badge récent trouvé.',
 
     // Your Badges
     yourBadgesTitle: 'Vos Badges',
     yourBadgesSubtitle: 'Consultez tous vos badges obtenus et disponibles ici.',
     yourBadgesEarnedOn: (date) => `Obtenu le ${date}`, // "Gagné" yerine "Obtenu"
     yourBadgesNotEarnedYet: 'Pas encore obtenu',
+    yourBadgesNoBadges: 'Aucun badge trouvé.',
     badgeEliteSecurityChampion: 'Champion de Sécurité Élite',
     badgeEngagementStar: "Étoile de l'Engagement",
     badgeSecurityAmbassador: 'Ambassadeur de Sécurité',
+    // Badge Names
+    badgeName_1_0: 'Première Formation Terminée',
+    badgeName_2_1: 'Maître de la Formation',
+    badgeName_2_2: 'Maître de la Formation',
+    badgeName_2_3: 'Maître de la Formation',
+    badgeName_3_1: 'Score Parfait',
+    badgeName_3_2: 'Score Parfait',
+    badgeName_3_3: 'Score Parfait',
+    badgeName_5_1: 'Champion de Sécurité',
+    badgeName_5_2: 'Champion de Sécurité',
+    badgeName_5_3: 'Champion de Sécurité',
+    badgeName_6_0: 'Premier Signalement de Hameçonnage',
+    badgeName_7_1: 'Chasseur de Hameçonnage',
+    badgeName_7_2: 'Chasseur de Hameçonnage',
+    badgeName_7_3: 'Chasseur de Hameçonnage',
     // Badge Descriptions
     badgeDescription_1_0: 'Vous obtenez ce badge lorsque vous terminez votre première formation.',
     badgeDescription_2_1: 'Vous obtenez ce badge lorsque vous terminez 20 formations.',
@@ -1108,6 +1172,11 @@ const usersDashboardLabels = {
       'Vous obtenez ce badge lorsque vous atteignez le rang 3 ou plus sur le classement.',
     badgeDescription_5_3:
       'Vous obtenez ce badge lorsque vous devenez le rang #1 sur le classement.',
+    badgeDescription_6_0:
+      'Vous obtenez ce badge lorsque vous signalez votre premier e-mail de hameçonnage.',
+    badgeDescription_7_1: 'Vous obtenez ce badge lorsque vous signalez 3 e-mails de hameçonnage.',
+    badgeDescription_7_2: 'Vous obtenez ce badge lorsque vous signalez 10 e-mails de hameçonnage.',
+    badgeDescription_7_3: 'Vous obtenez ce badge lorsque vous signalez 25 e-mails de hameçonnage.',
 
     // Your Learning
     yourLearningTitle: 'Vos Formations', // "Votre apprentissage" yerine daha kurumsal
@@ -1377,15 +1446,32 @@ const usersDashboardLabels = {
     recentBadgesSubtitle:
       'Vea sus últimas 3 insignias obtenidas por sus acciones y comportamientos.',
     recentBadgesSeeAll: 'Ver todas las insignias',
+    recentBadgesNoBadges: 'No se encontraron insignias recientes.',
 
     // Your Badges
     yourBadgesTitle: 'Sus Insignias',
     yourBadgesSubtitle: 'Vea todas sus insignias obtenidas y disponibles en un solo lugar.',
     yourBadgesEarnedOn: (date) => `Obtenida el ${date}`, // Corregido género si la insignia es 'La Insignia'
     yourBadgesNotEarnedYet: 'Aún no obtenida',
+    yourBadgesNoBadges: 'No se encontraron insignias.',
     badgeEliteSecurityChampion: 'Campeón de Seguridad Élite',
     badgeEngagementStar: 'Estrella del Compromiso', // Mejor flujo con 'del'
     badgeSecurityAmbassador: 'Embajador de Seguridad',
+    // Badge Names
+    badgeName_1_0: 'Primera Formación Completada',
+    badgeName_2_1: 'Maestro de Formación',
+    badgeName_2_2: 'Maestro de Formación',
+    badgeName_2_3: 'Maestro de Formación',
+    badgeName_3_1: 'Puntuación Perfecta',
+    badgeName_3_2: 'Puntuación Perfecta',
+    badgeName_3_3: 'Puntuación Perfecta',
+    badgeName_5_1: 'Campeón de Seguridad',
+    badgeName_5_2: 'Campeón de Seguridad',
+    badgeName_5_3: 'Campeón de Seguridad',
+    badgeName_6_0: 'Primer Reporte de Phishing',
+    badgeName_7_1: 'Cazador de Phishing',
+    badgeName_7_2: 'Cazador de Phishing',
+    badgeName_7_3: 'Cazador de Phishing',
     // Badge Descriptions
     badgeDescription_1_0: 'La obtienes cuando completas tu primera formación.',
     badgeDescription_2_1: 'La obtienes cuando completas 20 formaciones.',
@@ -1398,6 +1484,10 @@ const usersDashboardLabels = {
     badgeDescription_5_1: 'La obtienes cuando alcanzas el Rango 10 o superior en la clasificación.',
     badgeDescription_5_2: 'La obtienes cuando alcanzas el Rango 3 o superior en la clasificación.',
     badgeDescription_5_3: 'La obtienes cuando te conviertes en el Rango #1 en la clasificación.',
+    badgeDescription_6_0: 'La obtienes cuando reportas tu primer correo electrónico de phishing.',
+    badgeDescription_7_1: 'La obtienes cuando reportas 3 correos electrónicos de phishing.',
+    badgeDescription_7_2: 'La obtienes cuando reportas 10 correos electrónicos de phishing.',
+    badgeDescription_7_3: 'La obtienes cuando reportas 25 correos electrónicos de phishing.',
 
     // Your Learning
     yourLearningTitle: 'Sus Formaciones', // 'Aprendizaje' es demasiado literal.

@@ -322,6 +322,7 @@ import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
+import { convertContentToFile } from '@/api/phishingsimulator'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import BackButton from '@/components/Common/Buttons/BackButton'
 import NextButton from '@/components/Common/Buttons/NextButton'
@@ -807,7 +808,6 @@ export default {
       if (files.length) {
         const formData = new FormData()
         formData.append('File', files[0])
-        console.log('files', files)
         parseEmailOrMessageFile(formData).then((response) => {
           const {
             data: { data }
@@ -824,12 +824,19 @@ export default {
           this.selectedLanguagePayloadItemBeforeSave.subject = subject
           if (attachments && attachments.length > 0) {
             // Only take the first attachment (system supports only 1 attachment)
-            /*
+            const backendAttachment = attachments[0]
             const firstAttachment = {
-              ...attachments[0],
-              fileName: attachments[0].name || attachments[0].fileName,
-              name: attachments[0].name || attachments[0].fileName,
+              ...backendAttachment,
+              fileName: backendAttachment.name || backendAttachment.fileName,
+              name: backendAttachment.name || backendAttachment.fileName,
               isDeletable: true
+            }
+            // Convert to File object if content exists (backend format)
+            // Backend format: { name, contentType, content (base64), ... }
+            if (firstAttachment.content && !(firstAttachment instanceof File)) {
+              const fileObject = convertContentToFile(firstAttachment)
+              // Keep original attachment data for UI, but use File object for API
+              firstAttachment.fileObject = fileObject
             }
             // Add imported attachment directly to attachmentFiles (for UI display)
             this.$set(this.formValues, 'attachmentFiles', [firstAttachment])
@@ -839,11 +846,12 @@ export default {
               JSON.parse(JSON.stringify([firstAttachment]))
             )
             // Keep importedEmailAttachments for backend API
-            this.$set(this.formValues, 'importedEmailAttachments', [firstAttachment])
+            // Use File object if available, otherwise use original attachment
+            const attachmentForApi = firstAttachment.fileObject || firstAttachment
+            this.$set(this.formValues, 'importedEmailAttachments', [attachmentForApi])
             // Set flags for imported attachment
             this.isPhishingFileModified = false
             this.isAddedNewPhishingFile = true
-            */
           }
           delete this.lastRedFlags[this.activeLanguage]
           this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))

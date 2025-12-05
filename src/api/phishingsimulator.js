@@ -1,6 +1,65 @@
 import axios from 'axios'
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+/**
+ * Convert content to File object if attachment is not already a File
+ * Backend format: { name, contentType, content (base64 string), ... }
+ * @param {Object|File} attachment - Attachment object with content or File object
+ * @returns {File} File object
+ */
+const convertContentToFile = (attachment) => {
+  // If already a File object, return as is
+  if (attachment instanceof File) {
+    return attachment
+  }
+
+  // If not a File object, convert content to File
+  if (attachment && attachment.content) {
+    let blob
+    // Backend format: name, contentType fields
+    const fileName = attachment.fileName || attachment.name || 'attachment'
+    const fileType =
+      attachment.contentType || attachment.fileType || attachment.type || 'application/octet-stream'
+
+    // Check if content is base64 string
+    if (typeof attachment.content === 'string') {
+      let base64Data = attachment.content
+
+      // Handle data URL format: data:type;base64,content
+      if (attachment.content.startsWith('data:')) {
+        base64Data = attachment.content.split(',')[1]
+      }
+
+      // Decode base64 to binary
+      try {
+        const byteCharacters = atob(base64Data)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        blob = new Blob([byteArray], { type: fileType })
+      } catch (error) {
+        console.error('Error converting base64 to File:', error)
+        // Fallback: try to create blob directly
+        blob = new Blob([attachment.content], { type: fileType })
+      }
+    } else if (attachment.content instanceof Blob) {
+      // Already a Blob
+      blob = attachment.content
+    } else {
+      // Fallback: convert to string and create blob
+      blob = new Blob([attachment.content], { type: fileType })
+    }
+
+    // Convert Blob to File
+    return new File([blob], fileName, { type: fileType })
+  }
+
+  // Fallback: return original if conversion fails
+  return attachment
+}
+
 const getPhishingFileType = (payload) => {
   if (payload.attachmentFiles[0]) {
     return payload.attachmentFiles[0]?.name
@@ -57,11 +116,18 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
   }
   if (payload.isAttachmentBasedTemplate) {
     const phishingFileType = getPhishingFileType(payload)
+
+    // Convert attachmentFiles[0] to File if needed
+    let attachmentFile = null
+    if (payload.attachmentFiles && payload.attachmentFiles[0]) {
+      attachmentFile =
+        payload.attachmentFiles[0] instanceof File
+          ? payload.attachmentFiles[0]
+          : convertContentToFile(payload.attachmentFiles[0])
+    }
+
     formData.append('attachmentFiles', payload.importedEmailAttachments[0])
-    formData.append(
-      'phishingFile',
-      payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
-    )
+    formData.append('phishingFile', payload.isAddedNewPhishingFile ? attachmentFile : null)
     formData.append('phishingFileType', phishingFileType)
     formData.append('isPhishingFileModified', payload.isPhishingFileModified)
     formData.append('phishingFileName', payload.phishingFileName)
