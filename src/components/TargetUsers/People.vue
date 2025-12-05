@@ -304,6 +304,15 @@
           </div>
         </div>
       </template>
+      <template #datatable-custom-column="{ scope, col }">
+        <span v-if="col.property === 'manager'">
+          {{
+            scope.row.managerFirstName || scope.row.managerLastName
+              ? `${scope.row.managerFirstName || ''} ${scope.row.managerLastName || ''}`.trim()
+              : ''
+          }}
+        </span>
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :icon="tableOptions.rowActions[0].icon"
@@ -602,6 +611,31 @@ export default {
             filterableItems: [],
             dbName: 'TimeZone',
             filterableCustomFieldName: 'TimeZoneId'
+          },
+          {
+            property: 'manager',
+            align: 'left',
+            editable: false,
+            label: 'Manager',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'slot',
+            width: 200,
+            filterableType: 'text',
+            dbName: 'ManagerFirstName'
+          },
+          {
+            property: 'managerEmail',
+            align: 'left',
+            editable: false,
+            label: 'Manager Email',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 250,
+            filterableType: 'text',
+            dbName: 'ManagerEmail'
           }
         ],
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
