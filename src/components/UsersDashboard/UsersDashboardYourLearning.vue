@@ -228,6 +228,7 @@ export default {
         'Not Completed': this.labels.yourLearningNotCompleted,
         'In Progress': this.labels.yourLearningInProgress,
         Completed: this.labels.yourLearningCompleted,
+        'In Queue': this.labels.yourCertificatesInQueue,
         'Exam Failed': this.labels.actionTypeExamFailed
       }
       return statusMap[status] || status
@@ -238,6 +239,7 @@ export default {
         'Not Completed': '#B83A3A', // Red
         'In Progress': '#FF9800', // Orange
         Completed: '#217124', // Green
+        'In Queue': '#1173C1', // Blue
         'Exam Failed': '#F56C6C' // Red
       }
       return statusMap[status] || '#757575'
