@@ -42,7 +42,7 @@
             @click="handleLogout"
           >
             <v-icon left>mdi-logout</v-icon>
-            Logout
+            {{ labels.userMenuLogout }}
           </v-btn>
         </div>
       </div>
