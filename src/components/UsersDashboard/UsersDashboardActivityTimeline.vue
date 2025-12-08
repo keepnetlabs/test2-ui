@@ -386,13 +386,18 @@ export default {
       // Map backend ActionType to label key
       const actionTypeMap = {
         'Clicked Training': 'actionTypeClickedTraining',
+        'Training Completed': 'actionTypeTrainingCompleted',
         'Email Opened': 'actionTypeEmailOpened',
         'Email Sent': 'actionTypeEmailSent',
         'Downloaded Poster': 'actionTypeDownloadedPoster',
+        'Downloaded Infographic': 'actionTypeDownloadedInfographic',
         'Exam Passed': 'actionTypeExamPassed',
+        'Exam Failed': 'actionTypeExamFailed',
         'Clicked Link': 'actionTypeClickedLink',
         'SMS Sent': 'actionTypeSMSSent',
-        'Opened Attachment': 'actionTypeOpenedAttachment'
+        'Opened Attachment': 'actionTypeOpenedAttachment',
+        'Submitted Data': 'actionTypeSubmittedData',
+        Reported: 'actionTypeReported'
       }
       const labelKey = actionTypeMap[actionType]
       return labelKey ? this.labels[labelKey] || actionType : actionType
