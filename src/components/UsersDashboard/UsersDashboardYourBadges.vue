@@ -17,22 +17,26 @@
           {{ labels.yourBadgesNoBadges }}
         </span>
       </div>
-      <div
+      <v-tooltip
         v-else
         v-for="(badge, index) in badges"
         :key="badge.id || index"
-        :class="[
-          'users-dashboard-your-badges__badge-card',
-          badge.isEarned
-            ? 'users-dashboard-your-badges__badge-card--earned'
-            : 'users-dashboard-your-badges__badge-card--not-earned'
-        ]"
+        bottom
+        opacity="1"
+        :disabled="!getBadgeDescription(badge)"
       >
-        <v-tooltip bottom opacity="1" :disabled="!getBadgeDescription(badge)">
-          <template #activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
+          <div
+            v-bind="attrs"
+            v-on="on"
+            :class="[
+              'users-dashboard-your-badges__badge-card',
+              badge.isEarned
+                ? 'users-dashboard-your-badges__badge-card--earned'
+                : 'users-dashboard-your-badges__badge-card--not-earned'
+            ]"
+          >
             <div
-              v-bind="attrs"
-              v-on="on"
               :class="[
                 'users-dashboard-your-badges__badge-icon',
                 badge.isEarned
@@ -51,16 +55,16 @@
                 {{ getBadgeIcon(badge.type) }}
               </VIcon>
             </div>
-          </template>
-          <span>{{ getBadgeDescription(badge) }}</span>
-        </v-tooltip>
-        <h3 class="users-dashboard-your-badges__badge-name">
-          {{ getBadgeName(badge) }}
-        </h3>
-        <p class="users-dashboard-your-badges__badge-status">
-          {{ getBadgeStatus(badge) }}
-        </p>
-      </div>
+            <h3 class="users-dashboard-your-badges__badge-name">
+              {{ getBadgeName(badge) }}
+            </h3>
+            <p class="users-dashboard-your-badges__badge-status">
+              {{ getBadgeStatus(badge) }}
+            </p>
+          </div>
+        </template>
+        <span>{{ getBadgeDescription(badge) }}</span>
+      </v-tooltip>
     </div>
   </VCard>
 </template>

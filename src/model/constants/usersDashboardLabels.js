@@ -202,15 +202,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Detection Accuracy:',
     phishingTestResultsEarnedPoints: (points) => {
       if (points === 0) {
-        return 'No points earned for your reports yet.'
+        return 'No points earned for your reported emails yet.'
       }
-      return `You earned +${points} points for your reports.`
+      return `You earned +${points} points for your reported emails.`
     },
     phishingTestResultsLostPoints: (points) => {
       if (points === 0) {
-        return 'No points lost for missed reports.'
+        return 'No points lost for missed reported emails.'
       }
-      return `You lost -${points} points for missed reports.`
+      return `You lost -${points} points for missed reported emails.`
     },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
@@ -439,15 +439,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Detection Accuracy:',
     phishingTestResultsEarnedPoints: (points) => {
       if (points === 0) {
-        return 'No points earned for your reports yet.'
+        return 'No points earned for your reported emails yet.'
       }
-      return `You earned +${points} points for your reports.`
+      return `You earned +${points} points for your reported emails.`
     },
     phishingTestResultsLostPoints: (points) => {
       if (points === 0) {
-        return 'No points lost for missed reports.'
+        return 'No points lost for missed reported emails.'
       }
-      return `You lost -${points} points for missed reports.`
+      return `You lost -${points} points for missed reported emails.`
     },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
@@ -762,15 +762,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Tespit Doğruluğu:',
     phishingTestResultsEarnedPoints: (points) => {
       if (points === 0) {
-        return 'Raporlamalarınızdan henüz puan kazanmadınız.'
+        return 'Bildirdiğiniz e-postalardan henüz puan kazanmadınız.'
       }
-      return `Raporlamalarınız sayesinde +${points} puan kazandınız.`
+      return `Bildirdiğiniz e-postalar sayesinde +${points} puan kazandınız.`
     },
     phishingTestResultsLostPoints: (points) => {
       if (points === 0) {
-        return 'Kaçırılan raporlar nedeniyle puan kaybı yok.'
+        return 'Bildirmediğiniz e-postalar için puan kaybı yoktur.'
       }
-      return `Kaçırılan raporlar nedeniyle -${points} puan kaybettiniz.`
+      return `Bildirmediğiniz e-postalar nedeniyle -${points} puan kaybettiniz.`
     },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
@@ -1094,15 +1094,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Erkennungsgenauigkeit:',
     phishingTestResultsEarnedPoints: (points) => {
       if (points === 0) {
-        return 'Bisher keine Punkte für Meldungen erhalten.'
+        return 'Bisher keine Punkte für gemeldete E-Mails erhalten.'
       }
-      return `Sie haben +${points} Punkte für Ihre Meldungen erhalten.`
+      return `Sie haben +${points} Punkte für Ihre gemeldeten E-Mails erhalten.`
     },
     phishingTestResultsLostPoints: (points) => {
       if (points === 0) {
-        return 'Kein Punktabzug für verpasste Meldungen.'
+        return 'Kein Punktabzug für nicht gemeldete E-Mails.'
       }
-      return `Sie haben -${points} Punkte für verpasste Meldungen verloren.`
+      return `Sie haben -${points} Punkte für nicht gemeldete E-Mails verloren.`
     },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
@@ -1423,15 +1423,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Précision de détection :',
     phishingTestResultsEarnedPoints: (points) => {
       if (points === 0) {
-        return "Vous n'avez encore gagné aucun point pour vos rapports."
+        return "Vous n'avez encore gagné aucun point pour vos e-mails signalés."
       }
-      return `Vous avez gagné +${points} points pour vos rapports.`
+      return `Vous avez gagné +${points} points pour vos e-mails signalés.`
     },
     phishingTestResultsLostPoints: (points) => {
       if (points === 0) {
-        return "Vous n'avez perdu aucun point pour les rapports manqués."
+        return "Vous n'avez perdu aucun point pour les e-mails non signalés."
       }
-      return `Vous avez perdu -${points} points pour les rapports manqués.`
+      return `Vous avez perdu -${points} points pour les e-mails non signalés.`
     },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
@@ -1742,15 +1742,15 @@ const usersDashboardLabels = {
     phishingTestResultsDetectionAccuracy: 'Precisión de Detección:',
     phishingTestResultsEarnedPoints: (points) => {
       if (points === 0) {
-        return 'Aún no ha ganado puntos por sus reportes.'
+        return 'Aún no ha ganado puntos por sus correos reportados.'
       }
-      return `Ganó +${points} puntos por sus reportes.`
+      return `Ganó +${points} puntos por sus correos reportados.`
     },
     phishingTestResultsLostPoints: (points) => {
       if (points === 0) {
-        return 'No perdió puntos por reportes omitidos.' // Más natural
+        return 'No perdió puntos por correos no reportados.'
       }
-      return `Perdió -${points} puntos por reportes omitidos.`
+      return `Perdió -${points} puntos por correos no reportados.`
     },
     phishingTestResultsAccuracyUp: (percentage) => {
       const absPercentage = Math.abs(percentage)
