@@ -225,13 +225,18 @@ const usersDashboardLabels = {
 
     // Activity Action Types
     actionTypeClickedTraining: 'Clicked Training',
+    actionTypeTrainingCompleted: 'Training Completed',
     actionTypeEmailOpened: 'Email Opened',
     actionTypeEmailSent: 'Email Sent',
     actionTypeDownloadedPoster: 'Downloaded Poster',
+    actionTypeDownloadedInfographic: 'Downloaded Infographic',
     actionTypeExamPassed: 'Exam Passed',
+    actionTypeExamFailed: 'Exam Failed',
     actionTypeClickedLink: 'Clicked Link',
     actionTypeSMSSent: 'SMS Sent',
     actionTypeOpenedAttachment: 'Opened Attachment',
+    actionTypeSubmittedData: 'Submitted Data',
+    actionTypeReported: 'Reported',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Rows per page:',
@@ -462,13 +467,18 @@ const usersDashboardLabels = {
 
     // Activity Action Types
     actionTypeClickedTraining: 'Clicked Training',
+    actionTypeTrainingCompleted: 'Training Completed',
     actionTypeEmailOpened: 'Email Opened',
     actionTypeEmailSent: 'Email Sent',
     actionTypeDownloadedPoster: 'Downloaded Poster',
+    actionTypeDownloadedInfographic: 'Downloaded Infographic',
     actionTypeExamPassed: 'Exam Passed',
+    actionTypeExamFailed: 'Exam Failed',
     actionTypeClickedLink: 'Clicked Link',
     actionTypeSMSSent: 'SMS Sent',
     actionTypeOpenedAttachment: 'Opened Attachment',
+    actionTypeSubmittedData: 'Submitted Data',
+    actionTypeReported: 'Reported',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Rows per page:',
@@ -785,13 +795,18 @@ const usersDashboardLabels = {
 
     // Activity Action Types
     actionTypeClickedTraining: 'Eğitime Tıklandı',
+    actionTypeTrainingCompleted: 'Eğitim Tamamlandı',
     actionTypeEmailOpened: 'E-posta Açıldı',
     actionTypeEmailSent: 'E-posta Gönderildi',
     actionTypeDownloadedPoster: 'Poster İndirildi',
+    actionTypeDownloadedInfographic: 'İnfografik İndirildi',
     actionTypeExamPassed: 'Sınav Geçildi',
+    actionTypeExamFailed: 'Sınav Başarısız',
     actionTypeClickedLink: 'Bağlantıya Tıklandı',
     actionTypeSMSSent: 'SMS Gönderildi',
     actionTypeOpenedAttachment: 'Ek Dosya Açıldı', // "Ek Açıldı" yerine daha net.
+    actionTypeSubmittedData: 'Veri Gönderildi',
+    actionTypeReported: 'Bildirildi',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Sayfa başına satır:',
@@ -1117,13 +1132,18 @@ const usersDashboardLabels = {
 
     // Activity Action Types
     actionTypeClickedTraining: 'Training angeklickt',
+    actionTypeTrainingCompleted: 'Training abgeschlossen',
     actionTypeEmailOpened: 'E-Mail geöffnet',
     actionTypeEmailSent: 'E-Mail gesendet',
     actionTypeDownloadedPoster: 'Poster heruntergeladen',
+    actionTypeDownloadedInfographic: 'Infografik heruntergeladen',
     actionTypeExamPassed: 'Prüfung bestanden',
+    actionTypeExamFailed: 'Prüfung nicht bestanden',
     actionTypeClickedLink: 'Link angeklickt',
     actionTypeSMSSent: 'SMS gesendet',
     actionTypeOpenedAttachment: 'Anhang geöffnet',
+    actionTypeSubmittedData: 'Daten übermittelt',
+    actionTypeReported: 'Gemeldet',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Zeilen pro Seite:',
@@ -1446,13 +1466,18 @@ const usersDashboardLabels = {
 
     // Activity Action Types
     actionTypeClickedTraining: 'Formation cliquée',
+    actionTypeTrainingCompleted: 'Formation terminée',
     actionTypeEmailOpened: 'E-mail ouvert',
     actionTypeEmailSent: 'E-mail envoyé',
     actionTypeDownloadedPoster: 'Affiche téléchargée',
+    actionTypeDownloadedInfographic: 'Infographie téléchargée',
     actionTypeExamPassed: 'Examen réussi',
+    actionTypeExamFailed: 'Examen échoué',
     actionTypeClickedLink: 'Lien cliqué',
     actionTypeSMSSent: 'SMS envoyé',
     actionTypeOpenedAttachment: 'Pièce jointe ouverte',
+    actionTypeSubmittedData: 'Données soumises',
+    actionTypeReported: 'Signalé',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Lignes par page :',
@@ -1765,13 +1790,18 @@ const usersDashboardLabels = {
 
     // Activity Action Types
     actionTypeClickedTraining: 'Curso clicado',
+    actionTypeTrainingCompleted: 'Curso Completado',
     actionTypeEmailOpened: 'Correo electrónico abierto',
     actionTypeEmailSent: 'Correo electrónico enviado',
     actionTypeDownloadedPoster: 'Póster descargado',
+    actionTypeDownloadedInfographic: 'Infografía Descargada',
     actionTypeExamPassed: 'Examen aprobado',
+    actionTypeExamFailed: 'Examen reprobado',
     actionTypeClickedLink: 'Enlace clicado',
     actionTypeSMSSent: 'SMS enviado',
     actionTypeOpenedAttachment: 'Archivo adjunto abierto', // Más completo
+    actionTypeSubmittedData: 'Datos Enviados',
+    actionTypeReported: 'Reportado',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Filas por página:',
