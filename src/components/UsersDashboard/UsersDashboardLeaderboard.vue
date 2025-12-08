@@ -120,7 +120,6 @@ export default {
       if (!this.topPerformance || this.topPerformance.length === 0) {
         return []
       }
-      const currentUserId = this?.$route?.query?.targetUserResourceId || '4BCeEWHwAKME'
       return this.topPerformance.map((user) => ({
         rank: user.rank,
         firstName: user.firstName,
@@ -129,7 +128,7 @@ export default {
         department: user.department || '',
         performance: `${user.performance}%`,
         totalPoints: user.points,
-        isUser: user.targetUserResourceId === currentUserId
+        isUser: user.email === this.userInfo?.email
       }))
     },
     tableColumns() {

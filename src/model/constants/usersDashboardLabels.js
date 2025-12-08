@@ -11,6 +11,7 @@ const usersDashboardLabels = {
     userMenuDepartment: 'Department:',
     userMenuPhoneNumber: 'Phone Number:',
     userMenuPreferredLanguage: 'Preferred Language:',
+    userMenuLogout: 'Logout',
 
     // Overall Performance
     overallPerformanceTitle: 'Overall Performance',
@@ -427,6 +428,7 @@ const usersDashboardLabels = {
     userMenuDepartment: 'Department:',
     userMenuPhoneNumber: 'Phone Number:',
     userMenuPreferredLanguage: 'Preferred Language:',
+    userMenuLogout: 'Logout',
 
     // Phishing Test Results
     phishingTestResultsTitle: 'Your Phishing Test Results',
@@ -484,6 +486,7 @@ const usersDashboardLabels = {
     userMenuDepartment: 'Departman:',
     userMenuPhoneNumber: 'Telefon Numarası:',
     userMenuPreferredLanguage: 'Tercih Edilen Dil:',
+    userMenuLogout: 'Çıkış Yap',
 
     // Overall Performance
     overallPerformanceTitle: 'Genel Performans',
@@ -807,6 +810,7 @@ const usersDashboardLabels = {
     userMenuDepartment: 'Abteilung:',
     userMenuPhoneNumber: 'Telefonnummer:',
     userMenuPreferredLanguage: 'Bevorzugte Sprache:',
+    userMenuLogout: 'Abmelden',
 
     // Overall Performance
     overallPerformanceTitle: 'Gesamtleistung',
@@ -1137,6 +1141,7 @@ const usersDashboardLabels = {
     userMenuDepartment: 'Département :',
     userMenuPhoneNumber: 'Numéro de téléphone :',
     userMenuPreferredLanguage: 'Langue préférée :',
+    userMenuLogout: 'Déconnexion',
 
     // Overall Performance
     overallPerformanceTitle: 'Performance Globale',
@@ -1465,6 +1470,7 @@ const usersDashboardLabels = {
     userMenuDepartment: 'Departamento:',
     userMenuPhoneNumber: 'Número de teléfono:',
     userMenuPreferredLanguage: 'Idioma preferido:',
+    userMenuLogout: 'Cerrar sesión',
 
     // Overall Performance
     overallPerformanceTitle: 'Rendimiento General',

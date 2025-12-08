@@ -109,7 +109,7 @@ export default {
       }
       return this.myLearning.map((item) => {
         // Map status from API format to component format
-        let status = 'Not Started'
+        let status = item.status
         if (item.status === 'NotStarted') {
           status = 'Not Started'
         } else if (item.status === 'NotCompleted') {
