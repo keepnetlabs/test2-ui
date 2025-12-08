@@ -121,6 +121,7 @@
     border: none;
     background: transparent;
     position: relative;
+    overflow: hidden; // Clip animation to icon bounds
 
     // Shine animation overlay
     &::before {
@@ -137,6 +138,8 @@
         transparent 70%
       );
       animation: badge-shine 3s ease-in-out infinite;
+      z-index: 1; // Ensure animation is above content but clipped
+      pointer-events: none; // Don't block hover events
     }
   }
 
@@ -144,12 +147,15 @@
     width: 80px;
     height: 80px;
     object-fit: contain;
+    position: relative;
   }
 
   &__badge-placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    z-index: 2; // Above animation overlay
   }
 
   &__badge-name {
