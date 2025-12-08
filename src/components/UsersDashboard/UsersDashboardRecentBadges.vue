@@ -46,18 +46,24 @@
             {{ labels.recentBadgesNoBadges }}
           </span>
         </div>
-        <div
+        <v-tooltip
           v-else
           v-for="(badge, index) in recentBadges"
           :key="badge.id || index"
-          :class="[
-            'users-dashboard-recent-badges__badge-item',
-            `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
-          ]"
+          bottom
+          opacity="1"
+          :disabled="!getBadgeDescription(badge)"
         >
-          <v-tooltip bottom opacity="1" :disabled="!getBadgeDescription(badge)">
-            <template #activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on" class="users-dashboard-recent-badges__badge-icon">
+          <template #activator="{ on, attrs }">
+            <div
+              v-bind="attrs"
+              v-on="on"
+              :class="[
+                'users-dashboard-recent-badges__badge-item',
+                `users-dashboard-recent-badges__badge-item--count-${badgeCount}`
+              ]"
+            >
+              <div class="users-dashboard-recent-badges__badge-icon">
                 <img
                   v-if="getBadgeImage(badge)"
                   :src="getBadgeImage(badge)"
@@ -68,26 +74,26 @@
                   <VIcon size="48" color="#2196F3">mdi-trophy</VIcon>
                 </div>
               </div>
-            </template>
-            <span>{{ getBadgeDescription(badge) }}</span>
-          </v-tooltip>
-          <span
-            :id="`text--users-dashboard-recent-badges-name-${index}`"
-            class="users-dashboard-recent-badges__badge-name"
-          >
-            {{ getBadgeName(badge) }}
-          </span>
-          <span
-            :id="`text--users-dashboard-recent-badges-earned-date-${index}`"
-            class="users-dashboard-recent-badges__badge-earned-date"
-          >
-            {{
-              labels.yourBadgesEarnedOn(
-                formatBadgeEarnedDate(badge.earnedDate || badge.earnedOn || badge.createdAt)
-              )
-            }}
-          </span>
-        </div>
+              <span
+                :id="`text--users-dashboard-recent-badges-name-${index}`"
+                class="users-dashboard-recent-badges__badge-name"
+              >
+                {{ getBadgeName(badge) }}
+              </span>
+              <span
+                :id="`text--users-dashboard-recent-badges-earned-date-${index}`"
+                class="users-dashboard-recent-badges__badge-earned-date"
+              >
+                {{
+                  labels.yourBadgesEarnedOn(
+                    formatBadgeEarnedDate(badge.earnedDate || badge.earnedOn || badge.createdAt)
+                  )
+                }}
+              </span>
+            </div>
+          </template>
+          <span>{{ getBadgeDescription(badge) }}</span>
+        </v-tooltip>
       </template>
     </div>
   </v-card>
@@ -132,7 +138,13 @@ export default {
           }))
           .sort((a, b) => {
             // Sort by earnedDate descending (most recent first)
-            return new Date(b.earnedDate) - new Date(a.earnedDate)
+            const dateA = new Date(a.earnedDate).getTime()
+            const dateB = new Date(b.earnedDate).getTime()
+            // Handle invalid dates
+            if (isNaN(dateA) || isNaN(dateB)) {
+              return 0
+            }
+            return dateB - dateA
           })
           .slice(0, 3) // Take only first 3
 
