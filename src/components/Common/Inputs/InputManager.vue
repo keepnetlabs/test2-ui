@@ -1,6 +1,8 @@
 <template>
   <div class="input-manager-wrapper">
-    <div :class="['input-manager', { 'input-manager--error': hasPartialFields }]">
+    <div
+      :class="['input-manager', { 'input-manager--error': hasPartialFields || !allFieldsValid }]"
+    >
       <v-text-field
         ref="firstNameField"
         v-model.trim="managerFirstName"
@@ -9,7 +11,7 @@
         label="First Name"
         placeholder="Enter manager first name"
         persistent-placeholder
-        hide-details
+        :hide-details="!hasAnyManagerField || firstNameValid"
         :rules="firstNameRules"
         class="input-manager__field"
         id="input--target-user-manager-first-name"
@@ -23,7 +25,7 @@
         label="Last Name"
         placeholder="Enter manager last name"
         persistent-placeholder
-        hide-details
+        :hide-details="!hasAnyManagerField || lastNameValid"
         :rules="lastNameRules"
         class="input-manager__field"
         id="input--target-user-manager-last-name"
@@ -37,7 +39,7 @@
         label="Email"
         placeholder="Enter manager email address"
         persistent-placeholder
-        hide-details
+        :hide-details="!hasAnyManagerField || emailValid"
         :rules="emailRules"
         class="input-manager__field"
         id="input--target-user-manager-email"
@@ -159,6 +161,12 @@ export default {
       return rules
     }
   },
+  mounted() {
+    // Validate fields on mount if any field is filled
+    if (this.hasAnyManagerField) {
+      this.validateFields()
+    }
+  },
   methods: {
     handleFirstNameInput(value) {
       this.managerFirstName = value
@@ -199,7 +207,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .input-manager-wrapper {
   &__error-message {
     margin-top: 4px;
@@ -209,6 +217,10 @@ export default {
     font-size: 9px;
     color: #f56c6c;
     padding-left: 12px;
+  }
+
+  .v-text-field__details {
+    margin-bottom: 0 !important;
   }
 }
 
