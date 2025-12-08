@@ -388,6 +388,8 @@ export default {
         'Clicked Training': 'actionTypeClickedTraining',
         'Training Completed': 'actionTypeTrainingCompleted',
         'Email Opened': 'actionTypeEmailOpened',
+        'Opened Email But Not Clicked Training Link':
+          'actionTypeOpenedEmailButNotClickedTrainingLink',
         'Email Sent': 'actionTypeEmailSent',
         'Downloaded Poster': 'actionTypeDownloadedPoster',
         'Downloaded Infographic': 'actionTypeDownloadedInfographic',
