@@ -227,6 +227,7 @@ const usersDashboardLabels = {
     actionTypeClickedTraining: 'Clicked Training',
     actionTypeTrainingCompleted: 'Training Completed',
     actionTypeEmailOpened: 'Email Opened',
+    actionTypeOpenedEmailButNotClickedTrainingLink: 'Opened Email But Not Clicked Training Link',
     actionTypeEmailSent: 'Email Sent',
     actionTypeDownloadedPoster: 'Downloaded Poster',
     actionTypeDownloadedInfographic: 'Downloaded Infographic',
@@ -469,6 +470,7 @@ const usersDashboardLabels = {
     actionTypeClickedTraining: 'Clicked Training',
     actionTypeTrainingCompleted: 'Training Completed',
     actionTypeEmailOpened: 'Email Opened',
+    actionTypeOpenedEmailButNotClickedTrainingLink: 'Opened Email But Not Clicked Training Link',
     actionTypeEmailSent: 'Email Sent',
     actionTypeDownloadedPoster: 'Downloaded Poster',
     actionTypeDownloadedInfographic: 'Downloaded Infographic',
@@ -797,6 +799,8 @@ const usersDashboardLabels = {
     actionTypeClickedTraining: 'Eğitime Tıklandı',
     actionTypeTrainingCompleted: 'Eğitim Tamamlandı',
     actionTypeEmailOpened: 'E-posta Açıldı',
+    actionTypeOpenedEmailButNotClickedTrainingLink:
+      'E-posta Açıldı Ama Eğitim Bağlantısına Tıklanmadı',
     actionTypeEmailSent: 'E-posta Gönderildi',
     actionTypeDownloadedPoster: 'Poster İndirildi',
     actionTypeDownloadedInfographic: 'İnfografik İndirildi',
@@ -1134,6 +1138,8 @@ const usersDashboardLabels = {
     actionTypeClickedTraining: 'Training angeklickt',
     actionTypeTrainingCompleted: 'Training abgeschlossen',
     actionTypeEmailOpened: 'E-Mail geöffnet',
+    actionTypeOpenedEmailButNotClickedTrainingLink:
+      'E-Mail geöffnet, aber Trainingslink nicht angeklickt',
     actionTypeEmailSent: 'E-Mail gesendet',
     actionTypeDownloadedPoster: 'Poster heruntergeladen',
     actionTypeDownloadedInfographic: 'Infografik heruntergeladen',
@@ -1468,6 +1474,8 @@ const usersDashboardLabels = {
     actionTypeClickedTraining: 'Formation cliquée',
     actionTypeTrainingCompleted: 'Formation terminée',
     actionTypeEmailOpened: 'E-mail ouvert',
+    actionTypeOpenedEmailButNotClickedTrainingLink:
+      'E-mail ouvert mais lien de formation non cliqué',
     actionTypeEmailSent: 'E-mail envoyé',
     actionTypeDownloadedPoster: 'Affiche téléchargée',
     actionTypeDownloadedInfographic: 'Infographie téléchargée',
@@ -1792,6 +1800,8 @@ const usersDashboardLabels = {
     actionTypeClickedTraining: 'Curso clicado',
     actionTypeTrainingCompleted: 'Curso Completado',
     actionTypeEmailOpened: 'Correo electrónico abierto',
+    actionTypeOpenedEmailButNotClickedTrainingLink:
+      'Correo electrónico abierto pero enlace de capacitación no clicado',
     actionTypeEmailSent: 'Correo electrónico enviado',
     actionTypeDownloadedPoster: 'Póster descargado',
     actionTypeDownloadedInfographic: 'Infografía Descargada',
