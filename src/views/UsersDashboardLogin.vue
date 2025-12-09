@@ -464,9 +464,6 @@ export default {
           console.log('response', response)
           // Reset error count on successful login
           this.loginErrorCount = 0
-          this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
-            root: true
-          })
           // Show sign-in methods based on SAML provider
           if (response && response.data && response.data.data) {
             this.showSignInMethods = true
