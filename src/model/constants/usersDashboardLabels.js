@@ -238,6 +238,7 @@ const usersDashboardLabels = {
     actionTypeOpenedAttachment: 'Opened Attachment',
     actionTypeSubmittedData: 'Submitted Data',
     actionTypeReported: 'Reported',
+    actionTypeScannedQRLink: 'Scanned QR Link',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Rows per page:',
@@ -481,6 +482,7 @@ const usersDashboardLabels = {
     actionTypeOpenedAttachment: 'Opened Attachment',
     actionTypeSubmittedData: 'Submitted Data',
     actionTypeReported: 'Reported',
+    actionTypeScannedQRLink: 'Scanned QR Link',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Rows per page:',
@@ -811,6 +813,7 @@ const usersDashboardLabels = {
     actionTypeOpenedAttachment: 'Ek Dosya Açıldı', // "Ek Açıldı" yerine daha net.
     actionTypeSubmittedData: 'Veri Gönderildi',
     actionTypeReported: 'Bildirildi',
+    actionTypeScannedQRLink: 'QR Bağlantısı Taranıldı',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Sayfa başına satır:',
@@ -1150,6 +1153,7 @@ const usersDashboardLabels = {
     actionTypeOpenedAttachment: 'Anhang geöffnet',
     actionTypeSubmittedData: 'Daten übermittelt',
     actionTypeReported: 'Gemeldet',
+    actionTypeScannedQRLink: 'QR-Link gescannt',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Zeilen pro Seite:',
@@ -1486,6 +1490,7 @@ const usersDashboardLabels = {
     actionTypeOpenedAttachment: 'Pièce jointe ouverte',
     actionTypeSubmittedData: 'Données soumises',
     actionTypeReported: 'Signalé',
+    actionTypeScannedQRLink: 'Lien QR scanné',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Lignes par page :',
@@ -1812,6 +1817,7 @@ const usersDashboardLabels = {
     actionTypeOpenedAttachment: 'Archivo adjunto abierto', // Más completo
     actionTypeSubmittedData: 'Datos Enviados',
     actionTypeReported: 'Reportado',
+    actionTypeScannedQRLink: 'Enlace QR escaneado',
 
     // DataTable Pagination
     dataTableRowsPerPage: 'Filas por página:',

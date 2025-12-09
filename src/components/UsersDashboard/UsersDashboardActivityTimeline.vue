@@ -399,7 +399,8 @@ export default {
         'SMS Sent': 'actionTypeSMSSent',
         'Opened Attachment': 'actionTypeOpenedAttachment',
         'Submitted Data': 'actionTypeSubmittedData',
-        Reported: 'actionTypeReported'
+        Reported: 'actionTypeReported',
+        'Scanned QR Link': 'actionTypeScannedQRLink'
       }
       const labelKey = actionTypeMap[actionType]
       return labelKey ? this.labels[labelKey] || actionType : actionType

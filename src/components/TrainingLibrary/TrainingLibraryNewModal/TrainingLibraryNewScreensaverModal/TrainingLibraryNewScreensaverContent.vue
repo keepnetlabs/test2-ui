@@ -31,6 +31,8 @@
           :is-uploading="isUploading"
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
+          :vendor-id="formData.vendorId"
+          :can-save-vendor="canSaveVendor"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
