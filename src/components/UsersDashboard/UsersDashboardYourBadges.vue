@@ -115,7 +115,10 @@ export default {
   },
   methods: {
     getBadgeStatus(badge) {
-      if (badge.isEarned && badge.earnedDate) {
+      if (badge.isEarned) {
+        if (!badge.earnedDate) {
+          return ''
+        }
         const date = new Date(badge.earnedDate)
         const formattedDate = date.toLocaleDateString('en-GB', {
           day: '2-digit',

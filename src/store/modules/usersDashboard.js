@@ -293,8 +293,6 @@ const usersDashboard = {
 
       try {
         const response = await getTopPerformance()
-        // Minimum 800ms loading duration for better UX
-        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data) {
           const topPerformanceData = response.data.data
           commit('SET_TOP_PERFORMANCE', topPerformanceData)
@@ -333,8 +331,6 @@ const usersDashboard = {
 
       try {
         const response = await getMyLearning()
-        // Minimum 800ms loading duration for better UX
-        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data && response.data.data.results) {
           commit('SET_MY_LEARNING', response.data.data.results)
         } else {
@@ -357,8 +353,6 @@ const usersDashboard = {
 
       try {
         const response = await getMyCertificates()
-        // Minimum 800ms loading duration for better UX
-        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data && response.data.data.results) {
           commit('SET_MY_CERTIFICATES', response.data.data.results)
         } else {
@@ -381,10 +375,14 @@ const usersDashboard = {
 
       try {
         const response = await getMyBadges()
-        // Minimum 800ms loading duration for better UX
-        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data && Array.isArray(response.data.data)) {
-          commit('SET_MY_BADGES', response.data.data)
+          const mappedBadges = response.data.data.map((badge) => {
+            if (badge.badgeType === 5 && 'earnedDate' in badge) {
+              return { ...badge, earnedDate: '' }
+            }
+            return badge
+          })
+          commit('SET_MY_BADGES', mappedBadges)
         } else {
           // Set empty array on invalid response instead of error
           commit('SET_MY_BADGES', [])
@@ -405,8 +403,6 @@ const usersDashboard = {
 
       try {
         const response = await getPhishingResult()
-        // Minimum 800ms loading duration for better UX
-        await new Promise((resolve) => setTimeout(resolve, 800))
         if (response && response.data && response.data.data) {
           commit('SET_PHISHING_RESULT', response.data.data)
         } else {
