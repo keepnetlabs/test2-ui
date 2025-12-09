@@ -158,6 +158,7 @@ export default (router) => {
       'NotSupportedError: Failed to load because no supported source was found.',
       `Cannot read properties of undefined (reading 'status')`,
       `Cannot read properties of undefined (reading 'message')`,
+      `Cannot read properties of undefined (reading 'json')`,
       'Event `CustomEvent` (type=error) captured as exception',
       'Load failed',
       'Request failed with status code 524',

@@ -295,7 +295,6 @@
                             @on-custom-head-scripts-change="
                               (value) => onCustomHeadScriptsChange(value, index)
                             "
-                            @on-save-template="(template) => handleSaveTemplate(template, index)"
                             @setAttachmentFile="setAttachmentFile"
                           />
                         </el-tab-pane>
