@@ -560,6 +560,7 @@ export default {
           }
         })
         this.landingPageData = { ...response.data.data, domainRecords }
+        console.log('this.landingPageData', this.landingPageData)
       })
     }
   }
