@@ -4,12 +4,7 @@
       <!-- Logo Section -->
       <div class="users-dashboard-header__logo">
         <template v-if="loginWhiteLabel.mainLogoUrl">
-          <v-skeleton-loader
-            v-if="!logoLoaded"
-            type="image"
-            width="120"
-            height="40"
-          />
+          <v-skeleton-loader v-if="!logoLoaded" type="image" width="120" height="40" />
           <img
             v-show="logoLoaded"
             id="img--users-dashboard-header-logo"
