@@ -31,6 +31,8 @@
           :is-uploading="isUploading"
           :file-previews="formData.contentByLanguage[index - 1].filePreviews"
           :type-with-display-name="formData.contentByLanguage[index - 1].typeWithDisplayName"
+          :vendor-id="formData.vendorId"
+          :can-save-vendor="canSaveVendor"
           @on-remove="handleRemove(index - 1)"
         />
       </div>
@@ -115,11 +117,26 @@ export default {
       immediate: true,
       handler(val) {
         if (this.step === 2) {
-          if (
-            val.every(
-              (content) => (content.file || content?.filePreviews?.length) && content.languageId
-            )
-          ) {
+          const isContentValid = val.every(
+            (content) => (content.file || content?.filePreviews?.length) && content.languageId
+          )
+          const isVendorValid = this.formData.vendorId
+          if (isContentValid && isVendorValid) {
+            this.$emit('update:isActionButtonDisabled', false)
+          } else {
+            this.$emit('update:isActionButtonDisabled', true)
+          }
+        }
+      }
+    },
+    'formData.vendorId': {
+      handler() {
+        if (this.step === 2) {
+          const isContentValid = this.formData.contentByLanguage.every(
+            (content) => (content.file || content?.filePreviews?.length) && content.languageId
+          )
+          const isVendorValid = this.formData.vendorId
+          if (isContentValid && isVendorValid) {
             this.$emit('update:isActionButtonDisabled', false)
           } else {
             this.$emit('update:isActionButtonDisabled', true)

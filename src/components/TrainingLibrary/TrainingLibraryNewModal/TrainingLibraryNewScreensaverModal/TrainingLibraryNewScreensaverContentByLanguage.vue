@@ -12,7 +12,7 @@
         required
         :items="languageItems"
         :menu-props="{ offsetY: true }"
-        :disabled="isLanguageDisabled"
+        :disabled="isLanguageDisabled || isCheckDisableVendor"
       />
       <template v-if="isRemovable">
         <VTooltip v-if="isRenderTooltip" bottom>
@@ -61,7 +61,7 @@
         :onUploadProgress="progressEvent"
         :extensions="['jpg', 'pdf', 'tiff', 'png']"
         :file-previews="filePreviews"
-        :disabled="!value.languageId"
+        :disabled="!value.languageId || isCheckDisableVendor"
         :readonly="isReadonly"
         :deletable="false"
         :is-backend-parsed="isBackendParsed"
@@ -109,6 +109,14 @@ export default {
     typeWithDisplayName: {
       type: String,
       default: ''
+    },
+    vendorId: {
+      type: String,
+      default: ''
+    },
+    canSaveVendor: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -142,8 +150,12 @@ export default {
     isRenderTooltip() {
       return this?.value?.isDeleteable
     },
+    isCheckDisableVendor() {
+      if (!this.canSaveVendor) return false
+      return !this.vendorId
+    },
     isLanguageDisabled() {
-      return !!this?.filePreviews?.length || this.isDisabled
+      return !!this?.filePreviews?.length || this.isDisabled || this.isCheckDisableVendor
     },
     getHint() {
       return '.jpg, .png, .pdf, .tiff file. Max. file size 100MB'
