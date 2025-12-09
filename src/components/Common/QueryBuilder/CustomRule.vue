@@ -295,7 +295,7 @@ export default {
     },
     'query.operand'(newVal = '') {
       if (newVal === 'AttachmentHash') {
-        if (this.query.operator !== 'Equal' || this.query.operator !== 'IsNotEqual') {
+        if (this.query.operator !== 'Equal' && this.query.operator !== 'IsNotEqual') {
           this.query.operator = 'Equal'
         }
       }
