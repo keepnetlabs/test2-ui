@@ -102,6 +102,7 @@
         @refreshAction="callForData"
         @downloadEvent="exportLeaderboard"
         @on-details="handleDetails"
+        @on-send-with-ai="handleSendWithAI"
       />
     </KContainer>
   </Fragment>
@@ -133,6 +134,8 @@ import { mapGetters } from 'vuex'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
 import labels from '@/model/constants/labels'
+import axios from 'axios'
+import AuthenticationService from '@/services/authentication'
 export default {
   name: 'GamificationReport',
   components: {
@@ -258,6 +261,12 @@ export default {
             id: 'btn-interactions--row-actions-training-report-sending-report',
             icon: '$custom-details',
             action: 'on-details'
+          },
+          {
+            name: 'Send with AI',
+            id: 'btn-send-with-ai-gamification-report',
+            icon: 'mdi-send',
+            action: 'on-send-with-ai'
           }
         ],
         columns: [
@@ -547,6 +556,29 @@ export default {
       }
       this.resetPageNumber()
       this.callForData()
+    },
+    handleSendWithAI(row) {
+      const token = AuthenticationService.getToken()
+      const { firstName, lastName } = row
+      const body = {
+        token,
+        firstName,
+        lastName,
+        actions: ['training', 'phishing']
+      }
+
+      axios
+        .post('http://localhost:4111/autonomous', body, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response) => {
+          console.log('Response:', response)
+        })
+        .catch((error) => {
+          console.error('Error sending data to autonomous:', error)
+        })
     }
   }
 }
