@@ -81,6 +81,7 @@
                 {{ getBadgeName(badge) }}
               </span>
               <span
+                v-if="badge.earnedDate"
                 :id="`text--users-dashboard-recent-badges-earned-date-${index}`"
                 class="users-dashboard-recent-badges__badge-earned-date"
               >
@@ -127,7 +128,7 @@ export default {
       // Get earned badges from API, sorted by earnedDate (most recent first)
       if (this.myBadges && this.myBadges.length > 0) {
         const earnedBadges = this.myBadges
-          .filter((badge) => badge.earned === true && badge.earnedDate)
+          .filter((badge) => badge.earned)
           .map((badge, index) => ({
             id: `${badge.badgeType}-${badge.level || 0}-${index}`,
             name: badge.badgeName,
