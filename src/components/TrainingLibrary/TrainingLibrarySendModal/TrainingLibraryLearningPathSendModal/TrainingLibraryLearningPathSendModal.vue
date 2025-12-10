@@ -497,6 +497,7 @@ export default {
         });
 
         this.enrollmentData = {
+          resourceId: this.learningPathEmailNotificationTemplateTypeResourceId,
           createdBy: this?.$store?.state?.auth?.selectedCompanyName,
           template: mainTemplate,
           name: data.template.name || "Default Training Email",

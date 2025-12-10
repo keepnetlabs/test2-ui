@@ -430,6 +430,7 @@ export default {
           })
 
           this.reminderData = {
+            resourceId: this.reminderEmailNotificationTemplateTypeResourceId,
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: mainTemplate,
             name: data.template.name || 'Default Reminder Email',
@@ -500,6 +501,7 @@ export default {
           })
 
           this.enrollmentData = {
+            resourceId: this.trainingEmailNotificationTemplateTypeResourceId,
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: mainTemplate,
             name: data.template.name || 'Default Training Email',

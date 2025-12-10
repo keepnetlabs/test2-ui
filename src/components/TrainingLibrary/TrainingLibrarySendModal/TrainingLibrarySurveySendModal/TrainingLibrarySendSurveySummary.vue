@@ -1,5 +1,20 @@
 <template>
-  <div class="campaign-manager-last-step">
+  <div>
+    <NotificationTemplatesPreviewDialog
+      v-if="isShowEnrollmentEmail"
+      :status="isShowEnrollmentEmail"
+      :template-data="formData.enrollmentData"
+      :is-nested="true"
+      @on-close="isShowEnrollmentEmail = false"
+    />
+    <NotificationTemplatesPreviewDialog
+      v-if="isShowReminderEmailDialog"
+      :status="isShowReminderEmailDialog"
+      :template-data="formData.reminderData"
+      :is-nested="true"
+      @on-close="isShowReminderEmailDialog = false"
+    />
+    <div class="campaign-manager-last-step">
     <div
       class="campaign-manager-last-step__header"
       :style="{
@@ -75,52 +90,12 @@
     </div>
     <div v-if="!isProxy" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
+        is-training
         detailable
         title="Enrollment email that will be sent to users"
         icon="mdi-email"
         :show-body-detail.sync="isShowEnrollmentEmail"
-      >
-        <template #body>
-          <div v-if="isEnrollmentData" class="campaign-manager-last-step__email-template-body pb-4">
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.enrollmentData.name }}
-              </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Survey enrollment email template &#8226;
-              <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.enrollmentData.createdBy }}
-            </div>
-          </div>
-          <div
-            v-if="isShowEnrollmentEmail && formData.enrollmentData.languages?.length > 0"
-            style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
-          >
-            <InputLanguagePreview
-              :value="formData.enrollmentData.selectedLanguageResourceId"
-              style="max-width: 240px;"
-              hide-details
-              :label="enrollmentTemplateLanguageLabel"
-              :items="getEnrollmentLanguageItems"
-              @input="handleEnrollmentLanguageChange"
-            />
-          </div>
-          <div
-            v-if="isShowEnrollmentEmail"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!getEnrollmentTemplate"
-                ref="refPreview"
-                is-extra-height
-                :html="getEnrollmentTemplate"
-              />
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+      />
     </div>
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
@@ -186,55 +161,12 @@
     <div v-if="isReminderEmailData" class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
         detailable
+        is-training
         title="Reminder email that will be sent to users"
         icon="mdi-email"
-        :show-body-detail.sync="isShowReminderEmail"
-      >
-        <template #body>
-          <div
-            v-if="isReminderEmailData"
-            class="campaign-manager-last-step__email-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.reminderData.name }}
-              </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Survey reminder email template &#8226;
-              <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.reminderData.createdBy }}
-            </div>
-          </div>
-          <div
-            v-if="isShowReminderEmail && formData.reminderData.languages?.length > 0"
-            style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
-          >
-            <InputLanguagePreview
-              :value="formData.reminderData.selectedLanguageResourceId"
-              style="max-width: 240px;"
-              hide-details
-              :label="reminderTemplateLanguageLabel"
-              :items="getReminderLanguageItems"
-              @input="handleReminderLanguageChange"
-            />
-          </div>
-          <div
-            v-if="isShowReminderEmail"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!formData.reminderData.template"
-                ref="refPreview"
-                :html="formData.reminderData.template"
-                is-extra-height
-              />
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+      />
     </div>
+  </div>
   </div>
 </template>
 
@@ -246,6 +178,7 @@ import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import NotificationTemplatesPreviewDialog from '@/components/Company Settings/NotificationTemplatesPreviewDialog.vue'
 import { mapActions } from 'vuex'
 import PhoneNumber from 'awesome-phonenumber'
 export default {
@@ -256,7 +189,8 @@ export default {
     CampaignManagerSummaryCardOneLine,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     AlertBox,
-    InputLanguagePreview
+    InputLanguagePreview,
+    NotificationTemplatesPreviewDialog
   },
   props: {
     formData: {
@@ -272,7 +206,7 @@ export default {
       isShowEnrollmentEmail: false,
       isShowTrainingEmail: false,
       isShowCertificate: false,
-      isShowReminderEmail: false,
+      isShowReminderEmailDialog: false,
       isShowTargetUserDetail: false
     }
   },

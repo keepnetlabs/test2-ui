@@ -1,274 +1,196 @@
 <template>
-  <div class="campaign-manager-last-step">
-    <div
-      class="campaign-manager-last-step__header"
-      :style="{
-        gridTemplateColumns: '1fr',
-      }"
-    >
-      <CampaignManagerSummaryCardOneLine
-        icon="mdi-cog"
-        class="campaign-manager-summary-card__body-container-learning-path-original"
-        :title="labels.Settings"
-        :items="getSettingItems"
+  <div>
+    <NotificationTemplatesPreviewDialog
+      v-if="isShowEnrollmentEmail"
+      :status="isShowEnrollmentEmail"
+      :template-data="formData.enrollmentData"
+      :is-nested="true"
+      @on-close="isShowEnrollmentEmail = false"
+    />
+    <NotificationTemplatesPreviewDialog
+      v-if="isShowReminderEmailDialog"
+      :status="isShowReminderEmailDialog"
+      :template-data="formData.reminderData"
+      :is-nested="true"
+      @on-close="isShowReminderEmailDialog = false"
+    />
+    <div class="campaign-manager-last-step">
+      <div
+        class="campaign-manager-last-step__header"
+        :style="{
+          gridTemplateColumns: '1fr',
+        }"
       >
-        <template #SMSNotification="{ props: { key, val } }">
-          <div class="campaign-manager-summary-card__body-item-key">
-            {{ key }}
-          </div>
-          <div
-            v-if="val === 'Off'"
-            class="campaign-manager-summary-card__body-item-value"
-          >
-            {{ val }}
-          </div>
-          <div
-            v-else
-            class="campaign-manager-summary-card__body-item-value d-flex flex-column"
-          >
-            <div class="campaign-manager-sender-phone-number justify-end p-0">
-              <span class="campaign-manager-sender-phone-number__number mr-2">{{
-                getPhoneNumberFormatted(val.senderPhoneNumber)
-              }}</span>
-              <span class="campaign-manager-sender-phone-number__country">{{
-                getPhoneNumberCountry(val.senderPhoneNumber)
-              }}</span>
+        <CampaignManagerSummaryCardOneLine
+          icon="mdi-cog"
+          class="campaign-manager-summary-card__body-container-learning-path-original"
+          :title="labels.Settings"
+          :items="getSettingItems"
+        >
+          <template #SMSNotification="{ props: { key, val } }">
+            <div class="campaign-manager-summary-card__body-item-key">
+              {{ key }}
             </div>
-            <div>
-              <span style="font-weight: 600" class="mr-1">SMS Text:</span
-              >{{ val.smsText }}
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCardOneLine>
-    </div>
-    <div v-if="!isProxy" class="campaign-manager-last-step__target-users mt-4">
-      <CampaignManagerSummaryCard
-        detailable
-        icon="mdi-account-multiple"
-        :show-body-detail.sync="isShowTargetUserDetail"
-        :title="labels.TargetUsers"
-      >
-        <template #body>
-          <div
-            v-if="formData.selectedStep2 === 0"
-            class="campaign-manager-last-step__target-users-body pb-4"
-          >
-            <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
-            <div v-if="isShowTargetUserDetail" class="mt-4">
-              <CampaignManagerTargetGroupsAndUserSummaryInfo
-                :items="getTargetGroupItems"
-              />
-            </div>
-            <AlertBox
-              v-if="canRenderAlertbox"
-              class="mt-4"
-              :text="getUnverifiedDomainsText"
-              :slots="{ primaryAction: false, secondaryAction: false }"
-            />
-            <AlertBox
-              v-if="canRenderSmartGroupAlertBox"
-              class="mt-4"
-              text="Smart Group selected. It updates automatically, removes users who no longer meet its criteria, and excludes them from the next trainings."
-              :slots="{ primaryAction: false, secondaryAction: false }"
-            />
-          </div>
-          <div class="campaign-manager-last-step__target-users-body pb-4" v-else>
-            <span
-              v-if="isRandomlyTargetUser"
-              style="background-color: #e0e0e0; color: #383b41"
+            <div
+              v-if="val === 'Off'"
+              class="campaign-manager-summary-card__body-item-value"
             >
-              {{ getRandomlyTargetUser }}
-            </span>
-            <span style="background-color: #e0e0e0; color: #383b41">
-              {{ getTotalTargetUserByCampaign }}
-            </span>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
-    </div>
-    <div v-if="!isProxy" class="campaign-manager-last-step__email-template mt-4">
-      <CampaignManagerSummaryCard
-        detailable
-        title="Enrollment email that will be sent to users"
-        icon="mdi-email"
-        :show-body-detail.sync="isShowEnrollmentEmail"
-      >
-        <template #body>
-          <div
-            v-if="isEnrollmentData"
-            class="campaign-manager-last-step__email-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.enrollmentData.name }}
+              {{ val }}
+            </div>
+            <div
+              v-else
+              class="campaign-manager-summary-card__body-item-value d-flex flex-column"
+            >
+              <div class="campaign-manager-sender-phone-number justify-end p-0">
+                <span class="campaign-manager-sender-phone-number__number mr-2">{{
+                  getPhoneNumberFormatted(val.senderPhoneNumber)
+                }}</span>
+                <span class="campaign-manager-sender-phone-number__country">{{
+                  getPhoneNumberCountry(val.senderPhoneNumber)
+                }}</span>
+              </div>
+              <div>
+                <span style="font-weight: 600" class="mr-1">SMS Text:</span
+                >{{ val.smsText }}
               </div>
             </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Learning Path enrollment email template &#8226;
-              <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.enrollmentData.createdBy }}
-            </div>
-          </div>
-          <div
-            v-if="isShowEnrollmentEmail && formData.enrollmentData.languages?.length > 0"
-            style="
-              display: flex;
-              justify-content: flex-start;
-              padding: 12px 0;
-              margin-left: 24px;
-            "
-          >
-            <InputLanguagePreview
-              :value="formData.enrollmentData.selectedLanguageResourceId"
-              style="max-width: 240px"
-              hide-details
-              :label="enrollmentTemplateLanguageLabel"
-              :items="getEnrollmentLanguageItems"
-              @input="handleEnrollmentLanguageChange"
-            />
-          </div>
-          <div
-            v-if="isShowEnrollmentEmail"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!getEnrollmentTemplate"
-                ref="refPreview"
-                is-extra-height
-                :html="getEnrollmentTemplate"
+          </template>
+        </CampaignManagerSummaryCardOneLine>
+      </div>
+      <div v-if="!isProxy" class="campaign-manager-last-step__target-users mt-4">
+        <CampaignManagerSummaryCard
+          detailable
+          icon="mdi-account-multiple"
+          :show-body-detail.sync="isShowTargetUserDetail"
+          :title="labels.TargetUsers"
+        >
+          <template #body>
+            <div
+              v-if="formData.selectedStep2 === 0"
+              class="campaign-manager-last-step__target-users-body pb-4"
+            >
+              <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
+              <div v-if="isShowTargetUserDetail" class="mt-4">
+                <CampaignManagerTargetGroupsAndUserSummaryInfo
+                  :items="getTargetGroupItems"
+                />
+              </div>
+              <AlertBox
+                v-if="canRenderAlertbox"
+                class="mt-4"
+                :text="getUnverifiedDomainsText"
+                :slots="{ primaryAction: false, secondaryAction: false }"
+              />
+              <AlertBox
+                v-if="canRenderSmartGroupAlertBox"
+                class="mt-4"
+                text="Smart Group selected. It updates automatically, removes users who no longer meet its criteria, and excludes them from the next trainings."
+                :slots="{ primaryAction: false, secondaryAction: false }"
               />
             </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
-    </div>
-    <div class="campaign-manager-last-step__email-template mt-4">
-      <CampaignManagerSummaryCard
-        detailable
-        :title="getCardTitle"
-        icon="mdi-school"
-        is-training
-        :show-body-detail.sync="isShowTrainingEmail"
-      />
-    </div>
-    <div v-if="isCertificateData" class="campaign-manager-last-step__email-template mt-4">
-      <CampaignManagerSummaryCard
-        detailable
-        title="Certificate that users will be received"
-        icon="mdi-book-open"
-        :show-body-detail.sync="isShowCertificate"
+            <div class="campaign-manager-last-step__target-users-body pb-4" v-else>
+              <span
+                v-if="isRandomlyTargetUser"
+                style="background-color: #e0e0e0; color: #383b41"
+              >
+                {{ getRandomlyTargetUser }}
+              </span>
+              <span style="background-color: #e0e0e0; color: #383b41">
+                {{ getTotalTargetUserByCampaign }}
+              </span>
+            </div>
+          </template>
+        </CampaignManagerSummaryCard>
+      </div>
+      <div v-if="!isProxy" class="campaign-manager-last-step__email-template mt-4">
+        <CampaignManagerSummaryCard
+          is-training
+          detailable
+          title="Enrollment email that will be sent to users"
+          icon="mdi-email"
+          :show-body-detail.sync="isShowEnrollmentEmail"
+        />
+      </div>
+      <div class="campaign-manager-last-step__email-template mt-4">
+        <CampaignManagerSummaryCard
+          detailable
+          :title="getCardTitle"
+          icon="mdi-school"
+          is-training
+          :show-body-detail.sync="isShowTrainingEmail"
+        />
+      </div>
+      <div
+        v-if="isCertificateData"
+        class="campaign-manager-last-step__email-template mt-4"
       >
-        <template #body>
-          <div
-            v-if="isCertificateData"
-            class="campaign-manager-last-step__email-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.certificateData.name }}
+        <CampaignManagerSummaryCard
+          detailable
+          title="Certificate that users will be received"
+          icon="mdi-book-open"
+          :show-body-detail.sync="isShowCertificate"
+        >
+          <template #body>
+            <div
+              v-if="isCertificateData"
+              class="campaign-manager-last-step__email-template-body pb-4"
+            >
+              <div class="campaign-manager-last-step__email-template-body-header">
+                <div class="campaign-manager-last-step__email-template-body-header-left">
+                  {{ formData.certificateData.name }}
+                </div>
+              </div>
+              <div class="campaign-manager-last-step__email-template-body-header-sub">
+                Certificate email template &#8226;
+                <span class="template-list--item__sub-header--span">by</span>
+                {{ formData.certificateData.createdBy }}
               </div>
             </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Certificate email template &#8226;
-              <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.certificateData.createdBy }}
-            </div>
-          </div>
-          <div
-            v-if="isShowCertificate && formData.certificateData.languages?.length > 0"
-            style="
-              display: flex;
-              justify-content: flex-start;
-              padding: 12px 0;
-              margin-left: 24px;
-            "
-          >
-            <InputLanguagePreview
-              :value="formData.certificateData.selectedLanguageResourceId"
-              style="max-width: 240px"
-              hide-details
-              :label="certificateTemplateLanguageLabel"
-              :items="getCertificateLanguageItems"
-              @input="handleCertificateLanguageChange"
-            />
-          </div>
-          <div
-            v-if="isShowCertificate"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!formData.certificateData.template"
-                ref="refPreview"
-                :html="formData.certificateData.template"
-                is-extra-height
+            <div
+              v-if="isShowCertificate && formData.certificateData.languages?.length > 0"
+              style="
+                display: flex;
+                justify-content: flex-start;
+                padding: 12px 0;
+                margin-left: 24px;
+              "
+            >
+              <InputLanguagePreview
+                :value="formData.certificateData.selectedLanguageResourceId"
+                style="max-width: 240px"
+                hide-details
+                :label="certificateTemplateLanguageLabel"
+                :items="getCertificateLanguageItems"
+                @input="handleCertificateLanguageChange"
               />
             </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
-    </div>
-    <div
-      v-if="isReminderEmailData"
-      class="campaign-manager-last-step__email-template mt-4"
-    >
-      <CampaignManagerSummaryCard
-        detailable
-        title="Reminder email that will be sent to users"
-        icon="mdi-email"
-        :show-body-detail.sync="isShowReminderEmail"
-      >
-        <template #body>
-          <div
-            v-if="isReminderEmailData"
-            class="campaign-manager-last-step__email-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.reminderData.name }}
+            <div
+              v-if="isShowCertificate"
+              class="campaign-manager-last-step__email-template-body-preview-container"
+            >
+              <div class="campaign-manager-last-step__email-template-body-preview">
+                <KEmailPreview
+                  v-if="!!formData.certificateData.template"
+                  ref="refPreview"
+                  :html="formData.certificateData.template"
+                  is-extra-height
+                />
               </div>
             </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              Training reminder email template &#8226;
-              <span class="template-list--item__sub-header--span">by</span>
-              {{ formData.reminderData.createdBy }}
-            </div>
-          </div>
-          <div
-            v-if="isShowReminderEmail && formData.reminderData.languages?.length > 0"
-            style="
-              display: flex;
-              justify-content: flex-start;
-              padding: 12px 0;
-              margin-left: 24px;
-            "
-          >
-            <InputLanguagePreview
-              :value="formData.reminderData.selectedLanguageResourceId"
-              style="max-width: 240px"
-              hide-details
-              :label="reminderTemplateLanguageLabel"
-              :items="getReminderLanguageItems"
-              @input="handleReminderLanguageChange"
-            />
-          </div>
-          <div
-            v-if="isShowReminderEmail"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!formData.reminderData.template"
-                ref="refPreview"
-                :html="formData.reminderData.template"
-                is-extra-height
-              />
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+          </template>
+        </CampaignManagerSummaryCard>
+      </div>
+      <div
+        v-if="isReminderEmailData"
+        class="campaign-manager-last-step__email-template mt-4"
+      >
+        <CampaignManagerSummaryCard
+          detailable
+          is-training
+          title="Reminder email that will be sent to users"
+          icon="mdi-email"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -281,6 +203,7 @@ import KEmailPreview from "@/components/KEmailPreview.vue";
 import CampaignManagerTargetGroupsAndUserSummaryInfo from "@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import InputLanguagePreview from "@/components/Common/Inputs/InputLanguagePreview.vue";
+import NotificationTemplatesPreviewDialog from "@/components/Company Settings/NotificationTemplatesPreviewDialog.vue";
 import { mapActions } from "vuex";
 import PhoneNumber from "awesome-phonenumber";
 export default {
@@ -292,6 +215,7 @@ export default {
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     AlertBox,
     InputLanguagePreview,
+    NotificationTemplatesPreviewDialog,
   },
   props: {
     formData: {
@@ -307,11 +231,17 @@ export default {
       isShowEnrollmentEmail: false,
       isShowTrainingEmail: false,
       isShowCertificate: false,
-      isShowReminderEmail: false,
+      isShowReminderEmailDialog: false,
       isShowTargetUserDetail: false,
     };
   },
   computed: {
+    getEnrollmentPreviewDialogSelectedRow() {
+      return {
+        name: this.formData.enrollmentData?.name,
+        resourceId: this.formData.enrollmentData?.resourceId,
+      };
+    },
     canRenderSmartGroupAlertBox() {
       console.log(this.formData?.selectedTargetGroups);
       return this.formData?.selectedTargetGroups?.some(
