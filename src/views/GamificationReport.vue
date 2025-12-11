@@ -8,6 +8,13 @@
       :datePayload="getDatePayload"
       @on-close="handleCloseDrawer"
     />
+    <SendWithAIDialog
+      v-if="isSendWithAIDialogOpen"
+      :status="isSendWithAIDialogOpen"
+      :options="sendWithAIOptions"
+      @closeOverlay="handleCloseSendWithAIDialog"
+      @confirm="handleConfirmSendWithAI"
+    />
     <KContainer id="gamification-report">
       <CompanySettingsHeader title="Leaderboard" :slots="{ title: true }">
         <template #title>
@@ -133,6 +140,7 @@ import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReport
 import { mapGetters } from 'vuex'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
+import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import labels from '@/model/constants/labels'
 import axios from 'axios'
 import AuthenticationService from '@/services/authentication'
@@ -146,7 +154,8 @@ export default {
     LeaderboardTopPerformerCard,
     InputDate,
     DatatableLoading,
-    GamificationReportUserDetailsDrawer
+    GamificationReportUserDetailsDrawer,
+    SendWithAIDialog
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
@@ -155,6 +164,12 @@ export default {
       labels,
       isUserDetailsDrawerOpen: false,
       selectedRow: null,
+      isSendWithAIDialogOpen: false,
+      selectedRowForAI: null,
+      sendWithAIOptions: {
+        training: true,
+        phishing: true
+      },
       CONSTANTS: {
         id: 'leaderboard-data-table'
       },
@@ -265,7 +280,7 @@ export default {
           {
             name: 'Send with AI',
             id: 'btn-send-with-ai-gamification-report',
-            icon: 'mdi-send',
+            icon: 'mdi-creation',
             action: 'on-send-with-ai'
           }
         ],
@@ -558,13 +573,38 @@ export default {
       this.callForData()
     },
     handleSendWithAI(row) {
+      this.selectedRowForAI = row
+      this.sendWithAIOptions = {
+        training: true,
+        phishing: true
+      }
+      this.isSendWithAIDialogOpen = true
+    },
+    handleCloseSendWithAIDialog() {
+      this.isSendWithAIDialogOpen = false
+      this.selectedRowForAI = null
+      this.sendWithAIOptions = {
+        training: true,
+        phishing: true
+      }
+    },
+    handleConfirmSendWithAI(options) {
       const token = AuthenticationService.getToken()
-      const { firstName, lastName } = row
+      const { firstName, lastName } = this.selectedRowForAI
+      const actions = []
+
+      if (options.training) {
+        actions.push('training')
+      }
+      if (options.phishing) {
+        actions.push('phishing')
+      }
+
       const body = {
         token,
         firstName,
         lastName,
-        actions: ['training', 'phishing']
+        actions
       }
 
       axios
@@ -575,6 +615,7 @@ export default {
         })
         .then((response) => {
           console.log('Response:', response)
+          this.handleCloseSendWithAIDialog()
         })
         .catch((error) => {
           console.error('Error sending data to autonomous:', error)
