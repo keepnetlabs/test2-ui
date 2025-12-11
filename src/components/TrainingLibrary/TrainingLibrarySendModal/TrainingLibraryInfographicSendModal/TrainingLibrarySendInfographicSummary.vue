@@ -14,6 +14,13 @@
       :is-nested="true"
       @on-close="isShowReminderEmailDialog = false"
     />
+    <NotificationTemplatesPreviewDialog
+      v-if="isShowCertificateDialog"
+      :status="isShowCertificateDialog"
+      :template-data="formData.certificateData"
+      :is-nested="true"
+      @on-close="isShowCertificateDialog = false"
+    />
     <div class="campaign-manager-last-step">
       <div
         class="campaign-manager-last-step__header"
@@ -112,52 +119,8 @@
           detailable
           title="Certificate that users will be received"
           icon="mdi-book-open"
-          :show-body-detail.sync="isShowCertificate"
-        >
-          <template #body>
-            <div
-              v-if="isCertificateData"
-              class="campaign-manager-last-step__email-template-body pb-4"
-            >
-              <div class="campaign-manager-last-step__email-template-body-header">
-                <div class="campaign-manager-last-step__email-template-body-header-left">
-                  {{ formData.certificateData.name }}
-                </div>
-              </div>
-              <div class="campaign-manager-last-step__email-template-body-header-sub">
-                Certificate email template &#8226;
-                <span class="template-list--item__sub-header--span">by</span>
-                {{ formData.certificateData.createdBy }}
-              </div>
-            </div>
-            <div
-              v-if="isShowCertificate && formData.certificateData.languages?.length > 0"
-              style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
-            >
-              <InputLanguagePreview
-                :value="formData.certificateData.selectedLanguageResourceId"
-                style="max-width: 240px;"
-                hide-details
-                :label="certificateTemplateLanguageLabel"
-                :items="getCertificateLanguageItems"
-                @input="handleCertificateLanguageChange"
-              />
-            </div>
-            <div
-              v-if="isShowCertificate"
-              class="campaign-manager-last-step__email-template-body-preview-container"
-            >
-              <div class="campaign-manager-last-step__email-template-body-preview">
-                <KEmailPreview
-                  v-if="!!formData.certificateData.template"
-                  ref="refPreview"
-                  :html="formData.certificateData.template"
-                  is-extra-height
-                />
-              </div>
-            </div>
-          </template>
-        </CampaignManagerSummaryCard>
+          :show-body-detail.sync="isShowCertificateDialog"
+        />
       </div>
       <div v-if="isReminderEmailData" class="campaign-manager-last-step__email-template mt-4">
         <CampaignManagerSummaryCard
@@ -175,22 +138,18 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard.vue'
 import CampaignManagerSummaryCardOneLine from '@/components/CampaignManager/Summary/CampaignManagerSummaryCardOneLine.vue'
 import labels from '@/model/constants/labels'
-import KEmailPreview from '@/components/KEmailPreview.vue'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo.vue'
 import AlertBox from '@/components/AlertBox.vue'
-import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import NotificationTemplatesPreviewDialog from '@/components/Company Settings/NotificationTemplatesPreviewDialog.vue'
 import { mapActions } from 'vuex'
 import PhoneNumber from 'awesome-phonenumber'
 export default {
   name: 'TrainingLibrarySendInfographicSummary',
   components: {
-    KEmailPreview,
     CampaignManagerSummaryCard,
     CampaignManagerSummaryCardOneLine,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     AlertBox,
-    InputLanguagePreview,
     NotificationTemplatesPreviewDialog
   },
   props: {
@@ -206,7 +165,7 @@ export default {
       labels,
       isShowEnrollmentEmail: false,
       isShowTrainingEmail: false,
-      isShowCertificate: false,
+      isShowCertificateDialog: false,
       isShowReminderEmailDialog: false,
       isShowTargetUserDetail: false
     }
