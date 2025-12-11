@@ -436,7 +436,11 @@ export default {
             name: data.template.name || 'Default Reminder Email',
             languages: languages,
             selectedLanguageResourceId: data.template.languageTypeResourceId,
-            selectedLanguageName: data.template.languageTypeName
+            selectedLanguageName: data.template.languageTypeName,
+            fromName: data.template.fromName || '',
+            fromAddress: data.template.fromAddress || '',
+            ccAddresses: data.template.ccAddresses || [],
+            subject: data.template.subject || ''
           }
         }
       )
@@ -471,7 +475,11 @@ export default {
             name: data.template.name || 'Default Certificate Email',
             languages: certificateLanguages,
             selectedLanguageResourceId: data.template.languageTypeResourceId,
-            selectedLanguageName: data.template.languageTypeName
+            selectedLanguageName: data.template.languageTypeName,
+            fromName: data.template.fromName || '',
+            fromAddress: data.template.fromAddress || '',
+            ccAddresses: data.template.ccAddresses || [],
+            subject: data.template.subject || ''
           }
         }
       )
@@ -507,7 +515,11 @@ export default {
             name: data.template.name || 'Default Training Email',
             languages: enrollmentLanguages,
             selectedLanguageResourceId: data.template.languageTypeResourceId,
-            selectedLanguageName: data.template.languageTypeName
+            selectedLanguageName: data.template.languageTypeName,
+            fromName: data.template.fromName || '',
+            fromAddress: data.template.fromAddress || '',
+            ccAddresses: data.template.ccAddresses || [],
+            subject: data.template.subject || ''
           }
         }
       )

@@ -85,7 +85,7 @@
             <div v-if="!!emailTemplate" class="email-template-preview__text mt-4">
               <div>
                 <span class="email-template-preview__text--title">Subject: </span>
-                <span class="email-template-preview__text--body">{{ selectedRow?.subject }}</span>
+                <span class="email-template-preview__text--body">{{ subject }}</span>
               </div>
               <div v-if="fromName" style="margin-top: 2px;">
                 <span class="email-template-preview__text--title">From Name: </span>
@@ -151,7 +151,8 @@ export default {
       languagesData: [],
       fromName: '',
       fromAddress: '',
-      ccAddresses: []
+      ccAddresses: [],
+      subject: ''
     }
   },
   computed: {
@@ -192,6 +193,11 @@ export default {
           document.documentElement.style.overflow = ''
         }
       }
+    },
+    templateData(newVal) {
+      if (newVal && Object.keys(newVal).length > 0) {
+        this.setupFromTemplateData(newVal)
+      }
     }
   },
   methods: {
@@ -202,6 +208,7 @@ export default {
       const mainTemplate = data.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
       // Metadata alanlarını set et
+      this.subject = data.subject || ''
       this.fromName = data.fromName || ''
       this.fromAddress = data.fromAddress || ''
       this.ccAddresses = data.ccAddresses || []
@@ -241,6 +248,7 @@ export default {
           const mainTemplate = data.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           // Metadata alanlarını set et
+          this.subject = data.subject || ''
           this.fromName = data.fromName || ''
           this.fromAddress = data.fromAddress || ''
           this.ccAddresses = data.ccAddresses || []

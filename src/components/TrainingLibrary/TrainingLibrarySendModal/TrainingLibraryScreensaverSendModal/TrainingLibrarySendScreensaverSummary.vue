@@ -82,6 +82,7 @@
       </div>
       <div v-if="isCertificateData" class="campaign-manager-last-step__email-template mt-4">
         <CampaignManagerSummaryCard
+          is-training
           detailable
           title="Certificate that users will be received"
           icon="mdi-book-open"

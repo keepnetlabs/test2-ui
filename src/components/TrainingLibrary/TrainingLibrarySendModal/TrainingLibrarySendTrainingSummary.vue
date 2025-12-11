@@ -4,12 +4,14 @@
       v-if="isShowEnrollmentEmail"
       :status="isShowEnrollmentEmail"
       :template-data="formData.enrollmentData"
+      :is-nested="true"
       @on-close="isShowEnrollmentEmail = false"
     />
     <NotificationTemplatesPreviewDialog
       v-if="isShowReminderEmail"
       :status="isShowReminderEmail"
       :template-data="formData.reminderData"
+      :is-nested="true"
       @on-close="isShowReminderEmail = false"
     />
     <NotificationTemplatesPreviewDialog
@@ -114,6 +116,7 @@
       </div>
       <div v-if="isCertificateData" class="campaign-manager-last-step__email-template mt-4">
         <CampaignManagerSummaryCard
+          is-training
           detailable
           title="Certificate that users will be received"
           icon="mdi-book-open"

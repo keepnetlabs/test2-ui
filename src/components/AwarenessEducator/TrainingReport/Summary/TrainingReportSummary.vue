@@ -495,7 +495,11 @@ export default {
         template = '',
         languages = [],
         selectedLanguageResourceId = '',
-        selectedLanguageName = ''
+        selectedLanguageName = '',
+        subject = '',
+        fromName = '',
+        fromAddress = '',
+        ccAddresses = []
       } = this.enrollmentEmailData || {}
       return {
         name,
@@ -504,7 +508,11 @@ export default {
         template,
         languages,
         selectedLanguageResourceId,
-        selectedLanguageName
+        selectedLanguageName,
+        subject,
+        fromName,
+        fromAddress,
+        ccAddresses
       }
     },
     getCertificateData() {
@@ -515,7 +523,11 @@ export default {
         template = '',
         languages = [],
         selectedLanguageResourceId = '',
-        selectedLanguageName = ''
+        selectedLanguageName = '',
+        subject = '',
+        fromName = '',
+        fromAddress = '',
+        ccAddresses = []
       } = this.certificateEmailData || {}
       return {
         name,
@@ -524,7 +536,11 @@ export default {
         template,
         languages,
         selectedLanguageResourceId,
-        selectedLanguageName
+        selectedLanguageName,
+        subject,
+        fromName,
+        fromAddress,
+        ccAddresses
       }
     },
     getTrainingMaterialData() {
@@ -596,7 +612,11 @@ export default {
               template: mainTemplate,
               languages,
               selectedLanguageResourceId: emailTemplateData.languageTypeResourceId || (languages[0]?.languageTypeResourceId || ''),
-              selectedLanguageName: emailTemplateData.languageTypeName || (languages[0]?.languageTypeName || '')
+              selectedLanguageName: emailTemplateData.languageTypeName || (languages[0]?.languageTypeName || ''),
+              subject: emailTemplateData.subject || '',
+              fromName: emailTemplateData.fromName || '',
+              fromAddress: emailTemplateData.fromAddress || '',
+              ccAddresses: emailTemplateData.ccAddresses || []
             }
           }
         )
@@ -633,7 +653,11 @@ export default {
             template: mainTemplate,
             languages,
             selectedLanguageResourceId: data.languageTypeResourceId || (languages[0]?.languageTypeResourceId || ''),
-            selectedLanguageName: data.languageTypeName || (languages[0]?.languageTypeName || '')
+            selectedLanguageName: data.languageTypeName || (languages[0]?.languageTypeName || ''),
+            subject: data.subject || '',
+            fromName: data.fromName || '',
+            fromAddress: data.fromAddress || '',
+            ccAddresses: data.ccAddresses || []
           }
         })
       }
