@@ -53,7 +53,7 @@
       />
       <AlertBox
         v-if="canRenderSmartGroupAlertBox"
-        text="This Smart Group updates automatically. Users who no longer meet its criteria are removed and won't receive the next trainings."
+        text="This Smart Group updates automatically. Users who no longer meet its criteria are removed and won't receive the next training."
         :slots="{ primaryAction: false, secondaryAction: false }"
       />
     </div>
