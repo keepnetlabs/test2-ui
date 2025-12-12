@@ -2,13 +2,6 @@ pool:
   name: 'Azure Pipelines'
   vmImage: 'ubuntu-latest'
 
-schedules:
-  - cron: "00 5,9,13 * 12 1-5"
-    displayName: Daily build
-    branches:
-      include:
-        - dev
-
 resources:
   repositories:
     - repository: GitHub_Prod_Repo # In a different organization
@@ -25,14 +18,6 @@ resources:
         - test
 
 stages:
-  # BUILD DEV
-  - stage: CI_Dev
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
-    jobs:
-      - job: Build_UI
-        steps:
-          - template: sub-KeepnetLabs.UI-CI.yml
-
   # # BUILD TEST
   - stage: CI_Test
     condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
@@ -48,34 +33,6 @@ stages:
       - job: Build_UI
         steps:
           - template: sub-KeepnetLabs.UI-CI.yml
-
-  # DEPLOY DEV NEW
-  - stage: DEV
-    variables:
-      - group: Dev-UI-Config
-    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
-    dependsOn: CI_Dev
-    jobs:
-      - template: sub-KeepnetLabs.UI-CD.yml
-        parameters:
-          jobName: 'Deploy_UI'
-          environment: 'DEV_UI'
-          websiteName: 'DevUI'
-          artifactName: 'drop'
-
-  # DEPLOY DEV API NEW
-  - stage: DEV_API
-    variables:
-      - group: Dev-UI-Config
-    condition: and(in(dependencies.CI_Dev.result, 'Succeeded', 'SucceededWithIssues'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), contains(variables['Build.SourceBranch'], 'refs/heads/deving/')))
-    dependsOn: CI_Dev
-    jobs:
-      - template: sub-KeepnetLabs.UI-CD.yml
-        parameters:
-          jobName: 'Deploy_UI'
-          environment: 'DEV_API_UI'
-          websiteName: 'DevUI'
-          artifactName: 'drop'
 
   # # DEPLOY TEST
   # - stage: TEST
