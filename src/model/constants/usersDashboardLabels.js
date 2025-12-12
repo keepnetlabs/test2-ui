@@ -67,6 +67,12 @@ const usersDashboardLabels = {
     yourCertificatesNoCertificates: 'No certificates found',
     yourCertificatesDownloadCertificate: 'Download Certificate',
     yourCertificatesInQueue: 'In Queue',
+    yourCertificatesNotAvailableTitle: 'Certificate Not Available',
+    yourCertificatesWarningNotEligibleDownload:
+      "You're not eligible to download the certificate because eligibility applied only to your first attempt.",
+    yourCertificatesWarningCanRetakeNoCertificate:
+      'You can retake the training, but a certificate cannot be issued because certificate eligibility was only available on your first attempt.',
+    cancel: 'Cancel',
 
     // Leaderboard
     leaderboardTitle: 'Leaderboard',
@@ -304,6 +310,12 @@ const usersDashboardLabels = {
     yourCertificatesNoCertificates: 'No certificates found',
     yourCertificatesDownloadCertificate: 'Download Certificate',
     yourCertificatesInQueue: 'In Queue',
+    yourCertificatesNotAvailableTitle: 'Certificate Not Available',
+    cancel: 'Cancel',
+    yourCertificatesWarningNotEligibleDownload:
+      "You're not eligible to download the certificate because eligibility was only available on your first attempt.",
+    yourCertificatesWarningCanRetakeNoCertificate:
+      'You can retake the training, but a certificate cannot be issued because certificate eligibility was only available on your first attempt.',
 
     // Leaderboard
     leaderboardTitle: 'Leaderboard',
@@ -598,6 +610,12 @@ const usersDashboardLabels = {
     yourCertificatesNoCertificates: 'Sertifika bulunamadı',
     yourCertificatesDownloadCertificate: 'Sertifikayı İndir',
     yourCertificatesInQueue: 'Kuyrukta',
+    yourCertificatesNotAvailableTitle: 'Sertifika Mevcut Değil',
+    cancel: 'İptal',
+    yourCertificatesWarningNotEligibleDownload:
+      'Sertifika indirme hakkına sahip değilsiniz çünkü bu hak yalnızca ilk denemenizde geçerlidir.',
+    yourCertificatesWarningCanRetakeNoCertificate:
+      'Eğitimi tekrar alabilirsiniz, ancak sertifika uygunluğu yalnızca ilk denemenizde mevcut olduğu için sertifika verilemez.',
 
     // Leaderboard
     leaderboardTitle: 'Liderlik Tablosu',
@@ -936,6 +954,12 @@ const usersDashboardLabels = {
     yourCertificatesNoCertificates: 'Keine Zertifikate gefunden',
     yourCertificatesDownloadCertificate: 'Zertifikat herunterladen',
     yourCertificatesInQueue: 'In Warteschlange',
+    yourCertificatesNotAvailableTitle: 'Zertifikat nicht verfügbar',
+    cancel: 'Abbrechen',
+    yourCertificatesWarningNotEligibleDownload:
+      'Sie sind nicht berechtigt, das Zertifikat herunterzuladen, da die Berechtigung nur für Ihren ersten Versuch galt.',
+    yourCertificatesWarningCanRetakeNoCertificate:
+      'Sie können die Schulung wiederholen, aber es kann kein Zertifikat ausgestellt werden, da die Zertifikatsberechtigung nur bei Ihrem ersten Versuch verfügbar war.',
 
     // Leaderboard
     leaderboardTitle: 'Bestenliste',
@@ -1276,6 +1300,12 @@ const usersDashboardLabels = {
     yourCertificatesNoCertificates: 'Aucun certificat trouvé',
     yourCertificatesDownloadCertificate: 'Télécharger le certificat',
     yourCertificatesInQueue: 'En attente',
+    yourCertificatesNotAvailableTitle: 'Certificat non disponible',
+    cancel: 'Annuler',
+    yourCertificatesWarningNotEligibleDownload:
+      "Vous n'êtes pas éligible pour télécharger le certificat car l'éligibilité ne s'appliquait qu'à votre première tentative.",
+    yourCertificatesWarningCanRetakeNoCertificate:
+      "Vous pouvez reprendre la formation, mais aucun certificat ne peut être délivré car l'éligibilité au certificat n'était disponible que lors de votre première tentative.",
 
     // Leaderboard
     leaderboardTitle: 'Classement',
@@ -1604,6 +1634,12 @@ const usersDashboardLabels = {
     yourCertificatesNoCertificates: 'No se encontraron certificados',
     yourCertificatesDownloadCertificate: 'Descargar certificado',
     yourCertificatesInQueue: 'En cola',
+    yourCertificatesNotAvailableTitle: 'Certificado no disponible',
+    cancel: 'Cancelar',
+    yourCertificatesWarningNotEligibleDownload:
+      'No es elegible para descargar el certificado porque la elegibilidad se aplicó solo a su primer intento.',
+    yourCertificatesWarningCanRetakeNoCertificate:
+      'Puede volver a realizar la formación, pero no se puede emitir un certificado porque la elegibilidad del certificado solo estaba disponible en su primer intento.',
 
     // Leaderboard
     leaderboardTitle: 'Clasificación',
