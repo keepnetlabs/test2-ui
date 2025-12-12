@@ -307,7 +307,11 @@ export default {
           this.reminderData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: data.template.template,
-            name: data.template.name || 'Default Reminder Email'
+            name: data.template.name || 'Default Reminder Email',
+            fromName: data.template.fromName || '',
+            fromAddress: data.template.fromAddress || '',
+            ccAddresses: data.template.ccAddresses || [],
+            subject: data.template.subject || ''
           }
         }
       )
@@ -320,7 +324,11 @@ export default {
           this.certificateData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: data.template.template,
-            name: data.template.name || 'Default Certificate Email'
+            name: data.template.name || 'Default Certificate Email',
+            fromName: data.template.fromName || '',
+            fromAddress: data.template.fromAddress || '',
+            ccAddresses: data.template.ccAddresses || [],
+            subject: data.template.subject || ''
           }
         }
       )
@@ -333,7 +341,11 @@ export default {
           this.enrollmentData = {
             createdBy: this?.$store?.state?.auth?.selectedCompanyName,
             template: data.template.template,
-            name: data.template.name || 'Default Training Email'
+            name: data.template.name || 'Default Training Email',
+            fromName: data.template.fromName || '',
+            fromAddress: data.template.fromAddress || '',
+            ccAddresses: data.template.ccAddresses || [],
+            subject: data.template.subject || ''
           }
         }
       )

@@ -35,7 +35,9 @@
       v-if="showNotificationTemplatePreviewDialog"
       :status="showNotificationTemplatePreviewDialog"
       :selected-row="selectedItem"
+      :show-edit-button="true"
       @on-close="toggleNotificationPreviewDialog"
+      @on-edit="handleEditFromPreview"
     />
     <div class="notification-templates__container">
       <DataTable
@@ -451,14 +453,14 @@ export default {
       }
     },
     toggleNotificationPreviewDialog() {
-      if (this.showNotificationTemplatePreviewDialog) {
-        this.selectedItem = null
-      }
+      // Don't clear selectedItem to preserve data for edit functionality
       this.showNotificationTemplatePreviewDialog = !this.showNotificationTemplatePreviewDialog
     },
-    toggleNewNotificationTemplate() {
+    toggleNewNotificationTemplate(clearSelection = true) {
       if (this.newNotificationTemplateStatus) {
-        this.selectedItem = null
+        if (clearSelection) {
+          this.selectedItem = null
+        }
         this.editItemsDisabled = false
       }
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
@@ -556,6 +558,16 @@ export default {
       this.selectedItem = row
       this.isDuplicate = false
       this.toggleNewNotificationTemplate()
+    },
+    handleEditFromPreview() {
+      if (this.selectedItem) {
+        this.toggleNotificationPreviewDialog()
+        // Set selectedItem before toggling, so it's not cleared
+        const itemToEdit = this.selectedItem
+        this.toggleNewNotificationTemplate(false) // Don't clear selectedItem
+        this.isDuplicate = false
+        this.editItemsDisabled = false
+      }
     }
   }
 }
