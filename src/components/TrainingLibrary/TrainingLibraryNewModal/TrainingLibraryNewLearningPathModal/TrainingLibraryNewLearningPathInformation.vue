@@ -9,17 +9,56 @@
       />
     </FormGroup>
     <FormGroup :title="labels.Description" :sub-title="labels.DescriptionLearningPathSub">
-      <InputDescription
+      <InputAIDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
-        rows="2"
-        height="100"
+        rows="5"
+        height="150"
         hint="*Required"
         required
         :max-length="300"
         :initial-placeholder="labels.Description"
         :rules="[(v) => Validations.required(v, labels.Required)]"
-      />
+        :show-generated-by-ai="hasGenerated"
+        :is-generating="isGenerateLoading"
+      >
+        <template #append-inner>
+          <v-tooltip bottom opacity="1" z-index="1000" max-width="250">
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-btn
+                  class="generate-button safari-hide-tooltip"
+                  :color="hasGenerated ? '#2196F3' : '#2196F3'"
+                  :outlined="hasGenerated"
+                  rounded
+                  :style="getGenerateButtonStyle"
+                  @click="handleGenerate"
+                >
+                  <v-icon
+                    left
+                    :color="hasGenerated ? '#2196F3' : 'white'"
+                    style="margin-right: 4px; font-size: 16px"
+                    >mdi-creation</v-icon
+                  >
+                  <span
+                    :style="{
+                      color: hasGenerated ? '#2196F3' : 'white',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      textTransform: 'capitalize',
+                    }"
+                    >{{ generateButtonText }}</span
+                  >
+                </v-btn>
+              </div>
+            </template>
+            <span
+              >To generate an AI-powered description, complete key fields like Learning
+              Path Name, Category, Training Level and Role.</span
+            >
+          </v-tooltip>
+        </template>
+      </InputAIDescription>
     </FormGroup>
     <FormGroup has-hint :title="labels.Category">
       <KSelect
@@ -38,7 +77,11 @@
     </FormGroup>
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
-    <FormGroup has-hint :title="labels.Role" :sub-title="labels.TargetAudienceLearningPathSub">
+    <FormGroup
+      has-hint
+      :title="labels.Role"
+      :sub-title="labels.TargetAudienceLearningPathSub"
+    >
       <KSelect
         v-model.trim="formData.targetAudience"
         persistent-hint
@@ -61,7 +104,10 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheLearningPath">
+    <FormGroup
+      :title="labels.CoverImage"
+      :sub-title="labels.UploadCoverImageForTheLearningPath"
+    >
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
@@ -87,21 +133,21 @@
 </template>
 
 <script>
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import labels from '@/model/constants/labels'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InputTag from '@/components/Common/Inputs/InputTag'
-import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import * as Validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
-import { mapGetters } from 'vuex'
-import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
-import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import InputEntityName from "@/components/Common/Inputs/InputEntityName";
+import labels from "@/model/constants/labels";
+import InputAIDescription from "@/components/Common/Inputs/InputAIDescription";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import InputTag from "@/components/Common/Inputs/InputTag";
+import KFileUpload from "@/components/Common/FileUpload/FileUpload";
+import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
+import * as Validations from "@/utils/validations";
+import { scrollToComponent } from "@/utils/functions";
+import { mapGetters } from "vuex";
+import InputCompliance from "@/components/Common/Inputs/InputCompliance.vue";
+import InputBehaviour from "@/components/Common/Inputs/InputBehaviour.vue";
 export default {
-  name: 'TrainingLibraryNewLearningPathInformation',
+  name: "TrainingLibraryNewLearningPathInformation",
   components: {
     InputBehaviour,
     InputCompliance,
@@ -109,109 +155,162 @@ export default {
     KFileUpload,
     InputTag,
     KSelect,
-    InputDescription,
+    InputAIDescription,
     InputEntityName,
-    FormGroup
+    FormGroup,
   },
   props: {
     selectedCompaniesAndGroups: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
       Validations,
       labels,
       coverImageFilePreview: [],
+      isGenerateLoading: false,
+      hasGenerated: false,
       formData: {
         coverImage: null,
         compliances: [],
-        name: '',
-        description: '',
-        category: '',
-        targetAudience: '',
+        name: "",
+        description: "",
+        category: "",
+        targetAudience: "",
         behaviours: [],
         tags: [],
         availableForRequests: [],
-        coverImageUrl: null
-      }
-    }
+        coverImageUrl: null,
+      },
+    };
   },
   computed: {
     ...mapGetters({
-      getCategories: 'trainingLibraryHelpers/getCategories',
-      getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
-    })
+      getCategories: "trainingLibraryHelpers/getCategories",
+      getTargetAudiences: "trainingLibraryHelpers/getTargetAudiences",
+    }),
+    isGenerateDisabled() {
+      // If description has more than 5 characters, enable button
+      if (this.formData.description && this.formData.description.trim().length > 5) {
+        return this.isGenerateLoading;
+      }
+      // Otherwise check required fields
+      return (
+        !this.formData.name ||
+        !this.formData.category ||
+        !this.formData.targetAudience ||
+        this.isGenerateLoading
+      );
+    },
+    getGenerateButtonStyle() {
+      const defaultStyle = {
+        textTransform: "capitalize",
+        maxHeight: "28px",
+      };
+      if (this.isGenerateDisabled) {
+        return {
+          opacity: 0.5,
+          pointerEvents: "none",
+          ...defaultStyle,
+        };
+      }
+      return defaultStyle;
+    },
+    generateButtonText() {
+      if (this.hasGenerated) {
+        return "Regenerate";
+      }
+      if (this.formData.description && !this.hasGenerated) {
+        return "Improve with AI";
+      }
+      return "Generate";
+    },
   },
   methods: {
     handleCoverImageChange(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.formData.coverImage = null
-        return
+        this.formData.coverImage = null;
+        return;
       }
-      this.formData.coverImage = file
+      this.formData.coverImage = file;
     },
     validateForm() {
-      const { refForm } = this.$refs
+      const { refForm } = this.$refs;
       if (refForm.validate()) {
-        return true
+        return true;
       } else {
         this.$nextTick(() => {
-          const el = refForm.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
+          const el = refForm.$el.querySelector(".error--text");
+          scrollToComponent(el);
+        });
       }
-      return false
+      return false;
     },
     setFormData(formData = {}) {
       if (formData.coverImage) {
         this.coverImageFilePreview = [
           {
             url: formData.coverImage.imageUrl,
-            name: formData.coverImage.name || 'Cover Image'
-          }
-        ]
-        this.formData.coverImageUrl = formData.coverImage.imageUrl
+            name: formData.coverImage.name || "Cover Image",
+          },
+        ];
+        this.formData.coverImageUrl = formData.coverImage.imageUrl;
       }
       this.formData = {
         ...this.formData,
-        ...formData
-      }
+        ...formData,
+      };
     },
     handleCoverImageClear() {
-      this.coverImageFilePreview = []
-      this.formData.coverImage = ''
-      this.formData.coverImageUrl = ''
+      this.coverImageFilePreview = [];
+      this.formData.coverImage = "";
+      this.formData.coverImageUrl = "";
     },
     setMakeAvailableForData(availableForList = []) {
       if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
         const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
           availableForList
-        )
+        );
         if (!availableForListFromBackend.length) {
           this.formData.availableForRequests = [
             {
-              id: 'MyCompanyOnly',
-              label: 'My company only',
-              type: 'MyCompanyOnly',
-              resourceId: null
-            }
-          ]
+              id: "MyCompanyOnly",
+              label: "My company only",
+              type: "MyCompanyOnly",
+              resourceId: null,
+            },
+          ];
         } else {
-          this.formData.availableForRequests = availableForListFromBackend
+          this.formData.availableForRequests = availableForListFromBackend;
         }
       } else {
         this.formData.availableForRequests = [
           {
-            id: 'MyCompanyOnly',
-            label: 'My company only',
-            type: 'MyCompanyOnly',
-            resourceId: null
-          }
-        ]
+            id: "MyCompanyOnly",
+            label: "My company only",
+            type: "MyCompanyOnly",
+            resourceId: null,
+          },
+        ];
       }
-    }
-  }
-}
+    },
+    handleGenerate() {
+      if (this.isGenerateDisabled || this.isGenerateLoading) {
+        return;
+      }
+      this.isGenerateLoading = true;
+      // Simulate AI description generation - 3 seconds
+      setTimeout(() => {
+        // TODO: Replace with actual AI description generation API call
+        // For now, simulate with a sample description
+        this.formData.description =
+          "This learning path provides comprehensive training on security awareness, covering key topics such as phishing prevention, password security, and safe browsing practices.";
+        this.hasGenerated = true;
+        this.isGenerateLoading = false;
+      }, 3000);
+    },
+  },
+};
 </script>
