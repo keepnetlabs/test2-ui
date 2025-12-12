@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     :status="status"
-    title="Send with AI"
+    title="Autonomous AI"
     icon="mdi-creation"
     icon-color="#2196f3"
     @changeStatus="$emit('closeOverlay', $event)"
@@ -9,7 +9,7 @@
     <template #app-dialog-body>
       <div class="send-with-ai-dialog__body">
         <p class="send-with-ai-dialog__text">
-          Select the actions to perform for this user:
+          Select the actions to perform for this user. This process will take 3-5 minutes and the selected user will receive notifications via email:
         </p>
         <div class="send-with-ai-dialog__options">
           <div class="send-with-ai-dialog__option-item">
@@ -46,7 +46,7 @@
       <AppDialogFooter
         cancel-button-id="btn-cancel--send-with-ai"
         confirm-button-id="btn-confirm--send-with-ai"
-        action-button-text="Send with AI"
+        action-button-text="Start Autonomous AI"
         :confirm-button-disabled="!localOptions.training && !localOptions.phishing"
         @handleClose="$emit('closeOverlay', false)"
         @handleConfirm="handleConfirm"
@@ -97,6 +97,17 @@ export default {
   methods: {
     handleConfirm() {
       this.$emit('confirm', this.localOptions)
+
+      // Show success toast
+      this.$store.commit('snackbar/setSnackbar', {
+        show: true,
+        message: 'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
+        type: 'success',
+        timeout: 5000
+      })
+
+      // Close dialog
+      this.$emit('closeOverlay', false)
     }
   }
 }
