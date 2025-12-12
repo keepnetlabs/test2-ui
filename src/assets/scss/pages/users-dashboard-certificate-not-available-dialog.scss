@@ -1,0 +1,30 @@
+.users-dashboard-certificate-not-available-dialog {
+  &__message {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #383b41;
+    margin: 0;
+  }
+
+  // Force dialog container to be visible
+  .v-dialog__container {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .v-dialog {
+    display: block !important;
+    border-radius: 12px !important;
+  }
+  // Ensure icon is visible
+  .k-dialog__header {
+    min-height: 24px;
+    padding: 24px !important;
+    .v-icon {
+      display: inline-block !important;
+    }
+  }
+}
