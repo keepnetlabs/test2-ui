@@ -117,17 +117,18 @@ export default {
       }
       this.$emit('confirm', confirmData)
 
-      // Show success toast
-      this.$store.commit('snackbar/setSnackbar', {
-        show: true,
-        message:
-          'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
-        type: 'success',
-        timeout: 5000
-      })
-
       // Close dialog
       this.$emit('closeOverlay', false)
+
+      // Show success toast after dialog closes
+      this.$nextTick(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message:
+            'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
+          icon: 'mdi-check-circle',
+          color: '#4caf50'
+        })
+      })
     }
   }
 }
