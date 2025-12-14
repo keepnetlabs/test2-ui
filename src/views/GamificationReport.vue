@@ -612,11 +612,15 @@ export default {
       }
 
       axios
-        .post('http://localhost:4111/autonomous', body, {
-          headers: {
-            'Content-Type': 'application/json'
+        .post(
+          'https://agentic-ally.keepnet-labs-ltd-business-profile4086.workers.dev/autonomous',
+          body,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        })
+        )
         .then((response) => {
           console.log('Response:', response)
           this.handleCloseSendWithAIDialog()
