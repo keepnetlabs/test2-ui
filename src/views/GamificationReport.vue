@@ -278,7 +278,7 @@ export default {
             action: 'on-details'
           },
           {
-            name: 'Send with AI',
+            name: 'Autonomous AI',
             id: 'btn-send-with-ai-gamification-report',
             icon: 'mdi-creation',
             action: 'on-send-with-ai'
@@ -605,7 +605,10 @@ export default {
         firstName,
         lastName,
         actions,
-        sendAfterPhishingSimulation: options.sendAfterPhishingSimulation || false
+        sendAfterPhishingSimulation:
+          options.training && options.phishing
+            ? options.sendAfterPhishingSimulation || false
+            : false
       }
 
       axios
