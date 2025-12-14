@@ -604,7 +604,8 @@ export default {
         token,
         firstName,
         lastName,
-        actions
+        actions,
+        sendAfterPhishingSimulation: options.sendAfterPhishingSimulation || false
       }
 
       axios
