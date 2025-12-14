@@ -605,7 +605,10 @@ export default {
         firstName,
         lastName,
         actions,
-        sendAfterPhishingSimulation: options.sendAfterPhishingSimulation || false
+        sendAfterPhishingSimulation:
+          options.training && options.phishing
+            ? options.sendAfterPhishingSimulation || false
+            : false
       }
 
       axios
