@@ -9,7 +9,8 @@
     <template #app-dialog-body>
       <div class="send-with-ai-dialog__body">
         <p class="send-with-ai-dialog__text">
-          Select the actions to perform for this user. This process will take 3-5 minutes and the selected user will receive notifications via email:
+          Select the actions to perform for this user. This process will take 3-5 minutes and the
+          selected user will receive notifications via email:
         </p>
         <div class="send-with-ai-dialog__options">
           <div class="send-with-ai-dialog__option-item">
@@ -22,7 +23,8 @@
               />
             </div>
             <p class="send-with-ai-dialog__option-description">
-              Automatically assign personalized training based on the user's security level and weaknesses
+              Automatically assign personalized training based on the user's security level and
+              weaknesses
             </p>
           </div>
           <div class="send-with-ai-dialog__option-item">
@@ -37,6 +39,18 @@
             <p class="send-with-ai-dialog__option-description">
               Automatically send targeted phishing emails to help users identify and report threats
             </p>
+          </div>
+          <div
+            v-if="localOptions.training && localOptions.phishing"
+            class="send-with-ai-dialog__switch-container"
+          >
+            <v-switch
+              v-model="sendAfterPhishingSimulation"
+              label="Send training after simulation fails"
+              color="#2196f3"
+              class="send-with-ai-dialog__switch"
+              hide-details
+            />
           </div>
         </div>
       </div>
@@ -83,7 +97,8 @@ export default {
       localOptions: {
         training: true,
         phishing: true
-      }
+      },
+      sendAfterPhishingSimulation: false
     }
   },
   watch: {
@@ -96,12 +111,17 @@ export default {
   },
   methods: {
     handleConfirm() {
-      this.$emit('confirm', this.localOptions)
+      const confirmData = {
+        ...this.localOptions,
+        sendAfterPhishingSimulation: this.sendAfterPhishingSimulation
+      }
+      this.$emit('confirm', confirmData)
 
       // Show success toast
       this.$store.commit('snackbar/setSnackbar', {
         show: true,
-        message: 'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
+        message:
+          'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
         type: 'success',
         timeout: 5000
       })
@@ -144,22 +164,8 @@ export default {
     gap: 8px;
   }
 
-  &__option-checkbox {
-    ::v-deep .v-input__slot {
-      margin-bottom: 0;
-    }
-  }
-
   &__checkbox {
     margin: 0;
-
-    ::v-deep .v-input__slot {
-      margin-bottom: 0;
-    }
-
-    ::v-deep .v-input--checkbox {
-      margin-top: 0;
-    }
   }
 
   &__option-description {
@@ -168,6 +174,17 @@ export default {
     margin: 0;
     line-height: 1.5;
     margin-left: 32px;
+  }
+
+  &__switch-container {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  &__switch {
+    margin: 0;
+    max-width: 100%;
   }
 }
 </style>
