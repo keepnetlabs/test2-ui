@@ -150,7 +150,8 @@
                         scope.row.result !== 'Excluded' &&
                         scope.row.analysisEngineType !== INTEGRATION_TYPES.VIRUSTOTAL &&
                         scope.row.analysisEngineType !== INTEGRATION_TYPES.OPSWAT &&
-                        scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET
+                        scope.row.analysisEngineType !== INTEGRATION_TYPES.FORTINET &&
+                        scope.row.analysisEngineType !== INTEGRATION_TYPES.USTA
                       "
                       :id="`btn-see-details--email-details-url-${index}`"
                       :href="scope.row['analysisEnginePermalink']"
