@@ -228,6 +228,7 @@ export default {
         'Not Completed': this.labels.yourLearningNotCompleted,
         'In Progress': this.labels.yourLearningInProgress,
         Completed: this.labels.yourLearningCompleted,
+        'Exam Passed': this.labels.actionTypeExamPassed,
         'In Queue': this.labels.yourCertificatesInQueue,
         'Exam Failed': this.labels.actionTypeExamFailed
       }
@@ -239,6 +240,7 @@ export default {
         'Not Completed': '#B83A3A', // Red
         'In Progress': '#FF9800', // Orange
         Completed: '#217124', // Green
+        'Exam Passed': '#43A047', // Green (Exam Passed)
         'In Queue': '#1173C1', // Blue
         'Exam Failed': '#F56C6C' // Red
       }

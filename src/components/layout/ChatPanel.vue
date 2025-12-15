@@ -103,11 +103,11 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
     const sessionId = `${hostId}-${userData?.email?.replace('@', '_')}-${userData?.id}`
     const { token } = JSON.parse(localStorage.getItem('token'))
+    const companyId = localStorage.getItem('companyRequestId') || ''
+    const baseApiUrl = APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api'
     return {
       isExpanded: false,
-      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}&accessToken=${token}&baseApiUrl=${
-        APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api'
-      }`,
+      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}&accessToken=${token}&baseApiUrl=${baseApiUrl}&companyId=${companyId}`,
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
