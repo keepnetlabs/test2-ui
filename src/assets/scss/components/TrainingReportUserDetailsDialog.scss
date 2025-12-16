@@ -1,10 +1,37 @@
 // Training Report User Details Dialog Styles
+.training-report-user-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.17);
+  z-index: 250;
+  cursor: pointer;
+}
+
+.k-navigation-drawer.k-navigation-drawer--training-report-user-details {
+  transition: right 0.25s ease-in-out;
+  z-index: 251 !important;
+
+  .k-navigation-drawer__body:has(.responses-layout) {
+    overflow: hidden;
+    margin-bottom: 16px !important;
+  }
+}
+
 .training-report-user-details-dialog {
   min-height: auto;
 
   // Tab content styling
   .tab-content {
-    padding-top: 16px;
+    padding-top: 0;
+
+    // Responses tab - no body scroll
+    &:has(.responses-layout) {
+      overflow: hidden;
+      max-height: calc(100vh - 160px);
+    }
   }
 
   // Interactions table column styling
@@ -18,6 +45,7 @@
   .responses-layout {
     display: flex;
     gap: 16px;
+    align-items: stretch;
   }
 
   // Toolbar row above Q/A columns
@@ -29,31 +57,35 @@
   // Questions panel (left side)
   .questions-panel {
     flex: 0 0 450px;
-    .panel-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: #383b41;
-    }
-  }
-  .answers-panel {
-    .panel-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: #383b41;
-    }
+    display: flex;
+    flex-direction: column;
   }
 
   // Answers panel (right side)
   .answers-panel {
     flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   // Questions list container
   .questions-list {
-    max-height: 550px;
+    flex: 1;
+    max-height: calc(100vh - 180px);
+    min-height: calc(100vh - 180px);
     overflow-y: auto;
+    padding: 16px;
+    padding-bottom: 16px;
+    border: 1px solid #f2f2f2;
+    border-radius: 8px;
+    background-color: #ffffff;
+
+    .panel-title {
+      font-size: 16px;
+      color: rgba(56, 59, 65, 0.72);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
   }
 
   // Individual question item
@@ -106,13 +138,21 @@
 
   // Answer details container
   .answer-details {
-    max-height: 278px;
+    flex: 1;
+    max-height: calc(100vh - 180px);
+    min-height: calc(100vh - 180px);
     overflow-y: auto;
-    min-height: 278px;
     border: 1px solid #f2f2f2;
     border-radius: 8px;
     padding: 24px;
     background-color: #ffffff;
+
+    .panel-title {
+      font-size: 16px;
+      color: rgba(56, 59, 65, 0.72);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
   }
 
   // Question header in answer panel
