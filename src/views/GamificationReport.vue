@@ -144,6 +144,7 @@ import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import labels from '@/model/constants/labels'
 import axios from 'axios'
 import AuthenticationService from '@/services/authentication'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'GamificationReport',
   components: {
@@ -345,6 +346,20 @@ export default {
             minWidth: 175
           },
           {
+            property: 'preferredLanguage',
+            align: 'left',
+            editable: false,
+            label: 'Preferred Language',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'select',
+            filterableItems: [],
+            overrideWidth: true,
+            minWidth: 175
+          },
+
+          {
             property: 'performance',
             align: 'right',
             editable: false,
@@ -382,6 +397,7 @@ export default {
     this.callForData()
     this.callForTopPerformers()
     this.callForFormDetails()
+    this.callForLanguages()
   },
   computed: {
     ...mapGetters({
@@ -420,6 +436,25 @@ export default {
     callForFormDetails() {
       getLeaderboardFormDetails().then((res) => {
         this.formDetails = res?.data?.data || []
+      })
+    },
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        const languageOptions =
+          response?.map((language) => ({
+            text: language.isoFriendlyName || language.name,
+            value: language.resourceId
+          })) || []
+        const preferredLanguageColumn = this.tableOptions.columns.find(
+          (col) => col.property === 'preferredLanguage'
+        )
+        if (preferredLanguageColumn) {
+          this.$set(preferredLanguageColumn, 'filterableItems', languageOptions)
+          // Re-render filters if table is already rendered
+          if (this.$refs.refTable) {
+            this.$refs.refTable.reRenderFilters()
+          }
+        }
       })
     },
     callForData() {
