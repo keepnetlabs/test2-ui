@@ -1,215 +1,240 @@
 <template>
-  <AppDialog
-    title-id="text--training-report-user-details-popup-title"
-    title="User Details"
-    subtitle-id="text--training-report-user-details-popup-subtitle"
-    maxHeightSize="800"
-    :custom-size="'1200'"
-    :icon="CONSTANTS.icon"
-    :subtitle="getSubtitle"
-    :status="status"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <div v-if="item && isSurvey" class="training-report-user-details-dialog">
-        <el-tabs v-model="activeTab" ref="refTabContainer" class="mt-n2">
-          <el-tab-pane label="Responses" name="responses" id="responses-content">
-            <div v-if="activeTab === 'responses'" class="tab-content">
-              <div v-if="isResponsesLoading" class="responses-layout">
-                <!-- Skeleton Loading for Questions Panel -->
-                <div class="questions-panel">
-                  <h3 class="panel-title">Questions</h3>
-                  <div class="questions-list">
-                    <div
-                      v-for="n in 3"
-                      :key="'skeleton-q-' + n"
-                      class="question-item skeleton-item"
-                    >
-                      <div class="question-number skeleton-circle"></div>
-                      <div class="question-text skeleton-content">
-                        <div class="skeleton-line skeleton-line-long"></div>
-                        <div class="skeleton-line skeleton-line-medium"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Skeleton Loading for Answer Panel -->
-                <div class="answers-panel">
-                  <div class="answer-details skeleton-answer-panel">
-                    <div class="question-header">
-                      <div class="question-number-badge skeleton-circle"></div>
-                      <div class="question-title skeleton-content">
-                        <div class="skeleton-line skeleton-line-long"></div>
-                      </div>
-                    </div>
-
-                    <div class="answer-options">
-                      <h5 class="answer-options-title">Answer Options:</h5>
-                      <div class="options-list">
-                        <div
-                          v-for="n in 2"
-                          :key="'skeleton-a-' + n"
-                          class="option-item skeleton-option"
-                        >
+  <div v-if="isVisible">
+    <div class="training-report-user-details-overlay" @click="handleOverlayClick"></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  Details
+                </VListItemTitle>
+                <VListItemSubtitle v-if="getSubtitle" class="text-primary-color">
+                  {{ getSubtitle }}
+                </VListItemSubtitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <div v-if="item && isSurvey" class="training-report-user-details-dialog">
+          <el-tabs v-model="activeTab" ref="refTabContainer" class="mt-4">
+            <el-tab-pane label="Responses" name="responses" id="responses-content">
+              <div v-if="activeTab === 'responses'" class="tab-content">
+                <div v-if="isResponsesLoading" class="responses-layout">
+                  <!-- Skeleton Loading for Questions Panel -->
+                  <div class="questions-panel">
+                    <div class="questions-list">
+                      <h3 class="panel-title">Questions</h3>
+                      <div
+                        v-for="n in 3"
+                        :key="'skeleton-q-' + n"
+                        class="question-item skeleton-item"
+                      >
+                        <div class="question-number skeleton-circle"></div>
+                        <div class="question-text skeleton-content">
+                          <div class="skeleton-line skeleton-line-long"></div>
                           <div class="skeleton-line skeleton-line-medium"></div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div v-else-if="responsesData.length === 0" class="empty-state">
-                <p>You do not have any survey data available.</p>
-              </div>
-              <div v-else>
-                <div class="responses-toolbar" v-if="sessionSelectItems.length > 1">
-                  <KSelect
-                    v-model="selectedSessionIndex"
-                    :items="sessionSelectItems"
-                    outlined
-                    dense
-                    hide-details
-                    placeholder="Response"
-                    style="max-width: 380px;"
-                  />
-                </div>
-                <div class="responses-layout">
-                  <!-- Questions List (Left Side) -->
-                  <div class="questions-panel">
-                    <h3 class="panel-title">Questions</h3>
-                    <div class="questions-list">
-                      <div
-                        v-for="(question, index) in responsesData"
-                        :key="question.questionId || index"
-                        class="question-item"
-                        :class="{ active: selectedQuestionIndex === index }"
-                        @click="selectQuestion(index)"
-                      >
-                        <div class="question-number">{{ index + 1 }}</div>
-                        <div class="question-text">
-                          {{ question.questionText }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <!-- Answer Details (Right Side) -->
+                  <!-- Skeleton Loading for Answer Panel -->
                   <div class="answers-panel">
-                    <h3 class="panel-title">Answer Details</h3>
-                    <div v-if="selectedQuestion" class="answer-details">
-                      <div class="selected-question">
-                        <div class="question-header">
-                          <div class="question-number-badge">
-                            {{ selectedQuestionIndex + 1 }}
-                          </div>
-                          <h4 class="question-title">
-                            {{ selectedQuestion.questionText }}
-                          </h4>
+                    <div class="answer-details skeleton-answer-panel">
+                      <h3 class="panel-title">Answer Details</h3>
+                      <div class="question-header">
+                        <div class="question-number-badge skeleton-circle"></div>
+                        <div class="question-title skeleton-content">
+                          <div class="skeleton-line skeleton-line-long"></div>
                         </div>
                       </div>
 
                       <div class="answer-options">
-                        <h5
-                          v-if="
-                            selectedQuestion.questionType !== 'fill-in' &&
-                            selectedQuestion.questionType !== 'numeric' &&
-                            selectedQuestion.questionType !== 'long-fill-in'
-                          "
-                          class="answer-options-title"
-                        >
-                          Answer Options:
-                        </h5>
-                        <!-- Choice Single question type için component -->
-                        <ChoiceQuestionComponent
-                          v-if="
-                            selectedQuestion.questionType === 'choice-single' ||
-                            selectedQuestion.questionType === 'true-false'
-                          "
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Choice Multi question type için component -->
-                        <MultipleResponseComponent
-                          v-else-if="selectedQuestion.questionType === 'choice-multi'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Fill-In question type için component -->
-                        <FillInComponent
-                          v-else-if="selectedQuestion.questionType === 'fill-in'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Numeric question type için component -->
-                        <NumericComponent
-                          v-else-if="selectedQuestion.questionType === 'numeric'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Sequence question type için component -->
-                        <SequenceComponent
-                          v-else-if="selectedQuestion.questionType === 'sequence'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Matching question type için component -->
-                        <MatchingComponent
-                          v-else-if="selectedQuestion.questionType === 'matching'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Dropdown question type için component -->
-                        <DropdownComponent
-                          v-else-if="selectedQuestion.questionType === 'dropdown'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Word Bank question type için component -->
-                        <WordBankComponent
-                          v-else-if="selectedQuestion.questionType === 'word-bank'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Hotspot question type için component -->
-                        <HotspotComponent
-                          v-else-if="selectedQuestion.questionType === 'hotspot'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Likert question type için component -->
-                        <LikertComponent
-                          v-else-if="selectedQuestion.questionType === 'likert'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Long Fill In (Essay) question type için component -->
-                        <LongFillInComponent
-                          v-else-if="selectedQuestion.questionType === 'long-fill-in'"
-                          :answer-options="selectedQuestion.answerOptions"
-                          :show-correct-answers="showCorrectAnswers"
-                        />
-                        <!-- Diğer question type'lar için fallback -->
-                        <div v-else class="options-list">
+                        <h5 class="answer-options-title">Answer Options:</h5>
+                        <div class="options-list">
                           <div
-                            v-for="option in selectedQuestion.answerOptions"
-                            :key="option.optionId || option.text"
-                            class="option-item"
-                            :class="{
-                              selected: option.isUserAnswer,
-                              correct: option.isCorrect && showCorrectAnswers
-                            }"
+                            v-for="n in 2"
+                            :key="'skeleton-a-' + n"
+                            class="option-item skeleton-option"
                           >
-                            <span class="option-text">{{ option.text }}</span>
-                            <div class="option-badges">
-                              <span v-if="option.isUserAnswer" class="badge badge-selected"
-                                >Selected</span
-                              >
-                              <span
-                                v-if="option.isCorrect && showCorrectAnswers"
-                                class="badge badge-correct"
-                                >Correct</span
-                              >
+                            <div class="skeleton-line skeleton-line-medium"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-else-if="responsesData.length === 0" class="empty-state">
+                  <p>You do not have any survey data available.</p>
+                </div>
+                <div v-else>
+                  <div class="responses-toolbar" v-if="sessionSelectItems.length > 1">
+                    <KSelect
+                      v-model="selectedSessionIndex"
+                      :items="sessionSelectItems"
+                      outlined
+                      dense
+                      hide-details
+                      placeholder="Response"
+                      style="max-width: 380px;"
+                    />
+                  </div>
+                  <div class="responses-layout">
+                    <!-- Questions List (Left Side) -->
+                    <div class="questions-panel">
+                      <div class="questions-list">
+                        <h3 class="panel-title">Questions</h3>
+                        <div
+                          v-for="(question, index) in responsesData"
+                          :key="question.questionId || index"
+                          class="question-item"
+                          :class="{ active: selectedQuestionIndex === index }"
+                          @click="selectQuestion(index)"
+                        >
+                          <div class="question-number">{{ index + 1 }}</div>
+                          <div class="question-text">
+                            {{ question.questionText }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Answer Details (Right Side) -->
+                    <div class="answers-panel">
+                      <div v-if="selectedQuestion" class="answer-details">
+                        <h3 class="panel-title">Answer Details</h3>
+                        <div class="selected-question">
+                          <div class="question-header">
+                            <div class="question-number-badge">
+                              {{ selectedQuestionIndex + 1 }}
+                            </div>
+                            <h4 class="question-title">
+                              {{ selectedQuestion.questionText }}
+                            </h4>
+                          </div>
+                        </div>
+
+                        <div class="answer-options">
+                          <h5
+                            v-if="
+                              selectedQuestion.questionType !== 'fill-in' &&
+                              selectedQuestion.questionType !== 'numeric' &&
+                              selectedQuestion.questionType !== 'long-fill-in'
+                            "
+                            class="answer-options-title"
+                          >
+                            Answer Options:
+                          </h5>
+                          <!-- Choice Single question type için component -->
+                          <ChoiceQuestionComponent
+                            v-if="
+                              selectedQuestion.questionType === 'choice-single' ||
+                              selectedQuestion.questionType === 'true-false'
+                            "
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Choice Multi question type için component -->
+                          <MultipleResponseComponent
+                            v-else-if="selectedQuestion.questionType === 'choice-multi'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Fill-In question type için component -->
+                          <FillInComponent
+                            v-else-if="selectedQuestion.questionType === 'fill-in'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Numeric question type için component -->
+                          <NumericComponent
+                            v-else-if="selectedQuestion.questionType === 'numeric'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Sequence question type için component -->
+                          <SequenceComponent
+                            v-else-if="selectedQuestion.questionType === 'sequence'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Matching question type için component -->
+                          <MatchingComponent
+                            v-else-if="selectedQuestion.questionType === 'matching'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Dropdown question type için component -->
+                          <DropdownComponent
+                            v-else-if="selectedQuestion.questionType === 'dropdown'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Word Bank question type için component -->
+                          <WordBankComponent
+                            v-else-if="selectedQuestion.questionType === 'word-bank'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Hotspot question type için component -->
+                          <HotspotComponent
+                            v-else-if="selectedQuestion.questionType === 'hotspot'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Likert question type için component -->
+                          <LikertComponent
+                            v-else-if="selectedQuestion.questionType === 'likert'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Long Fill In (Essay) question type için component -->
+                          <LongFillInComponent
+                            v-else-if="selectedQuestion.questionType === 'long-fill-in'"
+                            :answer-options="selectedQuestion.answerOptions"
+                            :show-correct-answers="showCorrectAnswers"
+                          />
+                          <!-- Diğer question type'lar için fallback -->
+                          <div v-else class="options-list">
+                            <div
+                              v-for="option in selectedQuestion.answerOptions"
+                              :key="option.optionId || option.text"
+                              class="option-item"
+                              :class="{
+                                selected: option.isUserAnswer,
+                                correct: option.isCorrect && showCorrectAnswers
+                              }"
+                            >
+                              <span class="option-text">{{ option.text }}</span>
+                              <div class="option-badges">
+                                <span v-if="option.isUserAnswer" class="badge badge-selected"
+                                  >Selected</span
+                                >
+                                <span
+                                  v-if="option.isCorrect && showCorrectAnswers"
+                                  class="badge badge-correct"
+                                  >Correct</span
+                                >
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -218,102 +243,92 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="Interactions" name="interactions" id="interactions-content">
-            <div v-if="activeTab === 'interactions'" class="tab-content">
-              <DataTable
-                :id="CONSTANTS.interactionsTableId"
-                ref="refInteractionsTable"
-                selectable
-                filterable
-                options
-                no-padding-bottom
-                :show-filter-options="false"
-                :is-settings-popup="false"
-                :loading="isInteractionsLoading"
-                :table="interactionsTableData"
-                :columns="interactionsTableOptions.columns"
-                :empty="interactionsTableOptions.iEmpty"
-                :row-actions="interactionsTableOptions.rowActions"
-                :add-button="interactionsTableOptions.addButton"
-                :download-button="interactionsTableOptions.downloadButton"
-                :axios-payload.sync="interactionsAxiosPayload"
-                :count-row="5"
-                @refreshAction="callForInteractionsData"
+            </el-tab-pane>
+            <el-tab-pane label="Interactions" name="interactions" id="interactions-content">
+              <div v-if="activeTab === 'interactions'" class="tab-content">
+                <DataTable
+                  :id="CONSTANTS.interactionsTableId"
+                  ref="refInteractionsTable"
+                  selectable
+                  filterable
+                  options
+                  no-padding-bottom
+                  :show-filter-options="false"
+                  :is-settings-popup="false"
+                  :loading="isInteractionsLoading"
+                  :table="interactionsTableData"
+                  :columns="interactionsTableOptions.columns"
+                  :empty="interactionsTableOptions.iEmpty"
+                  :row-actions="interactionsTableOptions.rowActions"
+                  :add-button="interactionsTableOptions.addButton"
+                  :download-button="interactionsTableOptions.downloadButton"
+                  :axios-payload.sync="interactionsAxiosPayload"
+                  :count-row="5"
+                  @refreshAction="callForInteractionsData"
+                >
+                  <template v-slot:datatable-custom-column="{ scope, col }">
+                    <div
+                      v-if="col.property === 'interaction'"
+                      class="training-report-users-interactions__interaction-column"
+                    >
+                      <v-btn style="display: none;" />
+                      <Badge
+                        v-bind="getStatusBadgeProps(scope.row.interaction)"
+                        :col="col"
+                        size="medium"
+                      />
+                    </div>
+                  </template>
+                </DataTable>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+        <div v-else-if="item && !isSurvey" class="user-details-dialog">
+          <DataTable
+            :id="CONSTANTS.interactionsTableId"
+            ref="refInteractionsTable"
+            selectable
+            filterable
+            options
+            no-padding-bottom
+            :show-filter-options="false"
+            :is-settings-popup="false"
+            :loading="isInteractionsLoading"
+            :table="interactionsTableData"
+            :columns="interactionsTableOptions.columns"
+            :empty="interactionsTableOptions.iEmpty"
+            :row-actions="interactionsTableOptions.rowActions"
+            :add-button="interactionsTableOptions.addButton"
+            :download-button="interactionsTableOptions.downloadButton"
+            :axios-payload.sync="interactionsAxiosPayload"
+            :count-row="5"
+            @refreshAction="callForInteractionsData"
+          >
+            <template v-slot:datatable-custom-column="{ scope, col }">
+              <div
+                v-if="col.property === 'interaction'"
+                class="training-report-users-interactions__interaction-column"
               >
-                <template v-slot:datatable-custom-column="{ scope, col }">
-                  <div
-                    v-if="col.property === 'interaction'"
-                    class="training-report-users-interactions__interaction-column"
-                  >
-                    <v-btn style="display: none;" />
-                    <Badge
-                      v-bind="getStatusBadgeProps(scope.row.interaction)"
-                      :col="col"
-                      size="medium"
-                    />
-                  </div>
-                </template>
-              </DataTable>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
+                <v-btn style="display: none;" />
+                <Badge
+                  v-bind="getStatusBadgeProps(scope.row.interaction)"
+                  :col="col"
+                  size="medium"
+                />
+              </div>
+            </template>
+          </DataTable>
+        </div>
+        <div v-else class="user-details-dialog">
+          <p>No user selected</p>
+        </div>
       </div>
-      <div v-else-if="item && !isSurvey" class="user-details-dialog">
-        <DataTable
-          :id="CONSTANTS.interactionsTableId"
-          ref="refInteractionsTable"
-          selectable
-          filterable
-          options
-          no-padding-bottom
-          :show-filter-options="false"
-          :is-settings-popup="false"
-          :loading="isInteractionsLoading"
-          :table="interactionsTableData"
-          :columns="interactionsTableOptions.columns"
-          :empty="interactionsTableOptions.iEmpty"
-          :row-actions="interactionsTableOptions.rowActions"
-          :add-button="interactionsTableOptions.addButton"
-          :download-button="interactionsTableOptions.downloadButton"
-          :axios-payload.sync="interactionsAxiosPayload"
-          :count-row="5"
-          @refreshAction="callForInteractionsData"
-        >
-          <template v-slot:datatable-custom-column="{ scope, col }">
-            <div
-              v-if="col.property === 'interaction'"
-              class="training-report-users-interactions__interaction-column"
-            >
-              <v-btn style="display: none;" />
-              <Badge v-bind="getStatusBadgeProps(scope.row.interaction)" :col="col" size="medium" />
-            </div>
-          </template>
-        </DataTable>
-      </div>
-      <div v-else class="user-details-dialog">
-        <p>No user selected</p>
-      </div>
-    </template>
-    <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn
-          id="btn--action-training-report-user-details-modal"
-          class="pa-0 k-dialog__button"
-          text
-          color="#2196f3"
-          @click="handleClose"
-        >
-          CLOSE
-        </v-btn>
-      </div>
-    </template>
-  </AppDialog>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
 import ChoiceQuestionComponent from './ChoiceQuestionComponent'
@@ -337,12 +352,12 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 
 export default {
   name: 'TrainingReportUserDetailsDialog',
   components: {
     DataTable,
-    AppDialog,
     Badge,
     KSelect,
     ChoiceQuestionComponent,
@@ -357,7 +372,7 @@ export default {
     LikertComponent,
     LongFillInComponent
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useDrawerAnimation],
   props: {
     status: {
       type: Boolean
@@ -449,8 +464,7 @@ export default {
         label: 'IP',
         hideSort: true,
         show: true,
-        type: 'text',
-        width: 160
+        type: 'text'
       }
     ]
 
@@ -506,6 +520,11 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--training-report-user-details': true
+      }
+    },
     getSubtitle() {
       return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     },
@@ -669,8 +688,11 @@ export default {
         })
     },
 
+    handleOverlayClick() {
+      this.closeDrawer()
+    },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
     }
   }
 }
