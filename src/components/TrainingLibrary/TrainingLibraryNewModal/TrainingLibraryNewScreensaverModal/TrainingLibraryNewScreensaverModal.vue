@@ -181,7 +181,7 @@ export default {
     handleClose() {
       this.setNewScreensaverModal(emptyNewScreensaverModalObj)
     },
-    changeStep(flag = 1) {
+    async changeStep(flag = 1) {
       const { refTrainingCourseInformation, refTrainingContent } = this.$refs
       if (this.step === 1 && flag === 1) {
         const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {}
@@ -190,6 +190,10 @@ export default {
             refTrainingCourseInformation.formData.availableForRequests
           )
           if (!refMakeAvailableFor.isAvailableForValid) return
+        }
+        // Generate description if needed before validation
+        if (refTrainingCourseInformation.generateDescriptionIfNeeded) {
+          await refTrainingCourseInformation.generateDescriptionIfNeeded()
         }
         if (refTrainingCourseInformation.validateForm()) {
           if (this.isEdit) return this.step++

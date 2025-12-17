@@ -236,27 +236,29 @@ export default {
         ]
       }
     },
-    handleGenerate() {
+    async handleGenerate() {
       if (this.isGenerateDisabled || this.isGenerateLoading) {
         return
       }
       this.isGenerateLoading = true
 
-      // Prepare AI description generation payload
-      const payload = this.getAIDescriptionPayload()
+      try {
+        const generatedDescription = await this.generateAIDescription({
+          name: this.formData.name,
+          category: this.formData.category,
+          role: this.formData.targetAudience,
+          description: this.formData.description
+        })
 
-      // TODO: Replace with actual AI description generation API call
-      // Call worker/API with payload
-      // Example: await generateAIDescription(payload)
-
-      // Simulate AI description generation - 3 seconds
-      setTimeout(() => {
-        // For now, simulate with a sample description
-        this.formData.description =
-          'This survey helps assess security awareness knowledge and identify areas for improvement, covering essential topics such as phishing recognition, password security, and safe browsing practices.'
-        this.hasGenerated = true
+        if (generatedDescription) {
+          this.formData.description = generatedDescription
+          this.hasGenerated = true
+        }
+      } catch (error) {
+        console.error('Failed to generate AI description:', error)
+      } finally {
         this.isGenerateLoading = false
-      }, 3000)
+      }
     }
   }
 }

@@ -209,7 +209,7 @@ export default {
     handleClose() {
       this.setNewLearningPathModal(emptyNewLearningPathModalObj)
     },
-    changeStep(flag = 1) {
+    async changeStep(flag = 1) {
       const { refTrainingCourseInformation } = this.$refs
       if (this.step === 1 && flag === 1) {
         const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {}
@@ -221,6 +221,10 @@ export default {
           this.availableForRequestIds =
             refTrainingCourseInformation?.formData?.availableForRequests?.map((item) => item.id) ||
             []
+        }
+        // Generate description if needed before validation
+        if (refTrainingCourseInformation.generateDescriptionIfNeeded) {
+          await refTrainingCourseInformation.generateDescriptionIfNeeded()
         }
         if (refTrainingCourseInformation.validateForm()) {
           this.step += flag
