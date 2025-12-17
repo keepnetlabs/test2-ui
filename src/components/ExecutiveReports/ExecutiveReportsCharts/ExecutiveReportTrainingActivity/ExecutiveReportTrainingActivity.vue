@@ -1,6 +1,6 @@
 <template>
-  <div class="executive-report-phishing-activity">
-    <ExecutiveReportPhisihingActivityWidget
+  <div class="executive-report-training-activity">
+    <ExecutiveReportTrainingActivityWidget
       :edit-mode="editMode"
       :card="card"
       :date-range="dateRange"
@@ -11,7 +11,7 @@
       @on-edit="handleEdit"
       @on-set-default-widget-data="handleSetDefaultWidgetData"
     />
-    <ExecutiveReportPhishingActivityTable
+    <ExecutiveReportTrainingActivityTable
       :edit-mode="editMode"
       :card="card"
       :date-range="dateRange"
@@ -23,14 +23,14 @@
 </template>
 
 <script>
-import ExecutiveReportPhisihingActivityWidget from "./ExecutiveReportPhishingActivityWidget.vue";
-import ExecutiveReportPhishingActivityTable from "./ExecutiveReportPhishingActivityTable.vue";
+import ExecutiveReportTrainingActivityWidget from "./ExecutiveReportTrainingActivityWidget.vue";
+import ExecutiveReportTrainingActivityTable from "./ExecutiveReportTrainingActivityTable.vue";
 
 export default {
-  name: "ExecutiveReportPhishingActivity",
+  name: "ExecutiveReportTrainingActivity",
   components: {
-    ExecutiveReportPhisihingActivityWidget,
-    ExecutiveReportPhishingActivityTable,
+    ExecutiveReportTrainingActivityWidget,
+    ExecutiveReportTrainingActivityTable,
   },
   props: {
     editMode: {
@@ -77,7 +77,7 @@ export default {
 </script>
 
 <style scoped>
-.executive-report-phishing-activity {
+.executive-report-training-activity {
   display: flex;
   flex-direction: column;
   gap: 16px;
