@@ -8,19 +8,6 @@
         initial-placeholder="Enter a name"
       />
     </FormGroup>
-    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionSurveySub">
-      <InputDescription
-        v-model.trim="formData.description"
-        id="input--new-training-survey-description"
-        required
-        persistent-hint
-        hint="*Required"
-        rows="2"
-        height="100"
-        :max-length="300"
-        :initial-placeholder="labels.Description"
-      />
-    </FormGroup>
     <FormGroup has-hint :title="labels.Category">
       <KSelect
         v-model.trim="formData.category"
@@ -52,6 +39,26 @@
         :rules="[(v) => Validations.required(v, labels.Required)]"
         :items="getTargetAudiences"
       ></KSelect>
+    </FormGroup>
+    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionSurveySub">
+      <InputAIDescription
+        v-model.trim="formData.description"
+        id="input--new-training-survey-description"
+        rows="2"
+        height="100"
+        hint="AI needs a few words to create a meaningful description."
+        required
+        :max-length="300"
+        :initial-placeholder="labels.Description"
+        :rules="[(v) => Validations.required(v, labels.Required)]"
+        :show-generated-by-ai="hasGenerated"
+        :is-generating="isGenerateLoading"
+        :show-generate-button="true"
+        :has-generated="hasGenerated"
+        :is-generate-disabled="isGenerateDisabled"
+        tooltip-message="To generate an AI-powered description, complete key fields like Survey Name, Category, and Role."
+        @generate="handleGenerate"
+      />
     </FormGroup>
     <FormGroup :title="labels.Tags" :sub-title="labels.TagSurveySub">
       <InputTag
@@ -90,7 +97,6 @@
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import labels from '@/model/constants/labels'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -100,8 +106,11 @@ import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
 import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
+import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
+import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
 export default {
   name: 'TrainingLibraryNewSurveyCourseInformation',
+  mixins: [useAIDescriptionGeneration],
   components: {
     InputBehaviour,
     InputCompliance,
@@ -109,7 +118,7 @@ export default {
     KFileUpload,
     InputTag,
     KSelect,
-    InputDescription,
+    InputAIDescription,
     InputEntityName,
     FormGroup
   },
@@ -124,6 +133,8 @@ export default {
       Validations,
       labels,
       coverImageFilePreview: [],
+      isGenerateLoading: false,
+      hasGenerated: false,
       formData: {
         coverImage: null,
         compliances: [],
@@ -142,7 +153,20 @@ export default {
     ...mapGetters({
       getCategories: 'trainingLibraryHelpers/getCategories',
       getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
-    })
+    }),
+    isGenerateDisabled() {
+      // If description has more than 5 characters, enable button
+      if (this.formData.description && this.formData.description.trim().length > 5) {
+        return this.isGenerateLoading
+      }
+      // Otherwise check required fields
+      return (
+        !this.formData.name ||
+        !this.formData.category ||
+        !this.formData.targetAudience ||
+        this.isGenerateLoading
+      )
+    }
   },
   methods: {
     handleCoverImageChange(file) {
@@ -210,6 +234,30 @@ export default {
             resourceId: null
           }
         ]
+      }
+    },
+    async handleGenerate() {
+      if (this.isGenerateDisabled || this.isGenerateLoading) {
+        return
+      }
+      this.isGenerateLoading = true
+
+      try {
+        const generatedDescription = await this.generateAIDescription({
+          name: this.formData.name,
+          category: this.formData.category,
+          role: this.formData.targetAudience,
+          description: this.formData.description
+        })
+
+        if (generatedDescription) {
+          this.formData.description = generatedDescription
+          this.hasGenerated = true
+        }
+      } catch (error) {
+        console.error('Failed to generate AI description:', error)
+      } finally {
+        this.isGenerateLoading = false
       }
     }
   }
