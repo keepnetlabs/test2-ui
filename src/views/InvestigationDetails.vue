@@ -2582,7 +2582,7 @@ export default {
     },
   },
   mounted() {
-    if (this.statsAndMenuData && this.statsAndMenuData.status === "Running")
+    if (this.statsAndMenuData && this.statsAndMenuData.status === "Running") {
       this.isAutoRefreshActive = true;
     }
   },
@@ -2739,7 +2739,7 @@ export default {
               : TEXT_OPERATORS.Or,
         },
         ...headers,
-        ...(this.investigationDetailsData?.bodies.map((item) =>
+        ...(this.investigationDetailsData?.bodies?.map((item) =>
           item.url ? { resourceId: item.resourceId, domain: item.url } : item
         ) || []),
         ...attachments,
