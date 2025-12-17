@@ -70,7 +70,7 @@ export default {
               isDefaultExpanded: true,
               children: [
                 { label: "Keyword", id: "keyword" },
-                { label: "Domain", id: "domain" },
+                { label: "Domain", id: "url" },
                 { label: "Regex", id: "regex" },
               ],
             },
@@ -95,7 +95,7 @@ export default {
             bcc: "Enter an email address",
             subject: "Enter a subject",
             senderName: "Enter a from name",
-            domain: "Enter a domain name",
+            url: "Enter a domain name",
             keyword: "Enter a keyword",
             size: "Enter file size(byte)",
             name: "Enter a file name(case sensitive)",
@@ -158,7 +158,7 @@ export default {
                   labels.getMaxLengthMessage(labels.SenderName)
                 ),
             ],
-            domain: [
+            url: [
               (v) => Validations.startsWithSpace(v),
               (v) => Validations.required(v),
               (v) =>
