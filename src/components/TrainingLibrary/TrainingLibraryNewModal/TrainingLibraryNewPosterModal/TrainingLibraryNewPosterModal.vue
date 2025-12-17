@@ -61,12 +61,12 @@
           cancelButton: 'btn-cancel--add-or-edit-training-modal',
           backButton: 'btn-back--add-or-edit-training-modal',
           nextButton: 'btn-next--add-or-edit-training-modal',
-          saveButton: 'btn-save--add-or-edit-training-modal'
+          saveButton: 'btn-save--add-or-edit-training-modal',
         }"
         :step="step"
         :disabled-statuses="{
           nextButton: isActionButtonDisabled,
-          submitButton: isActionButtonDisabled
+          submitButton: isActionButtonDisabled,
         }"
         @on-cancel="handleClose"
         @on-back="changeStep(-1)"
@@ -78,57 +78,57 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal'
-import labels from '@/model/constants/labels'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import StepperFooter from '@/components/Stepper/StepperFooter'
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import TrainingLibraryNewPosterInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterInformation.vue'
-import TrainingLibraryNewPosterContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterContent.vue'
-import { mapActions } from 'vuex'
-import { emptyNewPosterModalObj } from '@/components/TrainingLibrary/utils'
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import AppModal from "@/components/AppModal";
+import labels from "@/model/constants/labels";
+import ConfigureCompanyStepHeader from "@/components/Companies/ConfigureCompanyStepHeader";
+import StepperFooter from "@/components/Stepper/StepperFooter";
+import AwarenessEducatorService from "@/api/awarenessEducator";
+import TrainingLibraryNewPosterInformation from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterInformation.vue";
+import TrainingLibraryNewPosterContent from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewPosterModal/TrainingLibraryNewPosterContent.vue";
+import { mapActions } from "vuex";
+import { emptyNewPosterModalObj } from "@/components/TrainingLibrary/utils";
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from "@/components/TrainingLibrary/TrainingLibraryFirstCard/utils";
 
 export default {
-  name: 'TrainingLibraryNewPosterModal',
+  name: "TrainingLibraryNewPosterModal",
   components: {
     TrainingLibraryNewPosterContent,
     TrainingLibraryNewPosterInformation,
     StepperFooter,
     ConfigureCompanyStepHeader,
-    AppModal
+    AppModal,
   },
   props: {
     status: {
-      type: Boolean
+      type: Boolean,
     },
     isEdit: {
-      type: Boolean
+      type: Boolean,
     },
     selectedRow: {
-      type: Object
+      type: Object,
     },
     isDuplicate: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   data() {
     return {
       labels,
       isActionButtonDisabled: false,
       step: 1,
-      trainingId: this?.selectedRow?.resourceId || '',
-      selectedCompaniesAndGroups: []
-    }
+      trainingId: this?.selectedRow?.resourceId || "",
+      selectedCompaniesAndGroups: [],
+    };
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewPoster : labels.EditPoster
-    }
+      return !this.isEdit ? labels.CreateNewPoster : labels.EditPoster;
+    },
   },
   created() {
     if (this.isEdit) {
-      this.trainingId = this.selectedRow.trainingId
+      this.trainingId = this.selectedRow.trainingId;
       AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
         const {
           coverImage,
@@ -143,9 +143,9 @@ export default {
           type,
           compliances,
           behaviours,
-          vendorId
-        } = response?.data?.data || {}
-        const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+          vendorId,
+        } = response?.data?.data || {};
+        const { refTrainingCourseInformation, refTrainingContent } = this.$refs;
         if (refTrainingCourseInformation && refTrainingContent) {
           refTrainingCourseInformation.setFormData({
             coverImage,
@@ -156,52 +156,56 @@ export default {
             targetAudience,
             category,
             compliances: compliances?.map(({ complianceId }) => complianceId),
-            behaviours: behaviours?.map(({ behaviourId }) => behaviourId)
-          })
-          refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-          refTrainingContent.setFormData({ hasQuiz, type, vendorId })
-          refTrainingContent.setTrainingContents(trainingContents)
+            behaviours: behaviours?.map(({ behaviourId }) => behaviourId),
+          });
+          refTrainingCourseInformation.setMakeAvailableForData(availableForList);
+          refTrainingContent.setFormData({ hasQuiz, type, vendorId });
+          refTrainingContent.setTrainingContents(trainingContents);
           this.selectedCompaniesAndGroups = availableForList
             ?.map((af) => {
-              if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
-                return null
+              if (["MyCompanyOnly", "AllCompanies"].includes(af.typeName)) {
+                return null;
               }
-              return { resourceId: af.targetResourceId, typeName: af.typeName }
+              return { resourceId: af.targetResourceId, typeName: af.typeName };
             })
-            ?.filter(Boolean)
+            ?.filter(Boolean);
         }
-      })
+      });
     }
   },
   methods: {
     ...mapActions({
-      setNewPosterModal: 'trainingLibrary/setNewPosterModal',
-      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
+      setNewPosterModal: "trainingLibrary/setNewPosterModal",
+      callForTrainingLibrary: "trainingLibrary/callForTrainingLibrary",
     }),
     handleClose() {
-      this.setNewPosterModal(emptyNewPosterModalObj)
+      this.setNewPosterModal(emptyNewPosterModalObj);
     },
-    changeStep(flag = 1) {
-      const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+    async changeStep(flag = 1) {
+      const { refTrainingCourseInformation, refTrainingContent } = this.$refs;
       if (this.step === 1 && flag === 1) {
-        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {}
+        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {};
         if (refMakeAvailableFor) {
           refMakeAvailableFor.validateAvailableFor(
             refTrainingCourseInformation.formData.availableForRequests
-          )
-          if (!refMakeAvailableFor.isAvailableForValid) return
+          );
+          if (!refMakeAvailableFor.isAvailableForValid) return;
+        }
+        // Generate description if needed before validation
+        if (refTrainingCourseInformation.generateDescriptionIfNeeded) {
+          await refTrainingCourseInformation.generateDescriptionIfNeeded();
         }
         if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit) return this.step++
+          if (this.isEdit) return this.step++;
           if (this.trainingId) {
             if (refTrainingContent) {
               this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                 (content) => content.file && content.languageId
-              )
+              );
             }
-            return this.step++
+            return this.step++;
           }
-          const { formData } = refTrainingCourseInformation
+          const { formData } = refTrainingCourseInformation;
           const {
             name,
             description,
@@ -210,9 +214,9 @@ export default {
             tagNames,
             availableForRequests,
             compliances,
-            behaviours
-          } = formData
-          this.isActionButtonDisabled = true
+            behaviours,
+          } = formData;
+          this.isActionButtonDisabled = true;
           AwarenessEducatorService.createDraftTraining({
             name,
             description,
@@ -222,35 +226,35 @@ export default {
             availableForRequests,
             type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER,
             compliances: compliances?.map((compliance) => ({ complianceId: compliance })),
-            behaviours: behaviours?.map((behaviour) => ({ behaviourId: behaviour }))
+            behaviours: behaviours?.map((behaviour) => ({ behaviourId: behaviour })),
           })
             .then((response) => {
-              this.trainingId = response?.data?.data?.resourceId || ''
-              this.step++
+              this.trainingId = response?.data?.data?.resourceId || "";
+              this.step++;
             })
             .finally(() => {
               //checking disability of save button
               if (refTrainingContent) {
                 this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                   (content) => content.file && content.languageId
-                )
+                );
               } else {
-                this.isActionButtonDisabled = false
+                this.isActionButtonDisabled = false;
               }
               if (this.step === 1) {
-                this.isActionButtonDisabled = false
+                this.isActionButtonDisabled = false;
               }
-            })
+            });
         }
       } else {
         if (this.step === 2 && flag === -1) {
-          this.isActionButtonDisabled = false
+          this.isActionButtonDisabled = false;
         }
-        this.step += flag
+        this.step += flag;
       }
     },
     handleSubmit() {
-      const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+      const { refTrainingCourseInformation, refTrainingContent } = this.$refs;
       const {
         formData: {
           coverImage,
@@ -262,50 +266,53 @@ export default {
           availableForRequests,
           coverImageUrl,
           compliances,
-          behaviours
-        }
-      } = refTrainingCourseInformation
+          behaviours,
+        },
+      } = refTrainingCourseInformation;
       const {
-        formData: { hasQuiz, vendorId }
-      } = refTrainingContent
-      const payload = new FormData()
+        formData: { hasQuiz, vendorId },
+      } = refTrainingContent;
+      const payload = new FormData();
       if (coverImageUrl) {
-        payload.append('trainingDetail.coverImageUrl', coverImageUrl)
+        payload.append("trainingDetail.coverImageUrl", coverImageUrl);
       }
-      payload.append('coverImage', coverImage)
-      payload.append('trainingDetail.name', name)
-      payload.append('trainingDetail.description', description)
-      payload.append('trainingDetail.category', category)
-      payload.append('trainingDetail.targetAudience', targetAudience)
-      payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
-      if (vendorId) payload.append('trainingDetail.vendorId', vendorId)
+      payload.append("coverImage", coverImage);
+      payload.append("trainingDetail.name", name);
+      payload.append("trainingDetail.description", description);
+      payload.append("trainingDetail.category", category);
+      payload.append("trainingDetail.targetAudience", targetAudience);
+      payload.append("trainingDetail.hasQuiz", hasQuiz);
+      payload.append("trainingDetail.type", TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER);
+      if (vendorId) payload.append("trainingDetail.vendorId", vendorId);
       tags?.map((tag, index) => {
-        payload.append(`trainingDetail.tagNames[${index}]`, tag)
-      })
+        payload.append(`trainingDetail.tagNames[${index}]`, tag);
+      });
       compliances?.map((compliance, index) => {
-        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
-      })
+        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance);
+      });
       behaviours?.map((behaviour, index) => {
-        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
-      })
+        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour);
+      });
       availableForRequests?.map((request, index) => {
-        payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)
+        payload.append(
+          `trainingDetail.availableForRequests[${index}].type`,
+          request.type
+        );
         payload.append(
           `trainingDetail.availableForRequests[${index}].resourceId`,
           request.resourceId
-        )
-      })
-      this.isActionButtonDisabled = true
+        );
+      });
+      this.isActionButtonDisabled = true;
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
-          this.handleClose()
-          this.callForTrainingLibrary()
+          this.handleClose();
+          this.callForTrainingLibrary();
         })
         .finally(() => {
-          this.isActionButtonDisabled = false
-        })
-    }
-  }
-}
+          this.isActionButtonDisabled = false;
+        });
+    },
+  },
+};
 </script>
