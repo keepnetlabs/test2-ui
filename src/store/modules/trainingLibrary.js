@@ -47,7 +47,7 @@ const trainingLibrary = {
     isLoading: false,
     tableData: [],
     axiosPayload: getDefaultAxiosPayload({
-      ascending: true,
+      ascending: false,
       trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
       trainingType: null
     }),
@@ -653,19 +653,11 @@ const trainingLibrary = {
     setListView({ commit, dispatch, state }, payload) {
       if (state.isListView === payload) return
       commit('SET_LIST_VIEW', payload)
-      if(!payload){
-        commit('SET_SORT_BY', 'Date Created - New to old')
-        commit('SET_SORT_BY_TO_PAYLOAD', {
-          ascending: false,
-          orderBy: 'createTime'
-        })
-      } else {
-        commit('SET_SORT_BY', 'Date Created - Old to new')
-        commit('SET_SORT_BY_TO_PAYLOAD', {
-          ascending: true,
-          orderBy: 'createTime'
-        })
-      }
+      commit('SET_SORT_BY', 'Date Created - New to old')
+      commit('SET_SORT_BY_TO_PAYLOAD', {
+        ascending: false,
+        orderBy: 'createTime'
+      })
       dispatch('callForTableData')
     },
     initDefaultTableSettings({ commit }) {
@@ -688,7 +680,7 @@ const trainingLibrary = {
       commit('RESET_PAGINATION')
       commit('SET_SORT_BY', 'Date Created - New to old')
       commit('SET_SORT_BY_TO_PAYLOAD', {
-        ascending: state.isListView,
+        ascending: false,
         orderBy: 'createTime'
       })
       dispatch('callForTableData')
