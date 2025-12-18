@@ -17,6 +17,7 @@
       v-if="showOverFlowTooltip"
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
+      :append-to-body="appendTooltipToBody"
     />
     <v-card v-show="!loading" class="card">
       <div class="table-wrapper">
@@ -217,26 +218,47 @@
                 <span>{{ getAddButtonLabel }}</span>
               </v-btn>
             </slot>
-            <v-btn
-              v-if="groupable"
-              class="clust-btn btn-hover mr-1"
-              icon
-              outlined
-              style="border-radius: 6px !important; order: 1; width: 42px;"
-              :color="!selectedCluster ? '#2196f3' : '#757575'"
-              @click="handleListBulletedClick"
-            >
-              <img :src="getBulletedIcon" alt="icon" />
-            </v-btn>
+            <v-tooltip bottom :disabled="!showClusterTooltips">
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  v-if="groupable"
+                  v-bind="attrs"
+                  v-on="on"
+                  class="clust-btn btn-hover mr-1"
+                  icon
+                  outlined
+                  style="border-radius: 6px !important; order: 1; width: 42px;"
+                  :color="!selectedCluster ? '#2196f3' : '#757575'"
+                  @click="handleListBulletedClick"
+                >
+                  <img :src="getBulletedIcon" alt="icon" />
+                </v-btn>
+              </template>
+              <span>Show data without grouping</span>
+            </v-tooltip>
+            <v-tooltip bottom :disabled="!showClusterTooltips">
+              <template #activator="{ on, attrs }">
+                <div
+                  v-if="groupable"
+                  v-bind="attrs"
+                  v-on="on"
+                  class="cluster__left"
+                  :style="[
+                    !selectedCluster && { borderColor: '#757575' },
+                    !showClusterMenu && {
+                      cursor: 'pointer',
+                      borderRadius: '6px'
+                    }
+                  ]"
+                  @click="onClusterLeftClick"
+                >
+                  <img :src="getGroupedListIcon" alt="icon" />
+                </div>
+              </template>
+              <span>Show data grouped</span>
+            </v-tooltip>
             <div
-              v-if="groupable"
-              class="cluster__left"
-              :style="!selectedCluster && { borderColor: '#757575' }"
-            >
-              <img :src="getGroupedListIcon" alt="icon" />
-            </div>
-            <div
-              v-if="groupable"
+              v-if="groupable && showClusterMenu"
               class="cluster__right"
               :style="[
                 !selectedCluster && {
@@ -1098,6 +1120,10 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    appendTooltipToBody: {
+      type: Boolean,
+      default: false
+    },
     axiosPayload: {
       type: Object,
       default: () => ({})
@@ -1330,6 +1356,14 @@ export default {
     clusterItems: {
       type: Array,
       required: false
+    },
+    showClusterMenu: {
+      type: Boolean,
+      default: true
+    },
+    showClusterTooltips: {
+      type: Boolean,
+      default: false
     },
     border: {
       type: Boolean,
@@ -2305,6 +2339,25 @@ export default {
       this.$emit('handleListBulleted')
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
+    },
+    /**
+     * This function fires when someone click grouped icon (when cluster menu is hidden)
+     */
+    handleGroupedClick() {
+      if (this.selectedCluster) {
+        this.selectedCluster = ''
+        this.$emit('handleListBulleted')
+      } else {
+        this.selectedCluster = 'grouped'
+        this.$emit('handleGroupedClick')
+      }
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
+    },
+    onClusterLeftClick() {
+      if (!this.showClusterMenu) {
+        this.handleGroupedClick()
+      }
     },
     /**
      * This function returns which cluster is selected

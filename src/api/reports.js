@@ -117,6 +117,18 @@ export const getSchedulingReportTargetGroups = () => {
   return testRequest.get('/report-scheduling/target-groups')
 }
 
+// Manager Metrics - Activity Users Search
+export const searchPhishingActivityUsers = (payload) => {
+  return testRequest.post(
+    '/phishing-simulator/phishing-campaign-job-report/activity-users/search',
+    payload
+  )
+}
+
+export const searchTrainingActivityUsers = (payload) => {
+  return testRequest.post('/training-reports/activity-users/search', payload)
+}
+
 export const getLeaderboardData = (payload) => {
   return testRequest.post('/leaderboard/get-all', payload)
 }
