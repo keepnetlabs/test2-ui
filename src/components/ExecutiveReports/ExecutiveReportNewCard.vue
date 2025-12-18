@@ -255,6 +255,7 @@
               :ref="`ref${item.i}`"
               :shadow="'never'"
               :simple="true"
+              :style="getSmartWidgetStyle(item)"
             >
               <component
                 :id="item.key"
@@ -270,6 +271,7 @@
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
                 @on-set-default-widget-data="setDefaultWidgetData"
+                @on-pagination-change="handlePaginationChange"
               />
             </smart-widget>
           </k-smart-grid>
@@ -814,38 +816,16 @@ export default {
           minW: 12,
           defaultW: 12,
           midW: 12,
-          h: 14,
-          defaultH: 14,
-          minH: 14,
-          maxH: 20,
+          h: 19,
+          defaultH: 19,
+          minH: 19,
+          maxH: 200,
           static: true,
           i: createRandomCryptStringNumber(),
           title: 'Phishing Activity',
           key: 'PhishingActivityWidget',
           isAllowed: true,
           parentKey: 'Phishing Metrics',
-          chartType: 'bar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
-          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
-        },
-        TrainingActivityWidget: {
-          x: 0,
-          y: 0,
-          w: 12,
-          minW: 12,
-          defaultW: 12,
-          midW: 12,
-          h: 14,
-          defaultH: 14,
-          minH: 14,
-          maxH: 14,
-          static: true,
-          i: createRandomCryptStringNumber(),
-          title: 'Training Activity',
-          key: 'TrainingActivityWidget',
-          isAllowed: true,
-          parentKey: 'Training Metrics',
           chartType: 'bar',
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
@@ -858,10 +838,10 @@ export default {
           minW: 12,
           defaultW: 12,
           midW: 12,
-          h: 15,
-          defaultH: 15,
-          minH: 12,
-          maxH: 20,
+          h: 19,
+          defaultH: 19,
+          minH: 19,
+          maxH: 200,
           static: true,
           i: createRandomCryptStringNumber(),
           title: 'Training Enrollment Activity',
@@ -919,15 +899,6 @@ export default {
       return this.isPreview || this.activatePreview
     },
     getIsStatic() {
-      // If layout contains PhishingActivityWidget or TrainingActivityWidget or TrainingEnrollmentActivityWidget, always static
-      const hasActivityWidget = this.layout.some(
-        (item) =>
-          item.key === 'PhishingActivityWidget' ||
-          item.key === 'TrainingActivityWidget' ||
-          item.key === 'TrainingEnrollmentActivityWidget'
-      )
-      if (hasActivityWidget) return true
-
       if (this.$route.name === 'Preview Executive Report')
         return !this.editMode || this.forcePreview
       return this.isShowPreview ? this.isShowPreview : !this.editMode
@@ -1082,6 +1053,15 @@ export default {
         }
       })
       this.layout = this.layout.map((item) => {
+        // Activity widgets should always stay at y=0
+        const isActivityWidget = [
+          'PhishingActivityWidget',
+          'TrainingEnrollmentActivityWidget'
+        ].includes(item.key)
+        if (isActivityWidget) {
+          return { ...item, x: 0, y: 0 }
+        }
+
         const itemWidth = item.w
         xValue = x
         x += itemWidth
@@ -1429,7 +1409,6 @@ export default {
           return ExecutiveReportAvgPhishingSimClickerRate
         case 'PhishingActivityWidget':
           return ExecutiveReportPhishingActivity
-        case 'TrainingActivityWidget':
         case 'TrainingEnrollmentActivityWidget':
           return ExecutiveReportTrainingActivity
         case 'EmptyWidget':
@@ -1456,8 +1435,59 @@ export default {
       lastYear.setFullYear(lastYear.getFullYear() - 1)
       return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
     },
+    getSmartWidgetStyle(item) {
+      // Activity widgets should have auto height instead of grid-defined height
+      if (['PhishingActivityWidget', 'TrainingEnrollmentActivityWidget'].includes(item.key)) {
+        return {}
+      }
+      return {}
+    },
     setDefaultWidgetData(key, data) {
       this.defaultWidgetData[key] = data
+    },
+    handlePaginationChange(card, pageSize) {
+      // Find the widget in the layout that matches this card
+      const widget = this.layout.find((item) => item.i === card.i || item.key === card.key)
+
+      if (!widget) return
+
+      // Validate pageSize
+      pageSize = pageSize || 5
+
+      // Calculate height based on page size (static mapping)
+      this.$nextTick(() => {
+        setTimeout(() => {
+          // Calculate height dynamically based on row count
+          // Base height (chart header ~4, table header ~2, pagination ~2) = ~8 grid units
+          // Each row is approximately 0.8 grid units
+          const baseH = 10
+          const rowH = 0.85
+          let calculatedH = Math.ceil(baseH + pageSize * rowH)
+
+          // Update widget height if it changed
+          if (calculatedH !== widget.h) {
+            widget.h = calculatedH
+
+            // Recalculate all y positions when any h changes
+            let currentY = 0
+            const sortedByY = [...this.layout].sort((a, b) => a.y - b.y)
+            sortedByY.forEach((sortedItem, index) => {
+              const originalItem = this.layout.find((l) => l.i === sortedItem.i)
+              if (originalItem) {
+                originalItem.y = Math.round(currentY)
+                currentY += originalItem.h
+                // Add gap between widgets (except after last widget)
+                if (index < sortedByY.length - 1) {
+                  currentY += 3
+                }
+              }
+            })
+
+            // Update the grid layout via reactivity - force Vue to detect change
+            this.$set(this, 'layout', [...this.layout])
+          }
+        }, 50) // Small delay, using static mapping so no need to wait for render
+      })
     },
     handleDateRangeInputChange(dateRange) {
       this.dateRange = dateRange

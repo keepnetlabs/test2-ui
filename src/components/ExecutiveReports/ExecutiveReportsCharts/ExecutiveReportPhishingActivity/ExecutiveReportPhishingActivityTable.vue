@@ -3,1189 +3,359 @@
     <DataTable
       ref="refPhishingActivityTable"
       class="phishing-activity-table"
-      :columns="columns"
+      is-server-side
+      append-tooltip-to-body
+      :columns="currentColumns"
       :table="tableData"
       :empty="empty"
+      :loading="isLoading"
+      :server-side-props="serverSideProps"
+      :server-side-events="serverSideEvents"
       :show-pagination="true"
       :show-page-size="true"
-      :show-filter-options="false"
+      :show-filter-options="true"
       :show-datatable-row-actions="false"
+      :download-button="{ show: false }"
       :filterable="true"
+      :groupable="true"
+      :show-cluster-menu="false"
+      :show-cluster-tooltips="true"
       :options="true"
-      :count-row="5"
+      :show-refresh-button="true"
+      :is-settings-popup="false"
+      :count-row="10"
+      @server-side-size-changed="serverSideSizeChanged"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @sortChangedEvent="sortChanged"
+      @refreshAction="callForData"
+      @handleListBulleted="handleListBulleted"
+      @handleGroupedClick="handleGroupedClick"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     />
   </div>
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import { getExecutiveReportChartData } from "@/api/reports";
+import DataTable from '@/components/DataTable'
+import { searchPhishingActivityUsers } from '@/api/reports'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
-  name: "ExecutiveReportPhishingActivityTable",
+  name: 'ExecutiveReportPhishingActivityTable',
   components: {
-    DataTable,
+    DataTable
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     editMode: {
       type: Boolean,
-      default: true,
+      default: true
     },
     card: {
       type: Object,
-      default: () => ({}),
+      default: () => ({})
     },
     dateRange: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     datePeriod: {
       type: Number,
-      default: 1,
+      default: 1
     },
     defaultWidgetData: {
-      type: [Object, Array],
+      type: [Object, Array]
     },
     dateFormat: {
       type: String,
-      default: "",
-    },
+      default: ''
+    }
   },
   data() {
     return {
       isLoading: false,
-      tableTitle: "Phishing Activity Details",
+      axiosPayload: getDefaultAxiosPayload(
+        {
+          pageSize: 10,
+          groupByUser: false
+        },
+        'firstName'
+      ),
+      serverSideProps: new ServerSideProps('', false, 10),
+      serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
-      columns: [
+      isGrouped: false,
+      ungroupedColumns: [
         {
-          property: "firstName",
-          label: "First Name",
-          align: "left",
+          property: 'firstName',
+          label: 'First Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 120,
+          filterableType: 'text',
+          width: 150
         },
         {
-          property: "lastName",
-          label: "Last Name",
-          align: "left",
+          property: 'lastName',
+          label: 'Last Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 120,
+          filterableType: 'text',
+          width: 150
         },
         {
-          property: "email",
-          label: "Email",
-          align: "left",
+          property: 'email',
+          label: 'Email',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 200,
+          filterableType: 'text',
+          width: 250
         },
         {
-          property: "campaignName",
-          label: "Campaign Name",
-          align: "left",
+          property: 'campaignName',
+          label: 'Campaign Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'text',
+          width: 200
         },
         {
-          property: "scenarioName",
-          label: "Scenario Name",
-          align: "left",
+          property: 'templateName',
+          label: 'Scenario Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'text',
+          width: 200
         },
         {
-          property: "category",
-          label: "Category",
-          align: "left",
+          property: 'categoryName',
+          label: 'Category',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 120,
+          filterableType: 'text',
+          width: 150
         },
         {
-          property: "difficulty",
-          label: "Difficulty",
-          align: "center",
+          property: 'difficulty',
+          label: 'Difficulty',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'select',
+          filterableItems: ['Easy', 'Medium', 'Hard'],
+          width: 150
         },
         {
-          property: "opened",
-          label: "Opened",
-          align: "center",
+          property: 'opened',
+          label: 'Opened',
+          align: 'left',
           show: true,
-          type: "number",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'number',
+          width: 120
         },
         {
-          property: "clicked",
-          label: "Clicked",
-          align: "center",
+          property: 'clicked',
+          label: 'Clicked',
+          align: 'left',
           show: true,
-          type: "number",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'number',
+          minWidth: 120
+        }
+      ],
+      groupedColumns: [
+        {
+          property: 'firstName',
+          label: 'First Name',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'text',
+          width: 150
         },
+        {
+          property: 'lastName',
+          label: 'Last Name',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'text',
+          width: 150
+        },
+        {
+          property: 'email',
+          label: 'Email',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'text',
+          width: 250
+        },
+        {
+          property: 'opened',
+          label: 'Opened',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'number',
+          width: 120
+        },
+        {
+          property: 'clicked',
+          label: 'Clicked',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'number',
+          width: 120
+        },
+        {
+          property: 'attachmentOpened',
+          label: 'Attachment Opened',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'number',
+          width: 190
+        },
+        {
+          property: 'dataSubmitted',
+          label: 'Data Submitted',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'number',
+          width: 180
+        },
+        {
+          property: 'reported',
+          label: 'Reported',
+          align: 'left',
+          show: true,
+          type: 'text',
+          sortable: true,
+          filterableType: 'number',
+          minWidth: 130
+        }
       ],
       empty: {
-        message: "No phishing activity data available",
-      },
-    };
+        message: 'No phishing activity data available'
+      }
+    }
+  },
+  computed: {
+    currentColumns() {
+      return this.isGrouped ? this.groupedColumns : this.ungroupedColumns
+    }
   },
   watch: {
     dateRange() {
-      this.callForData();
-    },
-  },
-  created() {
-    // TODO: Remove mock data after testing
-    this.setMockTableData();
-    return;
-    // Original code below
-    if (this?.defaultWidgetData?.length) {
-      this.setTableData(this.defaultWidgetData);
-    } else {
-      this.callForData();
+      this.callForData()
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    setMockTableData() {
-      // Mock data for testing
-      this.tableData = [
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-        {
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Fake Invoice Attack",
-          category: "Financial",
-          difficulty: "High",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Gift Card Scam",
-          category: "Social Engineering",
-          difficulty: "Medium",
-          opened: 5,
-          clicked: 2,
-        },
-        {
-          firstName: "Robert",
-          lastName: "Johnson",
-          email: "robert.j@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "Password Reset",
-          category: "Credential Theft",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Emily",
-          lastName: "Williams",
-          email: "emily.w@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Tech Support Scam",
-          category: "Technical",
-          difficulty: "High",
-          opened: 4,
-          clicked: 3,
-        },
-        {
-          firstName: "Michael",
-          lastName: "Brown",
-          email: "michael.b@company.com",
-          campaignName: "Holiday Phishing Test",
-          scenarioName: "Delivery Notification",
-          category: "Shipping",
-          difficulty: "Medium",
-          opened: 1,
-          clicked: 0,
-        },
-        {
-          firstName: "Sarah",
-          lastName: "Davis",
-          email: "sarah.d@company.com",
-          campaignName: "CEO Fraud Test",
-          scenarioName: "Urgent Wire Transfer",
-          category: "Financial",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "David",
-          lastName: "Miller",
-          email: "david.m@company.com",
-          campaignName: "Q4 Security Awareness",
-          scenarioName: "LinkedIn Request",
-          category: "Social Media",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Lisa",
-          lastName: "Garcia",
-          email: "lisa.g@company.com",
-          campaignName: "IT Support Simulation",
-          scenarioName: "Software Update",
-          category: "Technical",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 2,
-        },
-      ];
-      this.isLoading = false;
-    },
     callForData() {
-      this.isLoading = true;
-      const payload = {
-        widgetIds: [this.card.resourceId],
-        datePeriod: this.datePeriod,
-        startDate: this.dateRange[0],
-        endDate: this.dateRange[1],
-      };
-      getExecutiveReportChartData(payload)
+      if (!this.dateRange?.length) return
+
+      this.isLoading = true
+      this.axiosPayload.startDate = this.dateRange[0]
+      this.axiosPayload.endDate = this.dateRange[1]
+
+      searchPhishingActivityUsers(this.axiosPayload)
         .then((response) => {
-          const {
-            data: { data },
-          } = response || {};
-          this.$emit("on-set-default-widget-data", this.card.key, data);
-          this.setTableData(data);
+          const { data } = response || {}
+          const responseData = data?.data || {}
+          this.serverSideProps.totalNumberOfRecords = responseData.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = responseData.totalNumberOfPages
+          this.serverSideProps.pageNumber = responseData.pageNumber
+          this.setTableData(responseData.results || [])
+          this.emitPaginationChange()
         })
         .finally(() => {
-          this.isLoading = false;
-        });
+          this.isLoading = false
+        })
     },
-    setTableData(data) {
-      if (!data || !data.length) {
-        this.tableData = [];
-        return;
+    setTableData(results) {
+      if (!results || !results.length) {
+        this.tableData = []
+        return
       }
 
-      const widgetData = data[0]?.widgetDatas;
-      if (!widgetData || !widgetData.length) {
-        this.tableData = [];
-        return;
+      if (this.isGrouped) {
+        this.tableData = results.map((item) => ({
+          firstName: item.firstName || '',
+          lastName: item.lastName || '',
+          email: item.email || '',
+          opened: item.opened,
+          clicked: item.clicked,
+          attachmentOpened: item.attachmentOpened,
+          dataSubmitted: item.dataSubmitted,
+          reported: item.reported
+        }))
+      } else {
+        this.tableData = results.map((item) => ({
+          firstName: item.firstName || '',
+          lastName: item.lastName || '',
+          email: item.email || '',
+          campaignName: item.campaignName || '',
+          templateName: item.templateName || '',
+          categoryName: item.categoryName || '',
+          difficulty: item.difficulty || '',
+          opened: item.opened,
+          clicked: item.clicked
+        }))
       }
-
-      // Map the data to table format
-      this.tableData = widgetData.map((item) => ({
-        firstName: item.firstName || "",
-        lastName: item.lastName || "",
-        email: item.email || "",
-        campaignName: item.campaignName || "",
-        scenarioName: item.scenarioName || "",
-        category: item.category || "",
-        difficulty: item.difficulty || "",
-        opened: item.opened || 0,
-        clicked: item.clicked || 0,
-      }));
     },
-    handleDelete() {
-      this.$emit("on-delete", this.card);
+    serverSideSizeChanged(pageSize = 10) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForData()
     },
-    handleEdit() {
-      this.$emit("on-edit", this.card);
+    handleListBulleted() {
+      this.isGrouped = false
+      this.axiosPayload.groupByUser = false
+      this.resetPageNumber()
+      this.callForData()
     },
-  },
-};
+    handleGroupedClick() {
+      this.isGrouped = true
+      this.axiosPayload.groupByUser = true
+      this.resetPageNumber()
+      this.callForData()
+    },
+    emitPaginationChange() {
+      const actualRowCount = Math.min(this.axiosPayload.pageSize, this.tableData.length)
+      this.$emit('on-pagination-change', this.card, actualRowCount)
+    }
+  }
+}
 </script>

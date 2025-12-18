@@ -539,9 +539,9 @@
 .training-activity-table-wrapper {
   width: 100%;
   margin-top: 8px;
-  margin-right: 1px !important;
   .v-card {
     margin-left: 2px !important;
+    margin-right: 1px !important;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 1px 0 rgba(0, 0, 0, 0.25) !important;
   }
 
@@ -562,7 +562,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow: hidden;
+  overflow: visible;
 
   // Widget (chart) - fixed height
   .phishing-activity-widget,
@@ -570,11 +570,16 @@
     flex-shrink: 0;
   }
 
-  // Table wrapper - takes remaining space and scrolls
+  // Table wrapper - takes remaining space
   .phishing-activity-table-wrapper,
   .training-activity-table-wrapper {
     flex: 1;
-    overflow: auto;
+    overflow: visible;
     min-height: 0;
   }
+}
+
+// Ensure grid container allows content to overflow
+.executive-report-grid {
+  overflow: visible !important;
 }

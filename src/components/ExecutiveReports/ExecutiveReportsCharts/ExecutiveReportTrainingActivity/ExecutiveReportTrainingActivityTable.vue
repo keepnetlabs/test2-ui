@@ -3,309 +3,258 @@
     <DataTable
       ref="refTrainingActivityTable"
       class="training-activity-table"
+      is-server-side
+      append-tooltip-to-body
       :columns="columns"
       :table="tableData"
       :empty="empty"
+      :loading="isLoading"
+      :server-side-props="serverSideProps"
+      :server-side-events="serverSideEvents"
       :show-pagination="true"
       :show-page-size="true"
-      :show-filter-options="false"
+      :show-filter-options="true"
       :show-datatable-row-actions="false"
+      :download-button="{ show: false }"
       :filterable="true"
+      :groupable="true"
+      :show-cluster-menu="false"
+      :show-cluster-tooltips="true"
       :options="true"
-      :count-row="5"
+      :show-refresh-button="true"
+      :is-settings-popup="false"
+      :count-row="10"
+      @server-side-size-changed="serverSideSizeChanged"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @sortChangedEvent="sortChanged"
+      @refreshAction="callForData"
+      @handleListBulleted="handleListBulleted"
+      @handleGroupedClick="handleGroupedClick"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     />
   </div>
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import { getExecutiveReportChartData } from "@/api/reports";
+import DataTable from '@/components/DataTable'
+import { searchTrainingActivityUsers } from '@/api/reports'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
 export default {
-  name: "ExecutiveReportTrainingActivityTable",
+  name: 'ExecutiveReportTrainingActivityTable',
   components: {
-    DataTable,
+    DataTable
   },
+  mixins: [useDefaultTableFunctions],
   props: {
     editMode: {
       type: Boolean,
-      default: true,
+      default: true
     },
     card: {
       type: Object,
-      default: () => ({}),
+      default: () => ({})
     },
     dateRange: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     datePeriod: {
       type: Number,
-      default: 1,
+      default: 1
     },
     defaultWidgetData: {
-      type: [Object, Array],
+      type: [Object, Array]
     },
     dateFormat: {
       type: String,
-      default: "",
-    },
+      default: ''
+    }
   },
   data() {
     return {
       isLoading: false,
-      tableTitle: "Training Activity Details",
+      axiosPayload: getDefaultAxiosPayload(
+        {
+          pageSize: 10,
+          groupByUser: false
+        },
+        'firstName'
+      ),
+      serverSideProps: new ServerSideProps('', false, 10),
+      serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
       columns: [
         {
-          property: "firstName",
-          label: "First Name",
-          align: "left",
+          property: 'firstName',
+          label: 'First Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 120,
+          filterableType: 'text',
+          width: 150
         },
         {
-          property: "lastName",
-          label: "Last Name",
-          align: "left",
+          property: 'lastName',
+          label: 'Last Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 120,
+          filterableType: 'text',
+          width: 150
         },
         {
-          property: "email",
-          label: "Email",
-          align: "left",
+          property: 'email',
+          label: 'Email',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 200,
+          filterableType: 'text',
+          width: 250
         },
         {
-          property: "campaignName",
-          label: "Campaign Name",
-          align: "left",
+          property: 'enrollmentName',
+          label: 'Enrollment Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'text',
+          width: 200
         },
         {
-          property: "scenarioName",
-          label: "Scenario Name",
-          align: "left",
+          property: 'contentType',
+          label: 'Type',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'select',
+          filterableItems: [],
+          width: 120
         },
         {
-          property: "category",
-          label: "Category",
-          align: "left",
+          property: 'trainingContentName',
+          label: 'Material Name',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 120,
+          filterableType: 'text',
+          width: 200
         },
         {
-          property: "difficulty",
-          label: "Difficulty",
-          align: "center",
+          property: 'openedTrainingEmail',
+          label: 'Opened Training Email',
+          align: 'left',
           show: true,
-          type: "text",
+          type: 'text',
           sortable: true,
-          width: 180,
+          filterableType: 'number',
+          width: 220
         },
         {
-          property: "opened",
-          label: "Opened",
-          align: "center",
+          property: 'clickedTrainingEmail',
+          label: 'Clicked Training Link',
+          align: 'left',
           show: true,
-          type: "number",
+          type: 'text',
           sortable: true,
-          width: 180,
-        },
-        {
-          property: "clicked",
-          label: "Clicked",
-          align: "center",
-          show: true,
-          type: "number",
-          sortable: true,
-          width: 180,
-        },
+          filterableType: 'number',
+          minWidth: 220
+        }
       ],
       empty: {
-        message: "No training activity data available",
-      },
-    };
+        message: 'No training activity data available'
+      }
+    }
   },
   watch: {
     dateRange() {
-      this.callForData();
-    },
-  },
-  created() {
-    // TODO: Remove mock data after testing
-    this.setMockTableData();
-    return;
-    // Original code below
-    if (this?.defaultWidgetData?.length) {
-      this.setTableData(this.defaultWidgetData);
-    } else {
-      this.callForData();
+      this.callForData()
     }
   },
+  created() {
+    this.callForData()
+    this.fetchTrainingTypes()
+  },
   methods: {
-    setMockTableData() {
-      // Mock data for testing - Training Activity
-      this.tableData = [
-        {
-          firstName: "Alice",
-          lastName: "Thompson",
-          email: "alice.t@company.com",
-          campaignName: "Security Fundamentals",
-          scenarioName: "Phishing Basics",
-          category: "Awareness",
-          difficulty: "Low",
-          opened: 5,
-          clicked: 3,
-        },
-        {
-          firstName: "Bob",
-          lastName: "Anderson",
-          email: "bob.a@company.com",
-          campaignName: "Advanced Security",
-          scenarioName: "Social Engineering",
-          category: "Technical",
-          difficulty: "High",
-          opened: 2,
-          clicked: 1,
-        },
-        {
-          firstName: "Carol",
-          lastName: "Martinez",
-          email: "carol.m@company.com",
-          campaignName: "Security Fundamentals",
-          scenarioName: "Password Safety",
-          category: "Awareness",
-          difficulty: "Medium",
-          opened: 4,
-          clicked: 2,
-        },
-        {
-          firstName: "Daniel",
-          lastName: "Lee",
-          email: "daniel.l@company.com",
-          campaignName: "Compliance Training",
-          scenarioName: "GDPR Essentials",
-          category: "Compliance",
-          difficulty: "Medium",
-          opened: 3,
-          clicked: 1,
-        },
-        {
-          firstName: "Eva",
-          lastName: "Wilson",
-          email: "eva.w@company.com",
-          campaignName: "Advanced Security",
-          scenarioName: "Malware Prevention",
-          category: "Technical",
-          difficulty: "High",
-          opened: 6,
-          clicked: 4,
-        },
-        {
-          firstName: "Frank",
-          lastName: "Taylor",
-          email: "frank.t@company.com",
-          campaignName: "Security Fundamentals",
-          scenarioName: "Email Security",
-          category: "Awareness",
-          difficulty: "Low",
-          opened: 2,
-          clicked: 0,
-        },
-        {
-          firstName: "Grace",
-          lastName: "Chen",
-          email: "grace.c@company.com",
-          campaignName: "Compliance Training",
-          scenarioName: "Data Protection",
-          category: "Compliance",
-          difficulty: "Medium",
-          opened: 4,
-          clicked: 2,
-        },
-        {
-          firstName: "Henry",
-          lastName: "Kim",
-          email: "henry.k@company.com",
-          campaignName: "Advanced Security",
-          scenarioName: "Incident Response",
-          category: "Technical",
-          difficulty: "High",
-          opened: 5,
-          clicked: 3,
-        },
-      ];
-      this.isLoading = false;
+    fetchTrainingTypes() {
+      AwarenessEducatorService.getTrainingTypes().then((response) => {
+        const types = response?.data?.data || []
+        this.$set(
+          this.columns[4],
+          'filterableItems',
+          types.map((t) => t.displayName)
+        )
+        this.$refs.refTrainingActivityTable?.reRenderFilters()
+      })
     },
     callForData() {
-      this.isLoading = true;
-      const payload = {
-        widgetIds: [this.card.resourceId],
-        datePeriod: this.datePeriod,
-        startDate: this.dateRange[0],
-        endDate: this.dateRange[1],
-      };
-      getExecutiveReportChartData(payload)
+      if (!this.dateRange?.length) return
+
+      this.isLoading = true
+      this.axiosPayload.startDate = this.dateRange[0]
+      this.axiosPayload.endDate = this.dateRange[1]
+
+      searchTrainingActivityUsers(this.axiosPayload)
         .then((response) => {
-          const {
-            data: { data },
-          } = response || {};
-          this.$emit("on-set-default-widget-data", this.card.key, data);
-          this.setTableData(data);
+          const { data } = response || {}
+          const responseData = data?.data || {}
+          this.serverSideProps.totalNumberOfRecords = responseData.totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = responseData.totalNumberOfPages
+          this.serverSideProps.pageNumber = responseData.pageNumber
+          this.setTableData(responseData.results || [])
+          this.emitPaginationChange()
         })
         .finally(() => {
-          this.isLoading = false;
-        });
+          this.isLoading = false
+        })
     },
-    setTableData(data) {
-      if (!data || !data.length) {
-        this.tableData = [];
-        return;
+    setTableData(results) {
+      if (!results || !results.length) {
+        this.tableData = []
+        return
       }
 
-      const widgetData = data[0]?.widgetDatas;
-      if (!widgetData || !widgetData.length) {
-        this.tableData = [];
-        return;
-      }
-
-      // Map the data to table format
-      this.tableData = widgetData.map((item) => ({
-        firstName: item.firstName || "",
-        lastName: item.lastName || "",
-        email: item.email || "",
-        campaignName: item.campaignName || "",
-        scenarioName: item.scenarioName || "",
-        category: item.category || "",
-        difficulty: item.difficulty || "",
-        opened: item.opened || 0,
-        clicked: item.clicked || 0,
-      }));
+      this.tableData = results.map((item) => ({
+        firstName: item.firstName || '',
+        lastName: item.lastName || '',
+        email: item.email || '',
+        enrollmentName: item.enrollmentName || '',
+        contentType: item.contentType || '',
+        trainingContentName: item.trainingContentName || '',
+        openedTrainingEmail: item.openedTrainingEmail ?? 0,
+        clickedTrainingEmail: item.clickedTrainingEmail ?? 0
+      }))
     },
-    handleDelete() {
-      this.$emit("on-delete", this.card);
+    serverSideSizeChanged(pageSize = 10) {
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForData()
     },
-    handleEdit() {
-      this.$emit("on-edit", this.card);
+    handleListBulleted() {
+      this.axiosPayload.groupByUser = false
+      this.resetPageNumber()
+      this.callForData()
     },
-  },
-};
+    handleGroupedClick() {
+      this.axiosPayload.groupByUser = true
+      this.resetPageNumber()
+      this.callForData()
+    },
+    emitPaginationChange() {
+      const actualRowCount = Math.min(this.axiosPayload.pageSize, this.tableData.length)
+      this.$emit('on-pagination-change', this.card, actualRowCount)
+    }
+  }
+}
 </script>

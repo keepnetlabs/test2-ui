@@ -5,7 +5,7 @@
       :card="card"
       :date-range="dateRange"
       :date-period="datePeriod"
-      :default-widget-data="defaultWidgetData"
+      :default-widget-data="localWidgetData"
       :date-format="dateFormat"
       @on-delete="handleDelete"
       @on-edit="handleEdit"
@@ -16,64 +16,78 @@
       :card="card"
       :date-range="dateRange"
       :date-period="datePeriod"
-      :default-widget-data="defaultWidgetData"
+      :default-widget-data="localWidgetData"
       :date-format="dateFormat"
+      @on-pagination-change="handlePaginationChange"
     />
   </div>
 </template>
 
 <script>
-import ExecutiveReportTrainingActivityWidget from "./ExecutiveReportTrainingActivityWidget.vue";
-import ExecutiveReportTrainingActivityTable from "./ExecutiveReportTrainingActivityTable.vue";
+import ExecutiveReportTrainingActivityWidget from './ExecutiveReportTrainingActivityWidget.vue'
+import ExecutiveReportTrainingActivityTable from './ExecutiveReportTrainingActivityTable.vue'
 
 export default {
-  name: "ExecutiveReportTrainingActivity",
+  name: 'ExecutiveReportTrainingActivity',
   components: {
     ExecutiveReportTrainingActivityWidget,
-    ExecutiveReportTrainingActivityTable,
+    ExecutiveReportTrainingActivityTable
   },
   props: {
     editMode: {
       type: Boolean,
-      default: true,
+      default: true
     },
     card: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     dateRange: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     datePeriod: {
       type: Number,
-      default: 1,
+      default: 1
     },
     defaultWidgetData: {
-      type: [Object, Array],
+      type: [Object, Array]
     },
     dateFormat: {
       type: String,
-      default: "",
-    },
+      default: ''
+    }
   },
   data() {
-    return {};
+    return {
+      localWidgetData: null
+    }
   },
-  watch: {},
+  watch: {
+    defaultWidgetData: {
+      immediate: true,
+      handler(val) {
+        if (val) this.localWidgetData = val
+      }
+    }
+  },
   created() {},
   methods: {
     handleDelete(card) {
-      this.$emit("on-delete", card);
+      this.$emit('on-delete', card)
     },
     handleEdit(card) {
-      this.$emit("on-edit", card);
+      this.$emit('on-edit', card)
     },
     handleSetDefaultWidgetData(key, data) {
-      this.$emit("on-set-default-widget-data", key, data);
+      this.localWidgetData = data
+      this.$emit('on-set-default-widget-data', key, data)
     },
-  },
-};
+    handlePaginationChange(card, pageSize) {
+      this.$emit('on-pagination-change', card, pageSize)
+    }
+  }
+}
 </script>
 
 <style scoped>

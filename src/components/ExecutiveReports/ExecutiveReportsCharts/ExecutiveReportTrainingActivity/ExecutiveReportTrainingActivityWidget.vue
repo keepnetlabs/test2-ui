@@ -23,7 +23,7 @@
             <div
               v-else
               class="k-widget-list__empty-inline"
-              style="display: flex; align-items: center; justify-content: center"
+              style="display: flex; align-items: center; justify-content: center;"
             >
               <h2 v-if="empty.message">{{ empty.message }}</h2>
               <p v-if="empty.subMes">{{ empty.subMes }}</p>
@@ -40,380 +40,232 @@
 </template>
 
 <script>
-import WidgetLoading from "@/components/SkeletonLoading/WidgetLoading.vue";
-import BarChart from "@/components/Common/Charts/Bar.vue";
-import ExecutiveWidgetContainer from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue";
-import ExecutiveWidgetHeader from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue";
-import ExecutiveWidgetBody from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue";
-import { getExecutiveReportChartData } from "@/api/reports";
-import { createExecutiveReportChartData } from "@/components/ExecutiveReports/ExecutiveReportsWidget/utils";
-import { monthNamesLong } from "@/components/ExecutiveReports/ExecutiveReportsCharts/utils";
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+import BarChart from '@/components/Common/Charts/Bar.vue'
+import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
+import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
+import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
+import { getExecutiveReportChartData } from '@/api/reports'
+import { createExecutiveReportChartData } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
+import { monthNamesLong } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 
-// Chart colors for Campaigns, Risky Actions, Reported
-const PHISHING_ACTIVITY_COLORS = {
-  Campaigns: {
-    backgroundColor: "#757575",
-    borderColor: "#757575",
+// Chart colors for Enrollments, Incomplete, Completed
+const TRAINING_ACTIVITY_COLORS = {
+  Enrollments: {
+    backgroundColor: '#757575',
+    borderColor: '#757575'
   },
-  "Risky Actions": {
-    backgroundColor: "#F56C6C",
-    borderColor: "#F56C6C",
+  Incomplete: {
+    backgroundColor: '#E6A23C',
+    borderColor: '#E6A23C'
   },
-  Reported: {
-    backgroundColor: "#43A047",
-    borderColor: "#43A047",
-  },
-};
+  Completed: {
+    backgroundColor: '#43A047',
+    borderColor: '#43A047'
+  }
+}
 
 export default {
-  name: "ExecutiveReportPhisihingActivityWidget",
+  name: 'ExecutiveReportPhisihingActivityWidget',
   components: {
     ExecutiveWidgetBody,
     ExecutiveWidgetHeader,
     ExecutiveWidgetContainer,
     BarChart,
-    WidgetLoading,
+    WidgetLoading
   },
   props: {
     editMode: {
       type: Boolean,
-      default: true,
+      default: true
     },
     card: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     dateRange: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     datePeriod: {
       type: Number,
-      default: 1,
+      default: 1
     },
     defaultWidgetData: {
-      type: [Object, Array],
+      type: [Object, Array]
     },
     dateFormat: {
       type: String,
-      default: "",
-    },
+      default: ''
+    }
   },
   data() {
     return {
       isLoading: false,
       isEmpty: false,
       empty: {
-        message: "You do not have any report conclusion",
+        message: 'You do not have any report conclusion'
       },
       chartOptions: {},
       chartData: {},
       customPlugin: [
         {
           afterDraw: (chart) => {
-            const ctx = chart.chart.ctx;
-            const fontSize = 12;
-            const fontFamily = "Open Sans, sans-serif";
+            const ctx = chart.chart.ctx
+            const fontSize = 12
+            const fontFamily = 'Open Sans, sans-serif'
             chart.legend.legendItems.forEach((legendItem, index) => {
-              const textParts = legendItem.textParts;
+              const textParts = legendItem.textParts
               if (textParts) {
-                const text = textParts[0];
-                const percentage = textParts[1];
-                const x = chart.legend.legendHitBoxes[index].left + 17;
-                const y = chart.legend.legendHitBoxes[index].top + 6;
-                ctx.fillStyle = "#383B41";
-                ctx.fillText(text, x, y);
-                ctx.font = `bold ${fontSize}px ${fontFamily}`;
-                ctx.fillText(percentage, x + ctx.measureText(text).width + 8, y + 0.5);
-                ctx.font = `${fontSize}px ${fontFamily}`;
+                const text = textParts[0]
+                const percentage = textParts[1]
+                const x = chart.legend.legendHitBoxes[index].left + 17
+                const y = chart.legend.legendHitBoxes[index].top + 6
+                ctx.fillStyle = '#383B41'
+                ctx.fillText(text, x, y)
+                ctx.font = `bold ${fontSize}px ${fontFamily}`
+                const offset = text === 'Completed' ? 0 : -4
+                ctx.fillText(percentage, x + ctx.measureText(text).width + offset, y + 0.5)
+                ctx.font = `${fontSize}px ${fontFamily}`
               }
-            });
-          },
-        },
-      ],
-    };
+            })
+          }
+        }
+      ]
+    }
   },
   watch: {
     dateRange() {
-      this.callForData();
-    },
+      this.callForData()
+    }
   },
   created() {
-    // TODO: Remove mock data after testing
-    this.setMockChartData();
-    return;
-    // Original code below
-    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData);
-    else this.callForData();
+    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData)
+    else this.callForData()
   },
   methods: {
-    setMockChartData() {
-      // Mock data for testing - Training Activity (6 months)
-      const mockDatasets = [
-        {
-          type: "bar",
-          barThickness: 32,
-          label: "Campaigns",
-          backgroundColor: "#757575",
-          borderColor: "#757575",
-          data: [
-            { x: new Date("2024-07-01"), y: 35 },
-            { x: new Date("2024-08-01"), y: 42 },
-            { x: new Date("2024-09-01"), y: 50 },
-            { x: new Date("2024-10-01"), y: 58 },
-            { x: new Date("2024-11-01"), y: 65 },
-            { x: new Date("2024-12-01"), y: 72 },
-          ],
-        },
-        {
-          type: "bar",
-          barThickness: 32,
-          label: "Risky Actions",
-          backgroundColor: "#F56C6C",
-          borderColor: "#F56C6C",
-          data: [
-            { x: new Date("2024-07-01"), y: 35 },
-            { x: new Date("2024-08-01"), y: 28 },
-            { x: new Date("2024-09-01"), y: 22 },
-            { x: new Date("2024-10-01"), y: 18 },
-            { x: new Date("2024-11-01"), y: 14 },
-            { x: new Date("2024-12-01"), y: 8 },
-          ],
-        },
-        {
-          type: "bar",
-          barThickness: 32,
-          label: "Reported",
-          backgroundColor: "#43A047",
-          borderColor: "#43A047",
-          data: [
-            { x: new Date("2024-07-01"), y: 18 },
-            { x: new Date("2024-08-01"), y: 25 },
-            { x: new Date("2024-09-01"), y: 32 },
-            { x: new Date("2024-10-01"), y: 40 },
-            { x: new Date("2024-11-01"), y: 48 },
-            { x: new Date("2024-12-01"), y: 55 },
-          ],
-        },
-      ];
-
-      this.chartData = {
-        datasets: mockDatasets,
-      };
-
-      const maxY = 80;
-
-      this.chartOptions = {
-        responsive: true,
-        devicePixelRatio: 2,
-        maintainAspectRatio: false,
-        scales: {
-          yAxes: [
-            {
-              stacked: false,
-              beginAtZero: true,
-              position: "left",
-              scaleLabel: {
-                display: true,
-                labelString: "Training Activity Rate",
-                fontColor: "#383B41",
-              },
-              offset: false,
-              gridLines: {
-                display: true,
-                drawBorder: false,
-                zeroLineColor: "#757575",
-                zeroLineWidth: 2,
-              },
-              ticks: {
-                min: 0,
-                max: maxY,
-                stepSize: maxY / 5,
-                labelOffset: 0,
-                beginAtZero: true,
-                padding: 12,
-                fontFamily: "Open-sans,sans-serif",
-                fontColor: "rgba(56, 59, 65, 0.72)",
-                lineHeight: 1.58,
-                callback: function (value) {
-                  return value + "%";
-                },
-              },
-            },
-          ],
-          xAxes: [
-            {
-              stacked: false,
-              display: true,
-              offset: true,
-              type: "time",
-              time: {
-                unit: "month",
-                displayFormats: {
-                  month: "MM/YYYY",
-                },
-              },
-              scaleLabel: {
-                display: true,
-                labelString: "Month/Year",
-                fontColor: "#383B41",
-              },
-              ticks: {
-                fontColor: "rgba(56, 59, 65, 0.72)",
-                fontStyle: "600",
-                fontSize: 9,
-                fontFamily: "Open-sans,sans-serif",
-                callback(value) {
-                  const splittedVal = value.split("/");
-                  const monthName = monthNamesLong[splittedVal[0] - 1];
-                  return `${monthName}/${value.split("/")[1]}`;
-                },
-              },
-              gridLines: {
-                display: false,
-                showBorder: false,
-                color: "#F2F2F2",
-              },
-            },
-          ],
-        },
-        legend: {
-          display: true,
-          position: "top",
-          align: "center",
-          labels: {
-            usePointStyle: true,
-            fontColor: "#383B41",
-            generateLabels(chart = {}) {
-              const { data } = chart;
-              return data.datasets.map((item, index) => {
-                const total = item.data.reduce(
-                  (sum, current) => sum + (current.y || 0),
-                  0
-                );
-                const customSpacer = "        ";
-
-                return {
-                  text: Array.from(item.label + item.label + customSpacer)
-                    .fill("")
-                    .join(" "),
-                  fillStyle: item.borderColor,
-                  lineWidth: 0,
-                  datasetIndex: index,
-                  textParts: [item.label, `(${total})`],
-                };
-              });
-            },
-            fontFamily: "Open-sans,sans-serif",
-            padding: 16,
-            fontSize: 12,
-          },
-        },
-        tooltips: {
-          enabled: false,
-        },
-        plugins: {
-          datalabels: {
-            display: true,
-            color: "#383B41",
-            font: {
-              weight: "bold",
-              size: 11,
-            },
-            anchor: "end",
-            align: "top",
-            formatter: function (value) {
-              return value.y || "";
-            },
-          },
-        },
-      };
-
-      this.isEmpty = false;
-      this.isLoading = false;
-    },
     callForData() {
-      this.isLoading = true;
+      this.isLoading = true
       const payload = {
         widgetIds: [this.card.resourceId],
         datePeriod: this.datePeriod,
         startDate: this.dateRange[0],
-        endDate: this.dateRange[1],
-      };
+        endDate: this.dateRange[1]
+      }
       getExecutiveReportChartData(payload)
         .then((response) => {
           const {
-            data: { data },
-          } = response || {};
-          this.$emit("on-set-default-widget-data", this.card.key, data);
-          this.setChartData(data);
+            data: { data }
+          } = response || {}
+          this.$emit('on-set-default-widget-data', this.card.key, data)
+          this.setChartData(data)
         })
         .finally(() => {
-          this.isLoading = false;
-        });
+          this.isLoading = false
+        })
     },
     setChartData(data) {
-      const params = [data[0].widgetDatas];
-      if (this.dateFormat) params.push(this.dateFormat);
-      const { valueEnums, datasets } = createExecutiveReportChartData(...params);
+      const params = [data[0].widgetDatas]
+      if (this.dateFormat) params.push(this.dateFormat)
+      const { valueEnums, datasets } = createExecutiveReportChartData(...params)
       if (!datasets.length) {
-        this.isEmpty = true;
-        return;
+        this.isEmpty = true
+        return
       }
 
-      // Map old labels to new labels
+      // Map backend labels to display labels
       const labelMapping = {
-        "Users Who Clicked And Reported (%)": "Reported",
-        "Users Who Did Not Click And Reported (%)": "Campaigns",
-        "Users Who Did Not Reported (%)": "Risky Actions",
-      };
+        Total: 'Enrollments',
+        Incomplete: 'Incomplete',
+        Enrollment: 'Enrollments'
+      }
 
-      const newDatasets = [];
-      const datasetOrder = ["Campaigns", "Risky Actions", "Reported"];
+      const newDatasets = []
+      const datasetOrder = ['Enrollments', 'Incomplete', 'Completed']
 
+      // Calculate Completed from Total - Incomplete per date (x is timestamp)
+      const enrollmentsByDate = {}
+      const incompleteByDate = {}
+
+      datasets.forEach((item) => {
+        const timestamp = item.x
+        if (item.result === 'Total' || item.result === 'Enrollment') {
+          enrollmentsByDate[timestamp] = item.y
+        } else if (item.result === 'Incomplete') {
+          incompleteByDate[timestamp] = item.y
+        }
+      })
+
+      // Build datasets
       valueEnums.forEach((itemType) => {
-        const typedItems = datasets.filter((item) => item.result === itemType);
-        const newLabel = labelMapping[itemType] || itemType;
-        const orderIndex = datasetOrder.indexOf(newLabel);
+        const typedItems = datasets.filter((item) => item.result === itemType)
+        const newLabel = labelMapping[itemType] || itemType
+        const orderIndex = datasetOrder.indexOf(newLabel)
 
         if (orderIndex !== -1) {
-          newDatasets[orderIndex] = {
-            type: "bar",
-            barThickness: 32,
-            label: newLabel,
-            ...PHISHING_ACTIVITY_COLORS[newLabel],
-            data: typedItems,
-          };
+          const filteredData = typedItems.filter((item) => item.y > 0)
+          if (filteredData.length > 0) {
+            newDatasets[orderIndex] = {
+              type: 'bar',
+              barThickness: 32,
+              borderWidth: 2,
+              borderColor: '#ffffff',
+              label: newLabel,
+              backgroundColor: TRAINING_ACTIVITY_COLORS[newLabel].backgroundColor,
+              data: filteredData
+            }
+          }
         }
-      });
+      })
+
+      // Create Completed dataset from Enrollments - Incomplete
+      const completedData = Object.keys(enrollmentsByDate)
+        .map((timestamp) => ({
+          x: Number(timestamp),
+          y: (enrollmentsByDate[timestamp] || 0) - (incompleteByDate[timestamp] || 0),
+          result: 'Completed'
+        }))
+        .filter((item) => item.y > 0)
+
+      if (completedData.length > 0) {
+        newDatasets[2] = {
+          type: 'bar',
+          barThickness: 32,
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          label: 'Completed',
+          backgroundColor: TRAINING_ACTIVITY_COLORS['Completed'].backgroundColor,
+          data: completedData
+        }
+      }
 
       // Filter out undefined entries
-      const filteredDatasets = newDatasets.filter(Boolean);
+      const filteredDatasets = newDatasets.filter(Boolean)
 
       // Calculate max Y value (grouped - find max individual value)
-      let maxY = 0;
+      let maxY = 0
       filteredDatasets.forEach((ds) => {
         ds.data.forEach((point) => {
-          maxY = Math.max(maxY, point.y || 0);
-        });
-      });
+          maxY = Math.max(maxY, point.y || 0)
+        })
+      })
 
       // Round up maxY to nice value
       if (maxY < 20) {
-        maxY = 40;
+        maxY = 40
       } else if (maxY < 40) {
-        maxY = 60;
+        maxY = 60
       } else if (maxY < 60) {
-        maxY = 80;
+        maxY = 80
       } else if (maxY < 80) {
-        maxY = 100;
+        maxY = 100
       } else {
-        maxY = Math.ceil(maxY / 20) * 20;
+        maxY = Math.ceil(maxY / 20) * 20
       }
 
       this.chartData = {
-        datasets: filteredDatasets,
-      };
+        datasets: filteredDatasets
+      }
 
       this.chartOptions = {
         responsive: true,
@@ -424,18 +276,18 @@ export default {
             {
               stacked: false,
               beginAtZero: true,
-              position: "left",
+              position: 'left',
               scaleLabel: {
                 display: true,
-                labelString: "Phishing Activity Rate",
-                fontColor: "#383B41",
+                labelString: 'Training Activity',
+                fontColor: '#383B41'
               },
               offset: false,
               gridLines: {
                 display: true,
                 drawBorder: false,
-                zeroLineColor: "#757575",
-                zeroLineWidth: 2,
+                zeroLineColor: '#757575',
+                zeroLineWidth: 2
               },
               ticks: {
                 min: 0,
@@ -444,120 +296,127 @@ export default {
                 labelOffset: 0,
                 beginAtZero: true,
                 padding: 12,
-                fontFamily: "Open-sans,sans-serif",
-                fontColor: "rgba(56, 59, 65, 0.72)",
+                fontFamily: 'Open-sans,sans-serif',
+                fontColor: 'rgba(56, 59, 65, 0.72)',
                 lineHeight: 1.58,
                 callback: function (value) {
-                  return value + "%";
-                },
-              },
-            },
+                  return value
+                }
+              }
+            }
           ],
           xAxes: [
             {
               stacked: false,
               display: true,
               offset: true,
-              type: "time",
+              type: 'time',
               time: {
-                unit: "month",
+                unit: 'month',
                 displayFormats: {
-                  month: "MM/YYYY",
-                },
+                  month: 'MM/YYYY'
+                }
               },
               scaleLabel: {
                 display: true,
-                labelString: "Month/Year",
-                fontColor: "#383B41",
+                labelString: 'Month/Year',
+                fontColor: '#383B41'
               },
               ticks: {
-                fontColor: "rgba(56, 59, 65, 0.72)",
-                fontStyle: "600",
+                fontColor: 'rgba(56, 59, 65, 0.72)',
+                fontStyle: '600',
                 fontSize: 9,
-                fontFamily: "Open-sans,sans-serif",
+                fontFamily: 'Open-sans,sans-serif',
                 callback(value) {
-                  const splittedVal = value.split("/");
-                  const monthName = monthNamesLong[splittedVal[0] - 1];
-                  return `${monthName}/${value.split("/")[1]}`;
-                },
+                  const splittedVal = value.split('/')
+                  const monthName = monthNamesLong[splittedVal[0] - 1]
+                  return `${monthName}/${value.split('/')[1]}`
+                }
               },
               gridLines: {
                 display: false,
                 showBorder: false,
-                color: "#F2F2F2",
-              },
-            },
-          ],
+                color: '#F2F2F2'
+              }
+            }
+          ]
         },
         legend: {
           display: true,
-          position: "top",
-          align: "center",
+          position: 'top',
+          align: 'center',
           labels: {
             usePointStyle: true,
-            fontColor: "#383B41",
+            fontColor: '#383B41',
             generateLabels(chart = {}) {
-              const { data } = chart;
-              return data.datasets.map((item, index) => {
-                const total = item.data.reduce(
-                  (sum, current) => sum + (current.y || 0),
-                  0
-                );
-                const customSpacer = "        ";
+              const { data } = chart
+              const legendOrder = ['Enrollments', 'Incomplete', 'Completed']
+              const colors = {
+                Enrollments: '#757575',
+                Incomplete: '#E6A23C',
+                Completed: '#43A047'
+              }
+
+              return legendOrder.map((label) => {
+                const dataset = data.datasets.find((ds) => ds.label === label)
+                const total = dataset
+                  ? dataset.data.reduce((sum, current) => sum + (current.y || 0), 0)
+                  : 0
+                const customSpacer = '        '
 
                 return {
-                  text: Array.from(item.label + item.label + customSpacer)
-                    .fill("")
-                    .join(" "),
-                  fillStyle: item.borderColor,
+                  text: Array.from(label + label + customSpacer)
+                    .fill('')
+                    .join(' '),
+                  fillStyle: colors[label],
                   lineWidth: 0,
-                  datasetIndex: index,
-                  textParts: [item.label, `(${total})`],
-                };
-              });
+                  datasetIndex: data.datasets.findIndex((ds) => ds.label === label),
+                  textParts: [label, `(${total})`]
+                }
+              })
             },
-            fontFamily: "Open-sans,sans-serif",
+            fontFamily: 'Open-sans,sans-serif',
             padding: 16,
-            fontSize: 12,
-          },
+            fontSize: 12
+          }
         },
         tooltips: {
-          enabled: false,
+          enabled: false
         },
         plugins: {
           datalabels: {
             display: true,
-            color: "#383B41",
+            color: '#383B41',
             font: {
-              weight: "bold",
-              size: 11,
+              weight: 'bold',
+              size: 11
             },
-            anchor: "end",
-            align: "top",
+            anchor: 'end',
+            align: 'top',
             formatter: function (value) {
-              return value.y || "";
-            },
-          },
-        },
-      };
+              return value.y > 0 ? value.y : ''
+            }
+          }
+        }
+      }
 
-      this.isEmpty = false;
-      this.isLoading = false;
+      this.isEmpty = false
+      this.isLoading = false
     },
     handleDelete() {
-      this.$emit("on-delete", this.card);
+      this.$emit('on-delete', this.card)
     },
     handleEdit() {
-      this.$emit("on-edit", this.card);
-    },
-  },
-};
+      this.$emit('on-edit', this.card)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .training-activity-widget {
-  height: 320px;
-  min-height: 320px;
-  max-height: 320px;
+  height: 360px;
+  min-height: 360px;
+  max-height: 360px;
 }
 </style>
