@@ -257,6 +257,7 @@ export default {
   z-index: 1000;
   height: 100vh;
   pointer-events: none;
+  z-index: 2147483001;
 }
 
 .ai-agent-button {
@@ -265,7 +266,7 @@ export default {
   top: 20px;
   height: 48px;
   width: 48px;
-  background: linear-gradient(90deg, #1173C1 0%, #2196F3 100%);
+  background: linear-gradient(90deg, #1173c1 0%, #2196f3 100%);
   border-radius: 24px 0 0 24px;
   border-top: 2px solid #fff;
   border-bottom: 2px solid #fff;
