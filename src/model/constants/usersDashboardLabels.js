@@ -543,6 +543,9 @@ const usersDashboardLabels = {
     badgeName_2_1: 'Eğitim Ustası',
     badgeName_2_2: 'Eğitim Ustası',
     badgeName_2_3: 'Eğitim Ustası',
+    badgeName_4_1: 'Eğitim Serisi',
+    badgeName_4_2: 'Eğitim Serisi',
+    badgeName_4_3: 'Eğitim Serisi',
     badgeName_3_1: 'Mükemmel Puan',
     badgeName_3_2: 'Mükemmel Puan',
     badgeName_3_3: 'Mükemmel Puan',
@@ -556,11 +559,26 @@ const usersDashboardLabels = {
     badgeName_8_1: 'Sıfır Tıklama Şampiyonu',
     badgeName_8_2: 'Sıfır Tıklama Şampiyonu',
     badgeName_8_3: 'Sıfır Tıklama Şampiyonu',
+    badgeName_9_1: 'Siber Koruyucu',
+    badgeName_9_2: 'Siber Koruyucu',
+    badgeName_9_3: 'Siber Koruyucu',
+    badgeName_10_1: 'Hızlı Raporlayıcı',
+    badgeName_10_2: 'Hızlı Raporlayıcı',
+    badgeName_10_3: 'Hızlı Raporlayıcı',
+    badgeName_11_1: 'Gerçek Oltalama Savunucusu',
+    badgeName_11_2: 'Gerçek Oltalama Savunucusu',
+    badgeName_11_3: 'Gerçek Oltalama Savunucusu',
+    badgeName_12_1: 'Haftalık Aktif Kullanıcı',
+    badgeName_12_2: 'Haftalık Aktif Kullanıcı',
+    badgeName_12_3: 'Haftalık Aktif Kullanıcı',
     // Badge Descriptions
     badgeDescription_1_0: 'İlk eğitiminizi tamamladığınızda kazanırsınız.',
     badgeDescription_2_1: '20 eğitimi tamamladığınızda kazanırsınız.',
     badgeDescription_2_2: '40 eğitimi tamamladığınızda kazanırsınız.',
     badgeDescription_2_3: '60 eğitimi tamamladığınızda kazanırsınız.',
+    badgeDescription_4_1: 'Arka arkaya 3 eğitimi başarıyla tamamladığınızda kazanırsınız.',
+    badgeDescription_4_2: 'Arka arkaya 7 eğitimi başarıyla tamamladığınızda kazanırsınız.',
+    badgeDescription_4_3: 'Arka arkaya 15 eğitimi başarıyla tamamladığınızda kazanırsınız.',
     badgeDescription_3_1: '3 eğitim sınavında 100 puan aldığınızda kazanırsınız.',
     badgeDescription_3_2: '5 eğitim sınavında 100 puan aldığınızda kazanırsınız.',
     badgeDescription_3_3: '10 eğitim sınavında tutarlı olarak 100 puan aldığınızda kazanırsınız.',
@@ -579,6 +597,27 @@ const usersDashboardLabels = {
       '4 kampanya boyunca herhangi bir oltalama simülasyonuna tıklamaktan başarıyla kaçındığınızda kazanırsınız.',
     badgeDescription_8_3:
       '6 kampanya boyunca herhangi bir oltalama simülasyonuna tıklamaktan başarıyla kaçındığınızda kazanırsınız.',
+    badgeDescription_9_1:
+      '5 eğitimi tamamladığınızda ve 1 oltalama simülasyonunu bildirdiğinizde kazanırsınız.',
+    badgeDescription_9_2:
+      '10 eğitimi tamamladığınızda ve 3 oltalama simülasyonunu bildirdiğinizde kazanırsınız.',
+    badgeDescription_9_3:
+      '20 eğitimi tamamladığınızda ve 5 oltalama simülasyonunu bildirdiğinizde kazanırsınız.',
+    badgeDescription_10_1:
+      '1 kampanyada oltalama simülasyonunu bildiren ilk kişi olduğunuzda kazanırsınız.',
+    badgeDescription_10_2:
+      '3 kampanyada oltalama simülasyonunu bildiren ilk kişi olduğunuzda kazanırsınız.',
+    badgeDescription_10_3:
+      '5 kampanyada oltalama simülasyonunu bildiren ilk kişi olduğunuzda kazanırsınız.',
+    badgeDescription_11_1: 'İlk gerçek oltalama e-postanızı bildirdiğinizde kazanırsınız.',
+    badgeDescription_11_2: '3 gerçek oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_11_3: '5 gerçek oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_12_1:
+      "Dashboard'u 3 hafta üst üste aktif olarak kullandığınızda kazanırsınız.",
+    badgeDescription_12_2:
+      "Dashboard'u 6 hafta üst üste aktif olarak kullandığınızda kazanırsınız.",
+    badgeDescription_12_3:
+      "Dashboard'u 12 hafta üst üste aktif olarak kullandığınızda kazanırsınız.",
 
     // Your Learning
     yourLearningTitle: 'Eğitimleriniz', // "Öğrenmeleriniz" yerine "Eğitimleriniz" daha doğal.
@@ -881,6 +920,9 @@ const usersDashboardLabels = {
     badgeName_2_1: 'Schulungsmeister',
     badgeName_2_2: 'Schulungsmeister',
     badgeName_2_3: 'Schulungsmeister',
+    badgeName_4_1: 'Schulungsserie',
+    badgeName_4_2: 'Schulungsserie',
+    badgeName_4_3: 'Schulungsserie',
     badgeName_3_1: 'Perfekte Punktzahl',
     badgeName_3_2: 'Perfekte Punktzahl',
     badgeName_3_3: 'Perfekte Punktzahl',
@@ -894,12 +936,30 @@ const usersDashboardLabels = {
     badgeName_8_1: 'Null-Klick-Champion',
     badgeName_8_2: 'Null-Klick-Champion',
     badgeName_8_3: 'Null-Klick-Champion',
+    badgeName_9_1: 'Cyber-Wächter',
+    badgeName_9_2: 'Cyber-Wächter',
+    badgeName_9_3: 'Cyber-Wächter',
+    badgeName_10_1: 'Schnellmelder',
+    badgeName_10_2: 'Schnellmelder',
+    badgeName_10_3: 'Schnellmelder',
+    badgeName_11_1: 'Echter Phishing-Verteidiger',
+    badgeName_11_2: 'Echter Phishing-Verteidiger',
+    badgeName_11_3: 'Echter Phishing-Verteidiger',
+    badgeName_12_1: 'Wöchentlich aktiver Benutzer',
+    badgeName_12_2: 'Wöchentlich aktiver Benutzer',
+    badgeName_12_3: 'Wöchentlich aktiver Benutzer',
     // Badge Descriptions
     badgeDescription_1_0:
       'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste Schulung abschließen.',
     badgeDescription_2_1: 'Sie erhalten dieses Abzeichen, wenn Sie 20 Schulungen abschließen.',
     badgeDescription_2_2: 'Sie erhalten dieses Abzeichen, wenn Sie 40 Schulungen abschließen.',
     badgeDescription_2_3: 'Sie erhalten dieses Abzeichen, wenn Sie 60 Schulungen abschließen.',
+    badgeDescription_4_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie 3 Schulungen hintereinander erfolgreich abschließen.',
+    badgeDescription_4_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie 7 Schulungen hintereinander erfolgreich abschließen.',
+    badgeDescription_4_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie 15 Schulungen hintereinander erfolgreich abschließen.',
     badgeDescription_3_1:
       'Sie erhalten dieses Abzeichen, wenn Sie bei 3 Schulungsquizzen 100 Punkte erreichen.',
     badgeDescription_3_2:
@@ -923,6 +983,30 @@ const usersDashboardLabels = {
       'Sie erhalten dieses Abzeichen, wenn Sie erfolgreich das Anklicken jeglicher Phishing-Simulationen über 4 Kampagnen vermeiden.',
     badgeDescription_8_3:
       'Sie erhalten dieses Abzeichen, wenn Sie erfolgreich das Anklicken jeglicher Phishing-Simulationen über 6 Kampagnen vermeiden.',
+    badgeDescription_9_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie 5 Schulungen abschließen und 1 Phishing-Simulation melden.',
+    badgeDescription_9_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie 10 Schulungen abschließen und 3 Phishing-Simulationen melden.',
+    badgeDescription_9_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie 20 Schulungen abschließen und 5 Phishing-Simulationen melden.',
+    badgeDescription_10_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie die erste Person sind, die die Phishing-Simulation in 1 Kampagne meldet.',
+    badgeDescription_10_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie die erste Person sind, die die Phishing-Simulation in 3 Kampagnen meldet.',
+    badgeDescription_10_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie die erste Person sind, die die Phishing-Simulation in 5 Kampagnen meldet.',
+    badgeDescription_11_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste echte Phishing-E-Mail melden.',
+    badgeDescription_11_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie 3 echte Phishing-E-Mails melden.',
+    badgeDescription_11_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie 5 echte Phishing-E-Mails melden.',
+    badgeDescription_12_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie das Dashboard 3 Wochen hintereinander aktiv nutzen.',
+    badgeDescription_12_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie das Dashboard 6 Wochen hintereinander aktiv nutzen.',
+    badgeDescription_12_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie das Dashboard 12 Wochen hintereinander aktiv nutzen.',
 
     // Your Learning
     yourLearningTitle: 'Ihre Schulungen', // "Ihr Lernen" yerine "Schulungen" (Eğitimler) daha doğal.
@@ -1226,6 +1310,9 @@ const usersDashboardLabels = {
     badgeName_2_1: 'Maître de la Formation',
     badgeName_2_2: 'Maître de la Formation',
     badgeName_2_3: 'Maître de la Formation',
+    badgeName_4_1: 'Série de Formations',
+    badgeName_4_2: 'Série de Formations',
+    badgeName_4_3: 'Série de Formations',
     badgeName_3_1: 'Score Parfait',
     badgeName_3_2: 'Score Parfait',
     badgeName_3_3: 'Score Parfait',
@@ -1239,11 +1326,29 @@ const usersDashboardLabels = {
     badgeName_8_1: 'Champion Zéro Clic',
     badgeName_8_2: 'Champion Zéro Clic',
     badgeName_8_3: 'Champion Zéro Clic',
+    badgeName_9_1: 'Cyber Gardien',
+    badgeName_9_2: 'Cyber Gardien',
+    badgeName_9_3: 'Cyber Gardien',
+    badgeName_10_1: 'Signaleur Rapide',
+    badgeName_10_2: 'Signaleur Rapide',
+    badgeName_10_3: 'Signaleur Rapide',
+    badgeName_11_1: 'Défenseur Anti-Hameçonnage Réel',
+    badgeName_11_2: 'Défenseur Anti-Hameçonnage Réel',
+    badgeName_11_3: 'Défenseur Anti-Hameçonnage Réel',
+    badgeName_12_1: 'Utilisateur Actif Hebdomadaire',
+    badgeName_12_2: 'Utilisateur Actif Hebdomadaire',
+    badgeName_12_3: 'Utilisateur Actif Hebdomadaire',
     // Badge Descriptions
     badgeDescription_1_0: 'Vous obtenez ce badge lorsque vous terminez votre première formation.',
     badgeDescription_2_1: 'Vous obtenez ce badge lorsque vous terminez 20 formations.',
     badgeDescription_2_2: 'Vous obtenez ce badge lorsque vous terminez 40 formations.',
     badgeDescription_2_3: 'Vous obtenez ce badge lorsque vous terminez 60 formations.',
+    badgeDescription_4_1:
+      'Vous obtenez ce badge lorsque vous terminez avec succès 3 formations consécutives.',
+    badgeDescription_4_2:
+      'Vous obtenez ce badge lorsque vous terminez avec succès 7 formations consécutives.',
+    badgeDescription_4_3:
+      'Vous obtenez ce badge lorsque vous terminez avec succès 15 formations consécutives.',
     badgeDescription_3_1:
       'Vous obtenez ce badge lorsque vous obtenez 100 points sur 3 quiz de formation.',
     badgeDescription_3_2:
@@ -1267,6 +1372,30 @@ const usersDashboardLabels = {
       'Vous obtenez ce badge lorsque vous évitez avec succès de cliquer sur toute simulation de hameçonnage sur 4 campagnes.',
     badgeDescription_8_3:
       'Vous obtenez ce badge lorsque vous évitez avec succès de cliquer sur toute simulation de hameçonnage sur 6 campagnes.',
+    badgeDescription_9_1:
+      'Vous obtenez ce badge lorsque vous terminez 5 formations et signalez 1 simulation de hameçonnage.',
+    badgeDescription_9_2:
+      'Vous obtenez ce badge lorsque vous terminez 10 formations et signalez 3 simulations de hameçonnage.',
+    badgeDescription_9_3:
+      'Vous obtenez ce badge lorsque vous terminez 20 formations et signalez 5 simulations de hameçonnage.',
+    badgeDescription_10_1:
+      'Vous obtenez ce badge lorsque vous êtes la première personne à signaler la simulation de hameçonnage dans 1 campagne.',
+    badgeDescription_10_2:
+      'Vous obtenez ce badge lorsque vous êtes la première personne à signaler la simulation de hameçonnage dans 3 campagnes.',
+    badgeDescription_10_3:
+      'Vous obtenez ce badge lorsque vous êtes la première personne à signaler la simulation de hameçonnage dans 5 campagnes.',
+    badgeDescription_11_1:
+      'Vous obtenez ce badge lorsque vous signalez votre premier vrai e-mail de hameçonnage.',
+    badgeDescription_11_2:
+      'Vous obtenez ce badge lorsque vous signalez 3 vrais e-mails de hameçonnage.',
+    badgeDescription_11_3:
+      'Vous obtenez ce badge lorsque vous signalez 5 vrais e-mails de hameçonnage.',
+    badgeDescription_12_1:
+      'Vous obtenez ce badge lorsque vous utilisez activement le tableau de bord pendant 3 semaines consécutives.',
+    badgeDescription_12_2:
+      'Vous obtenez ce badge lorsque vous utilisez activement le tableau de bord pendant 6 semaines consécutives.',
+    badgeDescription_12_3:
+      'Vous obtenez ce badge lorsque vous utilisez activement le tableau de bord pendant 12 semaines consécutives.',
 
     // Your Learning
     yourLearningTitle: 'Vos Formations', // "Votre apprentissage" yerine daha kurumsal
@@ -1568,6 +1697,9 @@ const usersDashboardLabels = {
     badgeName_2_1: 'Maestro de Formación',
     badgeName_2_2: 'Maestro de Formación',
     badgeName_2_3: 'Maestro de Formación',
+    badgeName_4_1: 'Racha de Formación',
+    badgeName_4_2: 'Racha de Formación',
+    badgeName_4_3: 'Racha de Formación',
     badgeName_3_1: 'Puntuación Perfecta',
     badgeName_3_2: 'Puntuación Perfecta',
     badgeName_3_3: 'Puntuación Perfecta',
@@ -1581,11 +1713,26 @@ const usersDashboardLabels = {
     badgeName_8_1: 'Campeón Cero Clic',
     badgeName_8_2: 'Campeón Cero Clic',
     badgeName_8_3: 'Campeón Cero Clic',
+    badgeName_9_1: 'Guardián Cibernético',
+    badgeName_9_2: 'Guardián Cibernético',
+    badgeName_9_3: 'Guardián Cibernético',
+    badgeName_10_1: 'Reportero Rápido',
+    badgeName_10_2: 'Reportero Rápido',
+    badgeName_10_3: 'Reportero Rápido',
+    badgeName_11_1: 'Defensor contra Phishing Real',
+    badgeName_11_2: 'Defensor contra Phishing Real',
+    badgeName_11_3: 'Defensor contra Phishing Real',
+    badgeName_12_1: 'Usuario Activo Semanal',
+    badgeName_12_2: 'Usuario Activo Semanal',
+    badgeName_12_3: 'Usuario Activo Semanal',
     // Badge Descriptions
     badgeDescription_1_0: 'La obtienes cuando completas tu primera formación.',
     badgeDescription_2_1: 'La obtienes cuando completas 20 formaciones.',
     badgeDescription_2_2: 'La obtienes cuando completas 40 formaciones.',
     badgeDescription_2_3: 'La obtienes cuando completas 60 formaciones.',
+    badgeDescription_4_1: 'La obtienes cuando completas con éxito 3 formaciones consecutivas.',
+    badgeDescription_4_2: 'La obtienes cuando completas con éxito 7 formaciones consecutivas.',
+    badgeDescription_4_3: 'La obtienes cuando completas con éxito 15 formaciones consecutivas.',
     badgeDescription_3_1: 'La obtienes cuando obtienes 100 puntos en 3 cuestionarios de formación.',
     badgeDescription_3_2: 'La obtienes cuando obtienes 100 puntos en 5 cuestionarios de formación.',
     badgeDescription_3_3:
@@ -1603,6 +1750,28 @@ const usersDashboardLabels = {
       'La obtienes cuando evitas con éxito hacer clic en cualquier simulación de phishing a través de 4 campañas.',
     badgeDescription_8_3:
       'La obtienes cuando evitas con éxito hacer clic en cualquier simulación de phishing a través de 6 campañas.',
+    badgeDescription_9_1:
+      'La obtienes cuando completas 5 formaciones y reportas 1 simulación de phishing.',
+    badgeDescription_9_2:
+      'La obtienes cuando completas 10 formaciones y reportas 3 simulaciones de phishing.',
+    badgeDescription_9_3:
+      'La obtienes cuando completas 20 formaciones y reportas 5 simulaciones de phishing.',
+    badgeDescription_10_1:
+      'La obtienes cuando te conviertes en la primera persona en reportar la simulación de phishing en 1 campaña.',
+    badgeDescription_10_2:
+      'La obtienes cuando te conviertes en la primera persona en reportar la simulación de phishing en 3 campañas.',
+    badgeDescription_10_3:
+      'La obtienes cuando te conviertes en la primera persona en reportar la simulación de phishing en 5 campañas.',
+    badgeDescription_11_1:
+      'La obtienes cuando reportas tu primer correo electrónico de phishing real.',
+    badgeDescription_11_2: 'La obtienes cuando reportas 3 correos electrónicos de phishing real.',
+    badgeDescription_11_3: 'La obtienes cuando reportas 5 correos electrónicos de phishing real.',
+    badgeDescription_12_1:
+      'La obtienes cuando utilizas activamente el panel de control durante 3 semanas consecutivas.',
+    badgeDescription_12_2:
+      'La obtienes cuando utilizas activamente el panel de control durante 6 semanas consecutivas.',
+    badgeDescription_12_3:
+      'La obtienes cuando utilizas activamente el panel de control durante 12 semanas consecutivas.',
 
     // Your Learning
     yourLearningTitle: 'Sus Formaciones', // 'Aprendizaje' es demasiado literal.
