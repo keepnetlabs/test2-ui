@@ -568,6 +568,9 @@ const usersDashboardLabels = {
     badgeName_11_1: 'Gerçek Oltalama Savunucusu',
     badgeName_11_2: 'Gerçek Oltalama Savunucusu',
     badgeName_11_3: 'Gerçek Oltalama Savunucusu',
+    badgeName_12_1: 'Haftalık Aktif Kullanıcı',
+    badgeName_12_2: 'Haftalık Aktif Kullanıcı',
+    badgeName_12_3: 'Haftalık Aktif Kullanıcı',
     // Badge Descriptions
     badgeDescription_1_0: 'İlk eğitiminizi tamamladığınızda kazanırsınız.',
     badgeDescription_2_1: '20 eğitimi tamamladığınızda kazanırsınız.',
@@ -606,12 +609,15 @@ const usersDashboardLabels = {
       '3 kampanyada oltalama simülasyonunu bildiren ilk kişi olduğunuzda kazanırsınız.',
     badgeDescription_10_3:
       '5 kampanyada oltalama simülasyonunu bildiren ilk kişi olduğunuzda kazanırsınız.',
-    badgeDescription_11_1:
-      'İlk gerçek oltalama e-postanızı bildirdiğinizde kazanırsınız.',
-    badgeDescription_11_2:
-      '3 gerçek oltalama e-postası bildirdiğinizde kazanırsınız.',
-    badgeDescription_11_3:
-      '5 gerçek oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_11_1: 'İlk gerçek oltalama e-postanızı bildirdiğinizde kazanırsınız.',
+    badgeDescription_11_2: '3 gerçek oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_11_3: '5 gerçek oltalama e-postası bildirdiğinizde kazanırsınız.',
+    badgeDescription_12_1:
+      "Dashboard'u 3 hafta üst üste aktif olarak kullandığınızda kazanırsınız.",
+    badgeDescription_12_2:
+      "Dashboard'u 6 hafta üst üste aktif olarak kullandığınızda kazanırsınız.",
+    badgeDescription_12_3:
+      "Dashboard'u 12 hafta üst üste aktif olarak kullandığınızda kazanırsınız.",
 
     // Your Learning
     yourLearningTitle: 'Eğitimleriniz', // "Öğrenmeleriniz" yerine "Eğitimleriniz" daha doğal.
@@ -939,6 +945,9 @@ const usersDashboardLabels = {
     badgeName_11_1: 'Echter Phishing-Verteidiger',
     badgeName_11_2: 'Echter Phishing-Verteidiger',
     badgeName_11_3: 'Echter Phishing-Verteidiger',
+    badgeName_12_1: 'Wöchentlich aktiver Benutzer',
+    badgeName_12_2: 'Wöchentlich aktiver Benutzer',
+    badgeName_12_3: 'Wöchentlich aktiver Benutzer',
     // Badge Descriptions
     badgeDescription_1_0:
       'Sie erhalten dieses Abzeichen, wenn Sie Ihre erste Schulung abschließen.',
@@ -992,6 +1001,12 @@ const usersDashboardLabels = {
       'Sie erhalten dieses Abzeichen, wenn Sie 3 echte Phishing-E-Mails melden.',
     badgeDescription_11_3:
       'Sie erhalten dieses Abzeichen, wenn Sie 5 echte Phishing-E-Mails melden.',
+    badgeDescription_12_1:
+      'Sie erhalten dieses Abzeichen, wenn Sie das Dashboard 3 Wochen hintereinander aktiv nutzen.',
+    badgeDescription_12_2:
+      'Sie erhalten dieses Abzeichen, wenn Sie das Dashboard 6 Wochen hintereinander aktiv nutzen.',
+    badgeDescription_12_3:
+      'Sie erhalten dieses Abzeichen, wenn Sie das Dashboard 12 Wochen hintereinander aktiv nutzen.',
 
     // Your Learning
     yourLearningTitle: 'Ihre Schulungen', // "Ihr Lernen" yerine "Schulungen" (Eğitimler) daha doğal.
@@ -1320,6 +1335,9 @@ const usersDashboardLabels = {
     badgeName_11_1: 'Défenseur Anti-Hameçonnage Réel',
     badgeName_11_2: 'Défenseur Anti-Hameçonnage Réel',
     badgeName_11_3: 'Défenseur Anti-Hameçonnage Réel',
+    badgeName_12_1: 'Utilisateur Actif Hebdomadaire',
+    badgeName_12_2: 'Utilisateur Actif Hebdomadaire',
+    badgeName_12_3: 'Utilisateur Actif Hebdomadaire',
     // Badge Descriptions
     badgeDescription_1_0: 'Vous obtenez ce badge lorsque vous terminez votre première formation.',
     badgeDescription_2_1: 'Vous obtenez ce badge lorsque vous terminez 20 formations.',
@@ -1372,6 +1390,12 @@ const usersDashboardLabels = {
       'Vous obtenez ce badge lorsque vous signalez 3 vrais e-mails de hameçonnage.',
     badgeDescription_11_3:
       'Vous obtenez ce badge lorsque vous signalez 5 vrais e-mails de hameçonnage.',
+    badgeDescription_12_1:
+      'Vous obtenez ce badge lorsque vous utilisez activement le tableau de bord pendant 3 semaines consécutives.',
+    badgeDescription_12_2:
+      'Vous obtenez ce badge lorsque vous utilisez activement le tableau de bord pendant 6 semaines consécutives.',
+    badgeDescription_12_3:
+      'Vous obtenez ce badge lorsque vous utilisez activement le tableau de bord pendant 12 semaines consécutives.',
 
     // Your Learning
     yourLearningTitle: 'Vos Formations', // "Votre apprentissage" yerine daha kurumsal
@@ -1698,17 +1722,17 @@ const usersDashboardLabels = {
     badgeName_11_1: 'Defensor contra Phishing Real',
     badgeName_11_2: 'Defensor contra Phishing Real',
     badgeName_11_3: 'Defensor contra Phishing Real',
+    badgeName_12_1: 'Usuario Activo Semanal',
+    badgeName_12_2: 'Usuario Activo Semanal',
+    badgeName_12_3: 'Usuario Activo Semanal',
     // Badge Descriptions
     badgeDescription_1_0: 'La obtienes cuando completas tu primera formación.',
     badgeDescription_2_1: 'La obtienes cuando completas 20 formaciones.',
     badgeDescription_2_2: 'La obtienes cuando completas 40 formaciones.',
     badgeDescription_2_3: 'La obtienes cuando completas 60 formaciones.',
-    badgeDescription_4_1:
-      'La obtienes cuando completas con éxito 3 formaciones consecutivas.',
-    badgeDescription_4_2:
-      'La obtienes cuando completas con éxito 7 formaciones consecutivas.',
-    badgeDescription_4_3:
-      'La obtienes cuando completas con éxito 15 formaciones consecutivas.',
+    badgeDescription_4_1: 'La obtienes cuando completas con éxito 3 formaciones consecutivas.',
+    badgeDescription_4_2: 'La obtienes cuando completas con éxito 7 formaciones consecutivas.',
+    badgeDescription_4_3: 'La obtienes cuando completas con éxito 15 formaciones consecutivas.',
     badgeDescription_3_1: 'La obtienes cuando obtienes 100 puntos en 3 cuestionarios de formación.',
     badgeDescription_3_2: 'La obtienes cuando obtienes 100 puntos en 5 cuestionarios de formación.',
     badgeDescription_3_3:
@@ -1740,10 +1764,14 @@ const usersDashboardLabels = {
       'La obtienes cuando te conviertes en la primera persona en reportar la simulación de phishing en 5 campañas.',
     badgeDescription_11_1:
       'La obtienes cuando reportas tu primer correo electrónico de phishing real.',
-    badgeDescription_11_2:
-      'La obtienes cuando reportas 3 correos electrónicos de phishing real.',
-    badgeDescription_11_3:
-      'La obtienes cuando reportas 5 correos electrónicos de phishing real.',
+    badgeDescription_11_2: 'La obtienes cuando reportas 3 correos electrónicos de phishing real.',
+    badgeDescription_11_3: 'La obtienes cuando reportas 5 correos electrónicos de phishing real.',
+    badgeDescription_12_1:
+      'La obtienes cuando utilizas activamente el panel de control durante 3 semanas consecutivas.',
+    badgeDescription_12_2:
+      'La obtienes cuando utilizas activamente el panel de control durante 6 semanas consecutivas.',
+    badgeDescription_12_3:
+      'La obtienes cuando utilizas activamente el panel de control durante 12 semanas consecutivas.',
 
     // Your Learning
     yourLearningTitle: 'Sus Formaciones', // 'Aprendizaje' es demasiado literal.

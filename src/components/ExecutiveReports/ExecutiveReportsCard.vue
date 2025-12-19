@@ -52,7 +52,7 @@
         </template>
         <span>Duplicate</span>
       </VTooltip>
-      <VTooltip bottom>
+      <VTooltip v-if="!card.isSupportManager" bottom>
         <template #activator="{ on }">
           <VIcon
             v-on="on"

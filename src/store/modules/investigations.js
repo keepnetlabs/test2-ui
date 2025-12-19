@@ -38,9 +38,20 @@ const investigations = {
   },
   mutations: {
     SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA(state, payload) {
-      state.getInvestigationDetailsTargetUsersListData = payload?.data || { results: [] }
+      state.getInvestigationDetailsTargetUsersListData = payload?.data || {
+        results: []
+      }
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
+      console.log('SET_INVESTIGATIONDETAILSLISTDATA', payload)
+      if (payload?.data?.results?.length > 0) {
+        payload.data.results = payload.data.results.map((item) => {
+          return {
+            ...item,
+            filterTags: item.filterTags.map((tag) => (tag === 'BodyUrl' ? 'BodyDomain' : tag))
+          }
+        })
+      }
       state.getInvestigationDetailsListData = payload.data
     },
     SET_INVESTIGATIONLISTEMPY(state) {

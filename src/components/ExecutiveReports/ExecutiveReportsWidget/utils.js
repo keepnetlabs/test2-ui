@@ -1,6 +1,12 @@
 export const createExecutiveReportChartData = (widgetData, comingDateFormat) => {
   const datasets = []
   const valueEnums = new Set()
+  if (!widgetData || !Array.isArray(widgetData)) {
+    return {
+      valueEnums: [],
+      datasets: []
+    }
+  }
   widgetData.forEach((dItem) => {
     const dateFormat = comingDateFormat || localStorage.getItem('selectedDateFormat')
     const [datePart] = dItem?.date?.split(' ') || []

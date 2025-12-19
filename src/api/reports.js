@@ -116,6 +116,9 @@ export const setSchedulingReportStatus = (resourceId, status) => {
 export const getSchedulingReportTargetGroups = () => {
   return testRequest.get('/report-scheduling/target-groups')
 }
+export const getSchedulingReportManagers = () => {
+  return testRequest.get('/report-scheduling/managers')
+}
 
 // Manager Metrics - Activity Users Search
 export const searchPhishingActivityUsers = (payload) => {
