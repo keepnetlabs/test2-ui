@@ -1,22 +1,19 @@
 <template>
   <div v-if="!isInitialHidden" class="chat-panel">
-    <!-- Chat Toggle Button - Draggable -->
-    <v-btn
-      v-if="!isExpanded"
-      ref="chatToggleBtn"
-      class="chat-toggle-btn"
-      fab
-      color="primary"
+    <!-- Chat Toggle Button - AI Agent -->
+    <div
+      class="ai-agent-button"
+      :class="{ 'ai-agent-button--hovered': isHoveringButton || isExpanded }"
+      :style="{ zIndex: isExpanded ? 999 : 1001 }"
       @click="handleBtnClick"
-      @mousedown="startDrag"
-      draggable="false"
-      :style="{
-        right: buttonPosition.right + 'px',
-        bottom: buttonPosition.bottom + 'px'
-      }"
+      @mouseenter="isHoveringButton = true"
+      @mouseleave="isHoveringButton = false"
     >
-      <v-icon>mdi-robot</v-icon>
-    </v-btn>
+      <div class="ai-agent-button__content">
+        <v-icon class="ai-agent-button__icon" color="white">mdi-creation</v-icon>
+        <span class="ai-agent-button__text">USE AI agent</span>
+      </div>
+    </div>
 
     <!-- Chat Sidebar Panel -->
     <div
@@ -27,15 +24,13 @@
       <!-- Chat Header -->
       <div class="chat-header">
         <div class="d-flex align-center">
-          <v-avatar size="32" color="primary" class="mr-2">
-            <v-icon small color="white">mdi-robot</v-icon>
-          </v-avatar>
+          <v-icon color="#2196F3">mdi-creation</v-icon>
         </div>
         <div class="d-flex gap-2">
-          <v-btn icon small @click="toggleFullWidth" color="white">
+          <v-btn icon small @click="toggleFullWidth" color="#757575">
             <v-icon>{{ isFullWidth ? 'mdi-window-restore' : 'mdi-window-maximize' }}</v-icon>
           </v-btn>
-          <v-btn icon small @click="toggleChat" color="white">
+          <v-btn icon small @click="toggleChat" color="#757575">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
@@ -112,11 +107,8 @@ export default {
       isFullWidth: false,
       isInitialHidden: true,
       chatPopupInterval: null,
-      isDragging: false,
-      hasDragged: false,
-      dragStart: { x: 0, y: 0 },
-      buttonPosition: { right: 76, bottom: 20 },
-      dragThreshold: 5 // Minimum pixels to consider as drag
+      isHoveringButton: false,
+      buttonPosition: { right: 20, top: 20 }
     }
   },
   computed: {
@@ -127,6 +119,7 @@ export default {
   methods: {
     toggleChat() {
       this.isExpanded = !this.isExpanded
+      this.isHoveringButton = false
 
       // HTML scroll lock/unlock
       if (this.isExpanded) {
@@ -216,83 +209,13 @@ export default {
     },
 
     handleBtnClick() {
-      if (this.hasDragged) {
-        this.hasDragged = false
-        return
-      }
       this.toggleChat()
-    },
-
-    startDrag(event) {
-      this.isDragging = true
-      this.hasDragged = false
-      this.dragStart = {
-        x: event.clientX,
-        y: event.clientY
-      }
-      document.addEventListener('mousemove', this.handleMouseMove)
-      document.addEventListener('mouseup', this.handleMouseUp)
-      event.preventDefault()
-    },
-
-    handleMouseMove(event) {
-      if (!this.isDragging) return
-
-      const deltaX = event.clientX - this.dragStart.x
-      const deltaY = event.clientY - this.dragStart.y
-
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-      if (distance > this.dragThreshold) {
-        this.hasDragged = true
-      }
-
-      if (!this.hasDragged) return
-
-      // Butonun yeni konumunu hesapla
-      const newRight = this.buttonPosition.right - deltaX
-      const newBottom = this.buttonPosition.bottom - deltaY
-
-      // Sınırları kontrol et (ekran içinde kalması için)
-      const maxRight = window.innerWidth - 48
-      const maxBottom = window.innerHeight - 48
-
-      this.buttonPosition.right = Math.max(0, Math.min(newRight, maxRight))
-      this.buttonPosition.bottom = Math.max(0, Math.min(newBottom, maxBottom))
-
-      // Drag start pozisyonunu güncelle
-      this.dragStart = {
-        x: event.clientX,
-        y: event.clientY
-      }
-    },
-
-    handleMouseUp() {
-      if (!this.isDragging) return
-      this.isDragging = false
-
-      // Yeni konumu localStorage'a kaydet (sadece drag yapıldıysa)
-      if (this.hasDragged) {
-        localStorage.setItem('chatButtonPosition', JSON.stringify(this.buttonPosition))
-      }
-
-      document.removeEventListener('mousemove', this.handleMouseMove)
-      document.removeEventListener('mouseup', this.handleMouseUp)
     }
   },
 
   mounted() {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false
-
-    // localStorage'dan önceki konum bilgisini yükle
-    const savedPosition = localStorage.getItem('chatButtonPosition')
-    if (savedPosition) {
-      try {
-        this.buttonPosition = JSON.parse(savedPosition)
-      } catch (e) {
-        console.error('Failed to parse saved button position:', e)
-      }
-    }
 
     // Interval ile diğer chat-popup elemanını kapat
     this.chatPopupInterval = setInterval(() => {
@@ -334,21 +257,71 @@ export default {
   z-index: 1000;
   height: 100vh;
   pointer-events: none;
+  z-index: 2147483001;
 }
 
-.chat-toggle-btn {
+.ai-agent-button {
   position: fixed;
-  width: 48px !important;
-  height: 48px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  pointer-events: auto;
+  right: 0;
+  top: 20px;
+  height: 48px;
+  width: 48px;
+  background: linear-gradient(90deg, #1173c1 0%, #2196f3 100%);
+  border-radius: 24px 0 0 24px;
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: none;
+  cursor: pointer;
   z-index: 1001;
-  cursor: grab;
-  transition: none;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 16px rgba(17, 115, 193, 0.2);
 }
 
-.chat-toggle-btn:active {
-  cursor: grabbing;
+.ai-agent-button:hover {
+  box-shadow: 0 6px 24px rgba(33, 150, 243, 0.3);
+}
+
+.ai-agent-button--hovered {
+  width: 180px;
+  height: 48px;
+  padding: 0 16px;
+}
+
+.ai-agent-button__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.ai-agent-button__icon {
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ai-agent-button__text {
+  color: white;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ai-agent-button--hovered .ai-agent-button__text {
+  opacity: 1;
 }
 
 .chat-sidebar {
@@ -439,10 +412,10 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f1f8fe;
   color: white;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #b3d4fc;
 }
 
 .chat-sidebar.fullwidth .chat-header {
@@ -501,8 +474,19 @@ export default {
     right: -50%;
   }
 
-  .chat-toggle-btn {
-    right: 15px;
+  .ai-agent-button {
+    height: 44px;
+    width: 44px;
+  }
+
+  .ai-agent-button--hovered {
+    width: 160px;
+    height: 44px;
+  }
+
+  .ai-agent-button__text {
+    font-size: 12px;
+    line-height: 18px;
   }
 }
 
@@ -511,8 +495,26 @@ export default {
     width: 50%;
   }
 
-  .chat-toggle-btn {
-    right: 10px;
+  .ai-agent-button {
+    height: 40px;
+    width: 40px;
+    top: 16px;
+  }
+
+  .ai-agent-button--hovered {
+    width: 140px;
+    height: 40px;
+  }
+
+  .ai-agent-button__icon {
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .ai-agent-button__text {
+    font-size: 11px;
+    line-height: 16px;
   }
 }
 </style>

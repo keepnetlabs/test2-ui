@@ -13,7 +13,7 @@
       v-for="item in layout"
       drag-ignore-from=".widget-body"
       :key="item.i"
-      :static="isStatic"
+      :static="isStatic || item.static"
       v-bind="item"
       title=""
       @move="moveEvent"

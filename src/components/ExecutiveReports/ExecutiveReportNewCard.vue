@@ -255,6 +255,7 @@
               :ref="`ref${item.i}`"
               :shadow="'never'"
               :simple="true"
+              :style="getSmartWidgetStyle(item)"
             >
               <component
                 :id="item.key"
@@ -270,6 +271,7 @@
                 @on-delete="deleteWidget(item, index)"
                 @on-edit="toggleShowCustomizeWidgetDialog"
                 @on-set-default-widget-data="setDefaultWidgetData"
+                @on-pagination-change="handlePaginationChange"
               />
             </smart-widget>
           </k-smart-grid>
@@ -326,6 +328,8 @@ import ExecutiveReportsUsersTimeToFailure from '@/components/ExecutiveReports/Ex
 import ExecutiveReportsTotalReportedSuspiciousPie from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousPie.vue'
 import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTotalReportedSuspiciousDoughnut.vue'
 import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
+import ExecutiveReportPhishingActivity from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingActivity/ExecutiveReportPhishingActivity.vue'
+import ExecutiveReportTrainingActivity from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportTrainingActivity/ExecutiveReportTrainingActivity.vue'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -804,6 +808,50 @@ export default {
           dateInterval: 'month',
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        PhishingActivityWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 19,
+          defaultH: 19,
+          minH: 19,
+          maxH: 200,
+          static: true,
+          i: createRandomCryptStringNumber(),
+          title: 'Phishing Activity',
+          key: 'PhishingActivityWidget',
+          isAllowed: true,
+          parentKey: 'Phishing Metrics',
+          chartType: 'bar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
+        TrainingEnrollmentActivityWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 19,
+          defaultH: 19,
+          minH: 19,
+          maxH: 200,
+          static: true,
+          i: createRandomCryptStringNumber(),
+          title: 'Training Enrollment Activity',
+          key: 'TrainingEnrollmentActivityWidget',
+          isAllowed: true,
+          parentKey: 'Manager Metrics',
+          chartType: 'bar',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         }
       },
       formData: {
@@ -1005,6 +1053,15 @@ export default {
         }
       })
       this.layout = this.layout.map((item) => {
+        // Activity widgets should always stay at y=0
+        const isActivityWidget = [
+          'PhishingActivityWidget',
+          'TrainingEnrollmentActivityWidget'
+        ].includes(item.key)
+        if (isActivityWidget) {
+          return { ...item, x: 0, y: 0 }
+        }
+
         const itemWidth = item.w
         xValue = x
         x += itemWidth
@@ -1287,7 +1344,17 @@ export default {
         this.allWidgets[widget.widgetType].w = this.allWidgets[widget.widgetType].defaultW
       }
       newItem = widgetObj
-      newItem['y'] = 0
+      // Static widget'ler için manuel y hesapla (grid collision detection çalışmaz)
+      if (widgetObj.static) {
+        const maxY =
+          this.layout.length > 0
+            ? Math.max(...this.layout.map((item) => (item.y || 0) + (item.h || 0)))
+            : 0
+        newItem['y'] = maxY > 0 ? maxY : 0
+      } else {
+        // Normal widget'ler için y=0 bırak (grid collision detection çözer)
+        newItem['y'] = 0
+      }
       this.newItemY += newItem.h
       this.layout.unshift(widgetObj)
       return true
@@ -1340,6 +1407,10 @@ export default {
           return ExecutiveReportsUsersTimeToFailure
         case 'RepeatOffendersUsersRateWidget':
           return ExecutiveReportAvgPhishingSimClickerRate
+        case 'PhishingActivityWidget':
+          return ExecutiveReportPhishingActivity
+        case 'TrainingEnrollmentActivityWidget':
+          return ExecutiveReportTrainingActivity
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:
@@ -1364,8 +1435,59 @@ export default {
       lastYear.setFullYear(lastYear.getFullYear() - 1)
       return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
     },
+    getSmartWidgetStyle(item) {
+      // Activity widgets should have auto height instead of grid-defined height
+      if (['PhishingActivityWidget', 'TrainingEnrollmentActivityWidget'].includes(item.key)) {
+        return {}
+      }
+      return {}
+    },
     setDefaultWidgetData(key, data) {
       this.defaultWidgetData[key] = data
+    },
+    handlePaginationChange(card, pageSize) {
+      // Find the widget in the layout that matches this card
+      const widget = this.layout.find((item) => item.i === card.i || item.key === card.key)
+
+      if (!widget) return
+
+      // Validate pageSize
+      pageSize = pageSize || 5
+
+      // Calculate height based on page size (static mapping)
+      this.$nextTick(() => {
+        setTimeout(() => {
+          // Calculate height dynamically based on row count
+          // Base height (chart header ~4, table header ~2, pagination ~2) = ~8 grid units
+          // Each row is approximately 0.8 grid units
+          const baseH = 10
+          const rowH = 0.85
+          let calculatedH = Math.ceil(baseH + pageSize * rowH)
+
+          // Update widget height if it changed
+          if (calculatedH !== widget.h) {
+            widget.h = calculatedH
+
+            // Recalculate all y positions when any h changes
+            let currentY = 0
+            const sortedByY = [...this.layout].sort((a, b) => a.y - b.y)
+            sortedByY.forEach((sortedItem, index) => {
+              const originalItem = this.layout.find((l) => l.i === sortedItem.i)
+              if (originalItem) {
+                originalItem.y = Math.round(currentY)
+                currentY += originalItem.h
+                // Add gap between widgets (except after last widget)
+                if (index < sortedByY.length - 1) {
+                  currentY += 3
+                }
+              }
+            })
+
+            // Update the grid layout via reactivity - force Vue to detect change
+            this.$set(this, 'layout', [...this.layout])
+          }
+        }, 50) // Small delay, using static mapping so no need to wait for render
+      })
     },
     handleDateRangeInputChange(dateRange) {
       this.dateRange = dateRange

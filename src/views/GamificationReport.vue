@@ -360,6 +360,7 @@ export default {
             filterableType: "select",
             filterableItems: [],
             overrideWidth: true,
+            filterableCustomFieldName: "preferredLanguageId",
             width: 200,
           },
 

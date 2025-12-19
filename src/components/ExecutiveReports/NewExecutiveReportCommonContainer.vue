@@ -17,6 +17,8 @@
           v-for="(card, index) in getCards"
           :key="index"
           :card="card"
+          :has-manager-metric-added="hasManagerMetricAdded"
+          :has-non-manager-metric-added="hasNonManagerMetricAdded"
           @on-add-chart="handleSearchAdd"
         />
       </div>
@@ -49,7 +51,11 @@ import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 export default {
   name: 'NewExecutiveReportCommonContainer',
-  components: { DatatableLoading, ExecutiveReportSearchCard, ExecutiveReportNewCard },
+  components: {
+    DatatableLoading,
+    ExecutiveReportSearchCard,
+    ExecutiveReportNewCard
+  },
   mixins: [useLoading],
   props: {
     isShowLeftSide: {
@@ -87,6 +93,16 @@ export default {
         })
         return card.widgets.length ? card : null
       })
+    },
+    hasManagerMetricAdded() {
+      return this.cards.some((card) =>
+        card.widgets.some((widget) => widget.isSupportManager && widget.isAdded)
+      )
+    },
+    hasNonManagerMetricAdded() {
+      return this.cards.some((card) =>
+        card.widgets.some((widget) => !widget.isSupportManager && widget.isAdded)
+      )
     }
   },
   created() {
