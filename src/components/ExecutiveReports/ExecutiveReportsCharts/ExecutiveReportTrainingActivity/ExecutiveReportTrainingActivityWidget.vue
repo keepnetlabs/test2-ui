@@ -165,7 +165,28 @@ export default {
         })
     },
     setChartData(data) {
-      const params = [data[0].widgetDatas]
+      let widgetDatas
+      // Handle different data formats
+      if (Array.isArray(data) && data.length > 0 && data[0]?.widgetDatas) {
+        // Format: [{ widgetDatas: [...] }]
+        widgetDatas = data[0].widgetDatas
+      } else if (Array.isArray(data) && data.length > 0) {
+        // Format: [{ date: ..., values: [...] }, ...]
+        widgetDatas = data
+      } else if (Array.isArray(data)) {
+        // Format: [{ date: ..., values: [...] }, ...]
+        widgetDatas = data
+      } else {
+        this.isEmpty = true
+        return
+      }
+
+      if (!widgetDatas || !Array.isArray(widgetDatas) || !widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+
+      const params = [widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       const { valueEnums, datasets } = createExecutiveReportChartData(...params)
       if (!datasets.length) {

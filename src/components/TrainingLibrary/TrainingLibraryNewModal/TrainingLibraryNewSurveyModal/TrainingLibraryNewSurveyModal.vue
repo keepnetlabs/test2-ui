@@ -35,6 +35,7 @@
             <TrainingLibraryNewSurveyCourseInformation
               ref="refTrainingCourseInformation"
               :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
+              @generating-changed="handleGeneratingChanged"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -65,8 +66,8 @@
         }"
         :step="step"
         :disabled-statuses="{
-          nextButton: isActionButtonDisabled,
-          submitButton: isActionButtonDisabled
+          nextButton: isActionButtonDisabled || isGenerating,
+          submitButton: isActionButtonDisabled || isGenerating
         }"
         @on-cancel="handleClose"
         @on-back="changeStep(-1)"
@@ -115,6 +116,7 @@ export default {
     return {
       labels,
       isActionButtonDisabled: false,
+      isGenerating: false,
       step: 1,
       trainingId: this?.selectedRow?.resourceId || '',
       selectedCompaniesAndGroups: []
@@ -179,6 +181,9 @@ export default {
     }),
     handleClose() {
       this.setNewSurveyModal(emptyNewSurveyModalObj)
+    },
+    handleGeneratingChanged(isGenerating) {
+      this.isGenerating = isGenerating
     },
     async changeStep(flag = 1) {
       const { refTrainingCourseInformation, refTrainingContent } = this.$refs

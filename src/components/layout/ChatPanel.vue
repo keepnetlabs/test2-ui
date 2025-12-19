@@ -11,7 +11,7 @@
     >
       <div class="ai-agent-button__content">
         <v-icon class="ai-agent-button__icon" color="white">mdi-creation</v-icon>
-        <span class="ai-agent-button__text">USE AI agent</span>
+        <span class="ai-agent-button__text">Use Agentic AI </span>
       </div>
     </div>
 
@@ -263,11 +263,11 @@ export default {
 .ai-agent-button {
   position: fixed;
   right: 0;
-  top: 20px;
+  top: 32px;
   height: 48px;
-  width: 48px;
+  width: 56px;
   background: linear-gradient(90deg, #1173c1 0%, #2196f3 100%);
-  border-radius: 24px 0 0 24px;
+  border-radius: 28px 0 0 28px;
   border-top: 2px solid #fff;
   border-bottom: 2px solid #fff;
   border-left: 2px solid #fff;
@@ -476,7 +476,8 @@ export default {
 
   .ai-agent-button {
     height: 44px;
-    width: 44px;
+    width: 52px;
+    border-radius: 26px 0 0 26px;
   }
 
   .ai-agent-button--hovered {
@@ -497,8 +498,9 @@ export default {
 
   .ai-agent-button {
     height: 40px;
-    width: 40px;
+    width: 48px;
     top: 16px;
+    border-radius: 24px 0 0 24px;
   }
 
   .ai-agent-button--hovered {

@@ -58,6 +58,7 @@
         :is-generate-disabled="isGenerateDisabled"
         tooltip-message="To generate an AI-powered description, complete key fields like Infographic Name, Category, and Role."
         @generate="handleGenerate"
+        @generating-changed="$emit('generating-changed', $event)"
       />
     </FormGroup>
     <FormGroup :title="labels.Tags" :sub-title="labels.TagInfographicSub">

@@ -41,6 +41,7 @@
               <TrainingLibraryNewLearningPathInformation
                 ref="refTrainingCourseInformation"
                 :selectedCompaniesAndGroups="selectedCompaniesAndGroups"
+                @generating-changed="handleGeneratingChanged"
               />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="2">
@@ -72,8 +73,8 @@
           }"
           :step="step"
           :disabled-statuses="{
-            nextButton: isActionButtonDisabled,
-            submitButton: isActionButtonDisabled
+            nextButton: isActionButtonDisabled || isGenerating,
+            submitButton: isActionButtonDisabled || isGenerating
           }"
           @on-cancel="handleClose"
           @on-back="changeStep(-1)"
@@ -129,6 +130,7 @@ export default {
       isCannotSaveModalActive: false,
       labels,
       isActionButtonDisabled: false,
+      isGenerating: false,
       step: 1,
       trainingId: this?.selectedRow?.resourceId || '',
       availableForRequestIds: [],
@@ -208,6 +210,9 @@ export default {
     },
     handleClose() {
       this.setNewLearningPathModal(emptyNewLearningPathModalObj)
+    },
+    handleGeneratingChanged(isGenerating) {
+      this.isGenerating = isGenerating
     },
     async changeStep(flag = 1) {
       const { refTrainingCourseInformation } = this.$refs

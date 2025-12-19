@@ -141,52 +141,70 @@
             </div>
           </div>
         </div>
-        <FormGroup
-          class-name="mb-0 mt-2"
-          title="Send to Email"
-          sub-title="Send report to multiple email addresses"
-        >
+        <template v-if="!shouldShowManagerSection">
+          <FormGroup
+            class-name="mb-0 mt-2"
+            title="Send to Email"
+            sub-title="Send report to multiple email addresses"
+          >
+            <KSelect
+              v-model="formData.emailAddresses"
+              id="input--threat-sharing-incident-share-email"
+              type="combobox"
+              :items="[]"
+              placeholder="Enter email address"
+              multiple
+              dense
+              deletable-chips
+              autocomplete="disabled"
+              small-chips
+              outlined
+              class="pop-up-card__invite-member"
+              persistent-hint
+              :hint="isEmailAddressesFocused ? 'Press enter to separate email addresses' : ''"
+              @focus="isEmailAddressesFocused = true"
+              @blur="isEmailAddressesFocused = false"
+              :rules="[rules.email]"
+            ></KSelect>
+          </FormGroup>
+          <FormGroup
+            title="Send to Target Group"
+            sub-title="Send report to multiple target groups "
+          >
+            <v-autocomplete
+              v-model="formData.targetGroupResourceIds"
+              id="input--schedule-report-target-group"
+              type="select"
+              placeholder="Select target group"
+              auto-select-first
+              multiple
+              dense
+              deletable-chips
+              autocomplete="off"
+              small-chips
+              outlined
+              class="pop-up-card__invite-member"
+              persistent-hint
+              position="top"
+              :menu-props="{
+                contentClass: 'scheduled-reports-send-to-target-group-menu',
+                auto: true
+              }"
+              :items="targetGroupItems"
+            />
+          </FormGroup>
+        </template>
+        <FormGroup v-else title="Send to Manager" sub-title="Send Report to managers">
           <KSelect
-            v-model="formData.emailAddresses"
-            id="input--threat-sharing-incident-share-email"
-            type="combobox"
-            :items="[]"
-            placeholder="Enter email address"
-            multiple
+            v-model="formData.managerEmails"
+            id="input--schedule-report-manager"
             dense
-            deletable-chips
-            autocomplete="disabled"
-            small-chips
             outlined
-            class="pop-up-card__invite-member"
-            persistent-hint
-            :hint="isEmailAddressesFocused ? 'Press enter to separate email addresses' : ''"
-            @focus="isEmailAddressesFocused = true"
-            @blur="isEmailAddressesFocused = false"
-            :rules="[rules.email]"
-          ></KSelect>
-        </FormGroup>
-        <FormGroup title="Send to Target Group" sub-title="Send report to multiple target groups ">
-          <v-autocomplete
-            v-model="formData.targetGroupResourceIds"
-            id="input--schedule-report-target-group"
-            type="select"
-            placeholder="Select target group"
-            auto-select-first
+            placeholder="Select Option"
             multiple
-            dense
             deletable-chips
-            autocomplete="off"
             small-chips
-            outlined
-            class="pop-up-card__invite-member"
-            persistent-hint
-            position="top"
-            :menu-props="{
-              contentClass: 'scheduled-reports-send-to-target-group-menu',
-              auto: true
-            }"
-            :items="targetGroupItems"
+            :items="managerItems"
           />
         </FormGroup>
       </VForm>
@@ -214,7 +232,7 @@ import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { getTimeZone, getTimeZoneForMoment } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 import * as Validations from '@/utils/validations'
-import ReportsService, { createReportScheduling } from '@/api/reports'
+import ReportsService, { createReportScheduling, getSchedulingReportManagers } from '@/api/reports'
 import AppModal from '@/components/AppModal.vue'
 import AppModalFooter from '@/components/AppModalFooter.vue'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader.vue'
@@ -261,6 +279,10 @@ export default {
     isScheduledPage: {
       type: Boolean,
       default: false
+    },
+    isSupportManager: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -270,6 +292,7 @@ export default {
       reportTypeItems: [{ text: 'Executive Report', value: 2 }],
       reportItems: [],
       targetGroupItems: [],
+      managerItems: [],
       isEmailAddressesFocused: false,
       scheduledPageFormData: {
         reportType: 2,
@@ -282,7 +305,8 @@ export default {
         schedule: this.$moment(Date.now()).format(getTimeZoneForMoment()),
         isRegionAwareTimeZone: false,
         emailAddresses: [],
-        targetGroupResourceIds: []
+        targetGroupResourceIds: [],
+        managerEmails: []
       },
       isActionButtonDisabled: false,
       rules: {
@@ -331,6 +355,16 @@ export default {
       const splittedDate = this.formData.schedule.split(' ')
       if (splittedDate.length > 2) return `${splittedDate[1]} ${splittedDate[2]}`
       return splittedDate[1]
+    },
+    selectedReportIsSupportManager() {
+      if (!this.isScheduledPage || !this.scheduledPageFormData.reportResourceId) return false
+      const selectedReport = this.reportItems.find(
+        (item) => item.value === this.scheduledPageFormData.reportResourceId
+      )
+      return selectedReport?.isSupportManager || false
+    },
+    shouldShowManagerSection() {
+      return this.isScheduledPage ? this.selectedReportIsSupportManager : this.isSupportManager
     }
   },
   watch: {
@@ -343,6 +377,7 @@ export default {
       this.callForReports()
       if (this.isDuplicate || this.isEdit) this.callForSelectedSchedule()
     }
+    this.callForManagers()
     this.callForGetTimeZones()
     this.getSelectedTimeZone()
     this.callForTargetGroups()
@@ -355,7 +390,8 @@ export default {
         } = response || {}
         this.reportItems = data.map((item) => ({
           text: item.name,
-          value: item.resourceId
+          value: item.resourceId,
+          isSupportManager: item.isSupportManager || false
         }))
       })
     },
@@ -382,6 +418,12 @@ export default {
           this.formData.targetGroupResourceIds = targetGroupResourceIds.includes(',')
             ? targetGroupResourceIds.split(',')
             : [targetGroupResourceIds]
+        }
+        const managerEmails = data.managerEmails
+        if (managerEmails) {
+          this.formData.managerEmails = managerEmails.includes(',')
+            ? managerEmails.split(',')
+            : [managerEmails]
         }
       })
     },
@@ -411,6 +453,21 @@ export default {
         }))
       })
     },
+    callForManagers() {
+      getSchedulingReportManagers()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response || {}
+          this.managerItems = (data || []).map((item) => ({
+            text: item.fullName || item.email,
+            value: item.email
+          }))
+        })
+        .catch(() => {
+          this.managerItems = []
+        })
+    },
     handleClose() {
       this.$emit('on-close')
     },
@@ -421,13 +478,24 @@ export default {
         !this.formData.scheduledDateTimeZoneId
       )
         return
-      if (!this.formData.emailAddresses.length && !this.formData.targetGroupResourceIds.length) {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-information',
-          message: `Please send the report either to email or to a target group. You must choose at least one of these options.`
-        })
-        return
+      if (this.shouldShowManagerSection) {
+        if (!this.formData.managerEmails.length) {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-information',
+            message: `Please select at least one manager.`
+          })
+          return
+        }
+      } else {
+        if (!this.formData.emailAddresses.length && !this.formData.targetGroupResourceIds.length) {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-information',
+            message: `Please send the report either to email or to a target group. You must choose at least one of these options.`
+          })
+          return
+        }
       }
       if (this.isScheduledPage) return this.submitScheduled()
       if (!this.isNew || this.isReportSaved) {

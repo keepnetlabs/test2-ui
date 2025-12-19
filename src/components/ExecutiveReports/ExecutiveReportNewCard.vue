@@ -7,6 +7,7 @@
       :is-new="isEdit ? false : !isShowPreview"
       :is-report-saved="isReportSaved"
       :saved-report-resource-id="savedReportResourceId"
+      :is-support-manager="hasManagerMetricWidget"
       @on-close="toggleShowScheduleReportDialog"
       @on-submit="handleScheduleReportSubmit"
     />
@@ -85,15 +86,23 @@
             >
               CANCEL
             </VBtn>
-            <VBtn
-              id="btn-add--training-library"
-              rounded
-              color="#2196f3"
-              :class="getPreviewPdfButtonClasses"
-              @click="handlePreviewClick"
-            >
-              <span class="training-library-new-btn__text">PREVIEW PDF</span>
-            </VBtn>
+            <VTooltip bottom :disabled="!hasManagerMetricWidget">
+              <template #activator="{ on, attrs }">
+                <div v-on="on" v-bind="attrs" style="display: inline-block;">
+                  <VBtn
+                    id="btn-add--training-library"
+                    rounded
+                    color="#2196f3"
+                    :class="getPreviewPdfButtonClasses"
+                    :style="hasManagerMetricWidget ? { opacity: 0.5, cursor: 'default' } : {}"
+                    @click="handlePreviewClick"
+                  >
+                    <span class="training-library-new-btn__text">PREVIEW PDF</span>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Preview is disabled because the report contains a Manager Metric widget.</span>
+            </VTooltip>
             <VBtn
               id="btn-add--training-library"
               :class="getSaveButtonClasses"
@@ -113,7 +122,7 @@
             >mdi-pencil</VIcon
           >
           <VIcon
-            v-if="isShowPreview && !editMode"
+            v-if="isShowPreview && !editMode && !shouldHideDownloadIcon"
             color="#2196f3"
             class="executive-reports-card__right-btn"
             small
@@ -867,7 +876,8 @@ export default {
         executiveReportLogo: ''
       },
       defaultWidgetData: {},
-      defaultWidgetTableDefinitions: {}
+      defaultWidgetTableDefinitions: {},
+      reportIsSupportManager: false
     }
   },
   computed: {
@@ -894,6 +904,23 @@ export default {
     },
     getPreviewPdfButtonClasses() {
       return ['training-library-new-btn ml-2']
+    },
+    hasManagerMetricWidget() {
+      // Check if report has isSupportManager from API (for edit/preview mode)
+      if (this.reportIsSupportManager) return true
+      // Check layout for Manager Metric widgets
+      return this.layout.some(
+        (item) => item.isSupportManager || item.parentKey === 'Manager Metrics'
+      )
+    },
+    shouldHideDownloadIcon() {
+      // In preview mode, hide download icon if report has isSupportManager: true
+      const isPreviewMode = this.isPreview || this.$route?.name === 'Preview Executive Report'
+      if (isPreviewMode) {
+        return this.reportIsSupportManager === true
+      }
+      // In non-preview mode, use hasManagerMetricWidget check
+      return this.hasManagerMetricWidget
     },
     isShowPreview() {
       return this.isPreview || this.activatePreview
@@ -940,6 +967,7 @@ export default {
           data: { data }
         } = report
         this.selectedRow = data
+        this.reportIsSupportManager = data.isSupportManager || false
         this.formData.companyName = data.companyName
         this.formData.dateCreated = data.dateCreated
         this.formData.datePeriod = DATE_PERIOD_ENUMS[data.datePeriod]
@@ -1100,6 +1128,7 @@ export default {
       this.$refs.refInputExecutiveReportDate.showPicker()
     },
     handlePreviewClick() {
+      if (this.hasManagerMetricWidget) return
       if (!this.$refs.refForm.validate()) return
       this.activatePreview = true
       this.isPreviewDownload = true
@@ -1334,7 +1363,8 @@ export default {
         title: widget.name,
         parentKey: widget.description,
         name: widget.name,
-        chartType: widget.chartType
+        chartType: widget.chartType,
+        isSupportManager: widget.isSupportManager
       }
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
         widgetObj.w = 6

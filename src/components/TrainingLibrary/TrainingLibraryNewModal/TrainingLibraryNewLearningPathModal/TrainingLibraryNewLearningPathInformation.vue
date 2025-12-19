@@ -58,6 +58,7 @@
         :is-generate-disabled="isGenerateDisabled"
         tooltip-message="To generate an AI-powered description, complete key fields like Learning Path Name, Category, Training Level and Role."
         @generate="handleGenerate"
+        @generating-changed="$emit('generating-changed', $event)"
       />
     </FormGroup>
     <FormGroup :title="labels.Tags" :sub-title="labels.TagLearningSub">

@@ -319,7 +319,7 @@ export default {
         this.$set(
           this.ungroupedColumns[4],
           'filterableItems',
-          types.map((t) => t.displayName)
+          types.map((t) => ({ text: t.displayName, value: t.id }))
         )
         this.$refs.refTrainingActivityTable?.reRenderFilters()
       })
