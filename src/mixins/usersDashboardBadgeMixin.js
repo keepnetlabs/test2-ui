@@ -121,6 +121,19 @@ export default {
         )
       }
 
+      // Weekly Active User has level-based images
+      if (badge.name === 'Weekly Active User' && badge.level) {
+        const weeklyActiveUserLevelMap = {
+          1: require('@/assets/img/weekly-active-user-level-1.svg'),
+          2: require('@/assets/img/weekly-active-user-level-2.svg'),
+          3: require('@/assets/img/weekly-active-user-level-3.svg')
+        }
+        return (
+          weeklyActiveUserLevelMap[badge.level] ||
+          require('@/assets/img/weekly-active-user-level-1.svg')
+        )
+      }
+
       // Map by badgeName first (more flexible)
       const nameImageMap = {
         'First Training Completed': require('@/assets/img/first-training-completed.svg'),
@@ -133,7 +146,8 @@ export default {
         'Zero Click Champion': require('@/assets/img/zero-level-champion-level-1.svg'), // Fallback if no level
         'Cyber Guardian': require('@/assets/img/cyber-guardian-level-1.svg'), // Fallback if no level
         'Rapid Reporter': require('@/assets/img/rapid-reporter-level-1.svg'), // Fallback if no level
-        'Real Phishing Defender': require('@/assets/img/real-phishing-defender-level-1.svg') // Fallback if no level
+        'Real Phishing Defender': require('@/assets/img/real-phishing-defender-level-1.svg'), // Fallback if no level
+        'Weekly Active User': require('@/assets/img/weekly-active-user-level-1.svg') // Fallback if no level
       }
 
       if (nameImageMap[badge.name]) {
@@ -152,7 +166,8 @@ export default {
         8: require('@/assets/img/zero-level-champion-level-1.svg'), // Default level 1 for Zero Click Champion
         9: require('@/assets/img/cyber-guardian-level-1.svg'), // Default level 1 for Cyber Guardian
         10: require('@/assets/img/rapid-reporter-level-1.svg'), // Default level 1 for Rapid Reporter
-        11: require('@/assets/img/real-phishing-defender-level-1.svg') // Default level 1 for Real Phishing Defender
+        11: require('@/assets/img/real-phishing-defender-level-1.svg'), // Default level 1 for Real Phishing Defender
+        12: require('@/assets/img/weekly-active-user-level-1.svg') // Default level 1 for Weekly Active User
       }
 
       return typeImageMap[badge.type] || null
@@ -220,7 +235,8 @@ export default {
         8: 'mdi-mouse-off', // Zero Click Champion
         9: 'mdi-shield-account', // Cyber Guardian
         10: 'mdi-flash', // Rapid Reporter
-        11: 'mdi-email-check' // Real Phishing Defender
+        11: 'mdi-email-check', // Real Phishing Defender
+        12: 'mdi-calendar-week' // Weekly Active User
       }
       return iconMap[badgeType] || 'mdi-trophy'
     }
