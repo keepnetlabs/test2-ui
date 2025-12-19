@@ -40,11 +40,7 @@
         :items="getTargetAudiences"
       ></KSelect>
     </FormGroup>
-    <FormGroup
-      has-hint
-      :title="labels.Description"
-      :sub-title="labels.DescriptionTrainingSub"
-    >
+    <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionTrainingSub">
       <InputAIDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
@@ -62,6 +58,7 @@
         :is-generate-disabled="isGenerateDisabled"
         tooltip-message="To generate an AI-powered description, complete key fields like Training Name, Category, and Role."
         @generate="handleGenerate"
+        @generating-changed="$emit('generating-changed', $event)"
       />
     </FormGroup>
     <FormGroup :title="labels.Tags" :sub-title="labels.TagTrainingSub">
@@ -72,10 +69,7 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup
-      :title="labels.CoverImage"
-      :sub-title="labels.UploadCoverImageForTheTraining"
-    >
+    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheTraining">
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
@@ -101,23 +95,23 @@
 </template>
 
 <script>
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import InputEntityName from "@/components/Common/Inputs/InputEntityName";
-import labels from "@/model/constants/labels";
-import InputDescription from "@/components/Common/Inputs/InputDescription";
-import KSelect from "@/components/Common/Inputs/KSelect";
-import InputTag from "@/components/Common/Inputs/InputTag";
-import KFileUpload from "@/components/Common/FileUpload/FileUpload";
-import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
-import * as Validations from "@/utils/validations";
-import { scrollToComponent } from "@/utils/functions";
-import { mapGetters } from "vuex";
-import InputCompliance from "@/components/Common/Inputs/InputCompliance.vue";
-import InputBehaviour from "@/components/Common/Inputs/InputBehaviour.vue";
-import InputAIDescription from "@/components/Common/Inputs/InputAIDescription";
-import useAIDescriptionGeneration from "@/hooks/useAIDescriptionGeneration";
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import labels from '@/model/constants/labels'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import InputTag from '@/components/Common/Inputs/InputTag'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
+import * as Validations from '@/utils/validations'
+import { scrollToComponent } from '@/utils/functions'
+import { mapGetters } from 'vuex'
+import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
+import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
+import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
+import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
 export default {
-  name: "TrainingLibraryNewTrainingCourseInformation",
+  name: 'TrainingLibraryNewTrainingCourseInformation',
   mixins: [useAIDescriptionGeneration],
   components: {
     InputBehaviour,
@@ -128,13 +122,13 @@ export default {
     KSelect,
     InputAIDescription,
     InputEntityName,
-    FormGroup,
+    FormGroup
   },
   props: {
     selectedCompaniesAndGroups: {
       type: Array,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
   data() {
     return {
@@ -146,26 +140,26 @@ export default {
       formData: {
         coverImage: null,
         compliances: [],
-        name: "",
-        description: "",
-        category: "",
-        targetAudience: "",
+        name: '',
+        description: '',
+        category: '',
+        targetAudience: '',
         behaviours: [],
         tags: [],
         availableForRequests: [],
-        coverImageUrl: null,
-      },
-    };
+        coverImageUrl: null
+      }
+    }
   },
   computed: {
     ...mapGetters({
-      getCategories: "trainingLibraryHelpers/getCategories",
-      getTargetAudiences: "trainingLibraryHelpers/getTargetAudiences",
+      getCategories: 'trainingLibraryHelpers/getCategories',
+      getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
     }),
     isGenerateDisabled() {
       // If description has more than 5 characters, enable button
       if (this.formData.description && this.formData.description.trim().length > 5) {
-        return this.isGenerateLoading;
+        return this.isGenerateLoading
       }
       // Otherwise check required fields
       return (
@@ -173,101 +167,101 @@ export default {
         !this.formData.category ||
         !this.formData.targetAudience ||
         this.isGenerateLoading
-      );
-    },
+      )
+    }
   },
   methods: {
     handleCoverImageChange(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.formData.coverImage = null;
-        return;
+        this.formData.coverImage = null
+        return
       }
-      this.formData.coverImage = file;
+      this.formData.coverImage = file
     },
     handleCoverImageClear() {
-      this.coverImageFilePreview = [];
-      this.formData.coverImage = "";
-      this.formData.coverImageUrl = "";
+      this.coverImageFilePreview = []
+      this.formData.coverImage = ''
+      this.formData.coverImageUrl = ''
     },
     validateForm() {
-      const { refForm } = this.$refs;
+      const { refForm } = this.$refs
       if (refForm.validate()) {
-        return true;
+        return true
       } else {
         this.$nextTick(() => {
-          const el = refForm.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        });
+          const el = refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
-      return false;
+      return false
     },
     setFormData(formData = {}) {
       if (formData.coverImage) {
         this.coverImageFilePreview = [
           {
             url: formData.coverImage.imageUrl,
-            name: formData.coverImage.name || "Cover Image",
-          },
-        ];
-        this.formData.coverImageUrl = formData.coverImage.imageUrl;
+            name: formData.coverImage.name || 'Cover Image'
+          }
+        ]
+        this.formData.coverImageUrl = formData.coverImage.imageUrl
       }
       this.formData = {
         ...this.formData,
-        ...formData,
-      };
+        ...formData
+      }
     },
     setMakeAvailableForData(availableForList = []) {
       if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
         const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
           availableForList
-        );
+        )
         if (!availableForListFromBackend.length) {
           this.formData.availableForRequests = [
             {
-              id: "MyCompanyOnly",
-              label: "My company only",
-              type: "MyCompanyOnly",
-              resourceId: null,
-            },
-          ];
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            }
+          ]
         } else {
-          this.formData.availableForRequests = availableForListFromBackend;
+          this.formData.availableForRequests = availableForListFromBackend
         }
       } else {
         this.formData.availableForRequests = [
           {
-            id: "MyCompanyOnly",
-            label: "My company only",
-            type: "MyCompanyOnly",
-            resourceId: null,
-          },
-        ];
+            id: 'MyCompanyOnly',
+            label: 'My company only',
+            type: 'MyCompanyOnly',
+            resourceId: null
+          }
+        ]
       }
     },
     async handleGenerate() {
       if (this.isGenerateDisabled || this.isGenerateLoading) {
-        return;
+        return
       }
-      this.isGenerateLoading = true;
+      this.isGenerateLoading = true
 
       try {
         const generatedDescription = await this.generateAIDescription({
           name: this.formData.name,
           category: this.formData.category,
           role: this.formData.targetAudience,
-          description: this.formData.description,
-        });
+          description: this.formData.description
+        })
 
         if (generatedDescription) {
-          this.formData.description = generatedDescription;
-          this.hasGenerated = true;
+          this.formData.description = generatedDescription
+          this.hasGenerated = true
         }
       } catch (error) {
-        console.error("Failed to generate AI description:", error);
+        console.error('Failed to generate AI description:', error)
       } finally {
-        this.isGenerateLoading = false;
+        this.isGenerateLoading = false
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>

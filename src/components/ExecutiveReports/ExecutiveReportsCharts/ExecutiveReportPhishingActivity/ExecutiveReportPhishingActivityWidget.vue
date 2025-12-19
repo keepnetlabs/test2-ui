@@ -124,7 +124,7 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                const offset = text === 'Reported' ? 0 : -4
+                const offset = text === 'Reported' ? 0 : -2
                 ctx.fillText(percentage, x + ctx.measureText(text).width + offset, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
@@ -165,7 +165,28 @@ export default {
         })
     },
     setChartData(data) {
-      const params = [data[0].widgetDatas]
+      let widgetDatas
+      // Handle different data formats
+      if (Array.isArray(data) && data.length > 0 && data[0]?.widgetDatas) {
+        // Format: [{ widgetDatas: [...] }]
+        widgetDatas = data[0].widgetDatas
+      } else if (Array.isArray(data) && data.length > 0) {
+        // Format: [{ date: ..., values: [...] }, ...]
+        widgetDatas = data
+      } else if (Array.isArray(data)) {
+        // Format: [{ date: ..., values: [...] }, ...]
+        widgetDatas = data
+      } else {
+        this.isEmpty = true
+        return
+      }
+
+      if (!widgetDatas || !Array.isArray(widgetDatas) || !widgetDatas.length) {
+        this.isEmpty = true
+        return
+      }
+
+      const params = [widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       const { valueEnums, datasets } = createExecutiveReportChartData(...params)
       if (!datasets.length) {
@@ -175,9 +196,6 @@ export default {
 
       // Map old labels to new labels
       const labelMapping = {
-        'Users Who Clicked And Reported (%)': 'Reported',
-        'Users Who Did Not Click And Reported (%)': 'Campaigns',
-        'Users Who Did Not Reported (%)': 'Risky Actions',
         Delivered: 'Campaigns',
         'Risky Actions': 'Risky Actions',
         RiskyActions: 'Risky Actions',
@@ -188,14 +206,15 @@ export default {
       const datasetOrder = ['Campaigns', 'Risky Actions', 'Reported']
 
       valueEnums.forEach((itemType) => {
-        const typedItems = datasets.filter((item) => item.result === itemType)
+        // Sadece y > 0 olan değerleri oluştur (0 olanları hiç ekleme)
+        const typedItems = datasets.filter((item) => item.result === itemType && item.y > 0)
         const newLabel = labelMapping[itemType] || itemType
         const orderIndex = datasetOrder.indexOf(newLabel)
 
-        if (orderIndex !== -1) {
+        if (orderIndex !== -1 && typedItems.length > 0) {
           newDatasets[orderIndex] = {
             type: 'bar',
-            barThickness: 32,
+            maxBarThickness: 32,
             label: newLabel,
             ...PHISHING_ACTIVITY_COLORS[newLabel],
             data: typedItems
@@ -205,7 +224,6 @@ export default {
 
       // Filter out undefined entries
       const filteredDatasets = newDatasets.filter(Boolean)
-
       // Calculate max Y value (grouped - find max individual value)
       let maxY = 0
       filteredDatasets.forEach((ds) => {
@@ -243,7 +261,7 @@ export default {
               position: 'left',
               scaleLabel: {
                 display: true,
-                labelString: 'Phishing Activity Rate',
+                labelString: 'Number of Activities',
                 fontColor: '#383B41'
               },
               offset: false,
@@ -262,10 +280,7 @@ export default {
                 padding: 12,
                 fontFamily: 'Open-sans,sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
-                lineHeight: 1.58,
-                callback: function (value) {
-                  return value + '%'
-                }
+                lineHeight: 1.58
               }
             }
           ],
@@ -314,18 +329,28 @@ export default {
             fontColor: '#383B41',
             generateLabels(chart = {}) {
               const { data } = chart
-              return data.datasets.map((item, index) => {
-                const total = item.data.reduce((sum, current) => sum + (current.y || 0), 0)
-                const customSpacer = '        '
+              const legendOrder = ['Campaigns', 'Risky Actions', 'Reported']
+              const colors = {
+                Campaigns: '#757575',
+                'Risky Actions': '#F56C6C',
+                Reported: '#43A047'
+              }
+
+              return legendOrder.map((label) => {
+                const dataset = data.datasets.find((ds) => ds.label === label)
+                const total = dataset
+                  ? dataset.data.reduce((sum, current) => sum + (current.y || 0), 0)
+                  : 0
+                const customSpacer = '            '
 
                 return {
-                  text: Array.from(item.label + item.label + customSpacer)
+                  text: Array.from(label + label + customSpacer)
                     .fill('')
                     .join(' '),
-                  fillStyle: item.borderColor,
+                  fillStyle: colors[label],
                   lineWidth: 0,
-                  datasetIndex: index,
-                  textParts: [item.label, `(${total})`]
+                  datasetIndex: data.datasets.findIndex((ds) => ds.label === label),
+                  textParts: [label, `(${total})`]
                 }
               })
             },
