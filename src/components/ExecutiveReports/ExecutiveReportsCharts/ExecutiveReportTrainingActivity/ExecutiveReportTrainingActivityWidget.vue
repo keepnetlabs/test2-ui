@@ -124,7 +124,7 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                const offset = text === 'Completed' ? 0 : -4
+                const offset = text === 'Enrollments' ? -5 : text === 'Completed' ? 0 : -2
                 ctx.fillText(percentage, x + ctx.measureText(text).width + offset, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }
@@ -207,9 +207,7 @@ export default {
           if (filteredData.length > 0) {
             newDatasets[orderIndex] = {
               type: 'bar',
-              barThickness: 32,
-              borderWidth: 2,
-              borderColor: '#ffffff',
+              maxBarThickness: 32,
               label: newLabel,
               backgroundColor: TRAINING_ACTIVITY_COLORS[newLabel].backgroundColor,
               data: filteredData
@@ -219,20 +217,24 @@ export default {
       })
 
       // Create Completed dataset from Enrollments - Incomplete
-      const completedData = Object.keys(enrollmentsByDate)
-        .map((timestamp) => ({
-          x: Number(timestamp),
-          y: (enrollmentsByDate[timestamp] || 0) - (incompleteByDate[timestamp] || 0),
-          result: 'Completed'
-        }))
-        .filter((item) => item.y > 0)
+      // Sadece y > 0 olan değerleri oluştur (0 olanları hiç ekleme)
+      const completedData = Object.keys(enrollmentsByDate).reduce((acc, timestamp) => {
+        const completedValue =
+          (enrollmentsByDate[timestamp] || 0) - (incompleteByDate[timestamp] || 0)
+        if (completedValue > 0) {
+          acc.push({
+            x: Number(timestamp),
+            y: completedValue,
+            result: 'Completed'
+          })
+        }
+        return acc
+      }, [])
 
       if (completedData.length > 0) {
         newDatasets[2] = {
           type: 'bar',
-          barThickness: 32,
-          borderWidth: 2,
-          borderColor: '#ffffff',
+          maxBarThickness: 32,
           label: 'Completed',
           backgroundColor: TRAINING_ACTIVITY_COLORS['Completed'].backgroundColor,
           data: completedData
@@ -279,7 +281,7 @@ export default {
               position: 'left',
               scaleLabel: {
                 display: true,
-                labelString: 'Training Activity',
+                labelString: 'Number of Activities',
                 fontColor: '#383B41'
               },
               offset: false,
@@ -298,10 +300,7 @@ export default {
                 padding: 12,
                 fontFamily: 'Open-sans,sans-serif',
                 fontColor: 'rgba(56, 59, 65, 0.72)',
-                lineHeight: 1.58,
-                callback: function (value) {
-                  return value
-                }
+                lineHeight: 1.58
               }
             }
           ],

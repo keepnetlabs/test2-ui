@@ -11,9 +11,10 @@
       :loading="isLoading"
       :server-side-props="serverSideProps"
       :server-side-events="serverSideEvents"
+      :axios-payload.sync="axiosPayload"
       :show-pagination="true"
       :show-page-size="true"
-      :show-filter-options="true"
+      :show-filter-options="false"
       :show-datatable-row-actions="false"
       :download-button="{ show: false }"
       :filterable="true"
@@ -32,6 +33,7 @@
       @handleGroupedClick="handleGroupedClick"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @searchChangedEvent="handleSearchChange"
     />
   </div>
 </template>
@@ -42,7 +44,7 @@ import { searchPhishingActivityUsers } from '@/api/reports'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-
+import { getScenarioDataDetails } from '@/api/scenarios'
 export default {
   name: 'ExecutiveReportPhishingActivityTable',
   components: {
@@ -77,13 +79,17 @@ export default {
   data() {
     return {
       isLoading: false,
-      axiosPayload: getDefaultAxiosPayload(
-        {
-          pageSize: 10,
-          groupByUser: false
-        },
-        'firstName'
-      ),
+      axiosPayload: (() => {
+        const payload = getDefaultAxiosPayload(
+          {
+            pageSize: 10,
+            groupByUser: false
+          },
+          'firstName'
+        )
+        payload.ascending = true
+        return payload
+      })(),
       serverSideProps: new ServerSideProps('', false, 10),
       serverSideEvents: { pagination: true, search: true, sort: true },
       tableData: [],
@@ -130,7 +136,7 @@ export default {
           width: 200
         },
         {
-          property: 'templateName',
+          property: 'scenarioName',
           label: 'Scenario Name',
           align: 'left',
           show: true,
@@ -146,7 +152,9 @@ export default {
           show: true,
           type: 'text',
           sortable: true,
-          filterableType: 'text',
+          filterableType: 'select',
+          filterableItems: [],
+          filterableCustomFieldName: 'categoryName',
           width: 150
         },
         {
@@ -280,6 +288,7 @@ export default {
   },
   created() {
     this.callForData()
+    this.callForScenarioDetails()
   },
   methods: {
     callForData() {
@@ -303,6 +312,7 @@ export default {
           this.isLoading = false
         })
     },
+
     setTableData(results) {
       if (!results || !results.length) {
         this.tableData = []
@@ -326,7 +336,7 @@ export default {
           lastName: item.lastName || '',
           email: item.email || '',
           campaignName: item.campaignName || '',
-          templateName: item.templateName || '',
+          scenarioName: item.scenarioName || '',
           categoryName: item.categoryName || '',
           difficulty: item.difficulty || '',
           opened: item.opened,
@@ -343,18 +353,49 @@ export default {
     handleListBulleted() {
       this.isGrouped = false
       this.axiosPayload.groupByUser = false
+      // Clear filters for columns that exist only in grouped mode
+      const groupedOnlyColumns = ['attachmentOpened', 'dataSubmitted', 'reported']
+      const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterItems.filter(
+        (item) => !groupedOnlyColumns.includes(item.FieldName)
+      )
+      // Check if current orderBy exists in ungrouped columns
+      const ungroupedColumnProperties = this.ungroupedColumns.map((col) => col.property)
+      if (!ungroupedColumnProperties.includes(this.axiosPayload.orderBy)) {
+        this.axiosPayload.orderBy = 'firstName'
+        this.axiosPayload.ascending = true
+      }
       this.resetPageNumber()
       this.callForData()
     },
     handleGroupedClick() {
       this.isGrouped = true
       this.axiosPayload.groupByUser = true
+      // Clear filters for columns that exist only in ungrouped mode
+      const ungroupedOnlyColumns = ['campaignName', 'scenarioName', 'categoryName', 'difficulty']
+      const filterItems = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterItems.filter(
+        (item) => !ungroupedOnlyColumns.includes(item.FieldName)
+      )
+      // Check if current orderBy exists in grouped columns
+      const groupedColumnProperties = this.groupedColumns.map((col) => col.property)
+      if (!groupedColumnProperties.includes(this.axiosPayload.orderBy)) {
+        this.axiosPayload.orderBy = 'firstName'
+        this.axiosPayload.ascending = true
+      }
       this.resetPageNumber()
       this.callForData()
     },
     emitPaginationChange() {
       const actualRowCount = Math.min(this.axiosPayload.pageSize, this.tableData.length)
       this.$emit('on-pagination-change', this.card, actualRowCount)
+    },
+    callForScenarioDetails() {
+      getScenarioDataDetails().then((response) => {
+        this.categories = response?.data?.data?.categories || []
+        this.$set(this.ungroupedColumns[5], 'filterableItems', this.categories)
+        this.$refs.refPhishingActivityTable.reRenderFilters()
+      })
     }
   }
 }
