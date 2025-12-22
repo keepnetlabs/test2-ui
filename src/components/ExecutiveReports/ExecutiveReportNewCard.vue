@@ -906,12 +906,20 @@ export default {
       return ['training-library-new-btn ml-2']
     },
     hasManagerMetricWidget() {
-      // Check if report has isSupportManager from API (for edit/preview mode)
-      if (this.reportIsSupportManager) return true
-      // Check layout for Manager Metric widgets
-      return this.layout.some(
-        (item) => item.isSupportManager || item.parentKey === 'Manager Metrics'
-      )
+      // First check layout for Manager Metric widgets (user can add/remove widgets)
+      const hasManagerInLayout = this.layout.some((item) => {
+        // Check if item is a Manager Metric widget
+        return (
+          item.isSupportManager ||
+          item.parentKey === 'Manager Metrics' ||
+          item.key === 'PhishingActivityWidget' ||
+          item.key === 'TrainingEnrollmentActivityWidget'
+        )
+      })
+      // If layout has Manager Metric widget, return true
+      if (hasManagerInLayout) return true
+      // Otherwise, use reportIsSupportManager from API (for edit/preview mode)
+      return this.reportIsSupportManager
     },
     shouldHideDownloadIcon() {
       // In preview mode, hide download icon if report has isSupportManager: true
@@ -1102,7 +1110,10 @@ export default {
         return { ...item, w: itemWidth, x: xValue, y }
       })
     },
-    layoutUpdated(newLayout) {},
+    layoutUpdated(newLayout) {
+      // Update reportIsSupportManager when layout changes via drag & drop
+      this.updateReportIsSupportManagerFromLayout()
+    },
     layoutMounted() {},
     routeToExecutiveReports() {
       if (this.$route.params.isFromScheduledReport)
@@ -1145,7 +1156,8 @@ export default {
           endDate: '',
           description: this.formData.description,
           datePeriod: this.formData.datePeriod,
-          companyName: this.formData.companyName
+          companyName: this.formData.companyName,
+          isSupportManager: this.hasManagerMetricWidget
         },
         widgetLayouts: this.layout
       }
@@ -1387,6 +1399,8 @@ export default {
       }
       this.newItemY += newItem.h
       this.layout.unshift(widgetObj)
+      // Update reportIsSupportManager based on current layout
+      this.updateReportIsSupportManagerFromLayout()
       return true
     },
     deleteWidget(item, index) {
@@ -1518,6 +1532,19 @@ export default {
           }
         }, 50) // Small delay, using static mapping so no need to wait for render
       })
+    },
+    updateReportIsSupportManagerFromLayout() {
+      // Update reportIsSupportManager based on current layout
+      const hasManagerInLayout = this.layout.some((item) => {
+        // Check if item is a Manager Metric widget
+        return (
+          item.isSupportManager ||
+          item.parentKey === 'Manager Metrics' ||
+          item.key === 'PhishingActivityWidget' ||
+          item.key === 'TrainingEnrollmentActivityWidget'
+        )
+      })
+      this.reportIsSupportManager = hasManagerInLayout
     },
     handleDateRangeInputChange(dateRange) {
       this.dateRange = dateRange
