@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-    <ChatPanel v-if="true" />
+    <ChatPanel v-if="isTestEnvironment" />
   </v-app>
 </template>
 <script>
@@ -1496,7 +1496,10 @@ export default {
       return this.$route.path.includes('/awareness-educator')
     },
     isTestEnvironment() {
-      return window.location.hostname.includes('test-ui.devkeepnet.com')
+      return (
+        window.location.hostname.includes('test-ui.devkeepnet.com') ||
+        window.location.hostname.includes('localhost')
+      )
     }
   },
   watch: {
