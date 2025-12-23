@@ -56,8 +56,8 @@ const TRAINING_ACTIVITY_COLORS = {
     borderColor: '#757575'
   },
   Incomplete: {
-    backgroundColor: '#E6A23C',
-    borderColor: '#E6A23C'
+    backgroundColor: '#B83A3A',
+    borderColor: '#B83A3A'
   },
   Completed: {
     backgroundColor: '#43A047',
@@ -373,7 +373,7 @@ export default {
               const legendOrder = ['Enrollments', 'Incomplete', 'Completed']
               const colors = {
                 Enrollments: '#757575',
-                Incomplete: '#E6A23C',
+                Incomplete: '#B83A3A',
                 Completed: '#43A047'
               }
 
