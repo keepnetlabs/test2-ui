@@ -632,7 +632,7 @@ export default {
     },
     handleConfirmSendWithAI(options) {
       const token = AuthenticationService.getToken()
-      const { firstName, lastName, preferredLanguage } = this.selectedRowForAI
+      const { preferredLanguage, targetUserResourceId, department } = this.selectedRowForAI
       const actions = []
 
       if (options.training) {
@@ -644,9 +644,9 @@ export default {
 
       const body = {
         token,
-        firstName,
-        lastName,
         preferredLanguage,
+        targetUserResourceId,
+        departmentName: department,
         actions,
         sendAfterPhishingSimulation:
           options.training && options.phishing
