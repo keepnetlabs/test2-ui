@@ -532,8 +532,9 @@ export default {
           : this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
         this.$moment(Date.now()).format(getTimeZoneForMoment())
       ]
-      this.filteredSelectValueNum = ''
-      this.filteredSelectValueNumber = ''
+      // Reset number filter selects to default value '=' instead of empty string
+      this.filteredSelectValueNum = '='
+      this.filteredSelectValueNumber = '='
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })

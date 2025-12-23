@@ -656,7 +656,7 @@ export default {
       const isLocalhost = window.location.hostname.includes('localhost')
       const url = isLocalhost
         ? 'http://localhost:4111/autonomous'
-        : 'https://agentic-ally.keepnet-labs-ltd-business-profile4086.workers.dev/autonomous'
+        : 'https://agentic-ai-agent.keepnetlabs.com/autonomous'
       axios
         .post(url, body, {
           headers: {
