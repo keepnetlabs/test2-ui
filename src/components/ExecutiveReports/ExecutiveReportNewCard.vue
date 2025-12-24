@@ -1028,7 +1028,11 @@ export default {
         }
         this.formData.description = data.description
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
+       
         data.widgets.forEach((widget) => {
+          if(widget.widgetType === 'PhishingActivityWidget' || widget.widgetType === 'TrainingActivityWidget'){
+            widget.static = true
+          } 
           if (
             widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
             widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
@@ -1050,7 +1054,14 @@ export default {
             this.defaultWidgetData[widget.widgetType] = widget.widgetDatas
           }
         })
-        this.layout = JSON.parse(data.widgetLayout)
+        const layoutFromApi = JSON.parse(data.widgetLayout)
+        layoutFromApi.forEach((item) => {
+          if(item.key === 'PhishingActivityWidget' || item.key === 'TrainingActivityWidget'){
+            item.static = true
+          }
+        })
+        this.layout = layoutFromApi
+        
         this.$emit('on-layout-get', this.layout)
         this.dateRange = data.dateRange
         if (this.isScheduledReport) {
