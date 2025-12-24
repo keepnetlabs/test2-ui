@@ -533,7 +533,7 @@ export default {
             })
             .filter(Boolean) // Remove undefined values if any resourceId doesn't match
 
-          this.companyLanguageTypeResourceId = formDetailsData.companyLanguageTypeResourceId || ''
+          this.companyLanguageTypeResourceId = formDetailsData?.companyLanguageTypeResourceId || ''
 
           this.$set(this.tableOptions.columns, 1, {
             ...this.tableOptions.columns[1],
