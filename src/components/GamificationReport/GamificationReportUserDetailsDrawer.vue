@@ -860,9 +860,17 @@ export default {
             totalPoints: product.totalPoints
           }))
           this.productScores = newProductScores
-          this.overallScore = {
-            points: newProductScores[0].totalPoints,
-            percentage: newProductScores[0].totalPerformance
+          if(newProductScores?.length > 0) {
+              this.overallScore = {
+              points: newProductScores[0].totalPoints,
+              percentage: newProductScores[0].totalPerformance
+            }
+          }else {
+            this.overallScore = {
+              points: 0,
+              percentage: 0
+            }
+            this.productScores = []
           }
         })
         .finally(() => {

@@ -13,6 +13,7 @@ export default {
       this?.$refs?.refTable?.reRenderFilters()
     },
     languages(val) {
+      if (!val || !Array.isArray(val)) return
       this.$set(
         this.tableOptions.columns.find((col) => col.property === 'languages'),
         'filterableItems',
