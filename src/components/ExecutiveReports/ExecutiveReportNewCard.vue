@@ -103,15 +103,22 @@
               </template>
               <span>Preview is disabled because the report contains a Manager Metric widget.</span>
             </VTooltip>
-            <VBtn
-              id="btn-add--training-library"
-              :class="getSaveButtonClasses"
-              rounded
-              color="#2196f3"
-              @click="handleSaveReportClick"
-            >
-              <span class="training-library-new-btn__text">SAVE REPORT</span>
-            </VBtn>
+            <VTooltip bottom :disabled="!isNameRequired">
+              <template #activator="{ on, attrs }">
+                <div v-on="on" v-bind="attrs" style="display: inline-block;">
+                  <VBtn
+                    id="btn-save-report--training-library"
+                    :class="getSaveButtonClasses"
+                    rounded
+                    color="#2196f3"
+                    @click="handleSaveReportClick"
+                  >
+                    <span class="training-library-new-btn__text">SAVE REPORT</span>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Executive Report Name is required</span>
+            </VTooltip>
           </template>
           <VIcon
             v-if="isShowPreview && !editMode"
@@ -339,6 +346,7 @@ import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/Execut
 import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 import ExecutiveReportPhishingActivity from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingActivity/ExecutiveReportPhishingActivity.vue'
 import ExecutiveReportTrainingActivity from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportTrainingActivity/ExecutiveReportTrainingActivity.vue'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'ExecutiveReportNewCard',
   components: {
@@ -902,6 +910,9 @@ export default {
         classes.push('new-executive-report-button-disabled')
       return classes
     },
+    isNameRequired() {
+      return !this.formData.name || !this.formData.name.trim()
+    },
     getPreviewPdfButtonClasses() {
       return ['training-library-new-btn ml-2']
     },
@@ -1148,6 +1159,14 @@ export default {
     },
     async handleSaveReportClick() {
       if (!this.$refs.refForm.validate()) return
+      if(!this.formData.executiveReportLogo){
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-information',
+          message: `Company logo is required`
+        })
+        return
+      }
       const payload = {
         executiveReport: {
           name: this.formData.name,
