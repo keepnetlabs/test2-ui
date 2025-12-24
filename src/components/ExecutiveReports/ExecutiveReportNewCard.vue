@@ -1163,7 +1163,7 @@ export default {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-information',
-          message: `Company logo is required`
+          message: `Executive report logo is required`
         })
         return
       }
