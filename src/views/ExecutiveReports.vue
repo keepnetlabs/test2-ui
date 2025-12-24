@@ -4,6 +4,7 @@
       v-if="isShowScheduleReportDialog"
       :status="isShowScheduleReportDialog"
       :selected-row="selectedRow"
+      :is-support-manager="isSupportManager"
       @on-close="toggleShowScheduleReportDialog"
     />
     <ExecutiveReportDeleteDialog
@@ -103,7 +104,8 @@ export default {
       isShowScheduleReportDialog: false,
       isShowDeleteDialog: false,
       selectedRow: null,
-      hasSearch: false
+      hasSearch: false,
+      isSupportManager: false
     }
   },
   created() {
@@ -134,6 +136,7 @@ export default {
     },
     toggleShowScheduleReportDialog(row = {}) {
       this.selectedRow = row
+      this.isSupportManager = row?.isSupportManager || false
       this.isShowScheduleReportDialog = !this.isShowScheduleReportDialog
     },
     toggleShowDeleteDialog(row = {}, forceUpdate = false) {
