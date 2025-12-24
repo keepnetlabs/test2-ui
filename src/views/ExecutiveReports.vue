@@ -43,6 +43,11 @@
       </VTooltip>
     </div>
     <div class="executive-reports__body">
+      <ExecutiveReportsSecurityCultureScore
+        class="executive-reports__score-card"
+        :score="securityCultureScore"
+        :trend="securityCultureTrend"
+      />
       <DatatableLoading v-if="isLoading" :loading="isLoading" />
       <template v-else-if="cards.length">
         <ExecutiveReportsCard
@@ -80,6 +85,7 @@
 import KContainer from '@/components/KContainer/KContainer.vue'
 import useDebounce from '@/hooks/useDebounce'
 import ExecutiveReportsCard from '@/components/ExecutiveReports/ExecutiveReportsCard.vue'
+import ExecutiveReportsSecurityCultureScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSecurityCultureScore.vue'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ReportsService from '@/api/reports'
 import ExecutiveReportScheduleReportDialog from '@/components/ExecutiveReports/ExecutiveReportScheduleReportDialog.vue'
@@ -93,6 +99,7 @@ export default {
     ExecutiveReportDeleteDialog,
     ExecutiveReportScheduleReportDialog,
     ExecutiveReportsCard,
+    ExecutiveReportsSecurityCultureScore,
     KContainer
   },
   mixins: [useDebounce, useLoading],
@@ -105,7 +112,9 @@ export default {
       isShowDeleteDialog: false,
       selectedRow: null,
       hasSearch: false,
-      isSupportManager: false
+      isSupportManager: false,
+      securityCultureScore: 3.9,
+      securityCultureTrend: 5
     }
   },
   created() {
