@@ -303,10 +303,6 @@ export default {
   },
   methods: {
     columnFilterChanged(filter) {
-      // Override operator to 'Contains' for trainingStatus filter
-      if (filter.FieldName === 'trainingStatus') {
-        filter.Operator = 'Contains'
-      }
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
