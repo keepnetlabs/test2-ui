@@ -83,7 +83,7 @@ export default {
       } else if (this.isRegionGBOrTRAndHasHyphen(newVal)) {
         this.setOldValueBySplitter('-', newVal)
       } else if (
-        newVal.length > 12 &&
+        newVal?.length > 12 &&
         this.$refs.refTelInput.phoneObject.possibility === 'too-long'
       ) {
         if (this.regionCode !== this.$refs.refTelInput.phoneObject.regionCode) {
@@ -95,14 +95,14 @@ export default {
         }
       } else if (
         //CHINA BUG
-        newVal.length === 17 &&
+        newVal?.length === 17 &&
         this.$refs.refTelInput.phoneObject.regionCode === 'CN' &&
         newVal[4] !== '1'
       ) {
         this.setValueSubStr(16, newVal)
-      } else if (newVal.length === 16 && this.$refs.refTelInput.phoneObject.regionCode === 'PL') {
+      } else if (newVal?.length === 16 && this.$refs.refTelInput.phoneObject.regionCode === 'PL') {
         this.setValueSubStr(15, newVal)
-      } else if (newVal.length === 17 && this.$refs.refTelInput.phoneObject.regionCode === 'SE') {
+      } else if (newVal?.length === 17 && this.$refs.refTelInput.phoneObject.regionCode === 'SE') {
         this.setValueSubStr(16, newVal)
       } else {
         this.$refs.refTelInput.phone = newVal
