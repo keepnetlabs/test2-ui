@@ -102,7 +102,7 @@ export default {
     const baseApiUrl = APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api'
     return {
       isExpanded: false,
-      chatUrl: `https://agentic-ui.pages.dev?sessionId=${sessionId}&accessToken=${token}&baseApiUrl=${baseApiUrl}&companyId=${companyId}`,
+      chatUrl: `https://agentic-ai-chat.keepnetlabs.com?sessionId=${sessionId}&accessToken=${token}&baseApiUrl=${baseApiUrl}&companyId=${companyId}`,
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
