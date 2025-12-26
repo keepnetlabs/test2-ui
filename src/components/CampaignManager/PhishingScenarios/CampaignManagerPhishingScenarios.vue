@@ -299,7 +299,7 @@
                 </ElTabPane>
               </ElTabs>
             </div>
-            <div v-if="isPhishing">
+            <div v-if="isPhishing" class="align-self-start">
               <v-btn
                 class="emailTemplatePreview__edit-button"
                 color="#2196F3"
