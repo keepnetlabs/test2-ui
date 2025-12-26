@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-    <ChatPanel v-if="isTestEnvironment" />
+    <ChatPanel v-show="isTestEnvironment" />
   </v-app>
 </template>
 <script>

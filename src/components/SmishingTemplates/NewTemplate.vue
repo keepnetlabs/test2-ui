@@ -305,6 +305,7 @@ export default {
       attachmentName: '',
       languageOptions: [],
       isSubmitDisabled: false,
+      enhancedCache:{},
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       availableForRequests: [],
@@ -582,6 +583,9 @@ export default {
       this.step -= 1
     },
     checkComplianceAndSubmit() {
+      if(this.enhancedCache[this.formValues.template] === false) {
+        return 
+      }
       this.isSubmitDisabled = true
       SmishingService.checkSmishingTextRisk(this.formValues.template)
         .then((response) => {
@@ -589,9 +593,11 @@ export default {
           const assistantMessage = data.find((item) => item.role === 'assistant')
           const { approval, reason } = JSON.parse(assistantMessage.content[0].text)
           if (approval === 'Yes') {
+            this.$set(this.enhancedCache, this.formValues.template, true)
             this.enhanceAlertText = ''
             this.submit()
           } else {
+            this.$set(this.enhancedCache, this.formValues.template, false)
             this.enhanceAlertText = reason
             this.isSubmitDisabled = false
           }
