@@ -29,6 +29,9 @@
       text-field-placeholder="Enter an Ip address"
       invalid-message="There are invalid entries, please change them."
       :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
+      :getEditability="getEditability"
+      :disabledTooltipText="labels.ExcludedIPTooltipText"
+      @on-delete="handleDeleteItem"
     />
     <button
       id="btn-import--advanced-settings-url"
@@ -59,7 +62,11 @@ import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import { getFormData, setFormData } from '@/components/Integrations/AdvancedSettings/util'
+import {
+  getFormData,
+  setFormData,
+  getFormDataWithObjects
+} from '@/components/Integrations/AdvancedSettings/util'
 export default {
   name: 'AdvancedSettingsIpAddresses',
   components: {
@@ -83,8 +90,9 @@ export default {
       isBatchImportPopupOpen: false,
       ipAddressSearch: '',
       dataContainerWithSearchItems: [],
-      labels,
-      initialData: []
+      initialData: [],
+      dataWithObjects: [],
+      labels
     }
   },
   computed: {
@@ -111,9 +119,13 @@ export default {
     this.setFormDataToIpAddresses()
   },
   methods: {
+    getEditability(value) {
+      return this.dataWithObjects?.find((item) => item.value === value)?.isEditable
+    },
     setFormDataToIpAddresses(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'IP')
       this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+      this.dataWithObjects = getFormDataWithObjects(val, 'IP')
     },
     handleBatchImport(data = []) {
       if (!data.length) return
@@ -124,7 +136,15 @@ export default {
     },
     handleIpAddressesAdd() {
       this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
+      this.dataWithObjects.unshift({
+        value: this.ipAddressSearch,
+        exclusionType: 'IP',
+        isEditable: true
+      })
       this.resetIpAddresses()
+    },
+    handleDeleteItem(index) {
+      this.dataWithObjects.splice(index, 1)
     },
     resetIpAddresses() {
       this.ipAddressSearch = ''
@@ -132,7 +152,11 @@ export default {
     handleSaveChanges() {
       if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
         return
-      const payload = setFormData(this.dataContainerWithSearchItems, 'IP')
+      for (let i = 0; i < this.dataWithObjects.length; i++) {
+        this.dataWithObjects[i].value = this.dataContainerWithSearchItems[i]
+      }
+      const editableItems = this.dataWithObjects.filter((item) => item.isEditable)
+      const payload = setFormData(editableItems, 'IP')
       this.$emit('on-submit', payload, 'IP')
     }
   }
