@@ -343,6 +343,7 @@ export const labels = {
   DownloadedInfographic: 'Downloaded Infographic',
   ClickedTrainingLink: 'Clicked Training Link',
   ExcludeIPAddress: 'Exclude IP Address',
+  ExcludedIPTooltipText: 'This IP address is excluded by system to prevent false positive reporting.',
   ExcludedURLTooltipText: 'This URL is excluded by system to prevent false positive reporting.',
   TargetUserGroups: 'Target User Groups',
   UserWhoOpenedEmail: 'Users who opened the e-mail',
