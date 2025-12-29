@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isInitialHidden" class="chat-panel">
+  <div v-show="!isInitialHidden" class="chat-panel">
     <!-- Chat Toggle Button - AI Agent -->
     <div
       class="ai-agent-button"
@@ -17,7 +17,7 @@
 
     <!-- Chat Sidebar Panel -->
     <div
-      v-if="isExpanded"
+      v-show="isExpanded"
       class="chat-sidebar"
       :class="{ 'chat-sidebar-open': isExpanded, fullwidth: isFullWidth }"
     >
@@ -124,15 +124,12 @@ export default {
       // HTML scroll lock/unlock
       if (this.isExpanded) {
         document.querySelector('html').style.overflowY = 'hidden'
+        // Panel açılırken iframe yüklüyse kullanıcı bilgilerini gönder
+        if (this.iframeLoaded) {
+          this.sendUserInfoToIframe()
+        }
       } else {
         document.querySelector('html').style.overflowY = ''
-        // Panel kapatılırken skeleton'u reset et
-        this.iframeLoaded = false
-      }
-
-      if (this.isExpanded && this.iframeLoaded) {
-        // İframe yüklendiğinde kullanıcı bilgilerini gönder
-        this.sendUserInfoToIframe()
       }
     },
 

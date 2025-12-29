@@ -130,6 +130,12 @@ export default {
     handleBatchImport(data = []) {
       if (!data.length) return
       this.dataContainerWithSearchItems.unshift(...data)
+      const newObjects = data.map((ip) => ({
+        value: ip,
+        exclusionType: 'IP',
+        isEditable: true
+      }))
+      this.dataWithObjects.unshift(...newObjects)
     },
     toggleBatchImportPopup() {
       this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
