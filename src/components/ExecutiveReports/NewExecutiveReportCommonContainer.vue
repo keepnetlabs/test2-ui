@@ -122,19 +122,36 @@ export default {
         .finally(this.setLoading)
     },
     callForDefaultLogo() {
-      if (this.isEdit) {
-        getExecutiveReportLogo(this.$route.params.id).then((logo) => {
-          this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', {
-            type: logo.type
+      const reportId = this.$route.params.id
+
+      if (reportId) {
+        getExecutiveReportLogo(reportId)
+          .then((logo) => {
+            if (logo?.data && logo.data.size > 0) {
+              this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', {
+                type: logo.type
+              })
+            }
           })
-        })
+          .catch(() => {
+            this.fallbackToCompanyLogo()
+          })
       } else {
-        getReportSchedulingLogo(localStorage.getItem('selectedCompanyRequestId')).then((logo) => {
-          this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', {
-            type: logo.type
-          })
-        })
+        this.fallbackToCompanyLogo()
       }
+    },
+    fallbackToCompanyLogo() {
+      getReportSchedulingLogo(localStorage.getItem('selectedCompanyRequestId'))
+        .then((logo) => {
+          if (logo?.data && logo.data.size > 0) {
+            this.defaultCompanyLogo = new File([logo.data], 'Default Company Logo', {
+              type: logo.type
+            })
+          }
+        })
+        .catch(() => {
+          this.defaultCompanyLogo = null
+        })
     },
     handleSearchAdd(chart) {
       const isAdded = this.$refs.refCharts.addWidget(chart)
