@@ -442,7 +442,10 @@ export default {
                 type: 'cell',
                 tagName: tag.toLowerCase()
               }
-              result.components = `<td><div>${el.innerHTML}</div></td>`
+              // ✅ FIX: Gereksiz wrapper div kaldırıldı, direkt innerHTML kullanılıyor
+              // Eski kod: result.components = `<td><div>${el.innerHTML}</div></td>`
+              // Yeni kod: Wrapper div olmadan direkt içeriği kullan
+              result.components = el.innerHTML
             }
 
             return result
@@ -1041,23 +1044,16 @@ export default {
             btnImp.onclick = () => {
               editor.DomComponents.getWrapper().set('content', '')
               const code = codeViewer.editor.getValue()
-              const callback = (importedCode = code) => {
-                const doc = new DOMParser().parseFromString(importedCode, 'text/html')
-                btnImp.style.opacity = '1'
-                btnImp.style.cursor = 'pointer'
-                btnImp.style.pointerEvents = 'auto'
-                editor.setComponents(doc.children[0].outerHTML)
-                editor.getWrapper().setStyle(doc.body.style.cssText)
-                editor.Modal.close()
-              }
-              btnImp.style.opacity = '0.5'
-              btnImp.style.cursor = 'default'
-              btnImp.style.pointerEvents = 'none'
-              minifyHTML(code)
-                .then((response) => {
-                  callback(response?.data?.data?.htmlContent || '')
-                })
-                .catch(() => callback(code))
+
+              // ✅ FIX: Backend minifyHTML çağrısı kaldırıldı
+              // Eski kod her import'ta backend'e gidiyordu ve HTML'i bozuyordu
+              // minifyHTML(code).then((response) => { ... })
+
+              // Yeni kod: Direkt client-side parsing
+              const doc = new DOMParser().parseFromString(code, 'text/html')
+              editor.setComponents(doc.children[0].outerHTML)
+              editor.getWrapper().setStyle(doc.body.style.cssText)
+              editor.Modal.close()
             }
             btnCopyToClipboard.type = 'button'
             btnCopyToClipboard.onclick = () => {

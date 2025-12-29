@@ -142,7 +142,15 @@ export default {
     },
     handleBatchImport(data = []) {
       if (!data.length) return
+
       this.dataContainerWithSearchItems.unshift(...data)
+
+      const newObjects = data.map((url) => ({
+        value: url,
+        exclusionType: 'URL',
+        isEditable: true
+      }))
+      this.dataWithObjects.unshift(...newObjects)
     },
     toggleBatchImportPopup() {
       this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
