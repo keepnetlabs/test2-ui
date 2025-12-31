@@ -17,3 +17,7 @@ export function getLicences() {
 export function getTicket() {
   return testRequest.get('/reports/ticket')
 }
+
+export function getCountryTimezones() {
+  return testRequest.get('/lookups/country-timezones')
+}
