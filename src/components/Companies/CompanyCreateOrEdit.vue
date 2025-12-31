@@ -642,10 +642,9 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import AlertBox from '@/components/AlertBox'
 import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWarningModal'
 import moment from 'moment'
-import countryDefaultValues from '@/utils/countryDefaultValues'
-import countryLanguageMap from '@/utils/countryLanguageMap'
 import { getTimeZoneForMoment } from '../../utils/functions'
 import InputTag from '@/components/Common/Inputs/InputTag.vue'
+import { getCountryTimezones } from '@/api/common'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -773,7 +772,8 @@ export default {
       validations: validations,
       companyGroupPayload: getDefaultAxiosPayload({ pageSize: 100 }),
       callbackNumberItems: [],
-      isWarningModalVisible: false
+      isWarningModalVisible: false,
+      countryTimezones: []
     }
   },
   computed: {
@@ -783,7 +783,10 @@ export default {
           (country) => country.resourceId === this.formData.CountryResourceId
         )
         if (selectedCountryIndex !== -1) {
-          return this.countries[selectedCountryIndex].name
+          return (
+            this.countries[selectedCountryIndex].code ||
+            this.countries[selectedCountryIndex].isoCode
+          )
         }
       }
       return null
@@ -863,25 +866,33 @@ export default {
   },
   watch: {
     getSelectedCountry(val) {
+      console.log(val)
       if (this.edit || !val) return
 
-      const countryDefaultValuesIndex = countryDefaultValues.findIndex(
-        (country) => country.name === val
-      )
-
+      const countryData = this.countryTimezones.find((ct) => ct.countryCode === val)
+      console.log(countryData)
       const englishResourceId = this.languageItems.find((item) => item.name === 'English')
         ?.resourceId
-      if (countryDefaultValuesIndex !== -1) {
-        this.formData.DateFormat = countryDefaultValues[countryDefaultValuesIndex].dateFormat
-        this.formData.TimeFormat = countryDefaultValues[countryDefaultValuesIndex].timeFormat
-        this.formData.timeZoneId = countryDefaultValues[countryDefaultValuesIndex].timezone
-        const nativeLanguageIndex = countryLanguageMap.findIndex((clm) => clm.country === val)
-        if (nativeLanguageIndex !== -1) {
-          this.formData.PreferredLanguageTypeResourceId =
-            this.languageItems.find(
-              (language) => language.name === countryLanguageMap[nativeLanguageIndex].language
-            )?.resourceId || englishResourceId
+      if (countryData) {
+        console.log(countryData)
+        // DateFormat normalize et
+        this.formData.DateFormat = this.normalizeDateFormat(countryData.dateFormat)
+        // clockFormat kullan
+        this.formData.TimeFormat = countryData.clockFormat
+
+        // Timezone string'ini ID'ye çevir
+        const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
+        console.log(timeZoneList)
+        const timezoneObj = timeZoneList.find(
+          (tz) => tz.displayName === countryData.timezone || tz.id === countryData.timezone
+        )
+        if (timezoneObj) {
+          this.formData.timeZoneId = timezoneObj.id
         }
+
+        // Dil set et
+        this.formData.PreferredLanguageTypeResourceId =
+          countryData.languageResourceId || englishResourceId
       } else {
         this.formData.PreferredLanguageTypeResourceId = englishResourceId
       }
@@ -998,6 +1009,7 @@ export default {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     this.getLookupContents()
     this.getCompanyGroups()
+    this.fetchCountryTimezones()
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId =
         this.selectedExtend.preferredLanguageTypeResourceId === ''
@@ -1044,6 +1056,32 @@ export default {
     }
   },
   methods: {
+    normalizeDateFormat(format) {
+      if (!format) return 'dd/MM/yyyy'
+
+      let normalized = format
+        // . ile / değiştir
+        .replace(/\./g, '/')
+        // - ile / değiştir
+        .replace(/-/g, '/')
+
+      // Tek d'yi dd yap (yyyy'yi etkilememek için kelime sınırlarını kullan)
+      normalized = normalized.replace(/\b(d)\b/g, 'dd')
+      // Tek M'yi MM yap
+      normalized = normalized.replace(/\b(M)\b/g, 'MM')
+      // Tek y'yi yyyy yap
+      normalized = normalized.replace(/\b(y)\b/g, 'yyyy')
+      // yy'yi yyyy yap
+      normalized = normalized.replace(/\byy\b/g, 'yyyy')
+
+      return normalized
+    },
+    fetchCountryTimezones() {
+      getCountryTimezones().then((response) => {
+        console.log(response)
+        this.countryTimezones = response?.data?.data || []
+      })
+    },
     callForExpiryDateLimited() {
       expiryDateLimited(this.$moment(Date.now()).format(getTimeZoneForMoment())).then(
         (response) => {
