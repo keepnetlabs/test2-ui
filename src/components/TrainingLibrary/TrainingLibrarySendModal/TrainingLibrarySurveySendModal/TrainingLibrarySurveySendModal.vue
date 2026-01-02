@@ -256,10 +256,10 @@ export default {
       const sendReminderEvery = refSendTrainingSettings?.sendReminderEvery
       const enrollmentReminder = refSendTrainingSettings?.formData?.enrollmentReminder
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
-      const preferredLanguageLabel =
-        !refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
-          ? 'Company Language'
-          : 'Target Users Language'
+      const preferredLanguageLabel = !refSendTrainingSettings?.formData
+        ?.sendTemplatesInPreferredLanguage
+        ? 'Company Language'
+        : 'Target Users Language'
       if (
         refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.EMAIL ||
         refSendTrainingSettings?.formData?.deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
@@ -416,7 +416,8 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const languages = data.template.languages || []
-          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate =
+            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             languages.unshift({
@@ -455,7 +456,8 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const certificateLanguages = data.template.languages || []
-          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate =
+            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             certificateLanguages.unshift({
@@ -494,7 +496,8 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const enrollmentLanguages = data.template.languages || []
-          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate =
+            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             enrollmentLanguages.unshift({
@@ -729,7 +732,8 @@ export default {
         awardCertificate,
         certificateConfigSendType,
         languageIds: newLanguageIds,
-        sendTemplatesInPreferredLanguage: refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
+        sendTemplatesInPreferredLanguage:
+          refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
       }
 
       if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {

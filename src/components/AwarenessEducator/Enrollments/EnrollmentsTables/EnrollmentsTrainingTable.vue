@@ -12,10 +12,8 @@
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="
-      tableOptions.savedTableSettingsLocalStorageKey
-    "
+    :saved-filters-local-storage-key="savedFiltersKey"
+    :saved-table-settings-local-storage-key="savedTableSettingsKey"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :select-event="tableOptions.selectEvent"
@@ -54,79 +52,76 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import { useLoading } from "@/hooks/useLoading";
-import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import labels from "@/model/constants/labels";
-import { COLUMNS } from "../../utils";
-import EnrollmentsTableRowActions from "@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions";
+import DataTable from '@/components/DataTable'
+import { useLoading } from '@/hooks/useLoading'
+import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
+import { COLUMNS } from '../../utils'
+import EnrollmentsTableRowActions from '@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import AwarenessEducatorService from "@/api/awarenessEducator";
-import useAwarenessColumnBindsFromApi from "@/hooks/awareness-educator/useAwarenessColumnBindsFromApi";
-import { trashRowActions } from "@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils";
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from "@/components/TrainingLibrary/TrainingLibraryFirstCard/utils";
-import useEnrollmentTableFilters from "@/hooks/enrollments/useEnrollmentTableFilters";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
+import { trashRowActions } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import useEnrollmentTableFilters from '@/hooks/enrollments/useEnrollmentTableFilters'
 export default {
-  name: "EnrollmentsTrainingTable",
+  name: 'EnrollmentsTrainingTable',
   components: {
     EnrollmentsTableRowActions,
-    DataTable,
+    DataTable
   },
   props: {
     languages: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     enrollmentStatusEnum: {
       type: Array,
-      required: true,
+      required: true
     },
     showDownloadButton: {
       type: Boolean,
-      default: true,
+      default: true
     },
     apiFunc: {
       type: Function,
-      default: AwarenessEducatorService.searchEnrollments,
+      default: AwarenessEducatorService.searchEnrollments
     },
     isTrash: {
       type: Boolean,
-      default: false,
+      default: false
     },
     categories: {
-      type: Array,
-    },
+      type: Array
+    }
   },
   mixins: [
     useLoading,
     useDefaultTableFunctions,
     useAwarenessColumnBindsFromApi,
-    useEnrollmentTableFilters,
+    useEnrollmentTableFilters
   ],
   data() {
     return {
       CONSTANTS: {
-        id: "awareness-educator-enrollments-data-table",
+        id: 'awareness-educator-enrollments-data-table'
       },
       axiosPayload: getDefaultAxiosPayload({
-        enrollmentType: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING,
+        enrollmentType: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
       }),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.ENROLLMENTS_TRAINING_LIST,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ENROLLMENTS_TRAINING_LIST,
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         columns: [
           COLUMNS.ENROLLMENT_NAME,
@@ -140,89 +135,95 @@ export default {
           COLUMNS.DELIVERY,
           COLUMNS.DELIVERY_TYPE,
           COLUMNS.TARGET_USERS,
-          COLUMNS.ENROLLMENT_TAGS,
+          COLUMNS.ENROLLMENT_TAGS
         ],
         iEmpty: {
-          message: labels.EmptyEnrollmentTraining,
+          message: labels.EmptyEnrollmentTraining
         },
         addButton: {
-          show: false,
+          show: false
         },
         downloadButton: {
           show: this.showDownloadButton,
-          disabled: !this.$store.getters["permissions/getExportEnrollmentPermission"],
+          disabled: !this.$store.getters['permissions/getExportEnrollmentPermission']
         },
         rowActions: this.isTrash
           ? trashRowActions
           : [
               {
-                id: "btn-send--row-actions-enrollments-list",
+                id: 'btn-send--row-actions-enrollments-list',
                 name: labels.SendTraining,
-                icon: "mdi-send",
+                icon: 'mdi-send'
               },
               {
-                id: "btn-edit--row-actions-enrollments-list",
+                id: 'btn-edit--row-actions-enrollments-list',
                 name: labels.Edit,
-                icon: "mdi-pencil",
-                disabled: !this.$store.getters["permissions/getEnrollmentEditPermission"],
+                icon: 'mdi-pencil',
+                disabled: !this.$store.getters['permissions/getEnrollmentEditPermission']
               },
               {
-                id: "btn-preview--row-actions-enrollments-list",
+                id: 'btn-preview--row-actions-enrollments-list',
                 name: labels.Preview,
-                icon: "mdi-eye",
+                icon: 'mdi-eye'
               },
               {
-                id: "btn-delete--row-actions-enrollments-list",
+                id: 'btn-delete--row-actions-enrollments-list',
                 name: labels.Delete,
-                icon: "mdi-delete",
-                disabled: !this.$store.getters[
-                  "permissions/getDeleteEnrollmentPermission"
-                ],
+                icon: 'mdi-delete',
+                disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']
               },
               {
-                id: "btn-download-package--row-actions-enrollments-list",
+                id: 'btn-download-package--row-actions-enrollments-list',
                 name: labels.DownloadPackage,
-                icon: "mdi-download",
-                disabled: !this.$store.getters[
-                  "permissions/getDeleteEnrollmentPermission"
-                ],
-              },
+                icon: 'mdi-download',
+                disabled: !this.$store.getters['permissions/getDeleteEnrollmentPermission']
+              }
             ],
-        serverSideEvents: { pagination: true, search: true, sort: true },
-      },
-    };
+        serverSideEvents: { pagination: true, search: true, sort: true }
+      }
+    }
   },
   mounted() {
-    this.callForData();
+    this.callForData()
+  },
+  computed: {
+    savedFiltersKey() {
+      return this.isTrash
+        ? DEFAULT_SEARCH_CONTAINER_KEYS.TRASH_TRAINING_LIST
+        : DEFAULT_SEARCH_CONTAINER_KEYS.ENROLLMENTS_TRAINING_LIST
+    },
+    savedTableSettingsKey() {
+      return this.isTrash
+        ? TABLE_SETTINGS_KEYS.TRASH_TRAINING_LIST
+        : TABLE_SETTINGS_KEYS.ENROLLMENTS_TRAINING_LIST
+    }
   },
   methods: {
     callForData() {
-      this.setLoading(true);
+      this.setLoading(true)
       this.apiFunc(this.axiosPayload)
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber },
-            },
-          } = response || { data: { data: {} } };
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response || { data: { data: {} } }
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           const enrichedResults = results?.map((item) => {
             return {
               ...item,
               languageCodes: item.languages, // Orijinal kodları sakla
               languages: item.languages?.map((code) => {
-                const language = (this.languages || []).find(
-                  (lang) => lang.code === code
-                );
-                return language?.isoFriendlyName || code;
-              }),
-            };
-          });
-          this.tableData = enrichedResults || [];
+                const language = (this.languages || []).find((lang) => lang.code === code)
+                return language?.isoFriendlyName || code
+              })
+            }
+          })
+          this.tableData = enrichedResults || []
         })
-        .finally(this.setLoading);
+        .finally(this.setLoading)
     },
     exportEnrollments(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -232,21 +233,21 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === "XLS" ? "Excel" : item,
+          exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter,
-          enrollmentType: this.axiosPayload.enrollmentType,
-        };
+          enrollmentType: this.axiosPayload.enrollmentType
+        }
         AwarenessEducatorService.exportEnrollments(payload).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `Training-List.${
-            item.toLocaleLowerCase() === "xls" ? "xlsx" : item.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
-    },
-  },
-};
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    }
+  }
+}
 </script>

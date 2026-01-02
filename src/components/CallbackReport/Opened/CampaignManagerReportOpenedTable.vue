@@ -133,8 +133,7 @@ export default {
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CALLBACK_REPORT_OPENED_TABLE,
+        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CALLBACK_REPORT_OPENED_TABLE,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CALLBACK_REPORT_OPENED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
