@@ -92,7 +92,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages()
   },
   watch: {

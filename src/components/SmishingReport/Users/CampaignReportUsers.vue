@@ -273,7 +273,7 @@ export default {
       excludedUsersTableData: []
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {

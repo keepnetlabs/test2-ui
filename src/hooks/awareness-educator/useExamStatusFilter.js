@@ -31,7 +31,7 @@ export default {
   },
   watch: {
     selectedExamStatusFilter: {
-      immediate: true,
+      immediate: false,
       handler(val) {
         if (this.trainingSummary && !this.canRenderExamStatusFilter) return
         const examStatusFilterIndex = this.examStatusFilters.findIndex((item) => item.value === val)

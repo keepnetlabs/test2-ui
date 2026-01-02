@@ -446,7 +446,7 @@ export default {
       this.setLoading(false)
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages()
     this.callForData()
   },
