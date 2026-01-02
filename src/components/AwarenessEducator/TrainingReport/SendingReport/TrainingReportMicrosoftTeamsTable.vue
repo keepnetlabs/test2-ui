@@ -134,8 +134,8 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_MICROSOFT_TEAMS_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_MICROSOFT_TEAMS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           microsoftResend: true,
@@ -254,6 +254,12 @@ export default {
       tableData: []
     }
   },
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData()
+    })
+  },
   watch: {
     customFields: {
       deep: true,
@@ -281,9 +287,6 @@ export default {
         }
       }
     }
-  },
-  created() {
-    this.callForData()
   },
   methods: {
     handleSelectionChange(selectionCount) {

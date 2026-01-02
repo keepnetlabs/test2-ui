@@ -152,8 +152,13 @@ export default {
     }
   },
   created() {
-    this.callForData()
     this.callForLanguages()
+  },
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData()
+    })
   },
   watch: {
     customFields: {

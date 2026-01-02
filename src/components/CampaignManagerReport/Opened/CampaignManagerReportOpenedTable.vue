@@ -196,6 +196,15 @@ export default {
       languageOptions: []
     }
   },
+  created() {
+    this.callForLanguages()
+  },
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData()
+    })
+  },
   watch: {
     customFields: {
       deep: true,
@@ -213,10 +222,6 @@ export default {
     isShowSandbox(val) {
       this.$emit('update:is-show-sandbox-from-parent', val)
     }
-  },
-  created() {
-    this.callForData()
-    this.callForLanguages()
   },
   methods: {
     callForLanguages() {

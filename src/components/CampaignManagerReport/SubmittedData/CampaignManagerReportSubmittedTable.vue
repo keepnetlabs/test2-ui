@@ -174,6 +174,15 @@ export default {
       languageOptions: []
     }
   },
+  created() {
+    this.callForLanguages()
+  },
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData()
+    })
+  },
   watch: {
     passwordComplexities: {
       immediate: true,
@@ -192,10 +201,6 @@ export default {
         if (departmentIndex) this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
       }
     }
-  },
-  created() {
-    this.callForData()
-    this.callForLanguages()
   },
   methods: {
     callForLanguages() {

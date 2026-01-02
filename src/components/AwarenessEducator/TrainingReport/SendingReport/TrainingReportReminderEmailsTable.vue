@@ -148,9 +148,9 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_REMINDER_EMAILS_TABLE,
         savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.TRAINING_REPORT_SENDING_REPORT_TABLE,
+          TABLE_SETTINGS_KEYS.TRAINING_REPORT_REMINDER_EMAILS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           clipboard: true,
@@ -323,8 +323,11 @@ export default {
       return `Event history is only available for SMTP`;
     },
   },
-  created() {
-    this.callForData();
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData();
+    })
   },
   watch: {
     customFields: {

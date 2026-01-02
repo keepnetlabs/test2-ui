@@ -98,8 +98,8 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.CALLBACK_REPORT_CALLED_BACK_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CALLBACK_REPORT_CALLED_BACK_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: true
