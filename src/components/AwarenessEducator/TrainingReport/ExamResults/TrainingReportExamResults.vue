@@ -285,6 +285,9 @@ export default {
       tableData: []
     }
   },
+  mounted() {
+    this.callForData()
+  },
   watch: {
     customFields: {
       deep: true,

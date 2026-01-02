@@ -497,7 +497,7 @@ export default {
       }, 300)
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages()
     this.callForData()
   },

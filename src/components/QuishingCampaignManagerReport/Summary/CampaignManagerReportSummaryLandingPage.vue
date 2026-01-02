@@ -66,7 +66,7 @@ export default {
       languageOptions: []
     }
   },
-  created() {
+  mounted() {
     this.callForLanguages()
   },
   computed: {

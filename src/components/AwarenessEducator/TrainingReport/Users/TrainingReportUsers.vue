@@ -597,7 +597,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.canRenderExamStatusFilter) this.callForData()
+    this.callForData()
   },
   methods: {
     handleSelectionChange(selectionCount) {

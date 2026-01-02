@@ -196,7 +196,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   watch: {
