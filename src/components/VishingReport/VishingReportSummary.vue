@@ -187,7 +187,7 @@ export default {
       return { answered, noResponse, callingError: errorTargetUserCount }
     }
   },
-  created() {
+  mounted() {
     this.callForData(true)
     this.interval = setInterval(() => {
       this.callForData()
