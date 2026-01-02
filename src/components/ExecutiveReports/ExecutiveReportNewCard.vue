@@ -346,6 +346,7 @@ import ExecutiveReportsTotalReportedSuspiciousDoughnut from '@/components/Execut
 import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
 import ExecutiveReportPhishingActivity from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportPhishingActivity/ExecutiveReportPhishingActivity.vue'
 import ExecutiveReportTrainingActivity from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportTrainingActivity/ExecutiveReportTrainingActivity.vue'
+import ExecutiveReportsSecurityCultureScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSecurityCultureScore.vue'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'ExecutiveReportNewCard',
@@ -700,6 +701,27 @@ export default {
           startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
+        SecurityCultureScoreGaugeWidget: {
+          x: 0,
+          y: 0,
+          w: 12,
+          minW: 12,
+          defaultW: 12,
+          midW: 12,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          title: 'Security Culture Score',
+          key: 'SecurityCultureScoreGaugeWidget',
+          isAllowed: true,
+          parentKey: 'Security Culture',
+          chartType: 'gauge',
+          dateInterval: 'month',
+          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
+        },
         TotalReportedSuspiciousEmailsAndPercentageWidget: {
           x: 0,
           y: 0,
@@ -1028,11 +1050,14 @@ export default {
         }
         this.formData.description = data.description
         this.formData.name = this.isDuplicate ? `${data.name} - Copy` : data.name
-       
+
         data.widgets.forEach((widget) => {
-          if(widget.widgetType === 'PhishingActivityWidget' || widget.widgetType === 'TrainingActivityWidget'){
+          if (
+            widget.widgetType === 'PhishingActivityWidget' ||
+            widget.widgetType === 'TrainingActivityWidget'
+          ) {
             widget.static = true
-          } 
+          }
           if (
             widget.widgetType === 'IndustryPhishingRiskScoreWidget' ||
             widget.widgetType === 'PhishingSimulationEngagementReportingTrendsWidget' ||
@@ -1047,7 +1072,8 @@ export default {
             widget.widgetType === 'PhishingDwellTimeDistributionWidget' ||
             widget.widgetType === 'ResponseTimesToPhishingActionsWidget' ||
             widget.widgetType === 'TotalReportedSuspiciousEmailsAndPercentageWidget' ||
-            widget.widgetType === 'RepeatOffendersUsersRateWidget'
+            widget.widgetType === 'RepeatOffendersUsersRateWidget' ||
+            widget.widgetType === 'SecurityCultureScoreGaugeWidget'
           ) {
             this.defaultWidgetData[widget.widgetType] = [widget]
           } else {
@@ -1056,12 +1082,12 @@ export default {
         })
         const layoutFromApi = JSON.parse(data.widgetLayout)
         layoutFromApi.forEach((item) => {
-          if(item.key === 'PhishingActivityWidget' || item.key === 'TrainingActivityWidget'){
+          if (item.key === 'PhishingActivityWidget' || item.key === 'TrainingActivityWidget') {
             item.static = true
           }
         })
         this.layout = layoutFromApi
-        
+
         this.$emit('on-layout-get', this.layout)
         this.dateRange = data.dateRange
         if (this.isScheduledReport) {
@@ -1170,7 +1196,7 @@ export default {
     },
     async handleSaveReportClick() {
       if (!this.$refs.refForm.validate()) return
-      if(!this.formData.executiveReportLogo){
+      if (!this.formData.executiveReportLogo) {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-information',
@@ -1485,6 +1511,8 @@ export default {
           return ExecutiveReportPhishingActivity
         case 'TrainingEnrollmentActivityWidget':
           return ExecutiveReportTrainingActivity
+        case 'SecurityCultureScoreGaugeWidget':
+          return ExecutiveReportsSecurityCultureScore
         case 'EmptyWidget':
           return ExecutiveReportsEmptyWidget
         default:
