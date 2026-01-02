@@ -355,8 +355,11 @@ export default {
       return `Event history is only available for SMTP`
     }
   },
-  created() {
-    this.callForData()
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData()
+    })
   },
   watch: {
     customFields: {
