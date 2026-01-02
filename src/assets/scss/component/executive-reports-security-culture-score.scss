@@ -81,7 +81,7 @@
 
   .score-legend {
     display: flex;
-    gap: 32px;
+    gap: 24px;
     flex-wrap: wrap;
     margin-bottom: 12px;
     margin-top: 8px;
@@ -109,6 +109,14 @@
   }
 }
 
+@media (max-width: 1280px) {
+  .security-culture-score-card {
+    .score-legend {
+      gap: 8px;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .security-culture-score-card {
     .score-content {
@@ -117,7 +125,6 @@
     }
 
     .score-legend {
-      gap: 16px;
       justify-content: flex-start;
     }
   }
