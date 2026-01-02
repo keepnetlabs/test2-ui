@@ -389,7 +389,7 @@ export default {
       return `Event history is only available for SMTP`
     }
   },
-  created() {
+  mounted() {
     //this.callForData()
   },
   watch: {

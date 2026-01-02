@@ -194,7 +194,7 @@ export default {
       return `${this.item?.firstName || ''} ${this.item?.lastName || ''}`
     }
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {

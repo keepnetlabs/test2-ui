@@ -211,7 +211,7 @@ export default {
       tableData: []
     }
   },
-  created() {
+  mounted() {
     //this.callForData()
   },
   watch: {
