@@ -337,8 +337,14 @@ export default {
     }
   },
   created() {
-    this.callForData()
     this.callForLanguages()
+  },
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    // Bu nedenle callForData'yı nextTick içinde çağırıyoruz
+    this.$nextTick(() => {
+      this.callForData()
+    })
   },
   methods: {
     callForLanguages() {

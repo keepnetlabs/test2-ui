@@ -110,9 +110,9 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_REPLIED_TABLE,
         savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE,
+          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_REPLIED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: true
@@ -147,6 +147,15 @@ export default {
       languageOptions: []
     }
   },
+  created() {
+    this.callForLanguages()
+  },
+  mounted() {
+    // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
+    this.$nextTick(() => {
+      this.callForData()
+    })
+  },
   watch: {
     customFields: {
       deep: true,
@@ -159,10 +168,6 @@ export default {
         if (departmentIndex) this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
       }
     }
-  },
-  created() {
-    this.callForData()
-    this.callForLanguages()
   },
   methods: {
     callForLanguages() {

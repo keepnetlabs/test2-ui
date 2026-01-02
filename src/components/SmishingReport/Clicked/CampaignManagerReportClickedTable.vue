@@ -145,9 +145,9 @@ export default {
       tableData: [],
       tableOptions: {
         savedFiltersLocalStorageKey:
-          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
+          DEFAULT_SEARCH_CONTAINER_KEYS.SMISHING_REPORT_CLICKED_TABLE,
         savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
+          TABLE_SETTINGS_KEYS.SMISHING_REPORT_CLICKED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,
