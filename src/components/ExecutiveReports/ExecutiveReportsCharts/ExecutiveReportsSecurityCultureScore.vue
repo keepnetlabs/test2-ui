@@ -39,7 +39,7 @@
                   <Gauge v-if="securityScore" ref="scoreChart" :options="gaugeOptions" />
                   <div class="gauge-score">{{ securityScore.toFixed(2) }}</div>
                 </div>
-                <div class="score-details">
+                <div v-if="false" class="score-details">
                   <div class="info-box">
                     <div class="box-label">Change vs Previous Period</div>
                     <div class="box-value" :class="changeClass">
