@@ -274,7 +274,11 @@
                         {{ isSystemTemplateForNonSystemUser ? 'mdi-content-copy' : 'mdi-pencil' }}
                       </v-icon>
                       <span class="emailTemplatePreview__edit-button-text">
-                        {{ isSystemTemplateForNonSystemUser ? 'Duplicate Email Template' : 'Edit Email Template' }}
+                        {{
+                          isSystemTemplateForNonSystemUser
+                            ? 'Duplicate Email Template'
+                            : 'Edit Email Template'
+                        }}
                       </span>
                     </v-btn>
                     <v-btn
@@ -650,7 +654,7 @@ export default {
       return company?.name === 'System' || company?.companyName === 'System'
     },
     isSystemTemplateForNonSystemUser() {
-      return  !this.emailTemplateData.isOwner
+      return !this.emailTemplateData.isOwner
     },
     getEmailTemplateDialogSubtitle() {
       if (this.isQuishing)
@@ -770,7 +774,11 @@ export default {
       return MERGED_TEXTS[item]
     },
     handleEdit() {
-      this.$emit('on-edit-email-template', this.emailTemplatePreviewSelectedRow, this.isSystemTemplateForNonSystemUser)
+      this.$emit(
+        'on-edit-email-template',
+        this.emailTemplatePreviewSelectedRow,
+        this.isSystemTemplateForNonSystemUser
+      )
     },
     handleSaveTemplate(template) {
       this.editData.template = template

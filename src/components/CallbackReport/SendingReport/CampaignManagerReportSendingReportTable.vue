@@ -169,8 +169,7 @@ export default {
       tableOptions: {
         savedFiltersLocalStorageKey:
           DEFAULT_SEARCH_CONTAINER_KEYS.CALLBACK_REPORT_SENDING_REPORT_TABLE,
-        savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.CALLBACK_REPORT_SENDING_REPORT_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CALLBACK_REPORT_SENDING_REPORT_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,

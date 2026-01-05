@@ -135,7 +135,8 @@ export default {
       tableOptions: {
         savedFiltersLocalStorageKey:
           DEFAULT_SEARCH_CONTAINER_KEYS.TRAINING_REPORT_MICROSOFT_TEAMS_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.TRAINING_REPORT_MICROSOFT_TEAMS_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.TRAINING_REPORT_MICROSOFT_TEAMS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           microsoftResend: true,

@@ -232,10 +232,30 @@ export default {
     }
   },
   mounted() {
-    this.callForData()
     this.callForLanguages('refScenariosList')
+
+    // Wait for DataTable to restore filters before fetching data
+    this.$nextTick(() => {
+      this.restoreQuishingTypeFilter()
+      this.callForData()
+    })
   },
   methods: {
+    restoreQuishingTypeFilter() {
+      // Check if DataTable has restored a saved quishingType filter
+      const dataTable = this.$refs.refScenariosList
+      if (dataTable?.filterValues?.quishingType) {
+        // filterValues.quishingType is an object with selectValue property for select filters
+        const filterObj = dataTable.filterValues.quishingType
+        const selectValue = filterObj.selectValue || filterObj
+
+        if (selectValue) {
+          // selectValue is a string of comma-separated values
+          const values = typeof selectValue === 'string' ? selectValue.split(',') : selectValue
+          this.activeTemplateTypes = values.filter(v => v) // Remove empty strings
+        }
+      }
+    },
     callForData() {
       this.setLoading(true)
       this.axiosPayload.templateTypes = this.activeTemplateTypes

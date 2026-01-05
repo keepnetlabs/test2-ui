@@ -591,7 +591,8 @@ export default {
             const emailTemplateData = data?.template || {}
             const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
             const languages = emailTemplateData.languages || []
-            const mainTemplate = emailTemplateData.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            const mainTemplate =
+              emailTemplateData.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
             if (emailTemplateData.languageTypeResourceId && emailTemplateData.languageTypeName) {
               languages.unshift({
@@ -611,8 +612,12 @@ export default {
               ...emailTemplateData,
               template: mainTemplate,
               languages,
-              selectedLanguageResourceId: emailTemplateData.languageTypeResourceId || (languages[0]?.languageTypeResourceId || ''),
-              selectedLanguageName: emailTemplateData.languageTypeName || (languages[0]?.languageTypeName || ''),
+              selectedLanguageResourceId:
+                emailTemplateData.languageTypeResourceId ||
+                languages[0]?.languageTypeResourceId ||
+                '',
+              selectedLanguageName:
+                emailTemplateData.languageTypeName || languages[0]?.languageTypeName || '',
               subject: emailTemplateData.subject || '',
               fromName: emailTemplateData.fromName || '',
               fromAddress: emailTemplateData.fromAddress || '',
@@ -652,8 +657,9 @@ export default {
             ...data,
             template: mainTemplate,
             languages,
-            selectedLanguageResourceId: data.languageTypeResourceId || (languages[0]?.languageTypeResourceId || ''),
-            selectedLanguageName: data.languageTypeName || (languages[0]?.languageTypeName || ''),
+            selectedLanguageResourceId:
+              data.languageTypeResourceId || languages[0]?.languageTypeResourceId || '',
+            selectedLanguageName: data.languageTypeName || languages[0]?.languageTypeName || '',
             subject: data.subject || '',
             fromName: data.fromName || '',
             fromAddress: data.fromAddress || '',

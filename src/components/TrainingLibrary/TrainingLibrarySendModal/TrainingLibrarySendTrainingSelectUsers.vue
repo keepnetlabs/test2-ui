@@ -3,15 +3,15 @@
     <div v-show="isProxy" class="send-training-settings__lms-switch max-w-554">
       <div class="text-primary-color fs-5 fw-600">Target Audience</div>
       <div class="text-primary-color fs-medium">
-        When the “LMS” is selected, {{ isSurvey ? "survey" : "training" }} is created as a
-        SCORM package and can not be launched directly. Therefore, the target audience
-        selection can not be made.
+        When the “LMS” is selected, {{ isSurvey ? 'survey' : 'training' }} is created as a SCORM
+        package and can not be launched directly. Therefore, the target audience selection can not
+        be made.
       </div>
     </div>
     <div
       v-show="!isProxy"
       :style="{
-        visibility: isProxy ? 'hidden' : 'visible',
+        visibility: isProxy ? 'hidden' : 'visible'
       }"
     >
       <KButtonRadioGroup
@@ -21,8 +21,7 @@
         :items="radioGroupItems"
       />
       <div v-show="selectedRadioGroupIndex === 0">
-        <FormGroup :title="labels.TargetUserGroups" :sub-title="targetUsersGroupSub">
-        </FormGroup>
+        <FormGroup :title="labels.TargetUserGroups" :sub-title="targetUsersGroupSub"> </FormGroup>
         <TargetGroups
           ref="refTargetGroups"
           class="mt-2"
@@ -37,14 +36,13 @@
         />
         <CustomError
           class="mb-6 ml-2"
-          style="margin-top: 2px"
+          style="margin-top: 2px;"
           :is-valid="isTargetGroupsValid"
           :error-message="getTargetGroupErrorMessage"
         />
       </div>
       <div v-if="selectedRadioGroupIndex === 1">
-        <FormGroup :title="labels.CampaignResults" :sub-title="campaignResultsSub">
-        </FormGroup>
+        <FormGroup :title="labels.CampaignResults" :sub-title="campaignResultsSub"> </FormGroup>
         <TrainingLibrarySendTrainingUsersByCampaign
           ref="refSendTrainingSelectUsersByCampaign"
           :value="formData.campaignResourceId"
@@ -53,7 +51,7 @@
         />
         <FormGroup
           class="mt-6"
-          style="max-width: 640px"
+          style="max-width: 640px;"
           :title="labels.TargetUsers"
           :sub-title="targetUsersSubtitle"
         >
@@ -112,7 +110,7 @@
             </v-checkbox>
             <CustomError
               class="mb-6"
-              style="margin-top: 2px"
+              style="margin-top: 2px;"
               :is-valid="!getErrorText"
               :error-message="getErrorText"
             />
@@ -124,53 +122,53 @@
 </template>
 
 <script>
-import KButtonRadioGroup from "@/components/ButtonRadioGroup/KButtonRadioGroup.vue";
-import FormGroup from "@/components/SmallComponents/FormGroup.vue";
-import labels from "@/model/constants/labels";
-import CampaignManagerTargetGroups from "@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups.vue";
-import CustomError from "@/components/CustomError.vue";
-import { searchAllTargetGroups } from "@/api/targetUsers";
-import { getDefaultAxiosPayload } from "@/utils/functions";
-import TrainingLibrarySendTrainingUsersByCampaign from "@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingUsersByCampaign.vue";
+import KButtonRadioGroup from '@/components/ButtonRadioGroup/KButtonRadioGroup.vue'
+import FormGroup from '@/components/SmallComponents/FormGroup.vue'
+import labels from '@/model/constants/labels'
+import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups.vue'
+import CustomError from '@/components/CustomError.vue'
+import { searchAllTargetGroups } from '@/api/targetUsers'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import TrainingLibrarySendTrainingUsersByCampaign from '@/components/TrainingLibrary/TrainingLibrarySendModal/TrainingLibrarySendTrainingUsersByCampaign.vue'
 export default {
-  name: "TrainingLibrarySendTrainingSelectUsers",
+  name: 'TrainingLibrarySendTrainingSelectUsers',
   components: {
     TrainingLibrarySendTrainingUsersByCampaign,
 
     CustomError,
     TargetGroups: CampaignManagerTargetGroups,
     FormGroup,
-    KButtonRadioGroup,
+    KButtonRadioGroup
   },
   props: {
     isProxy: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isSmsNotification: {
       type: Boolean,
-      default: false,
+      default: false
     },
     targetUsersGroupSub: {
       type: String,
-      default: labels.TargetUserGroupsSub,
+      default: labels.TargetUserGroupsSub
     },
     campaignResultsSub: {
       type: String,
-      default: labels.CampaignResultsSub,
+      default: labels.CampaignResultsSub
     },
     targetUsersSubtitle: {
       type: String,
-      default: labels.SendTrainingTargetUsersSub,
+      default: labels.SendTrainingTargetUsersSub
     },
     isSurvey: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isLearningPath: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
@@ -182,158 +180,154 @@ export default {
       isShowTargetGroupUsersError: false,
       isTargetGroupsValid: true,
       responseOfTargetGroupsItems: null,
-      methodTypeId: "",
+      methodTypeId: '',
       selectedCampaign: null,
       formData: {
         targetGroupResourceIds: [],
-        campaignResourceId: "",
+        campaignResourceId: '',
         userWhoOpenedEmail: false,
         userWhoClickedEmail: false,
         userWhoSubmittedData: false,
         userWhoSubmittedMFACode: false,
         userWhoDownloadedAttachment: false,
-        userWhoReportedAsSuspicious: false,
+        userWhoReportedAsSuspicious: false
       },
       radioGroupItems: [
         {
-          label: labels.SelectRecipientsByUserGroups,
+          label: labels.SelectRecipientsByUserGroups
         },
         {
-          label: labels.SelectRecipientsByCampaign,
-        },
+          label: labels.SelectRecipientsByCampaign
+        }
       ],
-      axiosPayloadOfTargetGroups: getDefaultAxiosPayload(),
-    };
+      axiosPayloadOfTargetGroups: getDefaultAxiosPayload()
+    }
   },
   computed: {
     isMultipleMethod() {
-      return this.selectedCampaign?.methodType === "Multiple Method" || false;
+      return this.selectedCampaign?.methodType === 'Multiple Method' || false
     },
     isMFADataSubmission() {
       return (
-        (this.selectedCampaign?.methodType === "MFA" &&
-          this.selectedCampaign?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId ===
-            2) ||
+        (this.selectedCampaign?.methodType === 'MFA' &&
+          this.selectedCampaign?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId === 2) ||
         false
-      );
+      )
     },
     isMFAClickOnly() {
       return (
-        (this.selectedCampaign?.methodType === "MFA" &&
-          this.selectedCampaign?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId ===
-            1) ||
+        (this.selectedCampaign?.methodType === 'MFA' &&
+          this.selectedCampaign?.scenarios[0]?.landingPageTemplateInfo?.methodTypeId === 1) ||
         false
-      );
+      )
     },
     getTargetGroupErrorMessage() {
       return this.formData.targetGroupResourceIds.length
         ? this.getTargetGroupErrorText
-        : labels.TargetGroupSelectionRequiredError;
+        : labels.TargetGroupSelectionRequiredError
     },
     getTargetGroupErrorText() {
-      return this.isShowTargetGroupUsersError
-        ? labels.TargetGroupUserRequiredError
-        : "Required";
+      return this.isShowTargetGroupUsersError ? labels.TargetGroupUserRequiredError : 'Required'
     },
     getErrorText() {
       if (this.targetUserCheckboxSelectionError) {
-        return "At least one of the options must be selected";
+        return 'At least one of the options must be selected'
       }
 
       if (!this.getTotalTargetUserCount) {
-        return "At least one target user must be selected";
+        return 'At least one target user must be selected'
       }
 
-      return "";
+      return ''
     },
     getTotalTargetUserCount() {
-      let total = 0;
+      let total = 0
 
       if (this.selectedCampaign) {
         if (this.formData.userWhoOpenedEmail) {
-          total += this.selectedCampaign.scenarioStats.openedEmail;
+          total += this.selectedCampaign.scenarioStats.openedEmail
         }
 
         if (this.formData.userWhoClickedEmail) {
-          total += this.selectedCampaign.scenarioStats.clickedEmail;
+          total += this.selectedCampaign.scenarioStats.clickedEmail
         }
 
         if (this.formData.userWhoSubmittedData) {
-          total += this.selectedCampaign.scenarioStats.submittedEmail;
+          total += this.selectedCampaign.scenarioStats.submittedEmail
         }
 
         if (this.formData.userWhoSubmittedMFACode) {
-          total += this.selectedCampaign.scenarioStats.mfa;
+          total += this.selectedCampaign.scenarioStats.mfa
         }
 
         if (this.formData.userWhoDownloadedAttachment) {
-          total += this.selectedCampaign.scenarioStats.attachmentOpenedEmail;
+          total += this.selectedCampaign.scenarioStats.attachmentOpenedEmail
         }
 
         if (this.formData.userWhoReportedAsSuspicious) {
-          total += this.selectedCampaign.scenarioStats.reportedEmail;
+          total += this.selectedCampaign.scenarioStats.reportedEmail
         }
       }
 
-      return total;
-    },
+      return total
+    }
   },
   created() {
-    this.callForTargetGroups();
+    this.callForTargetGroups()
   },
   watch: {
     selectedRadioGroupIndex(val) {
       if (val === 0) {
-        this.resetCheckboxes();
-        this.totalTargetUserCount = 0;
-        this.formData.campaignResourceId = "";
-        this.methodTypeId = "";
-        this.selectedCampaign = null;
+        this.resetCheckboxes()
+        this.totalTargetUserCount = 0
+        this.formData.campaignResourceId = ''
+        this.methodTypeId = ''
+        this.selectedCampaign = null
       } else {
-        this.formData.targetGroupResourceIds = [];
-        this.$refs?.refTargetGroups?.$refs?.refGroupTable?.$refs?.refTable?.resetSelectableParams?.();
+        this.formData.targetGroupResourceIds = []
+        this.$refs?.refTargetGroups?.$refs?.refGroupTable?.$refs?.refTable?.resetSelectableParams?.()
       }
     },
     getTotalTargetUserCount(val) {
-      this.totalTargetUserCount = val;
-    },
+      this.totalTargetUserCount = val
+    }
   },
   methods: {
     resetCheckboxes() {
-      this.formData.userWhoOpenedEmail = false;
-      this.formData.userWhoClickedEmail = false;
-      this.formData.userWhoSubmittedData = false;
-      this.formData.userWhoSubmittedMFACode = false;
-      this.formData.userWhoDownloadedAttachment = false;
-      this.formData.userWhoReportedAsSuspicious = false;
+      this.formData.userWhoOpenedEmail = false
+      this.formData.userWhoClickedEmail = false
+      this.formData.userWhoSubmittedData = false
+      this.formData.userWhoSubmittedMFACode = false
+      this.formData.userWhoDownloadedAttachment = false
+      this.formData.userWhoReportedAsSuspicious = false
     },
     handleTableSelectionChange(items) {
-      this.selectedTargetGroups = items;
+      this.selectedTargetGroups = items
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({
           text: item.text || item.name,
           value: item.value || item.resourceId,
-          extraDatas: null,
-        }));
+          extraDatas: null
+        }))
     },
     callForTargetGroups() {
       searchAllTargetGroups(this.axiosPayloadOfTargetGroups).then((response) => {
         if (this.initial) {
-          this.responseOfTargetGroupsItems = response;
+          this.responseOfTargetGroupsItems = response
         }
-        this.initial = false;
-      });
+        this.initial = false
+      })
     },
     handleCampaignChange(item) {
-      this.selectedCampaign = item;
-      this.methodTypeId = item.methodTypeId;
-      this.formData.campaignResourceId = item.resourceId;
-      this.resetCheckboxes();
+      this.selectedCampaign = item
+      this.methodTypeId = item.methodTypeId
+      this.formData.campaignResourceId = item.resourceId
+      this.resetCheckboxes()
     },
     checkboxSelectionChange() {
-      this.targetUserCheckboxSelectionError = false;
-    },
-  },
-};
+      this.targetUserCheckboxSelectionError = false
+    }
+  }
+}
 </script>

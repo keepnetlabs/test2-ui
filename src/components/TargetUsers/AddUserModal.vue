@@ -741,7 +741,7 @@ export default {
             (language) => language.text === this.editData.preferredLanguage
           )
         }
-        const editedData = { ...this.editData,phoneNumber:this.editData.phoneNumber || '' }
+        const editedData = { ...this.editData, phoneNumber: this.editData.phoneNumber || '' }
         const customFieldProp = 'customFieldValues'
         const customFields = editedData[customFieldProp]
         for (let { resourceId, value, name, dataType, timestampValue } of customFields) {
