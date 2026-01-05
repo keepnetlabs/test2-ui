@@ -49,6 +49,8 @@ import {
 } from '@/api/reports'
 import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
+
+const HIDDEN_WIDGET_TYPES = ['SecurityCultureScoreGaugeWidget']
 export default {
   name: 'NewExecutiveReportCommonContainer',
   components: {
@@ -81,11 +83,24 @@ export default {
     }
   },
   computed: {
+    visibleCards() {
+      return this.cards
+        .map((card) => {
+          const widgets = (card.widgets || []).filter(
+            (widget) => !HIDDEN_WIDGET_TYPES.includes(widget.widgetType)
+          )
+          return {
+            ...card,
+            widgets
+          }
+        })
+        .filter((card) => card.widgets.length)
+    },
     getCards() {
-      return this.search ? this.filteredCards : this.cards
+      return this.search ? this.filteredCards : this.visibleCards
     },
     filteredCards() {
-      let copyOfCards = JSON.parse(JSON.stringify(this.cards))
+      let copyOfCards = JSON.parse(JSON.stringify(this.visibleCards))
       return copyOfCards.filter((card) => {
         card.widgets = card.widgets.filter((chart) => {
           const isChartNameIncludes = chart.name.toLowerCase().includes(this.search.toLowerCase())
@@ -95,12 +110,12 @@ export default {
       })
     },
     hasManagerMetricAdded() {
-      return this.cards.some((card) =>
+      return this.visibleCards.some((card) =>
         card.widgets.some((widget) => widget.isSupportManager && widget.isAdded)
       )
     },
     hasNonManagerMetricAdded() {
-      return this.cards.some((card) =>
+      return this.visibleCards.some((card) =>
         card.widgets.some((widget) => !widget.isSupportManager && widget.isAdded)
       )
     }
