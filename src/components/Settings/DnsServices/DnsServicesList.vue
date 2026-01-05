@@ -245,7 +245,7 @@ export default {
       getDnsDeletePermissions: 'permissions/getDnsDeletePermissions'
     })
   },
-  created() {
+  mounted() {
     this.callForData()
   },
   methods: {

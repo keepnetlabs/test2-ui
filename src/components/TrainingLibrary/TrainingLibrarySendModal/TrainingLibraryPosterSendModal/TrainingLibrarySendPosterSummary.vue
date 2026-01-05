@@ -266,22 +266,28 @@ export default {
       return `Template Language${count > 1 ? 's' : ''} (${count})`
     },
     getEnrollmentLanguageItems() {
-      return this.formData?.enrollmentData?.languages?.map((lang) => ({
-        text: lang.languageTypeName,
-        value: lang.languageTypeResourceId
-      })) || []
+      return (
+        this.formData?.enrollmentData?.languages?.map((lang) => ({
+          text: lang.languageTypeName,
+          value: lang.languageTypeResourceId
+        })) || []
+      )
     },
     getCertificateLanguageItems() {
-      return this.formData?.certificateData?.languages?.map((lang) => ({
-        text: lang.languageTypeName,
-        value: lang.languageTypeResourceId
-      })) || []
+      return (
+        this.formData?.certificateData?.languages?.map((lang) => ({
+          text: lang.languageTypeName,
+          value: lang.languageTypeResourceId
+        })) || []
+      )
     },
     getReminderLanguageItems() {
-      return this.formData?.reminderData?.languages?.map((lang) => ({
-        text: lang.languageTypeName,
-        value: lang.languageTypeResourceId
-      })) || []
+      return (
+        this.formData?.reminderData?.languages?.map((lang) => ({
+          text: lang.languageTypeName,
+          value: lang.languageTypeResourceId
+        })) || []
+      )
     }
   },
   watch: {

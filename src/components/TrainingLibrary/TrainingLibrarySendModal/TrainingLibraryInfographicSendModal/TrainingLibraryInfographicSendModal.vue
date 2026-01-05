@@ -12,12 +12,8 @@
           <v-icon class="ml-2" color="blue" left medium>mdi-send</v-icon>
         </div>
         <v-list-item-content>
-          <v-list-item-title class="k-overlay__title"
-            >Send Infographic</v-list-item-title
-          >
-          <v-list-item-subtitle>{{
-            selectedRow && selectedRow.trainingName
-          }}</v-list-item-subtitle>
+          <v-list-item-title class="k-overlay__title">Send Infographic</v-list-item-title>
+          <v-list-item-subtitle>{{ selectedRow && selectedRow.trainingName }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </template>
@@ -87,9 +83,7 @@
               :campaign-results-sub="labels.InfographicCampaignResultsSub"
               :is-proxy="isTrainingProxy"
               :is-sms-notification="isSmsNotification"
-              :target-users-subtitle="
-                labels.SendTrainingTargetUsersSubInfographic
-              "
+              :target-users-subtitle="labels.SendTrainingTargetUsersSubInfographic"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -260,10 +254,10 @@ export default {
       const isProxy = refSendTrainingSettings?.formData?.isProxy
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
-      const preferredLanguageLabel =
-        !refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
-          ? 'Company Language'
-          : 'Target Users Language'
+      const preferredLanguageLabel = !refSendTrainingSettings?.formData
+        ?.sendTemplatesInPreferredLanguage
+        ? 'Company Language'
+        : 'Target Users Language'
       if (
         deliveryMethod === DELIVERY_METHODS.EMAIL ||
         deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
@@ -378,7 +372,8 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const languages = data.template.languages || []
-          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate =
+            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             languages.unshift({
@@ -417,7 +412,8 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const certificateLanguages = data.template.languages || []
-          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate =
+            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             certificateLanguages.unshift({
@@ -456,7 +452,8 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const enrollmentLanguages = data.template.languages || []
-          const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate =
+            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             enrollmentLanguages.unshift({
@@ -691,7 +688,8 @@ export default {
         awardCertificate,
         certificateConfigSendType,
         languageIds: newLanguageIds,
-        sendTemplatesInPreferredLanguage: refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
+        sendTemplatesInPreferredLanguage:
+          refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
       }
 
       if (this.$refs?.refSendTrainingSettings?.formData?.isSendSMSNotification) {

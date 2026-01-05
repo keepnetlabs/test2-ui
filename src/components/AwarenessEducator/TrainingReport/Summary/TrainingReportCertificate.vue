@@ -89,10 +89,12 @@ export default {
       return `Template Language${count > 1 ? 's' : ''} (${count})`
     },
     getLanguageItems() {
-      return this.formData?.languages?.map((lang) => ({
-        text: lang.languageTypeName,
-        value: lang.languageTypeResourceId
-      })) || []
+      return (
+        this.formData?.languages?.map((lang) => ({
+          text: lang.languageTypeName,
+          value: lang.languageTypeResourceId
+        })) || []
+      )
     }
   },
   watch: {

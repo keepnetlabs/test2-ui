@@ -46,7 +46,7 @@
               class="d-flex align-center justify-space-between mb-4"
             >
               <InputLanguagePreview
-                hide-details  
+                hide-details
                 :value="activeLanguage"
                 :items="selectedLanguages"
                 :label="languageLabel"

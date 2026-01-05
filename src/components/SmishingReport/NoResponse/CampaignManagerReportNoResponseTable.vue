@@ -108,8 +108,7 @@ export default {
       tableOptions: {
         savedFiltersLocalStorageKey:
           DEFAULT_SEARCH_CONTAINER_KEYS.SMISHING_REPORT_NO_RESPONSE_TABLE,
-        savedTableSettingsLocalStorageKey:
-          TABLE_SETTINGS_KEYS.SMISHING_REPORT_NO_RESPONSE_TABLE,
+        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.SMISHING_REPORT_NO_RESPONSE_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,

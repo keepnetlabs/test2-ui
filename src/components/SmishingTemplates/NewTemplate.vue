@@ -305,7 +305,7 @@ export default {
       attachmentName: '',
       languageOptions: [],
       isSubmitDisabled: false,
-      enhancedCache:{},
+      enhancedCache: {},
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       availableForRequests: [],
@@ -583,8 +583,8 @@ export default {
       this.step -= 1
     },
     checkComplianceAndSubmit() {
-      if(this.enhancedCache[this.formValues.template] === false) {
-        return 
+      if (this.enhancedCache[this.formValues.template] === false) {
+        return
       }
       this.isSubmitDisabled = true
       SmishingService.checkSmishingTextRisk(this.formValues.template)

@@ -12,8 +12,8 @@
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-    :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+    :saved-filters-local-storage-key="savedFiltersKey"
+    :saved-table-settings-local-storage-key="savedTableSettingsKey"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :select-event="tableOptions.selectEvent"
@@ -117,8 +117,6 @@ export default {
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.ENROLLMENTS_SURVEY_LIST,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.ENROLLMENTS_SURVEY_LIST,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -187,6 +185,18 @@ export default {
   },
   mounted() {
     this.callForData()
+  },
+  computed: {
+    savedFiltersKey() {
+      return this.isTrash
+        ? DEFAULT_SEARCH_CONTAINER_KEYS.TRASH_SURVEY_LIST
+        : DEFAULT_SEARCH_CONTAINER_KEYS.ENROLLMENTS_SURVEY_LIST
+    },
+    savedTableSettingsKey() {
+      return this.isTrash
+        ? TABLE_SETTINGS_KEYS.TRASH_SURVEY_LIST
+        : TABLE_SETTINGS_KEYS.ENROLLMENTS_SURVEY_LIST
+    }
   },
   methods: {
     callForData() {

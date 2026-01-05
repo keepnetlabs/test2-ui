@@ -153,7 +153,7 @@ export default {
             type: 'text',
             width: 250,
             filterableType: 'text'
-          },  
+          },
           {
             property: 'riskFactor',
             align: 'center',

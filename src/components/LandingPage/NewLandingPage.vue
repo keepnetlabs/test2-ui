@@ -622,7 +622,6 @@ export default {
     }
   },
   methods: {
-
     handleActiveLanguageChange(languageId) {
       // Yeni dilin sayfalarını yükle
       const newLangPayload = this.languagesPayload.find(
@@ -964,7 +963,7 @@ export default {
       let newPageText
       if (this.isEdit) newPageText = this.getNewIndexForPageText()
       else newPageText = this.getAndUpdateFirstIndexForPageText()
-      const maxOrder = Math.max(...this.formValues.landingPages.map(p => p.order || 0), 0)
+      const maxOrder = Math.max(...this.formValues.landingPages.map((p) => p.order || 0), 0)
       this.formValues.landingPages.push({
         name: `Page ${newPageText}`,
         order: maxOrder + 1,
@@ -1070,7 +1069,7 @@ export default {
         let newPageText
         if (that.isEdit) newPageText = that.getNewIndexForPageText()
         else newPageText = that.getAndUpdateFirstIndexForPageText()
-        const maxOrder = Math.max(...that.formValues.landingPages.map(p => p.order || 0), 0)
+        const maxOrder = Math.max(...that.formValues.landingPages.map((p) => p.order || 0), 0)
         that.formValues.landingPages.push({
           name: `Page ${newPageText}`,
           order: maxOrder + 1,
