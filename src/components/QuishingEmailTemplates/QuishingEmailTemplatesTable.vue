@@ -248,9 +248,29 @@ export default {
   },
   mounted() {
     this.callForLanguages('refEmailTemplatesList')
-    this.callForData()
+
+    // Wait for DataTable to restore filters before fetching data
+    this.$nextTick(() => {
+      this.restoreQuishingTypeFilter()
+      this.callForData()
+    })
   },
   methods: {
+    restoreQuishingTypeFilter() {
+      // Check if DataTable has restored a saved quishingType filter
+      const dataTable = this.$refs.refEmailTemplatesList
+      if (dataTable?.filterValues?.quishingType) {
+        // filterValues.quishingType is an object with selectValue property for select filters
+        const filterObj = dataTable.filterValues.quishingType
+        const selectValue = filterObj.selectValue || filterObj
+
+        if (selectValue) {
+          // selectValue is a string of comma-separated values
+          const values = typeof selectValue === 'string' ? selectValue.split(',') : selectValue
+          this.activeTemplateTypes = values.filter(v => v) // Remove empty strings
+        }
+      }
+    },
     checkIsQuishingTypePrintout(row) {
       if (!row) return false
       return row.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
