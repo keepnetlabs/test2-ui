@@ -556,11 +556,9 @@ export default {
                 return
               }
               const style = component.getStyle()
-              let styleHTML = ''
               const keys = Object.keys(style)
               const el = component?.getEl()
               for (const key of keys) {
-                styleHTML += `${key}:${style[key]};`
                 el.style[key] = style[key]
               }
               const coll = component?.collection || null
@@ -969,13 +967,29 @@ export default {
     },
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()
-      const doc = new DOMParser().parseFromString(html, 'text/html')
-      const docId = doc.body.id
-      this.editor.setComponents(doc.children[0].outerHTML)
-      this.editor.getWrapper().setStyle(doc.body.style.cssText)
-      this.editor.getWrapper().addAttributes({
-        id: docId
-      })
+
+      // Extract body content while preserving VML comments and conditional comments
+      // Use regex to avoid DOMParser stripping comments
+      const bodyIdMatch = html.match(/<body[^>]*\sid="([^"]*)"/i)
+      const bodyStyleMatch = html.match(/<body[^>]*\sstyle="([^"]*)"/i)
+      const bodyContentMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)
+
+      const docId = bodyIdMatch ? bodyIdMatch[1] : ''
+      const bodyStyle = bodyStyleMatch ? bodyStyleMatch[1] : ''
+      const bodyContent = bodyContentMatch ? bodyContentMatch[1] : html
+
+      // Set components with preserved VML/conditional comments
+      this.editor.setComponents(bodyContent)
+
+      // Apply wrapper styles and attributes
+      if (bodyStyle) {
+        this.editor.getWrapper().setStyle(bodyStyle)
+      }
+      if (docId) {
+        this.editor.getWrapper().addAttributes({
+          id: docId
+        })
+      }
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
         let el
