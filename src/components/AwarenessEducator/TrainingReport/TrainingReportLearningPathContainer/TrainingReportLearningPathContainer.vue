@@ -147,10 +147,11 @@ export default {
       return this.activeTrainingStep?.enrollmentId
     },
     activeTrainingStep() {
-      return this.trainingSummary?.steps[this.activeStep]
+      const steps = Array.isArray(this.trainingSummary?.steps) ? this.trainingSummary.steps : []
+      return steps[this.activeStep] || null
     },
     activeTrainingStepType() {
-      return this.activeTrainingStep?.trainingDetails?.trainingTypeName
+      return this.activeTrainingStep?.trainingDetails?.trainingTypeName || null
     },
     getTrainingName() {
       return this.$store?.state?.common?.activePageRouterName || 'Training Name'
@@ -169,14 +170,19 @@ export default {
     callForSummary() {
       this.isLoading = true
       let type = 0
-      if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
-      else if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
-      else if (this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
+      const trainingStepType = this.activeTrainingStepType
+      if (trainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER) type = 1
+      else if (trainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC) type = 2
+      else if (trainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER) type = 3
       else if (
-        this.activeTrainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
-        this.activeTrainingStepType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
+        trainingStepType === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||
+        trainingStepType === TRAINING_LIBRARY_TYPES.LEARNING_PATH
       )
         type = 4
+      if (!this.id) {
+        this.isLoading = false
+        return
+      }
       AwarenessEducatorService.getTrainingReportSummary(this.id, type)
         .then((response) => {
           const {
