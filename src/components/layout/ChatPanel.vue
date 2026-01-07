@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!isInitialHidden" class="chat-panel">
+  <div v-show="!isInitialHidden && isTestEnvironment" class="chat-panel">
     <!-- Chat Toggle Button - AI Agent -->
     <div
       class="ai-agent-button"
@@ -93,6 +93,12 @@
 <script>
 export default {
   name: 'ChatPanel',
+  props:{
+    isTestEnvironment: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     const hostId = localStorage.getItem('hostId')
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
