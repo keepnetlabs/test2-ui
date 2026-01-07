@@ -445,7 +445,7 @@ export default {
               // ✅ FIX: Gereksiz wrapper div kaldırıldı, direkt innerHTML kullanılıyor
               // Eski kod: result.components = `<td><div>${el.innerHTML}</div></td>`
               // Yeni kod: Wrapper div olmadan direkt içeriği kullan
-              result.components = el.innerHTML
+              result.components = el.outerHTML
             }
 
             return result
@@ -967,29 +967,13 @@ export default {
     },
     getGrapesWebModalDraw(html) {
       this.editor.DomComponents.clear()
-
-      // Extract body content while preserving VML comments and conditional comments
-      // Use regex to avoid DOMParser stripping comments
-      const bodyIdMatch = html.match(/<body[^>]*\sid="([^"]*)"/i)
-      const bodyStyleMatch = html.match(/<body[^>]*\sstyle="([^"]*)"/i)
-      const bodyContentMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)
-
-      const docId = bodyIdMatch ? bodyIdMatch[1] : ''
-      const bodyStyle = bodyStyleMatch ? bodyStyleMatch[1] : ''
-      const bodyContent = bodyContentMatch ? bodyContentMatch[1] : html
-
-      // Set components with preserved VML/conditional comments
-      this.editor.setComponents(bodyContent)
-
-      // Apply wrapper styles and attributes
-      if (bodyStyle) {
-        this.editor.getWrapper().setStyle(bodyStyle)
-      }
-      if (docId) {
-        this.editor.getWrapper().addAttributes({
-          id: docId
-        })
-      }
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      const docId = doc.body.id
+      this.editor.setComponents(doc.children[0].outerHTML)
+      this.editor.getWrapper().setStyle(doc.body.style.cssText)
+      this.editor.getWrapper().addAttributes({
+        id: docId
+      })
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
         let el
