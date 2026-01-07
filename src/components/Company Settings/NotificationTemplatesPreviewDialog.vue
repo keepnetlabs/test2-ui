@@ -211,7 +211,7 @@ export default {
       this.subject = data.subject || ''
       this.fromName = data.fromName || ''
       this.fromAddress = data.fromAddress || ''
-      this.ccAddresses = data.ccAddresses || []
+      this.ccAddresses = Array.isArray(data.ccAddresses) ? data.ccAddresses : []
 
       // Languages data array'ini oluştur (ana dil + ek diller)
       this.languagesData = []
@@ -251,7 +251,7 @@ export default {
           this.subject = data.subject || ''
           this.fromName = data.fromName || ''
           this.fromAddress = data.fromAddress || ''
-          this.ccAddresses = data.ccAddresses || []
+          this.ccAddresses = Array.isArray(data.ccAddresses) ? data.ccAddresses : []
 
           // Languages data array'ini oluştur (ana dil + ek diller)
           this.languagesData = [

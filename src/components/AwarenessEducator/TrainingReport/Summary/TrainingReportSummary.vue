@@ -621,7 +621,7 @@ export default {
               subject: emailTemplateData.subject || '',
               fromName: emailTemplateData.fromName || '',
               fromAddress: emailTemplateData.fromAddress || '',
-              ccAddresses: emailTemplateData.ccAddresses || []
+              ccAddresses: Array.isArray(emailTemplateData.ccAddresses) ? emailTemplateData.ccAddresses : []
             }
           }
         )
@@ -663,7 +663,7 @@ export default {
             subject: data.subject || '',
             fromName: data.fromName || '',
             fromAddress: data.fromAddress || '',
-            ccAddresses: data.ccAddresses || []
+            ccAddresses: Array.isArray(data.ccAddresses) ? data.ccAddresses : []
           }
         })
       }
