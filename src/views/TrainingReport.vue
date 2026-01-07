@@ -199,25 +199,26 @@ export default {
             component: TrainingReportSummary,
             isVisible: true
           })
-          const awardCertificateIndex = this.trainingSummary.steps.findIndex(
-            (step) => step.awardCertificate
-          )
-          if (awardCertificateIndex !== -1) {
-            this.awardCertificateEnrollmentId = this.trainingSummary.steps[
-              awardCertificateIndex
-            ].enrollmentId
-          }
-          this.trainingSummary.steps.sort((a, b) => a.stepNumber - b.stepNumber)
-          this.trainingSummary.steps.forEach((step, index) => {
-            newTabItems.push({
-              name: `${index + 1}`,
-              id: `training-report-learning-path-${step.trainingName}-${index}`,
-              label: `Step ${index + 1}: ${step.trainingName}`,
-              component: TrainingReportLearningPathContainer,
-              activeStep: index,
-              isVisible: true
+          const steps = Array.isArray(this.trainingSummary?.steps) ? this.trainingSummary.steps : []
+          if (steps.length > 0) {
+            const awardCertificateIndex = steps.findIndex(
+              (step) => step.awardCertificate
+            )
+            if (awardCertificateIndex !== -1) {
+              this.awardCertificateEnrollmentId = steps[awardCertificateIndex].enrollmentId
+            }
+            steps.sort((a, b) => a.stepNumber - b.stepNumber)
+            steps.forEach((step, index) => {
+              newTabItems.push({
+                name: `${index + 1}`,
+                id: `training-report-learning-path-${step.trainingName}-${index}`,
+                label: `Step ${index + 1}: ${step.trainingName}`,
+                component: TrainingReportLearningPathContainer,
+                activeStep: index,
+                isVisible: true
+              })
             })
-          })
+          }
           this.tabItems = newTabItems
         }
         this.$store.dispatch('common/setActivePageRouterName', this.trainingSummary?.name || '')
