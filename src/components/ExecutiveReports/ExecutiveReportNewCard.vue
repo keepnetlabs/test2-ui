@@ -1274,8 +1274,14 @@ export default {
       const brandName = this.brandName
       this.$nextTick(async () => {
         setTimeout(async () => {
-          let page = document.querySelector('#executive-report-new-card-container')
-          await html2PDF(page, {
+          try {
+            let page = document.querySelector('#executive-report-new-card-container')
+            if (!page) {
+              this.isPdfDownload = false
+              console.error('Executive report container not found for PDF download')
+              return
+            }
+            await html2PDF(page, {
             html2canvas: {
               useCORS: true,
               scale: window.devicePixelRatio * 2 > 4 ? 4 : window.devicePixelRatio * 2,
@@ -1338,10 +1344,20 @@ export default {
             imageQuality: 1.0,
             output: `${fileName}.pdf`
           })
-          setTimeout(() => {
-            if (isShowDownloadModalFromStart)
-              return this.$router.push({ name: 'Executive Reports' })
-            if (emptyWidgetIndex) removeEmptyWidget()
+            setTimeout(() => {
+              if (isShowDownloadModalFromStart)
+                return this.$router.push({ name: 'Executive Reports' })
+              if (emptyWidgetIndex) removeEmptyWidget()
+              this.isPdfDownload = false
+              this.activatePreview = false
+              this.isPreviewDownload = false
+              this.justDownload = false
+              this.isShowDownloadModal = false
+              this.isReportCreated = false
+              this.forcePreview = false
+            }, 1000)
+          } catch (error) {
+            console.error('Error generating PDF:', error)
             this.isPdfDownload = false
             this.activatePreview = false
             this.isPreviewDownload = false
@@ -1349,7 +1365,7 @@ export default {
             this.isShowDownloadModal = false
             this.isReportCreated = false
             this.forcePreview = false
-          }, 1000)
+          }
         }, 2000)
       })
     },
