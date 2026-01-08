@@ -662,9 +662,10 @@ export default {
             EMAIL_DELIVERY_TYPES.SMTP
           if (this.isDuplicate) this.formValues.name = this.formValues.name + ' - COPY'
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-          this.isSelectedNotificationEnrollment = this.selectedItem.categoryName
-            .toLowerCase()
-            .includes('enrollment')
+          console.log('this.selectedItem.categoryName', this.selectedItem.categoryName)
+          this.isSelectedNotificationEnrollment = ['enrollment', 'scheduled report'].includes(
+            this.selectedItem.categoryName.toLowerCase()
+          )
 
           // YENI: Initialize languages for edit mode
           this.languagesPayload.push({
@@ -837,9 +838,9 @@ export default {
     handleCategoryChange(resourceId = '') {
       const categoryIndex = this.categoryItems.findIndex((item) => item.value === resourceId)
       if (categoryIndex !== -1) {
-        this.isSelectedNotificationEnrollment = this.categoryItems[categoryIndex].text
-          .toLowerCase()
-          .includes('enrollment')
+        this.isSelectedNotificationEnrollment = ['enrollment', 'scheduled report'].includes(
+          this.categoryItems[categoryIndex].text.toLowerCase()
+        )
         if (!this.isSelectedNotificationEnrollment) this.formValues.ccAddresses = []
         const newTemplate = this.categoryItems[categoryIndex].template
         this.formValues.template = newTemplate
