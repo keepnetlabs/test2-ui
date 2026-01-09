@@ -1,73 +1,104 @@
 <template>
-  <WidgetLoading :loading="isLoading">
-    <template #skeleton-content>
-      <ExecutiveWidgetContainer>
-        <ExecutiveWidgetHeader
-          :title="title"
-          :subtitle="subtitle"
-          :edit-mode="editMode"
-          @on-delete="handleDelete"
-          @on-edit="handleEdit"
-        />
-        <ExecutiveWidgetBody>
-          <template v-if="isEmpty">
-            <div
-              class="k-widget-list__empty-inline"
-              :style="{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                textAlign: 'center',
-                minHeight: '160px'
-              }"
-            >
-              <h2 class="mb-1">{{ empty.message }}</h2>
-              <p v-if="empty.subMessage">{{ empty.subMessage }}</p>
-            </div>
-          </template>
-          <template v-else>
-            <div class="security-culture-score-card">
-              <div class="score-legend">
-                <div v-for="item in legendItems" :key="item.label" class="legend-item">
-                  <span class="legend-indicator" :style="{ backgroundColor: item.color }" />
-                  <span class="legend-label">{{ item.label }} ({{ item.range }})</span>
-                </div>
+  <div>
+    <WidgetLoading :loading="isLoading">
+      <template #skeleton-content>
+        <ExecutiveWidgetContainer class="security-culture-score-widget">
+          <ExecutiveWidgetHeader
+            :title="widgetName || title"
+            :subtitle="widgetDescription || subtitle"
+            :edit-mode="editMode"
+            @on-delete="handleDelete"
+            @on-edit="handleEdit"
+          />
+          <ExecutiveWidgetBody>
+            <template v-if="isEmpty">
+              <div
+                class="k-widget-list__empty-inline"
+                :style="{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  textAlign: 'center',
+                  minHeight: '160px'
+                }"
+              >
+                <h2 class="mb-1">{{ empty.message }}</h2>
+                <p v-if="empty.subMessage">{{ empty.subMessage }}</p>
               </div>
-              <div class="score-content">
-                <div class="gauge-wrapper">
-                  <Gauge v-if="securityScore" ref="scoreChart" :options="gaugeOptions" />
-                  <div class="gauge-score">{{ securityScore.toFixed(2) }}</div>
-                </div>
-                <div v-if="false" class="score-details">
-                  <div class="info-box">
-                    <div class="box-label">Change vs Previous Period</div>
-                    <div class="box-value" :class="changeClass">
-                      {{ changeValue > 0 ? '+' : '' }}{{ changeValue.toFixed(2) }}
-                    </div>
-                    <div class="box-secondary">Previous: {{ previousScore.toFixed(2) }}</div>
-                  </div>
-                  <div class="info-box">
-                    <div class="box-label">Industry Average</div>
-                    <div class="box-value">
-                      {{ industryAverage.toFixed(2) }}
-                    </div>
-                    <div class="box-secondary">
-                      Difference:
-                      <span :class="differenceClass">
-                        {{ differenceSign }}{{ differenceValue }}
-                      </span>
-                      vs industry
-                    </div>
+            </template>
+            <template v-else>
+              <div class="security-culture-score-card">
+                <div class="score-legend">
+                  <div v-for="item in legendItems" :key="item.label" class="legend-item">
+                    <span class="legend-indicator" :style="{ backgroundColor: item.color }" />
+                    <span class="legend-label">{{ item.label }} ({{ item.range }})</span>
                   </div>
                 </div>
+                <div class="score-content">
+                  <div class="gauge-wrapper">
+                    <Gauge v-if="securityScore" :key="windowWidth" ref="scoreChart" :options="gaugeOptions" />
+                    <div class="gauge-score">
+                      {{ securityScore.toFixed(2) }}
+                    </div>
+                  </div>
+                  <div class="score-details">
+                    <div
+                      class="info-box"
+                      :style="{ borderLeft: '4px solid ' + benchmarkBandColor }"
+                    >
+                      <div class="box-label">{{ benchmarkLabel }}</div>
+                      <div class="box-value">
+                        {{ benchmarkScore.toFixed(2) }}
+                      </div>
+                      <div class="box-secondary">
+                        {{ benchmarkComparisonSentence }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="currentBand"
+                      class="info-box band-item"
+                      :style="{ borderLeft: '4px solid ' + currentBandColor }"
+                    >
+                      <div class="box-label band-label">
+                        {{ currentBand.label.replace('(', ' (') }}
+                      </div>
+                      <div class="band-description">
+                        {{ currentBand.description }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="score-explanation">
+                  <p class="explanation-text">
+                    The overall score is the participant-weighted average of 1-5 Likert ratings
+                    collected across
+                    <span class="highlight" @click="showSurveyDialog = true">
+                      {{ enrollmentCount }} survey</span
+                    ><span v-if="enrollmentCount !== 1">s</span>.
+                  </p>
+                  <p class="explanation-formula">
+                    (Survey₁ Avg × Participants₁ + Survey₂ Avg × Participants₂ + …) / Total
+                    Participants
+                  </p>
+                  <p class="explanation-formula">
+                    Example: (3.8 × 100 + 4.5 × 10) / 110 = 3.86
+                  </p>
+                </div>
               </div>
-            </div>
-          </template>
-        </ExecutiveWidgetBody>
-      </ExecutiveWidgetContainer>
-    </template>
-  </WidgetLoading>
+            </template>
+          </ExecutiveWidgetBody>
+        </ExecutiveWidgetContainer>
+      </template>
+    </WidgetLoading>
+
+    <SecurityCultureSurveyDialog
+      :status="showSurveyDialog"
+      :enrollments="enrollments"
+      :overall-score="score"
+      @update:status="showSurveyDialog = $event"
+    />
+  </div>
 </template>
 
 <script>
@@ -76,12 +107,18 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
 import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
+import SecurityCultureSurveyDialog from './SecurityCultureSurveyDialog.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
 
 const VALUE_MATCHERS = {
   overall: ['OverallScoreX100', 'Overall Score x100', 'OverallScore'],
-  previous: ['PreviousScoreX100', 'Previous Score x100', 'PreviousScore'],
-  industry: ['IndustryAverageX100', 'IndustryAverage', 'Industry Avg']
+  benchmark: [
+    'BenchmarkScoreX100',
+    'BenchmarkScore',
+    'IndustryAverageX100',
+    'IndustryAverage',
+    'Industry Avg'
+  ]
 }
 
 export default {
@@ -91,7 +128,8 @@ export default {
     WidgetLoading,
     ExecutiveWidgetContainer,
     ExecutiveWidgetHeader,
-    ExecutiveWidgetBody
+    ExecutiveWidgetBody,
+    SecurityCultureSurveyDialog
   },
   props: {
     editMode: {
@@ -122,16 +160,26 @@ export default {
     },
     subtitle: {
       type: String,
-      default: 'Overall organizational security awareness'
+      default: 'Secure behavior maturity based on employee survey responses'
     }
   },
   data() {
     return {
       isLoading: false,
       score: 0,
-      previousScore: 0,
-      industryAverage: 0,
+      benchmarkScore: 0,
+      benchmarkLabel: 'Industry Average',
+      benchmarkDifference: 0,
+      benchmarkComparisonSentence: '',
+      bands: [],
+      enrollmentCount: 0,
+      participantCount: 0,
+      widgetName: '',
+      widgetDescription: '',
+      enrollments: [],
+      showSurveyDialog: false,
       isEmpty: false,
+      windowWidth: typeof window !== 'undefined' ? window.innerWidth : 1920,
       empty: {
         message: 'No data available for Security Culture Score',
         subMessage: ''
@@ -144,13 +192,14 @@ export default {
       if (Number.isNaN(value)) return 0
       return Math.min(Math.max(value, 0), 5)
     },
-    changeValue() {
-      const previous = Number.isNaN(Number(this.previousScore))
-        ? this.securityScore
-        : this.previousScore
-      return this.securityScore - previous
-    },
     gaugeOptions() {
+      let chartWidth = 420
+      if (this.windowWidth >= 1280 && this.windowWidth < 1440) {
+        chartWidth = 330
+      } else if (this.windowWidth < 1024) {
+        chartWidth = 330
+      }
+
       return {
         hasNeedle: true,
         needleColor: '#000000',
@@ -163,7 +212,7 @@ export default {
         arcLabelFontSize: true,
         arcOverEffect: false,
         rangeLabelFontSize: false,
-        chartWidth: 400,
+        chartWidth: chartWidth,
         labelsFont: 'Open Sans',
         needleValue: this.securityScore * 20
       }
@@ -177,24 +226,46 @@ export default {
         { label: 'Strong', color: '#217124', range: '4-5' }
       ]
     },
-    changeClass() {
-      if (this.changeValue > 0) return 'positive'
-      if (this.changeValue < 0) return 'negative'
-      return 'neutral'
+    currentBand() {
+      if (!this.bands || this.bands.length === 0) return null
+      const band = this.bands.find((b) => {
+        const from = Number(b.from)
+        const to = Number(b.to)
+        return this.securityScore >= from && this.securityScore <= to
+      })
+      return band || null
     },
-    difference() {
-      return this.securityScore - this.industryAverage
+    currentBandColor() {
+      if (!this.currentBand) return '#ccc'
+      const baseLabel = this.currentBand.label.split('(')[0].trim().toLowerCase()
+
+      const colorMap = {
+        'at risk': '#F56C6C',
+        weak: '#E6A23C',
+        'needs improvement': '#FBF280',
+        moderate: '#43A047',
+        strong: '#217124'
+      }
+      return colorMap[baseLabel] || '#ccc'
     },
-    differenceClass() {
-      if (this.difference > 0) return 'positive'
-      if (this.difference < 0) return 'negative'
-      return 'neutral'
-    },
-    differenceSign() {
-      return this.difference > 0 ? '+' : ''
-    },
-    differenceValue() {
-      return this.difference.toFixed(2)
+    benchmarkBandColor() {
+      if (!this.bands || this.bands.length === 0) return '#ccc'
+      const band = this.bands.find((b) => {
+        const from = Number(b.from)
+        const to = Number(b.to)
+        return this.benchmarkScore >= from && this.benchmarkScore <= to
+      })
+      if (!band) return '#ccc'
+
+      const baseLabel = band.label.split('(')[0].trim().toLowerCase()
+      const colorMap = {
+        'at risk': '#F56C6C',
+        weak: '#E6A23C',
+        'needs improvement': '#FBF280',
+        moderate: '#43A047',
+        strong: '#217124'
+      }
+      return colorMap[baseLabel] || '#ccc'
     }
   },
   watch: {
@@ -219,6 +290,12 @@ export default {
     if (!this.defaultWidgetData) {
       this.callForData()
     }
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleWindowResize)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleWindowResize)
   },
   methods: {
     applyWidgetData(payload) {
@@ -248,18 +325,37 @@ export default {
         this.normalizeScore(
           dataObject.overallScore ?? this.extractValue(values, VALUE_MATCHERS.overall)
         ) ?? null
-      const previous =
+      const benchmark =
         this.normalizeScore(
-          dataObject.previousScore ?? this.extractValue(values, VALUE_MATCHERS.previous)
-        ) ?? this.previousScore
-      const industry =
-        this.normalizeScore(
-          dataObject.industryAverage ?? this.extractValue(values, VALUE_MATCHERS.industry)
-        ) ?? this.industryAverage
+          dataObject.benchmarkScore ?? this.extractValue(values, VALUE_MATCHERS.benchmark)
+        ) ?? this.benchmarkScore
 
       if (overall !== null) this.score = overall
-      if (previous !== null) this.previousScore = previous
-      if (industry !== null) this.industryAverage = industry
+      if (benchmark !== null) this.benchmarkScore = benchmark
+
+      if (dataObject.benchmarkLabel) this.benchmarkLabel = dataObject.benchmarkLabel
+      if (dataObject.benchmarkDifference !== undefined)
+        this.benchmarkDifference = dataObject.benchmarkDifference
+      if (dataObject.benchmarkComparisonSentence)
+        this.benchmarkComparisonSentence = dataObject.benchmarkComparisonSentence
+
+      // Set bands from dataObject
+      if (dataObject.bands && Array.isArray(dataObject.bands)) {
+        this.bands = dataObject.bands
+      }
+
+      // Set enrollment and participant counts
+      if (dataObject.enrollmentCount !== undefined)
+        this.enrollmentCount = dataObject.enrollmentCount
+      if (dataObject.participantCount !== undefined)
+        this.participantCount = dataObject.participantCount
+
+      // Set widget name and description
+      if (dataObject.name) this.widgetName = dataObject.name
+      if (dataObject.description) this.widgetDescription = dataObject.description
+
+      // Set enrollments list
+      if (Array.isArray(dataObject.enrollments)) this.enrollments = dataObject.enrollments
     },
     extractValue(values, matchers) {
       return (
@@ -321,6 +417,9 @@ export default {
       if (score >= 1) return 'poor'
       return 'critical'
     },
+    handleWindowResize() {
+      this.windowWidth = window.innerWidth
+    },
     handleDelete() {
       this.$emit('on-delete')
     },
@@ -330,3 +429,149 @@ export default {
   }
 }
 </script>
+
+<style>
+.security-culture-score-widget {
+  padding-bottom: 24px !important;
+}
+
+.security-culture-score-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.score-legend {
+  flex-shrink: 0;
+}
+
+.score-content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: -32px;
+}
+
+.gauge-score {
+  font-size: 24px;
+  font-weight: 600;
+  color: #212121;
+  margin-top: -28px !important;
+}
+
+.score-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 180px;
+  margin-left: 30px;
+}
+
+@media (max-width: 1440px) {
+  .score-explanation {
+    top: 228px !important;
+  }
+}
+
+@media (max-width: 1440px) and (min-width: 1280px) {
+  .security-culture-score-card .gauge-wrapper {
+    margin-top: -16px !important;
+  }
+  .gauge-score {
+    margin-top: -4px !important;
+  }
+  .score-content {
+    flex-wrap: nowrap !important;
+  }
+  .score-details {
+    display: flex !important;
+  }
+  .score-explanation {
+    display: block !important;
+  }
+  .explanation-text {
+    max-width: 400px !important;
+  }
+}
+
+@media (max-width: 1279px) {
+  .security-culture-score-card .gauge-wrapper {
+    margin-top: 0 !important;
+  }
+  .score-details {
+    display: none !important;
+  }
+  .score-explanation {
+    display: none !important;
+  }
+  .explanation-text {
+    max-width: 400px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .security-culture-score-card .gauge-wrapper {
+    margin-top: -20px !important;
+  }
+  .security-culture-score-card .gauge-score {
+    margin-top: -12px !important;
+  }
+}
+
+.band-label {
+  font-weight: 600 !important;
+  color: #383b41 !important;
+}
+
+.band-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.score-explanation {
+  position: absolute;
+  top: 244px;
+  left: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.explanation-text {
+  font-size: 10px;
+  color: rgba(56, 59, 65, 0.72);
+  line-height: 1.4;
+  margin: 0;
+  margin-bottom: 0 !important;
+  font-style: italic;
+}
+
+.explanation-text .highlight {
+  color: #0066cc;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.explanation-text .highlight:hover {
+  opacity: 0.8;
+}
+
+.explanation-formula {
+  font-size: 9px;
+  color: rgba(56, 59, 65, 0.72);
+  margin: 0 !important;
+  font-style: italic;
+}
+</style>
