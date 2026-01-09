@@ -4,7 +4,7 @@
       <template #skeleton-content>
         <ExecutiveWidgetContainer class="security-culture-score-widget">
           <ExecutiveWidgetHeader
-            :title="widgetName || title"
+            :title="formattedTitle"
             :subtitle="widgetDescription || subtitle"
             :edit-mode="editMode"
             @on-delete="handleDelete"
@@ -61,7 +61,7 @@
                       :style="{ borderLeft: '4px solid ' + currentBandColor }"
                     >
                       <div class="box-label band-label">
-                        {{ currentBand.label.replace('(', ' (') }}
+                        {{ currentBand.label.split('(')[0].trim() }} ({{ currentBand.from }}-{{ currentBand.to }})
                       </div>
                       <div class="band-description">
                         {{ currentBand.description }}
@@ -74,8 +74,8 @@
                     The overall score is the participant-weighted average of 1-5 Likert ratings
                     collected across
                     <span class="highlight" @click="showSurveyDialog = true">
-                      {{ enrollmentCount }} survey</span
-                    ><span v-if="enrollmentCount !== 1">s</span>.
+                      {{ enrollmentCount }} survey<span v-if="enrollmentCount !== 1">s</span></span
+                    >.
                   </p>
                   <p class="explanation-formula">
                     (Survey₁ Avg × Participants₁ + Survey₂ Avg × Participants₂ + …) / Total
@@ -192,6 +192,14 @@ export default {
       if (Number.isNaN(value)) return 0
       return Math.min(Math.max(value, 0), 5)
     },
+    formattedTitle() {
+      const baseTitle = this.widgetName || this.title
+      const bandName = this.currentBand ? this.currentBand.label.split('(')[0].trim() : ''
+      if (bandName) {
+        return `${baseTitle} - ${this.securityScore.toFixed(2)} (${bandName})`
+      }
+      return `${baseTitle} - ${this.securityScore.toFixed(2)}`
+    },
     gaugeOptions() {
       let chartWidth = 420
       if (this.windowWidth >= 1280 && this.windowWidth < 1440) {
@@ -266,7 +274,7 @@ export default {
         strong: '#217124'
       }
       return colorMap[baseLabel] || '#ccc'
-    }
+    },
   },
   watch: {
     defaultWidgetData: {
