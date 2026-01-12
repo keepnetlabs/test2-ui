@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="SecurityCultureScoreGaugeWidget">
     <WidgetLoading :loading="isLoading">
       <template #skeleton-content>
         <ExecutiveWidgetContainer class="security-culture-score-widget">
@@ -28,7 +28,12 @@
               </div>
             </template>
             <template v-else>
-              <div class="security-culture-score-card">
+              <div
+                :class="{
+                  'security-culture-score-card': true,
+                  'is-safari': isSafari
+                }"
+              >
                 <div class="score-legend">
                   <div v-for="item in legendItems" :key="item.label" class="legend-item">
                     <span class="legend-indicator" :style="{ backgroundColor: item.color }" />
@@ -37,7 +42,12 @@
                 </div>
                 <div class="score-content">
                   <div class="gauge-wrapper">
-                    <Gauge v-if="securityScore" :key="windowWidth" ref="scoreChart" :options="gaugeOptions" />
+                    <Gauge
+                      v-if="securityScore"
+                      :key="windowWidth"
+                      ref="scoreChart"
+                      :options="gaugeOptions"
+                    />
                     <div class="gauge-score">
                       {{ securityScore.toFixed(2) }}
                     </div>
@@ -61,7 +71,9 @@
                       :style="{ borderLeft: '4px solid ' + currentBandColor }"
                     >
                       <div class="box-label band-label">
-                        {{ currentBand.label.split('(')[0].trim() }} ({{ currentBand.from }}-{{ currentBand.to }})
+                        {{ currentBand.label.split('(')[0].trim() }} ({{ currentBand.from }}-{{
+                          currentBand.to
+                        }})
                       </div>
                       <div class="band-description">
                         {{ currentBand.description }}
@@ -109,6 +121,7 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import SecurityCultureSurveyDialog from './SecurityCultureSurveyDialog.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
+import { handleIsSafari } from '@/utils/functions'
 
 const VALUE_MATCHERS = {
   overall: ['OverallScoreX100', 'Overall Score x100', 'OverallScore'],
@@ -192,6 +205,9 @@ export default {
       if (Number.isNaN(value)) return 0
       return Math.min(Math.max(value, 0), 5)
     },
+    isSafari() {
+      return handleIsSafari()
+    },
     formattedTitle() {
       const baseTitle = this.widgetName || this.title
       const bandName = this.currentBand ? this.currentBand.label.split('(')[0].trim() : ''
@@ -201,11 +217,15 @@ export default {
       return `${baseTitle} - ${this.securityScore.toFixed(2)}`
     },
     gaugeOptions() {
-      let chartWidth = 420
+      let chartWidth = this.isSafari ? 420 : 420
       if (this.windowWidth >= 1280 && this.windowWidth < 1440) {
         chartWidth = 330
-      } else if (this.windowWidth < 1024) {
-        chartWidth = 330
+      } else if (this.windowWidth <= 1024 && this.windowWidth > 854) {
+        chartWidth = 380
+      } else if (this.windowWidth <= 854 && this.windowWidth > 600) {
+        chartWidth = 340
+      } else if (this.windowWidth <= 768 && this.windowWidth > 600) {
+        chartWidth = 310
       }
 
       return {
@@ -274,7 +294,7 @@ export default {
         strong: '#217124'
       }
       return colorMap[baseLabel] || '#ccc'
-    },
+    }
   },
   watch: {
     defaultWidgetData: {
@@ -491,8 +511,8 @@ export default {
 }
 
 @media (max-width: 1440px) and (min-width: 1280px) {
-  .security-culture-score-card .gauge-wrapper {
-    margin-top: -16px !important;
+  .is-safari.security-culture-score-card .gauge-wrapper {
+    margin-top: -36px !important;
   }
   .gauge-score {
     margin-top: -4px !important;
@@ -581,5 +601,23 @@ export default {
   color: rgba(56, 59, 65, 0.72);
   margin: 0 !important;
   font-style: italic;
+}
+
+#SecurityCultureScoreGaugeWidget {
+  height: 100%;
+}
+
+.widget-body__content {
+  height: 100%;
+}
+
+@media (min-width: 1440px) {
+  .is-safari .gauge-score {
+    margin-top: -16px !important;
+  }
+
+  .is-safari .score-explanation {
+    top: 240px !important;
+  }
 }
 </style>

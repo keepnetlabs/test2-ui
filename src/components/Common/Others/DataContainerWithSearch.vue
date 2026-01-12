@@ -243,7 +243,7 @@ export default {
       const item = this.getItems[index]
       item.val = newVal
       const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
-      this.value[indexOfOldValue] = newVal
+      this.$set(this.value, indexOfOldValue, newVal)
       this.$set(item, 'isEdit', false)
       item.key = createRandomCryptStringNumber()
 
@@ -252,6 +252,8 @@ export default {
         this.resetOptions()
         this.setOptions()
         this.$emit('input', newItems)
+      } else {
+        this.$emit('input', this.value)
       }
       this.checkAllValid()
     },
