@@ -217,7 +217,7 @@ export default {
       return `${baseTitle} - ${this.securityScore.toFixed(2)}`
     },
     gaugeOptions() {
-      let chartWidth = this.isSafari ? 420 : 420
+      let chartWidth = this.isSafari ? 380 : 420
       if (this.windowWidth >= 1280 && this.windowWidth < 1440) {
         chartWidth = 330
       } else if (this.windowWidth <= 1024 && this.windowWidth > 854) {
@@ -617,7 +617,7 @@ export default {
   }
 
   .is-safari .score-explanation {
-    top: 240px !important;
+    top: 250px !important;
   }
 }
 </style>
