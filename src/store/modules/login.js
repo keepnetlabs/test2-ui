@@ -3,7 +3,6 @@ import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
 import { getCompanyByID, getAgenticAISettings } from '@/api/company'
-const AGENTIC_AI_MODULE_RESOURCE_ID = 'YhlE2C627p3e'
 const login = {
   namespaced: true,
   state: {
@@ -58,7 +57,9 @@ const login = {
   actions: {
     twoStepLogin({ commit, dispatch }, payload) {
       const jtwToken = AuthenticationService.getToken().token
-      dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+      dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {
+        root: true
+      })
       twoStepLogin({
         code: payload.code,
         token: jtwToken
@@ -66,7 +67,9 @@ const login = {
         .then((response) => {
           const result = response.data
           AuthenticationService.setToken(result.token, result.expiredIn, result.status)
-          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+            root: true
+          })
           commit('common/SET_ERROR_STATE', false, { root: true })
           dispatch('setPageNumber', 1)
           payload.router.push('/')
@@ -74,7 +77,9 @@ const login = {
         .catch((response) => {
           const result = response.response.data
           const errorMessage = result.errors[0].message
-          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+            root: true
+          })
           commit('common/SET_ERROR_STATE', true, { root: true })
           commit('common/SET_ERROR_MESSAGE', errorMessage, { root: true })
         })
@@ -116,10 +121,10 @@ const login = {
       return getCompanyByID(localStorage.getItem('companyRequestId')).then((response) => {
         const company = response?.data?.data || null
         commit('SET_COMPANY', company)
-        const hasLicense =
-          !!company?.hasAgenticAILicense ||
-          !!company?.licenseModules?.includes?.(AGENTIC_AI_MODULE_RESOURCE_ID)
+        // Use backend-provided flag as source of truth
+        const hasLicense = !!company?.hasAgenticAILicense
         commit('SET_HAS_AGENTIC_AI_LICENSE', hasLicense)
+        if (!hasLicense) commit('SET_AGENTIC_AI_ENABLED', false)
       })
     },
     getAgenticAIEnabled({ commit, state }) {

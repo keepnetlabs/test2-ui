@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-show="!isInitialHidden && isTestEnvironment && hasAgenticAILicense && agenticAIEnabled"
-    class="chat-panel"
-  >
+  <div v-show="!isInitialHidden && agenticAIEnabled" class="chat-panel">
     <!-- Chat Toggle Button - AI Agent -->
     <div
       class="ai-agent-button"
@@ -98,12 +95,6 @@ import { getAgentLoginUrl } from '@/api/auth'
 
 export default {
   name: 'ChatPanel',
-  props: {
-    isTestEnvironment: {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     const hostId = localStorage.getItem('hostId')
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
@@ -121,9 +112,6 @@ export default {
     }
   },
   computed: {
-    hasAgenticAILicense() {
-      return this.$store.getters['login/getHasAgenticAILicense']
-    },
     agenticAIEnabled() {
       return this.$store.getters['login/getAgenticAIEnabled']
     },
