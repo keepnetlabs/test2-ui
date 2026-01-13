@@ -2156,6 +2156,13 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  AGENTIC_AI_SETTINGS_PERMISSIONS: {
+    GET: {
+      url: `companies/agentic-ai`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
   AI_ALLY_SETTINGS_PERMISSIONS: {
     GET: {
       url: `companies/ai`,

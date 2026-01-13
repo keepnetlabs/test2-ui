@@ -76,7 +76,7 @@ export default {
     enrollmentsWithOverallScore() {
       return this.enrollments.map((enrollment) => ({
         ...enrollment,
-        avgScore: this.overallScore
+        avgScore: enrollment.overallScore
       }))
     },
     tableColumns() {
