@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-    <ChatPanel v-show="isTestEnvironment" :is-test-environment="isTestEnvironment" />
+  <ChatPanel v-if="hasAgenticAILicense" />
   </v-app>
 </template>
 <script>
@@ -1127,6 +1127,7 @@ export default {
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       isLoadingFromStore: 'common/getIsLoading',
+      hasAgenticAILicense: 'login/getHasAgenticAILicense',
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
       brandName: 'whitelabel/getBrandName',
       supportEmailAddress: 'whitelabel/getSupportEmailAddress',
