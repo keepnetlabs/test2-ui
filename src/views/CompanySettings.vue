@@ -10,6 +10,13 @@
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
       <el-tab-pane
+        label="Agentic AI Settings"
+        name="agentic-ai-settings"
+        id="agentic-ai-settings-content"
+      >
+        <AgenticAISettings v-if="tab === 'agentic-ai-settings'"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getAIAllySettingsGetPermissions"
         label="AI Ally Settings"
         name="ai-ally-settings"
@@ -150,6 +157,7 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
+import AgenticAISettings from '@/components/Company Settings/AgenticAISettings.vue'
 import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
 import MicrosoftTeamsSettings from '@/components/Company Settings/MicrosoftTeamsSettings/MicrosoftTeamsSettings'
 import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
@@ -160,6 +168,7 @@ export default {
     GoogleUserProvisioning,
     MicrosoftTeamsSettings,
     AIAllySettings,
+    AgenticAISettings,
     DirectEmailCreation,
     LDAP,
     KContainer,
@@ -199,12 +208,17 @@ export default {
         'permissions/getDirectEmailCreationSearchPermissions',
       getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
       getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions',
+      getAgenticAISettingsGetPermissions: 'permissions/getAgenticAISettingsGetPermissions',
       getMicrosoftTeamsSettingsGetPermissions: 'permissions/getMicrosoftTeamsSettingsGetPermissions'
     })
   },
   created() {
     this.tab = [
       { permission: this.getAccountPrivacyPermission, name: 'privacy' },
+      {
+        permission: this.getAgenticAISettingsGetPermissions,
+        name: 'agentic-ai-settings'
+      },
       {
         permission: this.getAIAllySettingsGetPermissions,
         name: 'ai-ally-settings'
