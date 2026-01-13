@@ -10,11 +10,12 @@
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="hasAgenticAILicense"
         label="Agentic AI Settings"
         name="agentic-ai-settings"
         id="agentic-ai-settings-content"
       >
-        <AgenticAISettings v-if="tab === 'agentic-ai-settings'"
+        <AgenticAISettings v-if="tab === 'agentic-ai-settings' && hasAgenticAILicense"
       /></el-tab-pane>
       <el-tab-pane
         v-if="getAIAllySettingsGetPermissions"
@@ -208,15 +209,16 @@ export default {
         'permissions/getDirectEmailCreationSearchPermissions',
       getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
       getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions',
-      getAgenticAISettingsGetPermissions: 'permissions/getAgenticAISettingsGetPermissions',
-      getMicrosoftTeamsSettingsGetPermissions: 'permissions/getMicrosoftTeamsSettingsGetPermissions'
+      getMicrosoftTeamsSettingsGetPermissions:
+        'permissions/getMicrosoftTeamsSettingsGetPermissions',
+      hasAgenticAILicense: 'login/getHasAgenticAILicense'
     })
   },
   created() {
     this.tab = [
       { permission: this.getAccountPrivacyPermission, name: 'privacy' },
       {
-        permission: this.getAgenticAISettingsGetPermissions,
+        permission: this.hasAgenticAILicense,
         name: 'agentic-ai-settings'
       },
       {
@@ -347,6 +349,9 @@ export default {
         return
       }
       if (!query || !query.tab) return
+      if (query.tab === 'agentic-ai-settings' && !this.hasAgenticAILicense) {
+        return
+      }
       this.tab = query.tab
       this.$nextTick(() => {
         this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
