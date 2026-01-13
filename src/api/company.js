@@ -228,6 +228,16 @@ export function saveAIAllySettings(payload = {}) {
 export function getAIAllySettings() {
   return testRequest.get('/companies/ai')
 }
+
+export function getAgenticAISettings(config = {}) {
+  // NOTE: no global loader here; use local skeleton loaders in UI
+  return testRequest.get('/companies/agentic-ai', { ...config })
+}
+
+export function saveAgenticAISettings(payload = {}) {
+  // NOTE: no global loader here; use local skeleton loaders in UI
+  return testRequest.post('/companies/agentic-ai', payload)
+}
 export function generateNotificationTemplateTranslation(payload = {}) {
   return testRequest.post('/companies/email-templates/translate', payload)
 }

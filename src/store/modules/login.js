@@ -2,13 +2,16 @@ import { resetPassword, twoStepLogin } from '@/api/auth'
 import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
-import { getCompanyByID } from '@/api/company'
+import { getCompanyByID, getAgenticAISettings } from '@/api/company'
+const AGENTIC_AI_MODULE_RESOURCE_ID = 'YhlE2C627p3e'
 const login = {
   namespaced: true,
   state: {
     pageNumber: 1,
     wrongLoginAttempt: 0,
     company: null,
+    hasAgenticAILicense: false,
+    agenticAIEnabled: false,
     loginWhiteLabel: {
       brandName: '',
       favIconUrl: '',
@@ -18,7 +21,9 @@ const login = {
   getters: {
     getPageNumber: (state) => state.pageNumber,
     loginWhiteLabel: (state) => state.loginWhiteLabel,
-    getCurrentCompany: (state) => state.company
+    getCurrentCompany: (state) => state.company,
+    getHasAgenticAILicense: (state) => state.hasAgenticAILicense,
+    getAgenticAIEnabled: (state) => state.agenticAIEnabled
   },
   mutations: {
     SET_PAGE_NUMBER(state, payload) {
@@ -42,6 +47,12 @@ const login = {
     },
     SET_COMPANY(state, payload) {
       state.company = payload
+    },
+    SET_HAS_AGENTIC_AI_LICENSE(state, payload) {
+      state.hasAgenticAILicense = !!payload
+    },
+    SET_AGENTIC_AI_ENABLED(state, payload) {
+      state.agenticAIEnabled = !!payload
     }
   },
   actions: {
@@ -102,9 +113,29 @@ const login = {
       })
     },
     getCurrentCompany({ commit }) {
-      getCompanyByID(localStorage.getItem('companyRequestId')).then((response) => {
-        commit('SET_COMPANY', response.data.data)
+      return getCompanyByID(localStorage.getItem('companyRequestId')).then((response) => {
+        const company = response?.data?.data || null
+        commit('SET_COMPANY', company)
+        const hasLicense =
+          !!company?.hasAgenticAILicense ||
+          !!company?.licenseModules?.includes?.(AGENTIC_AI_MODULE_RESOURCE_ID)
+        commit('SET_HAS_AGENTIC_AI_LICENSE', hasLicense)
       })
+    },
+    getAgenticAIEnabled({ commit, state }) {
+      // default to false until backend says true
+      commit('SET_AGENTIC_AI_ENABLED', false)
+      if (!state.hasAgenticAILicense) return Promise.resolve(false)
+      return getAgenticAISettings({ snackbar: { hideError: true } })
+        .then((response) => {
+          const enabled = !!response?.data?.data?.agenticAIEnabled
+          commit('SET_AGENTIC_AI_ENABLED', enabled)
+          return enabled
+        })
+        .catch(() => {
+          commit('SET_AGENTIC_AI_ENABLED', false)
+          return false
+        })
     }
   }
 }

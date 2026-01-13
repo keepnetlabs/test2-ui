@@ -10,6 +10,14 @@
         <Privacy v-if="tab === 'privacy'"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="hasAgenticAILicense"
+        label="Agentic AI Settings"
+        name="agentic-ai-settings"
+        id="agentic-ai-settings-content"
+      >
+        <AgenticAISettings v-if="tab === 'agentic-ai-settings' && hasAgenticAILicense"
+      /></el-tab-pane>
+      <el-tab-pane
         v-if="getAIAllySettingsGetPermissions"
         label="AI Ally Settings"
         name="ai-ally-settings"
@@ -150,6 +158,7 @@ import LDAP from '@/components/Company Settings/LDAP/LDAP'
 import AllowedList from '@/components/Company Settings/AllowedList/AllowedList'
 import DirectEmailCreation from '@/components/Company Settings/DirectEmailCreation/DirectEmailCreation'
 import Privacy from '@/components/Company Settings/Privacy/Privacy'
+import AgenticAISettings from '@/components/Company Settings/AgenticAISettings.vue'
 import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
 import MicrosoftTeamsSettings from '@/components/Company Settings/MicrosoftTeamsSettings/MicrosoftTeamsSettings'
 import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
@@ -160,6 +169,7 @@ export default {
     GoogleUserProvisioning,
     MicrosoftTeamsSettings,
     AIAllySettings,
+    AgenticAISettings,
     DirectEmailCreation,
     LDAP,
     KContainer,
@@ -199,12 +209,18 @@ export default {
         'permissions/getDirectEmailCreationSearchPermissions',
       getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
       getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions',
-      getMicrosoftTeamsSettingsGetPermissions: 'permissions/getMicrosoftTeamsSettingsGetPermissions'
+      getMicrosoftTeamsSettingsGetPermissions:
+        'permissions/getMicrosoftTeamsSettingsGetPermissions',
+      hasAgenticAILicense: 'login/getHasAgenticAILicense'
     })
   },
   created() {
     this.tab = [
       { permission: this.getAccountPrivacyPermission, name: 'privacy' },
+      {
+        permission: this.hasAgenticAILicense,
+        name: 'agentic-ai-settings'
+      },
       {
         permission: this.getAIAllySettingsGetPermissions,
         name: 'ai-ally-settings'
@@ -333,6 +349,9 @@ export default {
         return
       }
       if (!query || !query.tab) return
+      if (query.tab === 'agentic-ai-settings' && !this.hasAgenticAILicense) {
+        return
+      }
       this.tab = query.tab
       this.$nextTick(() => {
         this.$router.replace(this.$route.fullPath.replace(`tab=${this.tab}`, ''))
