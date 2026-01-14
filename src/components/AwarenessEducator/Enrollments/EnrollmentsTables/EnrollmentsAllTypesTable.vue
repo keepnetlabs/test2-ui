@@ -241,7 +241,8 @@ export default {
               languages: item.languages?.map((code) => {
                 const language = (this.languages || []).find((lang) => lang.code === code)
                 return language?.isoFriendlyName || code
-              })
+              }),
+              targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
             }
           })
           this.tableData = enrichedResults || []
