@@ -25,21 +25,13 @@
     </FormGroup>
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
-    <FormGroup has-hint :title="labels.Role" :sub-title="labels.TargetAudienceInfographicSub">
-      <KSelect
-        v-model.trim="formData.targetAudience"
-        persistent-hint
-        dense
-        outlined
-        autocomplete="off"
-        item-text="text"
-        item-value="value"
-        hint="*Required"
-        placeholder="Select role"
-        :rules="[(v) => Validations.required(v, labels.Required)]"
-        :items="getTargetAudiences"
-      ></KSelect>
-    </FormGroup>
+    <InputSelectRoles
+      v-model="formData.roleIds"
+      :items="getTargetAudiences"
+      item-text="text"
+      item-value="value"
+      sub-title="Select intended role for this infographic"
+    />
     <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionInfographicSub">
       <InputAIDescription
         v-model.trim="formData.description"
@@ -110,6 +102,7 @@ import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
 import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
 import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
 import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
+import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
 export default {
   name: 'TrainingLibraryNewInfographicInformation',
   mixins: [useAIDescriptionGeneration],
@@ -122,7 +115,8 @@ export default {
     KSelect,
     InputAIDescription,
     InputEntityName,
-    FormGroup
+    FormGroup,
+    InputSelectRoles
   },
   props: {
     selectedCompaniesAndGroups: {
@@ -143,7 +137,7 @@ export default {
         name: '',
         description: '',
         category: '',
-        targetAudience: '',
+        roleIds: [],
         compliances: [],
         behaviours: [],
         tags: [],
@@ -161,7 +155,7 @@ export default {
       return (
         this.formData?.name &&
         this.formData?.category &&
-        this.formData?.targetAudience &&
+        this.formData?.roleIds?.length &&
         !this.formData?.description &&
         !this.isGenerateLoading &&
         !this.hasGenerated &&
@@ -177,7 +171,7 @@ export default {
       return (
         !this.formData.name ||
         !this.formData.category ||
-        !this.formData.targetAudience ||
+        !this.formData.roleIds?.length ||
         this.isGenerateLoading
       )
     }
@@ -261,7 +255,7 @@ export default {
         const generatedDescription = await this.generateAIDescription({
           name: this.formData.name,
           category: this.formData.category,
-          role: this.formData.targetAudience,
+          roleIds: this.formData.roleIds,
           description: this.formData.description
         })
 
@@ -270,7 +264,7 @@ export default {
           this.hasGenerated = true
         } else {
           this.formData.description = `This infographic content is designed for ${
-            this.formData.targetAudience || 'users'
+            this.formData.roleIds?.length ? 'selected roles' : 'users'
           }.`
           this.hasGenerated = false
         }
@@ -278,7 +272,7 @@ export default {
         console.error('Failed to generate AI description:', error)
         this.hasGenerationError = true
         this.formData.description = `This infographic content is designed for ${
-          this.formData.targetAudience || 'users'
+          this.formData.roleIds?.length ? 'selected roles' : 'users'
         }.`
       } finally {
         this.isGenerateLoading = false
