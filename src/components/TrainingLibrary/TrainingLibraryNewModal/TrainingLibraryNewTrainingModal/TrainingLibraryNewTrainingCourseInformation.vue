@@ -25,21 +25,12 @@
     </FormGroup>
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
-    <FormGroup has-hint :title="labels.Role" :sub-title="labels.TargetAudienceSub">
-      <KSelect
-        v-model.trim="formData.targetAudience"
-        persistent-hint
-        dense
-        outlined
-        autocomplete="off"
-        item-text="text"
-        item-value="value"
-        hint="*Required"
-        placeholder="Select role"
-        :rules="[(v) => Validations.required(v, labels.Required)]"
-        :items="getTargetAudiences"
-      ></KSelect>
-    </FormGroup>
+    <InputSelectRoles
+      v-model="formData.roleIds"
+      :items="getTargetAudiences"
+      item-text="text"
+      item-value="value"
+    />
     <FormGroup has-hint :title="labels.Description" :sub-title="labels.DescriptionTrainingSub">
       <InputAIDescription
         v-model.trim="formData.description"
@@ -110,6 +101,7 @@ import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
 import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
 import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
 import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
+import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
 export default {
   name: 'TrainingLibraryNewTrainingCourseInformation',
   mixins: [useAIDescriptionGeneration],
@@ -122,7 +114,8 @@ export default {
     KSelect,
     InputAIDescription,
     InputEntityName,
-    FormGroup
+    FormGroup,
+    InputSelectRoles
   },
   props: {
     selectedCompaniesAndGroups: {
@@ -144,7 +137,7 @@ export default {
         name: '',
         description: '',
         category: '',
-        targetAudience: '',
+        roleIds: [],
         behaviours: [],
         tags: [],
         availableForRequests: [],
@@ -161,7 +154,7 @@ export default {
       return (
         this.formData?.name &&
         this.formData?.category &&
-        this.formData?.targetAudience &&
+        this.formData?.roleIds?.length &&
         !this.formData?.description &&
         !this.isGenerateLoading &&
         !this.hasGenerated &&
@@ -177,7 +170,7 @@ export default {
       return (
         !this.formData.name ||
         !this.formData.category ||
-        !this.formData.targetAudience ||
+        !this.formData.roleIds?.length ||
         this.isGenerateLoading
       )
     }
@@ -261,7 +254,7 @@ export default {
         const generatedDescription = await this.generateAIDescription({
           name: this.formData.name,
           category: this.formData.category,
-          role: this.formData.targetAudience,
+          roleIds: this.formData.roleIds,
           description: this.formData.description
         })
 
@@ -272,7 +265,7 @@ export default {
           // Default description if API returns empty
           this.formData.description = `This ${
             this.formData.category || 'training'
-          } content is designed for ${this.formData.targetAudience || 'users'}.`
+          } content is designed for ${this.formData.roleIds?.length ? 'selected roles' : 'users'}.`
           this.hasGenerated = false
         }
       } catch (error) {
@@ -281,7 +274,7 @@ export default {
         // Default description on error
         this.formData.description = `This ${
           this.formData.category || 'training'
-        } content is designed for ${this.formData.targetAudience || 'users'}.`
+        } content is designed for ${this.formData.roleIds?.length ? 'selected roles' : 'users'}.`
       } finally {
         this.isGenerateLoading = false
       }
