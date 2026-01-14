@@ -260,12 +260,9 @@ export default {
   position: relative;
 
   .v-textarea {
-    margin-bottom: 36px !important;
-
     .v-input__slot {
       padding-bottom: 50px !important;
     }
-
     textarea {
       padding-right: 0 !important;
     }

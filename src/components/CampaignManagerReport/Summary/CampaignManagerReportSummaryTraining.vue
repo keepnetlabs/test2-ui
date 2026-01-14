@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     is-training
     icon="mdi-book-education"
-    :title="`Training: ${trainingParams.name}`"
+    :title="trainingTitle"
   >
     <template #header-right>
       <VBtn
@@ -61,6 +61,9 @@ export default {
     }),
     getCategoryName() {
       return this?.trainingParams?.category || this?.trainingParams?.categoryName
+    },
+    trainingTitle() {
+      return this.trainingParams?.name ? `Training: ${this.trainingParams.name}` : 'Training'
     }
   },
   watch: {

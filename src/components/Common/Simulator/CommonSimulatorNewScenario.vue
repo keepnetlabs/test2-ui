@@ -211,6 +211,8 @@
                     v-model="formValues.roleResourceIds"
                     :items="availableRoleOptions"
                     :loading="rolesLoading"
+                    title="Roles"
+                    sub-title="Select the roles for this phishing scenario"
                   />
 
                   <FormGroup

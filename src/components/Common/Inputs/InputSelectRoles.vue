@@ -1,11 +1,11 @@
 <template>
-  <FormGroup has-hint title="Roles" sub-title="Select the roles for this phishing scenario">
+  <FormGroup has-hint :title="title" :sub-title="subTitle">
     <k-select
       v-bind="commonRules"
       :value="value"
       :items="items"
-      item-text="name"
-      item-value="resourceId"
+      :item-text="itemText"
+      :item-value="itemValue"
       :disabled="disabled"
       :loading="loading"
       outlined
@@ -16,7 +16,7 @@
       hint="*Required"
       required
       persistent-hint
-      placeholder="Select roles"
+      :placeholder="placeholder"
       @input="$emit('input', $event)"
     />
   </FormGroup>
@@ -39,6 +39,26 @@ export default {
     items: {
       type: Array,
       default: () => []
+    },
+    itemText: {
+      type: String,
+      default: 'name'
+    },
+    itemValue: {
+      type: String,
+      default: 'resourceId'
+    },
+    title: {
+      type: String,
+      default: 'Role'
+    },
+    subTitle: {
+      type: String,
+      default: 'Select intended role for this training'
+    },
+    placeholder: {
+      type: String,
+      default: 'Select roles'
     },
     loading: {
       type: Boolean,
