@@ -445,7 +445,7 @@ export default {
               // ✅ FIX: Gereksiz wrapper div kaldırıldı, direkt innerHTML kullanılıyor
               // Eski kod: result.components = `<td><div>${el.innerHTML}</div></td>`
               // Yeni kod: Wrapper div olmadan direkt içeriği kullan
-              result.components = el.innerHTML
+              result.components = el.outerHTML
             }
 
             return result
@@ -556,11 +556,9 @@ export default {
                 return
               }
               const style = component.getStyle()
-              let styleHTML = ''
               const keys = Object.keys(style)
               const el = component?.getEl()
               for (const key of keys) {
-                styleHTML += `${key}:${style[key]};`
                 el.style[key] = style[key]
               }
               const coll = component?.collection || null

@@ -984,7 +984,7 @@
     </v-content>
 
     <!-- Chat Panel -->
-    <ChatPanel v-show="isTestEnvironment" />
+  <ChatPanel v-if="hasAgenticAILicense" />
   </v-app>
 </template>
 <script>
@@ -1127,6 +1127,7 @@ export default {
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       isLoadingFromStore: 'common/getIsLoading',
+      hasAgenticAILicense: 'login/getHasAgenticAILicense',
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
       brandName: 'whitelabel/getBrandName',
       supportEmailAddress: 'whitelabel/getSupportEmailAddress',
@@ -1530,7 +1531,9 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
-        this.$store.dispatch('login/getCurrentCompany')
+        this.$store.dispatch('login/getCurrentCompany').then(() => {
+          this.$store.dispatch('login/getAgenticAIEnabled')
+        })
         this.callForSystemSummary()
         if (this.companyUpdateRequired) this.toggleShowInitializeCompanyModal()
         this.interval = setInterval(() => {

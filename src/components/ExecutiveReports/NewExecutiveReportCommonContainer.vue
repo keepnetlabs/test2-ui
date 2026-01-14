@@ -50,7 +50,7 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 
-const HIDDEN_WIDGET_TYPES = ['SecurityCultureScoreGaugeWidget']
+const HIDDEN_WIDGET_TYPES = []
 export default {
   name: 'NewExecutiveReportCommonContainer',
   components: {
@@ -133,6 +133,7 @@ export default {
             data: { data }
           } = response || {}
           this.cards = data.metrics
+          console.log('this.cards', this.cards)
         })
         .finally(this.setLoading)
     },

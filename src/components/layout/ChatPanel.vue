@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!isInitialHidden" class="chat-panel">
+  <div v-show="!isInitialHidden && agenticAIEnabled" class="chat-panel">
     <!-- Chat Toggle Button - AI Agent -->
     <div
       class="ai-agent-button"
@@ -91,32 +91,61 @@
 </template>
 
 <script>
+import { getAgentLoginUrl } from '@/api/auth'
+
 export default {
   name: 'ChatPanel',
   data() {
     const hostId = localStorage.getItem('hostId')
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
     const sessionId = `${hostId}-${userData?.email?.replace('@', '_')}-${userData?.id}`
-    const { token } = JSON.parse(localStorage.getItem('token'))
-    const companyId = localStorage.getItem('companyRequestId') || ''
-    const baseApiUrl = APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api'
     return {
       isExpanded: false,
-      chatUrl: `https://agentic-ai-chat.keepnetlabs.com?sessionId=${sessionId}&accessToken=${token}&baseApiUrl=${baseApiUrl}&companyId=${companyId}`,
+      chatUrl: '',
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
       chatPopupInterval: null,
       isHoveringButton: false,
-      buttonPosition: { right: 20, top: 20 }
+      buttonPosition: { right: 20, top: 20 },
+      sessionId
     }
   },
   computed: {
+    agenticAIEnabled() {
+      return this.$store.getters['login/getAgenticAIEnabled']
+    },
     iframeSrc() {
       return `${this.chatUrl}?embedded=true&theme=${this.getCurrentTheme()}`
     }
   },
   methods: {
+    getAbsoluteUrl(url) {
+      try {
+        return new URL(url, window.location.origin)
+      } catch (e) {
+        return null
+      }
+    },
+
+    normalizeAgentChatUrl(url) {
+      try {
+        const parsedUrl = this.getAbsoluteUrl(url)
+        if (!parsedUrl) return url
+        const baseApiUrl = parsedUrl.searchParams.get('baseApiUrl')
+        if (!baseApiUrl) return url
+
+        const normalizedBaseApiUrl = baseApiUrl.replace(/\/api\/?$/i, '')
+        if (normalizedBaseApiUrl !== baseApiUrl) {
+          parsedUrl.searchParams.set('baseApiUrl', normalizedBaseApiUrl)
+        }
+
+        return parsedUrl.toString()
+      } catch (e) {
+        return url
+      }
+    },
+
     toggleChat() {
       this.isExpanded = !this.isExpanded
       this.isHoveringButton = false
@@ -152,7 +181,9 @@ export default {
           }
         }
 
-        this.$refs.chatIframe.contentWindow.postMessage(userInfo, this.chatUrl)
+        // Chat URL API'ye taşınınca iframe redirect edebiliyor; hedef origin'i bilemeyebiliriz.
+        // Bu yüzden mesajı '*' ile gönderip, alıcı tarafta doğrulama yapılmasını bekliyoruz.
+        this.$refs.chatIframe.contentWindow.postMessage(userInfo, '*')
       }
     },
 
@@ -165,7 +196,7 @@ export default {
           timestamp: new Date().toISOString()
         }
 
-        this.$refs.chatIframe.contentWindow.postMessage(dataMessage, this.chatUrl)
+        this.$refs.chatIframe.contentWindow.postMessage(dataMessage, '*')
       }
     },
 
@@ -191,8 +222,10 @@ export default {
 
     // İframe'den gelen mesajları dinle
     handleIframeMessage(event) {
-      // Sadece kendi chat URL'imizden gelen mesajları kabul et
-      if (event.origin !== new URL(this.chatUrl).origin) return
+      // Chat URL API endpoint'ine taşınmışsa iframe redirect edebilir ve origin değişir.
+      // Origin'e göre filtrelemek yerine, mesajın bizim iframe window'undan geldiğini doğrula.
+      if (!this.$refs.chatIframe || !this.$refs.chatIframe.contentWindow) return
+      if (event.source !== this.$refs.chatIframe.contentWindow) return
 
       if (event.data.type === 'CANVAS_CLICK') {
         this.isFullWidth = true
@@ -207,12 +240,27 @@ export default {
 
     handleBtnClick() {
       this.toggleChat()
+    },
+
+    fetchAgentLoginUrl() {
+      getAgentLoginUrl({ sessionId: this.sessionId })
+        .then((response) => {
+          if (response?.data?.url) {
+            this.chatUrl = this.normalizeAgentChatUrl(response.data.url)
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to fetch agent login URL:', error)
+        })
     }
   },
 
   mounted() {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false
+
+    // Agent login URL'sini al ve iframe'e ata
+    this.fetchAgentLoginUrl()
 
     // Interval ile diğer chat-popup elemanını kapat
     this.chatPopupInterval = setInterval(() => {

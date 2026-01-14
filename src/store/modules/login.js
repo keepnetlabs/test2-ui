@@ -2,13 +2,15 @@ import { resetPassword, twoStepLogin } from '@/api/auth'
 import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
-import { getCompanyByID } from '@/api/company'
+import { getCompanyByID, getAgenticAISettings } from '@/api/company'
 const login = {
   namespaced: true,
   state: {
     pageNumber: 1,
     wrongLoginAttempt: 0,
     company: null,
+    hasAgenticAILicense: false,
+    agenticAIEnabled: false,
     loginWhiteLabel: {
       brandName: '',
       favIconUrl: '',
@@ -18,7 +20,9 @@ const login = {
   getters: {
     getPageNumber: (state) => state.pageNumber,
     loginWhiteLabel: (state) => state.loginWhiteLabel,
-    getCurrentCompany: (state) => state.company
+    getCurrentCompany: (state) => state.company,
+    getHasAgenticAILicense: (state) => state.hasAgenticAILicense,
+    getAgenticAIEnabled: (state) => state.agenticAIEnabled
   },
   mutations: {
     SET_PAGE_NUMBER(state, payload) {
@@ -42,12 +46,20 @@ const login = {
     },
     SET_COMPANY(state, payload) {
       state.company = payload
+    },
+    SET_HAS_AGENTIC_AI_LICENSE(state, payload) {
+      state.hasAgenticAILicense = !!payload
+    },
+    SET_AGENTIC_AI_ENABLED(state, payload) {
+      state.agenticAIEnabled = !!payload
     }
   },
   actions: {
     twoStepLogin({ commit, dispatch }, payload) {
       const jtwToken = AuthenticationService.getToken().token
-      dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+      dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {
+        root: true
+      })
       twoStepLogin({
         code: payload.code,
         token: jtwToken
@@ -55,7 +67,9 @@ const login = {
         .then((response) => {
           const result = response.data
           AuthenticationService.setToken(result.token, result.expiredIn, result.status)
-          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+            root: true
+          })
           commit('common/SET_ERROR_STATE', false, { root: true })
           dispatch('setPageNumber', 1)
           payload.router.push('/')
@@ -63,7 +77,9 @@ const login = {
         .catch((response) => {
           const result = response.response.data
           const errorMessage = result.errors[0].message
-          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+            root: true
+          })
           commit('common/SET_ERROR_STATE', true, { root: true })
           commit('common/SET_ERROR_MESSAGE', errorMessage, { root: true })
         })
@@ -102,9 +118,29 @@ const login = {
       })
     },
     getCurrentCompany({ commit }) {
-      getCompanyByID(localStorage.getItem('companyRequestId')).then((response) => {
-        commit('SET_COMPANY', response.data.data)
+      return getCompanyByID(localStorage.getItem('companyRequestId')).then((response) => {
+        const company = response?.data?.data || null
+        commit('SET_COMPANY', company)
+        // Use backend-provided flag as source of truth
+        const hasLicense = !!company?.hasAgenticAILicense
+        commit('SET_HAS_AGENTIC_AI_LICENSE', hasLicense)
+        if (!hasLicense) commit('SET_AGENTIC_AI_ENABLED', false)
       })
+    },
+    getAgenticAIEnabled({ commit, state }) {
+      // default to false until backend says true
+      commit('SET_AGENTIC_AI_ENABLED', false)
+      if (!state.hasAgenticAILicense) return Promise.resolve(false)
+      return getAgenticAISettings({ snackbar: { hideError: true } })
+        .then((response) => {
+          const enabled = !!response?.data?.data?.agenticAIEnabled
+          commit('SET_AGENTIC_AI_ENABLED', enabled)
+          return enabled
+        })
+        .catch(() => {
+          commit('SET_AGENTIC_AI_ENABLED', false)
+          return false
+        })
     }
   }
 }

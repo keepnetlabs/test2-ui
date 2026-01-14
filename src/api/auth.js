@@ -127,3 +127,7 @@ export function disableMfaStatus(payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getAgentLoginUrl(payload) {
+  return testRequest.post('/agent-auth/login-url', payload)
+}

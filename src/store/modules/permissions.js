@@ -68,6 +68,7 @@ const {
   ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   THREAT_INTELLIGENCE_PERMISSIONS,
   ALLOW_LIST_PERMISSIONS,
+  AGENTIC_AI_SETTINGS_PERMISSIONS,
   AI_ALLY_SETTINGS_PERMISSIONS,
   DIRECT_EMAIL_CREATION_PERMISSIONS,
   ADVANCED_REPORTS_PERMISSIONS,
@@ -160,6 +161,7 @@ const defaultState = {
   etsQuickScanReportPermissions: ETS_QUICK_SCAN_REPORT_PERMISSIONS,
   threatIntelligencePermissions: THREAT_INTELLIGENCE_PERMISSIONS,
   allowListPermissions: ALLOW_LIST_PERMISSIONS,
+  agenticAISettingsPermissions: AGENTIC_AI_SETTINGS_PERMISSIONS,
   directEmailCreationPermissions: DIRECT_EMAIL_CREATION_PERMISSIONS,
   advancedReportsPermissions: ADVANCED_REPORTS_PERMISSIONS,
   executiveReportsPermissions: EXECUTIVE_REPORTS_PERMISSIONS,
@@ -1075,6 +1077,9 @@ const store = {
     getNotificationTemplatesMakeDefaultPermissions(state) {
       return state?.notificationTemplatesPermissions?.MAKE_DEFAULT?.hasPermission
     },
+    getAgenticAISettingsGetPermissions(state) {
+      return state?.agenticAISettingsPermissions?.GET?.hasPermission
+    },
     getAIAllySettingsGetPermissions(state) {
       return state?.aiAllySettingsPermissions?.GET?.hasPermission
     },
@@ -1651,6 +1656,7 @@ const store = {
         'etsQuickScanReportPermissions',
         'threatIntelligencePermissions',
         'allowListPermissions',
+        'agenticAISettingsPermissions',
         'directEmailCreationPermissions',
         'advancedReportsPermissions',
         'executiveReportsPermissions',
