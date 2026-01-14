@@ -211,7 +211,7 @@ export const COLUMNS = {
     label: labels.Role,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'smallBadge',
     width: 220,
     filterableType: 'select',
     filterableItems: []

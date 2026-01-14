@@ -129,7 +129,13 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          const enrichedResults = results?.map((item) => {
+            return {
+              ...item,
+              targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
+            }
+          })
+          this.tableData = enrichedResults || []
         })
         .finally(this.setLoading)
     },
