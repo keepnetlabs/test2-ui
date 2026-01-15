@@ -139,6 +139,7 @@ export default {
           tagNames,
           targetAudience,
           roleIds,
+          trainingRoles,
           trainingContents,
           availableForList,
           category,
@@ -149,8 +150,17 @@ export default {
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         if (refTrainingCourseInformation && refTrainingContent) {
-          // Backward compatibility: if roleIds is empty but targetAudience exists, use targetAudience
-          const resolvedRoleIds = roleIds?.length ? roleIds : (targetAudience ? [targetAudience] : [])
+          // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
+          let resolvedRoleIds = []
+          if (trainingRoles?.length) {
+            resolvedRoleIds = trainingRoles.map((role) =>
+              role?.roleName ? role.roleName.replace(/\s/g, '') : role
+            )
+          } else if (roleIds?.length) {
+            resolvedRoleIds = roleIds
+          } else if (targetAudience) {
+            resolvedRoleIds = [targetAudience]
+          }
           refTrainingCourseInformation.setFormData({
             coverImage,
             name,
