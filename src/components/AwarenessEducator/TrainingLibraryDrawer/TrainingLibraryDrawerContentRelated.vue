@@ -69,7 +69,12 @@
             <span>{{ card.title }}</span>
           </VTooltip>
           <div class="training-library-drawer-content-related__card-meta">
-            <span>{{ card.targetAudienceDisplay }}</span>
+            <VTooltip bottom max-width="300" :disabled="!isTrainingRolesTooltipEnabled(card)">
+              <template #activator="{ on }">
+                <span v-on="on">{{ getTrainingRolesText(card) }}</span>
+              </template>
+              <span>{{ getTrainingRolesTooltip(card) }}</span>
+            </VTooltip>
             <span class="dot">•</span>
             <span>{{ card.category }}</span>
           </div>
@@ -234,7 +239,8 @@ export default {
               languagesFormatted: this.formatLanguages(item.languageCodes || item.languages),
               languages: item.languageCodes || item.languages, // Keep original codes for nested drawer
               languageCodes: item.languageCodes || item.languages, // Ensure languageCodes is available
-              coverImage: this.getCoverImage(item.coverImage)
+              coverImage: this.getCoverImage(item.coverImage),
+              trainingRoles: item.trainingRoles || []
             }))
         })
         .catch((error) => {
@@ -279,6 +285,32 @@ export default {
     getCoverImage(coverImage) {
       if (!coverImage) return null
       return typeof coverImage === 'string' ? coverImage : coverImage.imageUrl
+    },
+    getTrainingRolesText(card) {
+      const roles = card.trainingRoles || []
+      // Eğer hiç role yoksa veya trainingRoles gelmediyse targetAudience fallback
+      if (!roles || roles.length === 0) {
+        return card.targetAudienceDisplay || card.targetAudience || 'No target audience'
+      }
+
+      // Tek role varsa direkt ismini döndür
+      if (roles.length === 1) {
+        return roles[0].roleName
+      }
+
+      // Birden fazla role varsa: İlk Role + (N-1)
+      const firstRole = roles[0].roleName
+      const remainingCount = roles.length - 1
+      return `${firstRole} +${remainingCount}`
+    },
+    getTrainingRolesTooltip(card) {
+      const roles = card.trainingRoles || []
+      if (!roles || roles.length <= 1) return ''
+      return roles.map((r) => r.roleName).join(', ')
+    },
+    isTrainingRolesTooltipEnabled(card) {
+      const roles = card.trainingRoles || []
+      return roles.length > 1
     },
     handlePreviewClick(card) {
       // Nested drawer'ı aç
