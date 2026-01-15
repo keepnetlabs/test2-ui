@@ -157,13 +157,23 @@ export default {
             tagNames,
             targetAudience,
             roleIds,
+            trainingRoles,
             coverImage,
             trainingGroups = []
           } = response?.data?.data || {}
           const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
           if (refTrainingCourseInformation && refLearningPathContent) {
-            // Backward compatibility: if roleIds is empty but targetAudience exists, use targetAudience
-            const resolvedRoleIds = roleIds?.length ? roleIds : (targetAudience ? [targetAudience] : [])
+            // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
+            let resolvedRoleIds = []
+            if (trainingRoles?.length) {
+              resolvedRoleIds = trainingRoles.map((role) =>
+                role?.roleName ? role.roleName.replace(/\s/g, '') : role
+              )
+            } else if (roleIds?.length) {
+              resolvedRoleIds = roleIds
+            } else if (targetAudience) {
+              resolvedRoleIds = [targetAudience]
+            }
             refTrainingCourseInformation.setFormData({
               behaviours: behaviours.map((b) => b.behaviourId),
               category,

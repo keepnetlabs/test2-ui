@@ -235,7 +235,7 @@ const trainingLibraryHelpers = {
         const targetAudience =
           response?.data?.data?.map((targetAudience) => ({
             text: targetAudience.displayName,
-            value: targetAudience.name
+            value: targetAudience.name.replace(/\s/g, '')
           })) || []
         commit('SET_TARGET_AUDIENCES', targetAudience)
         dispatch(
