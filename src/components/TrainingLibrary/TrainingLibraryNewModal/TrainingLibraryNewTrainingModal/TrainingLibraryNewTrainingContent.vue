@@ -21,6 +21,13 @@
       />
     </FormGroup>
     <FormGroup :title="labels.Content" :sub-title="labels.ContentSub">
+      <AlertBox
+        v-if="isEdit"
+        icon-name="mdi-information"
+        icon-color="#2196F3"
+        class="mb-6 alert-box--info-custom"
+        text="Training files are saved immediately when uploaded or removed. The Save button applies settings only."
+      />
       <div v-for="index in formData.contentByLanguage.length" :key="index">
         <NewTrainingContentByLanguage
           v-model="formData.contentByLanguage[index - 1]"
@@ -58,9 +65,10 @@ import NewTrainingContentByLanguage from '@/components/AwarenessEducator/NewTrai
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'TrainingLibraryNewTrainingContent',
-  components: { KSelect, NewTrainingContentByLanguage, FormGroup },
+  components: { KSelect, NewTrainingContentByLanguage, FormGroup, AlertBox },
   props: {
     isActionButtonDisabled: {
       type: Boolean

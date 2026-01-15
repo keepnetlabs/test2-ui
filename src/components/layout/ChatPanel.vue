@@ -1,10 +1,13 @@
 <template>
-  <div v-show="!isInitialHidden && agenticAIEnabled" class="chat-panel">
+  <div
+    v-show="!isInitialHidden && agenticAIEnabled"
+    class="chat-panel"
+    :style="{ zIndex: isExpanded ? 2147483001 : 5 }"
+  >
     <!-- Chat Toggle Button - AI Agent -->
     <div
       class="ai-agent-button"
       :class="{ 'ai-agent-button--hovered': isHoveringButton || isExpanded }"
-      :style="{ zIndex: isExpanded ? 999 : 1001 }"
       @click="handleBtnClick"
       @mouseenter="isHoveringButton = true"
       @mouseleave="isHoveringButton = false"
@@ -299,10 +302,8 @@ export default {
   position: fixed;
   right: 0;
   top: 0;
-  z-index: 1000;
   height: 100vh;
   pointer-events: none;
-  z-index: 2147483001;
 }
 
 .ai-agent-button {

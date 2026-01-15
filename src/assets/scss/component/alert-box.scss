@@ -34,4 +34,22 @@
       color: #b83a3a;
     }
   }
+
+  &--info-custom {
+    background-color: #f1f8fe;
+    border-radius: 4px;
+    padding: 16px;
+
+    .alert-box__default-content {
+      align-items: flex-start;
+      gap: 12px;
+      
+      p {
+        color: #383b41 !important;
+        font-weight: 400;
+        line-height: 21px;
+        margin-left: 0;
+      }
+    }
+  }
 }
