@@ -21,6 +21,13 @@
       />
     </FormGroup>
     <FormGroup :title="labels.Content" :sub-title="labels.ScreensaverContentStep2Sub">
+      <AlertBox
+        v-if="isEdit"
+        icon-name="mdi-information"
+        icon-color="#2196F3"
+        class="mb-6 alert-box--info-custom"
+        text="Screensaver files are saved immediately when uploaded or removed. The Save button applies settings only."
+      />
       <div v-for="index in formData.contentByLanguage.length" :key="index">
         <TrainingLibraryNewScreensaverContentByLanguage
           v-model="formData.contentByLanguage[index - 1]"
@@ -58,12 +65,14 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
 import TrainingLibraryNewScreensaverContentByLanguage from './TrainingLibraryNewScreensaverContentByLanguage.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import AlertBox from '@/components/AlertBox.vue'
 export default {
   name: 'TrainingLibraryNewScreensaverContent',
   components: {
     TrainingLibraryNewScreensaverContentByLanguage,
     FormGroup,
-    KSelect
+    KSelect,
+    AlertBox
   },
   props: {
     isActionButtonDisabled: {
