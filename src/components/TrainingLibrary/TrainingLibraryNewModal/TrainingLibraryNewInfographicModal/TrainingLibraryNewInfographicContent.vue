@@ -21,6 +21,13 @@
       />
     </FormGroup>
     <FormGroup :title="labels.Content" :sub-title="labels.InfographicContentStep2Sub">
+      <AlertBox
+        v-if="isEdit"
+        icon-name="mdi-information"
+        icon-color="#2196F3"
+        class="mb-6 alert-box--info-custom"
+        text="Infographic files are saved immediately when uploaded or removed. The Save button applies settings only."
+      />
       <div v-for="index in formData.contentByLanguage.length" :key="index">
         <TrainingLibraryNewInfographicContentByLanguage
           v-model="formData.contentByLanguage[index - 1]"
@@ -58,9 +65,10 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
 import TrainingLibraryNewInfographicContentByLanguage from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicContentByLanguage.vue'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import AlertBox from '@/components/AlertBox'
 export default {
   name: 'TrainingLibraryNewInfographicContent',
-  components: { TrainingLibraryNewInfographicContentByLanguage, FormGroup, KSelect },
+  components: { TrainingLibraryNewInfographicContentByLanguage, FormGroup, KSelect, AlertBox },
   props: {
     isActionButtonDisabled: {
       type: Boolean
