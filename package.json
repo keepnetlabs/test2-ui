@@ -113,24 +113,13 @@
       "@vue/prettier"
     ],
     "rules": {
-      "prettier/prettier": [
-        "warn",
-        {
-          "#": "prettier config in here :)",
-          "semi": false,
-          "singleQuote": true,
-          "trailingComma": "none",
-          "no-unused-vars": false,
-          "vue/require-v-for-key": false,
-          "vue/no-mutating-props": false,
-          "vue/no-unused-vars": false,
-          "vue/no-dupe-v-else-if": false
-        }
-      ],
-      "vue/no-use-v-if-with-v-for": "off",
+      "prettier/prettier": "off",
+      "no-unused-vars": "off",
+      "vue/require-v-for-key": "off",
       "vue/no-mutating-props": "off",
       "vue/no-unused-vars": "off",
-      "vue/no-dupe-v-else-if": "off"
+      "vue/no-dupe-v-else-if": "off",
+      "vue/no-use-v-if-with-v-for": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint",
