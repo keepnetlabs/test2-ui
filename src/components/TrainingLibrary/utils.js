@@ -117,7 +117,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.Role,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'smallBadge',
     filterableType: 'select',
     filterableItems: [],
     width: 200

@@ -138,6 +138,8 @@ export default {
           description,
           tagNames,
           targetAudience,
+          roleIds,
+          trainingRoles,
           trainingContents,
           availableForList,
           category,
@@ -148,13 +150,24 @@ export default {
         } = response?.data?.data || {}
         const { refTrainingCourseInformation, refTrainingContent } = this.$refs
         if (refTrainingCourseInformation && refTrainingContent) {
+          // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
+          let resolvedRoleIds = []
+          if (trainingRoles?.length) {
+            resolvedRoleIds = trainingRoles.map((role) =>
+              role?.roleName ? role.roleName.replace(/\s/g, '') : role
+            )
+          } else if (roleIds?.length) {
+            resolvedRoleIds = roleIds
+          } else if (targetAudience) {
+            resolvedRoleIds = [targetAudience]
+          }
           refTrainingCourseInformation.setFormData({
             coverImage,
             name,
             hasQuiz,
             description,
             tags: tagNames,
-            targetAudience,
+            roleIds: resolvedRoleIds,
             category,
             compliances: compliances.map(({ complianceId }) => complianceId),
             behaviours: behaviours.map(({ behaviourId }) => behaviourId)
@@ -214,7 +227,7 @@ export default {
             name,
             description,
             category,
-            targetAudience,
+            roleIds,
             tagNames,
             availableForRequests,
             compliances,
@@ -225,7 +238,7 @@ export default {
             name,
             description,
             category,
-            targetAudience,
+            roleIds,
             tagNames,
             availableForRequests,
             compliances: compliances.map((compliance) => ({
@@ -269,7 +282,7 @@ export default {
           name,
           description,
           category,
-          targetAudience,
+          roleIds,
           tags,
           availableForRequests,
           coverImageUrl,
@@ -288,7 +301,9 @@ export default {
       payload.append('trainingDetail.name', name)
       payload.append('trainingDetail.description', description)
       payload.append('trainingDetail.category', category)
-      payload.append('trainingDetail.targetAudience', targetAudience)
+      roleIds.forEach((roleId, index) => {
+        payload.append(`trainingDetail.RoleIds[${index}]`, roleId)
+      })
       payload.append('trainingDetail.hasQuiz', hasQuiz)
       payload.append('trainingDetail.type', type)
       if (vendorId) payload.append('trainingDetail.vendorId', vendorId)

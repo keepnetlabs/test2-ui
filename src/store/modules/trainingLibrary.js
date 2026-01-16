@@ -568,7 +568,8 @@ const trainingLibrary = {
               languages: item.languages.map((code) => {
                 const language = languages.find((lang) => lang.code === code)
                 return language?.isoFriendlyName || code
-              })
+              }),
+              targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
             }
           })
           commit('SET_TABLE_DATA', enrichedResults)

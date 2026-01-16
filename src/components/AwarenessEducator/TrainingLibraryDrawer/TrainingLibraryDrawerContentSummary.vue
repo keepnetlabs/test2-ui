@@ -378,7 +378,8 @@ export default {
         */
         {
           icon: 'mdi-account-outline',
-          text: data.targetAudienceName || data.targetAudience || 'No target audience'
+          text: this.getTrainingRolesText(data),
+          tooltip: this.getTrainingRolesTooltip(data)
         },
         /*
         {
@@ -548,6 +549,29 @@ export default {
         return data.compliance
       }
       return 'No compliance'
+    },
+    getTrainingRolesTooltip(data) {
+      if (
+        data.trainingRoles &&
+        Array.isArray(data.trainingRoles) &&
+        data.trainingRoles.length > 1
+      ) {
+        return data.trainingRoles.map((r) => r.roleName).join(', ')
+      }
+      return ''
+    },
+    getTrainingRolesText(data) {
+      if (
+        data.trainingRoles &&
+        Array.isArray(data.trainingRoles) &&
+        data.trainingRoles.length > 0
+      ) {
+        if (data.trainingRoles.length === 1) {
+          return data.trainingRoles[0].roleName
+        }
+        return `${data.trainingRoles.length} roles`
+      }
+      return data.targetAudienceName || data.targetAudience || 'No target audience'
     },
     callForLanguages() {
       this.isLoadingLanguages = true

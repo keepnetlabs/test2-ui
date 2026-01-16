@@ -156,11 +156,24 @@ export default {
             name,
             tagNames,
             targetAudience,
+            roleIds,
+            trainingRoles,
             coverImage,
             trainingGroups = []
           } = response?.data?.data || {}
           const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
           if (refTrainingCourseInformation && refLearningPathContent) {
+            // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
+            let resolvedRoleIds = []
+            if (trainingRoles?.length) {
+              resolvedRoleIds = trainingRoles.map((role) =>
+                role?.roleName ? role.roleName.replace(/\s/g, '') : role
+              )
+            } else if (roleIds?.length) {
+              resolvedRoleIds = roleIds
+            } else if (targetAudience) {
+              resolvedRoleIds = [targetAudience]
+            }
             refTrainingCourseInformation.setFormData({
               behaviours: behaviours.map((b) => b.behaviourId),
               category,
@@ -168,7 +181,7 @@ export default {
               description,
               name,
               tags: tagNames,
-              targetAudience,
+              roleIds: resolvedRoleIds,
               coverImage
             })
             refTrainingCourseInformation.setMakeAvailableForData(availableForList)
@@ -263,7 +276,7 @@ export default {
           name,
           description,
           category,
-          targetAudience,
+          roleIds,
           tags,
           availableForRequests,
           coverImageUrl,
@@ -280,7 +293,9 @@ export default {
         payload.append('TrainingDetail.name', name)
         payload.append('TrainingDetail.description', description)
         payload.append('TrainingDetail.category', category)
-        payload.append('TrainingDetail.targetAudience', targetAudience)
+        roleIds.forEach((roleId, index) => {
+          payload.append(`TrainingDetail.RoleIds[${index}]`, roleId)
+        })
         payload.append('TrainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
         tags.map((tag, index) => {
           payload.append(`TrainingDetail.tagNames[${index}]`, tag)
@@ -322,7 +337,9 @@ export default {
         payload.append('name', name)
         payload.append('description', description)
         payload.append('category', category)
-        payload.append('targetAudience', targetAudience)
+        roleIds.forEach((roleId, index) => {
+          payload.append(`RoleIds[${index}]`, roleId)
+        })
         payload.append('type', TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
         tags.map((tag, index) => {
           payload.append(`tagNames[${index}]`, tag)
