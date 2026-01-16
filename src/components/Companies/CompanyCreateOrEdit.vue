@@ -367,9 +367,9 @@
                 <v-list-item>
                   <v-list-item-content>
                   <label for="input--company-numbers-limited">License Limit</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Number of end-users who will recieve emails and will be tracked
-                    </v-list-item-title>
+                  <v-list-item-title class="v-card-sub-header bottom-margin">
+                    Maximum number of users.
+                  </v-list-item-title>
                     <div class="d-flex align-items-center">
                       <v-text-field
                         v-mask="'######'"
@@ -837,7 +837,7 @@ export default {
         : [true]
     },
     numberOfUsersPlaceholder() {
-      return 'Enter license limit'
+      return 'Enter number of users'
     },
     isEndDateDisabled() {
       return (
