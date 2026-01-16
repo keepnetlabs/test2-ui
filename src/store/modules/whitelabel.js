@@ -94,10 +94,36 @@ const whitelabel = {
     SET_DATA(state = {}, payload = {}) {
       for (const key of Object.keys(state)) {
         if (key === 'faviconUrl' && payload[key]) {
-          const favIcon = document.querySelector('link[rel="icon"]')
+          // Update favicon with cache busting to prevent Safari caching issues
+          const faviconUrl = payload[key]
+          const cacheBuster = `?v=${Date.now()}`
+          const faviconWithCache = faviconUrl + cacheBuster
+
+          // Update main favicon link
+          let favIcon = document.querySelector('link[rel="icon"]')
           if (favIcon) {
-            favIcon.href = payload[key]
+            favIcon.href = faviconWithCache
           }
+
+          // Update Apple touch icon for iOS Safari
+          let appleLink = document.querySelector('link[rel="apple-touch-icon"]')
+          if (appleLink) {
+            appleLink.remove()
+          }
+          appleLink = document.createElement('link')
+          appleLink.rel = 'apple-touch-icon'
+          appleLink.href = faviconWithCache
+          document.head.appendChild(appleLink)
+
+          // Update shortcut icon for older browsers
+          let shortcutLink = document.querySelector('link[rel="shortcut icon"]')
+          if (shortcutLink) {
+            shortcutLink.remove()
+          }
+          shortcutLink = document.createElement('link')
+          shortcutLink.rel = 'shortcut icon'
+          shortcutLink.href = faviconWithCache
+          document.head.appendChild(shortcutLink)
         } else if (key === 'brandName' && payload[key]) {
           document.title = payload[key]
         }

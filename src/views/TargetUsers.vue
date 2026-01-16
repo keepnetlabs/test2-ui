@@ -10,7 +10,7 @@
       <el-tab-pane
         v-if="getTargetUsersSearchPermissions"
         id="target-users--people-content"
-        label="People"
+        label="Users"
         name="target-users--people"
         ><people
           v-if="tab === 'target-users--people'"

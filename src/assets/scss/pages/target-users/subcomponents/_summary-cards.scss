@@ -1,0 +1,99 @@
+.target-users-summary-card {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 8px !important;
+  padding: 24px !important;
+  height: 156px;
+  position: relative;
+  cursor: default;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.target-users-summary-card:hover {
+  cursor: default;
+}
+
+.target-users-summary-cards {
+  margin-left: -8px;
+  margin-right: -8px;
+
+  .v-col {
+    padding: 8px;
+  }
+
+  .summary-title {
+    color: #383b41;
+    font-family: "Open Sans", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  .summary-info-icon {
+    color: #9e9e9e;
+    margin-left: 6px;
+  }
+
+  .summary-tooltip {
+    display: inline-block;
+    max-width: 288px;
+    white-space: normal;
+  }
+
+  .summary-value {
+    color: #383b41;
+    font-family: "Open Sans", sans-serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    margin-top: 0;
+    min-height: 48px;
+    position: absolute;
+    left: 24px;
+    bottom: 16px;
+  }
+
+  .summary-subtitle {
+    align-items: center;
+    color: #757575;
+    display: inline-flex;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .summary-subtitle-icon {
+    margin-left: 2px;
+  }
+
+  .summary-subtitle-action {
+    cursor: pointer;
+  }
+
+  .summary-filter-icon {
+    font-size: 20px;
+  }
+
+  .summary-filter-icon--disabled {
+    pointer-events: none;
+  }
+
+  .summary-icon-image {
+    position: absolute;
+    right: 0;
+    bottom: 16px;
+  }
+
+  .summary-card--disabled {
+    .summary-icon-image {
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+  }
+
+  .summary-card--disabled {
+    .summary-filter-icon {
+      opacity: 0.5;
+    }
+  }
+}

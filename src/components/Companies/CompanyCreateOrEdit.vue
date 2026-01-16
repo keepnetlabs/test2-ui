@@ -366,10 +366,10 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label for="input--company-numbers-limited">{{ labels.NumberOfUsers }}</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Number of end-users who will recieve emails and will be tracked
-                    </v-list-item-title>
+                  <label for="input--company-numbers-limited">License Limit</label>
+                  <v-list-item-title class="v-card-sub-header bottom-margin">
+                    Maximum number of users.
+                  </v-list-item-title>
                     <div class="d-flex align-items-center">
                       <v-text-field
                         v-mask="'######'"
@@ -1178,7 +1178,9 @@ export default {
               }
             })
           this.licenceTypes = responses[1].data.data.licenses
-          this.allModuleLicences = responses[1].data.data.allLicenseModules
+          this.allModuleLicences = (responses[1].data.data.allLicenseModules || []).filter(
+            (module) => !['Video Animations', 'Serious Games'].includes(module.name)
+          )
           if (this.edit) {
             const license = this.licenceTypes.find(
               (licence) => licence.name === this.formData.licenseTypeName

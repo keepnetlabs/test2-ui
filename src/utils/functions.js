@@ -1,180 +1,181 @@
-import store from '@/store'
-import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import store from "@/store";
+import labels from "@/model/constants/labels";
+import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 export function getBtnStatusColor(type) {
-  let _type = type
-  if (typeof _type === 'boolean' && _type) {
-    _type = 'yes'
-  } else if (typeof _type === 'boolean' && !_type) {
-    _type = 'no'
+  let _type = type;
+  if (typeof _type === "boolean" && _type) {
+    _type = "yes";
+  } else if (typeof _type === "boolean" && !_type) {
+    _type = "no";
   }
-  if (typeof _type !== 'number') {
-    _type = _type.toLowerCase()
+  if (typeof _type !== "number") {
+    _type = _type.toLowerCase();
   }
 
   const statusColorMap = {
-    pending: '#00bcd4',
-    clean: '#00bcd4',
-    active: '#1173C1',
-    deferred: '#B6791D',
-    dropped: '#F56C6C',
-    blocked: '#F56C6C',
-    inactive: '#b83a3a',
-    sending: '#1173C1',
-    scheduled: '#1173C1',
-    finished: '#217124',
-    warning: '#b6791d',
-    processing: '#1173C1',
-    processed: '#217124',
-    delivered: '#217124',
-    clicked: '#217124',
-    opened: '#217124',
-    bounced: '#F56C6C',
-    blocks: '#F56C6C',
-    spam_report: '#F56C6C',
-    malicious: '#b83a3a',
-    unsubscribes: '#B6791D',
-    group_unsubscribe: '#B6791D',
-    group_resubscribe: '#B6791D',
-    nonmalicious: '#00bcd4',
-    offline: '#B83A3A',
-    expired: '#B6791D',
-    paused: '#B6791D',
-    passive: '#b83a3a',
-    cancelled: '#B6791D',
-    canceled: '#B6791D',
-    quequed: '#0198AC', // Assuming this was a typo for 'queued'
-    queued: '#0198AC',
-    phishing: '#b83a3a',
-    idle: '#0198AC',
-    excluded: '#757575',
-    disabled: '#b83a3a',
-    'network error': '#b83a3a',
-    quedued: '#00bcd4', // Assuming this was a typo for 'queued'
-    'in queue': '#1173C1',
-    inqueue: '#1173C1', // Added to handle both 'in queue' and 'inqueue'
-    none: '#00bcd4',
-    running: '#1173C1',
-    'not running': '#B83A3A', // Corrected from #1173C1 to #B83A3A as per previous logic
-    'not delivered': '#757575',
-    completed: '#217124',
-    complete: '#217124',
+    pending: "#00bcd4",
+    clean: "#00bcd4",
+    active: "#1173C1",
+    deferred: "#B6791D",
+    dropped: "#F56C6C",
+    deleted: "#F56C6C",
+    blocked: "#F56C6C",
+    inactive: "#b83a3a",
+    sending: "#1173C1",
+    scheduled: "#1173C1",
+    finished: "#217124",
+    warning: "#b6791d",
+    processing: "#1173C1",
+    processed: "#217124",
+    delivered: "#217124",
+    clicked: "#217124",
+    opened: "#217124",
+    bounced: "#F56C6C",
+    blocks: "#F56C6C",
+    spam_report: "#F56C6C",
+    malicious: "#b83a3a",
+    unsubscribes: "#B6791D",
+    group_unsubscribe: "#B6791D",
+    group_resubscribe: "#B6791D",
+    nonmalicious: "#00bcd4",
+    offline: "#B83A3A",
+    expired: "#B6791D",
+    paused: "#B6791D",
+    passive: "#b83a3a",
+    cancelled: "#B6791D",
+    canceled: "#B6791D",
+    quequed: "#0198AC", // Assuming this was a typo for 'queued'
+    queued: "#0198AC",
+    phishing: "#b83a3a",
+    idle: "#0198AC",
+    excluded: "#757575",
+    disabled: "#b83a3a",
+    "network error": "#b83a3a",
+    quedued: "#00bcd4", // Assuming this was a typo for 'queued'
+    "in queue": "#1173C1",
+    inqueue: "#1173C1", // Added to handle both 'in queue' and 'inqueue'
+    none: "#00bcd4",
+    running: "#1173C1",
+    "not running": "#B83A3A", // Corrected from #1173C1 to #B83A3A as per previous logic
+    "not delivered": "#757575",
+    completed: "#217124",
+    complete: "#217124",
     // 'finished' is already defined
-    successful: '#217124',
-    success: '#217124',
-    online: '#217124',
-    deactivated: '#757575',
-    notinstalled: '#757575',
-    'user unavailable': '#757575',
-    completedwitherror: '#6d6d6d',
-    itemnotfound: '#fafafa',
-    failed: '#b83a3a',
-    'n/a': '#00bcd4',
-    stopped: '#b83a3a',
-    error: '#B83A3A',
-    exist: '#1173C1',
-    new: '#217124',
-    undetected: '#1173C1',
-    listed: '#b83a3a',
-    low: '#0198AC',
-    verylow: '#757575',
-    custom: '#f56c6c',
-    system: '#1173C1',
-    yes: '#1173c1',
-    no: '#757575',
-    easy: 'rgba(33, 113, 36, 1)',
-    medium: 'rgba(17, 115, 193, 1)',
-    hard: 'rgba(184, 58, 58, 1)',
-    'no match': '#757575',
-    'not in use': '#757575',
-    'in use': '#1173C1',
-    passed: '#217124'
-  }
+    successful: "#217124",
+    success: "#217124",
+    online: "#217124",
+    deactivated: "#757575",
+    notinstalled: "#757575",
+    "user unavailable": "#757575",
+    completedwitherror: "#6d6d6d",
+    itemnotfound: "#fafafa",
+    failed: "#b83a3a",
+    "n/a": "#00bcd4",
+    stopped: "#b83a3a",
+    error: "#B83A3A",
+    exist: "#1173C1",
+    new: "#217124",
+    undetected: "#1173C1",
+    listed: "#b83a3a",
+    low: "#0198AC",
+    verylow: "#757575",
+    custom: "#f56c6c",
+    system: "#1173C1",
+    yes: "#1173c1",
+    no: "#757575",
+    easy: "rgba(33, 113, 36, 1)",
+    medium: "rgba(17, 115, 193, 1)",
+    hard: "rgba(184, 58, 58, 1)",
+    "no match": "#757575",
+    "not in use": "#757575",
+    "in use": "#1173C1",
+    passed: "#217124"
+  };
 
-  if (!_type) return '#00bcd4' // Default for empty or null type after processing
+  if (!_type) return "#00bcd4"; // Default for empty or null type after processing
 
-  return statusColorMap[_type] || '#00bcd4' // Return color from map or default
+  return statusColorMap[_type] || "#00bcd4"; // Return color from map or default
 }
 
 export function getBtnPriorityColor(type) {
-  if (type.toLowerCase() === 'active') return '#00bcd4'
-  if (type.toLowerCase() === 'inactive') return '#b83a3a'
-  if (type.toLowerCase() === 'low') return '#0198AC'
-  if (type.toLowerCase() === 'very low') return '#757575'
-  if (type.toLowerCase() === 'verylow') return '#757575'
-  if (type.toLowerCase() === 'medium') return '#1173C1'
-  if (type.toLowerCase() === 'high') return '#b6791d'
-  if (type.toLowerCase() === 'very high') return '#b83a3a'
-  if (type.toLowerCase() === 'veryhigh') return '#b83a3a'
-  if (type.toLowerCase() === 'n/a') return '#00bcd4'
-  if (type.toLowerCase() === 'error') return '#b83a3a'
-  if (type.toLowerCase() === 'exist') return '#1173C1'
-  if (type.toLowerCase() === 'new') return '#217124'
-  if (type.toLowerCase() === 'excluded') return '#757575'
+  if (type.toLowerCase() === "active") return "#00bcd4";
+  if (type.toLowerCase() === "inactive") return "#b83a3a";
+  if (type.toLowerCase() === "low") return "#0198AC";
+  if (type.toLowerCase() === "very low") return "#757575";
+  if (type.toLowerCase() === "verylow") return "#757575";
+  if (type.toLowerCase() === "medium") return "#1173C1";
+  if (type.toLowerCase() === "high") return "#b6791d";
+  if (type.toLowerCase() === "very high") return "#b83a3a";
+  if (type.toLowerCase() === "veryhigh") return "#b83a3a";
+  if (type.toLowerCase() === "n/a") return "#00bcd4";
+  if (type.toLowerCase() === "error") return "#b83a3a";
+  if (type.toLowerCase() === "exist") return "#1173C1";
+  if (type.toLowerCase() === "new") return "#217124";
+  if (type.toLowerCase() === "excluded") return "#757575";
 }
 
 export function getTextColor(type) {
-  if (type.toLowerCase() === 'open') return '#f56c6c'
-  if (type.toLowerCase() === 'in progress') return '#2196f3'
-  if (type.toLowerCase() === 'false positive') return '#e6a23c'
-  if (type.toLowerCase() === 'closed') return '#43a047'
-  if (type.toLowerCase() === 'very high') return '#43a047'
-  if (type.toLowerCase() === 'medium') return '#00bcd4'
-  if (type.toLowerCase() === 'low') return '#e6a23c'
-  if (type.toLowerCase() === 'very low') return '#f56c6c'
+  if (type.toLowerCase() === "open") return "#f56c6c";
+  if (type.toLowerCase() === "in progress") return "#2196f3";
+  if (type.toLowerCase() === "false positive") return "#e6a23c";
+  if (type.toLowerCase() === "closed") return "#43a047";
+  if (type.toLowerCase() === "very high") return "#43a047";
+  if (type.toLowerCase() === "medium") return "#00bcd4";
+  if (type.toLowerCase() === "low") return "#e6a23c";
+  if (type.toLowerCase() === "very low") return "#f56c6c";
 }
 
-export function getDataTableFieldLabel(field = '') {
-  field = String(field)
-  const defField = field
-  field = field.trim().toLowerCase()
-  let upperCaseCount = 0
+export function getDataTableFieldLabel(field = "") {
+  field = String(field);
+  const defField = field;
+  field = field.trim().toLowerCase();
+  let upperCaseCount = 0;
   for (let i = 0; i < field.length; i++) {
     if (upperCaseCount === 2) {
-      return `${field.slice(0, i)} ${field.slice(i, field.length)}`
+      return `${field.slice(0, i)} ${field.slice(i, field.length)}`;
     }
     if (field.charAt(i) === field.charAt(i).toUpperCase()) {
-      upperCaseCount++
+      upperCaseCount++;
     }
   }
   const fieldMap = {
-    beinganalyzed: 'Being Analyzed',
-    inprogress: 'In Progress',
-    falsepositive: 'False Positive',
-    nonmalicious: 'Clean',
-    veryhigh: 'Very High',
-    verylow: 'Very Low',
-    completedwitherror: 'Completed with error',
-    itemnotfound: 'Item not found',
-    Running: 'Running',
-    'Not Running': 'Not Running',
-    'n/a': 'N/A',
-    notinstalled: 'Not Installed',
-    waitingresponse: 'Waiting Response',
-    unknown: 'N/A',
-    Easy: 'Easy',
-    Medium: 'Medium',
-    Hard: 'Hard',
-    'not in use': 'Not In Use',
-    'in use': 'In Use'
-  }
-  return fieldMap[field] || defField
+    beinganalyzed: "Being Analyzed",
+    inprogress: "In Progress",
+    falsepositive: "False Positive",
+    nonmalicious: "Clean",
+    veryhigh: "Very High",
+    verylow: "Very Low",
+    completedwitherror: "Completed with error",
+    itemnotfound: "Item not found",
+    Running: "Running",
+    "Not Running": "Not Running",
+    "n/a": "N/A",
+    notinstalled: "Not Installed",
+    waitingresponse: "Waiting Response",
+    unknown: "N/A",
+    Easy: "Easy",
+    Medium: "Medium",
+    Hard: "Hard",
+    "not in use": "Not In Use",
+    "in use": "In Use"
+  };
+  return fieldMap[field] || defField;
 }
 
 export function isOwnerOrMember(membershipStatusId) {
-  return membershipStatusId === 1 || membershipStatusId === 2
+  return membershipStatusId === 1 || membershipStatusId === 2;
 }
 
 export function isOwner(membershipStatusId) {
-  return membershipStatusId == 1
+  return membershipStatusId == 1;
 }
 
 export function isPostedByMe(isPostedByMe) {
-  return isPostedByMe
+  return isPostedByMe;
 }
 
 export function setGlobalUserData(userData) {
-  let currentUserData = {}
+  let currentUserData = {};
   currentUserData = {
     id: userData.user_company_resourceid,
     name: userData.user_company_name,
@@ -196,26 +197,29 @@ export function setGlobalUserData(userData) {
       timeFormat: userData?.user_timeformat
     },
     role: {
-      name: userData?.role?.toString?.() || ''
+      name: userData?.role?.toString?.() || ""
     }
-  }
-  localStorage.setItem('companyId', currentUserData.userCompany.id)
-  localStorage.setItem('companyRequestId', currentUserData.userCompany.id)
-  localStorage.setItem('companyResourceId', currentUserData.userCompany.id)
-  localStorage.setItem('companyName', currentUserData.userCompany.name)
-  localStorage.setItem('userId', currentUserData.id)
-  localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
-  localStorage.setItem('userName', userData.name || currentUserData.name)
-  localStorage.setItem('hostId', userData['user_id'])
-  return currentUserData
+  };
+  localStorage.setItem("companyId", currentUserData.userCompany.id);
+  localStorage.setItem("companyRequestId", currentUserData.userCompany.id);
+  localStorage.setItem("companyResourceId", currentUserData.userCompany.id);
+  localStorage.setItem("companyName", currentUserData.userCompany.name);
+  localStorage.setItem("userId", currentUserData.id);
+  localStorage.setItem(
+    "businessCatId",
+    currentUserData.userCompany.businessCategoryId
+  );
+  localStorage.setItem("userName", userData.name || currentUserData.name);
+  localStorage.setItem("hostId", userData["user_id"]);
+  return currentUserData;
 }
 
-export function strReverse(oldString = '') {
-  let newString = ''
+export function strReverse(oldString = "") {
+  let newString = "";
   for (let s = 0; s < oldString.length; s++) {
-    newString = oldString.charAt(s) + newString
+    newString = oldString.charAt(s) + newString;
   }
-  return newString
+  return newString;
 }
 
 export function passwordComplexity(pwd) {
@@ -239,299 +243,321 @@ export function passwordComplexity(pwd) {
     nSeqNumber = 0,
     nSeqSymbol = 0,
     nSeqChar = 0,
-    nReqChar = 0
+    nReqChar = 0;
   let nMultMidChar = 2,
     nMultConsecAlphaUC = 2,
     nMultConsecAlphaLC = 2,
-    nMultConsecNumber = 2
+    nMultConsecNumber = 2;
   let nMultSeqAlpha = 3,
     nMultSeqNumber = 3,
-    nMultSeqSymbol = 3
+    nMultSeqSymbol = 3;
   let nMultLength = 4,
-    nMultNumber = 4
-  let nMultSymbol = 6
-  let nTmpAlphaUC = '',
-    nTmpAlphaLC = '',
-    nTmpNumber = '',
-    nTmpSymbol = ''
-  const sAlphas = 'abcdefghijklmnopqrstuvwxyz'
-  const sNumerics = '01234567890'
-  const sSymbols = ')!@#$%^&*()'
-  const nMinPwdLen = 8
+    nMultNumber = 4;
+  let nMultSymbol = 6;
+  let nTmpAlphaUC = "",
+    nTmpAlphaLC = "",
+    nTmpNumber = "",
+    nTmpSymbol = "";
+  const sAlphas = "abcdefghijklmnopqrstuvwxyz";
+  const sNumerics = "01234567890";
+  const sSymbols = ")!@#$%^&*()";
+  const nMinPwdLen = 8;
   if (pwd) {
-    nScore = parseInt(pwd.length * nMultLength)
-    nLength = pwd.length
-    let arrPwd = pwd.replace(/\s+/g, '')?.split(/\s*/)
-    let arrPwdLen = arrPwd.length
+    nScore = parseInt(pwd.length * nMultLength);
+    nLength = pwd.length;
+    let arrPwd = pwd.replace(/\s+/g, "")?.split(/\s*/);
+    let arrPwdLen = arrPwd.length;
 
     /* Loop through password to check for Symbol, Numeric, Lowercase and Uppercase pattern matches */
     for (let a = 0; a < arrPwdLen; a++) {
       if (arrPwd[a].match(/[A-Z]/g)) {
-        if (nTmpAlphaUC !== '') {
+        if (nTmpAlphaUC !== "") {
           if (nTmpAlphaUC + 1 == a) {
-            nConsecAlphaUC++
-            nConsecCharType++
+            nConsecAlphaUC++;
+            nConsecCharType++;
           }
         }
-        nTmpAlphaUC = a
-        nAlphaUC++
+        nTmpAlphaUC = a;
+        nAlphaUC++;
       } else if (arrPwd[a].match(/[a-z]/g)) {
-        if (nTmpAlphaLC !== '') {
+        if (nTmpAlphaLC !== "") {
           if (nTmpAlphaLC + 1 == a) {
-            nConsecAlphaLC++
-            nConsecCharType++
+            nConsecAlphaLC++;
+            nConsecCharType++;
           }
         }
-        nTmpAlphaLC = a
-        nAlphaLC++
+        nTmpAlphaLC = a;
+        nAlphaLC++;
       } else if (arrPwd[a].match(/\d/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
-          nMidChar++
+          nMidChar++;
         }
-        if (nTmpNumber !== '') {
+        if (nTmpNumber !== "") {
           if (nTmpNumber + 1 == a) {
-            nConsecNumber++
-            nConsecCharType++
+            nConsecNumber++;
+            nConsecCharType++;
           }
         }
-        nTmpNumber = a
-        nNumber++
+        nTmpNumber = a;
+        nNumber++;
       } else if (arrPwd[a].match(/\W/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
-          nMidChar++
+          nMidChar++;
         }
-        if (nTmpSymbol !== '') {
+        if (nTmpSymbol !== "") {
           if (nTmpSymbol + 1 == a) {
-            nConsecSymbol++
-            nConsecCharType++
+            nConsecSymbol++;
+            nConsecCharType++;
           }
         }
-        nTmpSymbol = a
-        nSymbol++
+        nTmpSymbol = a;
+        nSymbol++;
       }
       /* Internal loop through password to check for repeat characters */
-      let bCharExists = false
+      let bCharExists = false;
       for (let b = 0; b < arrPwdLen; b++) {
         if (arrPwd[a] == arrPwd[b] && a != b) {
           /* repeat character exists */
-          bCharExists = true
+          bCharExists = true;
           /*
       Calculate icrement deduction based on proximity to identical characters
       Deduction is incremented each time a new match is discovered
       Deduction amount is based on total password length divided by the
       difference of distance between currently selected match
       */
-          nRepInc += Math.abs(arrPwdLen / (b - a))
+          nRepInc += Math.abs(arrPwdLen / (b - a));
         }
       }
       if (bCharExists) {
-        nRepChar++
-        nUnqChar = arrPwdLen - nRepChar
-        nRepInc = nUnqChar ? Math.ceil(nRepInc / nUnqChar) : Math.ceil(nRepInc)
+        nRepChar++;
+        nUnqChar = arrPwdLen - nRepChar;
+        nRepInc = nUnqChar ? Math.ceil(nRepInc / nUnqChar) : Math.ceil(nRepInc);
       }
     }
 
     /* Check for sequential alpha string patterns (forward and reverse) */
     for (let s = 0; s < 23; s++) {
-      let sFwd = sAlphas.substring(s, parseInt(s + 3))
-      let sRev = strReverse(sFwd)
-      if (pwd.toLowerCase().indexOf(sFwd) !== -1 || pwd.toLowerCase().indexOf(sRev) !== -1) {
-        nSeqAlpha++
-        nSeqChar++
+      let sFwd = sAlphas.substring(s, parseInt(s + 3));
+      let sRev = strReverse(sFwd);
+      if (
+        pwd.toLowerCase().indexOf(sFwd) !== -1 ||
+        pwd.toLowerCase().indexOf(sRev) !== -1
+      ) {
+        nSeqAlpha++;
+        nSeqChar++;
       }
     }
     /* Check for sequential numeric string patterns (forward and reverse) */
     for (let s = 0; s < 8; s++) {
-      let sFwd = sNumerics.substring(s, parseInt(s + 3))
-      let sRev = strReverse(sFwd)
-      if (pwd.toLowerCase().indexOf(sFwd) !== -1 || pwd.toLowerCase().indexOf(sRev) !== -1) {
-        nSeqNumber++
-        nSeqChar++
+      let sFwd = sNumerics.substring(s, parseInt(s + 3));
+      let sRev = strReverse(sFwd);
+      if (
+        pwd.toLowerCase().indexOf(sFwd) !== -1 ||
+        pwd.toLowerCase().indexOf(sRev) !== -1
+      ) {
+        nSeqNumber++;
+        nSeqChar++;
       }
     }
     /* Check for sequential symbol string patterns (forward and reverse) */
     for (let s = 0; s < 8; s++) {
-      let sFwd = sSymbols.substring(s, parseInt(s + 3))
-      let sRev = strReverse(sFwd)
-      if (pwd.toLowerCase().indexOf(sFwd) !== -1 || pwd.toLowerCase().indexOf(sRev) !== -1) {
-        nSeqSymbol++
-        nSeqChar++
+      let sFwd = sSymbols.substring(s, parseInt(s + 3));
+      let sRev = strReverse(sFwd);
+      if (
+        pwd.toLowerCase().indexOf(sFwd) !== -1 ||
+        pwd.toLowerCase().indexOf(sRev) !== -1
+      ) {
+        nSeqSymbol++;
+        nSeqChar++;
       }
     }
 
     /* General point assignment */
     if (nAlphaUC > 0 && nAlphaUC < nLength) {
-      nScore = parseInt(nScore + (nLength - nAlphaUC) * 2)
+      nScore = parseInt(nScore + (nLength - nAlphaUC) * 2);
     }
     if (nAlphaLC > 0 && nAlphaLC < nLength) {
-      nScore = parseInt(nScore + (nLength - nAlphaLC) * 2)
+      nScore = parseInt(nScore + (nLength - nAlphaLC) * 2);
     }
     if (nNumber > 0 && nNumber < nLength) {
-      nScore = parseInt(nScore + nNumber * nMultNumber)
+      nScore = parseInt(nScore + nNumber * nMultNumber);
     }
     if (nSymbol > 0) {
-      nScore = parseInt(nScore + nSymbol * nMultSymbol)
+      nScore = parseInt(nScore + nSymbol * nMultSymbol);
     }
     if (nMidChar > 0) {
-      nScore = parseInt(nScore + nMidChar * nMultMidChar)
+      nScore = parseInt(nScore + nMidChar * nMultMidChar);
     }
 
     /* Point deductions for poor practices */
     if ((nAlphaLC > 0 || nAlphaUC > 0) && nSymbol === 0 && nNumber === 0) {
       // Only Letters
-      nScore = parseInt(nScore - nLength)
+      nScore = parseInt(nScore - nLength);
     }
     if (nAlphaLC === 0 && nAlphaUC === 0 && nSymbol === 0 && nNumber > 0) {
       // Only Numbers
-      nScore = parseInt(nScore - nLength)
+      nScore = parseInt(nScore - nLength);
     }
     if (nRepChar > 0) {
       // Same character exists more than once
-      nScore = parseInt(nScore - nRepInc)
+      nScore = parseInt(nScore - nRepInc);
     }
     if (nConsecAlphaUC > 0) {
       // Consecutive Uppercase Letters exist
-      nScore = parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC)
+      nScore = parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC);
     }
     if (nConsecAlphaLC > 0) {
       // Consecutive Lowercase Letters exist
-      nScore = parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC)
+      nScore = parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC);
     }
     if (nConsecNumber > 0) {
       // Consecutive Numbers exist
-      nScore = parseInt(nScore - nConsecNumber * nMultConsecNumber)
+      nScore = parseInt(nScore - nConsecNumber * nMultConsecNumber);
     }
     if (nSeqAlpha > 0) {
       // Sequential alpha strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqAlpha * nMultSeqAlpha)
+      nScore = parseInt(nScore - nSeqAlpha * nMultSeqAlpha);
     }
     if (nSeqNumber > 0) {
       // Sequential numeric strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqNumber * nMultSeqNumber)
+      nScore = parseInt(nScore - nSeqNumber * nMultSeqNumber);
     }
     if (nSeqSymbol > 0) {
       // Sequential symbol strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqSymbol * nMultSeqSymbol)
+      nScore = parseInt(nScore - nSeqSymbol * nMultSeqSymbol);
     }
     /* Determine if mandatory requirements have been met and set image indicators accordingly */
-    const arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol]
-    const arrCharsIds = ['nLength', 'nAlphaUC', 'nAlphaLC', 'nNumber', 'nSymbol']
-    const arrCharsLen = arrChars.length
+    const arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol];
+    const arrCharsIds = [
+      "nLength",
+      "nAlphaUC",
+      "nAlphaLC",
+      "nNumber",
+      "nSymbol"
+    ];
+    const arrCharsLen = arrChars.length;
     for (let c = 0; c < arrCharsLen; c++) {
-      let minVal = arrCharsIds[c] === 'nLength' ? parseInt(nMinPwdLen - 1) : 0
-      if (arrChars[c] === parseInt(minVal + 1) || arrChars[c] > parseInt(minVal + 1)) {
-        nReqChar++
+      let minVal = arrCharsIds[c] === "nLength" ? parseInt(nMinPwdLen - 1) : 0;
+      if (
+        arrChars[c] === parseInt(minVal + 1) ||
+        arrChars[c] > parseInt(minVal + 1)
+      ) {
+        nReqChar++;
       }
     }
-    nRequirements = nReqChar
-    let nMinReqChars = pwd.length >= nMinPwdLen ? 3 : 4
+    nRequirements = nReqChar;
+    let nMinReqChars = pwd.length >= nMinPwdLen ? 3 : 4;
     if (nRequirements > nMinReqChars) {
-      nScore = parseInt(nScore + nRequirements * 2)
+      nScore = parseInt(nScore + nRequirements * 2);
     }
     /* Determine complexity based on overall score */
     if (nScore > 100) {
-      nScore = 100
+      nScore = 100;
     } else if (nScore < 0) {
-      nScore = 0
+      nScore = 0;
     }
-    return nScore
+    return nScore;
   }
 }
 
 export function scrollToComponent(
   el,
-  options = { behavior: 'smooth', block: 'center', inline: 'center' }
+  options = { behavior: "smooth", block: "center", inline: "center" }
 ) {
-  if (!el) return
+  if (!el) return;
 
   if (window.safari || navigator.vendor.match(/apple/i)) {
-    el.scrollIntoView()
+    el.scrollIntoView();
   } else {
-    el.scrollIntoView(options)
+    el.scrollIntoView(options);
   }
 }
 
-export function setSafariClusterFix(obj = {}, param = '') {
+export function setSafariClusterFix(obj = {}, param = "") {
   if (obj.column.property === param) {
-    return 'safari-cluster-icon-fix'
+    return "safari-cluster-icon-fix";
   }
 }
 export function handleIsSafari() {
-  return window.safari || navigator.vendor.match(/apple/i)
+  return window.safari || navigator.vendor.match(/apple/i);
 }
 
 export function incidenPostReviewElementBind(url, id, rootId, isReview) {
-  let els
-  if (url.url === 'Hidden by Owner' || url.isHidden) {
+  let els;
+  if (url.url === "Hidden by Owner" || url.isHidden) {
     els = document
-      .getElementById(rootId || 'last-preview-body-shadow-root')
-      ?.shadowRoot?.querySelectorAll('[data-post-item-hidden]')
+      .getElementById(rootId || "last-preview-body-shadow-root")
+      ?.shadowRoot?.querySelectorAll("[data-post-item-hidden]");
     if (!els.length) {
       els = document
-        .getElementById(rootId || 'last-preview-body-shadow-root')
-        ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
+        .getElementById(rootId || "last-preview-body-shadow-root")
+        ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]');
     }
   } else {
     els = document
-      .getElementById(rootId || 'last-preview-body-shadow-root')
-      ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
+      .getElementById(rootId || "last-preview-body-shadow-root")
+      ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]');
   }
 
   if (els?.length) {
     for (let i = 0, l = els.length; i < l; i++) {
-      let el = els[i]
-      el.setAttribute('target', '_blank')
+      let el = els[i];
+      el.setAttribute("target", "_blank");
       if (url.isHidden) {
-        url.isFlagged = false
-        el.style.backgroundColor = '#757575'
-        el.style.color = '#ffffff'
-        el.style.position = 'relative'
-        el.innerHTML = 'Hidden by Owner'
+        url.isFlagged = false;
+        el.style.backgroundColor = "#757575";
+        el.style.color = "#ffffff";
+        el.style.position = "relative";
+        el.innerHTML = "Hidden by Owner";
       } else if (!!url && !!url.name) {
-        el.innerHTML = url.name
-        el.setAttribute('href', url.url)
-        el.style.backgroundColor = 'inherit'
-        el.style.color = 'inherit'
+        el.innerHTML = url.name;
+        el.setAttribute("href", url.url);
+        el.style.backgroundColor = "inherit";
+        el.style.color = "inherit";
       } else if (!!url && !!url.urlHtml) {
-        el.innerHTML = url.urlHtml
-        el.setAttribute('href', url.url)
-        el.style.backgroundColor = 'inherit'
-        el.style.color = 'inherit'
+        el.innerHTML = url.urlHtml;
+        el.setAttribute("href", url.url);
+        el.style.backgroundColor = "inherit";
+        el.style.color = "inherit";
       }
       if (url.isFlagged) {
-        el.setAttribute('target', '_blank')
-        el.setAttribute('data-title', 'This link has been reported as a phishing')
-        el.style.backgroundColor = '#f3e1e5'
-        el.style.color = '#bb2a45'
-        el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
-        el.style.cursor = 'default'
-        el.setAttribute('onclick', 'return false;')
+        el.setAttribute("target", "_blank");
+        el.setAttribute(
+          "data-title",
+          "This link has been reported as a phishing"
+        );
+        el.style.backgroundColor = "#f3e1e5";
+        el.style.color = "#bb2a45";
+        el.innerHTML =
+          el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`;
+        el.style.cursor = "default";
+        el.setAttribute("onclick", "return false;");
         //el.appendChild(iEl)
       } else if (!url.isFlagged && !url.isHidden) {
-        !isReview && (el.innerHTML = url.urlHtml || url.name || url.url)
-        el.style.backgroundColor = 'inherit'
-        el.style.color = 'inherit'
+        !isReview && (el.innerHTML = url.urlHtml || url.name || url.url);
+        el.style.backgroundColor = "inherit";
+        el.style.color = "inherit";
       }
       if (url.isHidden) {
-        el.setAttribute('target', '_self')
+        el.setAttribute("target", "_self");
       }
     }
   }
-  let hiddenEls = document.getElementsByClassName(url.url)
+  let hiddenEls = document.getElementsByClassName(url.url);
   if (hiddenEls?.length) {
     for (let i = 0, l = hiddenEls.length; i < l; i++) {
-      let hiddenEl = hiddenEls[i]
-      hiddenEl.setAttribute('target', '_blank')
+      let hiddenEl = hiddenEls[i];
+      hiddenEl.setAttribute("target", "_blank");
       if (url.isHidden) {
-        hiddenEl.innerHTML = 'Hidden by Owner'
-        hiddenEl.setAttribute('href', '#')
+        hiddenEl.innerHTML = "Hidden by Owner";
+        hiddenEl.setAttribute("href", "#");
       }
       if (url.isFlagged) {
-        hiddenEl.classList.add('malicious-link')
-        let iEl = document.createElement('span')
+        hiddenEl.classList.add("malicious-link");
+        let iEl = document.createElement("span");
         iEl.className +=
-          'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-        hiddenEl.appendChild(iEl)
+          "red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light";
+        hiddenEl.appendChild(iEl);
       }
     }
   }
@@ -539,143 +565,147 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
 
 export function datePrettier(date) {
   const options = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }
-  const newDate = new Date(date)
-  return newDate.toLocaleDateString('en-US', options)
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  };
+  const newDate = new Date(date);
+  return newDate.toLocaleDateString("en-US", options);
 }
 
 export function getTimeZone(isDate, fallback) {
-  let timeZone = localStorage.getItem('selectedDateFormat') || fallback?.dateFormat || ''
-  let timeFormat = localStorage.getItem('selectedTimeFormat') || fallback?.timeFormat || ''
-  let is12H = timeFormat === '12h'
-  timeFormat = is12H ? 'hh' : 'HH'
+  let timeZone =
+    localStorage.getItem("selectedDateFormat") || fallback?.dateFormat || "";
+  let timeFormat =
+    localStorage.getItem("selectedTimeFormat") || fallback?.timeFormat || "";
+  let is12H = timeFormat === "12h";
+  timeFormat = is12H ? "hh" : "HH";
 
   if (isDate) {
-    if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy`
+    if (timeZone === "DD/MM/YYYY") timeZone = `dd/MM/yyyy`;
     //timeZone = `yyyy-MM-dd HH:mm:ss`
-    if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy`
+    if (timeZone === "MM/DD/YYYY") timeZone = `MM/dd/yyyy`;
 
     //timeZone = `yyyy-MM-dd HH:mm:ss`
-    if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd`
+    if (timeZone === "YYYY/MM/DD") timeZone = `yyyy/MM/dd`;
     //timeZone = `yyyy-MM-dd HH:mm:ss`
-    return timeZone
+    return timeZone;
   }
-  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
-  if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy ${timeZoneRightText}`
+  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`;
+  if (timeZone === "DD/MM/YYYY") timeZone = `dd/MM/yyyy ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy ${timeZoneRightText}`
+  if (timeZone === "MM/DD/YYYY") timeZone = `MM/dd/yyyy ${timeZoneRightText}`;
 
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd ${timeZoneRightText}`
+  if (timeZone === "YYYY/MM/DD") timeZone = `yyyy/MM/dd ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  return timeZone
+  return timeZone;
 }
 
 export function getTimeValueFormatZone() {
-  let timeZone = localStorage.getItem('selectedDateFormat')
-  let timeFormat = localStorage.getItem('selectedTimeFormat')
-  let is12H = timeFormat === '12h'
+  let timeZone = localStorage.getItem("selectedDateFormat");
+  let timeFormat = localStorage.getItem("selectedTimeFormat");
+  let is12H = timeFormat === "12h";
 
   if (is12H) {
-    timeFormat = 'hh'
+    timeFormat = "hh";
   } else {
-    timeFormat = 'HH'
+    timeFormat = "HH";
   }
-  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
+  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`;
 
-  if (timeZone === 'DD/MM/YYYY') timeZone = `dd/MM/yyyy ${timeZoneRightText}`
+  if (timeZone === "DD/MM/YYYY") timeZone = `dd/MM/yyyy ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-  if (timeZone === 'MM/DD/YYYY') timeZone = `MM/dd/yyyy ${timeZoneRightText}`
+  if (timeZone === "MM/DD/YYYY") timeZone = `MM/dd/yyyy ${timeZoneRightText}`;
 
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-  if (timeZone === 'YYYY/MM/DD') timeZone = `yyyy/MM/dd ${timeZoneRightText}`
+  if (timeZone === "YYYY/MM/DD") timeZone = `yyyy/MM/dd ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-  return timeZone
+  return timeZone;
 }
 export function getTimeZoneForMoment(fallback) {
-  let timeZone = localStorage.getItem('selectedDateFormat') || fallback?.dateFormat || ''
-  let timeFormat = localStorage.getItem('selectedTimeFormat') || fallback?.timeFormat || ''
+  let timeZone =
+    localStorage.getItem("selectedDateFormat") || fallback?.dateFormat || "";
+  let timeFormat =
+    localStorage.getItem("selectedTimeFormat") || fallback?.timeFormat || "";
 
-  let is12H = timeFormat === '12h'
+  let is12H = timeFormat === "12h";
 
   if (is12H) {
-    timeFormat = 'hh'
+    timeFormat = "hh";
   } else {
-    timeFormat = 'HH'
+    timeFormat = "HH";
   }
-  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`
+  const timeZoneRightText = is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`;
 
-  if (timeZone === 'DD/MM/YYYY') timeZone = `DD/MM/YYYY ${timeZoneRightText}`
+  if (timeZone === "DD/MM/YYYY") timeZone = `DD/MM/YYYY ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  if (timeZone === 'MM/DD/YYYY') timeZone = `MM/DD/YYYY ${timeZoneRightText}`
+  if (timeZone === "MM/DD/YYYY") timeZone = `MM/DD/YYYY ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
-  if (timeZone === 'YYYY/MM/DD') timeZone = `YYYY/MM/DD ${timeZoneRightText}`
+  if (timeZone === "YYYY/MM/DD") timeZone = `YYYY/MM/DD ${timeZoneRightText}`;
   //timeZone = `yyyy-MM-dd HH:mm:ss`
 
-  return timeZone
+  return timeZone;
 }
 
 export function deepCopyArray(data) {
-  return JSON.parse(JSON.stringify(data))
+  return JSON.parse(JSON.stringify(data));
 }
 
 export function getDefaultFilter() {
   return deepCopyArray({
     filter: {
-      Condition: 'AND',
-      SearchInputTextValue: '',
+      Condition: "AND",
+      SearchInputTextValue: "",
       FilterGroups: [
         {
-          Condition: 'AND',
+          Condition: "AND",
           FilterItems: [],
           FilterGroups: []
         },
         {
-          Condition: 'OR',
+          Condition: "OR",
           FilterItems: [],
           FilterGroups: []
         }
       ]
     }
-  })
+  });
 }
 
 export function getDefaultAxiosPayload(props, defaultOrderBy = null) {
   return deepCopyArray({
     pageNumber: 1,
     pageSize: 10,
-    orderBy: defaultOrderBy !== null ? defaultOrderBy : 'CreateTime',
+    orderBy: defaultOrderBy !== null ? defaultOrderBy : "CreateTime",
     ascending: false,
     filter: getDefaultFilter().filter,
     ...props
-  })
+  });
 }
 
 export function getSelectSearchPayload(
   payload = {},
-  search = '',
-  key = 'name',
+  search = "",
+  key = "name",
   extraFilterItems = []
 ) {
-  const copyOfPayload = JSON.parse(JSON.stringify(payload))
-  copyOfPayload.pageSize = 100
-  copyOfPayload.pageNumber = 1
+  const copyOfPayload = JSON.parse(JSON.stringify(payload));
+  copyOfPayload.pageSize = 100;
+  copyOfPayload.pageNumber = 1;
   copyOfPayload.filter.FilterGroups[1].FilterItems.push(
     {
       Value: search,
       FieldName: key,
-      Operator: 'Contains'
+      Operator: "Contains"
     },
     ...extraFilterItems
-  )
-  return copyOfPayload
+  );
+  return copyOfPayload;
 }
 
 export function isDifferent(a, b) {
@@ -684,78 +714,80 @@ export function isDifferent(a, b) {
     !b ||
     Object.keys(a).some((key) => {
       if (Array.isArray(a[key]) && Array.isArray(b[key])) {
-        return a[key].length !== b[key].length
+        return a[key].length !== b[key].length;
       }
       if (
-        typeof a[key] === 'object' &&
+        typeof a[key] === "object" &&
         a[key] !== null &&
-        typeof b[key] === 'object' &&
+        typeof b[key] === "object" &&
         b[key] !== null
       ) {
-        return isDifferent(a[key], b[key])
+        return isDifferent(a[key], b[key]);
       }
-      return a[key] !== b[key]
+      return a[key] !== b[key];
     })
-  )
+  );
 }
 
 export function getInvestigationStatusTooltipText(type) {
-  if (type === 'Queued') return 'This investigation will start when others before it are finished'
-  if (type === 'Running') return 'Investigation will finish on expiry date'
-  if (type === 'No match')
-    return 'This email does not match properties required by the rule: No attachment'
-  if (type === 'Finished') return 'Investigation of all target users are completed and expired'
-  if (type === 'Canceled') return 'Investigation was cancelled manually'
-  if (type === 'Expired')
-    return 'Investigation expired before completing investigation for all target users'
+  if (type === "Queued")
+    return "This investigation will start when others before it are finished";
+  if (type === "Running") return "Investigation will finish on expiry date";
+  if (type === "No match")
+    return "This email does not match properties required by the rule: No attachment";
+  if (type === "Finished")
+    return "Investigation of all target users are completed and expired";
+  if (type === "Canceled") return "Investigation was cancelled manually";
+  if (type === "Expired")
+    return "Investigation expired before completing investigation for all target users";
 }
 
 export function createCopyToClipboardSnackbar() {
-  store.dispatch('common/createSnackBar', {
+  store.dispatch("common/createSnackBar", {
     message: labels.CopiedToClipboard,
     color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-    icon: 'mdi-checkbox-marked-circle '
-  })
+    icon: "mdi-checkbox-marked-circle "
+  });
 }
 export function copyToClipboard(textToCopy) {
   // navigator clipboard api needs a secure context (https)
   try {
     if (navigator.clipboard && window.isSecureContext) {
       // navigator clipboard api method'
-      createCopyToClipboardSnackbar()
-      return navigator.clipboard.writeText(textToCopy)
+      createCopyToClipboardSnackbar();
+      return navigator.clipboard.writeText(textToCopy);
     } else {
       // text area method
-      let textArea = document.createElement('textarea')
-      textArea.value = textToCopy
+      let textArea = document.createElement("textarea");
+      textArea.value = textToCopy;
       // make the textarea out of viewport
-      textArea.style.position = 'fixed'
-      textArea.style.left = '-999999px'
-      textArea.style.top = '-999999px'
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
       return new Promise((res, rej) => {
-        if (document.execCommand('copy')) {
-          res()
-          createCopyToClipboardSnackbar()
-        } else rej('something went wrong')
+        if (document.execCommand("copy")) {
+          res();
+          createCopyToClipboardSnackbar();
+        } else rej("something went wrong");
 
-        textArea.remove()
-      })
+        textArea.remove();
+      });
     }
   } catch (e) {}
 }
 
 export function formatSeconds(seconds = 0) {
-  const secondType = typeof seconds
-  if (secondType === 'number' || secondType === 'string') {
-    seconds = parseInt(seconds)
-    const minute = Math.floor(seconds / 60)
-    seconds = seconds - minute * 60
-    return ('0' + minute).slice(-2) + ':' + ('0' + seconds).slice(-2)
+  const secondType = typeof seconds;
+  if (secondType === "number" || secondType === "string") {
+    seconds = parseInt(seconds);
+    const minute = Math.floor(seconds / 60);
+    seconds = seconds - minute * 60;
+    return ("0" + minute).slice(-2) + ":" + ("0" + seconds).slice(-2);
   } else {
-    return '00:00'
+    return "00:00";
   }
 }
 export const getErrorMessage = (error) => {
@@ -765,64 +797,64 @@ export const getErrorMessage = (error) => {
     error?.response?.data?.message ||
     error?.response?.data?.Message ||
     error.message ||
-    'Something Went Wrong'
-  )
-}
+    "Something Went Wrong"
+  );
+};
 
-export const getDifficultyBadgeColor = (text = '') => {
-  if (text.toLowerCase() === 'easy') return '#217124'
-  if (text.toLowerCase() === 'medium') return '#2196f3'
-  if (text.toLowerCase() === 'hard') return '#f56c6c'
-  return '#2196f3'
-}
+export const getDifficultyBadgeColor = (text = "") => {
+  if (text.toLowerCase() === "easy") return "#217124";
+  if (text.toLowerCase() === "medium") return "#2196f3";
+  if (text.toLowerCase() === "hard") return "#f56c6c";
+  return "#2196f3";
+};
 
 export function createRandomCryptNumber() {
-  const crypto = window.crypto || window.msCrypto
-  if (!crypto) return parseFloat(Math.random().toFixed(10))
-  const array = new Uint32Array(1)
-  return crypto.getRandomValues(array)[0]
+  const crypto = window.crypto || window.msCrypto;
+  if (!crypto) return parseFloat(Math.random().toFixed(10));
+  const array = new Uint32Array(1);
+  return crypto.getRandomValues(array)[0];
 }
 
 export function createRandomCryptStringNumber() {
-  return createRandomCryptNumber().toString()
+  return createRandomCryptNumber().toString();
 }
 
 export function cancellableAxiosRequest(fn) {
-  let isAborted = false
-  let controller = new AbortController()
+  let isAborted = false;
+  let controller = new AbortController();
   return (...params) => {
     //that means if there is next call without resolving it would be aborted
     if (isAborted) {
-      controller.abort()
-      controller = new AbortController()
+      controller.abort();
+      controller = new AbortController();
     }
-    isAborted = true
+    isAborted = true;
     return fn(...params, {
       signal: controller.signal
     }).then((response) => {
       if (Object.keys(response).length) {
-        isAborted = false
-        controller = new AbortController()
+        isAborted = false;
+        controller = new AbortController();
       }
-      return response
-    })
-  }
+      return response;
+    });
+  };
 }
 
 export function logFormData(formData) {
   for (let pair of formData.entries()) {
-    console.log(pair[0] + ', ' + pair[1])
+    console.log(pair[0] + ", " + pair[1]);
   }
 }
 export function fileToBase64(file) {
   const toBase64 = (file) =>
     new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      if ('Blob' in window && file instanceof Blob) reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result)
-      reader.onerror = reject
-    })
-  return toBase64(file)
+      const reader = new FileReader();
+      if ("Blob" in window && file instanceof Blob) reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+  return toBase64(file);
 }
 
 /**
@@ -830,57 +862,63 @@ export function fileToBase64(file) {
  * @param {string} htmlContent - Açılacak HTML içeriği
  */
 export function openHtmlInNewWindow(htmlContent) {
-  if (!htmlContent) return
+  if (!htmlContent) return;
 
-  let processedHtml = htmlContent
+  let processedHtml = htmlContent;
 
   // UTF-8 meta tag ekle (encoding problemi için)
-  if (!processedHtml.includes('charset')) {
-    if (processedHtml.includes('<head>')) {
-      processedHtml = processedHtml.replace('<head>', '<head><meta charset="UTF-8">')
-    } else if (processedHtml.includes('<html>')) {
-      processedHtml = processedHtml.replace('<html>', '<html><head><meta charset="UTF-8"></head>')
+  if (!processedHtml.includes("charset")) {
+    if (processedHtml.includes("<head>")) {
+      processedHtml = processedHtml.replace(
+        "<head>",
+        '<head><meta charset="UTF-8">'
+      );
+    } else if (processedHtml.includes("<html>")) {
+      processedHtml = processedHtml.replace(
+        "<html>",
+        '<html><head><meta charset="UTF-8"></head>'
+      );
     } else {
-      processedHtml = `<head><meta charset="UTF-8"></head>${processedHtml}`
+      processedHtml = `<head><meta charset="UTF-8"></head>${processedHtml}`;
     }
   }
 
   // Title ekle veya güncelle
-  if (!processedHtml.includes('<title>')) {
-    if (processedHtml.includes('<head>')) {
+  if (!processedHtml.includes("<title>")) {
+    if (processedHtml.includes("<head>")) {
       processedHtml = processedHtml.replace(
-        '<head>',
-        '<head><title>Landing Page Template Preview</title>'
-      )
-    } else if (processedHtml.includes('<html>')) {
+        "<head>",
+        "<head><title>Landing Page Template Preview</title>"
+      );
+    } else if (processedHtml.includes("<html>")) {
       processedHtml = processedHtml.replace(
-        '<html>',
-        '<html><head><title>Landing Page Template Preview</title></head>'
-      )
+        "<html>",
+        "<html><head><title>Landing Page Template Preview</title></head>"
+      );
     } else {
-      processedHtml = `<head><title>Landing Page Template Preview</title></head>${processedHtml}`
+      processedHtml = `<head><title>Landing Page Template Preview</title></head>${processedHtml}`;
     }
   } else {
     processedHtml = processedHtml.replace(
       /<title>.*?<\/title>/i,
-      '<title>Landing Page Template Preview</title>'
-    )
+      "<title>Landing Page Template Preview</title>"
+    );
   }
 
   // Prevent click script'i ekle
-  const { getPreventClickScript } = require('./preventClickScript')
-  const preventScript = getPreventClickScript()
-  if (processedHtml.includes('</body>')) {
-    processedHtml = processedHtml.replace('</body>', `${preventScript}</body>`)
+  const { getPreventClickScript } = require("./preventClickScript");
+  const preventScript = getPreventClickScript();
+  if (processedHtml.includes("</body>")) {
+    processedHtml = processedHtml.replace("</body>", `${preventScript}</body>`);
   } else {
-    processedHtml += preventScript
+    processedHtml += preventScript;
   }
 
   // Blob oluştur ve aç
-  const blob = new Blob([processedHtml], { type: 'text/html;charset=UTF-8' })
-  const url = window.URL.createObjectURL(blob)
-  window.open(url, '_blank')
-  setTimeout(() => window.URL.revokeObjectURL(url), 100)
+  const blob = new Blob([processedHtml], { type: "text/html;charset=UTF-8" });
+  const url = window.URL.createObjectURL(blob);
+  window.open(url, "_blank");
+  setTimeout(() => window.URL.revokeObjectURL(url), 100);
 }
 
 /**
@@ -938,4 +976,4 @@ export const FLAGGED_AREA_CSS = `
       overflow:visible !important;
     }
   </style>
-`
+`;
