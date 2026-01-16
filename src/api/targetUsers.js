@@ -6,6 +6,10 @@ export function getTargetUsers(payload) {
   return testRequest.post(`/target-users/search`, payload)
 }
 
+export function getTargetUsersCountSummary() {
+  return testRequest.get('/target-users/count-summary')
+}
+
 export function deleteTargetUser(resourceId) {
   return testRequest.delete(`/target-users/${resourceId}`, {
     snackbar: COMMON_SNACKBAR

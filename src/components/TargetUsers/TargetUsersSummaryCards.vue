@@ -1,0 +1,148 @@
+<template>
+  <v-row class="target-users-summary-cards mb-6" dense>
+    <v-col v-for="item in items" :key="item.key" cols="12" sm="6" md="3">
+      <v-card
+        class="target-users-summary-card"
+        :class="cardClasses(item)"
+        :style="cardStyles(item)"
+        outlined
+        :ripple="false"
+      >
+        <div class="d-flex justify-space-between">
+          <div class="d-flex flex-column">
+            <div class="d-flex align-center">
+              <span class="summary-title">{{ item.title }}</span>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon
+                    v-bind="attrs"
+                    v-on="on"
+                    class="summary-info-icon"
+                    small
+                  >
+                    mdi-information-outline
+                  </v-icon>
+                </template>
+                <span class="summary-tooltip">{{ item.tooltip }}</span>
+              </v-tooltip>
+            </div>
+            <div v-if="item.subtitle" class="summary-subtitle">
+              <span>{{ item.subtitle }}</span>
+              <v-menu
+                v-if="item.menuOptions && item.menuOptions.length > 1"
+                offset-y
+                bottom
+                left
+                nudge-right="40"
+                nudge-bottom="4"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon
+                    v-bind="attrs"
+                    v-on="on"
+                    small
+                    class="summary-subtitle-icon summary-subtitle-action"
+                  >
+                    mdi-chevron-down
+                  </v-icon>
+                </template>
+                <v-list dense>
+                  <v-list-item
+                    v-for="(option, optionIndex) in item.menuOptions"
+                    :key="`${item.key}-period-${optionIndex}`"
+                    @click="
+                      $emit('period-select', {
+                        key: item.key,
+                        index: optionIndex
+                      })
+                    "
+                  >
+                    <v-list-item-title>{{ option.period }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+            <div class="summary-value">
+              <v-skeleton-loader v-if="loading" type="text" width="64" />
+              <span v-else>{{ item.value }}</span>
+            </div>
+          </div>
+          <div class="d-flex flex-column align-end">
+            <v-icon
+              class="summary-filter-icon"
+              :class="{ 'summary-filter-icon--disabled': item.disabled }"
+              :color="getFilterIconColor(item)"
+              @click.stop="handleSelect(item)"
+            >
+              {{ getFilterIconName(item) }}
+            </v-icon>
+            <img
+              v-if="item.iconType === 'image'"
+              class="summary-icon-image"
+              :src="item.icon"
+              width="64"
+              height="64"
+              alt=""
+            />
+            <v-icon v-else color="white" small>{{ item.icon }}</v-icon>
+          </div>
+        </div>
+      </v-card>
+    </v-col>
+  </v-row>
+</template>
+
+<script>
+export default {
+  name: "TargetUsersSummaryCards",
+  props: {
+    items: {
+      type: Array,
+      default: () => []
+    },
+    activeKey: {
+      type: [String, Number],
+      default: null
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    handleSelect(item) {
+      if (item.disabled) return;
+      this.$emit("select", item.key);
+    },
+    isActive(item) {
+      return this.activeKey === item.key;
+    },
+    getThemeColor(colorKey) {
+      return (
+        this.$vuetify?.theme?.currentTheme?.[colorKey] || colorKey || "#e0e0e0"
+      );
+    },
+    cardClasses(item) {
+      return {
+        "summary-card--active": this.isActive(item),
+        "summary-card--disabled": item.disabled
+      };
+    },
+    cardStyles(item) {
+      const borderColor = item.disabled
+        ? "#757575"
+        : this.getThemeColor(item.color);
+      return { borderColor };
+    },
+    getFilterIconColor(item) {
+      if (this.isActive(item)) return "primary";
+      return "grey";
+    },
+    getFilterIconName(item) {
+      return this.isActive(item)
+        ? "mdi-filter-variant-remove"
+        : "mdi-filter-variant";
+    }
+  }
+};
+</script>
