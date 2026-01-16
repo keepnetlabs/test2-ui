@@ -64,12 +64,12 @@
           </div>
           <div>
             <div style="font-weight: 600; font-size: 18px; color: #383b41;">
-              {{ limitExceededCompanyCount }} companies have exceeded their user limits. Use the
-              filter to identify them.
+              {{ limitExceededCompanyCount }} companies have exceeded their user
+              limits. Use the filter to identify them.
             </div>
             <div style="color: #757575; font-size: 14px;">
-              Use the Filter Exceeding Limit button below to filter the table and review these
-              companies.
+              Use the Filter Exceeding Limit button below to filter the table
+              and review these companies.
             </div>
           </div>
         </div>
@@ -98,10 +98,16 @@
       :clusterItems="[{ name: 'Company Name' }]"
       :rowActions="tableOptions.rowActions"
       :axios-payload.sync="payload"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-filters-local-storage-key="
+        tableOptions.savedFiltersLocalStorageKey
+      "
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       :manage-column-filter-status-from-parent="
-        isTargetUserCountExceedLimit ? { status: isTargetUserCountExceedLimit } : null
+        isTargetUserCountExceedLimit
+          ? { status: isTargetUserCountExceedLimit }
+          : null
       "
       active-cluster=""
       @clusterChanged="clusterChanged"
@@ -192,7 +198,7 @@
         </span>
         <template v-else-if="scope.column.property === 'targetUserCount'">
           <span v-if="isNumberOfUsersExceed(scope.row)">
-            <span>{{ scope.row['targetUserCount'] }}</span>
+            <span>{{ scope.row["targetUserCount"] }}</span>
             <VTooltip bottom>
               <template #activator="{ on }">
                 <VIcon v-on="on" color="#B6791D" style="margin-top: -2px;" small
@@ -206,7 +212,7 @@
             </VTooltip>
           </span>
           <span v-else>
-            {{ scope.row['targetUserCount'] }}
+            {{ scope.row["targetUserCount"] }}
           </span>
         </template>
       </template>
@@ -253,7 +259,9 @@
               color="#2196f3"
               @click="addButton"
             >
-              <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
+              <v-icon style="font-size: 20px; margin-top: 1px;"
+                >mdi-plus</v-icon
+              >
               <span class="button-new__text">NEW</span>
             </v-btn>
           </template>
@@ -265,38 +273,45 @@
 </template>
 
 <script>
-import Datatable from '@/components/DataTable'
+import Datatable from "@/components/DataTable";
 import {
   deleteCompany,
   exportCompanies,
   getCompanyByID,
   searchCompanies,
   bulkDeleteCompanies
-} from '@/api/company'
-import DeleteModal from './DeleteModal'
-import labels from '@/model/constants/labels'
+} from "@/api/company";
+import DeleteModal from "./DeleteModal";
+import labels from "@/model/constants/labels";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import CompanyListExtend from '@/components/Companies/CompanyListExtend'
-import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
-import AddGroupToModal from '@/components/Companies/AddToGroupModal'
-import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import AppModal from '@/components/AppModal'
-import { getDefaultAxiosPayload, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
-import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import AlertBox from '@/components/AlertBox.vue'
+} from "@/model/constants/commonConstants";
+import CompanyListExtend from "@/components/Companies/CompanyListExtend";
+import CompanyCreateOrEdit from "@/components/Companies/CompanyCreateOrEdit";
+import AddGroupToModal from "@/components/Companies/AddToGroupModal";
+import CreateItemModal from "@/components/CompanyGroups/CreateItemModal";
+import AppModal from "@/components/AppModal";
+import {
+  getDefaultAxiosPayload,
+  handleIsSafari,
+  setSafariClusterFix
+} from "@/utils/functions";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import ConfigureNewCompanyModal from "@/components/Companies/ConfigureNewCompanyModal";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
+import {
+  columnFilterChanged,
+  columnFilterCleared
+} from "@/utils/helperFunctions";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
+import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
+import AlertBox from "@/components/AlertBox.vue";
 export default {
-  name: 'CompanyList',
+  name: "CompanyList",
   components: {
     AlertBox,
     ConfigureNewCompanyModal,
@@ -319,7 +334,7 @@ export default {
       canRenderAlertbox: false,
       tableData: [],
       isMultipleDelete: false,
-      createdCompanyResourceIdForConfigureCompany: '',
+      createdCompanyResourceIdForConfigureCompany: "",
       isShowConfigureCompanyModal: false,
       tableHeight: 0,
       extendTop: 0,
@@ -340,118 +355,157 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.COMPANYNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
-            fixed: 'left',
+            fixed: "left",
             sortable: true,
             show: true,
-            type: 'slot',
-            filterableType: 'text',
+            type: "slot",
+            filterableType: "text",
             width: 180
           },
           {
             property: PROPERTY_STORE.RESELLERNAME,
-            align: 'left',
+            align: "left",
             editable: false,
-            label: 'Reseller Name',
+            label: "Reseller Name",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'text',
+            type: "text",
+            filterableType: "text",
             width: 180
           },
           {
             property: PROPERTY_STORE.INDUSTRYNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'select',
+            type: "text",
+            filterableType: "select",
             filterableItems: [],
-            filterableCustomFieldName: 'IndustryResourceId',
+            filterableCustomFieldName: "IndustryResourceId",
             width: 150
           },
           {
             property: PROPERTY_STORE.LICENSETYPENAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'select',
+            type: "text",
+            filterableType: "select",
             filterableItems: [],
-            filterableCustomFieldName: 'LicenseTypeResourceId',
+            filterableCustomFieldName: "LicenseTypeResourceId",
             width: 150
           },
           {
-            property: 'targetUserCount',
-            align: 'right',
+            property: "targetUserCount",
+            align: "right",
             editable: false,
             label: labels.TargetUsers,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'slot',
+            type: "slot",
             width: 160,
-            filterableType: 'number',
+            filterableType: "number",
+            emptyText: 0
+          },
+          {
+            property: "inactiveTargetUserCount",
+            align: "right",
+            editable: false,
+            label: "Inactive Users",
+            fixed: false,
+            sortable: true,
+            hideSort: true,
+            show: false,
+            type: "number",
+            width: 160,
+            emptyText: 0
+          },
+          {
+            property: "deletedTargetUserCount",
+            align: "right",
+            editable: false,
+            label: "Deleted Users",
+            fixed: false,
+            sortable: true,
+            hideSort: true,
+            show: false,
+            type: "number",
+            width: 160,
+            emptyText: 0
+          },
+          {
+            property: "monthlyActiveUserCount",
+            align: "right",
+            editable: false,
+            label: "Monthly Users",
+            fixed: false,
+            sortable: true,
+            hideSort: true,
+            show: false,
+            type: "number",
+            width: 160,
             emptyText: 0
           },
           {
             property: PROPERTY_STORE.NUMBEROFUSERS,
-            align: 'right',
+            align: "right",
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
+            label: "License Limit",
             sortable: true,
             show: true,
-            type: 'number',
-            filterableType: 'text',
+            type: "number",
+            filterableType: "text",
             width: 180,
             filterOptionProps: [
-              { text: 'Contains', value: 'Contains' },
-              { text: 'Equal', value: '=' },
-              { text: 'Not Equal', value: '!=' },
-              { text: 'Between', value: 'between' }
+              { text: "Contains", value: "Contains" },
+              { text: "Equal", value: "=" },
+              { text: "Not Equal", value: "!=" },
+              { text: "Between", value: "between" }
             ]
           },
           {
             property: PROPERTY_STORE.TAGS,
-            align: 'left',
+            align: "left",
             editable: false,
-            label: 'Tags',
+            label: "Tags",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'smallBadge',
+            type: "smallBadge",
             width: 150,
             hasTooltip: true,
-            filterableType: 'text'
+            filterableType: "text"
           },
           {
             property: PROPERTY_STORE.LICENSEENDDATE,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
             sortable: true,
             show: true,
-            type: 'date',
-            filterableType: 'date',
+            type: "date",
+            filterableType: "date",
             width: 180
           },
           {
-            property: 'createTime',
-            align: 'left',
+            property: "createTime",
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDATE),
             fixed: false,
             sortable: true,
             show: true,
-            filterableType: 'date',
-            type: 'date',
+            filterableType: "date",
+            type: "date",
             width: 180
           }
         ],
@@ -466,52 +520,65 @@ export default {
         iEmpty: {
           message: labels.EmptyCompany,
           btn: labels.New,
-          id: 'btn-empty--company',
-          icon: 'mdi-plus'
+          id: "btn-empty--company",
+          icon: "mdi-plus"
         },
         addButton: {
           show: true,
-          id: 'btn-add--company',
-          action: 'addButton',
-          tooltip: 'Add Company',
-          disabled: !this.$store.getters['permissions/getCompaniesCreatePermissions']
+          id: "btn-add--company",
+          action: "addButton",
+          tooltip: "Add Company",
+          disabled: !this.$store.getters[
+            "permissions/getCompaniesCreatePermissions"
+          ]
         },
         rowActions: [
           {
-            name: 'Edit this row',
-            id: 'btn-edit--company-row-actions',
-            icon: 'mdi-pencil',
-            action: 'editAction',
+            name: "Edit this row",
+            id: "btn-edit--company-row-actions",
+            icon: "mdi-pencil",
+            action: "editAction",
             isNotShow: true,
-            disabled: !this.$store.getters['permissions/getCompaniesEditPermissions']
+            disabled: !this.$store.getters[
+              "permissions/getCompaniesEditPermissions"
+            ]
           },
           {
-            id: 'btn-add--company-add-to-a-group-row-actions',
-            name: 'Add to a company group',
-            icon: 'mdi-account-multiple-plus',
-            action: 'AddGroupToModal',
-            disabled: !this.$store.getters['permissions/getCompanyGroupsSearchPermissions']
+            id: "btn-add--company-add-to-a-group-row-actions",
+            name: "Add to a company group",
+            icon: "mdi-account-multiple-plus",
+            action: "AddGroupToModal",
+            disabled: !this.$store.getters[
+              "permissions/getCompanyGroupsSearchPermissions"
+            ]
           },
           {
-            id: 'btn-add--company-create-new-company-group-with-company-row-actions',
-            name: 'Create a new company group with company',
-            icon: 'mdi-account-multiple',
-            action: 'createNewGroupWithCompany',
-            disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
+            id:
+              "btn-add--company-create-new-company-group-with-company-row-actions",
+            name: "Create a new company group with company",
+            icon: "mdi-account-multiple",
+            action: "createNewGroupWithCompany",
+            disabled: !this.$store.getters[
+              "permissions/getCompaniesSearchPermissions"
+            ]
           },
           {
-            id: 'btn-switch--company-switch-to-company-row-actions',
-            name: 'Switch to company',
-            icon: 'mdi-swap-horizontal',
-            action: 'switchCompany',
-            disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
+            id: "btn-switch--company-switch-to-company-row-actions",
+            name: "Switch to company",
+            icon: "mdi-swap-horizontal",
+            action: "switchCompany",
+            disabled: !this.$store.getters[
+              "permissions/getCompaniesSearchPermissions"
+            ]
           },
           {
-            id: 'btn-delete--company-row-actions',
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'delete',
-            disabled: !this.$store.getters['permissions/getCompaniesDeletePermissions']
+            id: "btn-delete--company-row-actions",
+            name: "Delete",
+            icon: "mdi-delete",
+            action: "delete",
+            disabled: !this.$store.getters[
+              "permissions/getCompaniesDeletePermissions"
+            ]
           }
         ]
       },
@@ -520,45 +587,45 @@ export default {
       serverSideProps: new ServerSideProps(),
       isTargetUserCountExceedLimit: false,
       limitExceededCompanyCount: 0
-    }
+    };
   },
   watch: {
     isShowCreateOrEditModal() {
-      document.querySelector('html').classList.toggle('overflow-y-hidden')
+      document.querySelector("html").classList.toggle("overflow-y-hidden");
     }
   },
   created() {
-    this.getLookUpDatas()
+    this.getLookUpDatas();
     if (handleIsSafari()) {
-      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
-        return setSafariClusterFix(obj, 'companyName')
-      }
+      this.bindPropsIsSafari["handleSetCellClass"] = (obj) => {
+        return setSafariClusterFix(obj, "companyName");
+      };
     }
   },
   computed: {
     getExceedingLimitFilterButtonStyle() {
       return {
         order: 1,
-        marginRight: '4px',
-        pointerEvents: this.isExceedingLimitFilterDisabled ? 'none' : 'auto'
-      }
+        marginRight: "4px",
+        pointerEvents: this.isExceedingLimitFilterDisabled ? "none" : "auto"
+      };
     },
     getExceedingLimitFilterLabel() {
-      if (this.isTargetUserCountExceedLimit) return 'REMOVE FILTER'
-      return 'FILTER EXCEEDING LIMIT'
+      if (this.isTargetUserCountExceedLimit) return "REMOVE FILTER";
+      return "FILTER EXCEEDING LIMIT";
     },
     getExceedingLimitFilterTooltip() {
       if (this.isExceedingLimitFilterDisabled)
-        return 'No companies exceeding their user limits, so the filter is disabled.'
-      if (this.isTargetUserCountExceedLimit) return 'Remove Filter'
-      return 'Filter exceeding limit'
+        return "No companies exceeding their user limits, so the filter is disabled.";
+      if (this.isTargetUserCountExceedLimit) return "Remove Filter";
+      return "Filter exceeding limit";
     }
   },
   methods: {
     handleExceedingFilterClick() {
-      this.isTargetUserCountExceedLimit = !this.isTargetUserCountExceedLimit
-      if (this.isTargetUserCountExceedLimit) this.canRenderAlertbox = false
-      this.getTableData()
+      this.isTargetUserCountExceedLimit = !this.isTargetUserCountExceedLimit;
+      if (this.isTargetUserCountExceedLimit) this.canRenderAlertbox = false;
+      this.getTableData();
     },
     handleMultipleDeleteOfCompanies(items, excludedItems, selectAll) {
       this.multipleDeletePayload = {
@@ -566,93 +633,100 @@ export default {
         excludedItems,
         selectAll,
         filter: this.payload.filter
-      }
+      };
       this.multipleDeleteCompanyCount = selectAll
         ? this.serverSideProps.totalNumberOfRecords
-        : items.length
-      this.isMultipleDelete = true
-      this.changeDeleteModalStatus(true)
+        : items.length;
+      this.isMultipleDelete = true;
+      this.changeDeleteModalStatus(true);
     },
     toggleConfigureNewCompanyModal() {
       if (this.isShowConfigureCompanyModal) {
-        this.getTableData()
+        this.getTableData();
       }
-      this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal
+      this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal;
       if (!this.isShowConfigureCompanyModal) {
-        this.createdCompanyResourceIdForConfigureCompany = ''
+        this.createdCompanyResourceIdForConfigureCompany = "";
       }
     },
     handleSwitchCompany(account = {}) {
-      this.$router.go(0)
-      localStorage.setItem('isSelectCompany', true)
-      localStorage.setItem('companyId', account.companyResourceId)
-      localStorage.setItem('companyRequestId', account.companyResourceId)
-      localStorage.setItem('selectedCompanyRequestId', account.companyResourceId)
-      localStorage.setItem('selectedCompanyName', account.companyName)
+      this.$router.go(0);
+      localStorage.setItem("isSelectCompany", true);
+      localStorage.setItem("companyId", account.companyResourceId);
+      localStorage.setItem("companyRequestId", account.companyResourceId);
+      localStorage.setItem(
+        "selectedCompanyRequestId",
+        account.companyResourceId
+      );
+      localStorage.setItem("selectedCompanyName", account.companyName);
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.payload.pageNumber = pageNumber
-      this.getTableData()
+      this.payload.pageNumber = pageNumber;
+      this.getTableData();
     },
     sortChanged({ order, prop } = {}) {
-      this.payload.ascending = order === 'ascending'
-      this.payload.orderBy = prop
-      this.getTableData()
+      this.payload.ascending = order === "ascending";
+      this.payload.orderBy = prop;
+      this.getTableData();
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.payload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getTableData()
+      this.payload.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.getTableData();
     },
     resetPageNumber() {
-      this.payload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.payload.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
-    isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
-      return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
+    isNumberOfUsersExceed({
+      numberOfUsers,
+      targetUserCount,
+      isNumberOfUsersLimited
+    } = {}) {
+      return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers);
     },
     exceedNumberOfUsersCount({ numberOfUsers, targetUserCount } = {}) {
-      return Number(targetUserCount) - Number(numberOfUsers)
+      return Number(targetUserCount) - Number(numberOfUsers);
     },
     handleChangeIsSettingsOpen(val) {
       if (val) {
-        this.isShowExtended = false
+        this.isShowExtended = false;
       }
     },
     handleSearchChange(searchFilter = {}) {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.getTableData()
+      ];
+      this.resetPageNumber();
+      this.getTableData();
     },
     handleCellClick({ column, event }) {
-      if (column.property === 'companyName') {
-        this.extendTop = event.offsetTop
+      if (column.property === "companyName") {
+        this.extendTop = event.offsetTop;
       }
     },
     getLookUpDatas() {
       LookupLocalStorage.getMultiple([2, 3])
         .then((response) => {
-          const res = response
+          const res = response;
           this.$set(
             this.tableOptions.columns[2],
-            'filterableItems',
+            "filterableItems",
             res
               .filter((item) => item.genericCodeTypeId === 2)
               .map((item) => ({ text: item.name, value: item.resourceId }))
-          )
+          );
           this.$set(
             this.tableOptions.columns[3],
-            'filterableItems',
+            "filterableItems",
             res
               .filter((item) => item.genericCodeTypeId === 3)
               .map((item) => ({ text: item.name, value: item.resourceId }))
-          )
-          this?.$refs?.refDataList?.reRenderFilters()
+          );
+          this?.$refs?.refDataList?.reRenderFilters();
         })
-        .finally(() => this.getTableData())
+        .finally(() => this.getTableData());
     },
     getTableData(payload) {
       const _payload = {
@@ -660,8 +734,8 @@ export default {
         ...payload,
         isClustered: this.isClustered,
         isTargetUserCountExceededLimit: this.isTargetUserCountExceedLimit
-      }
-      this.loading = true
+      };
+      this.loading = true;
       searchCompanies(_payload)
         .then((response) => {
           const {
@@ -669,108 +743,119 @@ export default {
             totalNumberOfPages,
             pageNumber,
             limitExceededCompanyCount
-          } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
+          } = response.data.data;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
           this.tableData =
-            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+            response.data.data.hasOwnProperty("results") &&
+            response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
-              : []
+              : [];
           if (!this.tableData.length) {
-            this.limitExceededCompanyCount = 0
-            this.canRenderAlertbox = false
-            if (!this.isTargetUserCountExceedLimit) this.isExceedingLimitFilterDisabled = true
+            this.limitExceededCompanyCount = 0;
+            this.canRenderAlertbox = false;
+            if (!this.isTargetUserCountExceedLimit)
+              this.isExceedingLimitFilterDisabled = true;
           } else {
-            this.limitExceededCompanyCount = limitExceededCompanyCount || 0
-            this.isExceedingLimitFilterDisabled = this.limitExceededCompanyCount <= 0
-            if (this.limitExceededCompanyCount <= 0) this.canRenderAlertbox = false
-            if (this.limitExceededCompanyCount > 0 && !this.isTargetUserCountExceedLimit) {
-              this.canRenderAlertbox = true
+            this.limitExceededCompanyCount = limitExceededCompanyCount || 0;
+            this.isExceedingLimitFilterDisabled =
+              this.limitExceededCompanyCount <= 0;
+            if (this.limitExceededCompanyCount <= 0)
+              this.canRenderAlertbox = false;
+            if (
+              this.limitExceededCompanyCount > 0 &&
+              !this.isTargetUserCountExceedLimit
+            ) {
+              this.canRenderAlertbox = true;
             }
           }
         })
         .catch(() => {
-          this.tableData = []
+          this.tableData = [];
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.loading = false));
     },
     getManipulatedTableData(data, isChild = false) {
       data.forEach((item) => {
         if (isChild) {
-          item.isChild = true
+          item.isChild = true;
         }
         if (item.children) {
-          this.getManipulatedTableData(item.children, true)
+          this.getManipulatedTableData(item.children, true);
         }
-      })
-      return data
+      });
+      return data;
     },
     clusterChanged() {
-      this.isClustered = true
-      this.resetPageNumber()
-      this.resetTableFilters()
-      this.getTableData()
+      this.isClustered = true;
+      this.resetPageNumber();
+      this.resetTableFilters();
+      this.getTableData();
     },
     handleListBulletedClick() {
-      this.isClustered = false
-      this.resetPageNumber()
-      this.resetTableFilters()
-      this.getTableData()
+      this.isClustered = false;
+      this.resetPageNumber();
+      this.resetTableFilters();
+      this.getTableData();
     },
     resetTableFilters() {
-      this.payload.filter.FilterGroups[0].FilterItems = []
-      this?.$refs?.refDataList?.reRenderFilters({})
+      this.payload.filter.FilterGroups[0].FilterItems = [];
+      this?.$refs?.refDataList?.reRenderFilters({});
     },
     handleTableItemDelete(selectedItem) {
-      this.isMultipleDelete = false
-      this.selectedRow = selectedItem
-      this.changeDeleteModalStatus(true)
+      this.isMultipleDelete = false;
+      this.selectedRow = selectedItem;
+      this.changeDeleteModalStatus(true);
     },
     deleteConfirmedItem() {
       deleteCompany(this.selectedRow.companyResourceId).then((response) => {
-        this?.$refs?.refDataList?.unSelectRow(this.selectedRow)
-        this?.$refs?.refDataList?.changeServerSideSelectionCount(-1)
+        this?.$refs?.refDataList?.unSelectRow(this.selectedRow);
+        this?.$refs?.refDataList?.changeServerSideSelectionCount(-1);
         if (response.data && response.data.message) {
-          this.getTableData()
+          this.getTableData();
         }
-      })
+      });
     },
     deleteMultipleConfirmedItems() {
-      this.isDeleting = true
+      this.isDeleting = true;
       bulkDeleteCompanies(this.multipleDeletePayload)
         .then(() => {
           if (this.$refs?.refDataList) {
-            this?.$refs?.refDataList?.resetSelectableParams()
+            this?.$refs?.refDataList?.resetSelectableParams();
           }
-          this.getTableData()
+          this.getTableData();
         })
         .finally(() => {
-          this.isDeleting = false
-        })
+          this.isDeleting = false;
+        });
     },
     changeDeleteModalStatus(status) {
-      this.isShowDeleteModal = status
+      this.isShowDeleteModal = status;
     },
     changeCreateOrEditModalStatus(status) {
-      this.isShowCreateOrEditModal = status
+      this.isShowCreateOrEditModal = status;
     },
     handleCompanyNameClick(row) {
-      this.$refs.extend.clickClose()
-      this.selectedRow = row
-      this.selectedExtend = {}
-      if (this.$refs && this.$refs.refDataList && this.$refs.refDataList.isSettingsOpened) {
-        this.$refs.refDataList.toggleIsSettingsOpened()
+      this.$refs.extend.clickClose();
+      this.selectedRow = row;
+      this.selectedExtend = {};
+      if (
+        this.$refs &&
+        this.$refs.refDataList &&
+        this.$refs.refDataList.isSettingsOpened
+      ) {
+        this.$refs.refDataList.toggleIsSettingsOpened();
       }
-      this.isShowExtended = true
-      this.tableHeight = this.$refs.refDataList.$el.clientHeight
+      this.isShowExtended = true;
+      this.tableHeight = this.$refs.refDataList.$el.clientHeight;
       getCompanyByID(row.companyResourceId, false)
         .then((response) => {
-          this.selectedExtend = response.data.data
+          this.selectedExtend = response.data.data;
         })
         .catch(() => {
-          this.isShowExtended = false
-        })
+          this.isShowExtended = false;
+        });
     },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -781,90 +866,98 @@ export default {
           ascending: this.payload.ascending,
           isClustered: this.isClustered,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
+          exportType: item === "XLS" ? "Excel" : item,
           filter: this.payload.filter,
           isTargetUserCountExceededLimit: this.isTargetUserCountExceedLimit
-        }
+        };
         exportCompanies(payload)
           .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
             link.download = `Companies.${
-              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-            }`
-            link.click()
+              item.toLocaleLowerCase() === "xls"
+                ? "xlsx"
+                : item.toLocaleLowerCase()
+            }`;
+            link.click();
           })
-          .catch(() => {})
-      })
+          .catch(() => {});
+      });
     },
     addButton() {
-      this.changeCreateOrEditModalStatus(true)
+      this.changeCreateOrEditModalStatus(true);
     },
     editAction(row) {
-      this.selectedRow = row
-      this.editModal = true
-      this.isShowExtended = false
+      this.selectedRow = row;
+      this.editModal = true;
+      this.isShowExtended = false;
 
       getCompanyByID(row.companyResourceId)
         .then((response) => {
-          this.selectedExtend = response.data.data
-          this.changeCreateOrEditModalStatus(true)
+          this.selectedExtend = response.data.data;
+          this.changeCreateOrEditModalStatus(true);
         })
         .catch(() => {
-          this.isShowExtended = false
-        })
+          this.isShowExtended = false;
+        });
     },
     cancelCreateOrEditForm() {
-      this.isShowCreateOrEditModal = false
-      this.editModal = false
-      this.selectedExtend = {}
-      this.selectedRow = {}
-      this.getTableData({ orderBy: 'createTime', ascending: false })
+      this.isShowCreateOrEditModal = false;
+      this.editModal = false;
+      this.selectedExtend = {};
+      this.selectedRow = {};
+      this.getTableData({ orderBy: "createTime", ascending: false });
     },
-    closeFormConfigureNewCompanyModal(createdCompanyResourceId = '') {
-      this.createdCompanyResourceIdForConfigureCompany = createdCompanyResourceId
-      this.cancelCreateOrEditForm()
-      this.toggleConfigureNewCompanyModal()
+    closeFormConfigureNewCompanyModal(createdCompanyResourceId = "") {
+      this.createdCompanyResourceIdForConfigureCompany = createdCompanyResourceId;
+      this.cancelCreateOrEditForm();
+      this.toggleConfigureNewCompanyModal();
     },
     closeExtend() {
-      this.selectedExtend = {}
-      this.isShowExtended = false
-      this.selectedRow = {}
+      this.selectedExtend = {};
+      this.isShowExtended = false;
+      this.selectedRow = {};
     },
     handleAddGroupToModal(v) {
       if (Array.isArray(v)) {
-        this.companyIdArray = v.map((x) => x.companyResourceId)
+        this.companyIdArray = v.map((x) => x.companyResourceId);
       } else {
-        this.companyIdArray = [v.companyResourceId]
+        this.companyIdArray = [v.companyResourceId];
       }
-      this.showAddGroupToModal = true
+      this.showAddGroupToModal = true;
     },
     handleStatusAddGroupToModal(status) {
-      this.showAddGroupToModal = status
+      this.showAddGroupToModal = status;
       if (status === false) {
-        this.getTableData()
+        this.getTableData();
       }
     },
     handleCreateNewGroupWithCompany(row) {
-      this.changeGroupModalStatus(true)
+      this.changeGroupModalStatus(true);
       this.selectedRow = {
         ...row,
         ...{ name: null },
         ...{ resourceId: row.companyResourceId }
-      }
+      };
     },
     changeGroupModalStatus(status) {
-      this.showCreateNewGroupWithCompany = status
+      this.showCreateNewGroupWithCompany = status;
     },
     columnFilterChanged(filter) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
-      this.getTableData()
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.payload
+      );
+      this.getTableData();
     },
     columnFilterCleared(fieldName) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
-      this.getTableData()
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.payload
+      );
+      this.getTableData();
     }
   }
-}
+};
 </script>
