@@ -479,6 +479,11 @@ export const COLUMNS = {
     filterableType: 'date'
   }
 }
+
+export const ENROLLMENT_AUDIENCE = {
+  ...COLUMNS.AUDIENCE,
+  filterableCustomFieldName: PROPERTY_STORE.ROLES
+}
 export const DISTRIBUTION_DELAY_TIME_TYPES = [
   {
     text: 'seconds',

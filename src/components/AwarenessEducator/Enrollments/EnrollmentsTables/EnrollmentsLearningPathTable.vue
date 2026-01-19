@@ -58,7 +58,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { COLUMNS } from '../../utils'
+import { COLUMNS, ENROLLMENT_AUDIENCE } from '../../utils'
 import EnrollmentsTableRowActions from '@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -131,7 +131,7 @@ export default {
           COLUMNS.ENROLLMENT_NAME,
           COLUMNS.LEARNING_PATH_NAME,
           COLUMNS.CATEGORY,
-          COLUMNS.AUDIENCE,
+          ENROLLMENT_AUDIENCE,
           COLUMNS.LANGUAGES,
           COLUMNS.ENROLLED_BY,
           COLUMNS.START_DATE,
