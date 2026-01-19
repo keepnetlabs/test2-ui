@@ -1,6 +1,14 @@
 <template>
   <div>
     <div>
+      <CommonReportViewTargetGroupsModal
+        v-if="isGroupsDialogOpen"
+        :status="isGroupsDialogOpen"
+      title="Groups"
+      subtitle="Groups the user has been added to"
+        :target-groups="selectedGroups"
+        @on-close="handleGroupsDialogClose"
+      />
       <CampaignManagerReportBotActivityAlertBox
         v-if="!isLoading && botActivityCount > 0"
         :bot-activity-count="botActivityCount"
@@ -26,8 +34,12 @@
       :add-button="tableOptions.addButton"
       :select-event="tableOptions.selectEvent"
       :axios-payload.sync="axiosPayload"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-filters-local-storage-key="
+        tableOptions.savedFiltersLocalStorageKey
+      "
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -47,7 +59,9 @@
           :id="tableOptions.rowActions[0].id"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled || campaignDurationExpired()"
+          :disabled="
+            tableOptions.rowActions[0].disabled || campaignDurationExpired()
+          "
           :disabledTooltipText="
             campaignDurationExpired
               ? 'You cannot resend this campaign because its lifetime has expired'
@@ -75,38 +89,47 @@
           :timeKey="COLUMNS.LAST_OPENED.property"
           localTimeKey="lastOpenedTimeToLocalUser"
         />
+        <CampaignManagerReportGroupsColumn
+          v-if="col.property === COLUMNS.GROUPS.property"
+          :value="scope.row?.targetGroups"
+          @click="handleGroupsClick"
+        />
       </template>
     </DataTable>
   </div>
 </template>
 
 <script>
-import DataTable from '@/components/DataTable'
-import { COLUMNS } from './utils'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
+import DataTable from "@/components/DataTable";
+import { COLUMNS } from "./utils";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import labels from "@/model/constants/labels";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
+} from "@/model/constants/commonConstants";
 import {
   exportCampaignJobUserEmailOpened,
   searchCampaignJobUserEmailOpened
-} from '@/api/phishingsimulator'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import { useLoading } from '@/hooks/useLoading'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import { createCustomFieldColumns } from '@/utils/helperFunctions'
-import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
-import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
-import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
-import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import CampaignManagerReportBotActivityAlertBox from '@/components/CampaignManagerReport/CampaignManagerReportBotActivityAlertBox.vue'
+} from "@/api/phishingsimulator";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import { useLoading } from "@/hooks/useLoading";
+import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import { createCustomFieldColumns } from "@/utils/helperFunctions";
+import CampaignManagerReportActivityColumn from "@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue";
+import CampaignManagerReportGroupsColumn from "@/components/CampaignManagerReport/CampaignManagerReportGroupsColumn.vue";
+import CampaignManagerReportTimeZoneColumn from "@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue";
+import CommonReportViewTargetGroupsModal from "@/components/Common/Report/CommonReportViewTargetGroupsModal.vue";
+import useSandboxTableActionLabel from "@/hooks/useSandboxTableActionLabel";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
+import CampaignManagerReportBotActivityAlertBox from "@/components/CampaignManagerReport/CampaignManagerReportBotActivityAlertBox.vue";
 export default {
-  name: 'CampaignManagerReportOpenedTable',
+  name: "CampaignManagerReportOpenedTable",
   components: {
     CampaignManagerReportActivityColumn,
+    CampaignManagerReportGroupsColumn,
+    CommonReportViewTargetGroupsModal,
     CampaignManagerReportTimeZoneColumn,
     DataTable,
     DefaultButtonRowAction,
@@ -138,16 +161,17 @@ export default {
     return {
       COLUMNS,
       CONSTANTS: {
-        id: 'campaign-manager-opened-data-table',
-        ascending: 'ascending'
+        id: "campaign-manager-opened-data-table",
+        ascending: "ascending"
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: "FirstName" }),
       tableData: [],
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         savedFiltersLocalStorageKey:
           DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
           resend: true
@@ -157,6 +181,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.GROUPS,
           COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
@@ -167,11 +192,11 @@ export default {
         addButton: {
           show: false,
           icon: null,
-          label: 'SHOW BOT ACTIVITY',
-          action: 'on-activity',
+          label: "SHOW BOT ACTIVITY",
+          action: "on-activity",
           hideTooltip: true,
-          type: 'outlined',
-          id: 'btn-select--hide-sandbox-activity'
+          type: "outlined",
+          id: "btn-select--hide-sandbox-activity"
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
@@ -179,48 +204,56 @@ export default {
         rowActions: [
           {
             name: labels.Resend,
-            id: 'btn-resend--row-actions-campaign-manager-report-opened',
-            icon: '$custom-resend',
-            action: 'on-resend',
+            id: "btn-resend--row-actions-campaign-manager-report-opened",
+            icon: "$custom-resend",
+            action: "on-resend",
             disabled: false
           },
           {
             name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-opened',
-            icon: '$custom-details',
-            action: 'on-detail',
-            disabled: !this.$store.getters['permissions/getCampaignReportsOpenedDetailsPermissions']
+            id: "btn-details--row-actions-campaign-manager-report-opened",
+            icon: "$custom-details",
+            action: "on-detail",
+            disabled: !this.$store.getters[
+              "permissions/getCampaignReportsOpenedDetailsPermissions"
+            ]
           }
         ]
       },
-      languageOptions: []
-    }
+      languageOptions: [],
+      isGroupsDialogOpen: false,
+      selectedGroups: []
+    };
   },
   created() {
-    this.callForLanguages()
+    this.callForLanguages();
   },
   mounted() {
     // DataTable component'i mount edildikten sonra filtreler localStorage'dan okunup axiosPayload'a uygulanır
     this.$nextTick(() => {
-      this.callForData()
-    })
+      this.callForData();
+    });
   },
   watch: {
     customFields: {
       deep: true,
       immediate: true,
       handler(val) {
-        const fields = createCustomFieldColumns(val)
+        const fields = createCustomFieldColumns(val);
+        const groupIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === COLUMNS.GROUPS.property
+        );
         const departmentIndex = this.tableOptions.columns.findIndex(
-          (column) => column.property === 'department'
-        )
-        if (departmentIndex) {
-          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+          (column) => column.property === "department"
+        );
+        const insertIndex = groupIndex !== -1 ? groupIndex : departmentIndex;
+        if (insertIndex !== -1) {
+          this.tableOptions.columns.splice(insertIndex + 1, 0, ...fields);
         }
       }
     },
     isShowSandbox(val) {
-      this.$emit('update:is-show-sandbox-from-parent', val)
+      this.$emit("update:is-show-sandbox-from-parent", val);
     }
   },
   methods: {
@@ -231,27 +264,47 @@ export default {
             text: language.isoFriendlyName,
             languageTypeName: language.name,
             value: language.resourceId
-          })) || []
+          })) || [];
         this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'preferredLanguage'),
-          'filterableItems',
+          this.tableOptions.columns.find(
+            (col) => col.property === "preferredLanguage"
+          ),
+          "filterableItems",
           this.languageOptions || []
-        )
+        );
         this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'emailTemplateLanguage'),
-          'filterableItems',
-          this.languageOptions.map((option) => ({ text: option.text, value: option.text })) || []
-        )
-        this?.$refs?.refTable?.reRenderFilters()
-      })
+          this.tableOptions.columns.find(
+            (col) => col.property === "emailTemplateLanguage"
+          ),
+          "filterableItems",
+          this.languageOptions.map((option) => ({
+            text: option.text,
+            value: option.text
+          })) || []
+        );
+        this?.$refs?.refTable?.reRenderFilters();
+      });
     },
     handleSelectionChange(selectionCount) {
-      this.$emit('on-selection-text-change', selectionCount)
+      this.$emit("on-selection-text-change", selectionCount);
+    },
+    handleGroupsClick(groups) {
+      this.selectedGroups = (groups || []).map((name) => ({ name }));
+      this.isGroupsDialogOpen = true;
+    },
+    handleGroupsDialogClose() {
+      this.isGroupsDialogOpen = false;
+      this.selectedGroups = [];
     },
     callForData() {
-      this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id, this.instanceGroup)
+      this.setLoading(true);
+      if (typeof this.axiosPayload.activityType === "undefined")
+        this.axiosPayload.activityType = 0;
+      searchCampaignJobUserEmailOpened(
+        this.axiosPayload,
+        this.id,
+        this.instanceGroup
+      )
         .then((response) => {
           const {
             data: {
@@ -263,15 +316,15 @@ export default {
                 totalSandBoxActivityCount
               }
             }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
+          } = response;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
           this.tableData = results.map((row) => {
-            let customFields = {}
+            let customFields = {};
             row.customFieldValues.forEach((field) => {
-              customFields[`${field.name}`] = field?.value
-            })
+              customFields[`${field.name}`] = field?.value;
+            });
             return {
               ...row,
               ...customFields,
@@ -279,11 +332,11 @@ export default {
                 this.languageOptions.find(
                   (option) => option.languageTypeName === row.preferredLanguage
                 )?.text || row.preferredLanguage
-            }
-          })
-          this.botActivityCount = totalSandBoxActivityCount || 0
+            };
+          });
+          this.botActivityCount = totalSandBoxActivityCount || 0;
         })
-        .finally(this.setLoading)
+        .finally(this.setLoading);
     },
     exportCampaignManagerReportOpenedTable(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -293,34 +346,42 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
+          exportType: item === "XLS" ? "Excel" : item,
           filter: this.axiosPayload.filter,
           activityType: this.axiosPayload.activityType
-        }
-        exportCampaignJobUserEmailOpened(payload, this.id, this.instanceGroup).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+        };
+        exportCampaignJobUserEmailOpened(
+          payload,
+          this.id,
+          this.instanceGroup
+        ).then((response) => {
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
           link.download = `Campaign-Report-Opened.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+            item.toLocaleLowerCase() === "xls"
+              ? "xlsx"
+              : item.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
         Types: [1],
-        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        items: Array.isArray(items)
+          ? items.map((item) => item.resourceId)
+          : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
         filter: this.axiosPayload.filter
-      }
-      this.$emit('on-resend', payload)
+      };
+      this.$emit("on-resend", payload);
     },
     handleOnDetail(row) {
-      this.$emit('on-detail', row)
+      this.$emit("on-detail", row);
     }
   }
-}
+};
 </script>
