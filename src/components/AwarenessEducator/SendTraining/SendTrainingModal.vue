@@ -313,13 +313,17 @@ export default {
       )
       //get template
       const languages = this.getLanguages() || []
-      AwarenessEducatorService.getTrainingUrlForPreview(
-        this.selectedRow.trainingId,
+      const selectedLanguageCode = this.selectedRow?.languages?.[0]
+      const selectedLanguage =
         languages.find(
           (lang) =>
-            lang.code === this.selectedRow.languages[0] ||
-            lang.isoFriendlyName === this.selectedRow.languages[0]
-        ).id
+            lang.code === selectedLanguageCode || lang.isoFriendlyName === selectedLanguageCode
+        ) || languages[0]
+      const languageId = selectedLanguage?.id
+      if (!languageId) return
+      AwarenessEducatorService.getTrainingUrlForPreview(
+        this.selectedRow.trainingId,
+        languageId
       ).then((response) => {
         const {
           data: { data }
