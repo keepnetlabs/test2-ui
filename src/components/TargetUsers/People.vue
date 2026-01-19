@@ -90,7 +90,7 @@
     />
     <TargetUsersSummaryCards
       :items="summaryCardItems"
-      :active-key="activeSummaryKey"
+      :active-key="activeSummaryKeys"
       :loading="summaryLoading"
       @select="handleSummaryCardSelect"
       @period-select="handleMonthlyPeriodSelect"
@@ -197,6 +197,7 @@
       @columnFilterCleared="columnFilterCleared"
       @handleMultipleDelete="handleMultipleDelete"
       @downloadEvent="exportTargetUserList"
+      @clear-filters="handleClearFilters"
       @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
@@ -491,7 +492,7 @@ export default {
       monthlyActiveUsers: [],
       monthlySelectedIndex: 0,
       monthlyPeriodKey: "",
-      activeSummaryKey: null,
+      activeSummaryKeys: [],
       languageFilterOptions: [],
       formDetails: null,
       isUserDetailsDrawerOpen: false,
@@ -560,8 +561,8 @@ export default {
             fullWidth: true,
             filterableType: "select",
             filterableItems: [
-              { text: labels.Active, value: 1 },
-              { text: labels.InActive, value: 2 },
+              { text: labels.Active, value: "1" },
+              { text: labels.InActive, value: "0" },
               { text: "Deleted", value: "Deleted" }
             ],
             dbName: "Status"
@@ -903,6 +904,13 @@ export default {
       handler(val) {
         if (val?.timeZoneList?.length) this.setTimeZoneFilterableItems();
       }
+    },
+    "payload.filter.FilterGroups": {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.syncSummaryKeysFromPayload();
+      }
     }
   },
   created() {
@@ -917,7 +925,13 @@ export default {
   },
   methods: {
     handleSummaryCardSelect(key) {
-      this.activeSummaryKey = this.activeSummaryKey === key ? null : key;
+      if (this.activeSummaryKeys.includes(key)) {
+        this.activeSummaryKeys = this.activeSummaryKeys.filter(
+          (item) => item !== key
+        );
+      } else {
+        this.activeSummaryKeys = [...this.activeSummaryKeys, key];
+      }
       this.applySummaryFilter();
     },
     applySummaryFilter() {
@@ -938,17 +952,45 @@ export default {
         );
       }
 
-      if (this.activeSummaryKey === "deleted") {
+      const statusValues = this.getSummaryStatusFilterValuesForPayload();
+      const includesDeleted = this.activeSummaryKeys.includes("deleted");
+
+      if (this.activeSummaryKeys.includes("monthly")) {
+        clearedItems.push({
+          FieldName: "MonthlyActiveUser",
+          Value: this.monthlyPeriodKey,
+          Operator: "="
+        });
+        this.payload.orderBy = "";
+      }
+
+      if (includesDeleted && statusValues.length) {
+        const nextOrItems = [
+          ...(orFilterGroup?.FilterItems || []),
+          {
+            FieldName: "IsDeleted",
+            Value: true,
+            Operator: "Contains"
+          },
+          {
+            FieldName: "Status",
+            Value: statusValues.join(","),
+            Operator: "Include"
+          }
+        ];
+        if (orFilterGroup) orFilterGroup.FilterItems = nextOrItems;
+        this.payload.orderBy = "";
+      } else if (includesDeleted) {
         clearedItems.push({
           FieldName: "IsDeleted",
           Value: true,
           Operator: "Contains"
         });
         this.payload.orderBy = "";
-      } else if (this.activeSummaryKey === "active") {
+      } else if (statusValues.length) {
         clearedItems.push({
           FieldName: "Status",
-          Value: "1",
+          Value: statusValues.join(","),
           Operator: "Include"
         });
         clearedItems.push({
@@ -957,32 +999,21 @@ export default {
           Operator: "Contains"
         });
         this.payload.orderBy = "";
-      } else if (this.activeSummaryKey === "inactive") {
-        clearedItems.push({
-          FieldName: "Status",
-          Value: "2",
-          Operator: "Contains"
-        });
-        clearedItems.push({
-          FieldName: "IsDeleted",
-          Value: false,
-          Operator: "Contains"
-        });
-        this.payload.orderBy = "";
-      } else if (this.activeSummaryKey === "monthly") {
-        clearedItems.push({
-          FieldName: "MonthlyActiveUser",
-          Value: this.monthlyPeriodKey,
-          Operator: "="
-        });
-        this.payload.orderBy = "";
-      } else {
+      } else if (!this.activeSummaryKeys.includes("monthly")) {
         this.payload.orderBy = this.defaultRequestBody.orderBy;
       }
 
       this.payload.filter.FilterGroups[0].FilterItems = clearedItems;
-      if (this.activeSummaryKey) {
-        const refTable = this.$refs?.refPeopleTable;
+      this.updateStatusFilterSelection();
+      this.toggleStatusFilterVisibility(true);
+      this.resetPageNumber();
+      this.callForGetTargetUserCustomFieldsByCompanyId();
+    },
+    updateStatusFilterSelection() {
+      const refTable = this.$refs?.refPeopleTable;
+      if (!refTable) return;
+      const statusValues = this.getSummaryStatusFilterValuesForUi();
+      if (!statusValues.length) {
         if (
           refTable?.filterValues &&
           refTable.filterValues[PROPERTY_STORE.STATUS]
@@ -990,12 +1021,63 @@ export default {
           this.$delete(refTable.filterValues, PROPERTY_STORE.STATUS);
           refTable.reRenderFilters(refTable.filterValues);
         }
-        this.toggleStatusFilterVisibility(false);
-      } else {
-        this.toggleStatusFilterVisibility(true);
+        return;
       }
-      this.resetPageNumber();
-      this.callForGetTargetUserCustomFieldsByCompanyId();
+      const nextValue = {
+        textValue: "",
+        selectValue: statusValues.join(","),
+        fieldName: PROPERTY_STORE.STATUS
+      };
+      this.$set(refTable.filterValues, PROPERTY_STORE.STATUS, nextValue);
+      refTable.reRenderFilters(refTable.filterValues);
+    },
+    getSummaryStatusFilterValuesForPayload() {
+      const values = [];
+      if (this.activeSummaryKeys.includes("active")) values.push("1");
+      if (this.activeSummaryKeys.includes("inactive")) values.push("0");
+      return values;
+    },
+    getSummaryStatusFilterValuesForUi() {
+      const values = this.getSummaryStatusFilterValuesForPayload();
+      if (this.activeSummaryKeys.includes("deleted")) values.push("Deleted");
+      return values;
+    },
+    clearAllTableFilters() {
+      const refTable = this.$refs?.refPeopleTable;
+      if (refTable?.filterValues) {
+        refTable.filterValues = {};
+        refTable.reRenderFilters(refTable.filterValues);
+      }
+    },
+    getSummaryKeysFromStatusValue(rawValue) {
+      const values = Array.isArray(rawValue)
+        ? rawValue.map((val) => String(val))
+        : String(rawValue || "")
+            .split(",")
+            .map((val) => val.trim())
+            .filter(Boolean);
+      const keys = [];
+      if (values.includes("1")) keys.push("active");
+      if (values.includes("0")) keys.push("inactive");
+      if (values.includes("Deleted")) keys.push("deleted");
+      return keys;
+    },
+    clearMonthlyFilterFromPayload() {
+      const filterGroup = this.payload?.filter?.FilterGroups?.[0];
+      const orFilterGroup = this.payload?.filter?.FilterGroups?.[1];
+      if (filterGroup?.FilterItems) {
+        filterGroup.FilterItems = filterGroup.FilterItems.filter(
+          (item) => item.FieldName !== "MonthlyActiveUser"
+        );
+      }
+      if (orFilterGroup?.FilterItems) {
+        orFilterGroup.FilterItems = orFilterGroup.FilterItems.filter(
+          (item) => item.FieldName !== "MonthlyActiveUser"
+        );
+      }
+      this.activeSummaryKeys = this.activeSummaryKeys.filter(
+        (item) => item !== "monthly"
+      );
     },
     toggleStatusFilterVisibility(isVisible = true) {
       const statusColumn =
@@ -1017,7 +1099,7 @@ export default {
       if (selected.count !== undefined) {
         this.summaryCounts.monthly = selected.count;
       }
-      if (this.activeSummaryKey === "monthly") {
+      if (this.activeSummaryKeys.includes("monthly")) {
         this.applySummaryFilter();
       }
     },
@@ -1283,6 +1365,18 @@ export default {
       );
       this.payload.filter.FilterGroups[0].FilterItems = normalized.andItems;
       this.payload.filter.FilterGroups[1].FilterItems = normalized.orItems;
+      const statusFilter = Array.isArray(filter)
+        ? filter.find((item) => item.FieldName === PROPERTY_STORE.STATUS)
+        : filter?.FieldName === PROPERTY_STORE.STATUS
+        ? filter
+        : null;
+      if (statusFilter) {
+        const nextKeys = this.getSummaryKeysFromStatusValue(statusFilter.Value);
+        const hasMonthly = this.activeSummaryKeys.includes("monthly");
+        this.activeSummaryKeys = hasMonthly
+          ? [...nextKeys, "monthly"]
+          : nextKeys;
+      }
       this.callForGetTargetUserCustomFieldsByCompanyId();
     },
     columnFilterCleared(fieldName) {
@@ -1294,9 +1388,51 @@ export default {
         this.payload.filter.FilterGroups[1].FilterItems = this.payload.filter.FilterGroups[1].FilterItems.filter(
           (item) => !["IsDeleted", "Status", "status"].includes(item.FieldName)
         );
+        this.activeSummaryKeys = this.activeSummaryKeys.filter(
+          (item) => item === "monthly"
+        );
       }
       this.payload.filter.FilterGroups[0].FilterItems = nextFilters;
       this.callForGetTargetUserCustomFieldsByCompanyId();
+    },
+    handleClearFilters() {
+      this.activeSummaryKeys = [];
+      this.updateStatusFilterSelection();
+    },
+    syncSummaryKeysFromPayload() {
+      const filterGroups = this.payload?.filter?.FilterGroups || [];
+      const items = filterGroups.flatMap((group) => group?.FilterItems || []);
+      const nextKeys = new Set();
+      const statusValues = new Set();
+      items.forEach((item) => {
+        const fieldName = String(item?.FieldName || "");
+        if (fieldName === "MonthlyActiveUser") {
+          nextKeys.add("monthly");
+        }
+        if (fieldName === "IsDeleted" && item?.Value === true) {
+          nextKeys.add("deleted");
+        }
+        if (fieldName.toLowerCase() === "status") {
+          this.normalizeStatusValues(item?.Value).forEach((val) =>
+            statusValues.add(val)
+          );
+        }
+      });
+      if (statusValues.has("1")) nextKeys.add("active");
+      if (statusValues.has("0")) nextKeys.add("inactive");
+      const nextArray = Array.from(nextKeys);
+      if (this.activeSummaryKeys.join(",") !== nextArray.join(",")) {
+        this.activeSummaryKeys = nextArray;
+      }
+    },
+    normalizeStatusValues(rawValue) {
+      if (Array.isArray(rawValue)) {
+        return rawValue.map((val) => String(val));
+      }
+      return String(rawValue || "")
+        .split(",")
+        .map((val) => val.trim())
+        .filter((val) => val && val !== "Deleted");
     },
     normalizeStatusFilterItems(filterItems = [], orItems = []) {
       const normalizeFieldName = (fieldName = "") =>
