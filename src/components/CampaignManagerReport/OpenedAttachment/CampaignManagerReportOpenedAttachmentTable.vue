@@ -1,5 +1,13 @@
 <template>
   <div>
+    <CommonReportViewTargetGroupsModal
+      v-if="isGroupsDialogOpen"
+      :status="isGroupsDialogOpen"
+      title="Groups"
+      subtitle="Groups the user has been added to"
+      :target-groups="selectedGroups"
+      @on-close="handleGroupsDialogClose"
+    />
     <div>
       <CampaignManagerReportBotActivityAlertBox
         v-if="!isLoading && botActivityCount > 0"
@@ -75,6 +83,11 @@
           :timeKey="COLUMNS.LAST_OPENED.property"
           localTimeKey="lastAttachmentOpenedTimeToLocalUser"
         />
+        <CampaignManagerReportGroupsColumn
+          v-if="col.property === COLUMNS.GROUPS.property"
+          :value="scope.row?.targetGroups"
+          @click="handleGroupsClick"
+        />
       </template>
     </DataTable>
   </div>
@@ -99,6 +112,8 @@ import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
+import CampaignManagerReportGroupsColumn from '@/components/CampaignManagerReport/CampaignManagerReportGroupsColumn.vue'
+import CommonReportViewTargetGroupsModal from '@/components/Common/Report/CommonReportViewTargetGroupsModal.vue'
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -109,6 +124,8 @@ export default {
   components: {
     DataTable,
     CampaignManagerReportActivityColumn,
+    CampaignManagerReportGroupsColumn,
+    CommonReportViewTargetGroupsModal,
     CampaignManagerReportTimeZoneColumn,
     DefaultButtonRowAction,
     CampaignManagerReportBotActivityAlertBox
@@ -159,6 +176,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.GROUPS,
           COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
           COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
@@ -197,7 +215,9 @@ export default {
           }
         ]
       },
-      languageOptions: []
+      languageOptions: [],
+      isGroupsDialogOpen: false,
+      selectedGroups: []
     }
   },
   created() {
@@ -215,11 +235,15 @@ export default {
       immediate: true,
       handler(val) {
         const fields = createCustomFieldColumns(val)
+        const groupIndex = this.tableOptions.columns.findIndex(
+          (column) => column.property === COLUMNS.GROUPS.property
+        )
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )
-        if (departmentIndex) {
-          this.tableOptions.columns.splice(departmentIndex + 1, 0, ...fields)
+        const insertIndex = groupIndex !== -1 ? groupIndex : departmentIndex
+        if (insertIndex !== -1) {
+          this.tableOptions.columns.splice(insertIndex + 1, 0, ...fields)
         }
       }
     },
@@ -251,6 +275,14 @@ export default {
     },
     handleSelectionChange(selectionCount) {
       this.$emit('on-selection-text-change', selectionCount)
+    },
+    handleGroupsClick(groups) {
+      this.selectedGroups = (groups || []).map((name) => ({ name }))
+      this.isGroupsDialogOpen = true
+    },
+    handleGroupsDialogClose() {
+      this.isGroupsDialogOpen = false
+      this.selectedGroups = []
     },
     callForData() {
       this.setLoading(true)

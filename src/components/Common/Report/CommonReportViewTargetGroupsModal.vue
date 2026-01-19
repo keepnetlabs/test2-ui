@@ -1,7 +1,8 @@
 <template>
   <AppDialog
     icon="mdi-account-group"
-    title="Target Groups"
+    :title="title"
+    :subtitle="subtitle"
     :status="status"
     max-height-size="1200"
     @changeStatus="closeModal"
@@ -53,6 +54,14 @@ export default {
   props: {
     status: {
       type: Boolean
+    },
+    title: {
+      type: String,
+      default: 'Target Groups'
+    },
+    subtitle: {
+      type: String,
+      default: ''
     },
     targetGroups: {
       type: Array,
