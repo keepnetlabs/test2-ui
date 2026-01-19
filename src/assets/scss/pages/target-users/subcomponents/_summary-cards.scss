@@ -22,6 +22,7 @@
 
 .target-users-summary-card:hover {
   cursor: default;
+  border-width: 2px !important;
 }
 
 .target-users-summary-cards {
@@ -97,12 +98,25 @@
     position: absolute;
     right: 0;
     bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .summary-card--active {
+    border-width: 2px !important;
+
+    .summary-icon-image {
+      opacity: 1;
+      filter: none;
+    }
   }
 
   .summary-card--disabled {
     .summary-icon-image {
       opacity: 0.5;
       filter: grayscale(1);
+    }
+    .summary-icon {
+      opacity: 0.5;
     }
   }
 
