@@ -1,6 +1,6 @@
 <template>
   <v-row class="target-users-summary-cards mb-6" dense>
-    <v-col v-for="item in items" :key="item.key" cols="12" sm="6" md="3">
+    <v-col v-for="item in items" :key="item.key" cols="12" sm="6" md="6" lg="3">
       <v-card
         class="target-users-summary-card"
         :class="cardClasses(item)"
@@ -67,7 +67,7 @@
               <span v-else>{{ item.value }}</span>
             </div>
           </div>
-          <div class="d-flex flex-column align-end">
+          <div class="d-flex flex-column align-baseline">
             <v-icon
               class="summary-filter-icon"
               :class="{ 'summary-filter-icon--disabled': item.disabled }"
