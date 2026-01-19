@@ -167,6 +167,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  GROUPS: {
+    property: 'targetGroups',
+    align: 'left',
+    label: labels.Groups || 'Groups',
+    fixed: false,
+    sortable: true,
+    hideSort: true,
+    show: true,
+    type: 'slot',
+    width: 160,
+    isEditable: false
+  },
   PREFERREDLANGUAGE: {
     property: 'preferredLanguage',
     align: 'left',
