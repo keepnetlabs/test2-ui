@@ -9,6 +9,17 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+@media (max-width: 1440px) {
+  .target-users-summary-card {
+    padding: 16px !important;
+  }
+  .target-users-summary-cards {
+    .summary-value {
+      left: 16px !important;
+    }
+  }
+}
+
 .target-users-summary-card:hover {
   cursor: default;
 }
