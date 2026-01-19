@@ -167,7 +167,7 @@ export default {
             let resolvedRoleIds = []
             if (trainingRoles?.length) {
               resolvedRoleIds = trainingRoles.map((role) =>
-                role?.roleName ? role.roleName.replace(/\s/g, '') : role
+                role?.code || (role?.roleName ? role.roleName.replace(/\s/g, '') : role)
               )
             } else if (roleIds?.length) {
               resolvedRoleIds = roleIds
