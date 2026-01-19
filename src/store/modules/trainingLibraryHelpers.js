@@ -234,6 +234,11 @@ const trainingLibraryHelpers = {
       AwarenessEducatorService.getTargetAudiences().then((response) => {
         const targetAudience =
           response?.data?.data?.map((targetAudience) => ({
+            id:
+              targetAudience.id ||
+              targetAudience.roleId ||
+              targetAudience.resourceId ||
+              targetAudience.targetAudienceId,
             text: targetAudience.displayName,
             value: targetAudience.name.replace(/\s/g, '')
           })) || []
