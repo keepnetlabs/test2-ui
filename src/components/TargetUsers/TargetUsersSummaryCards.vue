@@ -129,10 +129,16 @@ export default {
       };
     },
     cardStyles(item) {
-      const borderColor = item.disabled
-        ? "#757575"
-        : this.getThemeColor(item.color);
-      return { borderColor };
+      if (item.disabled) {
+        return { borderColor: "#757575" };
+      }
+      if (item.key === "active") {
+        return { borderColor: "#2196F3" };
+      }
+      if (item.key === "monthly") {
+        return { borderColor: "#00BCD4" };
+      }
+      return { borderColor: this.getThemeColor(item.color) };
     },
     getFilterIconColor(item) {
       if (this.isActive(item)) return "primary";
