@@ -84,7 +84,7 @@
               height="64"
               alt=""
             />
-            <v-icon v-else color="white" small>{{ item.icon }}</v-icon>
+            <v-icon v-else class="summary-icon" color="white" small>{{ item.icon }}</v-icon>
           </div>
         </div>
       </v-card>
