@@ -1,3 +1,5 @@
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+
 export default {
   props: {
     languages: {
@@ -35,11 +37,17 @@ export default {
       this?.$refs?.refTable?.reRenderFilters()
     },
     targetAudiences(val) {
-      this.$set(
-        this.tableOptions.columns.find((col) => col.property === 'targetAudience'),
-        'filterableItems',
-        val
+      const audienceColumn = this.tableOptions.columns.find(
+        (col) => col.property === 'targetAudience'
       )
+      const items =
+        audienceColumn?.filterableCustomFieldName === PROPERTY_STORE.ROLES
+          ? (val || []).map((item) => ({
+              ...item,
+              value: item.id || item.roleId || item.resourceId || item.value
+            }))
+          : val
+      this.$set(audienceColumn, 'filterableItems', items)
       this?.$refs?.refTable?.reRenderFilters()
     },
     scormTypes(val) {

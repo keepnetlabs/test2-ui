@@ -46,7 +46,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { COLUMNS } from '@/components/AwarenessEducator/utils'
+import { COLUMNS, ENROLLMENT_AUDIENCE } from '@/components/AwarenessEducator/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 export default {
   name: 'TrashTable',
@@ -73,7 +73,7 @@ export default {
           COLUMNS.ENROLLMENT_NAME,
           COLUMNS.TRAINING_NAME_UNFIXED,
           COLUMNS.CATEGORY,
-          COLUMNS.AUDIENCE,
+          ENROLLMENT_AUDIENCE,
           COLUMNS.LANGUAGES,
           COLUMNS.ENROLLMENT_TYPE,
           COLUMNS.ENROLLED_BY,
