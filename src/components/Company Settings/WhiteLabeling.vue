@@ -357,6 +357,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
+import { updateFavicon } from '@/utils/favicon'
 import * as validations from '@/utils/validations'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
@@ -627,10 +628,7 @@ export default {
           const payload = response.data.data
           this.$store.dispatch('whitelabel/setState', response.data.data)
           if (payload.faviconUrl) {
-            const favIcon = document.querySelector('link[rel="icon"]')
-            if (favIcon) {
-              favIcon.href = payload.faviconUrl
-            }
+            updateFavicon(payload.faviconUrl)
           }
           this.configureCompanyWhitelabelingResourceId = payload.resourceId
           delete payload.resourceId
