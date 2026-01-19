@@ -7,7 +7,10 @@
     <!-- Chat Toggle Button - AI Agent -->
     <div
       class="ai-agent-button"
-      :class="{ 'ai-agent-button--hovered': isHoveringButton || isExpanded }"
+      :class="{
+        'ai-agent-button--hovered': isHoveringButton || isExpanded,
+        'ai-agent-button--expanded': isExpanded
+      }"
       @click="handleBtnClick"
       @mouseenter="isHoveringButton = true"
       @mouseleave="isHoveringButton = false"
@@ -326,6 +329,10 @@ export default {
   padding: 0 12px;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 4px 16px rgba(17, 115, 193, 0.2);
+}
+
+.ai-agent-button--expanded {
+  z-index: 999;
 }
 
 .ai-agent-button:hover {
