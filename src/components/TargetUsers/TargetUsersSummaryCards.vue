@@ -101,7 +101,7 @@ export default {
       default: () => []
     },
     activeKey: {
-      type: [String, Number],
+      type: [String, Number, Array],
       default: null
     },
     loading: {
@@ -115,6 +115,9 @@ export default {
       this.$emit("select", item.key);
     },
     isActive(item) {
+      if (Array.isArray(this.activeKey)) {
+        return this.activeKey.includes(item.key);
+      }
       return this.activeKey === item.key;
     },
     getThemeColor(colorKey) {
