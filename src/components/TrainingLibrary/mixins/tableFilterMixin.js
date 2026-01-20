@@ -21,17 +21,24 @@ export default {
       removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload',
       setSortBy: 'trainingLibrary/setSortBy'
     }),
+    getFilterKey(fieldName) {
+      if (fieldName === 'vendorName') return 'vendor'
+      if (fieldName === 'roles') return 'targetAudience'
+      return fieldName
+    },
+    getTableFieldName(filterKey) {
+      if (filterKey === 'vendor') return 'vendorName'
+      if (filterKey === 'targetAudience') return 'roles'
+      return filterKey
+    },
     columnFilterChanged(filter) {
       const isFilterArray = Array.isArray(filter)
       const activeFilter = this.filters.find((item) => {
-        let key
-        if (isFilterArray) {
-          key = filter[0].FieldName
-        } else {
-          key = filter.FieldName === 'vendorName' ? 'vendor' : filter.FieldName
-        }
+        const fieldName = isFilterArray ? filter[0].FieldName : filter.FieldName
+        const key = this.getFilterKey(fieldName)
         return item.key.toLowerCase() === key.toLowerCase()
       })
+      if (!activeFilter) return
       this.$set(activeFilter, 'isFilterActive', true)
       let activeValue = isFilterArray
         ? filter.map((item) => item.Value || item.value)
@@ -43,9 +50,10 @@ export default {
     },
     columnFilterCleared(fieldName) {
       const filter = this.filters.find((item) => {
-        const key = fieldName === 'vendorName' ? 'vendor' : fieldName
+        const key = this.getFilterKey(fieldName)
         return item.key.toLowerCase() === key.toLowerCase()
       })
+      if (!filter) return
       this.$set(filter, 'isFilterActive', false)
       let filterValue, filterOperator
       if (filter.filterType === 'search' || filter.filterType === 'longTextSearch') {
@@ -68,7 +76,7 @@ export default {
       const filterValues = {}
       this.filters.forEach((filter) => {
         let { activeOperator, activeValue, key } = filter
-        if (key === 'vendor') key = 'vendorName'
+        key = this.getTableFieldName(key)
         const assignedFilterObj = {
           fieldName: '',
           selectValue: '',

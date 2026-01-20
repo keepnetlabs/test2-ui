@@ -233,15 +233,18 @@ const trainingLibraryHelpers = {
     callForTargetAudiences({ commit, dispatch }) {
       AwarenessEducatorService.getTargetAudiences().then((response) => {
         const targetAudience =
-          response?.data?.data?.map((targetAudience) => ({
-            id:
-              targetAudience.id ||
-              targetAudience.roleId ||
-              targetAudience.resourceId ||
-              targetAudience.targetAudienceId,
-            text: targetAudience.displayName,
-            value: targetAudience.name.replace(/\s/g, '')
-          })) || []
+          response?.data?.data?.map((targetAudience) => {
+          const id =
+            targetAudience.id ||
+            targetAudience.roleId ||
+            targetAudience.resourceId ||
+            targetAudience.targetAudienceId
+            return {
+              id,
+              text: targetAudience.displayName,
+            value: id != null ? String(id) : ''
+            }
+          }) || []
         commit('SET_TARGET_AUDIENCES', targetAudience)
         dispatch(
           'trainingLibrary/setFilterItems',
