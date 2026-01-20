@@ -26,10 +26,14 @@
           :template-type="templateType"
           :isAttachmentBasedTemplate="isAttachmentBasedScenario"
           :customHeadScripts="customHeadScripts"
+          :customHeadScriptsPlacement="customHeadScriptsPlacement"
           :isShowHeadScripts="isShowHeadScripts"
           :isProtocolHttp="isProtocolHttp"
           @on-custom-head-scripts-change="
             (value, pageIndex) => onCustomHeadScriptsChange(value, pageIndex)
+          "
+          @on-custom-head-scripts-placement-change="
+            (value, pageIndex) => onCustomHeadScriptsPlacementChange(value, pageIndex)
           "
         />
       </template>
@@ -833,6 +837,7 @@ export default {
     'redFlags',
     'isPlainText',
     'customHeadScripts',
+    'customHeadScriptsPlacement',
     'currentPageIndex',
     'isShowHeadScripts',
     'showEditButton',
@@ -1233,6 +1238,9 @@ export default {
     },
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$emit('on-custom-head-scripts-change', value, pageIndex)
+    },
+    onCustomHeadScriptsPlacementChange(value, pageIndex) {
+      this.$emit('on-custom-head-scripts-placement-change', value, pageIndex)
     },
     getListItemClass(state) {
       return {

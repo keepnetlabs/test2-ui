@@ -18,7 +18,7 @@
     <app-dialog
       :status="showHeadScriptsDialog"
       title="Custom Scripts"
-      subtitle="Add custom JavaScript code that will be inserted at the beginning of the HTML body section:"
+      subtitle="Add custom JavaScript code that will be inserted into the HTML body section:"
       size="big"
       @changeStatus="handleHeadScriptsDialogStatus"
     >
@@ -29,10 +29,21 @@
         ></div>
       </template>
       <template #app-dialog-footer>
-        <app-dialog-footer
-          @handleClose="handleHeadScriptsCancel"
-          @handleConfirm="handleHeadScriptsSave"
-        />
+        <div class="d-flex align-center w-100">
+          <v-switch
+            v-model="customHeadScriptsPlacementValue"
+            :false-value="'body-start'"
+            :true-value="'body-end'"
+            label="Insert scripts at end of body"
+            class="mt-0"
+            hide-details
+          />
+          <app-dialog-footer
+            class="ml-auto"
+            @handleClose="handleHeadScriptsCancel"
+            @handleConfirm="handleHeadScriptsSave"
+          />
+        </div>
       </template>
     </app-dialog>
   </div>
@@ -123,6 +134,10 @@ export default {
       type: String,
       default: ''
     },
+    customHeadScriptsPlacement: {
+      type: String,
+      default: 'body-start'
+    },
     currentPageIndex: {
       type: Number,
       default: 0
@@ -149,7 +164,8 @@ export default {
           'invalid url'
       },
       urlMergedTexts: [{ value: '', name: 'No Merged Text' }],
-      editedCustomHeadScripts: ''
+      editedCustomHeadScripts: '',
+      customHeadScriptsPlacementValue: this.customHeadScriptsPlacement
     }
   },
   created() {
@@ -1147,6 +1163,7 @@ export default {
     },
     openHeadScriptsEditor() {
       this.showHeadScriptsDialog = true
+      this.customHeadScriptsPlacementValue = this.customHeadScriptsPlacement
       this.$nextTick(() => {
         this.initializeCodeMirror()
       })
@@ -1229,6 +1246,11 @@ export default {
         this.$emit('update:customHeadScripts', newValue)
         this.$emit('on-custom-head-scripts-change', newValue, this.currentPageIndex)
       }
+      this.$emit(
+        'on-custom-head-scripts-placement-change',
+        this.customHeadScriptsPlacementValue,
+        this.currentPageIndex
+      )
       this.showHeadScriptsDialog = false
       this.codeMirrorViewer = null
       // Clear the container
@@ -1278,12 +1300,15 @@ export default {
         })
       }
       if (this.customHeadScripts && this.customHeadScripts.trim()) {
+        const scriptsPlacement =
+          this.customHeadScriptsPlacement === 'body-end' ? 'body-end' : 'body-start'
         const createScript = (script) => {
           const newScript = document.createElement('script')
           if (script.src) newScript.src = script.src
           if (script.type) newScript.type = script.type
           // Use data attribute instead of custom property
           newScript.setAttribute('data-custom-landing-page-script', 'true')
+          newScript.setAttribute('data-custom-landing-page-script-position', scriptsPlacement)
           newScript.innerHTML = script.innerHTML
           return newScript
         }
@@ -1311,20 +1336,24 @@ export default {
           }
           htmlElement.insertAdjacentElement('afterbegin', head)
         } else {
-          const newHtmlDOM = document.createElement('html')
-          newHtmlDOM.innerHTML = html?.trim().startsWith('<body') ? html : htmlDOM.innerHTML
-          newHtmlDOM.insertAdjacentElement('afterbegin', head)
-          addedScripts.forEach((script) => {
-            newHtmlDOM.querySelector('body').insertAdjacentElement('afterbegin', script)
-          })
-          return newHtmlDOM.outerHTML
+        const newHtmlDOM = document.createElement('html')
+        newHtmlDOM.innerHTML = html?.trim().startsWith('<body') ? html : htmlDOM.innerHTML
+        newHtmlDOM.insertAdjacentElement('afterbegin', head)
+        const insertPosition =
+          this.customHeadScriptsPlacement === 'body-end' ? 'beforeend' : 'afterbegin'
+        addedScripts.forEach((script) => {
+          newHtmlDOM.querySelector('body').insertAdjacentElement(insertPosition, script)
+        })
+        return newHtmlDOM.outerHTML
         }
       }
       if (addedScripts.length > 0) {
         const body = htmlDOM.querySelector('body')
         if (body) {
+          const insertPosition =
+            this.customHeadScriptsPlacement === 'body-end' ? 'beforeend' : 'afterbegin'
           addedScripts.forEach((script) => {
-            body.insertAdjacentElement('afterbegin', script)
+            body.insertAdjacentElement(insertPosition, script)
           })
         }
       }
