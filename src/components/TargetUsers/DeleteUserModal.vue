@@ -4,14 +4,23 @@
     type="delete"
     icon="mdi-delete"
     title="Delete User?"
-    subtitle="The user will deleted permanently"
+    subtitle="This action cannot be undone."
     title-id="text--target-users-people-delete-popup-title"
     subtitle-id="text--target-users-people-delete-popup-subtitle"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ getTargetUserEmail }} will be deleted and removed from all groups. User stats will remain
-      in reports.
+      <div>
+        <p class="mb-4">
+          {{ getTargetUserEmail }}
+          will no longer receive any deliveries and will be removed from all groups.
+        </p>
+        <p class="mb-0">
+          Historical data and reports related to this
+          {{ isMultiple ? "users" : "user" }}
+          will remain available on the platform.
+        </p>
+      </div>
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer

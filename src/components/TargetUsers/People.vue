@@ -358,10 +358,28 @@
           :id="tableOptions.rowActions[0].id"
           :text="tableOptions.rowActions[0].name"
           :scope="scope"
-          :disabled="tableOptions.rowActions[0].disabled"
+          :disabled="
+            tableOptions.rowActions[0].disabled || isRowTypeDeleted(scope.row)
+          "
+          :disabledTooltipText="
+            isRowTypeDeleted(scope.row)
+              ? getDeletedRowActionsTooltipText()
+              : null
+          "
           @on-click="handleUserTimeline(scope.row)"
         />
-        <RowActionsMenu>
+
+        <DefaultButtonRowAction
+          v-if="isRowTypeDeleted(scope.row)"
+          :id="`btn-more--target-user-${scope.$index}`"
+          :scope="scope"
+          :checkIsOwnerProperty="false"
+          icon="mdi-dots-vertical"
+          text="More"
+          :disabled="true"
+          :disabledTooltipText="getDeletedRowActionsTooltipText()"
+        />
+        <RowActionsMenu v-else>
           <TargetUserMenuActionsEditButton
             :scope="scope"
             :id="tableOptions.rowActions[1].id"
@@ -925,6 +943,12 @@ export default {
     if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured();
   },
   methods: {
+    isRowTypeDeleted(row) {
+      return row.isDeleted;
+    },
+    getDeletedRowActionsTooltipText() {
+      return "Historical activity data is retained and will be available here in an upcoming update.";
+    },
     handleSummaryCardSelect(key) {
       if (this.activeSummaryKeys.includes(key)) {
         this.activeSummaryKeys = this.activeSummaryKeys.filter(

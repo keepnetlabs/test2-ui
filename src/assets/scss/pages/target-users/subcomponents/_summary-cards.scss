@@ -2,11 +2,25 @@
   border-width: 1px;
   border-style: solid;
   border-radius: 8px !important;
+  background-color: #fff !important;
   padding: 24px !important;
   height: 156px;
   position: relative;
   cursor: default;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  // Vuetify adds an overlay on clickable cards via `:before` (v-card--link).
+  // This can look like "grey background" on click/focus. Keep it transparent.
+  &.v-card--link::before {
+    background-color: transparent !important;
+    opacity: 0 !important;
+  }
+
+  &.v-card--link:hover::before,
+  &.v-card--link:focus::before,
+  &.v-card--link:active::before {
+    opacity: 0 !important;
+  }
 }
 
 @media (max-width: 1440px) {
@@ -124,5 +138,22 @@
     .summary-filter-icon {
       opacity: 0.5;
     }
+  }
+
+  // Cursor states (kept global; component has no scoped CSS)
+  .summary-card--clickable {
+    cursor: pointer;
+  }
+
+  .summary-card--clickable:hover {
+    cursor: pointer;
+  }
+
+  .summary-card--disabled {
+    cursor: not-allowed;
+  }
+
+  .summary-card--disabled:hover {
+    cursor: not-allowed;
   }
 }
