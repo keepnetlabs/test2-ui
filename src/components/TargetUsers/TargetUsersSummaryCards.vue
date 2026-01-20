@@ -7,6 +7,7 @@
         :style="cardStyles(item)"
         outlined
         :ripple="false"
+        @click="handleSelect(item)"
       >
         <div class="d-flex justify-space-between">
           <div class="d-flex flex-column">
@@ -17,6 +18,7 @@
                   <v-icon
                     v-bind="attrs"
                     v-on="on"
+                    @click.stop
                     class="summary-info-icon"
                     small
                   >
@@ -40,6 +42,7 @@
                   <v-icon
                     v-bind="attrs"
                     v-on="on"
+                    @click.stop
                     small
                     class="summary-subtitle-icon summary-subtitle-action"
                   >
@@ -50,7 +53,7 @@
                   <v-list-item
                     v-for="(option, optionIndex) in item.menuOptions"
                     :key="`${item.key}-period-${optionIndex}`"
-                    @click="
+                    @click.stop="
                       $emit('period-select', {
                         key: item.key,
                         index: optionIndex
@@ -128,7 +131,8 @@ export default {
     cardClasses(item) {
       return {
         "summary-card--active": this.isActive(item),
-        "summary-card--disabled": item.disabled
+        "summary-card--disabled": item.disabled,
+        "summary-card--clickable": !item.disabled
       };
     },
     cardStyles(item) {
