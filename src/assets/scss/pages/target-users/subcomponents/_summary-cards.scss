@@ -39,6 +39,12 @@
   border-width: 2px !important;
 }
 
+.target-users-summary-card:not(.summary-card--disabled):hover {
+  .summary-filter-icon {
+    color: #2196f3 !important;
+  }
+}
+
 .target-users-summary-cards {
   margin-left: -8px;
   margin-right: -8px;
