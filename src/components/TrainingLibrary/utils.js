@@ -119,6 +119,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     show: true,
     type: 'smallBadge',
     filterableType: 'select',
+    filterableCustomFieldName: 'roles',
     filterableItems: [],
     width: 200
   },
