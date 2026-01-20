@@ -4,8 +4,8 @@ import {
   TRAINING_LIBRARY_PAYLOAD_TYPES,
   TRAINING_LIBRARY_SETTINGS_COLUMNS,
   TRAINING_LIBRARY_TYPES
-} from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-import AwarenessEducatorService from '@/api/awarenessEducator'
+} from "@/components/TrainingLibrary/TrainingLibraryFirstCard/utils";
+import AwarenessEducatorService from "@/api/awarenessEducator";
 import {
   emptyInfographicPreviewDialogObj,
   emptyLearningPathPreviewDialogObj,
@@ -27,19 +27,21 @@ import {
   emptyScreensaverSendModalObj,
   emptyLearningPathSendModalObj,
   TRAINING_LIBRARY_SEARCH_TYPES
-} from '@/components/TrainingLibrary/utils'
+} from "@/components/TrainingLibrary/utils";
 import {
   cancellableAxiosRequest,
   createRandomCryptStringNumber,
   getDefaultAxiosPayload
-} from '@/utils/functions'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
+} from "@/utils/functions";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import { trainingLibraryFilters } from "@/components/TrainingLibrary/TrainingLibraryFilters/utils";
 const cancellableSummaryRequest = cancellableAxiosRequest(
   AwarenessEducatorService.getTrainingTypeCount
-)
+);
 
-const cancellableDataRequest = cancellableAxiosRequest(AwarenessEducatorService.searchTraining)
+const cancellableDataRequest = cancellableAxiosRequest(
+  AwarenessEducatorService.searchTraining
+);
 const trainingLibrary = {
   namespaced: true,
   state: {
@@ -87,18 +89,18 @@ const trainingLibrary = {
       { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 0 },
       { name: TRAINING_LIBRARY_TYPES.SURVEY, totalCount: 0 }
     ],
-    search: '',
-    searchPlaceholder: 'Search in 3490 training by name',
+    search: "",
+    searchPlaceholder: "Search in 3490 training by name",
     firstColFixed: true,
     lastColFixed: true,
     isListView: true,
     tableFilterRenderKey: `table-filter-key-${createRandomCryptStringNumber()}`,
-    selectedTrainingContent: 'All Materials',
-    selectedSubTrainingContent: 'All Types',
+    selectedTrainingContent: "All Materials",
+    selectedSubTrainingContent: "All Types",
     filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
     filtersRenderKey: `filters-key-${createRandomCryptStringNumber()}`,
-    filterType: 'Or',
-    sortBy: 'Date Created - New to old',
+    filterType: "Or",
+    sortBy: "Date Created - New to old",
     deleteDialog: emptyTrainingDeleteDialogObj,
     trainingPreviewDialog: emptyTrainingPreviewDialogObj,
     learningPathPreviewDialog: emptyLearningPathPreviewDialogObj,
@@ -141,8 +143,8 @@ const trainingLibrary = {
     getRenderedColumns: (state) => state.renderedColumns,
     getSearch: (state) => state.search,
     getSearchPlaceholder: (state) => {
-      if (state.isTabsLoading) return 'Loading...'
-      return `Search in ${state.trainingSubTabs[0].totalCount} training by name`
+      if (state.isTabsLoading) return "Loading...";
+      return `Search in ${state.trainingSubTabs[0].totalCount} training by name`;
     },
     getFirstColFixed: (state) => state.firstColFixed,
     getLastColFixed: (state) => state.lastColFixed,
@@ -185,191 +187,200 @@ const trainingLibrary = {
   },
   mutations: {
     SET_IS_LOADING(state, payload) {
-      state.isLoading = payload
+      state.isLoading = payload;
     },
     SET_RENDERED_COLUMNS(state) {
       state.renderedColumns = state.tableColumns
         .filter((item) => item?.show)
-        .map((i) => i?.property)
+        .map((i) => i?.property);
     },
     SET_TABLE_SETTINGS_CHANGE(state) {
       localStorage.setItem(
-        'training-library-columns',
+        "training-library-columns",
         JSON.stringify({
           renderedColumns: state.renderedColumns,
           firstColFixed: state.firstColFixed || false,
           lastColFixed: state.lastColFixed || false
         })
-      )
+      );
     },
     SET_FIXED_COL(state, payload) {
-      state[payload.key] = payload.value
+      state[payload.key] = payload.value;
     },
     SET_SEARCH(state, payload) {
-      state.search = payload
+      state.search = payload;
     },
     SET_LIST_VIEW(state, payload) {
-      if (state.isListView === payload) return
-      state.axiosPayload.pageNumber = 1
-      state.serverSideProps.pageNumber = 1
+      if (state.isListView === payload) return;
+      state.axiosPayload.pageNumber = 1;
+      state.serverSideProps.pageNumber = 1;
       if (payload) {
-        state.serverSideProps.pageSize = 10
-        state.axiosPayload.pageSize = 10
+        state.serverSideProps.pageSize = 10;
+        state.axiosPayload.pageSize = 10;
       } else {
-        state.serverSideProps.pageSize = 9
-        state.axiosPayload.pageSize = 9
+        state.serverSideProps.pageSize = 9;
+        state.axiosPayload.pageSize = 9;
       }
-      state.isListView = payload
+      state.isListView = payload;
     },
     SET_DEFAULT_TABLE_SETTINGS(state) {
-      const tableSettings = localStorage.getItem('training-library-columns')
-      if (!tableSettings) return
-      const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(tableSettings)
-      state.tableColumns.forEach((col) => (col.show = renderedColumns.includes(col.property)))
-      if (renderedColumns) state.renderedColumns = renderedColumns
-      state.firstColFixed = !!firstColFixed
-      state.lastColFixed = !!lastColFixed
+      const tableSettings = localStorage.getItem("training-library-columns");
+      if (!tableSettings) return;
+      const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(
+        tableSettings
+      );
+      state.tableColumns.forEach(
+        (col) => (col.show = renderedColumns.includes(col.property))
+      );
+      if (renderedColumns) state.renderedColumns = renderedColumns;
+      state.firstColFixed = !!firstColFixed;
+      state.lastColFixed = !!lastColFixed;
     },
     SET_TRAINING_SUB_TABS(state, payload) {
-      state.trainingSubTabs = payload
+      state.trainingSubTabs = payload;
     },
     SET_SELECTED_TRAINING_CONTENT(state, payload) {
-      if (state.selectedTrainingContent === payload) return
-      state.selectedTrainingContent = payload
+      if (state.selectedTrainingContent === payload) return;
+      state.selectedTrainingContent = payload;
     },
     SET_SUB_SELECTED_TRAINING_CONTENT(state, payload) {
-      if (state.selectedSubTrainingContent === payload) return
-      state.selectedSubTrainingContent = payload
+      if (state.selectedSubTrainingContent === payload) return;
+      state.selectedSubTrainingContent = payload;
     },
     SET_SORT_BY(state, payload) {
-      state.sortBy = payload
+      state.sortBy = payload;
     },
     SET_DELETE_DIALOG(state, payload) {
-      state.deleteDialog = payload
+      state.deleteDialog = payload;
     },
     SET_TRAINING_PREVIEW_DIALOG(state, payload) {
-      state.trainingPreviewDialog = payload
+      state.trainingPreviewDialog = payload;
     },
     SET_LEARNING_PATH_PREVIEW_DIALOG(state, payload) {
-      state.learningPathPreviewDialog = payload
+      state.learningPathPreviewDialog = payload;
     },
     SET_POSTER_PREVIEW_DIALOG(state, payload) {
-      state.posterPreviewDialog = payload
+      state.posterPreviewDialog = payload;
     },
     SET_INFO_GRAPHIC_PREVIEW_DIALOG(state, payload) {
-      state.infographicPreviewDialog = payload
+      state.infographicPreviewDialog = payload;
     },
     SET_SCREENSAVER_PREVIEW_DIALOG(state, payload) {
-      state.screensaverPreviewDialog = payload
+      state.screensaverPreviewDialog = payload;
     },
     SET_TABLE_DATA(state, payload) {
-      state.tableData = payload
+      state.tableData = payload;
     },
     SET_SERVER_SIDE_PROPS(state, payload) {
-      state.serverSideProps.totalNumberOfRecords = payload.totalNumberOfRecords
-      state.serverSideProps.totalNumberOfPages = payload.totalNumberOfPages
-      state.serverSideProps.pageNumber = payload.pageNumber
+      state.serverSideProps.totalNumberOfRecords = payload.totalNumberOfRecords;
+      state.serverSideProps.totalNumberOfPages = payload.totalNumberOfPages;
+      state.serverSideProps.pageNumber = payload.pageNumber;
     },
     SET_TABS_LOADING(state, payload) {
-      state.isTabsLoading = payload
+      state.isTabsLoading = payload;
     },
     SET_NEW_TRAINING_MODAL(state, payload) {
-      state.newTrainingModal = payload
+      state.newTrainingModal = payload;
     },
     SET_NEW_SURVEY_MODAL(state, payload) {
-      state.newSurveyModal = payload
+      state.newSurveyModal = payload;
     },
     SET_NEW_LEARNING_PATH_MODAL(state, payload) {
-      state.newLearningPathModal = payload
+      state.newLearningPathModal = payload;
     },
     SET_NEW_POSTER_MODAL(state, payload) {
-      state.newPosterModal = payload
+      state.newPosterModal = payload;
     },
     SET_NEW_INFOGRAPHIC_MODAL(state, payload) {
-      state.newInfographicModal = payload
+      state.newInfographicModal = payload;
     },
     SET_NEW_SCREENSAVER_MODAL(state, payload) {
-      state.newScreensaverModal = payload
+      state.newScreensaverModal = payload;
     },
     SET_SURVEY_SEND_MODAL(state, payload) {
-      state.surveySendModal = payload
+      state.surveySendModal = payload;
     },
     SET_LIGHTBOX(state, payload) {
-      state.lightbox = payload
+      state.lightbox = payload;
     },
     SET_NESTED_DRAWER(state, payload) {
-      state.nestedDrawer = payload
+      state.nestedDrawer = payload;
     },
     SET_DEEP_NESTED_DRAWER(state, payload) {
-      state.deepNestedDrawer = payload
+      state.deepNestedDrawer = payload;
     },
     SET_TRAINING_SEND_MODAL(state, payload) {
-      state.trainingSendModal = payload
+      state.trainingSendModal = payload;
     },
     SET_POSTER_SEND_MODAL(state, payload) {
-      state.posterSendModal = payload
+      state.posterSendModal = payload;
     },
     SET_INFOGRAPHIC_SEND_MODAL(state, payload) {
-      state.infographicSendModal = payload
+      state.infographicSendModal = payload;
     },
     SET_SCREENSAVER_SEND_MODAL(state, payload) {
-      state.screensaverSendModal = payload
+      state.screensaverSendModal = payload;
     },
     SET_SURVEY_PREVIEW_DIALOG(state, payload) {
-      state.surveyPreviewDialog = payload
+      state.surveyPreviewDialog = payload;
     },
     SET_AXIOS_PAYLOAD(state, payload) {
-      state.axiosPayload = payload
+      state.axiosPayload = payload;
     },
     SET_FILTER_TYPE(state, payload) {
-      state.filterType = payload
+      state.filterType = payload;
     },
     SET_LEARNING_PATH_SEND_MODAL(state, payload) {
-      state.learningPathSendModal = payload
+      state.learningPathSendModal = payload;
     },
     SET_FILTER_ITEMS(state, payload) {
-      const filter = state.filters.find((f) => f && payload && f.key === payload.key)
-      filter.items = payload.items
+      const filter = state.filters.find(
+        (f) => f && payload && f.key === payload.key
+      );
+      filter.items = payload.items;
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
-      const filter = state.filters.find((f) => f && payload && f.key === payload.key)
-      filter.show = payload.show
+      const filter = state.filters.find(
+        (f) => f && payload && f.key === payload.key
+      );
+      filter.show = payload.show;
     },
     SET_DEFAULT_TABLE_FILTERS(state) {
-      const filters = localStorage.getItem('training-library-filters')
+      const filters = localStorage.getItem("training-library-filters");
       if (!filters) {
-        state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType = 'Or'
-        return
+        state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType =
+          "Or";
+        return;
       }
       const {
         filters: savedFilters = {},
         filterOptionsFilters = [],
-        filterType = 'Or',
-        sortBy = 'Date Created - New to old',
-        search = '',
+        filterType = "Or",
+        sortBy = "Date Created - New to old",
+        search = "",
         axiosPayload = getDefaultAxiosPayload({
           trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
           trainingType: null
         }),
-        selectedTrainingContent = 'All Materials',
-        selectedSubTrainingContent = 'All Types'
-      } = JSON.parse(filters)
-      state.filters = savedFilters
-      state.filterOptionsFilters = filterOptionsFilters
-      state.filterType = filterType
-      state.sortBy = sortBy
-      state.search = search
-      state.axiosPayload = axiosPayload
-      state.selectedTrainingContent = selectedTrainingContent
-      state.selectedSubTrainingContent = selectedSubTrainingContent
+        selectedTrainingContent = "All Materials",
+        selectedSubTrainingContent = "All Types"
+      } = JSON.parse(filters);
+      state.filters = savedFilters;
+      state.filterOptionsFilters = filterOptionsFilters;
+      state.filterType = filterType;
+      state.sortBy = sortBy;
+      state.search = search;
+      state.axiosPayload = axiosPayload;
+      state.selectedTrainingContent = selectedTrainingContent;
+      state.selectedSubTrainingContent = selectedSubTrainingContent;
       setTimeout(() => {
-        state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
-        state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
-      }, 500)
+        state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`;
+        state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`;
+      }, 500);
     },
     SET_FILTERS_TO_LOCAL_STORAGE(state) {
       localStorage.setItem(
-        'training-library-filters',
+        "training-library-filters",
         JSON.stringify({
           filterType: state.filterType,
           filters: state.filters,
@@ -380,12 +391,12 @@ const trainingLibrary = {
           selectedTrainingContent: state.selectedTrainingContent,
           selectedSubTrainingContent: state.selectedSubTrainingContent
         })
-      )
+      );
     },
     RESET_TABLE_PARAMS(state) {
-      state.isTabsLoading = false
-      state.isLoading = false
-      state.tableData = []
+      state.isTabsLoading = false;
+      state.isLoading = false;
+      state.tableData = [];
       state.tableColumns = [
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY },
@@ -396,20 +407,20 @@ const trainingLibrary = {
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.TAGS },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.VENDOR },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.DATE_CREATED }
-      ]
-      state.renderedColumns = []
+      ];
+      state.renderedColumns = [];
     },
     RESET_FILTERS(state) {
-      state.selectedTrainingContent = 'All Materials'
-      state.selectedSubTrainingContent = 'All Types'
+      state.selectedTrainingContent = "All Materials";
+      state.selectedSubTrainingContent = "All Types";
       state.axiosPayload = getDefaultAxiosPayload({
         trainingSearchType: TRAINING_LIBRARY_SEARCH_TYPES.All,
         trainingType: null
-      })
-      const oldPageSize = state.serverSideProps.pageSize
-      state.serverSideProps = new ServerSideProps()
-      state.axiosPayload.pageSize = oldPageSize
-      state.serverSideProps.pageSize = oldPageSize
+      });
+      const oldPageSize = state.serverSideProps.pageSize;
+      state.serverSideProps = new ServerSideProps();
+      state.axiosPayload.pageSize = oldPageSize;
+      state.serverSideProps.pageSize = oldPageSize;
       state.filterOptionsFilters = [
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.BEHAVIOURS },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE },
@@ -423,440 +434,487 @@ const trainingLibrary = {
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DESCRIPTION },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TAGS },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DATE_CREATED }
-      ]
-      state.search = ''
+      ];
+      state.search = "";
       state.filters.forEach((f) => {
-        if (f.filterType === 'search' || f.filterType === 'longTextSearch') {
-          f.value = []
-          f.activeValue = []
-          f.operator = 'Include'
-          f.activeOperator = 'Include'
-          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
-        } else if (f.filterType === 'select') {
-          f.value = ''
-          f.activeValue = ''
-          f.operator = 'Contains'
-          f.activeOperator = 'Contains'
-          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
+        if (f.filterType === "search" || f.filterType === "longTextSearch") {
+          f.value = [];
+          f.activeValue = [];
+          f.operator = "Include";
+          f.activeOperator = "Include";
+          f.show =
+            trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show ||
+            false;
+        } else if (f.filterType === "select") {
+          f.value = "";
+          f.activeValue = "";
+          f.operator = "Contains";
+          f.activeOperator = "Contains";
+          f.show =
+            trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show ||
+            false;
         } else {
-          f.value = ''
-          f.activeValue = ''
-          f.operator = '='
-          f.activeOperator = '='
-          f.show = trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show || false
+          f.value = "";
+          f.activeValue = "";
+          f.operator = "=";
+          f.activeOperator = "=";
+          f.show =
+            trainingLibraryFilters?.find((tF) => tF.key === f.key)?.show ||
+            false;
         }
-        f.isFilterActive = false
-      })
-      state.filterType = 'Or'
-      state.axiosPayload.filter.FilterGroups[0].Condition = 'OR'
-      state.sortBy = 'Date Created - New to old'
-      state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`
-      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
+        f.isFilterActive = false;
+      });
+      state.filterType = "Or";
+      state.axiosPayload.filter.FilterGroups[0].Condition = "OR";
+      state.sortBy = "Date Created - New to old";
+      state.filtersRenderKey = `filters-key-${createRandomCryptStringNumber()}`;
+      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`;
     },
     SET_SORT_BY_TO_PAYLOAD(state, payload) {
-      state.axiosPayload.ascending = payload.ascending
-      state.axiosPayload.orderBy = payload.orderBy
+      state.axiosPayload.ascending = payload.ascending;
+      state.axiosPayload.orderBy = payload.orderBy;
     },
     SET_SEARCH_TO_PAYLOAD(state) {
-      const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems
-      const fIndex = filterItems.findIndex((f) => f.FieldName === 'trainingName')
-      state.serverSideProps.pageNumber = 1
-      state.axiosPayload.pageNumber = 1
+      const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems;
+      const fIndex = filterItems.findIndex(
+        (f) => f.FieldName === "trainingName"
+      );
+      state.serverSideProps.pageNumber = 1;
+      state.axiosPayload.pageNumber = 1;
       if (fIndex !== -1) {
-        filterItems[fIndex].Value = state.search
+        filterItems[fIndex].Value = state.search;
       } else {
         filterItems.push({
-          FieldName: 'trainingName',
+          FieldName: "trainingName",
           Value: state.search,
-          Operator: 'Contains'
-        })
+          Operator: "Contains"
+        });
       }
     },
     SET_FILTER_TO_PAYLOAD(state, payload) {
-      const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
-      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
-      let value
-      if (typeof payload.activeValue === 'string') {
-        value = payload.activeValue.trim()
+      const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems;
+      const payloadKey =
+        payload.key === "targetAudience" ? "roles" : payload.key;
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey);
+      let value;
+      if (typeof payload.activeValue === "string") {
+        value = payload.activeValue.trim();
       } else if (Array.isArray(payload.activeValue)) {
-        if (payload.activeOperator === 'between') {
+        if (payload.activeOperator === "between") {
           filterItems.push({
-            FieldName: payload.key,
+            FieldName: payloadKey,
             Value: payload.activeValue[0],
-            Operator: '>='
-          })
+            Operator: ">="
+          });
           filterItems.push({
-            FieldName: payload.key,
+            FieldName: payloadKey,
             Value: payload.activeValue[1],
-            Operator: '<='
-          })
-          state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
-          return
+            Operator: "<="
+          });
+          state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`;
+          return;
         }
-        value = payload.activeValue.join(',')
+        value = payload.activeValue.join(",");
       }
       if (fIndex !== -1) {
-        filterItems[fIndex].Value = value
-        filterItems[fIndex].Operator = payload.activeOperator
+        filterItems[fIndex].Value = value;
+        filterItems[fIndex].Operator = payload.activeOperator;
       } else {
         filterItems.push({
-          FieldName: payload.key,
+          FieldName: payloadKey,
           Value: value,
           Operator: payload.activeOperator
-        })
+        });
       }
-      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
+      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`;
     },
     SET_FILTER_TYPE_TO_PAYLOAD(state) {
-      state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType
+      state.axiosPayload.filter.FilterGroups[0].Condition = state.filterType;
     },
     REMOVE_FILTER_FROM_PAYLOAD(state, payload) {
-      const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems
-      if (payload.filterType === 'date' && payload.activeOperator === 'between') {
-        const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
-        if (fIndex !== -1) filterItems.splice(fIndex, 2)
-        return
+      const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems;
+      const payloadKey =
+        payload.key === "targetAudience" ? "roles" : payload.key;
+      if (
+        payload.filterType === "date" &&
+        payload.activeOperator === "between"
+      ) {
+        const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey);
+        if (fIndex !== -1) filterItems.splice(fIndex, 2);
+        return;
       }
-      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
-      if (fIndex === -1) return
-      if (payload.filterType === 'search' || payload.filterType === 'longTextSearch') {
-        if (!payload.activeValue.length) filterItems.splice(fIndex, 1)
-        else filterItems[fIndex].Value = payload.activeValue.join(',')
-      } else filterItems.splice(fIndex, 1)
-      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey);
+      if (fIndex === -1) return;
+      if (
+        payload.filterType === "search" ||
+        payload.filterType === "longTextSearch"
+      ) {
+        if (!payload.activeValue.length) filterItems.splice(fIndex, 1);
+        else filterItems[fIndex].Value = payload.activeValue.join(",");
+      } else filterItems.splice(fIndex, 1);
+      state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`;
     },
     RESET_PAGINATION(state) {
-      state.axiosPayload.pageNumber = 1
-      state.serverSideProps.pageNumber = 1
+      state.axiosPayload.pageNumber = 1;
+      state.serverSideProps.pageNumber = 1;
     },
     SET_TRAINING_SEARCH_TYPE(state, payload) {
-      state.axiosPayload.trainingSearchType = payload
+      state.axiosPayload.trainingSearchType = payload;
     },
     SET_TRAINING_TYPE(state, payload) {
       if (payload === TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES) {
-        state.axiosPayload.trainingType = null
+        state.axiosPayload.trainingType = null;
       } else {
-        state.axiosPayload.trainingType = payload
+        state.axiosPayload.trainingType = payload;
       }
     }
   },
   actions: {
     callForTableData({ commit, state, rootGetters }) {
-      commit('SET_IS_LOADING', true)
-      let isAborted = false
+      commit("SET_IS_LOADING", true);
+      let isAborted = false;
       cancellableDataRequest(state.axiosPayload)
         .then((response) => {
           if (!Object.keys(response).length) {
-            isAborted = true
-            return
+            isAborted = true;
+            return;
           }
-          isAborted = false
+          isAborted = false;
           const {
             data: { data = {} }
-          } = response
+          } = response;
           const {
             results = [],
             totalNumberOfRecords = 0,
             totalNumberOfPages = 0,
             pageNumber = 1
-          } = data
-          const languages = rootGetters['trainingLibraryHelpers/getLanguages'] || []
+          } = data;
+          const languages =
+            rootGetters["trainingLibraryHelpers/getLanguages"] || [];
           const enrichedResults = results.map((item) => {
             return {
               ...item,
               languageCodes: item.languages, // Orijinal kodları sakla
               languages: item.languages.map((code) => {
-                const language = languages.find((lang) => lang.code === code)
-                return language?.isoFriendlyName || code
+                const language = languages.find((lang) => lang.code === code);
+                return language?.isoFriendlyName || code;
               }),
-              targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
-            }
-          })
-          commit('SET_TABLE_DATA', enrichedResults)
-          commit('SET_SERVER_SIDE_PROPS', {
+              targetAudience:
+                item.trainingRoles?.map((role) => role.roleName) || []
+            };
+          });
+          commit("SET_TABLE_DATA", enrichedResults);
+          commit("SET_SERVER_SIDE_PROPS", {
             totalNumberOfRecords,
             totalNumberOfPages,
             pageNumber
-          })
+          });
         })
         .finally(() => {
-          if (!isAborted) commit('SET_IS_LOADING', false)
-        })
+          if (!isAborted) commit("SET_IS_LOADING", false);
+        });
     },
     callForTrainingLibrary({ dispatch }) {
-      dispatch('callForSummary')
-      dispatch('callForTableData')
+      dispatch("callForSummary");
+      dispatch("callForTableData");
     },
     callForSummary({ commit, state }, payload) {
-      if (payload?.hideLoader) commit('SET_TABS_LOADING', false)
-      else commit('SET_TABS_LOADING', true)
-      const copyOfPayload = JSON.parse(JSON.stringify(state.axiosPayload))
-      copyOfPayload.pageNumber = 1
-      let isAborted = false
+      if (payload?.hideLoader) commit("SET_TABS_LOADING", false);
+      else commit("SET_TABS_LOADING", true);
+      const copyOfPayload = JSON.parse(JSON.stringify(state.axiosPayload));
+      copyOfPayload.pageNumber = 1;
+      let isAborted = false;
       cancellableSummaryRequest(copyOfPayload)
         .then((response) => {
           if (!Object.keys(response).length) {
-            isAborted = true
-            return
+            isAborted = true;
+            return;
           }
-          isAborted = false
-          const { data: { data } = {} } = response || {}
-          commit('SET_TRAINING_SUB_TABS', [
+          isAborted = false;
+          const { data: { data } = {} } = response || {};
+          commit("SET_TRAINING_SUB_TABS", [
             {
               name: TRAINING_LIBRARY_TYPES.ALL_TYPES,
               totalCount: data.reduce((acc, item) => {
-                return acc + item.trainingCount
+                return acc + item.trainingCount;
               }, 0)
             },
             {
               name: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
-              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+              totalCount: getTotalCountByType(
+                data,
+                TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+              )
             },
             {
               name: TRAINING_LIBRARY_TYPES.TRAINING,
-              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING)
+              totalCount: getTotalCountByType(
+                data,
+                TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+              )
             },
             {
               name: TRAINING_LIBRARY_TYPES.POSTER,
-              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER)
+              totalCount: getTotalCountByType(
+                data,
+                TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+              )
             },
             {
               name: TRAINING_LIBRARY_TYPES.INFOGRAPHIC,
-              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC)
+              totalCount: getTotalCountByType(
+                data,
+                TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+              )
             },
             {
               name: TRAINING_LIBRARY_TYPES.SCREENSAVER,
-              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER)
+              totalCount: getTotalCountByType(
+                data,
+                TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER
+              )
             },
             {
               name: TRAINING_LIBRARY_TYPES.SURVEY,
-              totalCount: getTotalCountByType(data, TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY)
+              totalCount: getTotalCountByType(
+                data,
+                TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY
+              )
             }
-          ])
+          ]);
         })
         .finally(() => {
-          if (!isAborted) commit('SET_TABS_LOADING', false)
-        })
+          if (!isAborted) commit("SET_TABS_LOADING", false);
+        });
     },
     setChangeVisibilityOfColumn({ commit }) {
-      commit('SET_RENDERED_COLUMNS')
-      commit('SET_TABLE_SETTINGS_CHANGE')
+      commit("SET_RENDERED_COLUMNS");
+      commit("SET_TABLE_SETTINGS_CHANGE");
     },
     setColFixedChange({ commit }, payload) {
-      commit('SET_FIXED_COL', payload)
-      commit('SET_TABLE_SETTINGS_CHANGE')
+      commit("SET_FIXED_COL", payload);
+      commit("SET_TABLE_SETTINGS_CHANGE");
     },
     setSearch({ commit, dispatch }, payload) {
-      commit('SET_SEARCH', payload)
-      commit('SET_SEARCH_TO_PAYLOAD')
-      dispatch('callForTrainingLibrary')
+      commit("SET_SEARCH", payload);
+      commit("SET_SEARCH_TO_PAYLOAD");
+      dispatch("callForTrainingLibrary");
     },
     setListView({ commit, dispatch, state }, payload) {
-      if (state.isListView === payload) return
-      commit('SET_LIST_VIEW', payload)
-      commit('SET_SORT_BY', 'Date Created - New to old')
-      commit('SET_SORT_BY_TO_PAYLOAD', {
+      if (state.isListView === payload) return;
+      commit("SET_LIST_VIEW", payload);
+      commit("SET_SORT_BY", "Date Created - New to old");
+      commit("SET_SORT_BY_TO_PAYLOAD", {
         ascending: false,
-        orderBy: 'createTime'
-      })
-      dispatch('callForTableData')
+        orderBy: "createTime"
+      });
+      dispatch("callForTableData");
     },
     initDefaultTableSettings({ commit }) {
-      commit('SET_RENDERED_COLUMNS')
-      commit('SET_DEFAULT_TABLE_SETTINGS')
+      commit("SET_RENDERED_COLUMNS");
+      commit("SET_DEFAULT_TABLE_SETTINGS");
     },
     setSelectedTrainingContent({ commit, dispatch, state }, payload) {
-      if (state.selectedTrainingContent === payload.name) return
-      let trainingSearchType = getTrainingSearchType(payload.name)
-      commit('SET_SELECTED_TRAINING_CONTENT', payload.name)
-      commit('SET_TRAINING_SEARCH_TYPE', trainingSearchType)
-      commit('RESET_PAGINATION')
-      dispatch('callForTrainingLibrary')
+      if (state.selectedTrainingContent === payload.name) return;
+      let trainingSearchType = getTrainingSearchType(payload.name);
+      commit("SET_SELECTED_TRAINING_CONTENT", payload.name);
+      commit("SET_TRAINING_SEARCH_TYPE", trainingSearchType);
+      commit("RESET_PAGINATION");
+      dispatch("callForTrainingLibrary");
     },
     setSubSelectedTrainingContent({ commit, dispatch, state }, payload) {
-      if (state.selectedSubTrainingContent === payload.name) return
-      let trainingType = getTrainingType(payload.name)
-      commit('SET_SUB_SELECTED_TRAINING_CONTENT', payload.name)
-      commit('SET_TRAINING_TYPE', trainingType)
-      commit('RESET_PAGINATION')
-      commit('SET_SORT_BY', 'Date Created - New to old')
-      commit('SET_SORT_BY_TO_PAYLOAD', {
+      if (state.selectedSubTrainingContent === payload.name) return;
+      let trainingType = getTrainingType(payload.name);
+      commit("SET_SUB_SELECTED_TRAINING_CONTENT", payload.name);
+      commit("SET_TRAINING_TYPE", trainingType);
+      commit("RESET_PAGINATION");
+      commit("SET_SORT_BY", "Date Created - New to old");
+      commit("SET_SORT_BY_TO_PAYLOAD", {
         ascending: false,
-        orderBy: 'createTime'
-      })
-      dispatch('callForTableData')
-      dispatch('callForSummary', { hideLoader: true })
+        orderBy: "createTime"
+      });
+      dispatch("callForTableData");
+      dispatch("callForSummary", { hideLoader: true });
     },
     setSortBy({ commit, dispatch }, { item, sort }) {
-      commit('SET_SORT_BY', `${item.text} - ${sort.text}`)
-      commit('SET_SORT_BY_TO_PAYLOAD', {
+      commit("SET_SORT_BY", `${item.text} - ${sort.text}`);
+      commit("SET_SORT_BY_TO_PAYLOAD", {
         ascending: sort.ascending,
         orderBy: item.orderBy
-      })
-      dispatch('callForTableData')
+      });
+      dispatch("callForTableData");
     },
     setDeleteDialog({ commit }, payload) {
-      commit('SET_DELETE_DIALOG', payload)
+      commit("SET_DELETE_DIALOG", payload);
     },
     setTrainingPreviewDialog({ commit }, payload) {
-      commit('SET_TRAINING_PREVIEW_DIALOG', payload)
+      commit("SET_TRAINING_PREVIEW_DIALOG", payload);
     },
     setSurveyPreviewDialog({ commit }, payload) {
-      commit('SET_SURVEY_PREVIEW_DIALOG', payload)
+      commit("SET_SURVEY_PREVIEW_DIALOG", payload);
     },
     setLearningPathPreviewDialog({ commit }, payload) {
-      commit('SET_LEARNING_PATH_PREVIEW_DIALOG', payload)
+      commit("SET_LEARNING_PATH_PREVIEW_DIALOG", payload);
     },
     setPosterPreviewDialog({ commit }, payload) {
-      commit('SET_POSTER_PREVIEW_DIALOG', payload)
+      commit("SET_POSTER_PREVIEW_DIALOG", payload);
     },
     setInfographicPreviewDialog({ commit }, payload) {
-      commit('SET_INFO_GRAPHIC_PREVIEW_DIALOG', payload)
+      commit("SET_INFO_GRAPHIC_PREVIEW_DIALOG", payload);
     },
     setScreenSaverPreviewDialog({ commit }, payload) {
-      commit('SET_SCREENSAVER_PREVIEW_DIALOG', payload)
+      commit("SET_SCREENSAVER_PREVIEW_DIALOG", payload);
     },
     setSurveySendModal({ commit }, payload) {
-      commit('SET_SURVEY_SEND_MODAL', payload)
+      commit("SET_SURVEY_SEND_MODAL", payload);
     },
     setNewTrainingModal({ commit }, payload) {
-      commit('SET_NEW_TRAINING_MODAL', payload)
+      commit("SET_NEW_TRAINING_MODAL", payload);
     },
     setNewSurveyModal({ commit }, payload) {
-      commit('SET_NEW_SURVEY_MODAL', payload)
+      commit("SET_NEW_SURVEY_MODAL", payload);
     },
     setNewLearningPathModal({ commit, dispatch }, payload) {
-      commit('SET_NEW_LEARNING_PATH_MODAL', payload)
+      commit("SET_NEW_LEARNING_PATH_MODAL", payload);
       if (payload.status === false) {
-        dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, {
+        dispatch("learningPath/resetSelectedLearningPathTrainings", undefined, {
           root: true
-        })
+        });
       }
     },
     setNewPosterModal({ commit }, payload) {
-      commit('SET_NEW_POSTER_MODAL', payload)
+      commit("SET_NEW_POSTER_MODAL", payload);
     },
     setNewInfographicModal({ commit }, payload) {
-      commit('SET_NEW_INFOGRAPHIC_MODAL', payload)
+      commit("SET_NEW_INFOGRAPHIC_MODAL", payload);
     },
     setNewScreensaverModal({ commit }, payload) {
-      commit('SET_NEW_SCREENSAVER_MODAL', payload)
+      commit("SET_NEW_SCREENSAVER_MODAL", payload);
     },
     setTrainingSendModal({ commit }, payload) {
-      commit('SET_TRAINING_SEND_MODAL', payload)
+      commit("SET_TRAINING_SEND_MODAL", payload);
     },
     setPosterSendModal({ commit }, payload) {
-      commit('SET_POSTER_SEND_MODAL', payload)
+      commit("SET_POSTER_SEND_MODAL", payload);
     },
     setInfographicSendModal({ commit }, payload) {
-      commit('SET_INFOGRAPHIC_SEND_MODAL', payload)
+      commit("SET_INFOGRAPHIC_SEND_MODAL", payload);
     },
     setScreensaverSendModal({ commit }, payload) {
-      commit('SET_SCREENSAVER_SEND_MODAL', payload)
+      commit("SET_SCREENSAVER_SEND_MODAL", payload);
     },
     setLearningPathSendModal({ commit }, payload) {
-      commit('SET_LEARNING_PATH_SEND_MODAL', payload)
+      commit("SET_LEARNING_PATH_SEND_MODAL", payload);
     },
     setFilterType({ commit, dispatch }, payload) {
-      commit('SET_FILTER_TYPE', payload)
-      commit('SET_FILTER_TYPE_TO_PAYLOAD')
-      commit('RESET_PAGINATION')
-      dispatch('callForTableData')
+      commit("SET_FILTER_TYPE", payload);
+      commit("SET_FILTER_TYPE_TO_PAYLOAD");
+      commit("RESET_PAGINATION");
+      dispatch("callForTableData");
     },
     setFilterItems({ commit }, payload) {
-      commit('SET_FILTER_ITEMS', payload)
+      commit("SET_FILTER_ITEMS", payload);
     },
     setFilterItemsShow({ commit, dispatch }, payload) {
-      commit('SET_FILTER_ITEMS_SHOW', payload)
-      dispatch('learningPath/setLearningPathFilterItemsShow', payload, {
+      commit("SET_FILTER_ITEMS_SHOW", payload);
+      dispatch("learningPath/setLearningPathFilterItemsShow", payload, {
         root: true
-      })
+      });
     },
     initDefaultTableFilters({ commit }) {
-      commit('SET_DEFAULT_TABLE_FILTERS')
+      commit("SET_DEFAULT_TABLE_FILTERS");
     },
     restoreDefaultFilters({ commit, dispatch }) {
-      const filters = localStorage.getItem('training-library-filters')
-      if (!filters) commit('RESET_FILTERS')
-      else commit('SET_DEFAULT_TABLE_FILTERS')
-      dispatch('callForTrainingLibrary')
+      const filters = localStorage.getItem("training-library-filters");
+      if (!filters) commit("RESET_FILTERS");
+      else commit("SET_DEFAULT_TABLE_FILTERS");
+      dispatch("callForTrainingLibrary");
     },
     writeFiltersToLocalStorage({ commit }) {
-      commit('SET_FILTERS_TO_LOCAL_STORAGE')
+      commit("SET_FILTERS_TO_LOCAL_STORAGE");
     },
     resetState({ commit }) {
-      commit('RESET_TABLE_PARAMS')
-      commit('RESET_FILTERS')
+      commit("RESET_TABLE_PARAMS");
+      commit("RESET_FILTERS");
     },
     setFilterToPayload({ commit, dispatch }, payload) {
-      commit('SET_FILTER_TO_PAYLOAD', payload)
-      commit('RESET_PAGINATION')
-      dispatch('callForTrainingLibrary')
+      commit("SET_FILTER_TO_PAYLOAD", payload);
+      commit("RESET_PAGINATION");
+      dispatch("callForTrainingLibrary");
     },
     removeFilterFromPayload({ commit, dispatch }, payload) {
-      commit('REMOVE_FILTER_FROM_PAYLOAD', payload)
-      commit('RESET_PAGINATION')
-      dispatch('callForTrainingLibrary')
+      commit("REMOVE_FILTER_FROM_PAYLOAD", payload);
+      commit("RESET_PAGINATION");
+      dispatch("callForTrainingLibrary");
     },
     clearAllFilters({ commit, dispatch }) {
-      commit('RESET_FILTERS')
-      dispatch('callForTrainingLibrary')
+      commit("RESET_FILTERS");
+      dispatch("callForTrainingLibrary");
     },
     resetAllModals({ commit, dispatch }) {
-      dispatch('learningPath/resetSelectedLearningPathTrainings', undefined, {
+      dispatch("learningPath/resetSelectedLearningPathTrainings", undefined, {
         root: true
-      })
-      commit('SET_NEW_LEARNING_PATH_MODAL', emptyNewLearningPathModalObj)
-      commit('SET_NEW_INFOGRAPHIC_MODAL', emptyNewInfographicModalObj)
-      commit('SET_NEW_TRAINING_MODAL', emptyNewTrainingModalObj)
-      commit('SET_NEW_SCREENSAVER_MODAL', emptyNewScreensaverModalObj)
-      commit('SET_NEW_POSTER_MODAL', emptyNewPosterModalObj)
-      commit('SET_NEW_SURVEY_MODAL', emptyNewSurveyModalObj)
-      commit('SET_LEARNING_PATH_SEND_MODAL', emptyLearningPathSendModalObj)
-      commit('SET_INFOGRAPHIC_SEND_MODAL', emptyInfographicSendModalObj)
-      commit('SET_TRAINING_SEND_MODAL', emptyTrainingSendModalObj)
-      commit('SET_SCREENSAVER_SEND_MODAL', emptyScreensaverSendModalObj)
-      commit('SET_POSTER_SEND_MODAL', emptyPosterSendModalObj)
-      commit('SET_LEARNING_PATH_PREVIEW_DIALOG', emptyLearningPathPreviewDialogObj)
-      commit('SET_INFO_GRAPHIC_PREVIEW_DIALOG', emptyInfographicPreviewDialogObj)
-      commit('SET_TRAINING_PREVIEW_DIALOG', emptyTrainingPreviewDialogObj)
-      commit('SET_SCREENSAVER_PREVIEW_DIALOG', emptyScreensaverPreviewDialogObj)
-      commit('SET_POSTER_PREVIEW_DIALOG', emptyPosterPreviewDialogObj)
-      commit('SET_DELETE_DIALOG', emptyTrainingDeleteDialogObj)
+      });
+      commit("SET_NEW_LEARNING_PATH_MODAL", emptyNewLearningPathModalObj);
+      commit("SET_NEW_INFOGRAPHIC_MODAL", emptyNewInfographicModalObj);
+      commit("SET_NEW_TRAINING_MODAL", emptyNewTrainingModalObj);
+      commit("SET_NEW_SCREENSAVER_MODAL", emptyNewScreensaverModalObj);
+      commit("SET_NEW_POSTER_MODAL", emptyNewPosterModalObj);
+      commit("SET_NEW_SURVEY_MODAL", emptyNewSurveyModalObj);
+      commit("SET_LEARNING_PATH_SEND_MODAL", emptyLearningPathSendModalObj);
+      commit("SET_INFOGRAPHIC_SEND_MODAL", emptyInfographicSendModalObj);
+      commit("SET_TRAINING_SEND_MODAL", emptyTrainingSendModalObj);
+      commit("SET_SCREENSAVER_SEND_MODAL", emptyScreensaverSendModalObj);
+      commit("SET_POSTER_SEND_MODAL", emptyPosterSendModalObj);
+      commit(
+        "SET_LEARNING_PATH_PREVIEW_DIALOG",
+        emptyLearningPathPreviewDialogObj
+      );
+      commit(
+        "SET_INFO_GRAPHIC_PREVIEW_DIALOG",
+        emptyInfographicPreviewDialogObj
+      );
+      commit("SET_TRAINING_PREVIEW_DIALOG", emptyTrainingPreviewDialogObj);
+      commit(
+        "SET_SCREENSAVER_PREVIEW_DIALOG",
+        emptyScreensaverPreviewDialogObj
+      );
+      commit("SET_POSTER_PREVIEW_DIALOG", emptyPosterPreviewDialogObj);
+      commit("SET_DELETE_DIALOG", emptyTrainingDeleteDialogObj);
     }
   }
-}
+};
 const getTotalCountByType = (data, key) => {
-  return data.find((item) => item.trainingType === key)?.trainingCount || 0
-}
+  return data.find((item) => item.trainingType === key)?.trainingCount || 0;
+};
 const getTrainingSearchType = (name) => {
-  let trainingSearchType
+  let trainingSearchType;
   if (name === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS) {
-    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.All
+    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.All;
   } else if (name === TRAINING_LIBRARY_MAIN_TABS.MOST_POPULAR) {
-    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.MostPopular
+    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.MostPopular;
   } else if (name === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES) {
-    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.Favourites
-  } else trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.CreatedByMe
-  return trainingSearchType
-}
+    trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.Favourites;
+  } else trainingSearchType = TRAINING_LIBRARY_SEARCH_TYPES.CreatedByMe;
+  return trainingSearchType;
+};
 const getTrainingType = (name) => {
-  let trainingType
+  let trainingType;
   if (name === TRAINING_LIBRARY_TYPES.ALL_TYPES)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES;
   else if (name === TRAINING_LIBRARY_TYPES.LEARNING_PATH)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH;
   else if (name === TRAINING_LIBRARY_TYPES.TRAINING)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING;
   else if (name === TRAINING_LIBRARY_TYPES.POSTER)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER;
   else if (name === TRAINING_LIBRARY_TYPES.INFOGRAPHIC)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC;
   else if (name === TRAINING_LIBRARY_TYPES.SCREENSAVER)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER;
   else if (name === TRAINING_LIBRARY_TYPES.SURVEY)
-    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY
-  return trainingType
-}
+    trainingType = TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY;
+  return trainingType;
+};
 
-export default trainingLibrary
+export default trainingLibrary;
