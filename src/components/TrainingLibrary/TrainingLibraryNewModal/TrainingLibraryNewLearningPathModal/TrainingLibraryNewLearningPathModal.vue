@@ -166,9 +166,11 @@ export default {
             // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
             let resolvedRoleIds = []
             if (trainingRoles?.length) {
-              resolvedRoleIds = trainingRoles.map((role) =>
-                role?.code || (role?.roleName ? role.roleName.replace(/\s/g, '') : role)
-              )
+              resolvedRoleIds = trainingRoles.map((role) => {
+                const id =
+                  role?.id || role?.roleId || role?.resourceId || role?.targetAudienceId
+                return id != null ? String(id) : role?.code || role?.roleName || role
+              })
             } else if (roleIds?.length) {
               resolvedRoleIds = roleIds
             } else if (targetAudience) {
