@@ -16,7 +16,9 @@
       @mouseleave="isHoveringButton = false"
     >
       <div class="ai-agent-button__content">
-        <v-icon class="ai-agent-button__icon" color="white">mdi-creation</v-icon>
+        <v-icon class="ai-agent-button__icon" color="white"
+          >mdi-creation</v-icon
+        >
         <span class="ai-agent-button__text">Use Agentic AI </span>
       </div>
     </div>
@@ -34,7 +36,9 @@
         </div>
         <div class="d-flex gap-2">
           <v-btn icon small @click="toggleFullWidth" color="#757575">
-            <v-icon>{{ isFullWidth ? 'mdi-window-restore' : 'mdi-window-maximize' }}</v-icon>
+            <v-icon>{{
+              isFullWidth ? "mdi-window-restore" : "mdi-window-maximize"
+            }}</v-icon>
           </v-btn>
           <v-btn icon small @click="toggleChat" color="#757575">
             <v-icon>mdi-close</v-icon>
@@ -48,7 +52,11 @@
         <div v-if="!iframeLoaded" class="iframe-loader">
           <!-- Header Skeleton -->
           <div class="skeleton-header">
-            <v-skeleton-loader type="avatar" width="32" height="32"></v-skeleton-loader>
+            <v-skeleton-loader
+              type="avatar"
+              width="32"
+              height="32"
+            ></v-skeleton-loader>
             <div class="skeleton-title">
               <v-skeleton-loader type="text" width="100px"></v-skeleton-loader>
             </div>
@@ -67,8 +75,16 @@
           <!-- Input Skeleton Card -->
           <div class="skeleton-input-card">
             <div class="skeleton-input-wrapper">
-              <v-skeleton-loader type="text" height="40" class="flex-grow-1"></v-skeleton-loader>
-              <v-skeleton-loader type="avatar" width="36" height="36"></v-skeleton-loader>
+              <v-skeleton-loader
+                type="text"
+                height="40"
+                class="flex-grow-1"
+              ></v-skeleton-loader>
+              <v-skeleton-loader
+                type="avatar"
+                width="36"
+                height="36"
+              ></v-skeleton-loader>
             </div>
           </div>
         </div>
@@ -97,17 +113,19 @@
 </template>
 
 <script>
-import { getAgentLoginUrl } from '@/api/auth'
+import { getAgentLoginUrl } from "@/api/auth";
 
 export default {
-  name: 'ChatPanel',
+  name: "ChatPanel",
   data() {
-    const hostId = localStorage.getItem('hostId')
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}')
-    const sessionId = `${hostId}-${userData?.email?.replace('@', '_')}-${userData?.id}`
+    const hostId = localStorage.getItem("hostId");
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const sessionId = `${hostId}-${userData?.email?.replace("@", "_")}-${
+      userData?.id
+    }`;
     return {
       isExpanded: false,
-      chatUrl: '',
+      chatUrl: "",
       iframeLoaded: false,
       isFullWidth: false,
       isInitialHidden: true,
@@ -115,114 +133,135 @@ export default {
       isHoveringButton: false,
       buttonPosition: { right: 20, top: 20 },
       sessionId
-    }
+    };
   },
   computed: {
     agenticAIEnabled() {
-      return this.$store.getters['login/getAgenticAIEnabled']
+      return this.$store.getters["login/getAgenticAIEnabled"];
     },
     iframeSrc() {
-      return `${this.chatUrl}?embedded=true&theme=${this.getCurrentTheme()}`
+      return `${this.chatUrl}?embedded=true&theme=${this.getCurrentTheme()}`;
     }
   },
   methods: {
     getAbsoluteUrl(url) {
       try {
-        return new URL(url, window.location.origin)
+        return new URL(url, window.location.origin);
       } catch (e) {
-        return null
+        return null;
       }
     },
 
     normalizeAgentChatUrl(url) {
       try {
-        const parsedUrl = this.getAbsoluteUrl(url)
-        if (!parsedUrl) return url
-        const baseApiUrl = parsedUrl.searchParams.get('baseApiUrl')
-        if (!baseApiUrl) return url
+        const parsedUrl = this.getAbsoluteUrl(url);
+        if (!parsedUrl) return url;
+        const isLocalhost = ["localhost", "127.0.0.1"].includes(
+          window.location.hostname
+        );
+        if (isLocalhost) {
+          parsedUrl.searchParams.set(
+            "baseApiUrl",
+            "https://test-api.devkeepnet.com"
+          );
+        }
+        const baseApiUrl = parsedUrl.searchParams.get("baseApiUrl");
+        if (!baseApiUrl) return url;
 
-        const normalizedBaseApiUrl = baseApiUrl.replace(/\/api\/?$/i, '')
+        const normalizedBaseApiUrl = baseApiUrl.replace(/\/api\/?$/i, "");
         if (normalizedBaseApiUrl !== baseApiUrl) {
-          parsedUrl.searchParams.set('baseApiUrl', normalizedBaseApiUrl)
+          parsedUrl.searchParams.set("baseApiUrl", normalizedBaseApiUrl);
         }
 
-        return parsedUrl.toString()
+        const normalizedUrl = parsedUrl.toString();
+        if (isLocalhost) {
+          return normalizedUrl.replace(
+            "https://agentic-ai-chat.keepnetlabs.com/",
+            "http://localhost:3001/"
+          );
+        }
+        return normalizedUrl;
       } catch (e) {
-        return url
+        return url;
       }
     },
 
     toggleChat() {
-      this.isExpanded = !this.isExpanded
-      this.isHoveringButton = false
+      this.isExpanded = !this.isExpanded;
+      this.isHoveringButton = false;
 
       // HTML scroll lock/unlock
       if (this.isExpanded) {
-        document.querySelector('html').style.overflowY = 'hidden'
+        document.querySelector("html").style.overflowY = "hidden";
         // Panel açılırken iframe yüklüyse kullanıcı bilgilerini gönder
         if (this.iframeLoaded) {
-          this.sendUserInfoToIframe()
+          this.sendUserInfoToIframe();
         }
       } else {
-        document.querySelector('html').style.overflowY = ''
+        document.querySelector("html").style.overflowY = "";
       }
     },
 
     onIframeLoad() {
-      this.iframeLoaded = true
+      this.iframeLoaded = true;
       if (this.isExpanded) {
-        this.sendUserInfoToIframe()
+        this.sendUserInfoToIframe();
       }
     },
 
     sendUserInfoToIframe() {
       if (this.$refs.chatIframe && this.$refs.chatIframe.contentWindow) {
         const userInfo = {
-          type: 'USER_INFO',
+          type: "USER_INFO",
           data: {
-            userId: this.$store.state.auth?.user?.id || 'guest',
-            userName: this.$store.state.auth?.user?.firstName || 'Guest',
-            companyName: this.$store.state.auth?.selectedCompanyName || 'Demo Company',
+            userId: this.$store.state.auth?.user?.id || "guest",
+            userName: this.$store.state.auth?.user?.firstName || "Guest",
+            companyName:
+              this.$store.state.auth?.selectedCompanyName || "Demo Company",
             theme: this.getCurrentTheme()
           }
-        }
+        };
 
         // Chat URL API'ye taşınınca iframe redirect edebiliyor; hedef origin'i bilemeyebiliriz.
         // Bu yüzden mesajı '*' ile gönderip, alıcı tarafta doğrulama yapılmasını bekliyoruz.
-        this.$refs.chatIframe.contentWindow.postMessage(userInfo, '*')
+        this.$refs.chatIframe.contentWindow.postMessage(userInfo, "*");
       }
     },
 
     // Ana sayfadan seçili verileri iframe'e gönder
     sendSelectedDataToChat(data) {
-      if (this.$refs.chatIframe && this.$refs.chatIframe.contentWindow && this.isExpanded) {
+      if (
+        this.$refs.chatIframe &&
+        this.$refs.chatIframe.contentWindow &&
+        this.isExpanded
+      ) {
         const dataMessage = {
-          type: 'SELECTED_DATA',
+          type: "SELECTED_DATA",
           data: data,
           timestamp: new Date().toISOString()
-        }
+        };
 
-        this.$refs.chatIframe.contentWindow.postMessage(dataMessage, '*')
+        this.$refs.chatIframe.contentWindow.postMessage(dataMessage, "*");
       }
     },
 
     getCurrentTheme() {
       // Tema bilgisini al (dark/light mode kontrolü için)
-      return this.$vuetify.theme.dark ? 'dark' : 'light'
+      return this.$vuetify.theme.dark ? "dark" : "light";
     },
 
     toggleFullWidth() {
-      this.isFullWidth = !this.isFullWidth
+      this.isFullWidth = !this.isFullWidth;
 
       // iframe'e fullwidth durumunu bildir
       if (this.$refs.chatIframe && this.$refs.chatIframe.contentWindow) {
         this.$refs.chatIframe.contentWindow.postMessage(
           {
-            type: 'FULLWIDTH_TOGGLE',
+            type: "FULLWIDTH_TOGGLE",
             data: { isFullWidth: this.isFullWidth }
           },
-          '*'
-        )
+          "*"
+        );
       }
     },
 
@@ -230,74 +269,75 @@ export default {
     handleIframeMessage(event) {
       // Chat URL API endpoint'ine taşınmışsa iframe redirect edebilir ve origin değişir.
       // Origin'e göre filtrelemek yerine, mesajın bizim iframe window'undan geldiğini doğrula.
-      if (!this.$refs.chatIframe || !this.$refs.chatIframe.contentWindow) return
-      if (event.source !== this.$refs.chatIframe.contentWindow) return
+      if (!this.$refs.chatIframe || !this.$refs.chatIframe.contentWindow)
+        return;
+      if (event.source !== this.$refs.chatIframe.contentWindow) return;
 
-      if (event.data.type === 'CANVAS_CLICK') {
-        this.isFullWidth = true
+      if (event.data.type === "CANVAS_CLICK") {
+        this.isFullWidth = true;
       }
 
-      if (event.data.type === 'CHAT_MESSAGE') {
+      if (event.data.type === "CHAT_MESSAGE") {
         // Chat mesajı geldiğinde gerekli işlemleri yap
-        console.log('Chat message received:', event.data)
+        console.log("Chat message received:", event.data);
         // Burada ana uygulama state'ini güncelleyebilir veya toast gösterebilirsin
       }
     },
 
     handleBtnClick() {
-      this.toggleChat()
+      this.toggleChat();
     },
 
     fetchAgentLoginUrl() {
       getAgentLoginUrl({ sessionId: this.sessionId })
         .then((response) => {
           if (response?.data?.url) {
-            this.chatUrl = this.normalizeAgentChatUrl(response.data.url)
+            this.chatUrl = this.normalizeAgentChatUrl(response.data.url);
           }
         })
         .catch((error) => {
-          console.error('Failed to fetch agent login URL:', error)
-        })
+          console.error("Failed to fetch agent login URL:", error);
+        });
     }
   },
 
   mounted() {
     // Chat panel'i başlangıçtan sonra göster
-    this.isInitialHidden = false
+    this.isInitialHidden = false;
 
     // Agent login URL'sini al ve iframe'e ata
-    this.fetchAgentLoginUrl()
+    this.fetchAgentLoginUrl();
 
     // Interval ile diğer chat-popup elemanını kapat
     this.chatPopupInterval = setInterval(() => {
-      const otherChatPopup = document.querySelector('.chat-popup')
+      const otherChatPopup = document.querySelector(".chat-popup");
       if (otherChatPopup) {
-        otherChatPopup.style.display = 'none'
+        otherChatPopup.style.display = "none";
         // Kapatıldıktan sonra interval'ı kaldır
-        clearInterval(this.chatPopupInterval)
-        this.chatPopupInterval = null
+        clearInterval(this.chatPopupInterval);
+        this.chatPopupInterval = null;
       }
-    }, 500)
+    }, 500);
 
     // İframe'den gelen mesajları dinle
-    window.addEventListener('message', this.handleIframeMessage)
+    window.addEventListener("message", this.handleIframeMessage);
   },
 
   beforeDestroy() {
     // Interval'ı kaldır
     if (this.chatPopupInterval) {
-      clearInterval(this.chatPopupInterval)
-      this.chatPopupInterval = null
+      clearInterval(this.chatPopupInterval);
+      this.chatPopupInterval = null;
     }
     // Event listener'ı kaldır
-    window.removeEventListener('message', this.handleIframeMessage)
+    window.removeEventListener("message", this.handleIframeMessage);
     // Diğer chat-popup elemanını aç
-    const otherChatPopup = document.querySelector('.chat-popup')
+    const otherChatPopup = document.querySelector(".chat-popup");
     if (otherChatPopup) {
-      otherChatPopup.style.display = ''
+      otherChatPopup.style.display = "";
     }
   }
-}
+};
 </script>
 
 <style>
@@ -491,7 +531,7 @@ export default {
 
 /* Overlay - chat açıkken arka planı hafif karart */
 .chat-panel::before {
-  content: '';
+  content: "";
   position: fixed;
   left: 0;
   top: 0;
