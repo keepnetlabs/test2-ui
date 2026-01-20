@@ -242,19 +242,20 @@ const learningPath = {
     },
     SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, payload) {
       const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
-      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      const payloadKey = payload.key === 'targetAudience' ? 'roles' : payload.key
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey)
       let value
       if (typeof payload.activeValue === 'string') {
         value = payload.activeValue.trim()
       } else if (Array.isArray(payload.activeValue)) {
         if (payload.activeOperator === 'between') {
           filterItems.push({
-            FieldName: payload.key,
+            FieldName: payloadKey,
             Value: payload.activeValue[0],
             Operator: '>='
           })
           filterItems.push({
-            FieldName: payload.key,
+            FieldName: payloadKey,
             Value: payload.activeValue[1],
             Operator: '<='
           })
@@ -266,7 +267,7 @@ const learningPath = {
         filterItems[fIndex].Value = value
       } else {
         filterItems.push({
-          FieldName: payload.key,
+          FieldName: payloadKey,
           Value: value,
           Operator: payload.activeOperator
         })
@@ -274,12 +275,13 @@ const learningPath = {
     },
     REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, payload) {
       const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
+      const payloadKey = payload.key === 'targetAudience' ? 'roles' : payload.key
       if (payload.filterType === 'date' && payload.activeOperator === 'between') {
-        const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+        const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey)
         if (fIndex !== -1) filterItems.splice(fIndex, 2)
         return
       }
-      const fIndex = filterItems.findIndex((f) => f.FieldName === payload.key)
+      const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey)
       if (fIndex === -1) return
       if (payload.key === 'type' && payload?.activeValue?.length === 0) {
         filterItems[fIndex] = {
