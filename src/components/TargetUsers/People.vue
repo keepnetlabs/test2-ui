@@ -428,6 +428,7 @@ import {
 import TargetUserMenuActionsEditButton from "@/components/SmallComponents/RowActions/TargetUserMenuActionsEditButton";
 import TargetUserRowActionsDeleteButton from "@/components/SmallComponents/RowActions/TargetUserRowActionsDeleteButton";
 import DefaultErrorDialog from "@/components/Common/Others/DefaultErrorDialog";
+import moment from "moment";
 import { mapGetters } from "vuex";
 import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
 import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
@@ -1105,10 +1106,28 @@ export default {
     },
     formatMonthlyPeriodKey(periodStart = "") {
       if (!periodStart) return "";
-      const datePart = String(periodStart).split(" ")[0] || "";
-      const [month, day, year] = datePart.split("/");
-      if (!year || !month) return "";
-      return `${year}-${String(month).padStart(2, "0")}`;
+
+      const raw = String(periodStart).trim();
+      const datePart = raw.split(" ")[0] || "";
+      if (!datePart) return "";
+
+      const selectedDateFormat =
+        localStorage.getItem("selectedDateFormat") || "";
+      const candidateFormats = [
+        ...(selectedDateFormat ? [selectedDateFormat] : []),
+        "YYYY/MM/DD",
+        "MM/DD/YYYY",
+        "DD/MM/YYYY",
+        "YYYY-MM-DD",
+        "DD.MM.YYYY",
+        "MM.DD.YYYY"
+      ];
+
+      const parsed = moment(datePart, candidateFormats, true);
+      const m = parsed.isValid() ? parsed : moment(raw);
+      if (!m.isValid()) return "";
+
+      return m.format("YYYY-MM");
     },
     getCountByKeys(summary, keys) {
       return keys.reduce((acc, key) => {
