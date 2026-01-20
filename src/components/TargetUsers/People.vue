@@ -1111,7 +1111,8 @@ export default {
       const datePart = raw.split(" ")[0] || "";
       if (!datePart) return "";
 
-      const selectedDateFormat = localStorage.getItem("selectedDateFormat") || "";
+      const selectedDateFormat =
+        localStorage.getItem("selectedDateFormat") || "";
       const candidateFormats = [
         ...(selectedDateFormat ? [selectedDateFormat] : []),
         "YYYY/MM/DD",
