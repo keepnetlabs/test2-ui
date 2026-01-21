@@ -1614,6 +1614,7 @@ export default {
       this.isWantToShowAddUsersModal = false;
       this.$emit("call-for-company-licenses", showMainModal);
       this.callForTargetUsers();
+      this.callForTargetUsersCountSummary();
     },
     handleEditTargetUsers(selectedRow) {
       this.selectedRow = selectedRow;
@@ -1670,6 +1671,7 @@ export default {
         .then(() => {
           this?.$refs?.refPeopleTable?.resetSelectableParams();
           this.callForTargetUsers();
+          this.callForTargetUsersCountSummary();
           this.changeDeleteModalStatus(false);
         })
         .catch((error) => {
@@ -1703,6 +1705,7 @@ export default {
             this.callForTargetUsers();
           }
           this.callForTargetUsers();
+          this.callForTargetUsersCountSummary();
         }
       });
     },
