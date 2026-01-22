@@ -45,14 +45,14 @@
                 </p>
               </div>
             </div>
-            <div class="agentic-ai-widget__stat-cards">
+          <div class="agentic-ai-widget__stat-cards">
               <div
-                v-for="card in statCards"
+                v-for="card in visibleStatCards"
                 :key="card.title"
                 class="agentic-ai-widget__stat-card"
                 :class="{
                   'agentic-ai-widget__stat-card--highlighted':
-                    isPendingApprovalsCard(card) && card.value > 0
+                    highlightedCardTitles.includes(card.title)
                 }"
               >
                 <div class="agentic-ai-widget__stat-card__header">
@@ -171,7 +171,7 @@ export default {
     },
     isAutonomous: {
       type: Boolean,
-      default: false
+      default: true
     },
     subtitle: {
       type: String,
@@ -210,7 +210,7 @@ export default {
       return this.isAgenticAllyActive && !this.isAutonomous;
     },
     statusIcon() {
-      if (this.isAgenticAllyActive && !this.isAutonomous) {
+      if (this.isAgenticAllyActive) {
         return "mdi-check-circle-outline";
       }
       return "mdi-creation";
@@ -250,6 +250,22 @@ export default {
       return this.isApprovalReviewState
         ? this.approvalActionButtonOutlined
         : this.actionButtonOutlined;
+    },
+    visibleStatCards() {
+      if (this.isAutonomous) {
+        return this.statCards.filter((card) => card.title === "Actions Executed");
+      }
+      return this.statCards;
+    },
+    highlightedCardTitles() {
+      const titles = [];
+      if (this.isAutonomous) {
+        titles.push("Actions Executed");
+      }
+      if (this.hasPendingApprovals) {
+        titles.push("Pending Approvals");
+      }
+      return titles;
     }
   },
   methods: {
