@@ -45,14 +45,15 @@
                 </p>
               </div>
             </div>
-          <div class="agentic-ai-widget__stat-cards">
+            <div class="agentic-ai-widget__stat-cards">
               <div
                 v-for="card in visibleStatCards"
                 :key="card.title"
                 class="agentic-ai-widget__stat-card"
                 :class="{
-                  'agentic-ai-widget__stat-card--highlighted':
-                    highlightedCardTitles.includes(card.title)
+                  'agentic-ai-widget__stat-card--highlighted': highlightedCardTitles.includes(
+                    card.title
+                  )
                 }"
               >
                 <div class="agentic-ai-widget__stat-card__header">
@@ -253,7 +254,9 @@ export default {
     },
     visibleStatCards() {
       if (this.isAutonomous) {
-        return this.statCards.filter((card) => card.title === "Actions Executed");
+        return this.statCards.filter(
+          (card) => card.title === "Actions Executed"
+        );
       }
       return this.statCards;
     },
