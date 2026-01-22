@@ -36,9 +36,9 @@
               hide-details
               inset
               color="#2196f3"
-            @click.stop
-            @change="item.switchOnChange && item.switchOnChange($event)"
-          />
+              @click.stop
+              @change="item.switchOnChange && item.switchOnChange($event)"
+            />
           </div>
         </div>
 
@@ -54,7 +54,9 @@
           class="safeguard-detail-card"
         >
           <div
-            v-if="child.showCheckbox && child.checkboxModel && child.checkboxField"
+            v-if="
+              child.showCheckbox && child.checkboxModel && child.checkboxField
+            "
             class="safeguard-detail-checkbox"
           >
             <v-checkbox
@@ -72,10 +74,7 @@
             {{ child.title }}
           </div>
 
-          <div
-            v-if="child.tooltip"
-            class="safeguard-detail-icon-wrapper"
-          >
+          <div v-if="child.tooltip" class="safeguard-detail-icon-wrapper">
             <v-tooltip bottom content-class="accordion-group__tooltip">
               <template v-slot:activator="{ on }">
                 <v-icon
@@ -103,7 +102,7 @@ export default {
       type: Array,
       required: true,
       validator(value) {
-        return value.every((item) => "title" in item && "description" in item);
+        return value.every((item) => "title" in item);
       }
     },
     allowMultiple: {

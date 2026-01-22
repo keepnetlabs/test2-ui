@@ -77,7 +77,7 @@
 
       <FormGroup
         v-if="agenticAISettings.isAgenticAIEnabled"
-        class-name="agentic-ai-settings__safeguards-form-group"
+        class-name="agentic-ai-settings__safeguards-form-group mt-6"
       >
         <template #title>
           <p class="agentic-ai-settings__section-title">Safeguards</p>
@@ -91,7 +91,7 @@
 
       <FormGroup
         v-if="agenticAISettings.isAgenticAIEnabled"
-        class-name="agentic-ai-settings__behavioral-policies-form-group"
+        class-name="agentic-ai-settings__behavioral-policies-form-group mt-6"
       >
         <template #title>
           <p class="agentic-ai-settings__section-title">Behavioral Policies</p>
@@ -135,7 +135,45 @@ export default {
         riskBasedSimulationFrequency: false,
         highRiskRoleSimulationCadence: false,
         repeatOffenderSimulationEscalation: false,
-        lowRiskUserFrequencyReduction: false
+        lowRiskUserFrequencyReduction: false,
+        complianceTrainingEnabled: false,
+        roleBasedComplianceTraining: false,
+        annualComplianceRefresh: false,
+        newHireComplianceOnboarding: false,
+        regulatorySpecificTraining: false,
+        executiveBoardComplianceTraining: false,
+        riskEscalationEnabled: false,
+        repeatOffenderIdentification: false,
+        escalatedSimulationTraining: false,
+        managerVisibilityHighRisk: false,
+        positiveReinforcementEnabled: false,
+        securityChampionRecognition: false,
+        fastPhishingReporterAppreciation: false,
+        consistentReporterEncouragement: false,
+        behaviorImprovementRecognition: false,
+        teamLevelAchievementRecognition: false,
+        milestoneAchievementCelebration: false,
+        difficultyProgressionEnabled: false,
+        progressiveDifficultyModel: false,
+        safeStartDifficulty: false,
+        performanceBasedDifficultyAdjustment: false,
+        repeatFailureDifficultyEscalation: false,
+        highRiskScenarioExposure: false,
+        difficultyStabilizationWindow: false,
+        nudgesEnabled: false,
+        incompleteTrainingReminder: false,
+        trainingDueSoonReminder: false,
+        followUpAfterSimulationFailure: false,
+        lowEngagementReminder: false,
+        reportingEncouragementNudge: false,
+        behaviorImprovementPrompt: false,
+        trainingEnablementEnabled: false,
+        failureBasedTrainingEnrollment: false,
+        targetedTrainingAssignment: false,
+        repeatFailureTrainingEscalation: false,
+        newHireTrainingOnboarding: false,
+        trainingCooldownEnforcement: false,
+        postIncidentTrainingAssignment: false
       },
       isFetching: true,
       isSaving: false
@@ -314,6 +352,402 @@ export default {
               checkboxOnChange: this.handleBehavioralPolicyCheckboxChange
             }
           ]
+        },
+        {
+          title: "Compliance Training Policies",
+          subtitle: "Schedule all actions based on each user's local timezone.",
+          description: "",
+          showSwitch: true,
+          switchModel: this.behavioralPolicySettings,
+          switchField: "complianceTrainingEnabled",
+          switchDisabled: !this.hasAgenticAILicense,
+          switchOnChange: this.handleComplianceTrainingSwitchChange,
+          children: [
+            {
+              title: "Role-Based Compliance Training",
+              tooltip:
+                "Automatically assign mandatory compliance training based on user role or department.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "roleBasedComplianceTraining",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleComplianceTrainingCheckboxChange
+            },
+            {
+              title: "Annual Compliance Refresh",
+              tooltip:
+                "Enroll users in required compliance training on a fixed annual schedule.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "annualComplianceRefresh",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleComplianceTrainingCheckboxChange
+            },
+            {
+              title: "New Hire Compliance Onboarding",
+              tooltip:
+                "Assign mandatory compliance training during onboarding, independent of phishing outcomes.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "newHireComplianceOnboarding",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleComplianceTrainingCheckboxChange
+            },
+            {
+              title: "Regulatory-Specific Training",
+              tooltip:
+                "Enforce training for users subject to regulations such as NIS2, ISO, or internal policies.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "regulatorySpecificTraining",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleComplianceTrainingCheckboxChange
+            },
+            {
+              title: "Executive & Board Compliance Training",
+              tooltip:
+                "Ensure leadership completes required governance and compliance training.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "executiveBoardComplianceTraining",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleComplianceTrainingCheckboxChange
+            }
+          ]
+        },
+        {
+          title: "Risk Escalation",
+          subtitle:
+            "Increase focus and intensity for users exhibiting repeated or elevated risk behavior.",
+          description: "",
+          showSwitch: true,
+          switchModel: this.behavioralPolicySettings,
+          switchField: "riskEscalationEnabled",
+          switchDisabled: !this.hasAgenticAILicense,
+          switchOnChange: this.handleRiskEscalationSwitchChange,
+          children: [
+            {
+              title: "Repeat Offender Identification",
+              tooltip:
+                "Flag users with repeated phishing failures as elevated risk.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "repeatOffenderIdentification",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleRiskEscalationCheckboxChange
+            },
+            {
+              title: "Escalated Simulation & Training Path",
+              tooltip:
+                "Apply stricter simulation and training paths for high-risk users.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "escalatedSimulationTraining",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleRiskEscalationCheckboxChange
+            },
+            {
+              title: "Manager Visibility on High Risk",
+              tooltip:
+                "Notify managers when users or teams reach elevated risk levels.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "managerVisibilityHighRisk",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleRiskEscalationCheckboxChange
+            }
+          ]
+        },
+        {
+          title: "Positive Reinforcement",
+          subtitle:
+            "Recognize and reinforce secure behavior through positive feedback.",
+          description: "",
+          showSwitch: true,
+          switchModel: this.behavioralPolicySettings,
+          switchField: "positiveReinforcementEnabled",
+          switchDisabled: !this.hasAgenticAILicense,
+          switchOnChange: this.handlePositiveReinforcementSwitchChange,
+          children: [
+            {
+              title: "Security Champion Recognition",
+              tooltip:
+                "Recognize users who consistently demonstrate strong and exemplary security behavior.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "securityChampionRecognition",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handlePositiveReinforcementCheckboxChange
+            },
+            {
+              title: "Fast Phishing Reporter Appreciation",
+              tooltip:
+                "Thank users who report suspicious emails quickly to reinforce prompt reporting.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "fastPhishingReporterAppreciation",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handlePositiveReinforcementCheckboxChange
+            },
+            {
+              title: "Consistent Reporter Encouragement",
+              tooltip:
+                "Acknowledge users who regularly report phishing or suspicious activity over time.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "consistentReporterEncouragement",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handlePositiveReinforcementCheckboxChange
+            },
+            {
+              title: "Behavior Improvement Recognition",
+              tooltip:
+                "Positively reinforce users who show measurable improvement after previous failures.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "behaviorImprovementRecognition",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handlePositiveReinforcementCheckboxChange
+            },
+            {
+              title: "Team-Level Achievement Recognition",
+              tooltip:
+                "Highlight teams that maintain low risk levels and strong reporting behavior.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "teamLevelAchievementRecognition",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handlePositiveReinforcementCheckboxChange
+            },
+            {
+              title: "Milestone Achievement Celebration",
+              tooltip:
+                "Celebrate milestones such as consecutive successful simulations or sustained secure behavior.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "milestoneAchievementCelebration",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handlePositiveReinforcementCheckboxChange
+            }
+          ]
+        },
+        {
+          title: "Difficulty & Progression",
+          subtitle:
+            "Adjust simulation difficulty dynamically based on user performance and maturity.",
+          description: "",
+          showSwitch: true,
+          switchModel: this.behavioralPolicySettings,
+          switchField: "difficultyProgressionEnabled",
+          switchDisabled: !this.hasAgenticAILicense,
+          switchOnChange: this.handleDifficultyProgressionSwitchChange,
+          children: [
+            {
+              title: "Progressive Difficulty Model (NIST Aligned)",
+              tooltip:
+                "Gradually increase phishing difficulty from low to hard based on user performance and the NIST Phish Scale.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "progressiveDifficultyModel",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleDifficultyProgressionCheckboxChange
+            },
+            {
+              title: "Safe Start Difficulty",
+              tooltip:
+                "Start all new users with low-difficulty simulations to avoid early frustration.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "safeStartDifficulty",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleDifficultyProgressionCheckboxChange
+            },
+            {
+              title: "Performance-Based Difficulty Adjustment",
+              tooltip:
+                "Automatically raise or lower difficulty based on recent simulation outcomes.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "performanceBasedDifficultyAdjustment",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleDifficultyProgressionCheckboxChange
+            },
+            {
+              title: "Repeat Failure Difficulty Escalation",
+              tooltip:
+                "Increase difficulty for users who repeatedly fail simulations to challenge risky behavior patterns.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "repeatFailureDifficultyEscalation",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleDifficultyProgressionCheckboxChange
+            },
+            {
+              title: "High-Risk Scenario Exposure",
+              tooltip:
+                "Introduce more realistic and advanced scenarios for users with elevated risk profiles.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "highRiskScenarioExposure",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleDifficultyProgressionCheckboxChange
+            },
+            {
+              title: "Difficulty Stabilization Window",
+              tooltip:
+                "Prevent rapid difficulty changes by applying a minimum stabilization period between adjustments.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "difficultyStabilizationWindow",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleDifficultyProgressionCheckboxChange
+            }
+          ]
+        },
+        {
+          title: "Nudges",
+          subtitle:
+            "Gently guide users with timely, positive, and contextual reminders.",
+          description: "",
+          showSwitch: true,
+          switchModel: this.behavioralPolicySettings,
+          switchField: "nudgesEnabled",
+          switchDisabled: !this.hasAgenticAILicense,
+          switchOnChange: this.handleNudgesSwitchChange,
+          children: [
+            {
+              title: "Incomplete Training Reminder",
+              tooltip:
+                "Send friendly reminders to users who have not completed assigned training.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "incompleteTrainingReminder",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleNudgesCheckboxChange
+            },
+            {
+              title: "Training Due Soon Reminder",
+              tooltip:
+                "Notify users shortly before assigned training deadlines to encourage timely completion.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "trainingDueSoonReminder",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleNudgesCheckboxChange
+            },
+            {
+              title: "Follow-Up After Simulation Failure",
+              tooltip:
+                "Gently prompt users after a phishing failure to review guidance or next steps.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "followUpAfterSimulationFailure",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleNudgesCheckboxChange
+            },
+            {
+              title: "Low Engagement Reminder",
+              tooltip:
+                "Encourage users with low interaction or reporting activity to stay engaged.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "lowEngagementReminder",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleNudgesCheckboxChange
+            },
+            {
+              title: "Reporting Encouragement Nudge",
+              tooltip: "Remind users how and when to report suspicious emails.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "reportingEncouragementNudge",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleNudgesCheckboxChange
+            },
+            {
+              title: "Behavior Improvement Prompt",
+              tooltip:
+                "Nudge users who are improving to maintain positive momentum.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "behaviorImprovementPrompt",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleNudgesCheckboxChange
+            }
+          ]
+        },
+        {
+          title: "Training & Enablement",
+          subtitle:
+            "Trigger learning actions automatically to reinforce secure behavior.",
+          description: "",
+          showSwitch: true,
+          switchModel: this.behavioralPolicySettings,
+          switchField: "trainingEnablementEnabled",
+          switchDisabled: !this.hasAgenticAILicense,
+          switchOnChange: this.handleTrainingEnablementSwitchChange,
+          children: [
+            {
+              title: "Failure-Based Training Enrollment",
+              tooltip:
+                "Automatically enroll users in relevant training when they fail a phishing simulation.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "failureBasedTrainingEnrollment",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleTrainingEnablementCheckboxChange
+            },
+            {
+              title: "Targeted Training Assignment",
+              tooltip:
+                "Assign specific training based on the type of phishing failure or risky behavior observed.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "targetedTrainingAssignment",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleTrainingEnablementCheckboxChange
+            },
+            {
+              title: "Repeat Failure Training Escalation",
+              tooltip:
+                "Enroll users in advanced or additional training after repeated simulation failures.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "repeatFailureTrainingEscalation",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleTrainingEnablementCheckboxChange
+            },
+            {
+              title: "New Hire Training Onboarding",
+              tooltip:
+                "Automatically assign foundational security training to new hires during onboarding.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "newHireTrainingOnboarding",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleTrainingEnablementCheckboxChange
+            },
+            {
+              title: "Training Cooldown Enforcement",
+              tooltip:
+                "Prevent users from being enrolled in the same training repeatedly within a short period.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "trainingCooldownEnforcement",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleTrainingEnablementCheckboxChange
+            },
+            {
+              title: "Post-Incident Training Assignment",
+              tooltip:
+                "Assign focused training after a real phishing incident or confirmed malicious interaction.",
+              showCheckbox: true,
+              checkboxModel: this.behavioralPolicySettings,
+              checkboxField: "postIncidentTrainingAssignment",
+              checkboxDisabled: !this.hasAgenticAILicense,
+              checkboxOnChange: this.handleTrainingEnablementCheckboxChange
+            }
+          ]
         }
       ];
     },
@@ -326,6 +760,68 @@ export default {
         "highRiskRoleSimulationCadence",
         "repeatOffenderSimulationEscalation",
         "lowRiskUserFrequencyReduction"
+      ];
+    },
+
+    complianceTrainingCheckboxFields() {
+      return [
+        "roleBasedComplianceTraining",
+        "annualComplianceRefresh",
+        "newHireComplianceOnboarding",
+        "regulatorySpecificTraining",
+        "executiveBoardComplianceTraining"
+      ];
+    },
+
+    riskEscalationCheckboxFields() {
+      return [
+        "repeatOffenderIdentification",
+        "escalatedSimulationTraining",
+        "managerVisibilityHighRisk"
+      ];
+    },
+
+    positiveReinforcementCheckboxFields() {
+      return [
+        "securityChampionRecognition",
+        "fastPhishingReporterAppreciation",
+        "consistentReporterEncouragement",
+        "behaviorImprovementRecognition",
+        "teamLevelAchievementRecognition",
+        "milestoneAchievementCelebration"
+      ];
+    },
+
+    difficultyProgressionCheckboxFields() {
+      return [
+        "progressiveDifficultyModel",
+        "safeStartDifficulty",
+        "performanceBasedDifficultyAdjustment",
+        "repeatFailureDifficultyEscalation",
+        "highRiskScenarioExposure",
+        "difficultyStabilizationWindow"
+      ];
+    },
+
+    nudgesCheckboxFields() {
+      return [
+        "incompleteTrainingReminder",
+        "trainingDueSoonReminder",
+        "followUpAfterSimulationFailure",
+        "lowEngagementReminder",
+        "reportingEncouragementNudge",
+        "behaviorImprovementPrompt"
+      ];
+    },
+
+    trainingEnablementCheckboxFields() {
+      return [
+        "failureBasedTrainingEnrollment",
+        "targetedTrainingAssignment",
+        "repeatFailureTrainingEscalation",
+        "newHireTrainingOnboarding",
+        "trainingCooldownEnforcement",
+        "postIncidentTrainingAssignment"
       ];
     },
 
@@ -390,8 +886,119 @@ export default {
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
       );
-      if (this.behavioralPolicySettings.simulationCadenceEnabled !== anyChecked) {
+      if (
+        this.behavioralPolicySettings.simulationCadenceEnabled !== anyChecked
+      ) {
         this.behavioralPolicySettings.simulationCadenceEnabled = anyChecked;
+      }
+    },
+    handleComplianceTrainingSwitchChange(value) {
+      const fields = this.complianceTrainingCheckboxFields;
+      fields.forEach((field) => {
+        this.behavioralPolicySettings[field] = value;
+      });
+    },
+
+    handleComplianceTrainingCheckboxChange() {
+      const fields = this.complianceTrainingCheckboxFields;
+      const anyChecked = fields.some(
+        (field) => this.behavioralPolicySettings[field]
+      );
+      if (
+        this.behavioralPolicySettings.complianceTrainingEnabled !== anyChecked
+      ) {
+        this.behavioralPolicySettings.complianceTrainingEnabled = anyChecked;
+      }
+    },
+
+    handleRiskEscalationSwitchChange(value) {
+      const fields = this.riskEscalationCheckboxFields;
+      fields.forEach((field) => {
+        this.behavioralPolicySettings[field] = value;
+      });
+    },
+
+    handleRiskEscalationCheckboxChange() {
+      const fields = this.riskEscalationCheckboxFields;
+      const anyChecked = fields.some(
+        (field) => this.behavioralPolicySettings[field]
+      );
+      if (this.behavioralPolicySettings.riskEscalationEnabled !== anyChecked) {
+        this.behavioralPolicySettings.riskEscalationEnabled = anyChecked;
+      }
+    },
+    handlePositiveReinforcementSwitchChange(value) {
+      const fields = this.positiveReinforcementCheckboxFields;
+      fields.forEach((field) => {
+        this.behavioralPolicySettings[field] = value;
+      });
+    },
+
+    handlePositiveReinforcementCheckboxChange() {
+      const fields = this.positiveReinforcementCheckboxFields;
+      const anyChecked = fields.some(
+        (field) => this.behavioralPolicySettings[field]
+      );
+      if (
+        this.behavioralPolicySettings.positiveReinforcementEnabled !==
+        anyChecked
+      ) {
+        this.behavioralPolicySettings.positiveReinforcementEnabled = anyChecked;
+      }
+    },
+
+    handleDifficultyProgressionSwitchChange(value) {
+      const fields = this.difficultyProgressionCheckboxFields;
+      fields.forEach((field) => {
+        this.behavioralPolicySettings[field] = value;
+      });
+    },
+
+    handleDifficultyProgressionCheckboxChange() {
+      const fields = this.difficultyProgressionCheckboxFields;
+      const anyChecked = fields.some(
+        (field) => this.behavioralPolicySettings[field]
+      );
+      if (
+        this.behavioralPolicySettings.difficultyProgressionEnabled !==
+        anyChecked
+      ) {
+        this.behavioralPolicySettings.difficultyProgressionEnabled = anyChecked;
+      }
+    },
+    handleNudgesSwitchChange(value) {
+      const fields = this.nudgesCheckboxFields;
+      fields.forEach((field) => {
+        this.behavioralPolicySettings[field] = value;
+      });
+    },
+
+    handleNudgesCheckboxChange() {
+      const fields = this.nudgesCheckboxFields;
+      const anyChecked = fields.some(
+        (field) => this.behavioralPolicySettings[field]
+      );
+      if (this.behavioralPolicySettings.nudgesEnabled !== anyChecked) {
+        this.behavioralPolicySettings.nudgesEnabled = anyChecked;
+      }
+    },
+
+    handleTrainingEnablementSwitchChange(value) {
+      const fields = this.trainingEnablementCheckboxFields;
+      fields.forEach((field) => {
+        this.behavioralPolicySettings[field] = value;
+      });
+    },
+
+    handleTrainingEnablementCheckboxChange() {
+      const fields = this.trainingEnablementCheckboxFields;
+      const anyChecked = fields.some(
+        (field) => this.behavioralPolicySettings[field]
+      );
+      if (
+        this.behavioralPolicySettings.trainingEnablementEnabled !== anyChecked
+      ) {
+        this.behavioralPolicySettings.trainingEnablementEnabled = anyChecked;
       }
     }
   }
