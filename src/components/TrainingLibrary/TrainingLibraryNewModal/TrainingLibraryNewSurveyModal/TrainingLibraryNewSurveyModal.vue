@@ -88,6 +88,7 @@ import { mapActions } from 'vuex'
 import { emptyNewSurveyModalObj } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewSurveyCourseInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewSurveyModal/TrainingLibraryNewSurveyCourseInformation.vue'
 import TrainingLibraryNewSurveyContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewSurveyModal/TrainingLibraryNewSurveyContent.vue'
+import { normalizeRoleId } from '@/utils/helperFunctions'
 
 export default {
   name: 'TrainingLibraryNewSurveyModal',
@@ -153,13 +154,11 @@ export default {
           // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
           let resolvedRoleIds = []
           if (trainingRoles?.length) {
-            resolvedRoleIds = trainingRoles.map((role) =>
-              role?.code || (role?.roleName ? role.roleName.replace(/\s/g, '') : role)
-            )
+            resolvedRoleIds = trainingRoles.map(normalizeRoleId).filter(Boolean)
           } else if (roleIds?.length) {
-            resolvedRoleIds = roleIds
+            resolvedRoleIds = roleIds.map(normalizeRoleId).filter(Boolean)
           } else if (targetAudience) {
-            resolvedRoleIds = [targetAudience]
+            resolvedRoleIds = [normalizeRoleId(targetAudience)].filter(Boolean)
           }
           refTrainingCourseInformation.setFormData({
             coverImage,
