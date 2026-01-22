@@ -1,9 +1,34 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row align="center" justify="center">
-      <v-col cols="12" md="6" class="text-center">
-        <v-progress-circular v-if="isLoading" indeterminate color="primary" size="48" />
-        <div class="mt-4">{{ statusMessage }}</div>
+  <v-container fluid style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    <v-row style="width:100%;" align="center" justify="center">
+      <v-col
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
+        style="display:flex;flex-direction:column;align-items:center;text-align:center;row-gap:12px;max-width:360px;margin-left:auto;margin-right:auto;"
+      >
+        <v-progress-circular
+          v-if="isLoading"
+          indeterminate
+          color="primary"
+          size="44"
+          width="4"
+        />
+        <v-icon v-else color="primary" size="44">mdi-download</v-icon>
+        <div style="font-size:16px;font-weight:500;">{{ statusMessage }}</div>
+        <div v-if="shouldShowCloseHint" style="font-size:12px;color:#757575;">
+          This tab may not close automatically due to browser settings.
+        </div>
+        <v-btn
+          v-if="shouldShowCloseButton"
+          color="primary"
+          outlined
+          small
+          @click="handleCloseTab"
+        >
+          Close tab
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -17,7 +42,9 @@ export default {
   data() {
     return {
       isLoading: true,
-      statusMessage: 'Preparing download...'
+      statusMessage: 'Preparing download...',
+      shouldShowCloseButton: false,
+      shouldShowCloseHint: false
     }
   },
   mounted() {
@@ -30,18 +57,27 @@ export default {
       if (!EnrollmentContentId || !TargetUserResourceId) {
         this.isLoading = false
         this.statusMessage = 'Missing required download parameters.'
+        this.shouldShowCloseButton = true
         return
       }
 
       try {
-        const response = await axios.get(`${APP_CONFIG.VUE_APP_ROOT_API}/trainings/download-content`, {
-          params: {
-            enrollmentContentId: EnrollmentContentId,
-            targetUserResourceId: TargetUserResourceId
-          },
-          responseType: 'blob'
+        console.log('download-content params', {
+          EnrollmentContentId,
+          TargetUserResourceId
         })
+        const response = await axios.get(
+          `${APP_CONFIG.VUE_APP_ROOT_API}/trainings/download-content`,
+          {
+            params: {
+              enrollmentContentId: EnrollmentContentId,
+              targetUserResourceId: TargetUserResourceId
+            },
+            responseType: 'blob'
+          }
+        )
 
+        console.log('download-content headers', response?.headers)
         const fileNameFromHeader = this.getFileNameFromDisposition(
           response?.headers?.['content-disposition']
         )
@@ -49,10 +85,20 @@ export default {
         const fallbackExtension = this.getExtensionFromType(contentType)
         const fileName = fileNameFromHeader || `download${fallbackExtension}`
 
+        console.log('download-content filename', {
+          fileNameFromHeader,
+          contentType,
+          fallbackExtension,
+          fileName
+        })
         this.triggerDownload(response.data, fileName)
         this.statusMessage = 'Your download should start shortly.'
+        this.shouldShowCloseButton = true
+        this.handleAutoClose()
       } catch (error) {
+        console.log('download-content error', error)
         this.statusMessage = 'Download failed. Please try again later.'
+        this.shouldShowCloseButton = true
       } finally {
         this.isLoading = false
       }
@@ -143,6 +189,25 @@ export default {
       link.click()
       link.remove()
       window.URL.revokeObjectURL(url)
+    },
+    handleAutoClose() {
+      this.shouldShowCloseHint = true
+      setTimeout(() => {
+        const didClose = this.handleCloseTab()
+        this.shouldShowCloseButton = !didClose
+      }, 1200)
+    },
+    handleCloseTab() {
+      try {
+        if (window.opener || window.history.length <= 1) {
+          window.close()
+          return true
+        }
+      } catch (error) {
+        return false
+      }
+
+      return false
     }
   }
 }
