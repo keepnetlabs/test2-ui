@@ -79,18 +79,19 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal.vue'
-import labels from '@/model/constants/labels'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
-import StepperFooter from '@/components/Stepper/StepperFooter.vue'
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import { mapActions } from 'vuex'
-import { emptyNewTrainingModalObj } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryNewTrainingCourseInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingCourseInformation.vue'
-import TrainingLibraryNewTrainingContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingContent.vue'
+import AppModal from "@/components/AppModal.vue";
+import labels from "@/model/constants/labels";
+import ConfigureCompanyStepHeader from "@/components/Companies/ConfigureCompanyStepHeader.vue";
+import StepperFooter from "@/components/Stepper/StepperFooter.vue";
+import AwarenessEducatorService from "@/api/awarenessEducator";
+import { normalizeRoleId } from "@/utils/helperFunctions";
+import { mapActions } from "vuex";
+import { emptyNewTrainingModalObj } from "@/components/TrainingLibrary/utils";
+import TrainingLibraryNewTrainingCourseInformation from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingCourseInformation.vue";
+import TrainingLibraryNewTrainingContent from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingContent.vue";
 
 export default {
-  name: 'TrainingLibraryNewTrainingModal',
+  name: "TrainingLibraryNewTrainingModal",
   components: {
     TrainingLibraryNewTrainingContent,
     TrainingLibraryNewTrainingCourseInformation,
@@ -118,18 +119,20 @@ export default {
       isActionButtonDisabled: false,
       isGenerating: false,
       step: 1,
-      trainingId: this?.selectedRow?.resourceId || '',
+      trainingId: this?.selectedRow?.resourceId || "",
       selectedCompaniesAndGroups: []
-    }
+    };
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewTrainingContent : labels.EditTrainingContent
+      return !this.isEdit
+        ? labels.CreateNewTrainingContent
+        : labels.EditTrainingContent;
     }
   },
   created() {
     if (this.isEdit) {
-      this.trainingId = this.selectedRow.trainingId
+      this.trainingId = this.selectedRow.trainingId;
       AwarenessEducatorService.getTraining(this.trainingId).then((response) => {
         const {
           coverImage,
@@ -147,21 +150,20 @@ export default {
           compliances,
           behaviours,
           vendorId
-        } = response?.data?.data || {}
-        const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+        } = response?.data?.data || {};
+        const { refTrainingCourseInformation, refTrainingContent } = this.$refs;
         if (refTrainingCourseInformation && refTrainingContent) {
           // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
-          let resolvedRoleIds = []
+          let resolvedRoleIds = [];
           if (trainingRoles?.length) {
-            resolvedRoleIds = trainingRoles.map((role) =>
-              role?.code || (role?.roleName ? role.roleName.replace(/\s/g, '') : role)
-            )
+            resolvedRoleIds = trainingRoles
+              .map(normalizeRoleId)
+              .filter(Boolean);
           } else if (roleIds?.length) {
-            resolvedRoleIds = roleIds
+            resolvedRoleIds = roleIds.map(normalizeRoleId).filter(Boolean);
           } else if (targetAudience) {
-            resolvedRoleIds = [targetAudience]
+            resolvedRoleIds = [normalizeRoleId(targetAudience)].filter(Boolean);
           }
-          console.log('resolvedRoleIds', resolvedRoleIds)
           refTrainingCourseInformation.setFormData({
             coverImage,
             name,
@@ -172,58 +174,61 @@ export default {
             category,
             compliances: compliances.map(({ complianceId }) => complianceId),
             behaviours: behaviours.map(({ behaviourId }) => behaviourId)
-          })
-          refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-          refTrainingContent.setFormData({ hasQuiz, type, vendorId })
-          refTrainingContent.setTrainingContents(trainingContents)
+          });
+          refTrainingCourseInformation.setMakeAvailableForData(
+            availableForList
+          );
+          refTrainingContent.setFormData({ hasQuiz, type, vendorId });
+          refTrainingContent.setTrainingContents(trainingContents);
           this.selectedCompaniesAndGroups = availableForList
             .map((af) => {
-              if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
-                return null
+              if (["MyCompanyOnly", "AllCompanies"].includes(af.typeName)) {
+                return null;
               }
-              return { resourceId: af.targetResourceId, typeName: af.typeName }
+              return { resourceId: af.targetResourceId, typeName: af.typeName };
             })
-            .filter(Boolean)
+            .filter(Boolean);
         }
-      })
+      });
     }
   },
   methods: {
     ...mapActions({
-      setNewTrainingModal: 'trainingLibrary/setNewTrainingModal',
-      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary'
+      setNewTrainingModal: "trainingLibrary/setNewTrainingModal",
+      callForTrainingLibrary: "trainingLibrary/callForTrainingLibrary"
     }),
     handleClose() {
-      this.setNewTrainingModal(emptyNewTrainingModalObj)
+      this.setNewTrainingModal(emptyNewTrainingModalObj);
     },
     handleGeneratingChanged(isGenerating) {
-      this.isGenerating = isGenerating
+      this.isGenerating = isGenerating;
     },
     async changeStep(flag = 1) {
-      const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+      const { refTrainingCourseInformation, refTrainingContent } = this.$refs;
       if (this.step === 1 && flag === 1) {
-        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {}
+        const { refMakeAvailableFor } =
+          refTrainingCourseInformation?.$refs || {};
         if (refMakeAvailableFor) {
           refMakeAvailableFor.validateAvailableFor(
             refTrainingCourseInformation.formData.availableForRequests
-          )
-          if (!refMakeAvailableFor.isAvailableForValid) return
+          );
+          if (!refMakeAvailableFor.isAvailableForValid) return;
         }
         // Generate description if needed before validation
         if (refTrainingCourseInformation.generateDescriptionIfNeeded) {
-          await refTrainingCourseInformation.generateDescriptionIfNeeded()
+          await refTrainingCourseInformation.generateDescriptionIfNeeded();
         }
         if (refTrainingCourseInformation.validateForm()) {
-          if (this.isEdit) return this.step++
+          if (this.isEdit) return this.step++;
           if (this.trainingId) {
             if (refTrainingContent) {
               this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                 (content) => content.file && content.languageId
-              )
+              );
             }
-            return this.step++
+            return this.step++;
           }
-          const { formData } = refTrainingCourseInformation
+          const { formData } = refTrainingCourseInformation;
           const {
             name,
             description,
@@ -233,8 +238,8 @@ export default {
             availableForRequests,
             compliances,
             behaviours
-          } = formData
-          this.isActionButtonDisabled = true
+          } = formData;
+          this.isActionButtonDisabled = true;
           AwarenessEducatorService.createDraftTraining({
             name,
             description,
@@ -250,32 +255,32 @@ export default {
             }))
           })
             .then((response) => {
-              this.trainingId = response?.data?.data?.resourceId || ''
-              this.step++
+              this.trainingId = response?.data?.data?.resourceId || "";
+              this.step++;
             })
             .finally(() => {
               //checking disability of save button
               if (refTrainingContent) {
                 this.isActionButtonDisabled = !refTrainingContent?.formData?.contentByLanguage?.some(
                   (content) => content.file && content.languageId
-                )
+                );
               } else {
-                this.isActionButtonDisabled = false
+                this.isActionButtonDisabled = false;
               }
               if (this.step === 1) {
-                this.isActionButtonDisabled = false
+                this.isActionButtonDisabled = false;
               }
-            })
+            });
         }
       } else {
         if (this.step === 2 && flag === -1) {
-          this.isActionButtonDisabled = false
+          this.isActionButtonDisabled = false;
         }
-        this.step += flag
+        this.step += flag;
       }
     },
     handleSubmit() {
-      const { refTrainingCourseInformation, refTrainingContent } = this.$refs
+      const { refTrainingCourseInformation, refTrainingContent } = this.$refs;
       const {
         formData: {
           coverImage,
@@ -289,50 +294,59 @@ export default {
           compliances,
           behaviours
         }
-      } = refTrainingCourseInformation
+      } = refTrainingCourseInformation;
       const {
         formData: { hasQuiz, type, vendorId }
-      } = refTrainingContent
-      const payload = new FormData()
+      } = refTrainingContent;
+      const payload = new FormData();
       if (coverImageUrl) {
-        payload.append('trainingDetail.coverImageUrl', coverImageUrl)
+        payload.append("trainingDetail.coverImageUrl", coverImageUrl);
       }
-      payload.append('coverImage', coverImage)
-      payload.append('trainingDetail.name', name)
-      payload.append('trainingDetail.description', description)
-      payload.append('trainingDetail.category', category)
+      payload.append("coverImage", coverImage);
+      payload.append("trainingDetail.name", name);
+      payload.append("trainingDetail.description", description);
+      payload.append("trainingDetail.category", category);
       roleIds.forEach((roleId, index) => {
-        payload.append(`trainingDetail.RoleIds[${index}]`, roleId)
-      })
-      payload.append('trainingDetail.hasQuiz', hasQuiz)
-      payload.append('trainingDetail.type', type)
-      if (vendorId) payload.append('trainingDetail.vendorId', vendorId)
+        payload.append(`trainingDetail.RoleIds[${index}]`, roleId);
+      });
+      payload.append("trainingDetail.hasQuiz", hasQuiz);
+      payload.append("trainingDetail.type", type);
+      if (vendorId) payload.append("trainingDetail.vendorId", vendorId);
       tags.map((tag, index) => {
-        payload.append(`trainingDetail.tagNames[${index}]`, tag)
-      })
+        payload.append(`trainingDetail.tagNames[${index}]`, tag);
+      });
       availableForRequests.map((request, index) => {
-        payload.append(`trainingDetail.availableForRequests[${index}].type`, request.type)
+        payload.append(
+          `trainingDetail.availableForRequests[${index}].type`,
+          request.type
+        );
         payload.append(
           `trainingDetail.availableForRequests[${index}].resourceId`,
           request.resourceId
-        )
-      })
+        );
+      });
       compliances.map((compliance, index) => {
-        payload.append(`trainingDetail.compliances[${index}].complianceId`, compliance)
-      })
+        payload.append(
+          `trainingDetail.compliances[${index}].complianceId`,
+          compliance
+        );
+      });
       behaviours.map((behaviour, index) => {
-        payload.append(`trainingDetail.behaviours[${index}].behaviourId`, behaviour)
-      })
-      this.isActionButtonDisabled = true
+        payload.append(
+          `trainingDetail.behaviours[${index}].behaviourId`,
+          behaviour
+        );
+      });
+      this.isActionButtonDisabled = true;
       AwarenessEducatorService.updateTraining(payload, this.trainingId)
         .then(() => {
-          this.handleClose()
-          this.callForTrainingLibrary()
+          this.handleClose();
+          this.callForTrainingLibrary();
         })
         .finally(() => {
-          this.isActionButtonDisabled = false
-        })
+          this.isActionButtonDisabled = false;
+        });
     }
   }
-}
+};
 </script>

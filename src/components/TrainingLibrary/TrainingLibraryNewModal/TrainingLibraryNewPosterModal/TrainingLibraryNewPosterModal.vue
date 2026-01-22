@@ -89,6 +89,7 @@ import TrainingLibraryNewPosterContent from '@/components/TrainingLibrary/Traini
 import { mapActions } from 'vuex'
 import { emptyNewPosterModalObj } from '@/components/TrainingLibrary/utils'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { normalizeRoleId } from '@/utils/helperFunctions'
 
 export default {
   name: 'TrainingLibraryNewPosterModal',
@@ -154,13 +155,11 @@ export default {
           // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
           let resolvedRoleIds = []
           if (trainingRoles?.length) {
-            resolvedRoleIds = trainingRoles.map((role) =>
-              role?.code || (role?.roleName ? role.roleName.replace(/\s/g, '') : role)
-            )
+            resolvedRoleIds = trainingRoles.map(normalizeRoleId).filter(Boolean)
           } else if (roleIds?.length) {
-            resolvedRoleIds = roleIds
+            resolvedRoleIds = roleIds.map(normalizeRoleId).filter(Boolean)
           } else if (targetAudience) {
-            resolvedRoleIds = [targetAudience]
+            resolvedRoleIds = [normalizeRoleId(targetAudience)].filter(Boolean)
           }
           refTrainingCourseInformation.setFormData({
             coverImage,

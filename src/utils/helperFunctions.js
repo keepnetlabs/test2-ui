@@ -28,6 +28,15 @@ export function getAvailableForListFromBackend(list = []) {
   })
 }
 
+export function normalizeRoleId(role) {
+  if (role == null) return ''
+  if (typeof role === 'string' || typeof role === 'number') return String(role)
+  const id = role?.id ?? role?.roleId ?? role?.resourceId ?? role?.targetAudienceId
+  if (id != null) return String(id)
+  const code = role?.code || role?.roleName
+  return code ? code.replace(/\s/g, '') : ''
+}
+
 export function getAvailableForValues(data) {
   return data.map((item) => {
     let { resourceId, type, id } = item
