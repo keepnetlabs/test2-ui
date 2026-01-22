@@ -21,17 +21,15 @@
         title="Select Training"
         :sub-title="getSubtitle"
       >
-        <VAutocomplete
+        <KSelect
           :value="value.trainingId"
           v-infinite-scroll="{
-            target: '.input--company-group-add-members',
-            callback: callForTrainingItems,
-            isOriginalVuetifyComponent: true
+            target: '#input--campaign-manager-training-tab .k-select__menu',
+            callback: callForTrainingItems
           }"
           v-select-search-handler="{
             callback: callForTrainingItemsSearch,
-            isLoadingKey: 'isTrainingLoading',
-            isOriginalVuetifyComponent: true
+            isLoadingKey: 'isTrainingLoading'
           }"
           type="autocomplete"
           id="input--campaign-manager-training-tab"
@@ -41,7 +39,7 @@
           return-object
           clearable
           placeholder="Select training"
-          :menu-props="{ contentClass: 'input--company-group-add-members' }"
+          custom-menu-class="input--company-group-add-members"
           :items="trainingItems"
           :disabled="!isInputsEditable || isEdit"
           :no-data-text="isTrainingLoading ? 'Loading...' : 'No training available'"
