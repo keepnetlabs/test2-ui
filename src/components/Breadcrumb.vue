@@ -40,13 +40,13 @@
 </template>
 
 <script>
-import { mdiChevronRight } from '@mdi/js'
-import { mapGetters } from 'vuex'
+import { mdiChevronRight } from "@mdi/js";
+import { mapGetters } from "vuex";
 export default {
-  name: 'Breadcrumb',
+  name: "Breadcrumb",
   props: {
     baseName: {
-      default: 'Company',
+      default: "Company",
       type: String
     }
   },
@@ -54,36 +54,37 @@ export default {
     return {
       breadcrumb: [],
       mdiChevronRight
-    }
+    };
   },
   mounted() {
-    this.generate()
+    this.generate();
   },
   watch: {
     // call again the method if the route changes
-    $route: 'generate',
-    '$store.state.common.activeTrainingType': 'generate'
+    $route: "generate",
+    "$store.state.common.activeTrainingType": "generate"
   },
   methods: {
     generate() {
-      const type = this.$store?.state?.common?.activeTrainingType
+      const type = this.$store?.state?.common?.activeTrainingType;
+      const safeType = typeof type === "string" ? type : "";
       const routeName =
-        this.$route.name === 'Training Report'
-          ? type.startsWith('SCORM')
-            ? 'Training Report'
-            : type + ' Report'
-          : this.$route.name
-      this.breadcrumb = [routeName]
-      let parent = this.$route.meta.parentName
+        this.$route.name === "Training Report"
+          ? !safeType || safeType.startsWith("SCORM")
+            ? "Training Report"
+            : `${safeType} Report`
+          : this.$route.name;
+      this.breadcrumb = [routeName];
+      let parent = this.$route.meta.parentName;
       while (parent) {
-        parent && this.breadcrumb.unshift(parent)
-        const resolved = this.$router.resolve({ name: parent })
-        parent = resolved.route.meta.parentName
+        parent && this.breadcrumb.unshift(parent);
+        const resolved = this.$router.resolve({ name: parent });
+        parent = resolved.route.meta.parentName;
       }
     },
-    getItemId(item = '') {
-      return `breadcrumb-link--${item.replace(/\s/, '')}`
+    getItemId(item = "") {
+      return `breadcrumb-link--${item.replace(/\s/, "")}`;
     }
   }
-}
+};
 </script>
