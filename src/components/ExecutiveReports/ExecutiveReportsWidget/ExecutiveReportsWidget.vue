@@ -191,14 +191,10 @@ export default {
           const {
             data: { data }
           } = response || {}
-          if (
-            data[0] &&
-            data[0].widgetDatas &&
-            data[0].widgetDatas[0] &&
-            data[0].widgetDatas[0].tableValues
-          ) {
-            const definitions = data[0].widgetDatas[0].tableDefinitions
-            const values = data[0].widgetDatas[0].tableValues.slice(0, 5)
+          const widgetDatas = data?.[0]?.widgetDatas || []
+          if (widgetDatas[0]?.tableValues) {
+            const definitions = widgetDatas[0].tableDefinitions
+            const values = widgetDatas[0].tableValues.slice(0, 5)
             this.executiveReportColumns = definitions.map((definition) => ({
               property: definition.name,
               label: definition.label,
@@ -207,7 +203,7 @@ export default {
             this.executiveReportData = values
             this.isTypeTable = true
           } else {
-            this.chartData = createExecutiveReportChartData(data[0].widgetDatas)
+            this.chartData = createExecutiveReportChartData(widgetDatas)
           }
 
           this.isLoading = false
