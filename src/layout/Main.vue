@@ -1,7 +1,12 @@
 <template>
   <v-app class="layout-container">
     <app-snackbar />
-    <v-dialog v-model="feedbackDialog" v-if="feedbackDialog" persistent :width="600">
+    <v-dialog
+      v-model="feedbackDialog"
+      v-if="feedbackDialog"
+      persistent
+      :width="600"
+    >
       <feedback-popup></feedback-popup>
     </v-dialog>
     <SecurityModal
@@ -45,23 +50,39 @@
         ></switch-account>
       </v-dialog>
     </v-row>
-    <AppDialog v-if="!isDisconnected" :status="!isDisconnected" :z-index="99999">
+    <AppDialog
+      v-if="!isDisconnected"
+      :status="!isDisconnected"
+      :z-index="99999"
+    >
       <template #app-dialog-body>
         <div class="connection-lost-wrapper">
-          <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
+          <connection-lost
+            @onIUnderstand="onIUnderstandClick($event)"
+          ></connection-lost>
         </div>
       </template>
       <template #app-dialog-footer>
-        <div class="connection-lost-button d-flex flex-row flex-wrap justify-end">
-          <v-btn text color="#2196f3" @click="onIUnderstandClick(true)">I UNDERSTAND</v-btn>
+        <div
+          class="connection-lost-button d-flex flex-row flex-wrap justify-end"
+        >
+          <v-btn text color="#2196f3" @click="onIUnderstandClick(true)"
+            >I UNDERSTAND</v-btn
+          >
         </div>
       </template>
     </AppDialog>
     <div class="layout-container__background"></div>
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
-        <div class="page-nav__logo-wrapper" style="display: flex; align-items: center;">
-          <offline :ping-url="baseUrl" @detected-condition="handleConnectivityChange">
+        <div
+          class="page-nav__logo-wrapper"
+          style="display: flex; align-items: center;"
+        >
+          <offline
+            :ping-url="baseUrl"
+            @detected-condition="handleConnectivityChange"
+          >
             <div slot="online"></div>
             <!-- Only renders when the device is offline -->
             <div slot="offline"></div>
@@ -97,7 +118,10 @@
             </div>
           </div>
         </div>
-        <div class="page-nav__simulated-company" v-if="isReturnMainAccountVisible">
+        <div
+          class="page-nav__simulated-company"
+          v-if="isReturnMainAccountVisible"
+        >
           Managing as
         </div>
         <div :class="navigationDrawerClass">
@@ -195,7 +219,9 @@
                       :id="item.id"
                       :key="item.key"
                       :class="{
-                        'user-name-dropdown__content--divider': setDropdownDivider(item)
+                        'user-name-dropdown__content--divider': setDropdownDivider(
+                          item
+                        )
                       }"
                       @click="changeDropdownItem(item.value)"
                     >
@@ -224,7 +250,10 @@
           style="left: 22px !important;"
           @click.stop="onNavigationClick()"
         ></v-app-bar-nav-icon>
-        <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">
+        <div
+          class="page-nav__simulated-company--mini"
+          v-if="isReturnMainAccountVisible"
+        >
           M
         </div>
         <div class="v-responsive">
@@ -264,9 +293,15 @@
             v-if="getThreatIntelligencePermissionsSearch"
             to="/threat-intelligence"
             id="btn--link-navigator-menu-threat-intelligence"
-            :class="['menu-link-default', routerName === 'Threat Intelligence' && 'active-link']"
+            :class="[
+              'menu-link-default',
+              routerName === 'Threat Intelligence' && 'active-link'
+            ]"
           >
-            <app-router-item title="Threat Intelligence" icon="$threat-intelligence" />
+            <app-router-item
+              title="Threat Intelligence"
+              icon="$threat-intelligence"
+            />
           </router-link>
 
           <router-link
@@ -275,18 +310,25 @@
             id="btn--link-navigator-menu-email-threat-simulator"
             :class="[
               'menu-link-default',
-              (routerName === 'Email Threat Simulator' || routerName === 'Scan Report') &&
+              (routerName === 'Email Threat Simulator' ||
+                routerName === 'Scan Report') &&
                 'active-link'
             ]"
           >
-            <app-router-item title="Email Threat Simulator" :icon="iconPaths.mdiShieldHalfFull" />
+            <app-router-item
+              title="Email Threat Simulator"
+              :icon="iconPaths.mdiShieldHalfFull"
+            />
           </router-link>
 
           <router-link
             v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
-            :class="['menu-link-default', routerName === 'Community' && 'active-link']"
+            :class="[
+              'menu-link-default',
+              routerName === 'Community' && 'active-link'
+            ]"
             @click.native="deleteTSVuexData"
           >
             <app-router-item title="Threat Sharing" :icon="iconPaths.mdiFlag" />
@@ -295,7 +337,10 @@
             v-if="getPhishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
-            :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorClasses]"
+            :class="[
+              'menu-with-item menu-link-default hook-menu',
+              getPhishingSimulatorClasses
+            ]"
             :prepend-icon="iconPaths.mdiHook"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -354,7 +399,10 @@
             v-if="getCallbackSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-callback-simulator-list-group"
             no-action
-            :class="['menu-with-item menu-link-default', getCallbackSimulatorClasses]"
+            :class="[
+              'menu-with-item menu-link-default',
+              getCallbackSimulatorClasses
+            ]"
             prepend-icon="$callback"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -387,7 +435,8 @@
                   route-name="Campaign Manager"
                   :active-class-comparator="
                     () =>
-                      routerName === 'Callback Campaign Manager' || routerName === 'Callback Report'
+                      routerName === 'Callback Campaign Manager' ||
+                      routerName === 'Callback Report'
                   "
                   @click="handleCallbackCampaignManagerClick"
                 />
@@ -403,7 +452,9 @@
                   id="btn--link-navigator-menu-callback-settings"
                   route-name="Settings"
                   :router-name="routerName"
-                  :active-class-comparator="() => routerName === 'Callback Settings'"
+                  :active-class-comparator="
+                    () => routerName === 'Callback Settings'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -412,7 +463,10 @@
             v-if="getVishingLeftMenuPermissions"
             id="btn--link-navigator-menu-vishing-simulator-list-group"
             no-action
-            :class="['menu-with-item menu-link-default vishing-menu', getVishingClasses]"
+            :class="[
+              'menu-with-item menu-link-default vishing-menu',
+              getVishingClasses
+            ]"
             :prepend-icon="iconPaths.mdiPhoneInTalk"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -447,7 +501,8 @@
                   :router-name="routerName"
                   :active-class-comparator="
                     () =>
-                      routerName === 'Vishing Campaign Manager' || routerName === 'Vishing Report'
+                      routerName === 'Vishing Campaign Manager' ||
+                      routerName === 'Vishing Report'
                   "
                 />
               </v-list-item-content>
@@ -458,7 +513,10 @@
             id="btn--link-navigator-menu-smishing-simulator-list-group"
             no-action
             prepend-icon="$smishing-simulator"
-            :class="['menu-with-item menu-link-default', getSmishingSimulatorClasses]"
+            :class="[
+              'menu-with-item menu-link-default',
+              getSmishingSimulatorClasses
+            ]"
             :append-icon="iconPaths.mdiChevronDown"
           >
             <template v-slot:activator>
@@ -490,7 +548,8 @@
                   route-name="Campaign Manager"
                   :active-class-comparator="
                     () =>
-                      routerName === 'Smishing Campaign Manager' || routerName === 'Smishing Report'
+                      routerName === 'Smishing Campaign Manager' ||
+                      routerName === 'Smishing Report'
                   "
                   @click="handleSmishingCampaignManagerClick"
                 />
@@ -506,7 +565,9 @@
                   id="btn--link-navigator-menu-smishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
-                  :active-class-comparator="() => routerName === 'Smishing Settings'"
+                  :active-class-comparator="
+                    () => routerName === 'Smishing Settings'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -516,7 +577,10 @@
             id="btn--link-navigator-menu-quishing-simulator-list-group"
             no-action
             :prepend-icon="getQuishingPrependIcon"
-            :class="['menu-with-item menu-link-default', getQuishingSimulatorClasses]"
+            :class="[
+              'menu-with-item menu-link-default',
+              getQuishingSimulatorClasses
+            ]"
             :append-icon="iconPaths.mdiChevronDown"
           >
             <template #activator>
@@ -548,7 +612,8 @@
                   route-name="Campaign Manager"
                   :active-class-comparator="
                     () =>
-                      routerName === 'Quishing Campaign Manager' || routerName === 'Quishing Report'
+                      routerName === 'Quishing Campaign Manager' ||
+                      routerName === 'Quishing Report'
                   "
                   @click="handleQuishingCampaignManagerClick"
                 />
@@ -564,7 +629,9 @@
                   id="btn--link-navigator-menu-quishing-dns-service"
                   route-name="Settings"
                   :router-name="routerName"
-                  :active-class-comparator="() => routerName === 'Quishing Settings'"
+                  :active-class-comparator="
+                    () => routerName === 'Quishing Settings'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -635,7 +702,10 @@
           <v-list-group
             v-if="getIncidentResponderListGroupPermissions"
             id="btn--link-navigator-menu-incident-responder-list-group"
-            :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
+            :class="[
+              'menu-with-item menu-link-default',
+              getIncidentResponderClasses
+            ]"
             no-action
             :append-icon="iconPaths.mdiChevronDown"
             :prepend-icon="iconPaths.mdiFlash"
@@ -655,7 +725,9 @@
                   id="btn--link-navigator-menu-incident-responder"
                   route-name="Incident Responder"
                   :active-class-comparator="
-                    () => routerName === 'Analysis Details' || routerName === 'Incident Responder'
+                    () =>
+                      routerName === 'Analysis Details' ||
+                      routerName === 'Incident Responder'
                   "
                 />
               </v-list-item-content>
@@ -670,7 +742,9 @@
                   id="btn--link-navigator-menu-investigations"
                   route-name="Investigations"
                   :active-class-comparator="
-                    () => routerName === 'Investigation Details' || routerName === 'Investigations'
+                    () =>
+                      routerName === 'Investigation Details' ||
+                      routerName === 'Investigations'
                   "
                 />
               </v-list-item-content>
@@ -733,9 +807,15 @@
             v-if="getPhishingReporterLeftMenuPermissions"
             to="/phishing-reporter"
             id="btn--link-navigator-phishing-reporter"
-            :class="['menu-link-default', routerName === 'Phishing Reporter' && 'active-link']"
+            :class="[
+              'menu-link-default',
+              routerName === 'Phishing Reporter' && 'active-link'
+            ]"
           >
-            <app-router-item title="Phishing Reporter" :icon="iconPaths.mdiAccountVoice" />
+            <app-router-item
+              title="Phishing Reporter"
+              :icon="iconPaths.mdiAccountVoice"
+            />
           </router-link>
           <v-list-group
             v-if="getReportsLeftMenuPermissions"
@@ -760,7 +840,9 @@
                   id="btn--link-navigator-menu-advanced-reports"
                   route-name="Advanced Reports"
                   :active-class-comparator="
-                    () => routerName === 'Advanced Reports' || routerName === 'Advanced Report'
+                    () =>
+                      routerName === 'Advanced Reports' ||
+                      routerName === 'Advanced Report'
                   "
                 />
               </v-list-item-content>
@@ -796,7 +878,9 @@
                   id="btn--link-navigator-menu-scheduled-reports"
                   route-name="Scheduled Reports"
                   :active-class-comparator="
-                    () => routerName === 'Scheduled Reports' || routerName === 'Scheduled Report'
+                    () =>
+                      routerName === 'Scheduled Reports' ||
+                      routerName === 'Scheduled Report'
                   "
                 />
               </v-list-item-content>
@@ -810,7 +894,9 @@
                   to="/reports/gamification-report"
                   id="btn--link-navigator-menu-gamification-report"
                   route-name="Gamification Report"
-                  :active-class-comparator="() => routerName === 'Gamification Report'"
+                  :active-class-comparator="
+                    () => routerName === 'Gamification Report'
+                  "
                 />
               </v-list-item-content>
             </v-list-item>
@@ -838,7 +924,9 @@
                   id="btn--link-navigator-menu-target-users"
                   route-name="Target Users"
                   :active-class-comparator="
-                    () => routerName === 'Target Group Users' || routerName === 'Target Users'
+                    () =>
+                      routerName === 'Target Group Users' ||
+                      routerName === 'Target Users'
                   "
                 />
               </v-list-item-content>
@@ -853,7 +941,9 @@
                   id="btn--link-navigator-menu-companies"
                   route-name="Companies"
                   :active-class-comparator="
-                    () => routerName === 'Company Group Details' || routerName === 'Companies'
+                    () =>
+                      routerName === 'Company Group Details' ||
+                      routerName === 'Companies'
                   "
                 />
               </v-list-item-content>
@@ -888,7 +978,10 @@
               v-if="getAuditLogSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
-              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
+              <v-list-item-content
+                class="menu-item-content"
+                style="border: 0 !important;"
+              >
                 <app-router-link
                   to="/company/audit"
                   id="btn--link-navigator-menu-audit-log"
@@ -901,7 +994,10 @@
               v-if="getJobLogsSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
-              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
+              <v-list-item-content
+                class="menu-item-content"
+                style="border: 0 !important;"
+              >
                 <app-router-link
                   to="/company/job-log"
                   id="btn--link-navigator-menu-job-log"
@@ -912,12 +1008,21 @@
             </v-list-item>
           </v-list-group>
         </v-list>
-        <navigation-drawer-footer :is-mini="getMini" :navigatorMenuProps="navigatorMenuProps" />
+        <navigation-drawer-footer
+          :is-mini="getMini"
+          :navigatorMenuProps="navigatorMenuProps"
+        />
       </v-navigation-drawer>
     </div>
 
     <!-- Header Begin -->
-    <v-app-bar class="page-header elevation-0 transparent" extension-height="100" app absolute flat>
+    <v-app-bar
+      class="page-header elevation-0 transparent"
+      extension-height="100"
+      app
+      absolute
+      flat
+    >
       <div class="page-header__details">
         <div class="page-header__content">
           <div class="page-header__title" id="text--router-name">
@@ -984,11 +1089,11 @@
     </v-content>
 
     <!-- Chat Panel -->
-  <ChatPanel v-if="hasAgenticAILicense" />
+    <ChatPanel v-if="hasAgenticAILicense" />
   </v-app>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 import {
   mdiHome,
   mdiChevronRight,
@@ -1005,30 +1110,30 @@ import {
   mdiPhoneInTalk,
   mdiBook,
   mdiSearchWeb
-} from '@mdi/js'
-import offline from 'v-offline'
-import ConnectionLost from '../components/ConnectionLost'
-import SwitchAccount from '../components/SwitchAccount'
-import FeedbackPopup from '../components/FeedbackPopup'
-import AppFooter from './AppFooter'
-import AppSnackbar from './AppSnackbar'
-import AuthenticationService from '../services/authentication'
-import Breadcrumb from '@/components/Breadcrumb'
-import labels from '@/model/constants/labels'
-import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
-import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
-import AppRouterItem from '@/layout/AppRouterItem'
-import SecurityModal from '@/components/Security/SecurityModal'
-import SettingsModal from '@/components/SettingsModal'
-import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
-import LeavingDialog from '@/components/LeavingDialog'
-import AppRouterLink from '@/layout/AppRouterLink'
-import InitializeCompanyModal from '@/components/Companies/InitializeCompanyModal'
-import AppDialog from '@/components/AppDialog.vue'
-import ChatPanel from '@/components/layout/ChatPanel.vue'
+} from "@mdi/js";
+import offline from "v-offline";
+import ConnectionLost from "../components/ConnectionLost";
+import SwitchAccount from "../components/SwitchAccount";
+import FeedbackPopup from "../components/FeedbackPopup";
+import AppFooter from "./AppFooter";
+import AppSnackbar from "./AppSnackbar";
+import AuthenticationService from "../services/authentication";
+import Breadcrumb from "@/components/Breadcrumb";
+import labels from "@/model/constants/labels";
+import TargetUsersCheckLicenseDialog from "@/components/TargetUsers/TargetUsersCheckLicenseDialog";
+import MainListItemLoading from "@/components/SkeletonLoading/MainListItemLoading";
+import AppRouterItem from "@/layout/AppRouterItem";
+import SecurityModal from "@/components/Security/SecurityModal";
+import SettingsModal from "@/components/SettingsModal";
+import NavigationDrawerFooter from "@/layout/NavigationDrawerFooter";
+import LeavingDialog from "@/components/LeavingDialog";
+import AppRouterLink from "@/layout/AppRouterLink";
+import InitializeCompanyModal from "@/components/Companies/InitializeCompanyModal";
+import AppDialog from "@/components/AppDialog.vue";
+import ChatPanel from "@/components/layout/ChatPanel.vue";
 
 export default {
-  name: 'Main',
+  name: "Main",
   components: {
     AppDialog,
     InitializeCompanyModal,
@@ -1054,7 +1159,7 @@ export default {
       isShowInitializeCompanyModal: false,
       showSettingsModalStatus: false,
       labels,
-      navigationDrawerClass: '',
+      navigationDrawerClass: "",
       iconPaths: {
         mdiHome,
         mdiChevronRight,
@@ -1084,435 +1189,472 @@ export default {
       isDisconnected: true,
       dropdownData: [
         {
-          text: 'Switch Company',
-          id: 'btn-switch-company--dashboard',
-          icon: 'mdi-swap-horizontal',
-          url: '',
-          value: 'switchCompany'
+          text: "Switch Company",
+          id: "btn-switch-company--dashboard",
+          icon: "mdi-swap-horizontal",
+          url: "",
+          value: "switchCompany"
         },
         {
-          text: 'Return to Main Account',
-          id: 'btn-return-to-main-account--dashboard',
-          icon: 'mdi-rotate-left',
-          url: '',
-          value: 'returnToMainAccount'
+          text: "Return to Main Account",
+          id: "btn-return-to-main-account--dashboard",
+          icon: "mdi-rotate-left",
+          url: "",
+          value: "returnToMainAccount"
         },
         {
-          text: 'Settings',
-          id: 'btn-settings--dashboard',
-          icon: 'mdi-cog',
-          url: '',
-          value: 'changeSettings'
+          text: "Settings",
+          id: "btn-settings--dashboard",
+          icon: "mdi-cog",
+          url: "",
+          value: "changeSettings"
         },
         {
-          text: 'Security',
-          id: 'btn-security--dashboard',
-          icon: 'mdi-lock',
-          url: '',
-          value: 'changePassword'
+          text: "Security",
+          id: "btn-security--dashboard",
+          icon: "mdi-lock",
+          url: "",
+          value: "changePassword"
         },
         {
-          text: 'Logout',
-          id: 'btn-logout--dashboard',
-          icon: 'mdi-login-variant',
-          url: '',
-          value: 'logout'
+          text: "Logout",
+          id: "btn-logout--dashboard",
+          icon: "mdi-login-variant",
+          url: "",
+          value: "logout"
         }
       ]
-    }
+    };
   },
   computed: {
     ...mapGetters({
-      companyUpdateRequired: 'auth/companyUpdateRequired',
-      isFeedbackPopupOpened: 'dashboard/isPopupOpened',
-      isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
-      isLoadingFromStore: 'common/getIsLoading',
-      hasAgenticAILicense: 'login/getHasAgenticAILicense',
-      navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
-      brandName: 'whitelabel/getBrandName',
-      supportEmailAddress: 'whitelabel/getSupportEmailAddress',
-      showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
-      companyLicense: 'whitelabel/getCompanyLicense',
-      getDashboardPermissions: 'permissions/getDashboardPermissions',
-      getEtsQuickScanPermissionSearch: 'permissions/getEtsQuickScanPermissionSearch',
-      getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
+      companyUpdateRequired: "auth/companyUpdateRequired",
+      isFeedbackPopupOpened: "dashboard/isPopupOpened",
+      isSwitchDialogOpen: "dashboard/getIsSwitchDialogOpen",
+      isLoadingFromStore: "common/getIsLoading",
+      hasAgenticAILicense: "login/getHasAgenticAILicense",
+      navigatorMenuProps: "whitelabel/getNavigatorMenuProps",
+      brandName: "whitelabel/getBrandName",
+      supportEmailAddress: "whitelabel/getSupportEmailAddress",
+      showLicenseExceededDialog: "whitelabel/getShowLicenseDialog",
+      companyLicense: "whitelabel/getCompanyLicense",
+      getDashboardPermissions: "permissions/getDashboardPermissions",
+      getEtsQuickScanPermissionSearch:
+        "permissions/getEtsQuickScanPermissionSearch",
+      getThreatSharingLeftMenuPermissions:
+        "permissions/getThreatSharingLeftMenuPermissions",
       getPhishingSimulatorLeftMenuPermissions:
-        'permissions/getPhishingSimulatorLeftMenuPermissions',
-      getPhishingScenarioLeftMenuPermissions: 'permissions/getPhishingScenarioLeftMenuPermissions',
-      getVishingLeftMenuPermissions: 'permissions/getVishingLeftMenuPermissions',
-      getVishingTemplatesLeftMenuPermissions: 'permissions/getVishingTemplatesLeftMenuPermissions',
+        "permissions/getPhishingSimulatorLeftMenuPermissions",
+      getPhishingScenarioLeftMenuPermissions:
+        "permissions/getPhishingScenarioLeftMenuPermissions",
+      getVishingLeftMenuPermissions:
+        "permissions/getVishingLeftMenuPermissions",
+      getVishingTemplatesLeftMenuPermissions:
+        "permissions/getVishingTemplatesLeftMenuPermissions",
       getVishingCampaignManagerLeftMenuPermissions:
-        'permissions/getVishingCampaignManagerLeftMenuPermissions',
-      getCampaignManagerLeftMenuPermissions: 'permissions/getCampaignManagerLeftMenuPermissions',
-      getSettingsLeftMenuPermissions: 'permissions/getSettingsLeftMenuPermissions',
+        "permissions/getVishingCampaignManagerLeftMenuPermissions",
+      getCampaignManagerLeftMenuPermissions:
+        "permissions/getCampaignManagerLeftMenuPermissions",
+      getSettingsLeftMenuPermissions:
+        "permissions/getSettingsLeftMenuPermissions",
       getIncidentResponderListGroupPermissions:
-        'permissions/getIncidentResponderListGroupPermissions',
+        "permissions/getIncidentResponderListGroupPermissions",
       getIncidentResponderLeftMenuPermissions:
-        'permissions/getIncidentResponderLeftMenuPermissions',
-      getInvestigationsSearchPermission: 'permissions/getInvestigationsSearchPermission',
-      getIntegrationsSearchPermission: 'permissions/getIntegrationsSearchPermission',
-      getPlaybookSearchPermission: 'permissions/getPlaybookSearchPermission',
-      getMailConfigurationSearchPermission: 'permissions/getMailConfigurationSearchPermission',
-      getCrossCompanyPermissions: 'permissions/getCrossCompanyPermissions',
-      getPhishingReporterLeftMenuPermissions: 'permissions/getPhishingReporterLeftMenuPermissions',
-      getReportsLeftMenuPermissions: 'permissions/getReportsLeftMenuPermissions',
-      getCompanyLeftMenuPermissions: 'permissions/getCompanyLeftMenuPermissions',
-      getTargetUsersLeftMenuPermissions: 'permissions/getTargetUsersLeftMenuPermissions',
-      getCompaniesLeftMenuPermissions: 'permissions/getCompaniesLeftMenuPermissions',
-      getCompanySettingsLeftMenuPermissions: 'permissions/getCompanySettingsLeftMenuPermissions',
-      getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
-      getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission',
-      getJobLogsSearchPermission: 'permissions/getJobLogsSearchPermission',
+        "permissions/getIncidentResponderLeftMenuPermissions",
+      getInvestigationsSearchPermission:
+        "permissions/getInvestigationsSearchPermission",
+      getIntegrationsSearchPermission:
+        "permissions/getIntegrationsSearchPermission",
+      getPlaybookSearchPermission: "permissions/getPlaybookSearchPermission",
+      getMailConfigurationSearchPermission:
+        "permissions/getMailConfigurationSearchPermission",
+      getCrossCompanyPermissions: "permissions/getCrossCompanyPermissions",
+      getPhishingReporterLeftMenuPermissions:
+        "permissions/getPhishingReporterLeftMenuPermissions",
+      getReportsLeftMenuPermissions:
+        "permissions/getReportsLeftMenuPermissions",
+      getCompanyLeftMenuPermissions:
+        "permissions/getCompanyLeftMenuPermissions",
+      getTargetUsersLeftMenuPermissions:
+        "permissions/getTargetUsersLeftMenuPermissions",
+      getCompaniesLeftMenuPermissions:
+        "permissions/getCompaniesLeftMenuPermissions",
+      getCompanySettingsLeftMenuPermissions:
+        "permissions/getCompanySettingsLeftMenuPermissions",
+      getSystemUserSearchPermission:
+        "permissions/getSystemUserSearchPermission",
+      getAuditLogSearchPermission: "permissions/getAuditLogSearchPermission",
+      getJobLogsSearchPermission: "permissions/getJobLogsSearchPermission",
       getAwarenessEducatorListGroupPermissions:
-        'permissions/getAwarenessEducatorListGroupPermissions',
-      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
-      getEnrollmentsSearchPermission: 'permissions/getEnrollmentsSearchPermission',
-      getCertificatesSearchPermission: 'permissions/getCertificatesSearchPermission',
-      getThreatIntelligencePermissionsSearch: 'permissions/getThreatIntelligencePermissionsSearch',
-      getAdvancedReportsSearchPermissions: 'permissions/getAdvancedReportsSearchPermissions',
-      getExecutiveReportsSearchPermissions: 'permissions/getExecutiveReportsSearchPermissions',
-      getScheduledReportsSearchPermissions: 'permissions/getScheduledReportsSearchPermissions',
-      getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions',
+        "permissions/getAwarenessEducatorListGroupPermissions",
+      getTrainingSearchPermission: "permissions/getTrainingSearchPermission",
+      getEnrollmentsSearchPermission:
+        "permissions/getEnrollmentsSearchPermission",
+      getCertificatesSearchPermission:
+        "permissions/getCertificatesSearchPermission",
+      getThreatIntelligencePermissionsSearch:
+        "permissions/getThreatIntelligencePermissionsSearch",
+      getAdvancedReportsSearchPermissions:
+        "permissions/getAdvancedReportsSearchPermissions",
+      getExecutiveReportsSearchPermissions:
+        "permissions/getExecutiveReportsSearchPermissions",
+      getScheduledReportsSearchPermissions:
+        "permissions/getScheduledReportsSearchPermissions",
+      getCampaignReportsSearchPermissions:
+        "permissions/getCampaignReportsSearchPermissions",
       getSmishingSimulatorLeftMenuPermissions:
-        'permissions/getSmishingSimulatorLeftMenuPermissions',
+        "permissions/getSmishingSimulatorLeftMenuPermissions",
       getSmishingScenariosLeftMenuPermissions:
-        'permissions/getSmishingScenariosLeftMenuPermissions',
+        "permissions/getSmishingScenariosLeftMenuPermissions",
       getSmishingCampaignManagerLeftMenuPermissions:
-        'permissions/getSmishingCampaignManagerLeftMenuPermissions',
-      getSmishingSettingsLeftMenuPermissions: 'permissions/getSmishingSettingsLeftMenuPermissions',
+        "permissions/getSmishingCampaignManagerLeftMenuPermissions",
+      getSmishingSettingsLeftMenuPermissions:
+        "permissions/getSmishingSettingsLeftMenuPermissions",
       getQuishingSimulatorLeftMenuPermissions:
-        'permissions/getQuishingSimulatorLeftMenuPermissions',
+        "permissions/getQuishingSimulatorLeftMenuPermissions",
       getQuishingCampaignManagerLeftMenuPermissions:
-        'permissions/getQuishingCampaignManagerLeftMenuPermissions',
-      getQuishingScenarioLeftMenuPermissions: 'permissions/getQuishingScenarioLeftMenuPermissions',
-      getQuishingSettingsLeftMenuPermissions: 'permissions/getQuishingSettingsLeftMenuPermissions',
+        "permissions/getQuishingCampaignManagerLeftMenuPermissions",
+      getQuishingScenarioLeftMenuPermissions:
+        "permissions/getQuishingScenarioLeftMenuPermissions",
+      getQuishingSettingsLeftMenuPermissions:
+        "permissions/getQuishingSettingsLeftMenuPermissions",
       getCallbackSimulatorLeftMenuPermissions:
-        'permissions/getCallbackSimulatorLeftMenuPermissions',
+        "permissions/getCallbackSimulatorLeftMenuPermissions",
       getCallbackCampaignManagerLeftMenuPermissions:
-        'permissions/getCallbackCampaignManagerLeftMenuPermissions',
-      getCallbackScenarioLeftMenuPermissions: 'permissions/getCallbackScenarioLeftMenuPermissions',
-      getCallbackSettingsLeftMenuPermissions: 'permissions/getCallbackSettingsLeftMenuPermissions',
-      getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions'
+        "permissions/getCallbackCampaignManagerLeftMenuPermissions",
+      getCallbackScenarioLeftMenuPermissions:
+        "permissions/getCallbackScenarioLeftMenuPermissions",
+      getCallbackSettingsLeftMenuPermissions:
+        "permissions/getCallbackSettingsLeftMenuPermissions",
+      getGamificationReportSearchPermissions:
+        "permissions/getGamificationReportSearchPermissions"
     }),
     getCompanyGroupName() {
-      return this.routerName === 'Company Group Details'
-        ? localStorage.getItem('companyGroupName')
-        : ''
+      return this.routerName === "Company Group Details"
+        ? localStorage.getItem("companyGroupName")
+        : "";
     },
     isShowSwitchCompany() {
-      return ['Root', 'Reseller'].includes(this.$store.state.auth.userRoleName)
+      return ["Root", "Reseller"].includes(this.$store.state.auth.userRoleName);
     },
     getBreadCrumbBaseName() {
-      return this.brandName || this.$store.state.auth.selectedCompanyName
+      return this.brandName || this.$store.state.auth.selectedCompanyName;
     },
     getTargetGroupUsersRouterName() {
-      return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+      return (
+        this.$route.params.label || localStorage.getItem("lastTargetGroupUsers")
+      );
     },
     getReportsClasses() {
-      const { routerName } = this
+      const { routerName } = this;
       return [
-        'menu-with-item menu-link-default',
-        routerName === 'Advanced Reports' ||
-        routerName === 'Advanced Report' ||
-        routerName === 'Executive Reports' ||
-        routerName === 'Executive Report' ||
-        routerName === 'New Executive Report' ||
-        routerName === 'Preview Executive Report' ||
-        routerName === 'Edit Executive Report' ||
-        routerName === 'Duplicate Executive Report' ||
-        routerName === 'Scheduled Reports' ||
-        routerName === 'Scheduled Report' ||
-        routerName === 'Gamification Report'
-          ? 'primary--text active-menu-parent'
-          : 'un-selected-list-item'
-      ]
+        "menu-with-item menu-link-default",
+        routerName === "Advanced Reports" ||
+        routerName === "Advanced Report" ||
+        routerName === "Executive Reports" ||
+        routerName === "Executive Report" ||
+        routerName === "New Executive Report" ||
+        routerName === "Preview Executive Report" ||
+        routerName === "Edit Executive Report" ||
+        routerName === "Duplicate Executive Report" ||
+        routerName === "Scheduled Reports" ||
+        routerName === "Scheduled Report" ||
+        routerName === "Gamification Report"
+          ? "primary--text active-menu-parent"
+          : "un-selected-list-item"
+      ];
     },
     getQuishingPrependIcon() {
       return [
-        'Quishing Scenarios',
-        'Quishing Campaign Manager',
-        'Quishing Settings',
-        'Quishing Report'
+        "Quishing Scenarios",
+        "Quishing Campaign Manager",
+        "Quishing Settings",
+        "Quishing Report"
       ].includes(this.routerName)
-        ? '$qr-code-selected'
-        : '$qr-code'
+        ? "$qr-code-selected"
+        : "$qr-code";
     },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
+        return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Campaign Report'
+      return "Campaign Report";
     },
     getTrainingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        const type = this.$store?.state?.common?.activeTrainingType
-        return `${type.startsWith('SCORM') ? 'Training' : type} Report - ${
-          this.$store?.state?.common?.activePageRouterName
-        }`
+        const type = this.$store?.state?.common?.activeTrainingType;
+        const safeType = typeof type === "string" ? type : "";
+        const label =
+          safeType && !safeType.startsWith("SCORM") ? safeType : "Training";
+        return `${label} Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Training Report'
+      return "Training Report";
     },
     getScormProxyReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Scorm Proxy Report - ${this.$store?.state?.common?.activePageRouterName}`
+        return `Scorm Proxy Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Scorm Proxy Report'
+      return "Scorm Proxy Report";
     },
     getVishingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Vishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+        return `Vishing Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Vishing Report'
+      return "Vishing Report";
     },
     getSmishingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Smishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+        return `Smishing Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Smishing Report'
+      return "Smishing Report";
     },
     getQuishingReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Quishing Report - ${this.$store?.state?.common?.activePageRouterName}`
+        return `Quishing Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Quishing Report'
+      return "Quishing Report";
     },
     getCallbackReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
-        return `Callback Report - ${this.$store?.state?.common?.activePageRouterName}`
+        return `Callback Report - ${this.$store?.state?.common?.activePageRouterName}`;
       }
-      return 'Callback Report'
+      return "Callback Report";
     },
     getRouterKey() {
-      const { name } = this.$route
-      if (['Community', 'Threat Sharing'].includes(name)) {
-        return this.$route.fullPath
+      const { name } = this.$route;
+      if (["Community", "Threat Sharing"].includes(name)) {
+        return this.$route.fullPath;
       }
-      return ''
+      return "";
     },
     getCompanyClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       const isSelected =
-        routerName === 'Company' ||
-        routerName === 'Target Users' ||
-        routerName === 'Companies' ||
-        routerName === 'Company Settings' ||
-        routerName === 'Company Group Details' ||
-        routerName === 'Target Group Users' ||
-        routerName === 'System Users' ||
-        routerName === 'Job Log' ||
-        routerName === 'Audit'
+        routerName === "Company" ||
+        routerName === "Target Users" ||
+        routerName === "Companies" ||
+        routerName === "Company Settings" ||
+        routerName === "Company Group Details" ||
+        routerName === "Target Group Users" ||
+        routerName === "System Users" ||
+        routerName === "Job Log" ||
+        routerName === "Audit";
       return {
-        'primary--text active-menu-parent': isSelected,
-        'un-selected-list-item': !isSelected
-      }
+        "primary--text active-menu-parent": isSelected,
+        "un-selected-list-item": !isSelected
+      };
     },
     getVishingClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       const isSelected =
-        routerName === 'Vishing' ||
-        routerName === 'Vishing Templates' ||
-        routerName === 'Vishing Campaign Manager' ||
-        routerName === 'Vishing Report'
+        routerName === "Vishing" ||
+        routerName === "Vishing Templates" ||
+        routerName === "Vishing Campaign Manager" ||
+        routerName === "Vishing Report";
       return {
-        'primary--text active-menu-parent': isSelected,
-        'un-selected-list-item': !isSelected
-      }
+        "primary--text active-menu-parent": isSelected,
+        "un-selected-list-item": !isSelected
+      };
     },
     getIncidentResponderClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       const isSelected =
-        routerName === 'Incident Responder' ||
-        routerName === 'Investigations' ||
-        routerName === 'Integrations' ||
-        routerName === 'Playbook' ||
-        routerName === 'Mail Configurations' ||
-        routerName === 'Analysis Details' ||
-        routerName === 'Investigation Details' ||
-        routerName === 'Cross Company Integration'
+        routerName === "Incident Responder" ||
+        routerName === "Investigations" ||
+        routerName === "Integrations" ||
+        routerName === "Playbook" ||
+        routerName === "Mail Configurations" ||
+        routerName === "Analysis Details" ||
+        routerName === "Investigation Details" ||
+        routerName === "Cross Company Integration";
       return {
-        'primary--text active-menu-parent': isSelected,
-        'un-selected-list-item': !isSelected
-      }
+        "primary--text active-menu-parent": isSelected,
+        "un-selected-list-item": !isSelected
+      };
     },
     getCallbackSimulatorClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Callback Simulator' ||
-          routerName === 'Callback Scenarios' ||
-          routerName === 'Callback Campaign Manager' ||
-          routerName === 'Callback Settings' ||
-          routerName === 'Callback Report',
-        'un-selected-list-item': routerName !== 'Callback Simulator'
-      }
+        "primary--text active-menu-parent":
+          routerName === "Callback Simulator" ||
+          routerName === "Callback Scenarios" ||
+          routerName === "Callback Campaign Manager" ||
+          routerName === "Callback Settings" ||
+          routerName === "Callback Report",
+        "un-selected-list-item": routerName !== "Callback Simulator"
+      };
     },
     getPhishingSimulatorClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Phishing Simulator' ||
-          routerName === 'Email Templates' ||
-          routerName === 'Phishing Scenarios' ||
-          routerName === 'Campaign Manager' ||
-          routerName === 'Campaign Reports' ||
-          routerName === 'Campaign Report' ||
-          routerName === 'Settings',
-        'un-selected-list-item':
-          routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
-      }
+        "primary--text active-menu-parent":
+          routerName === "Phishing Simulator" ||
+          routerName === "Email Templates" ||
+          routerName === "Phishing Scenarios" ||
+          routerName === "Campaign Manager" ||
+          routerName === "Campaign Reports" ||
+          routerName === "Campaign Report" ||
+          routerName === "Settings",
+        "un-selected-list-item":
+          routerName !== "Phishing Simulator" ||
+          routerName !== "Email Templates"
+      };
     },
     getSmishingSimulatorClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Smishing Simulator' ||
-          routerName === 'Smishing Scenarios' ||
-          routerName === 'Smishing Campaign Manager' ||
-          routerName === 'Smishing Settings' ||
-          routerName === 'Smishing Report',
-        'un-selected-list-item': routerName !== 'Smishing Simulator'
-      }
+        "primary--text active-menu-parent":
+          routerName === "Smishing Simulator" ||
+          routerName === "Smishing Scenarios" ||
+          routerName === "Smishing Campaign Manager" ||
+          routerName === "Smishing Settings" ||
+          routerName === "Smishing Report",
+        "un-selected-list-item": routerName !== "Smishing Simulator"
+      };
     },
     getQuishingSimulatorClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Quishing Simulator' ||
-          routerName === 'Quishing Scenarios' ||
-          routerName === 'Quishing Campaign Manager' ||
-          routerName === 'Quishing Settings' ||
-          routerName === 'Quishing Report',
-        'un-selected-list-item': routerName !== 'Quishing Simulator'
-      }
+        "primary--text active-menu-parent":
+          routerName === "Quishing Simulator" ||
+          routerName === "Quishing Scenarios" ||
+          routerName === "Quishing Campaign Manager" ||
+          routerName === "Quishing Settings" ||
+          routerName === "Quishing Report",
+        "un-selected-list-item": routerName !== "Quishing Simulator"
+      };
     },
     getAwarenessEducatorClasses() {
-      const routerName = this.routerName
+      const routerName = this.routerName;
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Training Library' ||
-          routerName === 'Enrollments' ||
-          routerName === 'Certificates' ||
-          routerName === 'Training Report' ||
-          routerName === 'Scorm Proxy Report',
-        'un-selected-list-item':
-          routerName !== 'Training Library' ||
-          routerName !== 'Enrollments' ||
-          routerName !== 'Certificates' ||
-          routerName !== 'Training Report' ||
-          routerName !== 'Scorm Proxy Report'
-      }
+        "primary--text active-menu-parent":
+          routerName === "Training Library" ||
+          routerName === "Enrollments" ||
+          routerName === "Certificates" ||
+          routerName === "Training Report" ||
+          routerName === "Scorm Proxy Report",
+        "un-selected-list-item":
+          routerName !== "Training Library" ||
+          routerName !== "Enrollments" ||
+          routerName !== "Certificates" ||
+          routerName !== "Training Report" ||
+          routerName !== "Scorm Proxy Report"
+      };
     },
     getLicenseDialogBody() {
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
-        : ''
+        : "";
     },
     isReturnMainAccountVisible() {
-      if (!this.isShowSwitchCompany) return false
+      if (!this.isShowSwitchCompany) return false;
       return (
-        localStorage.getItem('companyResourceId') !==
-        localStorage.getItem('selectedCompanyRequestId')
-      )
+        localStorage.getItem("companyResourceId") !==
+        localStorage.getItem("selectedCompanyRequestId")
+      );
     },
     companyName() {
       return this.brandName
         ? this.brandName
-        : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
+        : localStorage.getItem("selectedCompanyName") ||
+            localStorage.getItem("companyName");
     },
     routerName() {
-      return this.$route.name || ''
+      return this.$route.name || "";
     },
     getDrawer: {
       get() {
         if (this.drawer == null) {
-          return window.outerWidth > 768
+          return window.outerWidth > 768;
         }
-        return this.drawer
+        return this.drawer;
       },
       set(newValue) {
-        this.drawer = newValue
+        this.drawer = newValue;
       }
     },
     getMini: {
       get() {
         if (this.mini == null) {
-          const savedMini = localStorage.getItem('navigationMiniState')
+          const savedMini = localStorage.getItem("navigationMiniState");
           if (savedMini !== null) {
-            return JSON.parse(savedMini)
+            return JSON.parse(savedMini);
           }
-          return false
+          return false;
         }
-        return this.mini
+        return this.mini;
       },
       set(newValue) {
-        this.mini = newValue
-        localStorage.setItem('navigationMiniState', JSON.stringify(newValue))
+        this.mini = newValue;
+        localStorage.setItem("navigationMiniState", JSON.stringify(newValue));
       }
     },
     feedbackDialog: {
       get() {
-        return this.isFeedbackPopupOpened
+        return this.isFeedbackPopupOpened;
       },
       set(newValue) {
-        this.changeFeedbackPopup(newValue)
+        this.changeFeedbackPopup(newValue);
       }
     },
     getUser() {
-      return this?.$store?.state?.auth?.user
+      return this?.$store?.state?.auth?.user;
     },
     getLogoImage() {
-      if (!this.getUser) return ''
+      if (!this.getUser) return "";
       let image =
-        localStorage.getItem('isSelectCompany') === 'true'
+        localStorage.getItem("isSelectCompany") === "true"
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl
-      return image || require('../assets/img/no-logo.png')
+          : this.$store.state.auth.logoUrl;
+      return image || require("../assets/img/no-logo.png");
     },
     getMainLogo() {
-      if (!this.getUser) return ''
-      let image = this.navigatorMenuProps.mainLogoUrl
-      return image || require('../assets/img/no-logo.png')
+      if (!this.getUser) return "";
+      let image = this.navigatorMenuProps.mainLogoUrl;
+      return image || require("../assets/img/no-logo.png");
     },
     getMiniLogo() {
-      if (!this.getUser) return ''
-      let image = this.navigatorMenuProps.minimizedMenuLogoUrl
-      return image || require('../assets/img/no-logo.png')
+      if (!this.getUser) return "";
+      let image = this.navigatorMenuProps.minimizedMenuLogoUrl;
+      return image || require("../assets/img/no-logo.png");
     },
     getFirstName() {
-      return this?.$store?.state?.auth?.user?.firstName || ''
+      return this?.$store?.state?.auth?.user?.firstName || "";
     },
     getSelectedCompanyName() {
-      return this?.$store?.state?.auth?.selectedCompanyName || ''
+      return this?.$store?.state?.auth?.selectedCompanyName || "";
     },
     getRolename() {
-      return this?.$store?.state?.auth?.userRoleName || ''
+      return this?.$store?.state?.auth?.userRoleName || "";
     },
     getDrawerStyle() {
-      return this.mini ? 'left: 5px !important;' : 'left : 244px !important;'
+      return this.mini ? "left: 5px !important;" : "left : 244px !important;";
     },
     isSelectedCompanyNameDisabled() {
-      return this.getSelectedCompanyName && this.getSelectedCompanyName.length < 15
+      return (
+        this.getSelectedCompanyName && this.getSelectedCompanyName.length < 15
+      );
     },
     isAwarenessEducator() {
-      return this.$route.path.includes('/awareness-educator')
+      return this.$route.path.includes("/awareness-educator");
     },
     isTestEnvironment() {
       return (
-        window.location.hostname.includes('test-ui.devkeepnet.com') ||
-        window.location.hostname.includes('localhost')
-      )
+        window.location.hostname.includes("test-ui.devkeepnet.com") ||
+        window.location.hostname.includes("localhost")
+      );
     }
   },
   watch: {
     openPasswordChange(newVal) {
       if (!newVal) {
-        this.showNewPassword = false
+        this.showNewPassword = false;
       }
     },
     $route: {
       handler: function (to) {
-        if (to.name === 'Community') {
-          this.communityName = to.params.communityName
+        if (to.name === "Community") {
+          this.communityName = to.params.communityName;
         }
       },
       deep: true,
@@ -1520,166 +1662,174 @@ export default {
     }
   },
   mounted() {
-    this.baseUrl = `${window.location.origin}`
+    this.baseUrl = `${window.location.origin}`;
     // Restore mini state from localStorage
-    const savedMini = localStorage.getItem('navigationMiniState')
+    const savedMini = localStorage.getItem("navigationMiniState");
     if (savedMini !== null) {
-      this.mini = JSON.parse(savedMini)
+      this.mini = JSON.parse(savedMini);
     }
-    this.getNavigationDrawerClasses()
+    this.getNavigationDrawerClasses();
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
-        this.getCurrentUser()
-        this.$store.dispatch('whitelabel/callForData')
-        this.$store.dispatch('login/getCurrentCompany').then(() => {
-          this.$store.dispatch('login/getAgenticAIEnabled')
-        })
-        this.callForSystemSummary()
-        if (this.companyUpdateRequired) this.toggleShowInitializeCompanyModal()
+        this.getCurrentUser();
+        this.$store.dispatch("whitelabel/callForData");
+        this.$store.dispatch("login/getCurrentCompany").then(() => {
+          this.$store.dispatch("login/getAgenticAIEnabled");
+        });
+        this.callForSystemSummary();
+        if (this.companyUpdateRequired) this.toggleShowInitializeCompanyModal();
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
-            clearInterval(this.interval)
+            clearInterval(this.interval);
           }
-        }, 20000)
+        }, 20000);
       }
-    })
+    });
     setTimeout(() => {
-      let contentDom = document.getElementsByClassName('v-navigation-drawer__content')[0]
+      let contentDom = document.getElementsByClassName(
+        "v-navigation-drawer__content"
+      )[0];
       if (contentDom && !this.isEventAdded) {
         document
-          .getElementsByClassName('v-navigation-drawer__content')[0]
-          .addEventListener('scroll', () => {
-            this.getNavigationDrawerClasses()
-          })
-        this.isEventAdded = true
+          .getElementsByClassName("v-navigation-drawer__content")[0]
+          .addEventListener("scroll", () => {
+            this.getNavigationDrawerClasses();
+          });
+        this.isEventAdded = true;
       }
-    }, 500)
+    }, 500);
   },
   beforeDestroy() {
-    clearInterval(this.interval)
+    clearInterval(this.interval);
   },
   methods: {
     ...mapActions({
-      changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
-      logoutUser: 'dashboard/logoutUser',
-      setSwitchDialog: 'dashboard/setSwitchDialog',
-      getCurrentUser: 'auth/getCurrentUser',
-      handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
+      changeFeedbackPopup: "dashboard/changeFeedbackPopup",
+      logoutUser: "dashboard/logoutUser",
+      setSwitchDialog: "dashboard/setSwitchDialog",
+      getCurrentUser: "auth/getCurrentUser",
+      handleCloseLicenseExceededDialog: "whitelabel/toggleShowExceedDialog"
     }),
     handlePhishingCampaignManagerClick() {
-      this.$router.push('/phishing-simulator/campaign-manager?status=parent')
+      this.$router.push("/phishing-simulator/campaign-manager?status=parent");
     },
     handleCallbackCampaignManagerClick() {
-      this.$router.push('/callback-simulator/campaign-manager?status=parent')
+      this.$router.push("/callback-simulator/campaign-manager?status=parent");
     },
     handleSmishingCampaignManagerClick() {
-      this.$router.push('/smishing-simulator/campaign-manager?status=parent')
+      this.$router.push("/smishing-simulator/campaign-manager?status=parent");
     },
     handleQuishingCampaignManagerClick() {
-      this.$router.push('/quishing-simulator/campaign-manager?status=parent')
+      this.$router.push("/quishing-simulator/campaign-manager?status=parent");
     },
     toggleShowInitializeCompanyModal() {
-      this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal
+      this.isShowInitializeCompanyModal = !this.isShowInitializeCompanyModal;
     },
     changeSettings() {
-      this.showSettingsModalStatus = !this.showSettingsModalStatus
+      this.showSettingsModalStatus = !this.showSettingsModalStatus;
     },
     changePasswordChange() {
-      this.openPasswordChange = !this.openPasswordChange
+      this.openPasswordChange = !this.openPasswordChange;
     },
     getNavigationDrawerClasses() {
       const main = `d-flex justify-center flex-wrap user-wrapper ${
-        this.isReturnMainAccountVisible && 'p-0'
-      }`
-      const shadow = 'user-wrapper__scroll-on'
+        this.isReturnMainAccountVisible && "p-0"
+      }`;
+      const shadow = "user-wrapper__scroll-on";
       let content =
-        document.getElementsByClassName('page-nav__content') &&
-        document.getElementsByClassName('page-nav__content')[0]
+        document.getElementsByClassName("page-nav__content") &&
+        document.getElementsByClassName("page-nav__content")[0];
       let userContent =
-        document.getElementsByClassName('user-wrapper') &&
-        document.getElementsByClassName('user-wrapper')[0]
-      let isScroll = content && content.getBoundingClientRect().top < 200
-      let _class = main
-      if (isScroll) _class = _class + ' ' + shadow
-      if (userContent) userContent.className = _class
-      this.navigationDrawerClass = _class
+        document.getElementsByClassName("user-wrapper") &&
+        document.getElementsByClassName("user-wrapper")[0];
+      let isScroll = content && content.getBoundingClientRect().top < 200;
+      let _class = main;
+      if (isScroll) _class = _class + " " + shadow;
+      if (userContent) userContent.className = _class;
+      this.navigationDrawerClass = _class;
     },
     deleteTSVuexData() {
-      let communitiesData = null
-      this.$store.dispatch('communities/setCommunities', {
-        key: 'communities',
+      let communitiesData = null;
+      this.$store.dispatch("communities/setCommunities", {
+        key: "communities",
         communitiesData
-      })
-      let incidentsData = null
-      this.$store.dispatch('incidents/setIncidents', {
-        key: 'incidents',
+      });
+      let incidentsData = null;
+      this.$store.dispatch("incidents/setIncidents", {
+        key: "incidents",
         incidentsData
-      })
+      });
     },
     callForSystemSummary() {
-      const payload = {}
-      if (this.$route.name !== 'Target Users') {
-        payload.checkExceedDialog = true
+      const payload = {};
+      if (this.$route.name !== "Target Users") {
+        payload.checkExceedDialog = true;
       }
-      this.$store.dispatch('whitelabel/callForSystemInfoSummary', payload)
+      this.$store.dispatch("whitelabel/callForSystemInfoSummary", payload);
     },
     removeTooltip() {
-      this.$refs.accountTooltip.isActive = false
+      this.$refs.accountTooltip.isActive = false;
     },
     setDropdownDivider(item) {
-      if (item.value === 'switchCompany') {
-        return this.isShowSwitchCompany && !this.isReturnMainAccountVisible
-      } else if (item.value === 'returnToMainAccount') {
-        return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
+      if (item.value === "switchCompany") {
+        return this.isShowSwitchCompany && !this.isReturnMainAccountVisible;
+      } else if (item.value === "returnToMainAccount") {
+        return (
+          item.value === "returnToMainAccount" &&
+          this.isReturnMainAccountVisible
+        );
       } else {
-        return false
+        return false;
       }
     },
     setDropdownVisibility(item) {
-      if (item.value === 'switchCompany') {
-        return this.isShowSwitchCompany
-      } else if (item.value === 'returnToMainAccount') {
-        return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
+      if (item.value === "switchCompany") {
+        return this.isShowSwitchCompany;
+      } else if (item.value === "returnToMainAccount") {
+        return (
+          item.value === "returnToMainAccount" &&
+          this.isReturnMainAccountVisible
+        );
       } else {
-        return true
+        return true;
       }
     },
     changeDropdownItem(item) {
-      if (item === 'logout') {
-        this.logoutUser()
-        this.$store.dispatch('login/getWhiteLabelByUrl')
+      if (item === "logout") {
+        this.logoutUser();
+        this.$store.dispatch("login/getWhiteLabelByUrl");
       }
-      if (item === 'changePassword') {
-        this.openPasswordChange = true
+      if (item === "changePassword") {
+        this.openPasswordChange = true;
       }
-      if (item === 'switchCompany') {
-        this.setSwitchDialog(true)
+      if (item === "switchCompany") {
+        this.setSwitchDialog(true);
       }
-      if (item === 'returnToMainAccount') {
-        let mainCompanyId = localStorage.getItem('companyResourceId')
-        let mainCompanyName = localStorage.getItem('companyName')
-        localStorage.setItem('isSelectCompany', false)
-        localStorage.setItem('companyId', mainCompanyId)
-        localStorage.setItem('companyRequestId', mainCompanyId)
-        localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
-        localStorage.setItem('selectedCompanyName', mainCompanyName)
-        this.$router.go(0)
+      if (item === "returnToMainAccount") {
+        let mainCompanyId = localStorage.getItem("companyResourceId");
+        let mainCompanyName = localStorage.getItem("companyName");
+        localStorage.setItem("isSelectCompany", false);
+        localStorage.setItem("companyId", mainCompanyId);
+        localStorage.setItem("companyRequestId", mainCompanyId);
+        localStorage.setItem("selectedCompanyRequestId", mainCompanyId);
+        localStorage.setItem("selectedCompanyName", mainCompanyName);
+        this.$router.go(0);
       }
-      if (item === 'changeSettings') {
-        this.changeSettings()
+      if (item === "changeSettings") {
+        this.changeSettings();
       }
     },
     onIUnderstandClick(data) {
-      this.isDisconnected = data
+      this.isDisconnected = data;
     },
     handleConnectivityChange(status) {
-      this.isDisconnected = !!status
-      return this.isDisconnected
+      this.isDisconnected = !!status;
+      return this.isDisconnected;
     },
     onNavigationClick() {
-      this.getDrawer = true
-      this.getMini = !this.getMini
+      this.getDrawer = true;
+      this.getMini = !this.getMini;
     }
   }
-}
+};
 </script>
