@@ -158,8 +158,8 @@ export default {
     },
     setChartData(data) {
       if (
-        !data[0].widgetDatas.length ||
-        data[0].widgetDatas.filter((obj) => obj.values[0].value).length === 0
+        !data?.[0]?.widgetDatas?.length ||
+        data?.[0]?.widgetDatas?.filter((obj) => obj.values[0].value).length === 0
       ) {
         this.isEmpty = true
         return

@@ -87,21 +87,22 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal.vue'
-import labels from '@/model/constants/labels'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
-import StepperFooter from '@/components/Stepper/StepperFooter.vue'
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import { mapActions } from 'vuex'
-import { emptyNewLearningPathModalObj } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryNewLearningPathInformation from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathInformation.vue'
-import TrainingLibraryNewLearningPathContent from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathContent.vue'
-import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import TrainingLibraryNewLearningPathCannotSaveModal from './TrainingLibraryNewLearningPathCannotSaveModal'
-import { Fragment } from 'vue-frag'
+import AppModal from "@/components/AppModal.vue";
+import labels from "@/model/constants/labels";
+import ConfigureCompanyStepHeader from "@/components/Companies/ConfigureCompanyStepHeader.vue";
+import StepperFooter from "@/components/Stepper/StepperFooter.vue";
+import AwarenessEducatorService from "@/api/awarenessEducator";
+import { mapActions } from "vuex";
+import { emptyNewLearningPathModalObj } from "@/components/TrainingLibrary/utils";
+import { normalizeRoleId } from "@/utils/helperFunctions";
+import TrainingLibraryNewLearningPathInformation from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathInformation.vue";
+import TrainingLibraryNewLearningPathContent from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewLearningPathModal/TrainingLibraryNewLearningPathContent.vue";
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from "@/components/TrainingLibrary/TrainingLibraryFirstCard/utils";
+import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
+import TrainingLibraryNewLearningPathCannotSaveModal from "./TrainingLibraryNewLearningPathCannotSaveModal";
+import { Fragment } from "vue-frag";
 export default {
-  name: 'TrainingLibraryNewLearningPathModal',
+  name: "TrainingLibraryNewLearningPathModal",
   components: {
     TrainingLibraryNewLearningPathContent,
     TrainingLibraryNewLearningPathInformation,
@@ -132,15 +133,17 @@ export default {
       isActionButtonDisabled: false,
       isGenerating: false,
       step: 1,
-      trainingId: this?.selectedRow?.resourceId || '',
+      trainingId: this?.selectedRow?.resourceId || "",
       availableForRequestIds: [],
       trainingIds: [],
       selectedCompaniesAndGroups: []
-    }
+    };
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewLearningPath : labels.EditLearningPath
+      return !this.isEdit
+        ? labels.CreateNewLearningPath
+        : labels.EditLearningPath;
     }
   },
   created() {
@@ -160,21 +163,24 @@ export default {
             trainingRoles,
             coverImage,
             trainingGroups = []
-          } = response?.data?.data || {}
-          const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
+          } = response?.data?.data || {};
+          const {
+            refTrainingCourseInformation,
+            refLearningPathContent
+          } = this.$refs;
           if (refTrainingCourseInformation && refLearningPathContent) {
             // Backward compatibility: if trainingRoles is empty but targetAudience exists, use targetAudience
-            let resolvedRoleIds = []
+            let resolvedRoleIds = [];
             if (trainingRoles?.length) {
-              resolvedRoleIds = trainingRoles.map((role) => {
-                const id =
-                  role?.id || role?.roleId || role?.resourceId || role?.targetAudienceId
-                return id != null ? String(id) : role?.code || role?.roleName || role
-              })
+              resolvedRoleIds = trainingRoles
+                .map(normalizeRoleId)
+                .filter(Boolean);
             } else if (roleIds?.length) {
-              resolvedRoleIds = roleIds
+              resolvedRoleIds = roleIds.map(normalizeRoleId).filter(Boolean);
             } else if (targetAudience) {
-              resolvedRoleIds = [targetAudience]
+              resolvedRoleIds = [normalizeRoleId(targetAudience)].filter(
+                Boolean
+              );
             }
             refTrainingCourseInformation.setFormData({
               behaviours: behaviours.map((b) => b.behaviourId),
@@ -185,92 +191,104 @@ export default {
               tags: tagNames,
               roleIds: resolvedRoleIds,
               coverImage
-            })
-            refTrainingCourseInformation.setMakeAvailableForData(availableForList)
-            refLearningPathContent.setSelectedTrainings(trainingGroups || [])
+            });
+            refTrainingCourseInformation.setMakeAvailableForData(
+              availableForList
+            );
+            refLearningPathContent.setSelectedTrainings(trainingGroups || []);
             this.trainingIds = trainingGroups?.map(
               (training) => training?.trainingId || training?.detailTrainingId
-            )
+            );
             this.selectedCompaniesAndGroups = availableForList
               .map((af) => {
-                if (['MyCompanyOnly', 'AllCompanies'].includes(af.typeName)) {
-                  return null
+                if (["MyCompanyOnly", "AllCompanies"].includes(af.typeName)) {
+                  return null;
                 }
                 return {
                   resourceId: af.targetResourceId,
                   typeName: af.typeName
-                }
+                };
               })
-              .filter(Boolean)
+              .filter(Boolean);
           }
         })
         .then(() => {
           this.callForLearningPathTrainingLibrary({
             trainingIds: this.trainingIds,
             isAppend: false
-          })
-        })
+          });
+        });
     } else {
-      this.callForLearningPathTrainingLibrary()
+      this.callForLearningPathTrainingLibrary();
     }
   },
   methods: {
     ...mapActions({
-      setNewLearningPathModal: 'trainingLibrary/setNewLearningPathModal',
-      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
-      callForLearningPathTrainingLibrary: 'learningPath/callForLearningPathTrainingLibrary'
+      setNewLearningPathModal: "trainingLibrary/setNewLearningPathModal",
+      callForTrainingLibrary: "trainingLibrary/callForTrainingLibrary",
+      callForLearningPathTrainingLibrary:
+        "learningPath/callForLearningPathTrainingLibrary"
     }),
     toggleCannotSaveModal() {
-      this.isCannotSaveModalActive = !this.isCannotSaveModalActive
+      this.isCannotSaveModalActive = !this.isCannotSaveModalActive;
     },
     handleClose() {
-      this.setNewLearningPathModal(emptyNewLearningPathModalObj)
+      this.setNewLearningPathModal(emptyNewLearningPathModalObj);
     },
     handleGeneratingChanged(isGenerating) {
-      this.isGenerating = isGenerating
+      this.isGenerating = isGenerating;
     },
     async changeStep(flag = 1) {
-      const { refTrainingCourseInformation } = this.$refs
+      const { refTrainingCourseInformation } = this.$refs;
       if (this.step === 1 && flag === 1) {
-        const { refMakeAvailableFor } = refTrainingCourseInformation?.$refs || {}
+        const { refMakeAvailableFor } =
+          refTrainingCourseInformation?.$refs || {};
         if (refMakeAvailableFor) {
           refMakeAvailableFor.validateAvailableFor(
             refTrainingCourseInformation.formData.availableForRequests
-          )
-          if (!refMakeAvailableFor.isAvailableForValid) return
+          );
+          if (!refMakeAvailableFor.isAvailableForValid) return;
           this.availableForRequestIds =
-            refTrainingCourseInformation?.formData?.availableForRequests?.map((item) => item.id) ||
-            []
+            refTrainingCourseInformation?.formData?.availableForRequests?.map(
+              (item) => item.id
+            ) || [];
         }
         // Generate description if needed before validation
         if (refTrainingCourseInformation.generateDescriptionIfNeeded) {
-          await refTrainingCourseInformation.generateDescriptionIfNeeded()
+          await refTrainingCourseInformation.generateDescriptionIfNeeded();
         }
         if (refTrainingCourseInformation.validateForm()) {
-          this.step += flag
+          this.step += flag;
         }
       } else {
         if (this.step === 2 && flag === -1) {
-          this.isActionButtonDisabled = false
+          this.isActionButtonDisabled = false;
         }
-        this.step += flag
+        this.step += flag;
       }
     },
     handleSubmit() {
-      const { refTrainingCourseInformation, refLearningPathContent } = this.$refs
-      const { getSelectedTrainings } = refLearningPathContent
+      const {
+        refTrainingCourseInformation,
+        refLearningPathContent
+      } = this.$refs;
+      const { getSelectedTrainings } = refLearningPathContent;
       if (getSelectedTrainings?.length < 2) {
-        this.$store.dispatch('common/createSnackBar', {
+        this.$store.dispatch("common/createSnackBar", {
           message:
-            'The learning path has not been saved. Please add at least two training materials before proceeding.',
+            "The learning path has not been saved. Please add at least two training materials before proceeding.",
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-alert'
-        })
-        return
+          icon: "mdi-alert"
+        });
+        return;
       }
-      if (document.getElementsByClassName('learning-path-content__training--disabled').length) {
-        this.toggleCannotSaveModal()
-        return
+      if (
+        document.getElementsByClassName(
+          "learning-path-content__training--disabled"
+        ).length
+      ) {
+        this.toggleCannotSaveModal();
+        return;
       }
       const {
         formData: {
@@ -285,95 +303,116 @@ export default {
           compliances,
           behaviours
         }
-      } = refTrainingCourseInformation
-      const payload = new FormData()
+      } = refTrainingCourseInformation;
+      const payload = new FormData();
       if (this.isEdit) {
         if (coverImageUrl) {
-          payload.append('TrainingDetail.coverImageUrl', coverImageUrl)
+          payload.append("TrainingDetail.coverImageUrl", coverImageUrl);
         }
-        payload.append('coverImage', coverImage)
-        payload.append('TrainingDetail.name', name)
-        payload.append('TrainingDetail.description', description)
-        payload.append('TrainingDetail.category', category)
+        payload.append("coverImage", coverImage);
+        payload.append("TrainingDetail.name", name);
+        payload.append("TrainingDetail.description", description);
+        payload.append("TrainingDetail.category", category);
         roleIds.forEach((roleId, index) => {
-          payload.append(`TrainingDetail.RoleIds[${index}]`, roleId)
-        })
-        payload.append('TrainingDetail.type', TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+          payload.append(`TrainingDetail.RoleIds[${index}]`, roleId);
+        });
+        payload.append(
+          "TrainingDetail.type",
+          TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
+        );
         tags.map((tag, index) => {
-          payload.append(`TrainingDetail.tagNames[${index}]`, tag)
-        })
+          payload.append(`TrainingDetail.tagNames[${index}]`, tag);
+        });
         compliances.map((compliance, index) => {
-          payload.append(`TrainingDetail.compliances[${index}].complianceId`, compliance)
-        })
+          payload.append(
+            `TrainingDetail.compliances[${index}].complianceId`,
+            compliance
+          );
+        });
         behaviours.map((behaviour, index) => {
-          payload.append(`TrainingDetail.behaviours[${index}].behaviourId`, behaviour)
-        })
+          payload.append(
+            `TrainingDetail.behaviours[${index}].behaviourId`,
+            behaviour
+          );
+        });
         availableForRequests.map((request, index) => {
-          payload.append(`TrainingDetail.availableForRequests[${index}].type`, request.type)
+          payload.append(
+            `TrainingDetail.availableForRequests[${index}].type`,
+            request.type
+          );
           payload.append(
             `TrainingDetail.availableForRequests[${index}].resourceId`,
             request.resourceId
-          )
-        })
+          );
+        });
         getSelectedTrainings.map((training, index) => {
           payload.append(
             `TrainingDetail.trainingGroups[${index}].detailTrainingId`,
             training.trainingId || training.detailTrainingId
-          )
-          payload.append(`TrainingDetail.trainingGroups[${index}].trainingOrder`, index + 1)
-        })
-        this.isActionButtonDisabled = true
-        AwarenessEducatorService.updateTraining(payload, this.selectedRow.trainingId)
+          );
+          payload.append(
+            `TrainingDetail.trainingGroups[${index}].trainingOrder`,
+            index + 1
+          );
+        });
+        this.isActionButtonDisabled = true;
+        AwarenessEducatorService.updateTraining(
+          payload,
+          this.selectedRow.trainingId
+        )
           .then(() => {
-            this.handleClose()
-            this.callForTrainingLibrary()
+            this.handleClose();
+            this.callForTrainingLibrary();
           })
           .finally(() => {
-            this.isActionButtonDisabled = false
-          })
+            this.isActionButtonDisabled = false;
+          });
       } else {
         if (coverImageUrl) {
-          payload.append('coverImageUrl', coverImageUrl)
+          payload.append("coverImageUrl", coverImageUrl);
         }
-        payload.append('coverImage', coverImage)
-        payload.append('name', name)
-        payload.append('description', description)
-        payload.append('category', category)
+        payload.append("coverImage", coverImage);
+        payload.append("name", name);
+        payload.append("description", description);
+        payload.append("category", category);
         roleIds.forEach((roleId, index) => {
-          payload.append(`RoleIds[${index}]`, roleId)
-        })
-        payload.append('type', TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH)
+          payload.append(`RoleIds[${index}]`, roleId);
+        });
+        payload.append("type", TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH);
         tags.map((tag, index) => {
-          payload.append(`tagNames[${index}]`, tag)
-        })
+          payload.append(`tagNames[${index}]`, tag);
+        });
         compliances.map((compliance, index) => {
-          payload.append(`compliances[${index}].complianceId`, compliance)
-        })
+          payload.append(`compliances[${index}].complianceId`, compliance);
+        });
         behaviours.map((behaviour, index) => {
-          payload.append(`behaviours[${index}].behaviourId`, behaviour)
-        })
+          payload.append(`behaviours[${index}].behaviourId`, behaviour);
+        });
         availableForRequests.map((request, index) => {
-          payload.append(`availableForRequests[${index}].type`, request.type)
-          payload.append(`availableForRequests[${index}].resourceId`, request.resourceId)
-        })
+          payload.append(`availableForRequests[${index}].type`, request.type);
+          payload.append(
+            `availableForRequests[${index}].resourceId`,
+            request.resourceId
+          );
+        });
         getSelectedTrainings.map((training, index) => {
           payload.append(
             `trainingGroups[${index}].detailTrainingId`,
             training.trainingId || training.detailTrainingId
-          )
-          payload.append(`trainingGroups[${index}].trainingOrder`, index + 1)
-        })
-        this.isActionButtonDisabled = true
+          );
+          payload.append(`trainingGroups[${index}].trainingOrder`, index + 1);
+        });
+        this.isActionButtonDisabled = true;
         AwarenessEducatorService.createTraining(payload)
           .then(() => {
-            this.handleClose()
-            this.callForTrainingLibrary()
+            this.handleClose();
+            this.callForTrainingLibrary();
           })
           .finally(() => {
-            this.isActionButtonDisabled = false
-          })
+            this.isActionButtonDisabled = false;
+          });
       }
     }
   }
-}
+};
 </script>
