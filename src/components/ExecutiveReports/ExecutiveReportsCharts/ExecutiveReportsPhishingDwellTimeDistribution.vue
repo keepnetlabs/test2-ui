@@ -139,7 +139,8 @@ export default {
     }
   },
   created() {
-    if (this?.defaultWidgetData?.length) this.setChartData(this.defaultWidgetData[0].widgetDatas)
+    const widgetDatas = this.defaultWidgetData?.[0]?.widgetDatas
+    if (widgetDatas?.length) this.setChartData(widgetDatas)
     else this.callForData()
   },
   methods: {
@@ -156,8 +157,9 @@ export default {
           const {
             data: { data }
           } = response || {}
+          const widgetDatas = data?.[0]?.widgetDatas || []
           this.$emit('on-set-default-widget-data', this.card.key, data)
-          this.setChartData(data[0].widgetDatas)
+          this.setChartData(widgetDatas)
         })
         .finally(() => {
           this.isLoading = false

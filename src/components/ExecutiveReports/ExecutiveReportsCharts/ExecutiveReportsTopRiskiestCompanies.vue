@@ -332,7 +332,7 @@ export default {
           }
         }
       }
-      if (!data[0].widgetDatas.length) {
+      if (!data?.[0]?.widgetDatas?.length) {
         this.isEmpty = true
         return
       }
