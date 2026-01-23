@@ -156,6 +156,10 @@ export default {
         })
     },
     setChartData(data) {
+      if (!data?.[0]?.widgetDatas?.length) {
+        this.isEmpty = true
+        return
+      }
       const params = [data[0].widgetDatas]
       if (this.dateFormat) params.push(this.dateFormat)
       const { valueEnums, datasets } = createExecutiveReportChartData(...params)
