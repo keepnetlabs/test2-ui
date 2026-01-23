@@ -20,10 +20,12 @@ export function getBtnStatusColor(type) {
     dropped: "#F56C6C",
     deleted: "#F56C6C",
     blocked: "#F56C6C",
+    rejected: "#757575",
     inactive: "#b83a3a",
     sending: "#1173C1",
     scheduled: "#1173C1",
     finished: "#217124",
+    executed: "#217124",
     warning: "#b6791d",
     processing: "#1173C1",
     processed: "#217124",
@@ -54,6 +56,7 @@ export function getBtnStatusColor(type) {
     quedued: "#00bcd4", // Assuming this was a typo for 'queued'
     "in queue": "#1173C1",
     inqueue: "#1173C1", // Added to handle both 'in queue' and 'inqueue'
+    "waiting for approval": "#1173C1",
     none: "#00bcd4",
     running: "#1173C1",
     "not running": "#B83A3A", // Corrected from #1173C1 to #B83A3A as per previous logic

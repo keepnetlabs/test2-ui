@@ -178,3 +178,53 @@
 .agentic-ai-widget__stat-card--highlighted .agentic-ai-widget__stat-card__value {
   color: #2196f3;
 }
+
+.agentic-ai-activities-drawer {
+  font-family: "Open Sans";
+
+  .agentic-ai-activities-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .agentic-ai-activities-drawer__header-title {
+    color: #2196f3;
+    font-weight: 600;
+  }
+
+  .agentic-ai-activities-drawer__header-close {
+    cursor: pointer;
+    color: #757575;
+  }
+
+  .agentic-ai-activities-drawer__body {
+    padding: 16px 24px 24px;
+  }
+
+  .agentic-ai-activities-drawer__intro {
+    margin-bottom: 16px;
+  }
+
+  .agentic-ai-activities-drawer__intro h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #383b41;
+  }
+
+  .agentic-ai-activities-drawer__intro p {
+    margin: 0;
+    color: #6b7280;
+  }
+}
+
+.agentic-ai-activities-table__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  color: #6b7280;
+}
