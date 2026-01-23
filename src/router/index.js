@@ -75,6 +75,7 @@ import ScheduledExecutiveReport from '@/views/ScheduledExecutiveReport.vue'
 import ScheduledReports from '@/views/ScheduledReports.vue'
 import GamificationReport from '@/views/GamificationReport'
 import MicroLearning from '@/views/MicroLearning.vue'
+import TrainingsDownloadContent from '@/views/TrainingsDownloadContent.vue'
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
@@ -127,6 +128,14 @@ const router = new Router({
       path: '/training/scorm/phished-landing-page',
       name: 'Phished Landing Page',
       component: PhishedLandingPage,
+      meta: {
+        isAuthenticated: false
+      }
+    },
+    {
+      path: '/trainings/download-content',
+      name: 'Trainings Download Content',
+      component: TrainingsDownloadContent,
       meta: {
         isAuthenticated: false
       }
