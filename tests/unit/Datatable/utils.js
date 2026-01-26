@@ -69,6 +69,17 @@ export function getDefaultVuex(store) {
         getters,
         actions,
         mutations
+      },
+      usersDashboard: {
+        namespaced: true,
+        getters: {
+          getLabels: () => ({
+            dataTablePaginationOf: 'of',
+            dataTableRowsPerPage: 'Rows per page:',
+            dataTableActions: 'Actions'
+          }),
+          getLanguage: () => 'en-US'
+        }
       }
     }
   })

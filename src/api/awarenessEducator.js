@@ -516,6 +516,12 @@ const getCompliances = () => {
 const getTrainingTypes = () => {
   return testRequest.get('/trainings/types')
 }
+const getTrainingLevels = () => {
+  return testRequest.get('/trainings/levels')
+}
+const getTrainingDurations = () => {
+  return testRequest.get('/trainings/durations')
+}
 
 const addToFavorite = (resourceId) => {
   return testRequest.post(
@@ -637,6 +643,8 @@ export default {
   addToFavorite,
   removeFromFavorite,
   getTrainingTypes,
+  getTrainingLevels,
+  getTrainingDurations,
   getTrainingReportCertificateEmailDetails,
   getTrainingReportExamResultSessions,
   searchMicrosoftTeamsSendingReportEmails,
