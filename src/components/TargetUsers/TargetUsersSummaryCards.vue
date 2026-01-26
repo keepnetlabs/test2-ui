@@ -96,7 +96,7 @@
 
 <script>
 export default {
-  name: 'TargetUsersSummaryCards',
+  name: "TargetUsersSummaryCards",
   props: {
     items: {
       type: Array,
@@ -111,60 +111,62 @@ export default {
       default: false
     }
   },
-  data() {
-    return {
-      menuStates: {}
-    }
-  },
   methods: {
     handleMenuSelect(item, optionIndex) {
-      this.$set(this.menuStates, item.key, false)
-      this.$emit('period-select', {
+      this.$set(this.menuStates, item.key, false);
+      this.$emit("period-select", {
         key: item.key,
         index: optionIndex
-      })
+      });
     },
     handleSelect(item) {
-      if (item.disabled) return
-      this.$emit('select', item.key)
+      if (item.disabled) return;
+      this.$emit("select", item.key);
     },
     isActive(item) {
       if (Array.isArray(this.activeKey)) {
-        return this.activeKey.includes(item.key)
+        return this.activeKey.includes(item.key);
       }
-      return this.activeKey === item.key
+      return this.activeKey === item.key;
     },
     getThemeColor(colorKey) {
-      return this.$vuetify?.theme?.currentTheme?.[colorKey] || colorKey || '#e0e0e0'
+      return (
+        this.$vuetify?.theme?.currentTheme?.[colorKey] || colorKey || "#e0e0e0"
+      );
     },
     cardClasses(item) {
       return {
-        'summary-card--active': this.isActive(item),
-        'summary-card--disabled': item.disabled,
-        'summary-card--clickable': !item.disabled
-      }
+        "summary-card--active": this.isActive(item),
+        "summary-card--disabled": item.disabled,
+        "summary-card--clickable": !item.disabled
+      };
     },
     cardStyles(item) {
       if (item.disabled) {
-        return { borderColor: '#757575' }
+        return { borderColor: "#757575" };
       }
-      if (item.key === 'active') {
-        return { borderColor: '#2196F3' }
+      if (item.key === "active") {
+        return { borderColor: "#2196F3" };
       }
-      if (item.key === 'monthly') {
-        return { borderColor: '#00BCD4' }
+      if (item.key === "monthly") {
+        return { borderColor: "#00BCD4" };
       }
-      return { borderColor: this.getThemeColor(item.color) }
+      return { borderColor: this.getThemeColor(item.color) };
     },
     getFilterIconColor(item) {
-      if (this.isActive(item)) return 'primary'
-      return 'grey'
+      if (this.isActive(item)) return "primary";
+      return "grey";
     },
     getFilterIconName(item) {
       return this.isActive(item)
-        ? 'mdi-filter-variant-remove'
-        : 'mdi-filter-variant'
+        ? "mdi-filter-variant-remove"
+        : "mdi-filter-variant";
     }
+  },
+  data() {
+    return {
+      menuStates: {}
+    };
   }
-}
+};
 </script>
