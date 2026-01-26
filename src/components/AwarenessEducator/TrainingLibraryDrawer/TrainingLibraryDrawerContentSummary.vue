@@ -365,7 +365,7 @@ export default {
     },
     getInfoCards() {
       const data = this.getCurrentTrainingData
-      return [
+      const cards = [
         {
           icon: 'mdi-shape-outline',
           text: data.categoryName || data.category || 'No category'
@@ -381,12 +381,6 @@ export default {
           text: this.getTrainingRolesText(data),
           tooltip: this.getTrainingRolesTooltip(data)
         },
-        /*
-        {
-          icon: 'mdi-clock-outline',
-          text: data.duration || 'No duration'
-        },
-        */
         {
           icon: 'mdi-shield-check-outline',
           text: this.getComplianceText(data),
@@ -398,6 +392,21 @@ export default {
           tooltip: this.getLanguagesTooltip()
         }
       ]
+      const levelText = data.levelDisplayName || data.level
+      if (levelText) {
+        cards.splice(2, 0, {
+          icon: 'mdi-signal-cellular-3',
+          text: levelText
+        })
+      }
+      const durationText = data.durationDisplayName || data.duration
+      if (durationText) {
+        cards.splice(levelText ? 3 : 2, 0, {
+          icon: 'mdi-clock-outline',
+          text: durationText
+        })
+      }
+      return cards
     }
   },
   methods: {
