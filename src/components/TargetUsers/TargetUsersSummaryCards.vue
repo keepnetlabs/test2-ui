@@ -32,6 +32,8 @@
               <span>{{ item.subtitle }}</span>
               <v-menu
                 v-if="item.menuOptions && item.menuOptions.length > 1"
+                v-model="menuStates[item.key]"
+                close-on-content-click
                 offset-y
                 bottom
                 left
@@ -53,12 +55,7 @@
                   <v-list-item
                     v-for="(option, optionIndex) in item.menuOptions"
                     :key="`${item.key}-period-${optionIndex}`"
-                    @click.stop="
-                      $emit('period-select', {
-                        key: item.key,
-                        index: optionIndex
-                      })
-                    "
+                    @click.stop="handleMenuSelect(item, optionIndex)"
                   >
                     <v-list-item-title>{{ option.period }}</v-list-item-title>
                   </v-list-item>
@@ -87,7 +84,9 @@
               height="64"
               alt=""
             />
-            <v-icon v-else class="summary-icon" color="white" small>{{ item.icon }}</v-icon>
+            <v-icon v-else class="summary-icon" color="white" small>{{
+              item.icon
+            }}</v-icon>
           </div>
         </div>
       </v-card>
@@ -113,6 +112,13 @@ export default {
     }
   },
   methods: {
+    handleMenuSelect(item, optionIndex) {
+      this.$set(this.menuStates, item.key, false);
+      this.$emit("period-select", {
+        key: item.key,
+        index: optionIndex
+      });
+    },
     handleSelect(item) {
       if (item.disabled) return;
       this.$emit("select", item.key);
@@ -156,6 +162,11 @@ export default {
         ? "mdi-filter-variant-remove"
         : "mdi-filter-variant";
     }
+  },
+  data() {
+    return {
+      menuStates: {}
+    };
   }
 };
 </script>
