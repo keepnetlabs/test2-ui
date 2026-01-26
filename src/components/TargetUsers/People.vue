@@ -1124,9 +1124,10 @@ export default {
       if (selected.count !== undefined) {
         this.summaryCounts.monthly = selected.count;
       }
-      if (this.activeSummaryKeys.includes("monthly")) {
-        this.applySummaryFilter();
+      if (!this.activeSummaryKeys.includes("monthly")) {
+        this.activeSummaryKeys = [...this.activeSummaryKeys, "monthly"];
       }
+      this.applySummaryFilter();
     },
     formatMonthlyPeriodKey(periodStart = "") {
       if (!periodStart) return "";
@@ -1167,7 +1168,7 @@ export default {
         ...entry,
         periodKey: this.formatMonthlyPeriodKey(entry.periodStart)
       }));
-      const monthlyEntry = monthlyEntries[0] || {};
+      const monthlyEntry = monthlyEntries[monthlyEntries.length - 1] || {};
       const monthlyPeriod = monthlyEntry.period || "";
       return {
         counts: {
@@ -1188,8 +1189,15 @@ export default {
           this.summaryCounts = normalized.counts;
           this.monthlyPeriodLabel = normalized.periodLabel;
           this.monthlyActiveUsers = normalized.monthlyActiveUsers;
-          this.monthlySelectedIndex = 0;
-          this.monthlyPeriodKey = this.monthlyActiveUsers[0]?.periodKey || "";
+          this.monthlySelectedIndex = this.monthlyActiveUsers.length
+            ? this.monthlyActiveUsers.length - 1
+            : 0;
+          const selectedMonthly =
+            this.monthlyActiveUsers[this.monthlySelectedIndex] || {};
+          this.monthlyPeriodKey = selectedMonthly.periodKey || "";
+          if (selectedMonthly.count !== undefined) {
+            this.summaryCounts.monthly = selectedMonthly.count;
+          }
         })
         .catch(() => {
           this.summaryCounts = {
