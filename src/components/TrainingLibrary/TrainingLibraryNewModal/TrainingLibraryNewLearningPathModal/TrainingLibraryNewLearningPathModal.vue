@@ -157,6 +157,8 @@ export default {
             compliances,
             description,
             name,
+            level,
+            duration,
             tagNames,
             targetAudience,
             roleIds,
@@ -182,12 +184,31 @@ export default {
                 Boolean
               );
             }
+            const levels = this.$store.getters["trainingLibraryHelpers/getLevels"] || [];
+            const durations =
+              this.$store.getters["trainingLibraryHelpers/getDurations"] || [];
+            const resolvedLevel = levels.find(
+              (item) =>
+                item?.name === level ||
+                item?.text === level ||
+                String(item?.id) === String(level) ||
+                String(item?.value) === String(level)
+            );
+            const resolvedDuration = durations.find(
+              (item) =>
+                item?.name === duration ||
+                item?.text === duration ||
+                String(item?.id) === String(duration) ||
+                String(item?.value) === String(duration)
+            );
             refTrainingCourseInformation.setFormData({
               behaviours: behaviours.map((b) => b.behaviourId),
               category,
               compliances: compliances.map((c) => c.complianceId),
               description,
               name,
+              level: resolvedLevel?.id || level || "",
+              duration: resolvedDuration?.id || duration || "",
               tags: tagNames,
               roleIds: resolvedRoleIds,
               coverImage
@@ -296,6 +317,8 @@ export default {
           name,
           description,
           category,
+          level,
+          duration,
           roleIds,
           tags,
           availableForRequests,
@@ -313,6 +336,8 @@ export default {
         payload.append("TrainingDetail.name", name);
         payload.append("TrainingDetail.description", description);
         payload.append("TrainingDetail.category", category);
+        payload.append("TrainingDetail.level", level);
+        payload.append("TrainingDetail.duration", duration);
         roleIds.forEach((roleId, index) => {
           payload.append(`TrainingDetail.RoleIds[${index}]`, roleId);
         });
@@ -375,6 +400,8 @@ export default {
         payload.append("name", name);
         payload.append("description", description);
         payload.append("category", category);
+        payload.append("level", level);
+        payload.append("duration", duration);
         roleIds.forEach((roleId, index) => {
           payload.append(`RoleIds[${index}]`, roleId);
         });

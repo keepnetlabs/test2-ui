@@ -36,6 +36,16 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
     property: PROPERTY_STORE.TYPE,
     show: true
   },
+  LEVEL: {
+    label: 'Level',
+    property: PROPERTY_STORE.LEVEL,
+    show: true
+  },
+  DURATION: {
+    label: 'Duration',
+    property: PROPERTY_STORE.DURATION,
+    show: true
+  },
   CATEGORY: {
     label: 'Category',
     property: PROPERTY_STORE.CATEGORY,

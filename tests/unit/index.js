@@ -118,6 +118,13 @@ if (typeof window === 'undefined') {
   if (window.document && !window.document.origin) {
     window.document.origin = 'http://localhost'
   }
+
+  // Add data-app for Vuetify
+  if (window.document && window.document.body) {
+    const app = window.document.createElement('div')
+    app.setAttribute('data-app', 'true')
+    window.document.body.appendChild(app)
+  }
 }
 
 // Mock XMLHttpRequest to prevent ECONNREFUSED errors in JSDOM

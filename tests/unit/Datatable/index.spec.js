@@ -153,7 +153,10 @@ describe('Datatable test cases suite', () => {
     expect(emittedEvent).toBeTruthy()
     //checking is event object
     expect(emittedEvent[0][0]).toStrictEqual({
-      filter: MOCKS.SEARCH_FIELD_CASE
+      filter: {
+        ...MOCKS.SEARCH_FIELD_CASE,
+        SearchInputTextValue: 'custom data'
+      }
     })
   })
 
@@ -175,23 +178,26 @@ describe('Datatable test cases suite', () => {
     //checking is menu open
     expect(filterOptions.classes('filter-options--menu-active'))
     //getting menu items
-    const filterOptionsItems = wrapper.findAll('.filter-options__menu .v-list-item')
+    //getting menu items
+    const filterOptionsItems = document.querySelectorAll(
+      '.filter-options__menu-content .v-list-item'
+    )
     //checking there is 3 items
     expect(filterOptionsItems.length).toEqual(3)
     //clicking first item
-    await filterOptionsItems.at(0).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    filterOptionsItems[0].click()
     //checking is event is throwed
     expect(
       wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_SET_DEFAULT_SEARCH]
     ).toBeTruthy()
     //clicking second item
-    await filterOptionsItems.at(1).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    filterOptionsItems[1].click()
     //checking is event is throwed
     expect(
       wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_RESET_DEFAULT_SEARCH]
     ).toBeTruthy()
     //clicking third item
-    await filterOptionsItems.at(2).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    filterOptionsItems[2].click()
     //checking is event is throwed
     expect(wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_CLEAR_FILTER]).toBeTruthy()
   })
