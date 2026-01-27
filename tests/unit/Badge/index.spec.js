@@ -1,9 +1,10 @@
-import { createLocalVue, mount } from '@vue/test-utils'
+import { createLocalVue, mount, shallowMount } from '@vue/test-utils'
 import Badge from '@/components/Badge.vue'
 import Vuetify from 'vuetify'
 
 describe('Badge.vue', () => {
   const localVue = createLocalVue()
+  localVue.use(Vuetify)
   let vuetify
 
   beforeEach(() => {
@@ -12,18 +13,16 @@ describe('Badge.vue', () => {
 
   // Helper to mount the component
   const mountBadge = (propsData = {}) => {
-    return mount(Badge, {
+    return shallowMount(Badge, {
       localVue,
       vuetify,
-      context: {
-        props: {
-          ...propsData
-        }
+      propsData: {
+        ...propsData
       },
       stubs: {
-        // Stub VTooltip slot behavior if needed, or rely on shallowMount.
-        // Since it's a functional component using VTooltip, full mount or shallow mount might be tricky with tooltips.
-        // Let's rely on mount but we might need to handle the tooltip activation or slots.
+        'v-tooltip': {
+          template: '<div><slot name="activator" :on="{}"></slot></div>'
+        }
       }
     })
   }
@@ -87,14 +86,13 @@ describe('Badge.vue', () => {
   })
 
   it('hides border when hideBorder is true', () => {
-    // Verify logical output of getDynamicProps directly since rendering style serialization is flaky
-    const props = {
+    const wrapper = mountBadge({
       outline: true,
       hideBorder: true,
       color: 'green',
       defaultBackgroundColor: '#fff'
-    }
-    const dynamicProps = Badge.getDynamicProps(props)
+    })
+    const dynamicProps = wrapper.vm.dynamicProps
     // dynamicProps.style is an array: [{ border: ..., color: ... }, undefined] depending on usage
     // We expect the first element to have the border property.
     const styleObj = dynamicProps.style[0]
