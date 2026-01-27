@@ -66,4 +66,47 @@ describe('AlertBox.vue', () => {
       const wrapper = mountComponent({ iconColor: 'red' })
       expect(wrapper.find('.v-icon-stub').attributes('data-color')).toBe('red')
   })
+
+  it('renders different icon types', () => {
+      const wrapper = mountComponent({ iconName: 'mdi-check' })
+      expect(wrapper.vm.iconName).toBe('mdi-check')
+      expect(wrapper.find('.v-icon-stub').exists()).toBe(true)
+  })
+
+  it('handles custom iconColor prop', () => {
+      const wrapper = mountComponent({ iconColor: '#2196f3' })
+      expect(wrapper.find('.v-icon-stub').attributes('data-color')).toBe('#2196f3')
+  })
+
+  it('renders secondary action slot when provided', () => {
+      const wrapper = shallowMount(AlertBox, {
+          localVue,
+          vuetify,
+          propsData: {
+              slots: { secondaryAction: true }
+          },
+          stubs,
+          slots: {
+              secondaryAction: '<button class="secondary">Cancel</button>'
+          }
+      })
+      
+      expect(wrapper.find('.secondary').text()).toBe('Cancel')
+      expect(wrapper.vm.hasAction).toBe(true)
+  })
+
+  it('renders with different text variations', () => {
+      const variations = [
+          'Short text',
+          'This is a longer alert message that explains something important to the user',
+          ''
+      ]
+      
+      variations.forEach(text => {
+          const wrapper = mountComponent({ text })
+          if (text) {
+              expect(wrapper.text()).toContain(text)
+          }
+      })
+  })
 })

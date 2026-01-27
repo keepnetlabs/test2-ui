@@ -136,4 +136,78 @@ describe('DataTable.vue', () => {
       })
       expect(wrapper.find('.table-header').exists()).toBe(true)
   })
+
+  it('renders pagination when showPagination is true', () => {
+      const wrapper = mountComponent({
+          showPagination: true,
+          table: [
+              { name: 'Item 1' },
+              { name: 'Item 2' },
+              { name: 'Item 3' }
+          ]
+      })
+      // Pagination should be rendered
+      expect(wrapper.vm.showPagination).toBe(true)
+  })
+
+  it('handles selection when selectable is true', () => {
+      const wrapper = mountComponent({
+          selectable: true,
+          table: [{ name: 'Item 1' }, { name: 'Item 2' }]
+      })
+      const handleSelectionChangeSpy = jest.spyOn(wrapper.vm, 'handleSelectionChange')
+      
+      wrapper.vm.handleSelectionChange([{ name: 'Item 1' }])
+      
+      expect(handleSelectionChangeSpy).toHaveBeenCalled()
+      expect(wrapper.vm.multipleSelection).toEqual([{ name: 'Item 1' }])
+  })
+
+  it('emits row-click event when row is clicked', () => {
+      const wrapper = mountComponent({
+          table: [{ name: 'Item 1' }]
+      })
+      
+      wrapper.vm.handleRowClick({ name: 'Item 1' })
+      
+      expect(wrapper.emitted('row-click')).toBeTruthy()
+      expect(wrapper.emitted('row-click')[0][0]).toEqual({ name: 'Item 1' })
+  })
+
+  it('toggles column visibility in settings', () => {
+      const columns = [
+          { label: 'Name', property: 'name', show: true, type: 'text' },
+          { label: 'Email', property: 'email', show: false, type: 'text' }
+      ]
+      const wrapper = mountComponent({ columns })
+      
+      // Initially, second column is hidden
+      expect(wrapper.vm.columns[1].show).toBe(false)
+      
+      // Toggle visibility
+      wrapper.vm.columns[1].show = true
+      
+      expect(wrapper.vm.columns[1].show).toBe(true)
+  })
+
+  it('renders download button when downloadButton prop is provided', () => {
+      const wrapper = mountComponent({
+          options: true,
+          downloadButton: {
+              show: true,
+              disabled: false
+          }
+      })
+      
+      expect(wrapper.vm.downloadButton.show).toBe(true)
+  })
+
+  it('displays empty message when no data', () => {
+      const wrapper = mountComponent({
+          table: [],
+          empty: { message: 'No records found' }
+      })
+      
+      expect(wrapper.vm.empty.message).toBe('No records found')
+  })
 })

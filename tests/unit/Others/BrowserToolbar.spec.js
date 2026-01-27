@@ -33,4 +33,34 @@ describe('BrowserToolbar.vue', () => {
     const wrapper = mountComponent({ url: '' })
     expect(wrapper.vm.formattedUrl).toBe('')
   })
+
+  it('handles different page indexes', () => {
+    const wrapper = mountComponent({ url: 'http://test.com?', pageIndex: 5 })
+    const formatted = wrapper.vm.formattedUrl
+    expect(formatted).toContain('&order=6') // pageIndex + 1
+  })
+
+  it('does not add order param when pageIndex is 0', () => {
+    const wrapper = mountComponent({ 
+      url: 'http://test.com?param=value',
+      pageIndex: 0 
+    })
+    const formatted = wrapper.vm.formattedUrl
+    expect(formatted).toContain('param=value')
+    expect(formatted).not.toContain('&order=')
+  })
+
+  it('renders browser control dots', () => {
+    const wrapper = mountComponent({ showToolbar: true, url: 'http://test.com' })
+    expect(wrapper.find('.browser-toolbar__controls').exists()).toBe(true)
+    expect(wrapper.findAll('.browser-toolbar__dot').length).toBe(3)
+  })
+
+  it('computes URL correctly with random number', () => {
+    const wrapper = mountComponent({ url: 'http://simple.com?' })
+    const formatted = wrapper.vm.formattedUrl
+    expect(formatted).toContain('http://simple.com?')
+    // Random number should be appended
+    expect(formatted.length).toBeGreaterThan('http://simple.com?'.length)
+  })
 })
