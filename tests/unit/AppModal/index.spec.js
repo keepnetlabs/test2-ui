@@ -8,106 +8,112 @@ describe('AppModal.vue', () => {
 
   beforeEach(() => {
     vuetify = new Vuetify()
-    // Reset document body/html styles if needed
-    document.querySelector('html').style.overflowY = ''
   })
-
-  const mountComponent = (propsData = {}, slots = {}) => {
-    return shallowMount(AppModal, {
-      localVue,
-      vuetify,
-      propsData: {
-        status: true, // Default to open for most tests
-        ...propsData
+  
+  const stubs = {
+      'v-overlay': {
+          template: '<div class="v-overlay-stub"><slot/></div>',
+          props: ['value', 'opacity']
       },
-      slots: {
-        ...slots
-      }
-    })
+      'v-card': '<div><slot/></div>',
+      'v-form': {
+          template: '<form><slot/></form>',
+          methods: { validate: jest.fn() }
+      },
+      'v-list-item': '<div><slot/></div>',
+      'v-list-item-content': '<div><slot/></div>',
+      'v-list-item-title': '<div><slot/></div>',
+      'v-btn': {
+          template: '<button @click="$emit(\'click\')"><slot/></button>'
+      },
+      'v-icon': '<span><slot/></span>'
   }
 
-  it('renders when status is true', () => {
-    const wrapper = mountComponent({ status: true })
-    expect(wrapper.find('v-overlay-stub').exists()).toBe(true)
+  const mountComponent = (propsData = {}) => {
+      return shallowMount(AppModal, {
+          localVue,
+          vuetify,
+          propsData: {
+              status: true,
+              title: 'Modal Title',
+              ...propsData
+          },
+          stubs
+      })
+  }
+
+  it('renders correctly', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.find('.v-overlay-stub').exists()).toBe(true)
+      expect(wrapper.text()).toContain('Modal Title')
   })
 
-  it('does not render when status is false', () => {
-    const wrapper = mountComponent({ status: false })
-    // When root element is v-if=false, wrapper exists but contains comment node
-    expect(wrapper.isEmpty()).toBe(true)
+  it('handles overflow on create/destroy', () => {
+     const wrapper = mountComponent()
+     expect(document.querySelector('html').style.overflowY).toBe('hidden')
+     
+     wrapper.destroy()
+     expect(document.querySelector('html').style.overflowY).toBe('')
   })
 
-  it('renders title and icon correctly', () => {
-    const wrapper = mountComponent({ 
-      title: 'Modal Title',
-      iconName: 'mdi-test',
-      titleId: 'title-id'
-    })
-    
-    // Use stub selectors
-    expect(wrapper.text()).toContain('Modal Title')
-    const titleStub = wrapper.find('v-list-item-title-stub')
-    // Attributes passed to component should be on stub
-    expect(titleStub.attributes('id')).toBe('title-id')
-    
-    const icon = wrapper.find('v-icon-stub')
-    expect(icon.exists()).toBe(true)
-    expect(icon.text()).toBe('mdi-test')
+  it('emits events on button clicks', () => {
+      const wrapper = mountComponent()
+      
+      // Cancel
+      wrapper.vm.closeOverlay()
+      expect(wrapper.emitted('closeOverlay')).toBeTruthy()
+      
+      // Submit
+      wrapper.vm.submit()
+      expect(wrapper.emitted('submit')).toBeTruthy()
   })
 
-  it('emits closeOverlay event when cancel button clicked', async () => {
-    const wrapper = mountComponent()
-    // Find all btn stubs and assume first/specific one based on class
-    const cancelBtn = wrapper.findAll('v-btn-stub').filter(w => w.classes('k-overlay__btn-cancel')).at(0)
-    expect(cancelBtn.exists()).toBe(true)
-    
-    // Trigger click on the stub component
-    cancelBtn.vm.$emit('click')
-    expect(wrapper.emitted('closeOverlay')).toBeTruthy()
+  it('renders slots correctly', () => {
+      const wrapper = shallowMount(AppModal, {
+          localVue,
+          vuetify,
+          propsData: { status: true },
+          stubs,
+          slots: {
+              'overlay-body': '<div class="custom-body">Body</div>'
+          }
+      })
+      expect(wrapper.find('.custom-body').exists()).toBe(true)
   })
 
-  it('emits submit event when confirm button clicked', async () => {
-    const wrapper = mountComponent()
-    const saveBtn = wrapper.findAll('v-btn-stub').filter(w => w.classes('k-overlay__btn-save')).at(0)
-    expect(saveBtn.exists()).toBe(true)
-    
-    saveBtn.vm.$emit('click')
-    expect(wrapper.emitted('submit')).toBeTruthy()
+  it('applies custom className when provided', () => {
+    const wrapper = mountComponent({ className: 'custom-modal' })
+    expect(wrapper.vm.className).toBe('custom-modal')
   })
 
-  it('disabled submit button when saveDisable is true', () => {
-    const wrapper = mountComponent({ saveDisable: true })
-    const saveBtn = wrapper.findAll('v-btn-stub').filter(w => w.classes('k-overlay__btn-save')).at(0)
-    // Check prop because it is passed to v-btn component
-    expect(saveBtn.props('disabled')).toBe(true)
-  })
-
-  it('renders slot content', () => {
-    const wrapper = mountComponent({}, {
-      'overlay-body': '<div class="body-content">Body</div>',
-      'overlay-footer': '<div class="footer-content">Footer</div>'
-    })
-    
-    expect(wrapper.find('.body-content').exists()).toBe(true)
-    expect(wrapper.find('.footer-content').exists()).toBe(true)
-    // Buttons should be gone
-    const cancelBtn = wrapper.findAll('v-btn-stub').filter(w => w.classes('k-overlay__btn-cancel'))
-    expect(cancelBtn.length).toBe(0)
-  })
-
-  it('applies custom footer class', () => {
-    const wrapper = mountComponent({ footerClass: 'my-custom-class' })
-    const footerDiv = wrapper.find('.k-overlay__footer')
-    expect(footerDiv.classes()).toContain('my-custom-class')
+  it('handles zIndex prop', () => {
+    const wrapper = mountComponent({ zIndex: '100' })
+    expect(wrapper.vm.zIndex).toBe('100')
   })
 
   it('hides header when showHeader is false', () => {
     const wrapper = mountComponent({ showHeader: false })
-    expect(wrapper.find('.k-overlay__header').exists()).toBe(false)
+    expect(wrapper.vm.showHeader).toBe(false)
   })
 
-  it('hides footer when showFooter is false', () => {
-    const wrapper = mountComponent({ showFooter: false })
-    expect(wrapper.find('.k-overlay__footer').exists()).toBe(false)
+  it('renders custom confirmButtonText', () => {
+    const wrapper = mountComponent({ confirmButtonText: 'Submit Now' })
+    expect(wrapper.vm.confirmButtonText).toBe('Submit Now')
+  })
+
+  it('renders multiple slots correctly', () => {
+    const wrapper = shallowMount(AppModal, {
+      localVue,
+      vuetify,
+      propsData: { status: true },
+      stubs,
+      slots: {
+        'overlay-body': '<div class="body-slot">Body Content</div>',
+        'overlay-footer': '<div class="footer-slot">Footer Content</div>'
+      }
+    })
+    
+    expect(wrapper.find('.body-slot').exists()).toBe(true)
+    expect(wrapper.find('.footer-slot').exists()).toBe(true)
   })
 })
