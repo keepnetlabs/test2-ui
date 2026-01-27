@@ -23,8 +23,20 @@
         :items="getCategories"
       ></KSelect>
     </FormGroup>
-    <InputTrainingLevel v-model="formData.level" :items="getLevels" />
-    <InputTrainingDuration v-model="formData.duration" :items="getDurations" />
+    <InputTrainingLevel
+      v-model="formData.level"
+      :items="getLevels"
+      :required="false"
+      sub-title="Select the level of knowledge required for this screensaver"
+      placeholder="Select screensaver level"
+    />
+    <InputTrainingDuration
+      v-model="formData.duration"
+      :items="getDurations"
+      :required="false"
+      sub-title="Select the estimated time it takes to review the screensaver"
+      placeholder="Select screensaver duration"
+    />
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
     <InputSelectRoles
