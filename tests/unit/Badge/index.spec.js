@@ -86,15 +86,18 @@ describe('Badge.vue', () => {
   })
 
   it('hides border when hideBorder is true', () => {
-    const wrapper = mountBadge({
+    // Testing the logic directly since it's a static helper method on the functional component definition
+    const props = {
       outline: true,
       hideBorder: true,
       color: 'green',
       defaultBackgroundColor: '#fff'
-    })
-    const dynamicProps = wrapper.vm.dynamicProps
-    // dynamicProps.style is an array: [{ border: ..., color: ... }, undefined] depending on usage
-    // We expect the first element to have the border property.
+    }
+    
+    // getDynamicProps is on the exported component object
+    const dynamicProps = Badge.getDynamicProps(props)
+    
+    // dynamicProps.style is an array: [{ border: ..., color: ... }, ...]
     const styleObj = dynamicProps.style[0]
     expect(styleObj.border).toBe('none')
   })
