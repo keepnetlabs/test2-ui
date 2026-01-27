@@ -13,7 +13,7 @@ describe('Badge.vue', () => {
 
   // Helper to mount the component
   const mountBadge = (propsData = {}) => {
-    return shallowMount(Badge, {
+    return mount(Badge, {
       localVue,
       vuetify,
       propsData: {

@@ -104,4 +104,55 @@ describe('FeedbackPopup.vue', () => {
     wrapper.setData({ textAreaHeight: 100 })
     expect(wrapper.vm.getScrollingStyle.boxShadow).toContain('none')
   })
+
+  it('does not submit when validation fails', async () => {
+    const wrapper = mountComponent()
+    wrapper.vm.$refs.feedbackForm.validate = jest.fn(() => false)
+    
+    wrapper.vm.onFeedbackSend()
+    
+    expect(sendFeedback).not.toHaveBeenCalled()
+  })
+
+  it('sets saveDisable true while sending feedback', async () => {
+    const wrapper = mountComponent()
+    // Mock sendFeedback to be a pending promise
+    let resolvePromise
+    sendFeedback.mockReturnValue(new Promise(resolve => { resolvePromise = resolve }))
+    
+    wrapper.vm.$refs.feedbackForm.validate = jest.fn(() => true)
+    await wrapper.setData({ feedbackMessage: 'Test message' })
+    
+    wrapper.vm.onFeedbackSend()
+    
+    expect(wrapper.vm.saveDisable).toBe(true)
+    
+    resolvePromise({})
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    
+    expect(wrapper.vm.saveDisable).toBe(false)
+  })
+
+  it('resets loading state after API call', async () => {
+    const wrapper = mountComponent()
+    let resolvePromise
+    const p = new Promise((resolve) => { resolvePromise = resolve })
+    sendFeedback.mockReturnValue(p)
+    
+    wrapper.vm.$refs.feedbackForm.validate = jest.fn(() => true)
+    await wrapper.setData({ feedbackMessage: 'Test message' })
+    
+    wrapper.vm.onFeedbackSend()
+    
+    expect(wrapper.vm.saveDisable).toBe(true)
+    
+    resolvePromise({})
+    
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 10))
+    
+    expect(wrapper.vm.saveDisable).toBe(false)
+    expect(store.dispatch).toHaveBeenCalledWith('dashboard/changeFeedbackPopup', false)
+  })
 })
