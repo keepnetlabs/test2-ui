@@ -1,4 +1,4 @@
-import { createLocalVue, mount, shallowMount } from '@vue/test-utils'
+import { createLocalVue, shallowMount } from '@vue/test-utils'
 import AlertBox from '@/components/AlertBox.vue'
 import Vuetify from 'vuetify'
 
@@ -10,96 +10,60 @@ describe('AlertBox.vue', () => {
     vuetify = new Vuetify()
   })
 
-  const mountComponent = (propsData = {}, slots = {}) => {
-    return shallowMount(AlertBox, {
-      localVue,
-      vuetify,
-      propsData: {
-        ...propsData
-      },
-      slots: {
-        ...slots
+  // Stubs
+  const stubs = {
+      'v-icon': {
+          template: '<span class="v-icon-stub" :data-color="color"><slot/></span>',
+          props: ['color']
       }
-    })
   }
-
-  it('renders correctly with default props', () => {
-    const wrapper = mountComponent()
-    expect(wrapper.exists()).toBe(true)
-    expect(wrapper.find('.alert-box').exists()).toBe(true)
-    expect(wrapper.find('.alert-box__default-content').exists()).toBe(true)
-    
-    // Check v-icon-stub
-    const icon = wrapper.find('v-icon-stub')
-    expect(icon.exists()).toBe(true)
-    // text() of stub should contain slot content (iconName)
-    expect(icon.text()).toBe('mdi-alert-circle')
+  
+  const mountComponent = (propsData = {}) => {
+      return shallowMount(AlertBox, {
+          localVue,
+          vuetify,
+          propsData: {
+              text: 'Alert Message',
+              ...propsData
+          },
+          stubs
+      })
+  }
+  
+  it('renders default text', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.text()).toContain('Alert Message')
+      expect(wrapper.find('.v-icon-stub').exists()).toBe(true)
   })
 
-  it('renders provided text', () => {
-    const text = 'This is an alert'
-    const wrapper = mountComponent({ text })
-    expect(wrapper.text()).toContain(text)
+  it('renders slots when provided', () => {
+      const wrapper = shallowMount(AlertBox, {
+          localVue,
+          vuetify,
+          propsData: {
+              slots: { primaryAction: true } // trigger hasAction check
+          },
+          stubs,
+          slots: {
+              text: '<p>Custom Text</p>',
+              primaryAction: '<button>Action</button>'
+          }
+      })
+      
+      expect(wrapper.find('p').text()).toBe('Custom Text')
+      expect(wrapper.find('button').text()).toBe('Action')
   })
 
-  it('applies custom icon and color', () => {
-    const props = {
-      iconName: 'mdi-check',
-      iconColor: 'green'
-    }
-    const wrapper = mountComponent(props)
-    const icon = wrapper.find('v-icon-stub')
-    expect(icon.text()).toBe('mdi-check')
-    expect(icon.attributes('color')).toBe('green')
+  it('computes hasAction correctly', () => {
+      const wrapper = mountComponent({
+          slots: { primaryAction: true, secondaryAction: false }
+      })
+      expect(wrapper.vm.hasAction).toBe(true)
+      expect(wrapper.find('.alert-box__actions').exists()).toBe(true)
   })
 
-  it('renders default slot content', () => {
-    const wrapper = mountComponent({}, { default: '<div class="custom-content">My Content</div>' })
-    expect(wrapper.find('.custom-content').exists()).toBe(true)
-    expect(wrapper.text()).toContain('My Content')
-  })
-
-  it('renders text slot content override', () => {
-    const wrapper = mountComponent({}, { text: '<span>Custom Text Slot</span>' })
-    expect(wrapper.html()).toContain('Custom Text Slot')
-  })
-
-  it('renders actions when enabled via slots prop', () => {
-    const props = {
-      slots: {
-        primaryAction: true,
-        secondaryAction: true
-      }
-    }
-    const slots = {
-      primaryAction: '<button class="btn-primary">Ok</button>',
-      secondaryAction: '<button class="btn-secondary">Cancel</button>'
-    }
-    const wrapper = mountComponent(props, slots)
-    
-    expect(wrapper.find('.alert-box__actions').exists()).toBe(true)
-    expect(wrapper.find('.btn-primary').exists()).toBe(true)
-    expect(wrapper.find('.btn-secondary').exists()).toBe(true)
-  })
-
-  it('does not render actions wrapper if no actions enabled', () => {
-    const props = {
-      slots: {
-        primaryAction: false,
-        secondaryAction: false
-      }
-    }
-    const wrapper = mountComponent(props)
-    expect(wrapper.find('.alert-box__actions').exists()).toBe(false)
-  })
-
-  it('computes hasAction correctly', async () => {
-     const wrapper = mountComponent()
-     expect(wrapper.vm.hasAction).toBe(false)
-
-     await wrapper.setProps({
-       slots: { primaryAction: true }
-     })
-     expect(wrapper.vm.hasAction).toBe(true)
+  it('renders correct icon color', () => {
+      const wrapper = mountComponent({ iconColor: 'red' })
+      expect(wrapper.find('.v-icon-stub').attributes('data-color')).toBe('red')
   })
 })

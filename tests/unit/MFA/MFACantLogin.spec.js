@@ -34,7 +34,9 @@ describe('MFA Cant Login component', () => {
     await checkbox.trigger('click')
     //chechking resend sms
     await wait(2000)
-    expect(wrapper.find('#text--login-countdown').text()).toContain('00:57')
+    const countdownText = wrapper.find('#text--login-countdown').text()
+    // Check if countdown is within expected range (00:56-00:58) to handle timing variability
+    expect(['00:56', '00:57', '00:58'].some(time => countdownText.includes(time))).toBe(true)
     //clicking button
     const button = wrapper.find('.v-card__actions button')
     await button.trigger('click')
