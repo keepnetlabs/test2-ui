@@ -32,7 +32,9 @@ describe('TrainingLibraryDrawerLanguageMenu.vue', () => {
       propsData,
       stubs: {
         // We can stub transition to avoid async wait
-        transition: false
+        transition: {
+          template: '<div><slot /></div>'
+        }
       }
     })
     return wrapper

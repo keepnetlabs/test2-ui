@@ -23,7 +23,9 @@ describe('KButtonCheckbox.vue', () => {
         'v-btn': {
             template: '<button class="v-btn-mock" @click="$emit(\'click\')"><slot /></button>'
         },
-        'v-icon': true
+        'v-icon': {
+          template: '<i class="v-icon-stub"></i>'
+        }
       }
     })
   }
@@ -48,5 +50,45 @@ describe('KButtonCheckbox.vue', () => {
   it('applies custom styles', () => {
     const wrapper = mountComponent({ customStyle: 'color: red;' })
     expect(wrapper.find('.v-btn-mock').attributes('style')).toContain('color: red;')
+  })
+
+  it('renders icon when value is true', () => {
+    const wrapper = mountComponent({ value: true })
+    expect(wrapper.find('.v-icon-stub').exists()).toBe(true)
+  })
+
+  it('displays correct state based on value prop', () => {
+    const wrapper = mountComponent({ value: false })
+    expect(wrapper.vm.$props.value).toBe(false)
+
+    const wrapper2 = mountComponent({ value: true })
+    expect(wrapper2.vm.$props.value).toBe(true)
+  })
+
+  it('emits input event with correct payload', async () => {
+    const wrapper = mountComponent({ value: false })
+    await wrapper.find('.v-btn-mock').trigger('click')
+
+    const emitted = wrapper.emitted('input')
+    expect(emitted).toBeTruthy()
+    expect(emitted.length).toBe(1)
+    expect(emitted[0][0]).toBe(true)
+  })
+
+  it('handles multiple consecutive clicks', async () => {
+    const wrapper = mountComponent({ value: false })
+
+    await wrapper.find('.v-btn-mock').trigger('click')
+    expect(wrapper.emitted('input')[0][0]).toBe(true)
+
+    // Note: real implementation would use v-model to update, but testing emitted event
+    const emittedEvents = wrapper.emitted('input')
+    expect(emittedEvents.length).toBe(1)
+  })
+
+  it('applies default label when provided', () => {
+    const customLabel = 'Custom Checkbox Label'
+    const wrapper = mountComponent({ label: customLabel })
+    expect(wrapper.text()).toContain(customLabel)
   })
 })

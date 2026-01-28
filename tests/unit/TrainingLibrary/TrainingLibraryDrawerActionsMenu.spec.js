@@ -24,7 +24,9 @@ describe('TrainingLibraryDrawerActionsMenu.vue', () => {
       },
       stubs: {
         // Stub transitions to avoid waiting
-        transition: false
+        transition: {
+          template: '<div><slot /></div>'
+        }
       }
     })
   }
