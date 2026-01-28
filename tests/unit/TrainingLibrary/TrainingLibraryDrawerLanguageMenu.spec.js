@@ -119,8 +119,105 @@ describe('TrainingLibraryDrawerLanguageMenu.vue', () => {
     mountMenu({ languages: [] })
     await wrapper.setData({ menu: true })
     await wrapper.vm.$nextTick()
-    
+
     const content = getMenuContent()
     expect(content.textContent).toContain('No languages found')
+  })
+
+  it('handles empty search results', async () => {
+    const languages = [
+      { text: 'English', value: 'en' },
+      { text: 'German', value: 'de' }
+    ]
+    mountMenu({ languages })
+    await wrapper.setData({ menu: true })
+    await wrapper.vm.$nextTick()
+
+    // Search for non-existent language
+    await wrapper.setData({ search: 'XYZ' })
+    await wrapper.vm.$nextTick()
+
+    const content = getMenuContent()
+    expect(content.textContent).not.toContain('English')
+    expect(content.textContent).not.toContain('German')
+  })
+
+  it('resets search when menu closes', async () => {
+    const languages = [
+      { text: 'English', value: 'en' }
+    ]
+    mountMenu({ languages })
+    await wrapper.setData({ menu: true, search: 'test' })
+    await wrapper.vm.$nextTick()
+
+    await wrapper.setData({ menu: false })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.search).toBe('')
+  })
+
+  it('initializes menu in closed state', () => {
+    mountMenu()
+    expect(wrapper.vm.menu).toBe(false)
+  })
+
+  it('handles multiple language selections sequentially', async () => {
+    const languages = [
+      { text: 'English', value: 'en' },
+      { text: 'German', value: 'de' }
+    ]
+    mountMenu({ languages })
+
+    // Select first language
+    await wrapper.setData({ menu: true })
+    await wrapper.vm.$nextTick()
+
+    const emitted1 = wrapper.emitted('language-selected')
+    expect(emitted1).toBeTruthy()
+
+    // Select second language
+    await wrapper.setData({ menu: true })
+    await wrapper.vm.$nextTick()
+
+    const emitted2 = wrapper.emitted('language-selected')
+    expect(emitted2.length).toBeGreaterThan(0)
+  })
+
+  it('displays correct search input styling', async () => {
+    mountMenu()
+    await wrapper.setData({ menu: true })
+    await wrapper.vm.$nextTick()
+
+    const input = document.querySelector('.training-library-drawer-language-menu input')
+    expect(input).toBeTruthy()
+    expect(input.placeholder).toBe('Search languages')
+  })
+
+  it('handles single language list', async () => {
+    const languages = [
+      { text: 'English', value: 'en' }
+    ]
+    mountMenu({ languages })
+    await wrapper.setData({ menu: true })
+    await wrapper.vm.$nextTick()
+
+    const content = getMenuContent()
+    expect(content.textContent).toContain('English')
+  })
+
+  it('respects isLoading prop changes', async () => {
+    mountMenu({ isLoading: false, languages: [] })
+    await wrapper.setData({ menu: true })
+    await wrapper.vm.$nextTick()
+
+    let content = getMenuContent()
+    expect(content.textContent).toContain('No languages found')
+
+    // Change to loading
+    await wrapper.setProps({ isLoading: true })
+    await wrapper.vm.$nextTick()
+
+    content = getMenuContent()
+    expect(content.textContent).toContain('Loading languages...')
   })
 })

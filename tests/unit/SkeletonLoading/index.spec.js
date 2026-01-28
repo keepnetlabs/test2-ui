@@ -86,4 +86,52 @@ describe('Skeleton Loading test cases', () => {
 
     expect(wrapper.vm['loading']).toBe(false)
   })
+
+  it('All skeleton loaders respond to loading prop change', async () => {
+    const localVue = createLocalVue()
+
+    const datatableWrapper = mount(DatatableLoading, {
+      localVue,
+      propsData: { loading: true }
+    })
+    expect(datatableWrapper.vm.loading).toBe(true)
+    await datatableWrapper.setProps({ loading: false })
+    expect(datatableWrapper.vm.loading).toBe(false)
+  })
+
+  it('Datatable loader renders correct container', () => {
+    const localVue = createLocalVue()
+    const wrapper = mount(DatatableLoading, {
+      localVue,
+      propsData: { loading: true }
+    })
+    expect(wrapper.find('.data-table-loading').exists()).toBe(true)
+  })
+
+  it('Widget loader renders correct container', () => {
+    const localVue = createLocalVue()
+    const wrapper = mount(WidgetLoading, {
+      localVue,
+      propsData: { loading: true }
+    })
+    expect(wrapper.find('.widget-loading').exists()).toBe(true)
+  })
+
+  it('Phishing reporter loader renders correct container', () => {
+    const localVue = createLocalVue()
+    const wrapper = mount(PhishingReporterTopBar, {
+      localVue,
+      propsData: { loading: true }
+    })
+    expect(wrapper.find('.phishing-reporter-top-bar-loading').exists()).toBe(true)
+  })
+
+  it('Three row loader renders correct container', () => {
+    const localVue = createLocalVue()
+    const wrapper = mount(ThreeRowLoading, {
+      localVue,
+      propsData: { loading: true }
+    })
+    expect(wrapper.find('.three-row-loading').exists()).toBe(true)
+  })
 })

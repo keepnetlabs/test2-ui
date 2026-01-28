@@ -73,9 +73,41 @@ describe('ShowMoreTags.vue', () => {
       defaultBadges: ['A', 'B', 'C'],
       showMaximumBadgeCount: 1
     })
-    
+
     // hidden: B, C
     expect(wrapper.vm.getTooltipText).toContain('B')
     expect(wrapper.vm.getTooltipText).toContain('C')
+  })
+
+  it('displays badges with correct color', () => {
+    const testColor = '#FF5733'
+    const wrapper = mountComponent({
+      badgeColor: testColor
+    })
+    expect(wrapper.vm.$props.badgeColor).toBe(testColor)
+  })
+
+  it('counts rendered vs hidden badges correctly', () => {
+    const wrapper = mountComponent({
+      defaultBadges: ['A', 'B', 'C', 'D'],
+      showMaximumBadgeCount: 2
+    })
+    expect(wrapper.vm.maximumRenderedBadgeCount).toBe(2)
+    expect(wrapper.vm.unRenderedBadgeCount).toBe(2)
+  })
+
+  it('handles single badge display', () => {
+    const wrapper = mountComponent({
+      defaultBadges: ['SingleTag']
+    })
+    expect(wrapper.vm.maximumRenderedBadgeCount).toBeGreaterThan(0)
+  })
+
+  it('displays all badges when they fit', () => {
+    const wrapper = mountComponent({
+      defaultBadges: ['Tag1', 'Tag2'],
+      showMaximumBadgeCount: 5
+    })
+    expect(wrapper.vm.unRenderedBadgeCount).toBeLessThanOrEqual(0)
   })
 })

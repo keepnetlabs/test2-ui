@@ -89,8 +89,58 @@ describe('ScheduledReportsActivationDialog.vue', () => {
     const wrapper = mountComponent()
     const footer = wrapper.find('.footer-stub')
     footer.vm.$emit('handleClose')
-    
+
     expect(wrapper.emitted('on-close')).toBeTruthy()
     expect(wrapper.emitted('on-close')[0]).toEqual([null, false]) // handleClose() default false
+  })
+
+  it('disables action button during API call', async () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.isActionButtonDisabled).toBe(false)
+
+    setSchedulingReportStatus.mockResolvedValue({})
+    const footer = wrapper.find('.footer-stub')
+    footer.vm.$emit('handleConfirm')
+
+    expect(wrapper.vm.isActionButtonDisabled).toBe(true)
+  })
+
+  it('displays correct icon for activation state', () => {
+    const wrapper = mountComponent({
+      selectedRow: { resourceId: '1', status: 0 }
+    })
+    expect(wrapper.vm.getIcon).toBe('mdi-check-circle')
+  })
+
+  it('displays correct icon for inactivation state', () => {
+    const wrapper = mountComponent({
+      selectedRow: { resourceId: '1', status: 1 }
+    })
+    expect(wrapper.vm.getIcon).toBe('mdi-close-circle')
+  })
+
+  it('handles API errors gracefully', async () => {
+    const wrapper = mountComponent()
+    setSchedulingReportStatus.mockRejectedValue(new Error('API Error'))
+
+    const footer = wrapper.find('.footer-stub')
+    footer.vm.$emit('handleConfirm')
+
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+
+    expect(wrapper.vm.isActionButtonDisabled).toBe(true)
+  })
+
+  it('passes correct resource ID to API', async () => {
+    const wrapper = mountComponent({
+      selectedRow: { resourceId: 'resource-123', status: 0 }
+    })
+    setSchedulingReportStatus.mockResolvedValue({})
+
+    const footer = wrapper.find('.footer-stub')
+    footer.vm.$emit('handleConfirm')
+
+    expect(setSchedulingReportStatus).toHaveBeenCalledWith('resource-123', expect.any(Number))
   })
 })

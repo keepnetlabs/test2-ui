@@ -153,8 +153,99 @@ describe('Breadcrumb.vue', () => {
           stubs: { RouterLink: RouterLinkStub }
       })
       await wrapper.vm.$nextTick()
-      
+
       const link = wrapper.findComponent(RouterLinkStub)
       expect(link.text()).toBe('Home')
+  })
+
+  it('renders icon between breadcrumb items', async () => {
+      router.push({ name: 'Reports' })
+      const wrapper = shallowMount(Breadcrumb, {
+          localVue,
+          router,
+          store,
+          vuetify,
+          stubs: {
+              RouterLink: RouterLinkStub,
+              VIcon: { template: '<i class="v-icon-stub">chevron_right</i>' }
+          }
+      })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.v-icon-stub').exists()).toBe(true)
+  })
+
+  it('handles routes without parent correctly', async () => {
+      router.push({ name: 'Company' })
+      const wrapper = shallowMount(Breadcrumb, {
+          localVue,
+          router,
+          store,
+          vuetify,
+          stubs: { RouterLink: RouterLinkStub }
+      })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.breadcrumb.length).toBe(1)
+  })
+
+  it('updates breadcrumb when training type changes', async () => {
+      router.push({ name: 'Training Report' })
+      const wrapper = shallowMount(Breadcrumb, {
+          localVue,
+          router,
+          store,
+          vuetify,
+          stubs: { RouterLink: RouterLinkStub }
+      })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.breadcrumb[2]).toBe('Training Report')
+
+      store.state.common.activeTrainingType = 'Custom'
+      wrapper.vm.generate()
+
+      expect(wrapper.vm.breadcrumb[2]).toBe('Custom Report')
+  })
+
+  it('generates correct breadcrumb trail with deep nesting', async () => {
+      router.push({ name: 'Training Report' })
+      const wrapper = shallowMount(Breadcrumb, {
+          localVue,
+          router,
+          store,
+          vuetify,
+          stubs: { RouterLink: RouterLinkStub }
+      })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.breadcrumb).toEqual(['Company', 'Reports', 'Training Report'])
+  })
+
+  it('handles undefined route gracefully', async () => {
+      const wrapper = shallowMount(Breadcrumb, {
+          localVue,
+          router,
+          store,
+          vuetify,
+          stubs: { RouterLink: RouterLinkStub }
+      })
+
+      expect(wrapper.exists()).toBe(true)
+  })
+
+  it('renders multiple breadcrumb links', async () => {
+      router.push({ name: 'Training Report' })
+      const wrapper = shallowMount(Breadcrumb, {
+          localVue,
+          router,
+          store,
+          vuetify,
+          stubs: { RouterLink: RouterLinkStub }
+      })
+      await wrapper.vm.$nextTick()
+
+      const links = wrapper.findAllComponents(RouterLinkStub)
+      expect(links.length).toBeGreaterThan(1)
   })
 })

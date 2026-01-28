@@ -49,4 +49,43 @@ describe('Input company component', () => {
     )
     expect(wrapper.find('.v-messages__message').text().includes('cannot exceed')).toBeTruthy()
   })
+
+  it('Accepts valid department names', async () => {
+    const wrapper = mount(TestInputDepartmentWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('IT Department', textInput, wrapper)
+    expect(wrapper.find('.v-messages__message').text().includes('Cannot start with space')).toBe(false)
+  })
+
+  it('Department is not required', () => {
+    const wrapper = mount(TestInputDepartmentWrapper, {
+      localVue
+    })
+    expect(wrapper.find('.v-messages__wrapper').text().includes('*Required')).toBe(false)
+  })
+
+  it('Has correct input attributes', () => {
+    const wrapper = mount(TestInputDepartmentWrapper, {
+      localVue
+    })
+    const input = wrapper.find('input')
+    expect(input.attributes('placeholder')).toEqual('Enter a name for the department')
+    expect(input.attributes('autocomplete')).toEqual('off')
+  })
+
+  it('Allows empty input', async () => {
+    const wrapper = mount(TestInputDepartmentWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('', textInput, wrapper)
+    // Should not show required error
+    expect(wrapper.find('.v-messages__message').text().includes('Required')).toBe(false)
+  })
 })

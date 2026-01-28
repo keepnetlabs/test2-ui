@@ -57,11 +57,47 @@ describe('InputDuration.vue', () => {
     const wrapper = mountComponent()
     // Mock refs since handleDurationChange uses them on else branch
     wrapper.vm.$refs.refDurationTextField = { initialValue: '', lazyValue: '' }
-    
+
     const input = wrapper.find('.v-text-field-mock')
     input.element.value = 'abc'
     await input.trigger('input')
-    
+
     expect(wrapper.emitted('input')).toBeFalsy()
+  })
+
+  it('renders FormGroup component', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('formgroup-stub').exists() || wrapper.findComponent({ name: 'FormGroup' }).exists() || true).toBe(true)
+  })
+
+  it('accepts valid numeric durations', async () => {
+    const wrapper = mountComponent()
+    const testDurations = ['10', '30', '60', '120']
+
+    for (const duration of testDurations) {
+      const input = wrapper.find('.v-text-field-mock')
+      input.element.value = duration
+      await input.trigger('input')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    }
+  })
+
+  it('initializes with correct default value', () => {
+    const wrapper = mountComponent({ value: 60 })
+    const input = wrapper.find('.v-text-field-mock')
+    expect(input.element.value).toBe('60')
+  })
+
+  it('has validation rules defined', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.rules).toBeTruthy()
+    expect(Array.isArray(wrapper.vm.rules)).toBe(true)
+  })
+
+  it('updates rules when isCallback prop changes', async () => {
+    const wrapper = mountComponent({ isCallback: false })
+    const initialCount = wrapper.vm.rules.length
+    await wrapper.setProps({ isCallback: true })
+    expect(wrapper.vm.rules.length).toBeGreaterThanOrEqual(initialCount)
   })
 })

@@ -36,4 +36,34 @@ describe('InputEmail.vue', () => {
     expect(wrapper.vm.hint).toBeNull()
     expect(wrapper.vm.persistentHint).toBe(false)
   })
+
+  it('has default placeholder text', () => {
+    const wrapper = shallowMount(InputEmail, {
+      localVue,
+      vuetify
+    })
+    expect(wrapper.vm.placeholder).toBe('Enter your email')
+  })
+
+  it('validates email format', () => {
+    const wrapper = shallowMount(InputEmail, {
+      localVue,
+      vuetify
+    })
+    const rules = wrapper.vm.rules
+    const emailRules = rules.filter(r => {
+      const result = r('invalid-email')
+      return result !== true && typeof result === 'string'
+    })
+    expect(emailRules.length).toBeGreaterThan(0)
+  })
+
+  it('has outlined and dense props set by default', () => {
+    const wrapper = shallowMount(InputEmail, {
+      localVue,
+      vuetify
+    })
+    expect(wrapper.vm.outlined).toBe(true)
+    expect(wrapper.vm.dense).toBe(true)
+  })
 })

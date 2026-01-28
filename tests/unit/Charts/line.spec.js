@@ -21,4 +21,49 @@ describe('Line component', () => {
 
     expect(wrapper.vm['chartData']).toBeTruthy()
   })
+
+  it('Chart has correct data structure', () => {
+    const wrapper = mount(TestLine, { localVue })
+    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
+    expect(wrapper.vm.chartData).toBeInstanceOf(Object)
+  })
+
+  it('Chart canvas element exists', () => {
+    const wrapper = mount(TestLine, { localVue })
+    expect(wrapper.find('canvas').exists()).toBe(true)
+    expect(wrapper.find('.chartjs-render-monitor').exists()).toBe(true)
+  })
+
+  it('Chart container is properly initialized', () => {
+    const wrapper = mount(TestLine, { localVue })
+    const chartElement = wrapper.find('#line-chart')
+    expect(chartElement.element).toBeDefined()
+    expect(chartElement.element.className).toContain('chartjs-render-monitor')
+  })
+
+  it('chartOptions contains responsive configuration', () => {
+    const wrapper = mount(TestLine, { localVue })
+    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
+    expect(wrapper.vm.chartOptions.responsive).toBe(true)
+  })
+
+  it('chartData is valid object structure', () => {
+    const wrapper = mount(TestLine, { localVue })
+    expect(wrapper.vm.chartData).toBeInstanceOf(Object)
+    expect(Object.keys(wrapper.vm.chartData).length).toBeGreaterThan(0)
+  })
+
+  it('chart element exists with correct ID', () => {
+    const wrapper = mount(TestLine, { localVue })
+    const chartElement = wrapper.find('#line-chart')
+    expect(chartElement.exists()).toBe(true)
+    expect(chartElement.element.id).toBe('line-chart')
+  })
+
+  it('chartjs render monitor is visible', () => {
+    const wrapper = mount(TestLine, { localVue })
+    const monitor = wrapper.find('.chartjs-render-monitor')
+    expect(monitor.exists()).toBe(true)
+    expect(monitor.isVisible()).toBe(true)
+  })
 })

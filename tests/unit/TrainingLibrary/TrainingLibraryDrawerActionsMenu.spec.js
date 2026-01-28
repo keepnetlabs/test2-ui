@@ -97,4 +97,68 @@ describe('TrainingLibraryDrawerActionsMenu.vue', () => {
     expect(wrapper.emitted().download).toBeTruthy()
     expect(wrapper.emitted().download[0]).toEqual([lang])
   })
+
+  it('respects isDeletable prop', () => {
+    const wrapper = mountMenu({ isDeletable: false })
+    const items = wrapper.vm.otherItems
+    expect(items.some(i => i.action === 'delete')).toBe(false)
+
+    const wrapper2 = mountMenu({ isDeletable: true })
+    const items2 = wrapper2.vm.otherItems
+    expect(items2.some(i => i.action === 'delete')).toBe(true)
+  })
+
+  it('respects isEditable prop', () => {
+    const wrapper = mountMenu({ isEditable: false })
+    const items = wrapper.vm.otherItems
+    expect(items.some(i => i.action === 'edit')).toBe(false)
+
+    const wrapper2 = mountMenu({ isEditable: true })
+    const items2 = wrapper2.vm.otherItems
+    expect(items2.some(i => i.action === 'edit')).toBe(true)
+  })
+
+  it('initializes with correct languages prop', () => {
+    const languages = [
+      { text: 'English', value: 'en' },
+      { text: 'French', value: 'fr' }
+    ]
+    const wrapper = mountMenu({ languages })
+    expect(wrapper.vm.languages).toEqual(languages)
+  })
+
+  it('handles action for all action types', () => {
+    const wrapper = mountMenu()
+    const actions = ['edit', 'delete', 'duplicate']
+
+    actions.forEach(action => {
+      wrapper.vm.handleAction(action)
+      expect(wrapper.emitted()[action]).toBeTruthy()
+    })
+  })
+
+  it('renders correctly with all combinations of props', () => {
+    const wrapper = mountMenu({
+      type: TRAINING_LIBRARY_TYPES.POSTER,
+      isDeletable: true,
+      isEditable: false,
+      isNested: false,
+      languages: [{ text: 'EN', value: 'en' }]
+    })
+    expect(wrapper.exists()).toBe(true)
+    expect(wrapper.vm.hasDownloadSubmenu).toBe(true)
+  })
+
+  it('handles language search with empty string', () => {
+    const wrapper = mountMenu({
+      languages: [
+        { text: 'English', value: 'en' },
+        { text: 'German', value: 'de' },
+        { text: 'French', value: 'fr' }
+      ]
+    })
+
+    wrapper.setData({ langSearch: '' })
+    expect(wrapper.vm.filteredLanguages.length).toBe(3)
+  })
 })
