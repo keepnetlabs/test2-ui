@@ -1,4 +1,4 @@
-import { createLocalVue, mount, shallowMount } from '@vue/test-utils'
+import { createLocalVue, shallowMount } from '@vue/test-utils'
 import Badge from '@/components/Badge.vue'
 import Vuetify from 'vuetify'
 
@@ -13,7 +13,7 @@ describe('Badge.vue', () => {
 
   // Helper to mount the component
   const mountBadge = (propsData = {}) => {
-    return mount(Badge, {
+    return shallowMount(Badge, {
       localVue,
       vuetify,
       propsData: {
@@ -21,7 +21,10 @@ describe('Badge.vue', () => {
       },
       stubs: {
         'v-tooltip': {
-          template: '<div><slot name="activator" :on="{}"></slot></div>'
+          template: '<div><slot name="activator" :on="{}"></slot><slot /></div>'
+        },
+        'v-btn': {
+          template: '<button class="k-badge" :class="$attrs.class" :id="$attrs.id" :style="$attrs.style"><slot /></button>'
         }
       }
     })

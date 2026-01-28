@@ -88,8 +88,45 @@ describe('LeavingDialog.vue', () => {
     const wrapper = mountComponent()
     const footer = wrapper.find('.footer-stub')
     footer.vm.$emit('handleConfirm')
-    
+
     expect(callbackMock).toHaveBeenCalled()
     expect(actions['common/setIsShowLeavingDialog']).toHaveBeenCalledWith(expect.anything(), false)
+  })
+
+  it('displays correct title and content', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.text()).toContain('Data Lost Title')
+    expect(wrapper.text()).toContain('Data Lost Content')
+  })
+
+  it('uses vuex store getters', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.$store.getters['common/getIsShowLeavingDialog']).toBe(true)
+    expect(wrapper.vm.$store.getters['common/getLeavingDialogCallback']).toBe(callbackMock)
+  })
+
+  it('footer is properly stubbed', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('.footer-stub').exists()).toBe(true)
+  })
+
+  it('handles dialog state changes', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.$store.getters['common/getIsShowLeavingDialog']).toBe(true)
+
+    const newStore = new Vuex.Store({
+      getters: {
+        'common/getIsShowLeavingDialog': () => false,
+        'common/getLeavingDialogCallback': () => callbackMock
+      },
+      actions
+    })
+
+    const newWrapper = shallowMount(LeavingDialog, {
+      localVue,
+      vuetify,
+      store: newStore
+    })
+    expect(newWrapper.vm.$store.getters['common/getIsShowLeavingDialog']).toBe(false)
   })
 })

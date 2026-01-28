@@ -84,8 +84,28 @@ describe('AppDialog.vue', () => {
               'app-dialog-footer': '<div class="footer-content">Footer</div>'
           }
       })
-      
+
       expect(wrapper.find('.body-content').exists()).toBe(true)
       expect(wrapper.find('.footer-content').exists()).toBe(true)
+  })
+
+  it('applies correct icon color for non-delete type', () => {
+      const wrapper = mountComponent({ type: 'confirm', icon: 'mdi-check' })
+      expect(wrapper.vm.getIconColor).not.toBe('#B83A3A')
+  })
+
+  it('does not render when status is false', () => {
+      const wrapper = mountComponent({ status: false })
+      expect(wrapper.find('.v-dialog-stub').exists()).toBe(false)
+  })
+
+  it('handles custom size prop', () => {
+      const wrapper = mountComponent({ customSize: '750px' })
+      expect(wrapper.find('.v-dialog-stub').attributes('data-width')).toBe('750px')
+  })
+
+  it('renders with title and icon', () => {
+      const wrapper = mountComponent({ title: 'Test Title', icon: 'mdi-alert' })
+      expect(wrapper.text()).toContain('Test Title')
   })
 })

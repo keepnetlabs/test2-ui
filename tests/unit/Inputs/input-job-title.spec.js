@@ -54,4 +54,42 @@ describe('Input company component', () => {
 
     expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
   })
+
+  it('Accepts valid job titles', async () => {
+    const wrapper = mount(TestInputJobTitleWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('Senior Developer', textInput, wrapper)
+    expect(wrapper.find('.v-messages__message').text().includes('Cannot start with space')).toBe(false)
+  })
+
+  it('Enforces 64 character limit', async () => {
+    const wrapper = mount(TestInputJobTitleWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    const longTitle = 'a'.repeat(65)
+    await inputHelper.addData(longTitle, textInput, wrapper)
+    expect(wrapper.find('.v-messages__message').text()).toContain('Max 64')
+  })
+
+  it('Shows required indicator', () => {
+    const wrapper = mount(TestInputJobTitleWrapper, {
+      localVue
+    })
+    expect(wrapper.find('.v-messages__wrapper').text()).toContain('*Required')
+  })
+
+  it('Has correct placeholder', () => {
+    const wrapper = mount(TestInputJobTitleWrapper, {
+      localVue
+    })
+    const input = wrapper.find('input')
+    expect(input.attributes('placeholder')).toEqual('Enter a name for the job title')
+  })
 })

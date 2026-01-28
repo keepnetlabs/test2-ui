@@ -72,4 +72,35 @@ describe('KButtonRadioGroup.vue', () => {
     expect(wrapper.vm.isSelected(1)).toBe(true)
     expect(wrapper.vm.isSelected(0)).toBe(false)
   })
+
+  it('emits input event with correct index', () => {
+    const wrapper = mountComponent()
+    const btns = wrapper.findAll('.v-btn-stub')
+
+    btns.at(0).trigger('click')
+    expect(wrapper.emitted('input')[0]).toEqual([0])
+  })
+
+  it('handles multiple items correctly', () => {
+    const items = Array.from({ length: 4 }, (_, i) => ({ label: `Item ${i + 1}`, infoText: `Info ${i + 1}` }))
+    const wrapper = mountComponent({ items })
+
+    expect(wrapper.findAll('.v-btn-stub').length).toBe(4)
+  })
+
+  it('renders info text correctly', () => {
+    const wrapper = mountComponent({ value: 0 })
+    const infoText = wrapper.find('.k-button-radio-group__info')
+
+    expect(infoText.text()).toBe('Info 1')
+  })
+
+  it('handles selection state updates', async () => {
+    const wrapper = mountComponent({ value: 0 })
+    expect(wrapper.vm.selectedIndex).toBe(0)
+
+    await wrapper.setProps({ value: 1 })
+    expect(wrapper.vm.selectedIndex).toBe(1)
+    expect(wrapper.find('.k-button-radio-group__info').text()).toBe('Info 2')
+  })
 })

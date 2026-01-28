@@ -36,4 +36,47 @@ describe('Make available for test cases suite', () => {
     //expecting menu is open
     expect(wrapper.find('.vue-treeselect--open-below').exists()).toBe(true)
   })
+
+  it('displays correct title text', () => {
+    const { wrapper } = new MakeAvailableFor(localVue)
+    const title = wrapper.find('.k-form-group__title')
+    expect(title.text()).toContain('Make Available For')
+  })
+
+  it('toggles disabled state correctly', async () => {
+    const { wrapper } = new MakeAvailableFor(localVue)
+
+    // Initially not disabled
+    expect(wrapper.find('.vue-treeselect--disabled').exists()).toBe(false)
+
+    // Set to disabled
+    await wrapper.setProps({ disabled: true })
+    expect(wrapper.find('.vue-treeselect--disabled').exists()).toBe(true)
+  })
+
+  it('displays required indicator', () => {
+    const { wrapper } = new MakeAvailableFor(localVue)
+    expect(wrapper.text().includes('*Required')).toBe(true)
+  })
+
+  it('displays search placeholder in treeselect', () => {
+    const { wrapper } = new MakeAvailableFor(localVue)
+    const select = wrapper.find('.vue-treeselect')
+    expect(select.text()).toContain('Search companies and groups')
+  })
+
+  it('renders treeselect component', () => {
+    const { wrapper } = new MakeAvailableFor(localVue)
+    const select = wrapper.find('.vue-treeselect')
+    expect(select.exists()).toBe(true)
+    expect(select.classes()).toContain('vue-treeselect')
+  })
+
+  it('handles menu opening on focus', async () => {
+    const { wrapper } = new MakeAvailableFor(localVue)
+    const treeselect = wrapper.find('.vue-treeselect')
+
+    await treeselect.trigger('focus')
+    expect(wrapper.find('.vue-treeselect--open-below').exists() || wrapper.find('.vue-treeselect--open-above').exists()).toBeTruthy()
+  })
 })
