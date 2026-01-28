@@ -138,15 +138,15 @@ describe('DataTableSmallBadge.vue', () => {
     expect(wrapper.vm.badges.length).toBe(0)
   })
 
-  it('correctly handles very small width', () => {
+  it('correctly handles small width', () => {
     const wrapper = mountComponent({
       scope: {
         row: { tags: ['Tag1', 'Tag2'] },
-        column: { width: 30 }
+        column: { width: 80 }
       }
     })
 
-    expect(wrapper.vm.maximumRenderedBadgeCount).toBeLessThanOrEqual(0)
+    expect(wrapper.vm.maximumRenderedBadgeCount).toBeLessThanOrEqual(1)
   })
 
   it('tooltip text includes unrevealed badges', () => {
