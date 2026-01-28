@@ -56,7 +56,9 @@ describe('Breadcrumb.vue', () => {
           vuetify,
           stubs: {
               RouterLink: RouterLinkStub,
-              VIcon: true
+              VIcon: {
+                template: '<i class="v-icon-stub"></i>'
+              }
           }
       })
   }

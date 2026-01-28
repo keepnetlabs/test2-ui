@@ -22,9 +22,15 @@ describe('DataTableStatus.vue', () => {
         ...propsData
       },
       stubs: {
-        Badge: true,
-        'v-tooltip': true,
-        'v-btn': true
+        Badge: {
+          template: '<span class="badge-stub"><slot /></span>'
+        },
+        'v-tooltip': {
+          template: '<span class="v-tooltip-stub"><slot /></span>'
+        },
+        'v-btn': {
+          template: '<button class="v-btn-stub"><slot /></button>'
+        }
       }
     })
   }
@@ -49,7 +55,7 @@ describe('DataTableStatus.vue', () => {
         col: { property: 'status', type: 'status', isWithTooltip: true }
     })
     expect(wrapper.vm.shouldRenderTooltip).toBe(true)
-    expect(wrapper.find('v-tooltip-stub').exists()).toBe(true)
+    expect(wrapper.find('.v-tooltip-stub').exists()).toBe(true)
   })
 
   it('renders tooltip when tooltipKey is provided', () => {

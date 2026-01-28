@@ -21,9 +21,15 @@ describe('DataTableSmallBadge.vue', () => {
         ...propsData
       },
       stubs: {
-        badge: true,
-        'v-tooltip': true,
-        'v-btn': true
+        badge: {
+          template: '<span class="badge-stub"><slot /></span>'
+        },
+        'v-tooltip': {
+          template: '<span class="v-tooltip-stub"><slot /></span>'
+        },
+        'v-btn': {
+          template: '<button class="v-btn-stub"><slot /></button>'
+        }
       }
     })
   }
