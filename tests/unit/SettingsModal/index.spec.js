@@ -74,8 +74,12 @@ describe('SettingsModal.vue', () => {
         AppDialog: {
           template: '<div><slot name="app-dialog-body"/><slot name="app-dialog-footer"/></div>'
         },
-        KSelect: true,
-        PostCardLoading: true
+        KSelect: {
+          template: '<div class="k-select-stub"><slot /></div>'
+        },
+        PostCardLoading: {
+          template: '<div class="post-card-loading-stub"></div>'
+        }
       }
     })
   }
@@ -94,10 +98,10 @@ describe('SettingsModal.vue', () => {
 
   it('displays loading state', async () => {
     // ... same
-    getTimezone.mockImplementation(() => new Promise(() => {})) 
+    getTimezone.mockImplementation(() => new Promise(() => {}))
     const wrapper = mountComponent()
     expect(wrapper.vm.loadingSettingsModal).toBe(true)
-    expect(wrapper.find('postcardloading-stub').exists()).toBe(true)
+    expect(wrapper.find('.post-card-loading-stub').exists()).toBe(true)
   })
 
   it('filters timezone list based on search', async () => {
@@ -131,24 +135,60 @@ describe('SettingsModal.vue', () => {
     jest.useFakeTimers()
     const wrapper = mountComponent()
     await wrapper.vm.$nextTick()
-    
+
     setSystemUserSettings.mockResolvedValue({
       data: { data: { dateFormat: 'Y-M-D', timeFormat: '12h' } }
     })
-    
+
     wrapper.vm.setSystemUserSettings()
-    
+
     expect(setSystemUserSettings).toHaveBeenCalledWith(wrapper.vm.formValues)
-    
+
     // Allow promise to resolve
     await wrapper.vm.$nextTick()
-    await Promise.resolve() 
-    await Promise.resolve() 
-    
+    await Promise.resolve()
+    await Promise.resolve()
+
     expect(window.localStorage.setItem).toHaveBeenCalledWith('selectedDateFormat', 'Y-M-D')
-    
+
     jest.runAllTimers()
     expect(window.location.reload).toHaveBeenCalled()
     expect(wrapper.emitted('changeSettings')).toBeTruthy()
+  })
+
+  it('initializes with correct form values', async () => {
+    const wrapper = mountComponent()
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setImmediate(resolve))
+
+    expect(wrapper.vm.formValues).toBeTruthy()
+    expect(wrapper.vm.formValues.timeZoneId).toBe('UTC')
+    expect(wrapper.vm.formValues.dateFormat).toBe('DD/MM/YYYY')
+    expect(wrapper.vm.formValues.timeFormat).toBe('24h')
+  })
+
+  it('initializes timezone and date format lists', async () => {
+    const wrapper = mountComponent()
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setImmediate(resolve))
+
+    expect(wrapper.vm.timeZoneList.length).toBeGreaterThan(0)
+    expect(wrapper.vm.dateFormatList.length).toBeGreaterThan(0)
+    expect(wrapper.vm.timeFormatList.length).toBeGreaterThan(0)
+  })
+
+  it('handles settings modal visibility', async () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.showSettingsModalStatus).toBe(true)
+  })
+
+  it('handles timezone change', async () => {
+    const wrapper = mountComponent()
+    await wrapper.vm.$nextTick()
+
+    const newTimezone = 'IST'
+    wrapper.vm.formValues.timeZoneId = newTimezone
+
+    expect(wrapper.vm.formValues.timeZoneId).toBe(newTimezone)
   })
 })

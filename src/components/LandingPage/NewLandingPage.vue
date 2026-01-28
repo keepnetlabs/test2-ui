@@ -290,10 +290,16 @@
                             :prompt.sync="getSelectedLanguagePayload.landingPages[index].prompt"
                             :is-generate-with-ai="isGenerateWithAi"
                             :custom-head-scripts="customHeadScripts[index] || ''"
+                            :custom-head-scripts-placement="
+                              customHeadScriptsPlacement[index] || 'body-start'
+                            "
                             :current-page-index="index"
                             :is-protocol-http="isProtocolHttp"
                             @on-custom-head-scripts-change="
                               (value) => onCustomHeadScriptsChange(value, index)
+                            "
+                            @on-custom-head-scripts-placement-change="
+                              (value) => onCustomHeadScriptsPlacementChange(value, index)
                             "
                             @setAttachmentFile="setAttachmentFile"
                           />
@@ -511,6 +517,7 @@ export default {
       },
       isAIAllyGenerating: false,
       customHeadScripts: {},
+      customHeadScriptsPlacement: {},
       isInvisibleCaptchaDisabled: false,
       languageOptions: [],
       languageItems: [],
@@ -1035,6 +1042,9 @@ export default {
     },
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$set(this.customHeadScripts, pageIndex, value)
+    },
+    onCustomHeadScriptsPlacementChange(value, pageIndex) {
+      this.$set(this.customHeadScriptsPlacement, pageIndex, value)
     },
     handleUploadHTML() {
       this.$refs.refHtmlFile.click()
@@ -1654,13 +1664,16 @@ export default {
           response?.data?.data?.availableForList
         )
         data.landingPages.forEach((page, index) => {
-          const { customScripts } = processTemplateWithCustomScripts(page.content)
+          const { customScripts, scriptsPlacement } = processTemplateWithCustomScripts(page.content)
           if (customScripts.length > 0) {
             this.$set(
               this.customHeadScripts,
               index,
               customScripts.map((s) => s.outerHTML || s.content || '').join('\n')
             )
+          }
+          if (scriptsPlacement) {
+            this.$set(this.customHeadScriptsPlacement, index, scriptsPlacement)
           }
         })
 

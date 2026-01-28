@@ -166,6 +166,8 @@ export function processTemplateWithCustomScripts(templateString) {
       outerHTML: script.outerHTML
     }
   })
+  const scriptsPlacement =
+    customScripts[0]?.getAttribute('data-custom-landing-page-script-position') || 'body-start'
 
   // Remove custom scripts from template
   customScripts.forEach((script) => script.remove())
@@ -189,6 +191,7 @@ export function processTemplateWithCustomScripts(templateString) {
   return {
     customScripts: extractedScripts,
     cleanTemplate,
-    scriptsContent
+    scriptsContent,
+    scriptsPlacement
   }
 }
