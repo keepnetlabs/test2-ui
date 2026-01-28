@@ -55,4 +55,30 @@ describe('MFA Setup component', () => {
     await submitButton.trigger('click')
     expect(emittedEvent[1][0]).toBe('asas')
   })
+
+  it('shows setup instructions', () => {
+    const { wrapper } = new MFASetup(localVue)
+    expect(wrapper.text()).toContain('1. Install an MFA app on your mobile device')
+    expect(wrapper.text()).toContain('2. Scan the QR code with your device')
+    expect(wrapper.text()).toContain('3. Enter MFA code')
+  })
+
+  it('displays compatibility information', () => {
+    const { wrapper } = new MFASetup(localVue)
+    expect(wrapper.text()).toContain('Compatible MFA applications to login with')
+  })
+
+  it('submit button functionality', async () => {
+    const { wrapper } = new MFASetup(localVue)
+    await wrapper.setProps({ isLogin: true })
+    const button = wrapper.find('#btn-setup--mfa-dashboard-popup')
+    expect(button.exists()).toBe(true)
+    expect(button.isVisible()).toBe(true)
+  })
+
+  it('handles MFA code input correctly', async () => {
+    const { wrapper } = new MFASetup(localVue)
+    await wrapper.setData({ mfaCode: '123456' })
+    expect(wrapper.vm.mfaCode).toBe('123456')
+  })
 })

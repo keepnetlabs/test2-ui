@@ -58,4 +58,41 @@ describe('Input phone component', () => {
     //checking is valid
     expect(wrapper.find('.phone-number-invalid').exists()).toBe(false)
   })
+
+  it('Supports multiple country codes', async () => {
+    const wrapper = mount(InputPhone, {
+      localVue
+    })
+    const dropdown = wrapper.find('.vti__dropdown')
+    expect(dropdown.exists()).toBe(true)
+  })
+
+  it('Validates phone number format', async () => {
+    const wrapper = mount(InputPhone, {
+      localVue
+    })
+    const input = wrapper.find('input')
+
+    input.element.value = '1234'
+    wrapper.vm.value = input.element.value
+    await input.trigger('input')
+    expect(wrapper.find('.phone-number-invalid').exists()).toBe(true)
+  })
+
+  it('Has proper input type tel', () => {
+    const wrapper = mount(InputPhone, {
+      localVue
+    })
+    const input = wrapper.find('input')
+    expect(input.attributes('type')).toContain('tel')
+  })
+
+  it('Displays country flags', async () => {
+    const wrapper = mount(InputPhone, {
+      localVue
+    })
+    const input = wrapper.find('input')
+    await input.trigger('click')
+    expect(wrapper.find('.vti__flag').exists()).toBe(true)
+  })
 })

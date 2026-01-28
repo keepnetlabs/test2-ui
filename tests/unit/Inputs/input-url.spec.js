@@ -46,4 +46,41 @@ describe('Input URL component', () => {
 
     expect(wrapper.find('.v-messages__message').text().includes('Invalid URL')).toBeTruthy()
   })
+
+  it('Accepts valid URLs', async () => {
+    const wrapper = mount(TestInputURLWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('https://example.com', textInput, wrapper)
+    expect(wrapper.find('.v-messages__message').text().includes('Invalid URL')).toBe(false)
+  })
+
+  it('Validates URL format strictly', async () => {
+    const wrapper = mount(TestInputURLWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('not a url', textInput, wrapper)
+    expect(wrapper.find('.v-messages__message').text().includes('Invalid URL')).toBeTruthy()
+  })
+
+  it('Has correct placeholder text', () => {
+    const wrapper = mount(TestInputURLWrapper, {
+      localVue
+    })
+    const input = wrapper.find('input')
+    expect(input.attributes('placeholder')).toEqual('Enter a URL')
+  })
+
+  it('Requires URL input', () => {
+    const wrapper = mount(TestInputURLWrapper, {
+      localVue
+    })
+    expect(wrapper.find('.v-messages__wrapper').text()).toContain('*Required')
+  })
 })

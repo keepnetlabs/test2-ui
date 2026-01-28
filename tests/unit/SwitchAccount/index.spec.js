@@ -145,39 +145,74 @@ describe('SwitchAccount.vue', () => {
   it('handles confirm click', async () => {
     const wrapper = mountComponent()
     const account = { resourceId: '3', name: 'Company C', id: '3', label: 'Company C' }
-    
+
     // Select account
     await wrapper.setData({ selectedAccount: account, isSwitchAccountDisabled: false })
-    
+
     wrapper.vm.onClickSelectedAccount(account)
-    
+
     expect(routerMock.go).toHaveBeenCalledWith(0)
     expect(window.localStorage.getItem('companyId')).toBe('3')
     expect(dashboardActions.setSwitchDialog).toHaveBeenCalledWith(expect.anything(), false)
   })
 
+  it('calls getMyCompanies API on mount', async () => {
+    const wrapper = mountComponent()
+    expect(getMyCompanies).toHaveBeenCalled()
+  })
+
+  it('displays loaded companies correctly', async () => {
+    const wrapper = mountComponent()
+    await wrapper.vm.$nextTick()
+    await new Promise(r => setTimeout(r, 0))
+
+    expect(wrapper.vm.orderedAccounts.length).toBeGreaterThan(0)
+  })
+
+  it('has correct initial state', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.isCompaniesLoading).toBeTruthy()
+    expect(wrapper.vm.selectedAccount).toBeNull()
+  })
+
+  it('stores selected company ID in localStorage', async () => {
+    const wrapper = mountComponent()
+    const account = { id: 'test-id-123', resourceId: 'test-id-123', name: 'Test' }
+
+    await wrapper.setData({ selectedAccount: account, isSwitchAccountDisabled: false })
+    wrapper.vm.onClickSelectedAccount(account)
+
+    expect(window.localStorage.getItem('companyId')).toBe('test-id-123')
+  })
+
+  it('uses Vuex store correctly', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.$store.state.auth).toBeTruthy()
+    expect(wrapper.vm.$store.state.dashboard).toBeTruthy()
+  })
+
 /*
   it('filters companies on search', async () => {
     const wrapper = mountComponent()
-    
+
     // Mock debounce to execute immediately
     wrapper.vm.debounce = (fn) => fn()
-    
+
     // Populate data
     await wrapper.vm.$nextTick()
-    await Promise.resolve() 
+    await Promise.resolve()
     await wrapper.vm.$nextTick()
     await new Promise(r => setTimeout(r, 0))
-    
+
     // Ensure data loaded
     expect(wrapper.vm.orderedAccounts.length).toBe(2)
-    
+
     wrapper.setData({ searchedCompanyText: 'Company A' })
     wrapper.vm.handleSearchText()
-    
+
     // Wait for filtered update
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.orderedAccounts.length).toBe(1)
     expect(wrapper.vm.orderedAccounts[0].name).toBe('Company A')
   })

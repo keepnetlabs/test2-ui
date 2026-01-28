@@ -124,4 +124,65 @@ describe('DataTableSmallBadge.vue', () => {
       expect(wrapper.vm.getMultiplyBy('a bits longer text')).toBe(7.5)
       expect(wrapper.vm.getMultiplyBy('medium text')).toBe(8.6)
   })
+
+  it('renders small badge container', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('.small-badge').exists()).toBe(true)
+  })
+
+  it('handles property not existing in row', () => {
+    const wrapper = mountComponent({
+      scope: { row: {}, column: { width: 100 } },
+      col: { property: 'nonexistent' }
+    })
+    expect(wrapper.vm.badges.length).toBe(0)
+  })
+
+  it('correctly handles very small width', () => {
+    const wrapper = mountComponent({
+      scope: {
+        row: { tags: ['Tag1', 'Tag2'] },
+        column: { width: 30 }
+      }
+    })
+
+    expect(wrapper.vm.maximumRenderedBadgeCount).toBeLessThanOrEqual(0)
+  })
+
+  it('tooltip text includes unrevealed badges', () => {
+    const wrapper = mountComponent({
+      scope: {
+        row: { tags: ['Tag1', 'Tag2', 'Tag3'] },
+        column: { width: 80 }
+      }
+    })
+
+    wrapper.setData({ maximumRenderedBadgeCount: 1, badges: ['Tag1', 'Tag2', 'Tag3'] })
+    const tooltipText = wrapper.vm.getTooltipText
+    expect(tooltipText).toContain('Tag2')
+  })
+
+  it('handles numeric array as tags', () => {
+    const wrapper = mountComponent({
+      scope: {
+        row: { tags: [1, 2, 3] },
+        column: { width: 200 }
+      }
+    })
+    expect(wrapper.vm.badges).toBeTruthy()
+  })
+
+  it('component reacts to scope changes', async () => {
+    const wrapper = mountComponent()
+    const initialCount = wrapper.vm.maximumRenderedBadgeCount
+
+    await wrapper.setProps({
+      scope: {
+        row: { tags: ['NewTag1', 'NewTag2', 'NewTag3'] },
+        column: { width: 200 }
+      }
+    })
+
+    expect(wrapper.vm.badges).toEqual(['NewTag1', 'NewTag2', 'NewTag3'])
+  })
 })

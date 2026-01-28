@@ -69,8 +69,38 @@ describe('AppModalFooter.vue', () => {
   it('emits on-save when save button is clicked', async () => {
     const wrapper = mountComponent()
     const saveBtn = wrapper.findComponent(SaveButtonStub)
-    
+
     await saveBtn.trigger('click')
     expect(wrapper.emitted('on-save')).toBeTruthy()
+  })
+
+  it('passes correct button IDs to child components', () => {
+    const ids = { cancelButton: 'btn-cancel', saveButton: 'btn-save' }
+    const wrapper = mountComponent({ ids })
+
+    const cancelBtn = wrapper.findComponent(CancelButtonStub)
+    const saveBtn = wrapper.findComponent(SaveButtonStub)
+
+    expect(cancelBtn.attributes('id')).toBe('btn-cancel')
+    expect(saveBtn.props('id')).toBe('btn-save')
+  })
+
+  it('disables save button when actionButtonDisabled is true', () => {
+    const wrapper = mountComponent({ actionButtonDisabled: true })
+    const saveBtn = wrapper.findComponent(SaveButtonStub)
+    expect(saveBtn.props('disabled')).toBe(true)
+  })
+
+  it('renders both buttons', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('.cancel-button-stub').exists()).toBe(true)
+    expect(wrapper.find('.save-button-stub').exists()).toBe(true)
+  })
+
+  it('passes custom label to save button', () => {
+    const customLabel = 'Submit Form'
+    const wrapper = mountComponent({ label: customLabel })
+    const saveBtn = wrapper.findComponent(SaveButtonStub)
+    expect(saveBtn.props('label')).toBe(customLabel)
   })
 })
