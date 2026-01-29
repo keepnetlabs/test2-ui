@@ -1,6 +1,9 @@
 <template>
   <div class="training-library-lightbox-content" :class="{ 'is-pdf': isPdf }">
-    <div class="training-library-lightbox-content__iframe-wrapper" :class="{ 'is-pdf': isPdf }">
+    <div
+      class="training-library-lightbox-content__iframe-wrapper"
+      :class="{ 'is-pdf': isPdf }"
+    >
       <div v-if="isLoading" class="training-library-lightbox-content__loading">
         <VProgressCircular indeterminate size="64" color="primary" />
       </div>
@@ -44,6 +47,7 @@
           :src="previewUrl"
           frameborder="0"
           allowfullscreen
+          allow="microphone; downloads"
           title="Training Preview"
           class="training-library-lightbox-content__iframe"
         ></iframe>
@@ -57,22 +61,24 @@
 </template>
 
 <script>
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_TYPES } from "@/components/TrainingLibrary/utils";
 
 export default {
-  name: 'TrainingLibraryLightboxContent',
+  name: "TrainingLibraryLightboxContent",
   components: {
-    pdf: () => import('vue-pdf')
+    pdf: () => import("vue-pdf")
   },
   errorCaptured(err) {
     // Suppress vue-pdf resize sensor errors
     if (
       err.message &&
-      err.message.includes("Cannot read properties of undefined (reading 'catch')")
+      err.message.includes(
+        "Cannot read properties of undefined (reading 'catch')"
+      )
     ) {
-      return false
+      return false;
     }
-    return true
+    return true;
   },
   props: {
     previewData: {
@@ -94,10 +100,10 @@ export default {
       numPages: 0,
       pdfReady: false,
       pdfWidth: 800
-    }
+    };
   },
   mounted() {
-    this.pdfWidth = Math.floor(window.innerWidth * 0.3)
+    this.pdfWidth = Math.floor(window.innerWidth * 0.3);
   },
   computed: {
     isImageType() {
@@ -105,39 +111,40 @@ export default {
         this.type === TRAINING_LIBRARY_TYPES.POSTER ||
         this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC ||
         this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER
-      )
+      );
     },
     isPdf() {
-      if (!this.previewUrl) return false
+      if (!this.previewUrl) return false;
       const isPdf =
-        this.previewUrl.toLowerCase().includes('.pdf') || this.previewUrl.startsWith('blob:')
-      return isPdf
+        this.previewUrl.toLowerCase().includes(".pdf") ||
+        this.previewUrl.startsWith("blob:");
+      return isPdf;
     },
     pdfSrc() {
-      if (!this.previewUrl) return null
+      if (!this.previewUrl) return null;
 
       // Return URL string directly - vue-pdf will handle the loading task internally
-      return this.previewUrl
+      return this.previewUrl;
     },
     previewUrl() {
-      if (!this.previewData) return null
+      if (!this.previewData) return null;
 
       // String ise direkt döndür
-      if (typeof this.previewData === 'string') {
-        return this.previewData
+      if (typeof this.previewData === "string") {
+        return this.previewData;
       }
 
       // SCORM training ise player URL oluştur
       if (this.previewData.scormPlayerUrl && this.previewData.trainingUrl) {
-        return `${this.previewData.scormPlayerUrl}?isPreview=true&scoAddress=${this.previewData.trainingUrl}`
+        return `${this.previewData.scormPlayerUrl}?isPreview=true&scoAddress=${this.previewData.trainingUrl}`;
       }
 
       // Sadece trainingUrl varsa
       if (this.previewData.trainingUrl) {
-        return this.previewData.trainingUrl
+        return this.previewData.trainingUrl;
       }
 
-      return null
+      return null;
     }
   },
   watch: {
@@ -145,15 +152,15 @@ export default {
       handler(newVal) {
         // Reset state when PDF source changes
         if (newVal && this.isPdf) {
-          this.pdfReady = false
-          this.currentPage = 1
-          this.numPages = 0
+          this.pdfReady = false;
+          this.currentPage = 1;
+          this.numPages = 0;
           // Use nextTick to ensure DOM is ready before setting pdfReady
           this.$nextTick(() => {
-            this.pdfReady = true
-          })
+            this.pdfReady = true;
+          });
         } else {
-          this.pdfReady = false
+          this.pdfReady = false;
         }
       },
       immediate: true
@@ -161,13 +168,13 @@ export default {
   },
   methods: {
     handlePdfError(error) {
-      this.pdfReady = false
+      this.pdfReady = false;
       // Optionally emit error to parent component
-      this.$emit('pdf-error', error)
+      this.$emit("pdf-error", error);
     },
     handlePdfLoaded(numPages) {
-      this.numPages = numPages
+      this.numPages = numPages;
     }
   }
-}
+};
 </script>

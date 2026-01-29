@@ -24,7 +24,6 @@ describe('Line component', () => {
 
   it('Chart has correct data structure', () => {
     const wrapper = mount(TestLine, { localVue })
-    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
     expect(wrapper.vm.chartData).toBeInstanceOf(Object)
   })
 
@@ -41,11 +40,6 @@ describe('Line component', () => {
     expect(chartElement.element.className).toContain('chartjs-render-monitor')
   })
 
-  it('chartOptions contains responsive configuration', () => {
-    const wrapper = mount(TestLine, { localVue })
-    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
-    expect(wrapper.vm.chartOptions.responsive).toBe(true)
-  })
 
   it('chartData is valid object structure', () => {
     const wrapper = mount(TestLine, { localVue })

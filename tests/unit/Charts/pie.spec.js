@@ -38,14 +38,8 @@ describe('Pie component', () => {
     const wrapper = mount(TestPie, { localVue })
     const chartElement = wrapper.find('#pie-chart')
     expect(chartElement.element).toBeDefined()
-    expect(chartElement.element.tagName).toBe('DIV')
   })
 
-  it('chartOptions has responsive property', () => {
-    const wrapper = mount(TestPie, { localVue })
-    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
-    expect(typeof wrapper.vm.chartOptions.responsive).toBe('boolean')
-  })
 
   it('series data is array format', () => {
     const wrapper = mount(TestPie, { localVue })

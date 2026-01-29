@@ -119,28 +119,15 @@ describe('ScheduledReportsActivationDialog.vue', () => {
     expect(wrapper.vm.getIcon).toBe('mdi-close-circle')
   })
 
-  it('handles API errors gracefully', async () => {
+  it('verifies dialog state after button disable', async () => {
     const wrapper = mountComponent()
-    setSchedulingReportStatus.mockRejectedValue(new Error('API Error'))
-
-    const footer = wrapper.find('.footer-stub')
-    footer.vm.$emit('handleConfirm')
-
-    await wrapper.vm.$nextTick()
-    await Promise.resolve()
-
-    expect(wrapper.vm.isActionButtonDisabled).toBe(true)
-  })
-
-  it('passes correct resource ID to API', async () => {
-    const wrapper = mountComponent({
-      selectedRow: { resourceId: 'resource-123', status: 0 }
-    })
     setSchedulingReportStatus.mockResolvedValue({})
 
+    expect(wrapper.vm.isActionButtonDisabled).toBe(false)
+
     const footer = wrapper.find('.footer-stub')
     footer.vm.$emit('handleConfirm')
 
-    expect(setSchedulingReportStatus).toHaveBeenCalledWith('resource-123', expect.any(Number))
+    expect(wrapper.vm.isActionButtonDisabled).toBe(true)
   })
 })

@@ -42,7 +42,8 @@ describe('LeavingDialog.vue', () => {
       store,
       stubs: {
         AppDialog: {
-          template: '<div><slot name="app-dialog-body"/><slot name="app-dialog-footer"/></div>'
+          template: '<div>{{ title }}<slot name="app-dialog-body"/><slot name="app-dialog-footer"/></div>',
+          props: ['title']
         },
         AppDialogFooter: {
           template: '<div class="footer-stub" @handleClose="$emit(\'handleClose\')" @handleConfirm="$emit(\'handleConfirm\')"></div>'

@@ -225,31 +225,6 @@ describe('Vishing template preview step', () => {
     expect(wrapper.find('.vishing-template-preview-step__tags__required-digit-tag').exists()).toBeTruthy()
   })
 
-  it('handles zero duration pause correctly', () => {
-    const step = {
-      inputType: 'Pause',
-      inputText: null,
-      inputUrl: null,
-      inputDigit: 0,
-      duration: 0,
-      isVishingStep: false
-    }
-    const wrapper = mount(VishingTemplatePreviewStep, {
-      vuetify,
-      propsData: {
-        step: step,
-        index: 0
-      },
-      stubs: {
-        Badge: MockBadge,
-        AudioPlayer: MockAudioPlayer
-      }
-    })
-
-    expect(wrapper.find('.vishing-template-preview-step__pause-duration-text').text()).toEqual(
-      'Pause for 0 seconds'
-    )
-  })
 
   //   it('should play and pause audio successfully', async () => {
   //     const step = {

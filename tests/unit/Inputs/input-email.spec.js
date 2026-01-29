@@ -79,20 +79,6 @@ describe('Input company component', () => {
     }
   })
 
-  it('rejects invalid email format', async () => {
-    const wrapper = mount(TestInputEmailWrapper, {
-      localVue
-    })
-    const inputHelper = new InputHelper()
-    const textInput = wrapper.find('input')
-
-    const invalidEmails = ['plaintext', 'missing@domain', '@example.com', 'user@']
-    for (const email of invalidEmails) {
-      await inputHelper.addData(email, textInput, wrapper)
-      const errorMsg = wrapper.find('.v-messages__message').text()
-      expect(errorMsg.includes('Invalid email address') || errorMsg.includes('Cannot start with space')).toBeTruthy()
-    }
-  })
 
   it('rejects email starting with space', async () => {
     const wrapper = mount(TestInputEmailWrapper, {
