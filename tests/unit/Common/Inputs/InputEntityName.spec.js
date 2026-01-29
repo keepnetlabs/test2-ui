@@ -1,22 +1,19 @@
 import { shallowMount } from '@vue/test-utils'
-import InputDescription from '@/components/Common/Inputs/InputDescription.vue'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName.vue'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 
 jest.mock('@/utils/validations')
 jest.mock('@/model/constants/labels', () => ({
-  Description: 'Description',
-  CannotStartWithSpace: 'Cannot start with space',
-  RequiredStar: '*Required',
-  EnterDescription: 'Enter description',
+  CannotStartWithSpace: 'Field cannot start with space',
   getMaxLengthMessage: jest.fn((entity, length) => `${entity} cannot exceed ${length} characters`)
 }))
 
-describe('InputDescription.vue', () => {
+describe('InputEntityName.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputDescription)
+    wrapper = shallowMount(InputEntityName)
   })
 
   afterEach(() => {

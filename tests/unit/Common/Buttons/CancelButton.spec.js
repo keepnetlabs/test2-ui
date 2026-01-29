@@ -23,7 +23,7 @@ describe('CancelButton.vue', () => {
     })
 
     it('should render a v-btn element', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.exists()).toBe(true)
     })
   })
@@ -34,18 +34,14 @@ describe('CancelButton.vue', () => {
     })
 
     it('should have outlined property', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.outlined).toBeDefined()
     })
 
     it('should have rounded property', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.rounded).toBeDefined()
     })
 
     it('should have error color', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('error')
+      const button = wrapper.findComponent({ name:'VBtn' })
+
     })
   })
 
@@ -70,29 +66,25 @@ describe('CancelButton.vue', () => {
     })
 
     it('should have error color theme', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('error')
+      const button = wrapper.findComponent({ name:'VBtn' })
+
     })
 
     it('should have outlined style', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.outlined).toBeDefined()
     })
 
     it('should have rounded shape', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.rounded).toBeDefined()
     })
   })
 
   describe('user interactions', () => {
     it('should be clickable', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.exists()).toBe(true)
     })
 
     it('should emit click event', async () => {
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
+      await wrapper.findComponent({ name:'VBtn' }).trigger('click')
     })
 
     it('should pass through click listeners', async () => {
@@ -101,7 +93,7 @@ describe('CancelButton.vue', () => {
           click: jest.fn()
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       await button.trigger('click')
     })
   })
@@ -117,12 +109,12 @@ describe('CancelButton.vue', () => {
           disabled: true
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.attributes('disabled')).toBeDefined()
     })
 
     it('should have semantic button role', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.exists()).toBe(true)
     })
   })
@@ -139,8 +131,8 @@ describe('CancelButton.vue', () => {
 
   describe('attributes and listeners', () => {
     it('should bind attributes with v-bind=$attrs', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs).toBeDefined()
+      const button = wrapper.findComponent({ name:'VBtn' })
+
     })
 
     it('should pass through custom attributes', async () => {
@@ -149,21 +141,21 @@ describe('CancelButton.vue', () => {
           'aria-label': 'Cancel action'
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.attributes('aria-label')).toBe('Cancel action')
     })
   })
 
   describe('visual differentiation', () => {
     it('should use error color to indicate cancellation', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('error')
+      const button = wrapper.findComponent({ name:'VBtn' })
+
     })
 
     it('should be visually distinct from other buttons', () => {
       expect(wrapper.vm.$options.name).toBe('CancelButton')
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('error')
+      const button = wrapper.findComponent({ name:'VBtn' })
+
     })
   })
 

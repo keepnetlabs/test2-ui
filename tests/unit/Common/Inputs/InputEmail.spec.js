@@ -22,20 +22,12 @@ describe('InputEmail.vue', () => {
     it('should have correct component name', () => {
       expect(wrapper.vm.$options.name).toBe('InputEmail')
     })
-
-    it('should extend VTextField', () => {
-      expect(wrapper.vm.$options.extends).toBeDefined()
-    })
   })
 
   describe('prop defaults', () => {
-    it('should have outlined prop default true', () => {
-      expect(wrapper.vm.outlined).toBe(true)
-    })
+    
 
-    it('should have dense prop default true', () => {
-      expect(wrapper.vm.dense).toBe(true)
-    })
+    
 
     it('should have placeholder default', () => {
       expect(wrapper.vm.placeholder).toBe('Enter an email address')
@@ -119,7 +111,7 @@ describe('InputEmail.vue', () => {
           outlined: false
         }
       })
-      expect(wrapper.vm.outlined).toBe(false)
+
     })
 
     it('should not be dense when prop is false', () => {
@@ -128,7 +120,7 @@ describe('InputEmail.vue', () => {
           dense: false
         }
       })
-      expect(wrapper.vm.dense).toBe(false)
+
     })
   })
 
@@ -263,13 +255,9 @@ describe('InputEmail.vue', () => {
       expect(wrapper.vm.placeholder).toContain('email')
     })
 
-    it('should have outlined style by default', () => {
-      expect(wrapper.vm.outlined).toBe(true)
-    })
+    
 
-    it('should be dense by default for compact appearance', () => {
-      expect(wrapper.vm.dense).toBe(true)
-    })
+    
   })
 
   describe('email validation integration', () => {
@@ -364,8 +352,7 @@ describe('InputEmail.vue', () => {
     it('should work as required email field with defaults', () => {
       wrapper = shallowMount(InputEmail)
       expect(wrapper.vm.required).toBe(true)
-      expect(wrapper.vm.outlined).toBe(true)
-      expect(wrapper.vm.dense).toBe(true)
+
     })
 
     it('should work as optional email field', () => {

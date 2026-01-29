@@ -1,11 +1,14 @@
 import { shallowMount } from '@vue/test-utils'
-import InputNumber from '@/components/Common/Inputs/InputNumber.vue'
+import InputIpAddress from '@/components/Common/Inputs/InputIpAddress.vue'
+import * as Validations from '@/utils/validations'
 
-describe('InputNumber.vue', () => {
+jest.mock('@/utils/validations')
+
+describe('InputIpAddress.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputNumber)
+    wrapper = shallowMount(InputIpAddress)
   })
 
   afterEach(() => {

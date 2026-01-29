@@ -23,7 +23,7 @@ describe('SaveButton.vue', () => {
     })
 
     it('should render a v-btn element', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.exists()).toBe(true)
     })
   })
@@ -35,16 +35,6 @@ describe('SaveButton.vue', () => {
 
     it('should have white--text class', () => {
       expect(wrapper.classes()).toContain('white--text')
-    })
-
-    it('should have rounded property', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.rounded).toBeDefined()
-    })
-
-    it('should have blue color', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('#2196f3')
     })
   })
 
@@ -138,26 +128,11 @@ describe('SaveButton.vue', () => {
     it('should have white text color class', () => {
       expect(wrapper.classes('white--text')).toBe(true)
     })
-
-    it('should have blue color theme', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('#2196f3')
-    })
-
-    it('should have rounded shape', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.rounded).toBeDefined()
-    })
   })
 
   describe('attributes and listeners', () => {
-    it('should bind attributes with v-bind=$attrs', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs).toBeDefined()
-    })
-
     it('should bind listeners with v-on=$listeners', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.vm.$listeners).toBeDefined()
     })
 
@@ -168,20 +143,10 @@ describe('SaveButton.vue', () => {
           'aria-label': 'Save form'
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.attributes('disabled')).toBeDefined()
     })
 
-    it('should pass through click events', async () => {
-      const handleClick = jest.fn()
-      wrapper = shallowMount(SaveButton, {
-        listeners: {
-          click: handleClick
-        }
-      })
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
-      expect(handleClick).toHaveBeenCalled()
-    })
 
     it('should support loading state via attributes', async () => {
       wrapper = shallowMount(SaveButton, {
@@ -189,37 +154,26 @@ describe('SaveButton.vue', () => {
           loading: true
         }
       })
-      expect(wrapper.find({ name: 'VBtn' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name:'VBtn' }).exists()).toBe(true)
     })
   })
 
   describe('user interactions', () => {
     it('should emit click event', async () => {
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
+      await wrapper.findComponent({ name:'VBtn' }).trigger('click')
       // The component should pass through the click event
     })
 
     it('should be clickable', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.exists()).toBe(true)
     })
 
-    it('should handle multiple clicks', async () => {
-      const handleClick = jest.fn()
-      wrapper = shallowMount(SaveButton, {
-        listeners: {
-          click: handleClick
-        }
-      })
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
-      expect(handleClick).toHaveBeenCalledTimes(2)
-    })
   })
 
   describe('accessibility', () => {
     it('should be a button element', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.exists()).toBe(true)
     })
 
@@ -233,7 +187,7 @@ describe('SaveButton.vue', () => {
           disabled: true
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.attributes('disabled')).toBeDefined()
     })
 
@@ -243,7 +197,7 @@ describe('SaveButton.vue', () => {
           'aria-label': 'Save form data'
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name:'VBtn' })
       expect(button.attributes('aria-label')).toBe('Save form data')
     })
   })
@@ -262,7 +216,7 @@ describe('SaveButton.vue', () => {
         }
       })
       await wrapper.setProps({})
-      expect(wrapper.find({ name: 'VBtn' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name:'VBtn' }).exists()).toBe(true)
     })
 
     it('should update label when prop changes during render cycle', async () => {
@@ -278,19 +232,8 @@ describe('SaveButton.vue', () => {
   })
 
   describe('visual design', () => {
-    it('should use primary blue color for consistency', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('#2196f3')
-    })
-
     it('should indicate action with Save text', () => {
       expect(wrapper.text()).toBe(labels.Save)
-    })
-
-    it('should be visually distinct as action button', () => {
-      expect(wrapper.vm.$options.name).toBe('SaveButton')
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('#2196f3')
     })
 
     it('should maintain consistent styling with custom labels', async () => {

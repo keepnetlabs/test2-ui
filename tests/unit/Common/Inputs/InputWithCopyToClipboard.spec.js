@@ -1,12 +1,16 @@
 import { shallowMount } from '@vue/test-utils'
-import InputPhone from '@/components/Common/Inputs/InputPhone.vue'
+import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard.vue'
 import labels from '@/model/constants/labels'
 
-describe('InputPhone.vue', () => {
+jest.mock('@/model/constants/labels', () => ({
+  CopyToClipboard: 'Copy to Clipboard'
+}))
+
+describe('InputWithCopyToClipboard.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputPhone)
+    wrapper = shallowMount(InputWithCopyToClipboard)
   })
 
   afterEach(() => {

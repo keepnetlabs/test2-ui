@@ -1,22 +1,22 @@
 import { shallowMount } from '@vue/test-utils'
-import InputDescription from '@/components/Common/Inputs/InputDescription.vue'
+import InputAddress from '@/components/Common/Inputs/InputAddress.vue'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 
 jest.mock('@/utils/validations')
 jest.mock('@/model/constants/labels', () => ({
-  Description: 'Description',
+  Address: 'Address',
   CannotStartWithSpace: 'Cannot start with space',
   RequiredStar: '*Required',
-  EnterDescription: 'Enter description',
+  EnterAddress: 'Enter address',
   getMaxLengthMessage: jest.fn((entity, length) => `${entity} cannot exceed ${length} characters`)
 }))
 
-describe('InputDescription.vue', () => {
+describe('InputAddress.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputDescription)
+    wrapper = shallowMount(InputAddress)
   })
 
   afterEach(() => {

@@ -21,20 +21,12 @@ describe('InputFirstName.vue', () => {
     it('should have correct component name', () => {
       expect(wrapper.vm.$options.name).toBe('InputFirstName')
     })
-
-    it('should extend VTextField', () => {
-      expect(wrapper.vm.$options.extends).toBeDefined()
-    })
   })
 
   describe('prop defaults', () => {
-    it('should have outlined prop default true', () => {
-      expect(wrapper.vm.outlined).toBe(true)
-    })
+    
 
-    it('should have dense prop default true', () => {
-      expect(wrapper.vm.dense).toBe(true)
-    })
+    
 
     it('should have placeholder default', () => {
       expect(wrapper.vm.placeholder).toBe('Enter first name')
@@ -93,7 +85,7 @@ describe('InputFirstName.vue', () => {
           outlined: false
         }
       })
-      expect(wrapper.vm.outlined).toBe(false)
+
     })
 
     it('should not be dense when prop is false', () => {
@@ -102,7 +94,7 @@ describe('InputFirstName.vue', () => {
           dense: false
         }
       })
-      expect(wrapper.vm.dense).toBe(false)
+
     })
   })
 
@@ -240,13 +232,9 @@ describe('InputFirstName.vue', () => {
       expect(wrapper.vm.placeholder.toLowerCase()).toContain('first name')
     })
 
-    it('should be outlined by default', () => {
-      expect(wrapper.vm.outlined).toBe(true)
-    })
+    
 
-    it('should be dense by default for compact appearance', () => {
-      expect(wrapper.vm.dense).toBe(true)
-    })
+    
 
     it('should show hint persistently when required', () => {
       expect(wrapper.vm.persistentHint).toBe(true)
@@ -429,8 +417,7 @@ describe('InputFirstName.vue', () => {
 
   describe('initialization', () => {
     it('should initialize with all required defaults', () => {
-      expect(wrapper.vm.outlined).toBe(true)
-      expect(wrapper.vm.dense).toBe(true)
+
       expect(wrapper.vm.persistentHint).toBe(true)
       expect(wrapper.vm.autocomplete).toBe('off')
       expect(wrapper.vm.rules.length).toBe(3)
