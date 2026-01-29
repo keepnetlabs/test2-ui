@@ -18,14 +18,6 @@ describe('Badge.vue', () => {
       vuetify,
       propsData: {
         ...propsData
-      },
-      stubs: {
-        'v-tooltip': {
-          template: '<div><slot name="activator" :on="{}"></slot><slot /></div>'
-        },
-        'v-btn': {
-          template: '<button class="k-badge" :class="$attrs.class" :id="$attrs.id" :style="$attrs.style"><slot /></button>'
-        }
       }
     })
   }
