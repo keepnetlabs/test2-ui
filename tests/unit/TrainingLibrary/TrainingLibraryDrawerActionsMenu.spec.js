@@ -111,11 +111,13 @@ describe('TrainingLibraryDrawerActionsMenu.vue', () => {
   it('respects isEditable prop', () => {
     const wrapper = mountMenu({ isEditable: false })
     const items = wrapper.vm.otherItems
-    expect(items.some(i => i.action === 'edit')).toBe(false)
+    const editItem = items.find(i => i.action === 'edit')
+    expect(editItem && editItem.disabled).toBe(true)
 
     const wrapper2 = mountMenu({ isEditable: true })
     const items2 = wrapper2.vm.otherItems
-    expect(items2.some(i => i.action === 'edit')).toBe(true)
+    const editItem2 = items2.find(i => i.action === 'edit')
+    expect(editItem2 && !editItem2.disabled).toBe(true)
   })
 
   it('initializes with correct languages prop', () => {

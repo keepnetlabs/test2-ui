@@ -51,7 +51,7 @@ describe('Show more component', () => {
       data: [{ subject: 'item1' }, { subject: 'item2' }, { subject: 'item3' }]
     })
     expect(wrapper.find('.show-more').exists()).toBe(true)
-    expect(wrapper.classes('show-more')).toContain('show-more')
+    expect(wrapper.classes()).toContain('show-more')
   })
 
   it('Handles empty data gracefully', () => {

@@ -13,7 +13,7 @@ describe('AppDialog.vue', () => {
   // Stubs
   const stubs = {
       'v-dialog': {
-          template: '<div class="v-dialog-stub" :data-width="width"><slot/></div>',
+          template: '<div v-if="value" class="v-dialog-stub" :data-width="width"><slot/></div>',
           props: ['value', 'width', 'content-class']
       },
       'v-card': '<div class="v-card-stub"><slot/></div>',

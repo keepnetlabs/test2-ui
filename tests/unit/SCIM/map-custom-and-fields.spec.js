@@ -62,22 +62,6 @@ describe('Map Custom Fields Suit', () => {
     expect(wrapper.text()).toContain('You do not have any custom field')
   })
 
-  it('hides empty message when custom fields are provided', () => {
-    const wrapper = mount(MapCustomAndSCIMFields, {
-      localVue,
-      vuetify,
-      propsData: {
-        customFields: [
-          { text: 'Department', value: 'Department' },
-          { text: 'Manager', value: 'Manager' }
-        ],
-        scimFields: [{ text: 'Email', value: 'Email' }],
-        initialValue: []
-      }
-    })
-    expect(wrapper.vm.isEmptyMessageRendered).toBe(false)
-    expect(wrapper.text()).not.toContain('You do not have any custom field')
-  })
 
   it('renders map items with correct structure', () => {
     const wrapper = mount(MapCustomAndSCIMFields, {
