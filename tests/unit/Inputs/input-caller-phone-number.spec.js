@@ -38,7 +38,9 @@ describe('Input caller phone number component', () => {
         value: '+905372086061'
       }
     })
-    expect(wrapper.vm.getPhoneNumberCountry(wrapper.vm.value)).toBe('Türkiye')
+    const country = wrapper.vm.getPhoneNumberCountry(wrapper.vm.value)
+    // Intl.DisplayNames can return either "Turkey" or "Türkiye" depending on system locale data
+    expect(['Turkey', 'Türkiye']).toContain(country)
   })
 
   it('handles empty phone number', () => {
