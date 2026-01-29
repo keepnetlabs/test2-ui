@@ -425,6 +425,11 @@ export default {
             sortable: true,
             hideSort: true,
             show: false,
+            showHeaderTooltip: true,
+            headerTooltip:
+              "Users added to the platform during the selected month, regardless of their current status.",
+            headerTooltipIcon: "mdi-information-outline",
+            headerTooltipIconColor: "#9e9e9e",
             type: "number",
             width: 160,
             emptyText: 0
@@ -438,6 +443,11 @@ export default {
             sortable: true,
             hideSort: true,
             show: false,
+            showHeaderTooltip: true,
+            headerTooltip:
+              "Users removed from active use on the platform, with historical data retained.",
+            headerTooltipIcon: "mdi-information-outline",
+            headerTooltipIconColor: "#9e9e9e",
             type: "number",
             width: 160,
             emptyText: 0
@@ -450,7 +460,12 @@ export default {
             fixed: false,
             sortable: true,
             hideSort: true,
-            show: false,
+            show: true,
+            showHeaderTooltip: true,
+            headerTooltip:
+              "Users temporarily disabled on the platform with delivery paused and data retained.",
+            headerTooltipIcon: "mdi-information-outline",
+            headerTooltipIconColor: "#9e9e9e",
             type: "number",
             width: 160,
             emptyText: 0
