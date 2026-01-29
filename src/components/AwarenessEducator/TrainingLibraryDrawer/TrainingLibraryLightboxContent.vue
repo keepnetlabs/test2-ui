@@ -44,6 +44,7 @@
           :src="previewUrl"
           frameborder="0"
           allowfullscreen
+          allow="microphone; downloads"
           title="Training Preview"
           class="training-library-lightbox-content__iframe"
         ></iframe>
