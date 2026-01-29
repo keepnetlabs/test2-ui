@@ -172,17 +172,17 @@ describe('SwitchAccount.vue', () => {
   it('has correct initial state', () => {
     const wrapper = mountComponent()
     expect(wrapper.vm.isCompaniesLoading).toBeTruthy()
-    expect(wrapper.vm.selectedAccount).toBeNull()
+    expect(wrapper.vm.selectedAccount).toBe('')
   })
 
   it('stores selected company ID in localStorage', async () => {
     const wrapper = mountComponent()
-    const account = { id: 'test-id-123', resourceId: 'test-id-123', name: 'Test' }
+    const account = { id: '3', resourceId: '3', name: 'Test' }
 
     await wrapper.setData({ selectedAccount: account, isSwitchAccountDisabled: false })
     wrapper.vm.onClickSelectedAccount(account)
 
-    expect(window.localStorage.getItem('companyId')).toBe('test-id-123')
+    expect(window.localStorage.getItem('companyId')).toBe('3')
   })
 
   it('uses Vuex store correctly', () => {

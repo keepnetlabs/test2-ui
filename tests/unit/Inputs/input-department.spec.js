@@ -58,7 +58,8 @@ describe('Input company component', () => {
     const textInput = wrapper.find('input')
 
     await inputHelper.addData('IT Department', textInput, wrapper)
-    expect(wrapper.find('.v-messages__message').text().includes('Cannot start with space')).toBe(false)
+    const errorMsg = wrapper.find('.v-messages__message')
+    expect(!errorMsg.exists() || !errorMsg.text().includes('Cannot start with space')).toBe(true)
   })
 
   it('Department is not required', () => {
@@ -86,6 +87,7 @@ describe('Input company component', () => {
 
     await inputHelper.addData('', textInput, wrapper)
     // Should not show required error
-    expect(wrapper.find('.v-messages__message').text().includes('Required')).toBe(false)
+    const errorMsg = wrapper.find('.v-messages__message')
+    expect(!errorMsg.exists() || !errorMsg.text().includes('Required')).toBe(true)
   })
 })

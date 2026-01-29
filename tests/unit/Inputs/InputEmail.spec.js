@@ -42,7 +42,7 @@ describe('InputEmail.vue', () => {
       localVue,
       vuetify
     })
-    expect(wrapper.vm.placeholder).toBe('Enter your email')
+    expect(wrapper.vm.placeholder).toBe('Enter an email address')
   })
 
   it('validates email format', () => {

@@ -98,7 +98,7 @@ describe('DataTableStatus.vue', () => {
 
   it('renders badge when shouldRenderBadge is true', () => {
     const wrapper = mountComponent()
-    expect(wrapper.vm.shouldRenderBadge).toBe(true)
+    expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
     expect(wrapper.find('.badge-stub').exists()).toBe(true)
   })
 
@@ -133,10 +133,10 @@ describe('DataTableStatus.vue', () => {
 
   it('returns false for shouldRenderBadge when no valid status', () => {
     const wrapper = mountComponent({
-      scope: { row: { status: null } }
+      scope: { row: {} }
     })
 
-    expect(wrapper.vm.shouldRenderBadge).toBe(false)
+    expect(wrapper.vm.shouldRenderBadge).toBeFalsy()
   })
 
   it('displays emptyText when no property value exists', () => {

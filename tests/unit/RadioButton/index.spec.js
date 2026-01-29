@@ -51,10 +51,11 @@ describe('Radio Button Unit Cases', () => {
       vuetify
     })
 
-    const input = wrapper.find('input[type="radio"]')
-    if (input.exists()) {
-      await input.trigger('change')
-      expect(wrapper.emitted('input') || wrapper.emitted('change')).toBeTruthy()
+    const radio = wrapper.find('.v-radio')
+    if (radio.exists()) {
+      await radio.trigger('click')
+      const emitted = wrapper.emitted('input')
+      expect(emitted).toBeTruthy()
     }
   })
 })

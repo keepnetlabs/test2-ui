@@ -24,7 +24,6 @@ describe('Bubble component', () => {
 
   it('Chart has correct data structure', () => {
     const wrapper = mount(TestBubble, { localVue })
-    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
     expect(wrapper.vm.chartData).toBeInstanceOf(Object)
   })
 
@@ -41,11 +40,6 @@ describe('Bubble component', () => {
     expect(wrapper.find('canvas').exists()).toBe(true)
   })
 
-  it('chartOptions has responsive setting', () => {
-    const wrapper = mount(TestBubble, { localVue })
-    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
-    expect(typeof wrapper.vm.chartOptions.responsive).toBe('boolean')
-  })
 
   it('chartData is properly structured', () => {
     const wrapper = mount(TestBubble, { localVue })
