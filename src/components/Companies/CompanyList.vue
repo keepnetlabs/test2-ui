@@ -427,7 +427,7 @@ export default {
             show: false,
             showHeaderTooltip: true,
             headerTooltip:
-              "Users added to the platform during the selected month, regardless of their current status.",
+              "Users temporarily disabled on the platform, with delivery paused and data retained.",
             headerTooltipIcon: "mdi-information-outline",
             headerTooltipIconColor: "#9e9e9e",
             type: "number",
@@ -463,7 +463,7 @@ export default {
             show: true,
             showHeaderTooltip: true,
             headerTooltip:
-              "Users temporarily disabled on the platform with delivery paused and data retained.",
+              "Users added to the platform during the selected month, regardless of their current status.",
             headerTooltipIcon: "mdi-information-outline",
             headerTooltipIconColor: "#9e9e9e",
             type: "number",
