@@ -160,6 +160,9 @@ const login = {
           commit("SET_AGENTIC_AI_ENABLED", false);
           return false;
         });
+    },
+    setAgenticAIEnabled({ commit }, payload) {
+      commit("SET_AGENTIC_AI_ENABLED", payload);
     }
   }
 };

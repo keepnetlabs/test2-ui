@@ -865,10 +865,10 @@ export default {
 
         const data = settingsRes?.data?.data || {};
         
-        // Default to enabled if we can fetch settings or assume user has access based on license
-        this.agenticAISettings.isAgenticAIEnabled = true; 
-        
         this.agenticAISettings.executionMode = data.executionMode === 'Autonomous' ? 'autonomous' : 'approval';
+        
+        // Default to enabled if we can fetch settings or assume user has access based on license
+        this.agenticAISettings.isAgenticAIEnabled = true;
         
         const backendPolicies = data.behavioralPolicies || {};
         
@@ -905,7 +905,9 @@ export default {
       } catch (error) {
         console.error("Failed to fetch Agentic AI settings", error);
       } finally {
-        this.isFetching = false;
+        this.$nextTick(() => {
+          this.isFetching = false;
+        });
       }
     },
     buildLocalToApiKeyMap(metadata) {
@@ -939,6 +941,7 @@ export default {
        return localKey;
     },
     async updateSettings(payload) {
+      if (this.isFetching) return;
       this.isSaving = true;
       try {
         await updateAgenticAISettings(payload);
@@ -953,7 +956,7 @@ export default {
         }
       } catch (error) {
         this.$store.dispatch("common/createSnackBar", {
-            message: "Failed to save settings",
+            message: "Failed to saving settings",
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: "mdi-alert"
         });
@@ -991,21 +994,14 @@ export default {
           })
           .finally(() => { this.isSaving = false; });
       } else {
-        resetAgenticAISettings()
-          .then(() => {
-             this.agenticAISettings.isAgenticAIEnabled = false;
-             this.fetchAgenticAISettings(); 
-             this.$store.dispatch("common/createSnackBar", {
-                message: "Agentic AI is now disabled.",
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: "mdi-information"
-             });
-             this.$store.dispatch("login/getAgenticAIEnabled");
-          })
-          .catch(() => {
-             this.agenticAISettings.isAgenticAIEnabled = true; 
-          })
-          .finally(() => { this.isSaving = false; });
+         this.agenticAISettings.isAgenticAIEnabled = false;
+         this.$store.dispatch("common/createSnackBar", {
+            message: "Agentic AI is now disabled.",
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: "mdi-information"
+         });
+         this.$store.dispatch("login/setAgenticAIEnabled", false);
+         this.isSaving = false;
       }
     },
     handleSimulationCadenceSwitchChange(value) {

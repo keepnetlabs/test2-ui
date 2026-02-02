@@ -471,4 +471,403 @@ describe('store/modules/common', () => {
       expect(commit).toHaveBeenCalledWith('SET_ACTIVE_TRAINING_TYPE', 'Phishing')
     })
   })
+
+  describe('State Properties', () => {
+    it('all state properties have correct types', () => {
+      expect(typeof common.state.menuStatus).toBe('boolean')
+      expect(typeof common.state.isLoading).toBe('number')
+      expect(typeof common.state.snackStatus).toBe('boolean')
+      expect(Array.isArray(common.state.snackbars)).toBe(true)
+      expect(typeof common.state.snackbarColor).toBe('string')
+      expect(typeof common.state.errors).toBe('string')
+      expect(typeof common.state.errorState).toBe('boolean')
+      expect(typeof common.state.downloadModalStatus).toBe('boolean')
+      expect(typeof common.state.timezones).toBe('object')
+      expect(typeof common.state.sessionCheck).toBe('boolean')
+      expect(typeof common.state.isReCaptcha).toBe('boolean')
+      expect(typeof common.state.activePageRouterName).toBe('string')
+      expect(typeof common.state.activeTrainingType).toBe('string')
+      expect(typeof common.state.selectedTimeZone).toBe('string')
+      expect(typeof common.state.selectedTimeZoneName).toBe('string')
+      expect(typeof common.state.isShowLeavingDialog).toBe('boolean')
+      expect(typeof common.state.leavingDialogCallback).toBe('function')
+    })
+  })
+
+  describe('Getters Extended', () => {
+    it('all getters are functions', () => {
+      Object.values(common.getters).forEach((getter) => {
+        expect(typeof getter).toBe('function')
+      })
+    })
+
+    it('getters return correct types from state', () => {
+      const state = { ...common.state, menuStatus: true, isLoading: 3 }
+      expect(typeof common.getters.getMenuStatus(state)).toBe('boolean')
+      expect(typeof common.getters.getIsLoading(state)).toBe('number')
+    })
+
+    it('getter returns array reference', () => {
+      const state = { snackbars: [1, 2, 3] }
+      const result = common.getters.getSnackBars(state)
+      expect(result === state.snackbars).toBe(true)
+    })
+
+    it('getter returns object reference', () => {
+      const state = { timezones: { UTC: 'UTC' } }
+      const result = common.getters.getTimezones(state)
+      expect(result === state.timezones).toBe(true)
+    })
+  })
+
+  describe('Mutations Extended', () => {
+    let state
+
+    beforeEach(() => {
+      state = { ...common.state }
+    })
+
+    it('SET_IS_LOADING handles large numbers', () => {
+      state.isLoading = 0
+      common.mutations.SET_IS_LOADING(state, 1000)
+      expect(state.isLoading).toBe(1000)
+    })
+
+    it('SET_IS_LOADING handles negative increments', () => {
+      state.isLoading = 5
+      common.mutations.SET_IS_LOADING(state, -2)
+      expect(state.isLoading).toBe(3)
+    })
+
+    it('SET_ERROR_MESSAGE handles empty string', () => {
+      common.mutations.SET_ERROR_MESSAGE(state, '')
+      expect(state.errors).toBe('')
+    })
+
+    it('SET_ERROR_MESSAGE handles special characters', () => {
+      common.mutations.SET_ERROR_MESSAGE(state, 'Error: & < > " \'')
+      expect(state.errors).toBe('Error: & < > " \'')
+    })
+
+    it('SET_SNACKBAR_COLOR handles empty string', () => {
+      common.mutations.SET_SNACKBAR_COLOR(state, '')
+      expect(state.snackbarColor).toBe('')
+    })
+
+    it('SET_CREATE_SNACKBAR adds multiple snackbars', () => {
+      for (let i = 0; i < 5; i++) {
+        common.mutations.SET_CREATE_SNACKBAR(state, { message: `Test ${i}` })
+      }
+      expect(state.snackbars.length).toBe(5)
+    })
+
+    it('SET_CLOSE_SNACKBAR handles empty snackbars', () => {
+      state.snackbars = []
+      common.mutations.SET_CLOSE_SNACKBAR(state, { message: 'Test' })
+      expect(state.snackbars).toEqual([])
+    })
+
+    it('SET_TIMEZONE handles empty object', () => {
+      common.mutations.SET_TIMEZONE(state, {})
+      expect(state.timezones).toEqual({})
+    })
+
+    it('SET_SELECTED_TIME_ZONE handles special timezone strings', () => {
+      common.mutations.SET_SELECTED_TIME_ZONE(state, 'America/New_York')
+      expect(state.selectedTimeZone).toBe('America/New_York')
+    })
+
+    it('CHANGE_MENU_STATUS can toggle multiple times', () => {
+      for (let i = 0; i < 5; i++) {
+        common.mutations.CHANGE_MENU_STATUS(state, i % 2 === 0)
+        expect(state.menuStatus).toBe(i % 2 === 0)
+      }
+    })
+
+    it('CHANGE_SESSION_CHECK can toggle', () => {
+      common.mutations.CHANGE_SESSION_CHECK(state, true)
+      expect(state.sessionCheck).toBe(true)
+      common.mutations.CHANGE_SESSION_CHECK(state, false)
+      expect(state.sessionCheck).toBe(false)
+    })
+
+    it('SET_IS_SHOW_LEAVING_DIALOG toggles correctly', () => {
+      common.mutations.SET_IS_SHOW_LEAVING_DIALOG(state, true)
+      expect(state.isShowLeavingDialog).toBe(true)
+      common.mutations.SET_IS_SHOW_LEAVING_DIALOG(state, false)
+      expect(state.isShowLeavingDialog).toBe(false)
+    })
+
+    it('SET_LEAVING_DIALOG_CALLBACK handles null callback', () => {
+      common.mutations.SET_LEAVING_DIALOG_CALLBACK(state, null)
+      expect(state.leavingDialogCallback).toBeNull()
+    })
+
+    it('SET_ACTIVE_PAGE_ROUTE_NAME handles complex route names', () => {
+      common.mutations.SET_ACTIVE_PAGE_ROUTE_NAME(state, 'dashboard/company/settings')
+      expect(state.activePageRouterName).toBe('dashboard/company/settings')
+    })
+
+    it('SET_ACTIVE_TRAINING_TYPE handles different types', () => {
+      const types = ['Training', 'Learning Path', 'Certification', 'Assessment']
+      types.forEach((type) => {
+        common.mutations.SET_ACTIVE_TRAINING_TYPE(state, type)
+        expect(state.activeTrainingType).toBe(type)
+      })
+    })
+
+    it('SET_RE_CAPTCHA toggles correctly', () => {
+      common.mutations.SET_RE_CAPTCHA(state, true)
+      expect(state.isReCaptcha).toBe(true)
+      common.mutations.SET_RE_CAPTCHA(state, false)
+      expect(state.isReCaptcha).toBe(false)
+    })
+
+    it('SET_DOWNLOAD_MODAL_STATUS toggles correctly', () => {
+      common.mutations.SET_DOWNLOAD_MODAL_STATUS(state, true)
+      expect(state.downloadModalStatus).toBe(true)
+      common.mutations.SET_DOWNLOAD_MODAL_STATUS(state, false)
+      expect(state.downloadModalStatus).toBe(false)
+    })
+
+    it('SET_ERROR_STATE toggles correctly', () => {
+      common.mutations.SET_ERROR_STATE(state, true)
+      expect(state.errorState).toBe(true)
+      common.mutations.SET_ERROR_STATE(state, false)
+      expect(state.errorState).toBe(false)
+    })
+
+    it('SET_SNACK_STATUS toggles correctly', () => {
+      common.mutations.SET_SNACK_STATUS(state, true)
+      expect(state.snackStatus).toBe(true)
+      common.mutations.SET_SNACK_STATUS(state, false)
+      expect(state.snackStatus).toBe(false)
+    })
+
+    it('RESET_SNACKBARS clears large snackbar arrays', () => {
+      state.snackbars = Array.from({ length: 100 }, (_, i) => ({ id: i }))
+      common.mutations.RESET_SNACKBARS(state)
+      expect(state.snackbars).toEqual([])
+    })
+  })
+
+  describe('Actions Extended', () => {
+    it('all actions are functions', () => {
+      Object.values(common.actions).forEach((action) => {
+        expect(typeof action).toBe('function')
+      })
+    })
+
+    it('setIsShowLeavingDialog commits correct number of mutations', () => {
+      const commit = jest.fn()
+      const payload = { show: false, callback: () => {} }
+      common.actions.setIsShowLeavingDialog({ commit }, payload)
+      expect(commit).toHaveBeenCalledTimes(2)
+    })
+
+    it('activateLoader commits exactly once', () => {
+      const commit = jest.fn()
+      common.actions.activateLoader({ commit }, 3)
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('createSnackBar generates unique IDs', () => {
+      const commit = jest.fn()
+      const payload1 = { message: 'Test 1' }
+      const payload2 = { message: 'Test 2' }
+
+      common.actions.createSnackBar({ commit }, payload1)
+      const id1 = commit.mock.calls[0][1].id
+
+      common.actions.createSnackBar({ commit }, payload2)
+      const id2 = commit.mock.calls[1][1].id
+
+      expect(id1).not.toBe(id2)
+    })
+
+    it('closeSnackBar commits exactly once', () => {
+      const commit = jest.fn()
+      common.actions.closeSnackBar({ commit }, { message: 'Test' })
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('resetSnackbars commits exactly once', () => {
+      const commit = jest.fn()
+      common.actions.resetSnackbars({ commit })
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('changeDownloadModalStatus commits correctly', () => {
+      const commit = jest.fn()
+      common.actions.changeDownloadModalStatus({ commit }, true)
+      expect(commit).toHaveBeenCalledWith('SET_DOWNLOAD_MODAL_STATUS', true)
+
+      commit.mockClear()
+      common.actions.changeDownloadModalStatus({ commit }, false)
+      expect(commit).toHaveBeenCalledWith('SET_DOWNLOAD_MODAL_STATUS', false)
+    })
+
+    it('setActivePageRouterName handles different route names', () => {
+      const commit = jest.fn()
+      const routes = ['dashboard', 'settings', 'users', 'reports']
+
+      routes.forEach((route) => {
+        commit.mockClear()
+        common.actions.setActivePageRouterName({ commit }, route)
+        expect(commit).toHaveBeenCalledWith('SET_ACTIVE_PAGE_ROUTE_NAME', route)
+      })
+    })
+
+    it('setSelectedTimeZone handles various timezones', () => {
+      const commit = jest.fn()
+      const zones = ['UTC', 'America/New_York', 'Europe/London', 'Asia/Tokyo']
+
+      zones.forEach((zone) => {
+        commit.mockClear()
+        common.actions.setSelectedTimeZone({ commit }, zone)
+        expect(commit).toHaveBeenCalledWith('SET_SELECTED_TIME_ZONE', zone)
+      })
+    })
+
+    it('setSelectedTimeZoneName handles full timezone names', () => {
+      const commit = jest.fn()
+      common.actions.setSelectedTimeZoneName({ commit }, 'Eastern Standard Time')
+      expect(commit).toHaveBeenCalledWith('SET_SELECTED_TIME_ZONE_NAME', 'Eastern Standard Time')
+    })
+
+    it('setErrorMessage handles various error messages', () => {
+      const commit = jest.fn()
+      const messages = [
+        'Simple error',
+        'Error with details: details here',
+        'Multi-line\nerror\nmessage',
+        ''
+      ]
+
+      messages.forEach((msg) => {
+        commit.mockClear()
+        common.actions.setErrorMessage({ commit }, msg)
+        expect(commit).toHaveBeenCalledWith('SET_ERROR_MESSAGE', msg)
+      })
+    })
+
+    it('setReCaptcha toggles correctly', () => {
+      const commit = jest.fn()
+      common.actions.setReCaptcha({ commit }, true)
+      expect(commit).toHaveBeenCalledWith('SET_RE_CAPTCHA', true)
+
+      commit.mockClear()
+      common.actions.setReCaptcha({ commit }, false)
+      expect(commit).toHaveBeenCalledWith('SET_RE_CAPTCHA', false)
+    })
+
+    it('setSnackStatus toggles correctly', () => {
+      const commit = jest.fn()
+      common.actions.setSnackStatus({ commit }, true)
+      expect(commit).toHaveBeenCalledWith('SET_SNACK_STATUS', true)
+
+      commit.mockClear()
+      common.actions.setSnackStatus({ commit }, false)
+      expect(commit).toHaveBeenCalledWith('SET_SNACK_STATUS', false)
+    })
+
+    it('setActiveTrainingType handles all training types', () => {
+      const commit = jest.fn()
+      const types = ['Training', 'Learning Path', 'Phishing', 'Video']
+
+      types.forEach((type) => {
+        commit.mockClear()
+        common.actions.setActiveTrainingType({ commit }, type)
+        expect(commit).toHaveBeenCalledWith('SET_ACTIVE_TRAINING_TYPE', type)
+      })
+    })
+  })
+
+  describe('Type Safety and Consistency', () => {
+    it('all mutations are functions', () => {
+      Object.values(common.mutations).forEach((mutation) => {
+        expect(typeof mutation).toBe('function')
+      })
+    })
+
+    it('module is properly namespaced', () => {
+      expect(common.namespaced).toBe(true)
+    })
+
+    it('state is not null', () => {
+      expect(common.state).not.toBeNull()
+    })
+
+    it('getters object is not null', () => {
+      expect(common.getters).not.toBeNull()
+    })
+
+    it('mutations object is not null', () => {
+      expect(common.mutations).not.toBeNull()
+    })
+
+    it('actions object is not null', () => {
+      expect(common.actions).not.toBeNull()
+    })
+  })
+
+  describe('Edge Cases and Data Transitions', () => {
+    let state
+
+    beforeEach(() => {
+      state = { ...common.state }
+    })
+
+    it('handles rapid loading/unloading cycles', () => {
+      for (let i = 0; i < 10; i++) {
+        common.mutations.SET_IS_LOADING(state, 1)
+        expect(state.isLoading).toBeGreaterThan(0)
+      }
+      for (let i = 0; i < 10; i++) {
+        common.mutations.SET_IS_LOADING(state, -1)
+      }
+    })
+
+    it('handles snackbar operations with duplicates', () => {
+      const snackbar = { message: 'Test', id: 1 }
+      common.mutations.SET_CREATE_SNACKBAR(state, snackbar)
+      common.mutations.SET_CREATE_SNACKBAR(state, snackbar)
+      expect(state.snackbars.length).toBe(2)
+    })
+
+    it('handles timezone with very long names', () => {
+      const longName = 'A'.repeat(500)
+      common.mutations.SET_SELECTED_TIME_ZONE_NAME(state, longName)
+      expect(state.selectedTimeZoneName).toBe(longName)
+    })
+
+    it('handles error messages with HTML characters', () => {
+      common.mutations.SET_ERROR_MESSAGE(state, '<script>alert("test")</script>')
+      expect(state.errors).toBe('<script>alert("test")</script>')
+    })
+
+    it('handles all dialogs open simultaneously', () => {
+      common.mutations.SET_IS_SHOW_LEAVING_DIALOG(state, true)
+      common.mutations.SET_DOWNLOAD_MODAL_STATUS(state, true)
+      common.mutations.SET_RE_CAPTCHA(state, true)
+
+      expect(state.isShowLeavingDialog).toBe(true)
+      expect(state.downloadModalStatus).toBe(true)
+      expect(state.isReCaptcha).toBe(true)
+    })
+
+    it('handles resetting all state-related fields', () => {
+      common.mutations.SET_ERROR_MESSAGE(state, 'Error')
+      common.mutations.SET_ERROR_STATE(state, true)
+      common.mutations.SET_SNACK_STATUS(state, true)
+
+      common.mutations.SET_ERROR_MESSAGE(state, '')
+      common.mutations.SET_ERROR_STATE(state, false)
+      common.mutations.SET_SNACK_STATUS(state, false)
+
+      expect(state.errors).toBe('')
+      expect(state.errorState).toBe(false)
+      expect(state.snackStatus).toBe(false)
+    })
+  })
 })
