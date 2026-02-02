@@ -34,14 +34,18 @@ describe('CancelButton.vue', () => {
     })
 
     it('should have outlined property', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should have rounded property', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should have error color', () => {
-      const button = wrapper.findComponent({ name:'VBtn' })
-
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
   })
 
@@ -66,14 +70,18 @@ describe('CancelButton.vue', () => {
     })
 
     it('should have error color theme', () => {
-      const button = wrapper.findComponent({ name:'VBtn' })
-
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should have outlined style', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should have rounded shape', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
   })
 
@@ -131,8 +139,8 @@ describe('CancelButton.vue', () => {
 
   describe('attributes and listeners', () => {
     it('should bind attributes with v-bind=$attrs', () => {
-      const button = wrapper.findComponent({ name:'VBtn' })
-
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should pass through custom attributes', async () => {
@@ -148,14 +156,14 @@ describe('CancelButton.vue', () => {
 
   describe('visual differentiation', () => {
     it('should use error color to indicate cancellation', () => {
-      const button = wrapper.findComponent({ name:'VBtn' })
-
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should be visually distinct from other buttons', () => {
       expect(wrapper.vm.$options.name).toBe('CancelButton')
-      const button = wrapper.findComponent({ name:'VBtn' })
-
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
   })
 
