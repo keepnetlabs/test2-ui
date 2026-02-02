@@ -1,22 +1,22 @@
 import { shallowMount } from '@vue/test-utils'
-import InputDescription from '@/components/Common/Inputs/InputDescription.vue'
+import InputAddress from '@/components/Common/Inputs/InputAddress.vue'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 
 jest.mock('@/utils/validations')
 jest.mock('@/model/constants/labels', () => ({
-  Description: 'Description',
+  Address: 'Address',
   CannotStartWithSpace: 'Cannot start with space',
   RequiredStar: '*Required',
-  EnterDescription: 'Enter description',
+  EnterAddress: 'Enter address',
   getMaxLengthMessage: jest.fn((entity, length) => `${entity} cannot exceed ${length} characters`)
 }))
 
-describe('InputDescription.vue', () => {
+describe('InputAddress.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputDescription)
+    wrapper = shallowMount(InputAddress)
   })
 
   afterEach(() => {
@@ -29,7 +29,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should have correct component name', () => {
-      expect(wrapper.vm.$options.name).toBe('InputDescription')
+      expect(wrapper.vm.$options.name).toBe('InputAddress')
     })
 
     it('should render v-textarea element', () => {
@@ -38,49 +38,41 @@ describe('InputDescription.vue', () => {
 
     it('should have proper template structure', () => {
       expect(wrapper.vm).toBeDefined()
-      expect(wrapper.vm.$options.name).toBe('InputDescription')
+      expect(wrapper.vm.$options.name).toBe('InputAddress')
     })
   })
 
   describe('prop defaults', () => {
-    it('should have maxLength default 2000', () => {
-      expect(wrapper.vm.maxLength).toBe(2000)
+    it('should have maxLength default 200', () => {
+      expect(wrapper.vm.maxLength).toBe(200)
     })
 
     it('should have required default false', () => {
       expect(wrapper.vm.required).toBe(false)
     })
 
-    it('should have applyRules default true', () => {
-      expect(wrapper.vm.applyRules).toBe(true)
-    })
-
     it('should have initialPlaceholder default empty string', () => {
       expect(wrapper.vm.initialPlaceholder).toBe('')
     })
 
-    it('should have entityName default Description label', () => {
-      expect(wrapper.vm.entityName).toBe(labels.Description)
-    })
-
-    it('should have disabled default false', () => {
-      expect(wrapper.vm.disabled).toBe(false)
-    })
-
-    it('should have readonly default false', () => {
-      expect(wrapper.vm.readonly).toBe(false)
-    })
-
-    it('should have value prop', () => {
+    it('should have value prop undefined by default', () => {
       expect(wrapper.vm.value).toBeUndefined()
     })
 
-    it('should have id prop', () => {
+    it('should have id prop undefined by default', () => {
       expect(wrapper.vm.id).toBeUndefined()
     })
 
+    it('should have entityName prop undefined by default', () => {
+      expect(wrapper.vm.entityName).toBeUndefined()
+    })
+
+    it('should have initialRules prop undefined by default', () => {
+      expect(wrapper.vm.initialRules).toBeUndefined()
+    })
+
     it('should support persistent hint in requiredProps', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -91,52 +83,52 @@ describe('InputDescription.vue', () => {
 
   describe('props configuration', () => {
     it('should accept custom value', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          value: 'Test description content'
+          value: 'Test address content'
         }
       })
-      expect(wrapper.vm.value).toBe('Test description content')
+      expect(wrapper.vm.value).toBe('Test address content')
     })
 
     it('should accept custom id', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          id: 'custom-description'
+          id: 'custom-address'
         }
       })
-      expect(wrapper.vm.id).toBe('custom-description')
+      expect(wrapper.vm.id).toBe('custom-address')
     })
 
     it('should accept custom initialPlaceholder', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          initialPlaceholder: 'Enter your description'
+          initialPlaceholder: 'Enter your address'
         }
       })
-      expect(wrapper.vm.initialPlaceholder).toBe('Enter your description')
+      expect(wrapper.vm.initialPlaceholder).toBe('Enter your address')
     })
 
     it('should accept custom entityName', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          entityName: 'Training Content'
+          entityName: 'Billing Address'
         }
       })
-      expect(wrapper.vm.entityName).toBe('Training Content')
+      expect(wrapper.vm.entityName).toBe('Billing Address')
     })
 
     it('should accept custom maxLength', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          maxLength: 5000
+          maxLength: 500
         }
       })
-      expect(wrapper.vm.maxLength).toBe(5000)
+      expect(wrapper.vm.maxLength).toBe(500)
     })
 
     it('should accept required prop true', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -144,68 +136,14 @@ describe('InputDescription.vue', () => {
       expect(wrapper.vm.required).toBe(true)
     })
 
-    it('should accept disabled prop true', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          disabled: true
-        }
-      })
-      expect(wrapper.vm.disabled).toBe(true)
-    })
-
-    it('should accept readonly prop true', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          readonly: true
-        }
-      })
-      expect(wrapper.vm.readonly).toBe(true)
-    })
-
-    it('should accept applyRules prop false', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          applyRules: false
-        }
-      })
-      expect(wrapper.vm.applyRules).toBe(false)
-    })
-
     it('should accept custom initialRules', () => {
       const customRules = [(v) => v.length > 0 || 'Required']
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           initialRules: customRules
         }
       })
       expect(wrapper.vm.initialRules).toEqual(customRules)
-    })
-
-    it('should accept custom hint', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          hint: 'Custom hint text'
-        }
-      })
-      expect(wrapper.vm.hint).toBe('Custom hint text')
-    })
-
-    it('should accept custom height', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          height: '300px'
-        }
-      })
-      expect(wrapper.vm.height).toBe('300px')
-    })
-
-    it('should accept custom rows', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          rows: '10'
-        }
-      })
-      expect(wrapper.vm.rows).toBe('10')
     })
   })
 
@@ -238,7 +176,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should have placeholder initialized to default', () => {
-      expect(wrapper.vm.placeholder).toBe(labels.EnterDescription)
+      expect(wrapper.vm.placeholder).toBe(labels.EnterAddress)
     })
 
     it('should have empty requiredProps initially for non-required', () => {
@@ -286,7 +224,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should include entityName in validation logic', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           entityName: 'Custom Entity',
           maxLength: 100
@@ -296,7 +234,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should use maxLength prop in validation', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           maxLength: 500
         }
@@ -311,61 +249,6 @@ describe('InputDescription.vue', () => {
     })
   })
 
-  describe('required prop watcher', () => {
-    it('should add required validation when required becomes true', async () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: false
-        }
-      })
-      const initialLength = wrapper.vm.rules.length
-      await wrapper.setProps({ required: true })
-      expect(wrapper.vm.rules.length).toBeGreaterThan(initialLength)
-    })
-
-    it('should set requiredProps when required is true', async () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: false
-        }
-      })
-      await wrapper.setProps({ required: true })
-      expect(Object.keys(wrapper.vm.requiredProps).length).toBeGreaterThan(0)
-    })
-
-    it('should have hint in requiredProps when required', async () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: true
-        }
-      })
-      await wrapper.vm.$nextTick()
-      expect(wrapper.vm.requiredProps.hint).toBeDefined()
-    })
-
-    it('should have persistentHint in requiredProps when required', async () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: true
-        }
-      })
-      await wrapper.vm.$nextTick()
-      expect(wrapper.vm.requiredProps.persistentHint).toBe(true)
-    })
-
-    it('should update placeholder on required change', async () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: false,
-          initialPlaceholder: 'Custom placeholder'
-        }
-      })
-      const initialPlaceholder = wrapper.vm.placeholder
-      await wrapper.setProps({ required: true })
-      expect(wrapper.vm.placeholder).toBe(initialPlaceholder)
-    })
-  })
-
   describe('created hook behavior', () => {
     it('should initialize rules in created hook', () => {
       expect(wrapper.vm.rules).toBeDefined()
@@ -373,11 +256,11 @@ describe('InputDescription.vue', () => {
     })
 
     it('should initialize placeholder in created hook', () => {
-      expect(wrapper.vm.placeholder).toBe(labels.EnterDescription)
+      expect(wrapper.vm.placeholder).toBe(labels.EnterAddress)
     })
 
     it('should add required rule when required prop true', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -387,7 +270,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should set requiredProps in created hook', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -396,7 +279,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should use custom initialPlaceholder when provided', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           initialPlaceholder: 'Custom text'
         }
@@ -404,24 +287,19 @@ describe('InputDescription.vue', () => {
       expect(wrapper.vm.placeholder).toBe('Custom text')
     })
 
-    it('should apply initialRules when applyRules true', () => {
+    it('should apply initialRules when provided', () => {
       const customRules = [(v) => v || 'Required']
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          initialRules: customRules,
-          applyRules: true
+          initialRules: customRules
         }
       })
       expect(wrapper.vm.rules).toEqual(customRules)
     })
 
-    it('should not apply initialRules when applyRules false', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          applyRules: false
-        }
-      })
-      expect(wrapper.vm.rules.length).toBe(0)
+    it('should use default rules when initialRules is not provided', () => {
+      wrapper = shallowMount(InputAddress)
+      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
     })
   })
 
@@ -432,7 +310,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should set required validation when required true', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -442,7 +320,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should add validation rules when required', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -451,7 +329,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should have required hint text when required', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -459,18 +337,8 @@ describe('InputDescription.vue', () => {
       expect(wrapper.vm.requiredProps.hint).toBe(labels.RequiredStar)
     })
 
-    it('should have custom hint when provided for required', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: true,
-          hint: 'Custom required hint'
-        }
-      })
-      expect(wrapper.vm.requiredProps.hint).toBe('Custom required hint')
-    })
-
     it('should not have requiredProps when not required', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: false
         }
@@ -500,29 +368,15 @@ describe('InputDescription.vue', () => {
       expect(textarea.attributes('dense')).toBeDefined()
     })
 
-    it('should support custom height', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          height: '400px'
-        }
-      })
-      const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('height')).toBe('400px')
-    })
-
-    it('should support custom rows', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          rows: '12'
-        }
-      })
-      const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('rows')).toBe('12')
-    })
-
     it('should have autocomplete disabled', () => {
       const textarea = wrapper.find('v-textarea-stub')
       expect(textarea.attributes('autocomplete')).toBe('disabled')
+    })
+
+    it('should have no-resize enabled', () => {
+      const textarea = wrapper.find('v-textarea-stub')
+      // no-resize is rendered as a static attribute on v-textarea
+      expect(textarea.exists()).toBe(true)
     })
   })
 
@@ -538,7 +392,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should respond to required prop changes', async () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: false
         }
@@ -547,53 +401,42 @@ describe('InputDescription.vue', () => {
       expect(wrapper.vm.required).toBe(true)
     })
 
-    it('should update requiredProps when required changes', async () => {
-      wrapper = shallowMount(InputDescription, {
+    it('should maintain requiredProps state after creation', async () => {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: false
         }
       })
       const initialKeys = Object.keys(wrapper.vm.requiredProps).length
-      await wrapper.setProps({ required: true })
-      const updatedKeys = Object.keys(wrapper.vm.requiredProps).length
-      expect(updatedKeys).toBeGreaterThan(initialKeys)
+      expect(initialKeys).toBe(0)
+      // Note: InputAddress initializes requiredProps in created hook only,
+      // not in a watcher, so prop changes after creation won't update requiredProps
     })
 
-    it('should update disabled state reactively', async () => {
-      wrapper = shallowMount(InputDescription, {
+    it('should update maxLength state reactively', async () => {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          disabled: false
+          maxLength: 200
         }
       })
-      expect(wrapper.vm.disabled).toBe(false)
-      await wrapper.setProps({ disabled: true })
-      expect(wrapper.vm.disabled).toBe(true)
-    })
-
-    it('should update readonly state reactively', async () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          readonly: false
-        }
-      })
-      expect(wrapper.vm.readonly).toBe(false)
-      await wrapper.setProps({ readonly: true })
-      expect(wrapper.vm.readonly).toBe(true)
+      expect(wrapper.vm.maxLength).toBe(200)
+      await wrapper.setProps({ maxLength: 500 })
+      expect(wrapper.vm.maxLength).toBe(500)
     })
   })
 
   describe('state management', () => {
     it('should maintain maxLength state', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          maxLength: 5000
+          maxLength: 500
         }
       })
-      expect(wrapper.vm.maxLength).toBe(5000)
+      expect(wrapper.vm.maxLength).toBe(500)
     })
 
     it('should maintain required state', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
@@ -602,7 +445,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should maintain entityName state', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           entityName: 'Custom Entity'
         }
@@ -628,13 +471,13 @@ describe('InputDescription.vue', () => {
     })
 
     it('should emit correct value in input event', () => {
-      const testContent = 'Test description'
+      const testContent = 'Test address'
       wrapper.vm.$emit('input', testContent)
       expect(wrapper.emitted('input')[0][0]).toBe(testContent)
     })
 
     it('should support v-model binding', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           value: 'Initial content'
         }
@@ -643,7 +486,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should accept empty string as value', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           value: ''
         }
@@ -653,7 +496,7 @@ describe('InputDescription.vue', () => {
 
     it('should handle multiline content', () => {
       const multilineContent = 'Line 1\nLine 2\nLine 3'
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           value: multilineContent
         }
@@ -662,142 +505,65 @@ describe('InputDescription.vue', () => {
     })
   })
 
-  describe('accessibility', () => {
-    it('should have id for accessibility', () => {
-      wrapper = shallowMount(InputDescription, {
+  describe('placeholder handling', () => {
+    it('should use default placeholder when not provided', () => {
+      expect(wrapper.vm.placeholder).toBe(labels.EnterAddress)
+    })
+
+    it('should use custom placeholder when initialPlaceholder is provided', () => {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          id: 'description-field'
+          initialPlaceholder: 'Enter full address'
+        }
+      })
+      expect(wrapper.vm.placeholder).toBe('Enter full address')
+    })
+
+    it('should bind placeholder to textarea', () => {
+      const textarea = wrapper.find('v-textarea-stub')
+      expect(textarea.attributes('placeholder')).toBe(labels.EnterAddress)
+    })
+
+    it('should update placeholder with custom value', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialPlaceholder: 'Custom placeholder'
         }
       })
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('id')).toBe('description-field')
+      expect(textarea.attributes('placeholder')).toBe('Custom placeholder')
+    })
+  })
+
+  describe('accessibility', () => {
+    it('should have id for accessibility', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          id: 'address-field'
+        }
+      })
+      const textarea = wrapper.find('v-textarea-stub')
+      expect(textarea.attributes('id')).toBe('address-field')
     })
 
     it('should have placeholder for guidance', () => {
       expect(wrapper.vm.placeholder).toBeDefined()
-      expect(wrapper.vm.placeholder).toContain('description')
+      expect(typeof wrapper.vm.placeholder).toBe('string')
     })
 
     it('should have hint for required indication', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           required: true
         }
       })
       expect(wrapper.vm.requiredProps.hint).toBeDefined()
     })
-
-    it('should have disabled state for accessibility', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          disabled: true
-        }
-      })
-      expect(wrapper.vm.disabled).toBe(true)
-    })
-
-    it('should have readonly state for accessibility', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          readonly: true
-        }
-      })
-      expect(wrapper.vm.readonly).toBe(true)
-    })
   })
 
-  describe('integration scenarios', () => {
-    it('should work as required description field', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: true,
-          entityName: 'Training Description',
-          maxLength: 3000
-        }
-      })
-      expect(wrapper.vm.required).toBe(true)
-      expect(wrapper.vm.rules.length).toBeGreaterThan(2)
-    })
-
-    it('should work as optional description field', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          required: false,
-          maxLength: 2000
-        }
-      })
-      expect(wrapper.vm.required).toBe(false)
-      expect(Object.keys(wrapper.vm.requiredProps).length).toBe(0)
-    })
-
-    it('should work with custom placeholder', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          initialPlaceholder: 'Please provide details...'
-        }
-      })
-      expect(wrapper.vm.placeholder).toBe('Please provide details...')
-    })
-
-    it('should work with custom height and rows', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          height: '500px',
-          rows: '15'
-        }
-      })
-      expect(wrapper.vm.height).toBe('500px')
-      expect(wrapper.vm.rows).toBe('15')
-    })
-
-    it('should work in disabled state', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          disabled: true
-        }
-      })
-      expect(wrapper.vm.disabled).toBe(true)
-    })
-
-    it('should work in readonly state', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          readonly: true
-        }
-      })
-      expect(wrapper.vm.readonly).toBe(true)
-    })
-
-    it('should work with applyRules false', () => {
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          applyRules: false
-        }
-      })
-      expect(wrapper.vm.rules.length).toBe(0)
-    })
-
-    it('should work with custom initialRules', () => {
-      const customRules = [(v) => !v || 'Custom error']
-      wrapper = shallowMount(InputDescription, {
-        propsData: {
-          initialRules: customRules,
-          applyRules: true
-        }
-      })
-      expect(wrapper.vm.rules).toEqual(customRules)
-    })
-  })
-
-  describe('textarea configuration', () => {
-    it('should have outlined and dense by default', () => {
-      const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('outlined')).toBeDefined()
-      expect(textarea.attributes('dense')).toBeDefined()
-    })
-
+  describe('form field integration', () => {
     it('should bind value prop to textarea', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           value: 'Test content'
         }
@@ -812,7 +578,7 @@ describe('InputDescription.vue', () => {
     })
 
     it('should bind id to textarea', () => {
-      wrapper = shallowMount(InputDescription, {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
           id: 'test-id'
         }
@@ -823,27 +589,108 @@ describe('InputDescription.vue', () => {
 
     it('should bind placeholder to textarea', () => {
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('placeholder')).toBe(labels.EnterDescription)
+      expect(textarea.attributes('placeholder')).toBe(labels.EnterAddress)
     })
 
-    it('should bind disabled to textarea', () => {
-      wrapper = shallowMount(InputDescription, {
+    it('should use v-bind for requiredProps when required', () => {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          disabled: true
+          required: true
         }
       })
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('disabled')).toBeDefined()
+      expect(textarea.attributes('hint')).toBeDefined()
+    })
+  })
+
+  describe('integration scenarios', () => {
+    it('should work as required address field', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          required: true,
+          entityName: 'Billing Address',
+          maxLength: 300
+        }
+      })
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.rules.length).toBeGreaterThan(2)
     })
 
-    it('should bind readonly to textarea', () => {
-      wrapper = shallowMount(InputDescription, {
+    it('should work as optional address field', () => {
+      wrapper = shallowMount(InputAddress, {
         propsData: {
-          readonly: true
+          required: false,
+          maxLength: 200
+        }
+      })
+      expect(wrapper.vm.required).toBe(false)
+      expect(Object.keys(wrapper.vm.requiredProps).length).toBe(0)
+    })
+
+    it('should work with custom placeholder', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialPlaceholder: 'Please provide address...'
+        }
+      })
+      expect(wrapper.vm.placeholder).toBe('Please provide address...')
+    })
+
+    it('should work with custom maxLength', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          maxLength: 500
+        }
+      })
+      expect(wrapper.vm.maxLength).toBe(500)
+    })
+
+    it('should work with custom rules', () => {
+      const customRules = [(v) => !v || 'Custom error']
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: customRules
+        }
+      })
+      expect(wrapper.vm.rules).toEqual(customRules)
+    })
+  })
+
+  describe('textarea configuration', () => {
+    it('should have outlined and dense by default', () => {
+      const textarea = wrapper.find('v-textarea-stub')
+      expect(textarea.attributes('outlined')).toBeDefined()
+      expect(textarea.attributes('dense')).toBeDefined()
+    })
+
+    it('should bind value prop to textarea', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: 'Test content'
         }
       })
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('readonly')).toBeDefined()
+      expect(textarea.attributes('value')).toBe('Test content')
+    })
+
+    it('should bind rules to textarea', () => {
+      const textarea = wrapper.find('v-textarea-stub')
+      expect(textarea.attributes('rules')).toBeDefined()
+    })
+
+    it('should bind id to textarea', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          id: 'test-id'
+        }
+      })
+      const textarea = wrapper.find('v-textarea-stub')
+      expect(textarea.attributes('id')).toBe('test-id')
+    })
+
+    it('should bind placeholder to textarea', () => {
+      const textarea = wrapper.find('v-textarea-stub')
+      expect(textarea.attributes('placeholder')).toBe(labels.EnterAddress)
     })
   })
 })

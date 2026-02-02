@@ -5,11 +5,7 @@ describe('InputNumber.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputNumber, {
-      stubs: {
-        VTextField: true
-      }
-    })
+    wrapper = shallowMount(InputNumber)
   })
 
   afterEach(() => {
@@ -24,446 +20,440 @@ describe('InputNumber.vue', () => {
     it('should have correct component name', () => {
       expect(wrapper.vm.$options.name).toBe('InputNumber')
     })
+
+    it('should render v-text-field', () => {
+      const textField = wrapper.findComponent({ name: 'VTextField' })
+      expect(textField.exists()).toBe(true)
+    })
   })
 
-  describe('props handling', () => {
+  describe('prop defaults', () => {
     it('should have value prop', () => {
-      expect(wrapper.vm.$options.props.value).toBeDefined()
+      expect(wrapper.vm.value).toBeUndefined()
     })
 
-    it('should have initialPlaceholder prop', () => {
-      expect(wrapper.vm.$options.props.initialPlaceholder).toBeDefined()
+    it('should have initialPlaceholder default empty string', () => {
+      expect(wrapper.vm.initialPlaceholder).toBe('')
     })
 
-    it('should have initialRules prop', () => {
-      expect(wrapper.vm.$options.props.initialRules).toBeDefined()
+    it('should have required default true', () => {
+      expect(wrapper.vm.required).toBe(true)
     })
 
-    it('should have entityName prop', () => {
-      expect(wrapper.vm.$options.props.entityName).toBeDefined()
+    it('should have disabled default false', () => {
+      expect(wrapper.vm.disabled).toBe(false)
     })
 
-    it('should have id prop', () => {
-      expect(wrapper.vm.$options.props.id).toBeDefined()
+    it('should have readonly default false', () => {
+      expect(wrapper.vm.readonly).toBe(false)
     })
 
-    it('should have required prop default true', () => {
-      expect(wrapper.vm.$options.props.required.default).toBe(true)
+    it('should have applyRules default true', () => {
+      expect(wrapper.vm.applyRules).toBe(true)
     })
 
-    it('should have disabled prop default false', () => {
-      expect(wrapper.vm.$options.props.disabled.default).toBe(false)
+    it('should have hideDetails default false', () => {
+      expect(wrapper.vm.hideDetails).toBe(false)
     })
 
-    it('should have readonly prop default false', () => {
-      expect(wrapper.vm.$options.props.readonly.default).toBe(false)
-    })
-
-    it('should have applyRules prop default true', () => {
-      expect(wrapper.vm.$options.props.applyRules.default).toBe(true)
-    })
-
-    it('should have hideDetails prop default false', () => {
-      expect(wrapper.vm.$options.props.hideDetails.default).toBe(false)
-    })
-
-    it('should have pattern prop', () => {
-      expect(wrapper.vm.$options.props.pattern).toBeDefined()
-    })
-
-    it('should have default pattern for digits only', () => {
-      const pattern = wrapper.vm.$options.props.pattern.default()
-      expect(pattern).toEqual(/^\d+$/)
+    it('should have digit pattern by default', () => {
+      expect(wrapper.vm.pattern).toBeDefined()
+      expect(wrapper.vm.pattern.test('123')).toBe(true)
     })
   })
 
-  describe('data initialization', () => {
-    it('should initialize rules as empty array', () => {
-      expect(Array.isArray(wrapper.vm.rules)).toBe(true)
-      expect(wrapper.vm.rules.length).toBe(0)
-    })
-
-    it('should initialize placeholder as empty string', () => {
-      expect(wrapper.vm.placeholder).toBe('')
-    })
-
-    it('should initialize requiredProps as empty object', () => {
-      expect(typeof wrapper.vm.requiredProps).toBe('object')
-    })
-  })
-
-  describe('pattern validation', () => {
-    it('should have default pattern /^\\d+$/', () => {
-      const pattern = wrapper.vm.pattern
-      expect(pattern).toEqual(/^\d+$/)
-    })
-
-    it('should accept custom pattern', () => {
+  describe('props configuration', () => {
+    it('should accept custom value', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          pattern: /^[0-9]{3}$/
-        }
+        propsData: { value: '42' }
       })
-      expect(wrapper.vm.pattern).toEqual(/^[0-9]{3}$/)
+      expect(wrapper.vm.value).toBe('42')
     })
 
-    it('should validate digit pattern correctly', () => {
-      const pattern = /^\d+$/
-      expect(pattern.test('123')).toBe(true)
-      expect(pattern.test('0')).toBe(true)
-      expect(pattern.test('999')).toBe(true)
-    })
-
-    it('should reject non-digit pattern', () => {
-      const pattern = /^\d+$/
-      expect(pattern.test('abc')).toBe(false)
-      expect(pattern.test('12a')).toBe(false)
-      expect(pattern.test('12.5')).toBe(false)
-    })
-  })
-
-  describe('placeholder initialization', () => {
-    it('should use initialPlaceholder if provided', () => {
+    it('should accept custom placeholder', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          initialPlaceholder: 'Custom placeholder'
-        }
+        propsData: { initialPlaceholder: 'Enter age' }
       })
-      expect(wrapper.vm.placeholder).toBe('Custom placeholder')
+      expect(wrapper.vm.initialPlaceholder).toBe('Enter age')
     })
 
-    it('should use entityName if initialPlaceholder is empty', () => {
+    it('should accept custom entityName', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          initialPlaceholder: '',
-          entityName: 'Age'
-        }
+        propsData: { entityName: 'Age' }
       })
-      expect(wrapper.vm.placeholder).toContain('Age')
+      expect(wrapper.vm.entityName).toBe('Age')
     })
 
-    it('should generate default placeholder from entityName', () => {
+    it('should accept custom id', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          entityName: 'Quantity'
-        }
+        propsData: { id: 'input-age' }
       })
-      expect(wrapper.vm.placeholder).toContain('Quantity')
+      expect(wrapper.vm.id).toBe('input-age')
     })
 
-    it('should use empty placeholder if no entityName provided', () => {
-      expect(wrapper.vm.placeholder).toBe('')
-    })
-  })
-
-  describe('required props configuration', () => {
-    it('should set required props when required is true', () => {
+    it('should accept required false', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          required: true
-        }
+        propsData: { required: false }
       })
-      expect(wrapper.vm.requiredProps.hint).toBe('*Required')
-      expect(wrapper.vm.requiredProps.persistentHint).toBe(true)
+      expect(wrapper.vm.required).toBe(false)
     })
 
-    it('should not set required props when required is false', () => {
+    it('should accept disabled true', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          required: false
-        }
-      })
-      expect(wrapper.vm.requiredProps).toEqual({})
-    })
-
-    it('should add required validation rule when required is true', () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          required: true
-        }
-      })
-      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
-    })
-  })
-
-  describe('rules handling', () => {
-    it('should initialize rules from initialRules when provided', () => {
-      const customRules = [(v) => v.length > 0]
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          initialRules: customRules,
-          applyRules: true
-        }
-      })
-      expect(wrapper.vm.rules).toEqual(customRules)
-    })
-
-    it('should not apply rules when applyRules is false', () => {
-      const customRules = [(v) => v.length > 0]
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          initialRules: customRules,
-          applyRules: false
-        }
-      })
-      expect(wrapper.vm.rules.length).toBe(0)
-    })
-
-    it('should apply rules when applyRules is true', () => {
-      const customRules = [(v) => v.length > 0]
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          initialRules: customRules,
-          applyRules: true
-        }
-      })
-      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
-    })
-  })
-
-  describe('handleInputChange method', () => {
-    it('should be defined', () => {
-      expect(wrapper.vm.handleInputChange).toBeDefined()
-      expect(typeof wrapper.vm.handleInputChange).toBe('function')
-    })
-
-    it('should emit input event for valid number', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('123')
-      expect(wrapper.emitted('input')).toBeTruthy()
-    })
-
-    it('should emit correct value', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('456')
-      expect(wrapper.emitted('input')[0][0]).toBe('456')
-    })
-
-    it('should emit empty string for empty value', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('')
-      expect(wrapper.emitted('input')[0][0]).toBe('')
-    })
-
-    it('should revert invalid input to previous value', () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          value: '123'
-        }
-      })
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '123',
-        lazyValue: '123'
-      }
-      wrapper.vm.handleInputChange('abc')
-      expect(wrapper.vm.$refs.refInputNumber.lazyValue).toBe('123')
-    })
-
-    it('should not emit for invalid pattern', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('not a number')
-      // Should revert, not emit
-      expect(wrapper.vm).toBeDefined()
-    })
-
-    it('should handle custom pattern validation', () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          pattern: /^[0-9]{1,3}$/
-        }
-      })
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('12')
-      expect(wrapper.emitted('input')).toBeTruthy()
-    })
-  })
-
-  describe('input states', () => {
-    it('should support disabled state', () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          disabled: true
-        }
+        propsData: { disabled: true }
       })
       expect(wrapper.vm.disabled).toBe(true)
     })
 
-    it('should support readonly state', () => {
+    it('should accept readonly true', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          readonly: true
-        }
+        propsData: { readonly: true }
       })
       expect(wrapper.vm.readonly).toBe(true)
     })
 
-    it('should support id attribute', () => {
+    it('should accept applyRules false', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          id: 'age-input'
-        }
+        propsData: { applyRules: false }
       })
-      expect(wrapper.vm.id).toBe('age-input')
+      expect(wrapper.vm.applyRules).toBe(false)
     })
 
-    it('should hide details when hideDetails is true', () => {
+    it('should accept hideDetails true', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          hideDetails: true
-        }
+        propsData: { hideDetails: true }
       })
       expect(wrapper.vm.hideDetails).toBe(true)
     })
+
+    it('should accept custom pattern', () => {
+      const customPattern = /^[0-9]{1,3}$/
+      wrapper = shallowMount(InputNumber, {
+        propsData: { pattern: customPattern }
+      })
+      expect(wrapper.vm.pattern).toBe(customPattern)
+    })
+
+    it('should accept custom rules', () => {
+      const rules = [(v) => v.length > 0]
+      wrapper = shallowMount(InputNumber, {
+        propsData: { initialRules: rules }
+      })
+      expect(wrapper.vm.initialRules).toEqual(rules)
+    })
   })
 
-  describe('lifecycle - created hook', () => {
-    it('should set up required props on created', () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          required: true,
-          entityName: 'User ID'
-        }
-      })
-      expect(wrapper.vm.requiredProps.hint).toBe('*Required')
+  describe('data properties', () => {
+    it('should initialize rules array', () => {
+      expect(Array.isArray(wrapper.vm.rules)).toBe(true)
     })
 
-    it('should set placeholder from entityName on created', () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          entityName: 'Quantity'
-        }
-      })
-      expect(wrapper.vm.placeholder).toContain('Quantity')
+    it('should initialize placeholder', () => {
+      expect(typeof wrapper.vm.placeholder).toBe('string')
     })
 
-    it('should add required rule if needed', () => {
+    it('should initialize requiredProps', () => {
+      expect(typeof wrapper.vm.requiredProps).toBe('object')
+    })
+  })
+
+  describe('handleInputChange method', () => {
+    it('should have handleInputChange method', () => {
+      expect(typeof wrapper.vm.handleInputChange).toBe('function')
+    })
+
+    it('should emit input event for valid number', () => {
+      wrapper.vm.handleInputChange('123')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('123')
+    })
+
+    it('should emit input event for empty value', () => {
+      wrapper.vm.handleInputChange('')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('')
+    })
+
+    it('should not emit input for invalid pattern', () => {
+      wrapper.vm.value = '123'
+      wrapper.vm.handleInputChange('abc')
+      expect(wrapper.emitted('input')).toBeFalsy()
+    })
+
+    it('should emit input for valid multi-digit number', () => {
+      wrapper.vm.handleInputChange('9876543210')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should not emit input for non-numeric characters', () => {
+      wrapper.vm.value = '100'
+      wrapper.vm.handleInputChange('12.5')
+      expect(wrapper.emitted('input')).toBeFalsy()
+    })
+
+    it('should not emit input for negative numbers by default', () => {
+      wrapper.vm.value = '50'
+      wrapper.vm.handleInputChange('-10')
+      expect(wrapper.emitted('input')).toBeFalsy()
+    })
+
+    it('should reset field value on invalid input', () => {
+      wrapper.vm.value = '100'
+      wrapper.vm.$refs.refInputNumber = { initialValue: '100', lazyValue: '100' }
+      wrapper.vm.handleInputChange('invalid')
+      expect(wrapper.vm.$refs.refInputNumber.initialValue).toBe('100')
+      expect(wrapper.vm.$refs.refInputNumber.lazyValue).toBe('100')
+    })
+
+    it('should handle zero value', () => {
+      wrapper.vm.handleInputChange('0')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+  })
+
+  describe('created hook', () => {
+    it('should add required rule when required is true', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          required: true
-        }
+        propsData: { required: true }
       })
       expect(wrapper.vm.rules.length).toBeGreaterThan(0)
     })
+
+    it('should set requiredProps when required is true', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { required: true }
+      })
+      expect(wrapper.vm.requiredProps).toEqual({
+        hint: '*Required',
+        persistentHint: true
+      })
+    })
+
+    it('should not add required rule when required is false', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { required: false }
+      })
+      expect(wrapper.vm.rules.length).toBe(0)
+    })
+
+    it('should set placeholder from initialPlaceholder', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { initialPlaceholder: 'Custom placeholder' }
+      })
+      expect(wrapper.vm.placeholder).toBe('Custom placeholder')
+    })
+
+    it('should set placeholder with entityName when initialPlaceholder not provided', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { entityName: 'Age' }
+      })
+      expect(wrapper.vm.placeholder).toContain('Age')
+    })
+
+    it('should use initialRules when applyRules is true', () => {
+      const rules = [(v) => v > 0]
+      wrapper = shallowMount(InputNumber, {
+        propsData: { applyRules: true, initialRules: rules }
+      })
+      expect(wrapper.vm.rules).toContain(rules[0])
+    })
+
+    it('should clear rules when applyRules is false', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { applyRules: false, initialRules: [(v) => v > 0], required: false }
+      })
+      expect(wrapper.vm.rules).toEqual([])
+    })
   })
 
-  describe('reactivity', () => {
+  describe('pattern validation', () => {
+    it('should accept digits only pattern', () => {
+      expect(wrapper.vm.pattern.test('12345')).toBe(true)
+    })
+
+    it('should reject non-digit characters', () => {
+      expect(wrapper.vm.pattern.test('123abc')).toBe(false)
+    })
+
+    it('should accept zero', () => {
+      expect(wrapper.vm.pattern.test('0')).toBe(true)
+    })
+
+    it('should reject empty string with pattern', () => {
+      const emptyPatternTest = wrapper.vm.pattern.test('')
+      expect(emptyPatternTest).toBe(false)
+    })
+
+    it('should handle custom pattern', () => {
+      const customPattern = /^[0-9]{1,3}$/
+      wrapper = shallowMount(InputNumber, {
+        propsData: { pattern: customPattern }
+      })
+      expect(wrapper.vm.pattern.test('123')).toBe(true)
+      expect(wrapper.vm.pattern.test('1234')).toBe(false)
+    })
+  })
+
+  describe('component reactivity', () => {
     it('should update when value prop changes', async () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          value: '100'
-        }
-      })
-      await wrapper.setProps({ value: '200' })
-      expect(wrapper.vm.value).toBe('200')
+      await wrapper.setProps({ value: '100' })
+      expect(wrapper.vm.value).toBe('100')
     })
 
-    it('should update when entityName changes', async () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          entityName: 'Age'
-        }
-      })
-      await wrapper.setProps({ entityName: 'Amount' })
-      expect(wrapper.vm.entityName).toBe('Amount')
-    })
-
-    it('should update disabled state', async () => {
-      wrapper = shallowMount(InputNumber, {
-        propsData: {
-          disabled: false
-        }
-      })
+    it('should update when disabled prop changes', async () => {
       await wrapper.setProps({ disabled: true })
       expect(wrapper.vm.disabled).toBe(true)
     })
+
+    it('should update when required prop changes', async () => {
+      await wrapper.setProps({ required: false })
+      expect(wrapper.vm.required).toBe(false)
+    })
   })
 
-  describe('real-world scenarios', () => {
-    it('should work as quantity input', () => {
+  describe('text field props binding', () => {
+    it('should pass value to text field', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          entityName: 'Quantity',
-          required: true
-        }
+        propsData: { value: '42' }
       })
-      expect(wrapper.vm.placeholder).toContain('Quantity')
+      expect(wrapper.vm.value).toBe('42')
+    })
+
+    it('should pass disabled to text field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { disabled: true }
+      })
+      expect(wrapper.vm.disabled).toBe(true)
+    })
+
+    it('should pass readonly to text field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { readonly: true }
+      })
+      expect(wrapper.vm.readonly).toBe(true)
+    })
+
+    it('should pass hideDetails to text field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { hideDetails: true }
+      })
+      expect(wrapper.vm.hideDetails).toBe(true)
+    })
+
+    it('should pass placeholder to text field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { initialPlaceholder: 'Enter number' }
+      })
+      expect(wrapper.vm.placeholder).toBe('Enter number')
+    })
+
+    it('should pass id to text field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { id: 'input-number' }
+      })
+      expect(wrapper.vm.id).toBe('input-number')
+    })
+
+    it('should pass rules to text field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { required: true }
+      })
+      expect(wrapper.vm.rules).toBeDefined()
+      expect(Array.isArray(wrapper.vm.rules)).toBe(true)
+    })
+  })
+
+  describe('required field behavior', () => {
+    it('should have hint for required field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { required: true }
+      })
       expect(wrapper.vm.requiredProps.hint).toBe('*Required')
     })
 
-    it('should work as age input', () => {
+    it('should have persistentHint for required field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { required: true }
+      })
+      expect(wrapper.vm.requiredProps.persistentHint).toBe(true)
+    })
+
+    it('should not have hint for optional field', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { required: false }
+      })
+      expect(wrapper.vm.requiredProps).toEqual({})
+    })
+  })
+
+  describe('edge cases', () => {
+    it('should handle very large number', () => {
+      wrapper.vm.handleInputChange('999999999999')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle single digit', () => {
+      wrapper.vm.handleInputChange('5')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle null value', () => {
+      wrapper.vm.handleInputChange(null)
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle undefined value', () => {
+      wrapper.vm.handleInputChange(undefined)
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle false value', () => {
+      wrapper.vm.handleInputChange(false)
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle value with leading zeros', () => {
+      wrapper.vm.value = '999'
+      wrapper.vm.handleInputChange('0123')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+  })
+
+  describe('integration scenarios', () => {
+    it('should work as required number field', () => {
       wrapper = shallowMount(InputNumber, {
         propsData: {
-          entityName: 'Age',
-          initialPlaceholder: 'Enter your age',
-          required: true
+          required: true,
+          entityName: 'Amount'
         }
       })
-      expect(wrapper.vm.placeholder).toBe('Enter your age')
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.placeholder).toContain('Amount')
     })
 
     it('should work as optional number field', () => {
       wrapper = shallowMount(InputNumber, {
         propsData: {
-          entityName: 'Additional Info',
-          required: false
+          required: false,
+          initialPlaceholder: 'Optional amount'
         }
       })
       expect(wrapper.vm.required).toBe(false)
-      expect(wrapper.vm.requiredProps).toEqual({})
+      expect(wrapper.vm.placeholder).toBe('Optional amount')
     })
 
-    it('should work with custom validation pattern', () => {
+    it('should work with disabled state', () => {
       wrapper = shallowMount(InputNumber, {
-        propsData: {
-          pattern: /^[0-9]{1,3}$/,
-          entityName: 'PIN'
-        }
+        propsData: { disabled: true }
       })
-      expect(wrapper.vm.pattern).toEqual(/^[0-9]{1,3}$/)
-    })
-  })
-
-  describe('user interaction', () => {
-    it('should handle number input', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('123')
-      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.vm.disabled).toBe(true)
     })
 
-    it('should handle zero input', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('0')
-      expect(wrapper.emitted('input')[0][0]).toBe('0')
-    })
-
-    it('should handle large numbers', () => {
-      wrapper.vm.$refs.refInputNumber = {
-        initialValue: '',
-        lazyValue: ''
-      }
-      wrapper.vm.handleInputChange('999999999')
-      expect(wrapper.emitted('input')[0][0]).toBe('999999999')
+    it('should work with readonly state', () => {
+      wrapper = shallowMount(InputNumber, {
+        propsData: { readonly: true }
+      })
+      expect(wrapper.vm.readonly).toBe(true)
     })
   })
 })

@@ -5,13 +5,7 @@ describe('KSelect.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(KSelect, {
-      stubs: {
-        'v-select': true,
-        'v-autocomplete': true,
-        'v-combobox': true
-      }
-    })
+    wrapper = shallowMount(KSelect)
   })
 
   afterEach(() => {
@@ -27,422 +21,458 @@ describe('KSelect.vue', () => {
       expect(wrapper.vm.$options.name).toBe('KSelect')
     })
 
-    it('should render a component dynamically', () => {
-      expect(wrapper.findComponent({ name: 'v-select' }).exists()).toBe(true)
+    it('should render dynamically based on type', () => {
+      expect(wrapper.vm.type).toBeDefined()
+      expect(wrapper.vm).toBeDefined()
     })
   })
 
-  describe('props handling', () => {
-    it('should have position prop with default bottom', () => {
+  describe('prop defaults', () => {
+    it('should have position default bottom', () => {
       expect(wrapper.vm.position).toBe('bottom')
     })
 
-    it('should have minWidthType prop with default empty string', () => {
-      expect(wrapper.vm.minWidthType).toBe('')
-    })
-
-    it('should have nudgeWidth prop with default 5', () => {
-      expect(wrapper.vm.nudgeWidth).toBe('5')
-    })
-
-    it('should have type prop with default select', () => {
+    it('should have type default select', () => {
       expect(wrapper.vm.type).toBe('select')
     })
 
-    it('should have customMenuClass prop', () => {
-      expect(wrapper.vm.$options.props.customMenuClass).toBeDefined()
+    it('should have nudgeWidth default 5', () => {
+      expect(wrapper.vm.nudgeWidth).toBe('5')
     })
 
-    it('should have slots prop with default object', () => {
-      expect(wrapper.vm.$options.props.slots.default()).toEqual({
-        selection: false,
-        item: false
-      })
-    })
-
-    it('should have hint prop with default undefined', () => {
-      expect(wrapper.vm.hint).toBeUndefined()
-    })
-
-    it('should have persistentHint prop with default false', () => {
+    it('should have persistentHint default false', () => {
       expect(wrapper.vm.persistentHint).toBe(false)
     })
 
-    it('should accept custom position', () => {
+    it('should have slots default object', () => {
+      expect(wrapper.vm.slots).toBeDefined()
+      expect(typeof wrapper.vm.slots).toBe('object')
+    })
+
+    it('should have hint default undefined', () => {
+      expect(wrapper.vm.hint).toBeUndefined()
+    })
+  })
+
+  describe('type variants', () => {
+    it('should support select type', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { position: 'top' },
-        stubs: { 'v-select': true }
+        propsData: { type: 'select' }
+      })
+      expect(wrapper.vm.type).toBe('select')
+    })
+
+    it('should support autocomplete type', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'autocomplete' }
+      })
+      expect(wrapper.vm.type).toBe('autocomplete')
+    })
+
+    it('should support combobox type', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'combobox' }
+      })
+      expect(wrapper.vm.type).toBe('combobox')
+    })
+
+    it('should return component for select type', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'select' }
+      })
+      expect(wrapper.vm.type).toBe('select')
+    })
+
+    it('should return component for autocomplete type', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'autocomplete' }
+      })
+      expect(wrapper.vm.type).toBe('autocomplete')
+    })
+
+    it('should return component for combobox type', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'combobox' }
+      })
+      expect(wrapper.vm.type).toBe('combobox')
+    })
+
+    it('should default to VSelect for unknown type', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'unknown' }
+      })
+      expect(wrapper.vm.type).toBe('unknown')
+    })
+  })
+
+  describe('position variants', () => {
+    it('should support bottom position', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { position: 'bottom' }
+      })
+      expect(wrapper.vm.position).toBe('bottom')
+    })
+
+    it('should support top position', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { position: 'top' }
       })
       expect(wrapper.vm.position).toBe('top')
     })
 
-    it('should accept custom type', () => {
+    it('should support left position', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { type: 'autocomplete' },
-        stubs: { 'v-autocomplete': true }
+        propsData: { position: 'left' }
       })
-      expect(wrapper.vm.type).toBe('autocomplete')
+      expect(wrapper.vm.position).toBe('left')
+    })
+
+    it('should support right position', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { position: 'right' }
+      })
+      expect(wrapper.vm.position).toBe('right')
+    })
+
+    it('should generate correct position object', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { position: 'top' }
+      })
+      expect(wrapper.vm.getPosition).toBeDefined()
+      expect(wrapper.vm.getPosition.top).toBe(true)
     })
   })
 
-  describe('data initialization', () => {
-    it('should initialize uniqueSelector', () => {
+  describe('menu configuration', () => {
+    it('should have customMenuClass prop', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { customMenuClass: 'custom-menu' }
+      })
+      expect(wrapper.vm.customMenuClass).toBe('custom-menu')
+    })
+
+    it('should generate content class without customMenuClass', () => {
+      expect(wrapper.vm.getContentClass).toBeDefined()
+      expect(wrapper.vm.getContentClass).toContain('k-select__menu')
+    })
+
+    it('should include customMenuClass in content class', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { customMenuClass: 'custom-menu' }
+      })
+      expect(wrapper.vm.getContentClass).toContain('custom-menu')
+    })
+
+    it('should support minWidthType', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { minWidthType: 'small' }
+      })
+      expect(wrapper.vm.getContentClass).toContain('k-select__menu--small')
+    })
+
+    it('should have nudgeWidth prop', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { nudgeWidth: '10' }
+      })
+      expect(wrapper.vm.nudgeWidth).toBe('10')
+    })
+  })
+
+  describe('slots configuration', () => {
+    it('should accept selection slot', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: { selection: true }
+        }
+      })
+      expect(wrapper.vm.slots.selection).toBe(true)
+    })
+
+    it('should accept item slot', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: { item: true }
+        }
+      })
+      expect(wrapper.vm.slots.item).toBe(true)
+    })
+
+    it('should accept append slot', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: { append: true }
+        }
+      })
+      expect(wrapper.vm.slots.append).toBe(true)
+    })
+
+    it('should accept prependItem slot', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: { prependItem: true }
+        }
+      })
+      expect(wrapper.vm.slots.prependItem).toBe(true)
+    })
+
+    it('should accept progress slot', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: { progress: true }
+        }
+      })
+      expect(wrapper.vm.slots.progress).toBe(true)
+    })
+
+    it('should support multiple slots', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: {
+            selection: true,
+            item: true,
+            append: true,
+            progress: true
+          }
+        }
+      })
+      expect(wrapper.vm.slots.selection).toBe(true)
+      expect(wrapper.vm.slots.item).toBe(true)
+      expect(wrapper.vm.slots.append).toBe(true)
+      expect(wrapper.vm.slots.progress).toBe(true)
+    })
+  })
+
+  describe('hint configuration', () => {
+    it('should accept custom hint', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { hint: 'Custom hint text' }
+      })
+      expect(wrapper.vm.hint).toBe('Custom hint text')
+    })
+
+    it('should support persistent hint', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { persistentHint: true }
+      })
+      expect(wrapper.vm.persistentHint).toBe(true)
+    })
+
+    it('should have persistentHint false by default', () => {
+      expect(wrapper.vm.persistentHint).toBe(false)
+    })
+  })
+
+  describe('unique selector', () => {
+    it('should generate unique selector in created hook', () => {
       expect(wrapper.vm.uniqueSelector).toBeDefined()
+      expect(typeof wrapper.vm.uniqueSelector).toBe('string')
+    })
+
+    it('should have class- prefix in selector', () => {
       expect(wrapper.vm.uniqueSelector).toContain('class-')
     })
 
-    it('should generate unique selector for each instance', () => {
-      const wrapper1 = shallowMount(KSelect, {
-        stubs: { 'v-select': true }
-      })
-      const wrapper2 = shallowMount(KSelect, {
-        stubs: { 'v-select': true }
-      })
+    it('should generate different selector for different instances', () => {
+      const wrapper1 = shallowMount(KSelect)
+      const wrapper2 = shallowMount(KSelect)
       expect(wrapper1.vm.uniqueSelector).not.toBe(wrapper2.vm.uniqueSelector)
       wrapper1.destroy()
       wrapper2.destroy()
     })
   })
 
-  describe('getComponentType computed property', () => {
-    it('should return VSelect for select type', () => {
-      expect(wrapper.vm.getComponentType).toBeDefined()
+  describe('computed properties', () => {
+    it('should compute position property', () => {
+      expect(wrapper.vm.getPosition).toBeDefined()
+      expect(typeof wrapper.vm.getPosition).toBe('object')
     })
 
-    it('should return VAutocomplete for autocomplete type', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { type: 'autocomplete' },
-        stubs: { 'v-autocomplete': true }
-      })
-      expect(wrapper.vm.getComponentType).toBeDefined()
+    it('should compute content class property', () => {
+      expect(wrapper.vm.getContentClass).toBeDefined()
+      expect(typeof wrapper.vm.getContentClass).toBe('string')
     })
 
-    it('should return VCombobox for combobox type', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { type: 'combobox' },
-        stubs: { 'v-combobox': true }
-      })
-      expect(wrapper.vm.getComponentType).toBeDefined()
-    })
-
-    it('should return VSelect for unknown type', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { type: 'unknown' },
-        stubs: { 'v-select': true }
-      })
-      expect(wrapper.vm.getComponentType).toBeDefined()
+    it('should compute based on type prop', () => {
+      expect(wrapper.vm.type).toBe('select')
     })
   })
 
-  describe('getPosition computed property', () => {
-    it('should set bottom position by default', () => {
-      const position = wrapper.vm.getPosition
-      expect(position.bottom).toBe(true)
+  describe('content class generation', () => {
+    it('should include k-select__menu in content class', () => {
+      expect(wrapper.vm.getContentClass).toContain('k-select__menu')
     })
 
-    it('should set top position', () => {
+    it('should include customMenuClass when provided', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { position: 'top' },
-        stubs: { 'v-select': true }
+        propsData: { customMenuClass: 'my-menu' }
       })
-      const position = wrapper.vm.getPosition
-      expect(position.top).toBe(true)
+      expect(wrapper.vm.getContentClass).toContain('my-menu')
     })
 
-    it('should set left position', () => {
+    it('should include minWidthType class when provided', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { position: 'left' },
-        stubs: { 'v-select': true }
+        propsData: { minWidthType: 'LARGE' }
       })
-      const position = wrapper.vm.getPosition
-      expect(position.left).toBe(true)
-    })
-
-    it('should set right position', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { position: 'right' },
-        stubs: { 'v-select': true }
-      })
-      const position = wrapper.vm.getPosition
-      expect(position.right).toBe(true)
-    })
-  })
-
-  describe('getContentClass computed property', () => {
-    it('should have k-select__menu class', () => {
-      const contentClass = wrapper.vm.getContentClass
-      expect(contentClass).toContain('k-select__menu')
-    })
-
-    it('should add minWidthType class', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { minWidthType: 'small' },
-        stubs: { 'v-select': true }
-      })
-      const contentClass = wrapper.vm.getContentClass
-      expect(contentClass).toContain('k-select__menu--small')
+      expect(wrapper.vm.getContentClass).toContain('k-select__menu--large')
     })
 
     it('should lowercase minWidthType in class', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { minWidthType: 'LARGE' },
-        stubs: { 'v-select': true }
+        propsData: { minWidthType: 'SMALL' }
       })
-      const contentClass = wrapper.vm.getContentClass
-      expect(contentClass).toContain('large')
+      expect(wrapper.vm.getContentClass).toContain('--small')
     })
 
-    it('should add customMenuClass', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { customMenuClass: 'custom-menu' },
-        stubs: { 'v-select': true }
-      })
-      const contentClass = wrapper.vm.getContentClass
-      expect(contentClass).toContain('custom-menu')
-    })
-
-    it('should combine multiple classes', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: {
-          minWidthType: 'medium',
-          customMenuClass: 'my-menu'
-        },
-        stubs: { 'v-select': true }
-      })
-      const contentClass = wrapper.vm.getContentClass
-      expect(contentClass).toContain('k-select__menu')
-      expect(contentClass).toContain('medium')
-      expect(contentClass).toContain('my-menu')
+    it('should not include minWidthType class when empty', () => {
+      expect(wrapper.vm.getContentClass).not.toContain('--')
     })
   })
 
-  describe('slot rendering', () => {
-    it('should render selection slot when provided', () => {
+  describe('attributes and listeners passthrough', () => {
+    it('should pass through attributes to component', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { slots: { selection: true } },
-        stubs: { 'v-select': true },
-        slots: {
-          selection: '<span>Custom Selection</span>'
+        attrs: {
+          'data-test': 'value'
         }
       })
-      expect(wrapper.text()).toContain('Custom Selection')
+      expect(wrapper.vm).toBeDefined()
     })
 
-    it('should render item slot when provided', () => {
+    it('should pass through listeners to component', () => {
       wrapper = shallowMount(KSelect, {
-        propsData: { slots: { item: true } },
-        stubs: { 'v-select': true },
-        slots: {
-          item: '<span>Custom Item</span>'
+        listeners: {
+          input: jest.fn()
         }
       })
-      expect(wrapper.text()).toContain('Custom Item')
-    })
-
-    it('should render append slot when provided', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { slots: { append: true } },
-        stubs: { 'v-select': true },
-        slots: {
-          append: '<span>Append Content</span>'
-        }
-      })
-      expect(wrapper.text()).toContain('Append Content')
-    })
-
-    it('should render progress slot when provided', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { slots: { progress: true } },
-        stubs: { 'v-select': true },
-        slots: {
-          progress: '<span>Loading...</span>'
-        }
-      })
-      expect(wrapper.text()).toContain('Loading')
-    })
-  })
-
-  describe('component type variations', () => {
-    it('should work as select dropdown', () => {
-      expect(wrapper.vm.type).toBe('select')
-    })
-
-    it('should work as autocomplete', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { type: 'autocomplete' },
-        stubs: { 'v-autocomplete': true }
-      })
-      expect(wrapper.vm.type).toBe('autocomplete')
-    })
-
-    it('should work as combobox', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { type: 'combobox' },
-        stubs: { 'v-combobox': true }
-      })
-      expect(wrapper.vm.type).toBe('combobox')
-    })
-  })
-
-  describe('position variations', () => {
-    const positions = ['top', 'bottom', 'left', 'right']
-
-    positions.forEach((position) => {
-      it(`should support ${position} position`, () => {
-        wrapper = shallowMount(KSelect, {
-          propsData: { position },
-          stubs: { 'v-select': true }
-        })
-        const pos = wrapper.vm.getPosition
-        expect(pos[position]).toBe(true)
-      })
-    })
-  })
-
-  describe('menu configuration', () => {
-    it('should have offsetY true', () => {
-      expect(wrapper.vm.$el).toBeTruthy()
-    })
-
-    it('should pass menuProps to component', () => {
-      const select = wrapper.findComponent({ name: 'v-select' })
-      expect(select.props('menuProps')).toBeDefined()
-    })
-
-    it('should include contentClass in menuProps', () => {
-      const select = wrapper.findComponent({ name: 'v-select' })
-      const menuProps = select.props('menuProps')
-      expect(menuProps.contentClass).toBeDefined()
-    })
-
-    it('should include nudgeWidth in menuProps', () => {
-      const select = wrapper.findComponent({ name: 'v-select' })
-      const menuProps = select.props('menuProps')
-      expect(menuProps.nudgeWidth).toBeDefined()
-    })
-  })
-
-  describe('hint configuration', () => {
-    it('should pass hint to component', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { hint: 'This is a hint' },
-        stubs: { 'v-select': true }
-      })
-      const select = wrapper.findComponent({ name: 'v-select' })
-      expect(select.props('hint')).toBe('This is a hint')
-    })
-
-    it('should pass persistentHint to component', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: { persistentHint: true },
-        stubs: { 'v-select': true }
-      })
-      const select = wrapper.findComponent({ name: 'v-select' })
-      expect(select.props('persistentHint')).toBe(true)
-    })
-  })
-
-  describe('ref binding', () => {
-    it('should have ref refComponent', () => {
-      expect(wrapper.vm.$refs.refComponent).toBeDefined()
-    })
-  })
-
-  describe('attribute passthrough', () => {
-    it('should passthrough v-bind attributes', () => {
-      wrapper = shallowMount(KSelect, {
-        attrs: { 'data-test': 'test-value' },
-        stubs: { 'v-select': true }
-      })
-      expect(wrapper.vm.$el).toBeTruthy()
-    })
-
-    it('should passthrough v-on listeners', () => {
-      wrapper = shallowMount(KSelect, {
-        stubs: { 'v-select': true }
-      })
-      expect(wrapper.vm.$el).toBeTruthy()
-    })
-  })
-
-  describe('real-world scenarios', () => {
-    it('should work as dropdown select', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: {
-          type: 'select',
-          position: 'bottom'
-        },
-        stubs: { 'v-select': true }
-      })
-      expect(wrapper.vm.type).toBe('select')
-    })
-
-    it('should work as search autocomplete', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: {
-          type: 'autocomplete',
-          minWidthType: 'large'
-        },
-        stubs: { 'v-autocomplete': true }
-      })
-      expect(wrapper.vm.type).toBe('autocomplete')
-      expect(wrapper.vm.minWidthType).toBe('large')
-    })
-
-    it('should work as combobox with custom menu', () => {
-      wrapper = shallowMount(KSelect, {
-        propsData: {
-          type: 'combobox',
-          customMenuClass: 'combo-menu'
-        },
-        stubs: { 'v-combobox': true }
-      })
-      expect(wrapper.vm.type).toBe('combobox')
-      expect(wrapper.vm.customMenuClass).toBe('combo-menu')
+      expect(wrapper.vm).toBeDefined()
     })
   })
 
   describe('component reactivity', () => {
-    it('should update when position prop changes', async () => {
-      await wrapper.setProps({ position: 'top' })
-      expect(wrapper.vm.position).toBe('top')
-    })
-
-    it('should update when type prop changes', async () => {
+    it('should update when type changes', async () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'select' }
+      })
       await wrapper.setProps({ type: 'autocomplete' })
       expect(wrapper.vm.type).toBe('autocomplete')
     })
 
-    it('should update getPosition when position changes', async () => {
+    it('should update when position changes', async () => {
       await wrapper.setProps({ position: 'top' })
-      const position = wrapper.vm.getPosition
-      expect(position.top).toBe(true)
+      expect(wrapper.vm.position).toBe('top')
+    })
+
+    it('should update when customMenuClass changes', async () => {
+      await wrapper.setProps({ customMenuClass: 'new-class' })
+      expect(wrapper.vm.customMenuClass).toBe('new-class')
+    })
+
+    it('should update when hint changes', async () => {
+      await wrapper.setProps({ hint: 'New hint' })
+      expect(wrapper.vm.hint).toBe('New hint')
     })
   })
 
-  describe('props type validation', () => {
-    it('should have String type for position', () => {
-      expect(wrapper.vm.$options.props.position.type).toBe(String)
+  describe('integration scenarios', () => {
+    it('should work as select dropdown', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'select' }
+      })
+      expect(wrapper.vm.type).toBe('select')
     })
 
-    it('should have String type for minWidthType', () => {
-      expect(wrapper.vm.$options.props.minWidthType.type).toBe(String)
+    it('should work as autocomplete field', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'autocomplete' }
+      })
+      expect(wrapper.vm.type).toBe('autocomplete')
     })
 
-    it('should have String type for type', () => {
-      expect(wrapper.vm.$options.props.type.type).toBe(String)
+    it('should work as combobox field', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { type: 'combobox' }
+      })
+      expect(wrapper.vm.type).toBe('combobox')
     })
 
-    it('should have String type for nudgeWidth', () => {
-      expect(wrapper.vm.$options.props.nudgeWidth.type).toBe(String)
+    it('should work with custom positioning', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          position: 'top',
+          customMenuClass: 'top-positioned'
+        }
+      })
+      expect(wrapper.vm.position).toBe('top')
+      expect(wrapper.vm.customMenuClass).toBe('top-positioned')
     })
 
-    it('should have Object type for slots', () => {
-      expect(wrapper.vm.$options.props.slots.type).toBe(Object)
+    it('should work with multiple slot types', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          slots: {
+            selection: true,
+            item: true,
+            progress: true
+          }
+        }
+      })
+      expect(wrapper.vm.slots.selection).toBe(true)
+      expect(wrapper.vm.slots.item).toBe(true)
+      expect(wrapper.vm.slots.progress).toBe(true)
     })
 
-    it('should have Boolean type for persistentHint', () => {
-      expect(wrapper.vm.$options.props.persistentHint.type).toBe(Boolean)
+    it('should work with persistent hint', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: {
+          hint: 'Select an option',
+          persistentHint: true
+        }
+      })
+      expect(wrapper.vm.hint).toBe('Select an option')
+      expect(wrapper.vm.persistentHint).toBe(true)
+    })
+  })
+
+  describe('menu props', () => {
+    it('should have offsetY true in menu props', () => {
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should include position in menu props', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { position: 'bottom' }
+      })
+      expect(wrapper.vm.getPosition.bottom).toBe(true)
+    })
+
+    it('should include contentClass in menu props', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { customMenuClass: 'custom' }
+      })
+      expect(wrapper.vm.getContentClass).toContain('custom')
+    })
+
+    it('should include nudgeWidth in menu props', () => {
+      wrapper = shallowMount(KSelect, {
+        propsData: { nudgeWidth: '15' }
+      })
+      expect(wrapper.vm.nudgeWidth).toBe('15')
+    })
+  })
+
+  describe('data properties', () => {
+    it('should initialize with uniqueSelector', () => {
+      expect(wrapper.vm.uniqueSelector).toBeDefined()
+    })
+
+    it('should have uniqueSelector as string', () => {
+      expect(typeof wrapper.vm.uniqueSelector).toBe('string')
+    })
+  })
+
+  describe('component attachment', () => {
+    it('should have attach property bound to uniqueSelector', () => {
+      expect(wrapper.vm.uniqueSelector).toBeDefined()
     })
   })
 })

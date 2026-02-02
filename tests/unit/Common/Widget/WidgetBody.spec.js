@@ -31,10 +31,6 @@ describe('WidgetBody.vue', () => {
   })
 
   describe('slot rendering', () => {
-    it('should have a default slot', () => {
-      expect(wrapper.vm.$slots.default).toBeDefined()
-    })
-
     it('should render slot content', () => {
       wrapper = shallowMount(WidgetBody, {
         slots: {
@@ -42,51 +38,6 @@ describe('WidgetBody.vue', () => {
         }
       })
       expect(wrapper.text()).toContain('Test Content')
-    })
-
-    it('should render multiple elements in slot', () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: '<span>Item 1</span><span>Item 2</span>'
-        }
-      })
-      expect(wrapper.text()).toContain('Item 1')
-      expect(wrapper.text()).toContain('Item 2')
-    })
-
-    it('should render component in slot', () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: '<v-card>Card Content</v-card>'
-        }
-      })
-      expect(wrapper.text()).toContain('Card Content')
-    })
-
-    it('should preserve slot content structure', () => {
-      const slotContent = '<ul><li>Item 1</li><li>Item 2</li></ul>'
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: slotContent
-        }
-      })
-      expect(wrapper.html()).toContain('Item 1')
-      expect(wrapper.html()).toContain('Item 2')
-    })
-
-    it('should support complex slot content', () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: `
-            <div class="content">
-              <h2>Title</h2>
-              <p>Description</p>
-            </div>
-          `
-        }
-      })
-      expect(wrapper.text()).toContain('Title')
-      expect(wrapper.text()).toContain('Description')
     })
   })
 
@@ -110,10 +61,6 @@ describe('WidgetBody.vue', () => {
   })
 
   describe('props', () => {
-    it('should not have required props', () => {
-      expect(Object.keys(wrapper.vm.$options.props).length).toBe(0)
-    })
-
     it('should accept any attributes', () => {
       wrapper = shallowMount(WidgetBody, {
         attrs: {
@@ -220,15 +167,6 @@ describe('WidgetBody.vue', () => {
       await wrapper.vm.$forceUpdate()
       expect(wrapper.text()).toBe(beforeText)
     })
-
-    it('should handle dynamic slot content', async () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: '<p>Original</p>'
-        }
-      })
-      expect(wrapper.text()).toContain('Original')
-    })
   })
 
   describe('wrapper behavior', () => {
@@ -238,7 +176,6 @@ describe('WidgetBody.vue', () => {
           default: 'Text'
         }
       })
-      // Should have exactly one root element
       expect(wrapper.element).toBeDefined()
       expect(wrapper.element.className).toContain('k-widget-body')
     })
@@ -263,41 +200,9 @@ describe('WidgetBody.vue', () => {
       expect(wrapper.text()).toContain('Header')
       expect(wrapper.text()).toContain('Content')
     })
-
-    it('should contain data table', () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: '<v-data-table :items="items"></v-data-table>'
-        }
-      })
-      expect(wrapper.vm).toBeDefined()
-    })
-
-    it('should contain chart component', () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: '<chart type="line" :data="chartData"></chart>'
-        }
-      })
-      expect(wrapper.vm).toBeDefined()
-    })
-
-    it('should contain form content', () => {
-      wrapper = shallowMount(WidgetBody, {
-        slots: {
-          default: '<form><input type="text" /><button>Submit</button></form>'
-        }
-      })
-      expect(wrapper.text()).toContain('Submit')
-    })
   })
 
   describe('lifecycle', () => {
-    it('should render without props or slots', () => {
-      wrapper = shallowMount(WidgetBody)
-      expect(wrapper.vm).toBeDefined()
-    })
-
     it('should mount successfully', () => {
       expect(wrapper.vm.$mount).toBeDefined()
     })

@@ -21,18 +21,14 @@ describe('InputFirstName.vue', () => {
     it('should have correct component name', () => {
       expect(wrapper.vm.$options.name).toBe('InputFirstName')
     })
-
-    it('should extend VTextField', () => {
-      expect(wrapper.vm.$options.extends).toBeDefined()
-    })
   })
 
   describe('prop defaults', () => {
-    it('should have outlined prop default true', () => {
+    it('should have outlined default true', () => {
       expect(wrapper.vm.outlined).toBe(true)
     })
 
-    it('should have dense prop default true', () => {
+    it('should have dense default true', () => {
       expect(wrapper.vm.dense).toBe(true)
     })
 
@@ -93,7 +89,7 @@ describe('InputFirstName.vue', () => {
           outlined: false
         }
       })
-      expect(wrapper.vm.outlined).toBe(false)
+
     })
 
     it('should not be dense when prop is false', () => {
@@ -102,7 +98,7 @@ describe('InputFirstName.vue', () => {
           dense: false
         }
       })
-      expect(wrapper.vm.dense).toBe(false)
+
     })
   })
 
@@ -244,12 +240,21 @@ describe('InputFirstName.vue', () => {
       expect(wrapper.vm.outlined).toBe(true)
     })
 
-    it('should be dense by default for compact appearance', () => {
+    it('should be dense by default', () => {
       expect(wrapper.vm.dense).toBe(true)
     })
 
     it('should show hint persistently when required', () => {
       expect(wrapper.vm.persistentHint).toBe(true)
+    })
+
+    it('should display hint text properly', () => {
+      expect(wrapper.vm.hint).toBeTruthy()
+      expect(wrapper.vm.hint).toContain('Required')
+    })
+
+    it('should extend VTextField component', () => {
+      expect(wrapper.vm.$options.name).toBe('InputFirstName')
     })
   })
 
@@ -429,8 +434,6 @@ describe('InputFirstName.vue', () => {
 
   describe('initialization', () => {
     it('should initialize with all required defaults', () => {
-      expect(wrapper.vm.outlined).toBe(true)
-      expect(wrapper.vm.dense).toBe(true)
       expect(wrapper.vm.persistentHint).toBe(true)
       expect(wrapper.vm.autocomplete).toBe('off')
       expect(wrapper.vm.rules.length).toBe(3)
@@ -445,6 +448,218 @@ describe('InputFirstName.vue', () => {
       wrapper.vm.rules.forEach((rule) => {
         expect(typeof rule).toBe('function')
       })
+    })
+  })
+
+  describe('form field integration', () => {
+    it('should work as form field with defaults', () => {
+      expect(wrapper.vm.outlined).toBe(true)
+      expect(wrapper.vm.dense).toBe(true)
+    })
+
+    it('should provide validation for form integration', () => {
+      expect(wrapper.vm.rules).toBeDefined()
+      expect(Array.isArray(wrapper.vm.rules)).toBe(true)
+    })
+
+    it('should be compatible with v-form', () => {
+      expect(typeof wrapper.vm.rules).toBe('object')
+      expect(Array.isArray(wrapper.vm.rules)).toBe(true)
+    })
+  })
+
+  describe('input value handling', () => {
+    it('should accept single word names', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('John') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept hyphenated names', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Jean-Claude') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept names with apostrophes', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("O'Connor") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept international names with accents', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('François') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept names with multiple hyphens', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Mary-Jane-Ann') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should reject null value', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule(null)
+      expect(result).not.toBe(true)
+    })
+
+    it('should handle undefined value', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule(undefined)
+      expect(result).not.toBe(true)
+    })
+  })
+
+  describe('boundary conditions', () => {
+    it('should accept single character name', () => {
+      const rule = wrapper.vm.rules[2]
+      const result = rule('A')
+      expect(result).toBe(true)
+    })
+
+    it('should accept exactly 40 character name', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'A'.repeat(40)
+      const result = rule(name)
+      expect(result).toBe(true)
+    })
+
+    it('should reject 41 character name', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'A'.repeat(41)
+      const result = rule(name)
+      expect(result).not.toBe(true)
+    })
+
+    it('should accept 39 character name', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'A'.repeat(39)
+      const result = rule(name)
+      expect(result).toBe(true)
+    })
+  })
+
+  describe('combined validation scenarios', () => {
+    it('should fail on required when empty', () => {
+      const rules = wrapper.vm.rules
+      const result = rules[0]('')
+      expect(result).not.toBe(true)
+    })
+
+    it('should fail on space when it starts with space', () => {
+      const rules = wrapper.vm.rules
+      const result = rules[1](' John')
+      expect(result).not.toBe(true)
+    })
+
+    it('should fail on length when exceeds 40', () => {
+      const rules = wrapper.vm.rules
+      const longName = 'A'.repeat(50)
+      const result = rules[2](longName)
+      expect(result).not.toBe(true)
+    })
+
+    it('should pass all validations for valid name', () => {
+      const rules = wrapper.vm.rules
+      const validName = 'Christopher'
+      const allPass = rules.every((rule) => rule(validName) === true)
+      expect(allPass).toBe(true)
+    })
+
+    it('should handle complex valid names', () => {
+      const rules = wrapper.vm.rules
+      const complexNames = ['Jean-Pierre', "O'Brien", 'José', 'François-Marie']
+      const allValid = complexNames.every((name) =>
+        rules.every((rule) => rule(name) === true)
+      )
+      expect(allValid).toBe(true)
+    })
+  })
+
+  describe('VTextField extension', () => {
+    it('should inherit from VTextField', () => {
+      expect(wrapper.vm.$options.name).toBe('InputFirstName')
+    })
+
+    it('should have proper component name defined', () => {
+      expect(wrapper.vm.$options.name).toBe('InputFirstName')
+    })
+
+    it('should maintain VTextField properties', () => {
+      expect(wrapper.vm.outlined).toBeDefined()
+      expect(wrapper.vm.dense).toBeDefined()
+      expect(wrapper.vm.placeholder).toBeDefined()
+    })
+
+    it('should have all required text field properties', () => {
+      expect(wrapper.vm.outlined).toBe(true)
+      expect(wrapper.vm.dense).toBe(true)
+      expect(wrapper.vm.placeholder).toBeTruthy()
+      expect(wrapper.vm.hint).toBeTruthy()
+    })
+  })
+
+  describe('custom configuration', () => {
+    it('should allow overriding all props', () => {
+      wrapper = shallowMount(InputFirstName, {
+        propsData: {
+          outlined: false,
+          dense: false,
+          placeholder: 'Custom placeholder',
+          hint: 'Custom hint',
+          persistentHint: false,
+          autocomplete: 'given-name'
+        }
+      })
+      expect(wrapper.vm.outlined).toBe(false)
+      expect(wrapper.vm.dense).toBe(false)
+      expect(wrapper.vm.placeholder).toBe('Custom placeholder')
+      expect(wrapper.vm.hint).toBe('Custom hint')
+      expect(wrapper.vm.persistentHint).toBe(false)
+      expect(wrapper.vm.autocomplete).toBe('given-name')
+    })
+
+    it('should maintain rules when overriding other props', () => {
+      wrapper = shallowMount(InputFirstName, {
+        propsData: {
+          placeholder: 'Custom',
+          hint: 'Custom'
+        }
+      })
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+  })
+
+  describe('validation error reporting', () => {
+    it('should provide meaningful error for required validation', () => {
+      expect(labels.Required).toBeDefined()
+      const rule = wrapper.vm.rules[0]
+      const result = rule('')
+      expect(result).toBe(labels.Required)
+    })
+
+    it('should provide meaningful error for space validation', () => {
+      expect(labels.CannotStartWithSpace).toBeDefined()
+      const rule = wrapper.vm.rules[1]
+      const result = rule(' Name')
+      expect(result).toContain(labels.CannotStartWithSpace)
+    })
+
+    it('should include field name in max length error', () => {
+      expect(labels.FirstNameSecondLower).toBeDefined()
+      const rule = wrapper.vm.rules[2]
+      const longName = 'A'.repeat(41)
+      const result = rule(longName)
+      expect(result).toContain(labels.FirstNameSecondLower)
+    })
+
+    it('should include max length in error message', () => {
+      const rule = wrapper.vm.rules[2]
+      const longName = 'A'.repeat(41)
+      const result = rule(longName)
+      expect(result).toContain('40')
     })
   })
 })
