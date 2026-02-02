@@ -66,52 +66,57 @@
 </template>
 
 <script>
-import RecentCampaigns from '@/components/Common/Widget/WidgetComponents/RecentCampaigns'
-import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
-import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
-import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
-import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
-import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
-import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
-import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
-import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
-import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
-import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
-import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
-import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
-import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
-import { postWidgets } from '@/api/widgets'
-import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
-import AppModal from '@/components/AppModal'
-import MostPhishedUsers from '@/components/Common/Widget/WidgetComponents/MostPhishedUsers'
-import MostEngagedCampaigns from '@/components/Common/Widget/WidgetComponents/MostEngagedCampaigns'
-import PhishingCampaignTrends from '@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends'
-import TopPhishingSimulationReporters from '@/components/Common/Widget/WidgetComponents/TopPhishingSimulationReporters'
-import { createRandomCryptStringNumber, getTimeZoneForMoment } from '@/utils/functions'
-import ExecutiveReportsSimulationCoverageBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue'
-import ExecutiveReportsTrainingCompletionBar from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue'
-import ExecutiveReportsIndustryPhishingRiskScore from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue'
-import ExecutiveReportsImpactOfPhishingAwarenessTraining from '@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue'
-import ExecutiveReportAvgPhishingSimClickerRate from '@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue'
+import RecentCampaigns from "@/components/Common/Widget/WidgetComponents/RecentCampaigns";
+import AvailableWidgets from "@/components/Common/Widget/AvailableWidgets";
+import RecentInvestigations from "@/components/Common/Widget/WidgetComponents/RecentInvestigations";
+import Reporters from "@/components/Common/Widget/WidgetComponents/Reporters";
+import TopRules from "@/components/Common/Widget/WidgetComponents/TopRules";
+import PhishingReporterIrHeader from "@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader";
+import TopPosts from "@/components/Common/Widget/WidgetComponents/TopPosts";
+import RecentlyPostedThreats from "@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats";
+import RecentlyReportedIncidents from "@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents";
+import ReportedEmailTrends from "@/components/Common/Widget/WidgetComponents/ReportedEmailTrends";
+import KSmartGrid from "@/components/Common/Widget/KSmartGrid";
+import IncidentAnalysisIrHeader from "@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader";
+import InvestigationsIrHeader from "@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader";
+import RoiSummaryIrHeader from "@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader";
+import { postWidgets } from "@/api/widgets";
+import CreateOrEditRule from "@/components/Playbook/CreateOrEditRule";
+import AppModal from "@/components/AppModal";
+import MostPhishedUsers from "@/components/Common/Widget/WidgetComponents/MostPhishedUsers";
+import MostEngagedCampaigns from "@/components/Common/Widget/WidgetComponents/MostEngagedCampaigns";
+import PhishingCampaignTrends from "@/components/Common/Widget/WidgetComponents/PhishingCampaignTrends";
+import TopPhishingSimulationReporters from "@/components/Common/Widget/WidgetComponents/TopPhishingSimulationReporters";
+import {
+  createRandomCryptStringNumber,
+  getTimeZoneForMoment
+} from "@/utils/functions";
+import ExecutiveReportsSimulationCoverageBar from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue";
+import ExecutiveReportsTrainingCompletionBar from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue";
+import ExecutiveReportsIndustryPhishingRiskScore from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue";
+import ExecutiveReportsImpactOfPhishingAwarenessTraining from "@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue";
+import ExecutiveReportAvgPhishingSimClickerRate from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue";
+import AgenticAIStatusWidget from "@/components/Common/Widget/WidgetComponents/AgenticAIStatusWidget.vue";
 export default {
-  name: 'Widgets',
+  name: "Widgets",
   components: {
     KSmartGrid,
     AvailableWidgets,
     AppModal,
-    CreateOrEditRule
+    CreateOrEditRule,
+    AgenticAIStatusWidget
   },
   props: {
     permissions: {
       type: Object,
       default() {
-        return {}
+        return {};
       }
     }
   },
   data() {
     return {
-      activeBreakpoint: 'lg',
+      activeBreakpoint: "lg",
       initialLayout: [],
       initialAvailableWidgets: [],
       layout: [],
@@ -133,8 +138,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Recent Investigations',
-          key: 'RecentInvestigations',
+          title: "Recent Investigations",
+          key: "RecentInvestigations",
           isAllowed: this?.permissions?.runningInvestigation
         },
         PhishingReporterIrHeader: {
@@ -149,8 +154,8 @@ export default {
           minH: 3,
           maxH: 3,
           i: createRandomCryptStringNumber(),
-          key: 'PhishingReporterIrHeader',
-          title: 'Phishing Reporter Ir Header',
+          key: "PhishingReporterIrHeader",
+          title: "Phishing Reporter Ir Header",
           isAllowed: this?.permissions?.phishingReporterCard
         },
         IncidentAnalysisIrHeader: {
@@ -165,8 +170,8 @@ export default {
           minH: 3,
           maxH: 3,
           i: createRandomCryptStringNumber(),
-          key: 'IncidentAnalysisIrHeader',
-          title: 'Incident Analysis Ir Header',
+          key: "IncidentAnalysisIrHeader",
+          title: "Incident Analysis Ir Header",
           isAllowed: this?.permissions?.irSummary
         },
         InvestigationsIrHeader: {
@@ -181,8 +186,8 @@ export default {
           minH: 3,
           maxH: 3,
           i: createRandomCryptStringNumber(),
-          key: 'InvestigationsIrHeader',
-          title: 'Investigations Ir Header',
+          key: "InvestigationsIrHeader",
+          title: "Investigations Ir Header",
           isAllowed: this?.permissions?.irSummary
         },
         ROISummaryIrHeader: {
@@ -197,8 +202,8 @@ export default {
           minH: 3,
           maxH: 3,
           i: createRandomCryptStringNumber(),
-          key: 'ROISummaryIrHeader',
-          title: 'ROI Summary Ir Header',
+          key: "ROISummaryIrHeader",
+          title: "ROI Summary Ir Header",
           isAllowed: this?.permissions?.roiSettingCard
         },
         RecentlyReportedIncidents: {
@@ -213,8 +218,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Recently Reported Incidents',
-          key: 'RecentlyReportedIncidents',
+          title: "Recently Reported Incidents",
+          key: "RecentlyReportedIncidents",
           isAllowed: this?.permissions?.notifiedEmail
         },
         RecentlyPostedThreats: {
@@ -229,8 +234,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats',
+          title: "Recently Posted Threats",
+          key: "RecentlyPostedThreats",
           isAllowed: this?.permissions?.communityPosts
         },
         TopRules: {
@@ -245,8 +250,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'TopRules',
-          title: 'Top Rules',
+          key: "TopRules",
+          title: "Top Rules",
           isAllowed: this?.permissions?.topRules
         },
         // TopPosts: {
@@ -277,8 +282,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'Reporters',
-          title: 'Reporters',
+          key: "Reporters",
+          title: "Reporters",
           isAllowed: this?.permissions?.reporters
         },
         ReportedEmailTrends: {
@@ -293,8 +298,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'ReportedEmailTrends',
-          title: 'Reported Email Trends',
+          key: "ReportedEmailTrends",
+          title: "Reported Email Trends",
           isAllowed: this?.permissions?.reportedEmailTrends
         },
         PhishingCampaignTrends: {
@@ -309,8 +314,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'PhishingCampaignTrends',
-          title: 'Phishing Campaign Trends',
+          key: "PhishingCampaignTrends",
+          title: "Phishing Campaign Trends",
           isAllowed: this?.permissions?.phishingCampaignTrendsCard
         },
         RecentCampaigns: {
@@ -325,8 +330,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'RecentCampaigns',
-          title: 'Recent Campaigns',
+          key: "RecentCampaigns",
+          title: "Recent Campaigns",
           isAllowed: this?.permissions?.recentCampaignsCard
         },
         MostPhishedUsers: {
@@ -341,8 +346,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'MostPhishedUsers',
-          title: 'Most Phished Users',
+          key: "MostPhishedUsers",
+          title: "Most Phished Users",
           isAllowed: this?.permissions?.mostPhishedUsersCard
         },
         MostEngagedCampaigns: {
@@ -357,9 +362,25 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'MostEngagedCampaigns',
-          title: 'Most Engaged Campaigns',
+          key: "MostEngagedCampaigns",
+          title: "Most Engaged Campaigns",
           isAllowed: this?.permissions?.mostEngagedCampaignsCard
+        },
+        AgenticAIStatusWidget: {
+          x: 0,
+          y: 0,
+          w: 4,
+          minW: 3,
+          defaultW: 4,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          key: "AgenticAIStatusWidget",
+          title: "Agentic AI Status",
+          isAllowed: true
         },
         TopPhishingSimulationReporters: {
           x: 0,
@@ -373,8 +394,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'TopPhishingSimulationReporters',
-          title: 'Top Phishing Simulation Reporters',
+          key: "TopPhishingSimulationReporters",
+          title: "Top Phishing Simulation Reporters",
           isAllowed: this?.permissions?.topPhishingSimulationReportersCard
         },
         SimulationCoverageWidget: {
@@ -389,19 +410,22 @@ export default {
           minH: 6,
           maxH: 6,
           card: {
-            title: 'Simulation Coverage',
-            parentKey: 'Simulation proportion of simulated versus non-simulated users',
-            key: 'SimulationCoverageWidget',
-            resourceId: 'k8PWY03vDPke'
+            title: "Simulation Coverage",
+            parentKey:
+              "Simulation proportion of simulated versus non-simulated users",
+            key: "SimulationCoverageWidget",
+            resourceId: "k8PWY03vDPke"
           },
           i: createRandomCryptStringNumber(),
-          title: 'Simulation Coverage',
-          key: 'SimulationCoverageWidget',
+          title: "Simulation Coverage",
+          key: "SimulationCoverageWidget",
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'pie',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          parentKey: "Phishing Metrics",
+          chartType: "pie",
+          dateInterval: "month",
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         },
@@ -417,19 +441,21 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Training Completion',
-          key: 'TrainingCompletionWidget',
+          title: "Training Completion",
+          key: "TrainingCompletionWidget",
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'bar',
-          dateInterval: 'month',
+          parentKey: "Phishing Metrics",
+          chartType: "bar",
+          dateInterval: "month",
           card: {
-            title: 'Training Completion',
-            parentKey: 'Measure the training coverage across the company',
-            key: 'TrainingCompletionWidget',
-            resourceId: 'MY5C2U34WAgw'
+            title: "Training Completion",
+            parentKey: "Measure the training coverage across the company",
+            key: "TrainingCompletionWidget",
+            resourceId: "MY5C2U34WAgw"
           },
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         },
@@ -445,20 +471,22 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Industry Phishing Risk Score',
-          key: 'IndustryPhishingRiskScoreWidget',
+          title: "Industry Phishing Risk Score",
+          key: "IndustryPhishingRiskScoreWidget",
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
+          parentKey: "Phishing Metrics",
+          chartType: "stackedBar",
+          dateInterval: "month",
           card: {
-            title: 'Industry Phishing Risk Score',
+            title: "Industry Phishing Risk Score",
             parentKey:
-              'Phishing risk score comparing user responses and report rates against an industry average',
-            key: 'IndustryPhishingRiskScoreWidget',
-            resourceId: 'uyzuHENtMZU0'
+              "Phishing risk score comparing user responses and report rates against an industry average",
+            key: "IndustryPhishingRiskScoreWidget",
+            resourceId: "uyzuHENtMZU0"
           },
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         },
@@ -474,20 +502,22 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Impact of Phishing Awareness Training',
-          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          title: "Impact of Phishing Awareness Training",
+          key: "ImpactOfPhishingAwarenessTrainingWidget",
           card: {
-            title: 'Impact of Phishing Awareness Training',
+            title: "Impact of Phishing Awareness Training",
             parentKey:
-              'Phishing risk scores across a diverse user base, following a 12-month cybersecurity training program',
-            key: 'ImpactOfPhishingAwarenessTrainingWidget',
-            resourceId: '9c29GEAMmurS'
+              "Phishing risk scores across a diverse user base, following a 12-month cybersecurity training program",
+            key: "ImpactOfPhishingAwarenessTrainingWidget",
+            resourceId: "9c29GEAMmurS"
           },
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          parentKey: "Phishing Metrics",
+          chartType: "stackedBar",
+          dateInterval: "month",
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         },
@@ -503,47 +533,50 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Phishing Simulation Repeat Offenders Rate',
-          key: 'RepeatOffendersUsersRateWidget',
+          title: "Phishing Simulation Repeat Offenders Rate",
+          key: "RepeatOffendersUsersRateWidget",
           card: {
-            title: 'Phishing Simulation Repeat Offenders Rate',
-            parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
-            key: 'RepeatOffendersUsersRateWidget',
-            resourceId: 'mpdEh10N5E4d'
+            title: "Phishing Simulation Repeat Offenders Rate",
+            parentKey:
+              "Reduce external phishing attack risk by lowering repeat clickers.",
+            key: "RepeatOffendersUsersRateWidget",
+            resourceId: "mpdEh10N5E4d"
           },
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          parentKey: "Phishing Metrics",
+          chartType: "stackedBar",
+          dateInterval: "month",
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         }
       },
       availableWidgets: [
         {
-          name: 'Most Phished Users',
-          key: 'MostPhishedUsers',
+          name: "Most Phished Users",
+          key: "MostPhishedUsers",
           isAllowed: this?.permissions?.mostPhishedUsersCard
         },
         {
-          name: 'Most Engaged Campaigns',
-          key: 'MostEngagedCampaigns',
+          name: "Most Engaged Campaigns",
+          key: "MostEngagedCampaigns",
           isAllowed: this?.permissions?.mostEngagedCampaignsCard
         },
         {
-          name: 'Recent Campaigns',
-          key: 'RecentCampaigns',
+          name: "Recent Campaigns",
+          key: "RecentCampaigns",
           isAllowed: this?.permissions?.recentCampaignsCard
         },
         {
-          name: 'Recent Investigations',
-          key: 'RecentInvestigations',
+          name: "Recent Investigations",
+          key: "RecentInvestigations",
           isAllowed: this?.permissions?.runningInvestigation
         },
         {
-          name: 'Top Rules',
-          key: 'TopRules',
+          name: "Top Rules",
+          key: "TopRules",
           isAllowed: this?.permissions?.topRules
         },
         // {
@@ -552,136 +585,145 @@ export default {
         //   isAllowed: this?.permissions?.topPosts
         // },
         {
-          name: 'Reporters',
-          key: 'Reporters',
+          name: "Reporters",
+          key: "Reporters",
           isAllowed: this?.permissions?.reporters
         },
         {
-          name: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats',
+          name: "Recently Posted Threats",
+          key: "RecentlyPostedThreats",
           isAllowed: this?.permissions?.communityPosts
         },
         {
-          name: 'Recently Reported Incidents',
-          key: 'RecentlyReportedIncidents',
+          name: "Recently Reported Incidents",
+          key: "RecentlyReportedIncidents",
           isAllowed: this?.permissions?.notifiedEmail
         },
         {
-          name: 'Reported Email Trends',
-          key: 'ReportedEmailTrends',
+          name: "Reported Email Trends",
+          key: "ReportedEmailTrends",
           isAllowed: this?.permissions?.reportedEmailTrends
         },
         {
-          name: 'Phishing Campaign Trends',
-          key: 'PhishingCampaignTrends',
+          name: "Phishing Campaign Trends",
+          key: "PhishingCampaignTrends",
           isAllowed: this?.permissions?.phishingCampaignTrendsCard
         },
         {
-          name: 'Phishing Reporter Ir Header',
-          key: 'PhishingReporterIrHeader',
+          name: "Phishing Reporter Ir Header",
+          key: "PhishingReporterIrHeader",
           isAllowed: this?.permissions?.phishingReporterCard
         },
         {
-          name: 'Incident Analysis Ir Header',
-          key: 'IncidentAnalysisIrHeader',
+          name: "Incident Analysis Ir Header",
+          key: "IncidentAnalysisIrHeader",
           isAllowed: this?.permissions?.irSummary
         },
         {
-          name: 'Investigations Ir Header',
-          key: 'InvestigationsIrHeader',
+          name: "Investigations Ir Header",
+          key: "InvestigationsIrHeader",
           isAllowed: this?.permissions?.irSummary
         },
         {
-          name: 'ROI Summary Ir Header',
-          key: 'ROISummaryIrHeader',
+          name: "ROI Summary Ir Header",
+          key: "ROISummaryIrHeader",
           isAllowed: this?.permissions?.roiSettingCard
         },
         {
-          name: 'Top Phishing Simulation Reporters',
-          key: 'TopPhishingSimulationReporters',
+          name: "Top Phishing Simulation Reporters",
+          key: "TopPhishingSimulationReporters",
           isAllowed: this?.permissions?.topPhishingSimulationReportersCard
         },
         {
-          name: 'Simulation Coverage',
-          key: 'SimulationCoverageWidget',
+          name: "Simulation Coverage",
+          key: "SimulationCoverageWidget",
           isAllowed: true
         },
         {
-          name: 'Training Completion',
-          key: 'TrainingCompletionWidget',
+          name: "Training Completion",
+          key: "TrainingCompletionWidget",
           isAllowed: true
         },
         {
-          name: 'Industry Phishing Risk Score',
-          key: 'IndustryPhishingRiskScoreWidget',
+          name: "Industry Phishing Risk Score",
+          key: "IndustryPhishingRiskScoreWidget",
           isAllowed: true
         },
         {
-          name: 'Impact of Phishing Awareness Training',
-          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          name: "Impact of Phishing Awareness Training",
+          key: "ImpactOfPhishingAwarenessTrainingWidget",
           isAllowed: true
         },
         {
-          name: 'Phishing Simulation Repeat Offenders Rate',
-          key: 'RepeatOffendersUsersRateWidget',
+          name: "Phishing Simulation Repeat Offenders Rate",
+          key: "RepeatOffendersUsersRateWidget",
+          isAllowed: true
+        },
+        {
+          name: "Agentic AI Status",
+          key: "AgenticAIStatusWidget",
           isAllowed: true
         }
       ],
       style:
-        '.vue-grid-layout.smartwidget {box-shadow:none;' +
-        'background:transparent ;' +
-        ' border:none}',
+        ".vue-grid-layout.smartwidget {box-shadow:none;" +
+        "background:transparent ;" +
+        " border:none}",
       callbackOfPlaybook: null
-    }
+    };
   },
   watch: {
     editMode(val) {
       if (val) {
-        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
-        this.handleAddShadows()
+        this.initialLayout = JSON.parse(JSON.stringify(this.layout));
+        this.handleAddShadows();
       }
     }
   },
   async created() {
     if (this?.permissions?.widgets) {
       try {
-        const response = await this.$store.dispatch('widgets/callForWidgets')
-        const settings = response.data['dashboardWidgetsOrdering'].data.settings
+        const response = await this.$store.dispatch("widgets/callForWidgets");
+        const settings =
+          response.data["dashboardWidgetsOrdering"].data.settings;
         if (settings.length) {
           this.layout = settings.reduce((acc, item) => {
-            const widget = { ...this.allWidgets[item.key], ...item }
-            this.removeAvailableWidget(item)
-            //availableWidgets.splice()
-            if (widget.isAllowed) acc.push(widget)
-            return acc
-          }, [])
-
+            const widget = { ...this.allWidgets[item.key], ...item };
+            this.removeAvailableWidget(item);
+            if (widget.isAllowed) acc.push(widget);
+            return acc;
+          }, []);
+          // this.ensureAgenticAIWidget(this.layout);
           this.newItemY = this.layout.reduce((acc, item) => {
-            acc += item.h
-            return acc
-          }, 0)
+            acc += item.h;
+            return acc;
+          }, 0);
           setTimeout(() => {
-            this.handleDeleteShadows()
-            this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
-          }, 20)
+            this.handleDeleteShadows();
+            this.breakpointChanged({ newBreakpoint: this.activeBreakpoint });
+          }, 20);
         }
       } catch (e) {
-        this.layout = this.getDefaultLayoutObject()
+        this.layout = this.getDefaultLayoutObject();
         setTimeout(() => {
-          this.handleDeleteShadows()
-          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
-        }, 20)
+          this.handleDeleteShadows();
+          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint });
+        }, 20);
       } finally {
-        if (!this.layout.find((widget) => widget.key === 'RepeatOffendersUsersRateWidget')) {
-          const isAvailable = this.availableWidgets.find(
-            (widget) => widget.key === 'RepeatOffendersUsersRateWidget'
+        if (
+          !this.layout.find(
+            (widget) => widget.key === "RepeatOffendersUsersRateWidget"
           )
+        ) {
+          const isAvailable = this.availableWidgets.find(
+            (widget) => widget.key === "RepeatOffendersUsersRateWidget"
+          );
           if (!isAvailable) {
             this.availableWidgets.push({
-              name: 'Phishing Simulation Repeat Offenders Rate',
-              key: 'RepeatOffendersUsersRateWidget',
+              name: "Phishing Simulation Repeat Offenders Rate",
+              key: "RepeatOffendersUsersRateWidget",
               isAllowed: true
-            })
+            });
           }
         }
       }
@@ -689,185 +731,228 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
-      this.activeBreakpoint = newBreakpoint
-      const bdCol = this.getBdCol(newBreakpoint)
+      this.activeBreakpoint = newBreakpoint;
+      const bdCol = this.getBdCol(newBreakpoint);
       let x = 0,
         xValue = 0,
-        y = 0
+        y = 0;
       this.layout.sort((a, b) => {
         if (a.y > b.y) {
-          return 1
+          return 1;
         } else if (a.y === b.y) {
           if (a.x > b.x) {
-            return 1
+            return 1;
           } else if (a.x < b.x) {
-            return -1
+            return -1;
           }
-          return 0
+          return 0;
         } else {
-          return -1
+          return -1;
         }
-      })
+      });
       this.layout = this.layout.map((item) => {
-        const itemWidth = item.w
-        xValue = x
-        x += itemWidth
+        const itemWidth = item.w;
+        xValue = x;
+        x += itemWidth;
         if (x > bdCol) {
-          x = itemWidth
-          y += item.h
-          xValue = 0
+          x = itemWidth;
+          y += item.h;
+          xValue = 0;
         }
 
-        return { ...item, w: itemWidth, x: xValue, y }
-      })
+        return { ...item, w: itemWidth, x: xValue, y };
+      });
     },
-    getBdCol(newBreakpoint = '') {
-      if (newBreakpoint === 'xs') return 6
-      return newBreakpoint === 'xxs' ? 2 : 12
+    getBdCol(newBreakpoint = "") {
+      if (newBreakpoint === "xs") return 6;
+      return newBreakpoint === "xxs" ? 2 : 12;
     },
     layoutUpdated(newLayout) {},
     togglePlaybookModal() {
-      this.showPlaybookModal = !this.showPlaybookModal
+      this.showPlaybookModal = !this.showPlaybookModal;
     },
     handleSelectedPlaybook({ resourceId, callback }) {
-      this.selectedPlaybookId = resourceId
-      this.callbackOfPlaybook = callback
-      this.togglePlaybookModal()
+      this.selectedPlaybookId = resourceId;
+      this.callbackOfPlaybook = callback;
+      this.togglePlaybookModal();
     },
     closePlaybookWithUpdate() {
-      this.callbackOfPlaybook()
-      this.togglePlaybookModal()
+      this.callbackOfPlaybook();
+      this.togglePlaybookModal();
     },
     deleteWidget(item, index) {
-      this.layout.splice(index, 1)
+      this.layout.splice(index, 1);
       this.availableWidgets.push({
         key: item.key,
         name: item.title,
         isAllowed: item.isAllowed
-      })
+      });
     },
     handleOpenMenu() {
-      this.editMode = true
+      this.editMode = true;
     },
     addWidget(widget) {
-      this.removeAvailableWidget(widget)
-      let newItem
-      const widgetObj = { ...this.allWidgets[widget.key] }
+      this.removeAvailableWidget(widget);
+      let newItem;
+      const widgetObj = { ...this.allWidgets[widget.key] };
       if (window.innerWidth < 1100 && window.innerWidth > 900) {
-        widgetObj.w = 6
+        widgetObj.w = 6;
       } else if (window.innerWidth < 900) {
-        widgetObj.w = 6
+        widgetObj.w = 6;
       } else {
-        this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW
+        this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW;
       }
-      newItem = widgetObj
-      newItem['y'] = this.newItemY
-      this.newItemY += newItem.h
-      this.layout.push(widgetObj)
+      newItem = widgetObj;
+      newItem["y"] = this.newItemY;
+      this.newItemY += newItem.h;
+      this.layout.push(widgetObj);
     },
     removeAvailableWidget(widget) {
       this.availableWidgets.splice(
         this.availableWidgets.findIndex((item) => {
-          return item.key === widget.key
+          return item.key === widget.key;
         }),
         1
-      )
+      );
     },
     handleEditMode() {
-      this.initialAvailableWidgets = JSON.parse(JSON.stringify(this.availableWidgets))
-      this.editMode = true
+      this.initialAvailableWidgets = JSON.parse(
+        JSON.stringify(this.availableWidgets)
+      );
+      this.editMode = true;
     },
     handleCancelEditMode() {
-      this.availableWidgets = JSON.parse(JSON.stringify(this.initialAvailableWidgets))
-      this.editMode = false
-      this.layout = JSON.parse(JSON.stringify(this.initialLayout))
+      this.availableWidgets = JSON.parse(
+        JSON.stringify(this.initialAvailableWidgets)
+      );
+      this.editMode = false;
+      this.layout = JSON.parse(JSON.stringify(this.initialLayout));
     },
     layoutMounted() {
-      this.handleDeleteShadows()
+      this.handleDeleteShadows();
     },
     collapse(item, index, ref) {
       if (this.layout[index].h === 1) {
-        this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'block'
-        this.layout[index].h = this.allWidgets[item.key].defaultH
+        this.$refs[ref][0].$el.querySelector(".widget-body").style.display =
+          "block";
+        this.layout[index].h = this.allWidgets[item.key].defaultH;
       } else {
-        this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'none'
-        this.layout[index].h = 1
+        this.$refs[ref][0].$el.querySelector(".widget-body").style.display =
+          "none";
+        this.layout[index].h = 1;
       }
-      this.layout = [...this.layout]
+      this.layout = [...this.layout];
     },
 
     getComponent(componentString) {
       switch (componentString) {
-        case 'RecentInvestigations':
-          return RecentInvestigations
-        case 'RecentCampaigns':
-          return RecentCampaigns
-        case 'MostPhishedUsers':
-          return MostPhishedUsers
-        case 'MostEngagedCampaigns':
-          return MostEngagedCampaigns
-        case 'Reporters':
-          return Reporters
-        case 'TopRules':
-          return TopRules
-        case 'TopPosts':
-          return TopPosts
-        case 'RecentlyPostedThreats':
-          return RecentlyPostedThreats
-        case 'RecentlyReportedIncidents':
-          return RecentlyReportedIncidents
-        case 'ReportedEmailTrends':
-          return ReportedEmailTrends
-        case 'PhishingCampaignTrends':
-          return PhishingCampaignTrends
-        case 'PhishingReporterIrHeader':
-          return PhishingReporterIrHeader
-        case 'IncidentAnalysisIrHeader':
-          return IncidentAnalysisIrHeader
-        case 'InvestigationsIrHeader':
-          return InvestigationsIrHeader
-        case 'ROISummaryIrHeader':
-          return RoiSummaryIrHeader
-        case 'TopPhishingSimulationReporters':
-          return TopPhishingSimulationReporters
-        case 'SimulationCoverageWidget':
-          return ExecutiveReportsSimulationCoverageBar
-        case 'TrainingCompletionWidget':
-          return ExecutiveReportsTrainingCompletionBar
-        case 'IndustryPhishingRiskScoreWidget':
-          return ExecutiveReportsIndustryPhishingRiskScore
-        case 'ImpactOfPhishingAwarenessTrainingWidget':
-          return ExecutiveReportsImpactOfPhishingAwarenessTraining
-        case 'RepeatOffendersUsersRateWidget':
-          return ExecutiveReportAvgPhishingSimClickerRate
+        case "RecentInvestigations":
+          return RecentInvestigations;
+        case "RecentCampaigns":
+          return RecentCampaigns;
+        case "MostPhishedUsers":
+          return MostPhishedUsers;
+        case "MostEngagedCampaigns":
+          return MostEngagedCampaigns;
+        case "Reporters":
+          return Reporters;
+        case "TopRules":
+          return TopRules;
+        case "TopPosts":
+          return TopPosts;
+        case "RecentlyPostedThreats":
+          return RecentlyPostedThreats;
+        case "RecentlyReportedIncidents":
+          return RecentlyReportedIncidents;
+        case "ReportedEmailTrends":
+          return ReportedEmailTrends;
+        case "PhishingCampaignTrends":
+          return PhishingCampaignTrends;
+        case "PhishingReporterIrHeader":
+          return PhishingReporterIrHeader;
+        case "IncidentAnalysisIrHeader":
+          return IncidentAnalysisIrHeader;
+        case "InvestigationsIrHeader":
+          return InvestigationsIrHeader;
+        case "ROISummaryIrHeader":
+          return RoiSummaryIrHeader;
+        case "TopPhishingSimulationReporters":
+          return TopPhishingSimulationReporters;
+        case "SimulationCoverageWidget":
+          return ExecutiveReportsSimulationCoverageBar;
+        case "TrainingCompletionWidget":
+          return ExecutiveReportsTrainingCompletionBar;
+        case "IndustryPhishingRiskScoreWidget":
+          return ExecutiveReportsIndustryPhishingRiskScore;
+        case "ImpactOfPhishingAwarenessTrainingWidget":
+          return ExecutiveReportsImpactOfPhishingAwarenessTraining;
+        case "RepeatOffendersUsersRateWidget":
+          return ExecutiveReportAvgPhishingSimClickerRate;
+        case "AgenticAIStatusWidget":
+          return AgenticAIStatusWidget;
         default:
-          return
+          return;
       }
     },
     handleDeleteShadows() {
-      document.querySelectorAll('.smartwidget').forEach((item) => {
-        item.style.boxShadow = 'none'
-        item.style.backgroundColor = 'transparent'
-        item.style.border = 'none'
-        item.setAttribute('title', '')
-      })
-      document.querySelectorAll('.vue-grid-item').forEach((item) => {
-        item.setAttribute('title', '')
-      })
+      document.querySelectorAll(".smartwidget").forEach((item) => {
+        item.style.boxShadow = "none";
+        item.style.backgroundColor = "transparent";
+        item.style.border = "none";
+        item.setAttribute("title", "");
+      });
+      document.querySelectorAll(".vue-grid-item").forEach((item) => {
+        item.setAttribute("title", "");
+      });
     },
     handleAddShadows() {
-      document.querySelectorAll('.smartwidget').forEach((item) => {
-        item.style.boxShadow = ''
-        item.style.backgroundColor = ''
-        item.style.border = ''
-        item.setAttribute('title', '')
-      })
-      document.querySelectorAll('.vue-grid-item').forEach((item) => {
-        item.setAttribute('title', '')
-      })
+      document.querySelectorAll(".smartwidget").forEach((item) => {
+        item.style.boxShadow = "";
+        item.style.backgroundColor = "";
+        item.style.border = "";
+        item.setAttribute("title", "");
+      });
+      document.querySelectorAll(".vue-grid-item").forEach((item) => {
+        item.setAttribute("title", "");
+      });
     },
+
+    ensureAgenticAIWidget(layoutArray) {
+      if (
+        !layoutArray.find((widget) => widget.key === "AgenticAIStatusWidget")
+      ) {
+        this.removeAvailableWidget({ key: "AgenticAIStatusWidget" });
+        this.availableWidgets = this.availableWidgets.filter(
+          (widget) => widget.key !== "AgenticAIStatusWidget"
+        );
+        const widget = {
+          ...this.allWidgets.AgenticAIStatusWidget,
+          i: createRandomCryptStringNumber(),
+          x: 0,
+          y: 0
+        };
+        layoutArray.unshift(widget);
+      }
+    },
+
     getDefaultLayoutObject() {
       let widgets = [
+        {
+          x: 8,
+          y: 0,
+          w: 4,
+          minW: 3,
+          defaultW: 4,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          key: "AgenticAIStatusWidget",
+          title: "Agentic AI Status",
+          isAllowed: true
+        },
         {
           x: 0,
           y: 0,
@@ -879,9 +964,9 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: '0.36222415873736824',
-          key: 'PhishingReporterIrHeader',
-          title: 'Phishing Reporter Ir Header',
+          i: "0.36222415873736824",
+          key: "PhishingReporterIrHeader",
+          title: "Phishing Reporter Ir Header",
           isAllowed: this?.permissions?.phishingReporterCard
         },
         {
@@ -895,9 +980,9 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: '0.4439548718965418',
-          key: 'IncidentAnalysisIrHeader',
-          title: 'Incident Analysis Ir Header',
+          i: "0.4439548718965418",
+          key: "IncidentAnalysisIrHeader",
+          title: "Incident Analysis Ir Header",
           isAllowed: this?.permissions?.irSummary
         },
         {
@@ -911,9 +996,9 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: '0.955736738495951',
-          key: 'InvestigationsIrHeader',
-          title: 'Investigations Ir Header',
+          i: "0.955736738495951",
+          key: "InvestigationsIrHeader",
+          title: "Investigations Ir Header",
           isAllowed: this?.permissions?.irSummary
         },
         {
@@ -927,9 +1012,9 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: '0.8129690089605317',
-          key: 'ROISummaryIrHeader',
-          title: 'ROI Summary Ir Header',
+          i: "0.8129690089605317",
+          key: "ROISummaryIrHeader",
+          title: "ROI Summary Ir Header",
           isAllowed: this?.permissions?.roiSettingCard
         },
         {
@@ -944,13 +1029,13 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'IndustryPhishingRiskScoreWidget',
+          key: "IndustryPhishingRiskScoreWidget",
           card: {
-            title: 'Industry Phishing Risk Score',
+            title: "Industry Phishing Risk Score",
             parentKey:
-              'Phishing risk score comparing user responses and report rates against an industry average',
-            key: 'TrainingCompletionWidget',
-            resourceId: 'uyzuHENtMZU0'
+              "Phishing risk score comparing user responses and report rates against an industry average",
+            key: "TrainingCompletionWidget",
+            resourceId: "uyzuHENtMZU0"
           },
           isDashboardWidget: true,
           isAllowed: true
@@ -967,21 +1052,23 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Impact of Phishing Awareness Training',
-          key: 'ImpactOfPhishingAwarenessTrainingWidget',
+          title: "Impact of Phishing Awareness Training",
+          key: "ImpactOfPhishingAwarenessTrainingWidget",
           card: {
-            title: 'Impact of Phishing Awareness Training',
+            title: "Impact of Phishing Awareness Training",
             parentKey:
-              'Phishing risk scores across a diverse user base, following a 12-month cybersecurity training program',
-            key: 'ImpactOfPhishingAwarenessTrainingWidget',
-            resourceId: '9c29GEAMmurS'
+              "Phishing risk scores across a diverse user base, following a 12-month cybersecurity training program",
+            key: "ImpactOfPhishingAwarenessTrainingWidget",
+            resourceId: "9c29GEAMmurS"
           },
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
+          parentKey: "Phishing Metrics",
+          chartType: "stackedBar",
+          dateInterval: "month",
           isDashboardWidget: true,
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment())
         },
         /*
@@ -1044,9 +1131,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.5602556581402198',
-          key: 'ReportedEmailTrends',
-          title: 'Reported Email Trends',
+          i: "0.5602556581402198",
+          key: "ReportedEmailTrends",
+          title: "Reported Email Trends",
           isAllowed: this?.permissions?.reportedEmailTrends
         },
         // {
@@ -1076,9 +1163,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.5602556581402199',
-          key: 'PhishingCampaignTrends',
-          title: 'Phishing Campaign Trends',
+          i: "0.5602556581402199",
+          key: "PhishingCampaignTrends",
+          title: "Phishing Campaign Trends",
           isAllowed: this?.permissions?.phishingCampaignTrendsCard
         },
         {
@@ -1092,9 +1179,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.30768881243195656',
-          title: 'Recent Investigations',
-          key: 'RecentInvestigations',
+          i: "0.30768881243195656",
+          title: "Recent Investigations",
+          key: "RecentInvestigations",
           isAllowed: this?.permissions?.runningInvestigation
         },
         {
@@ -1108,9 +1195,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.6104982760663944',
-          title: 'Recently Reported Incidents',
-          key: 'RecentlyReportedIncidents',
+          i: "0.6104982760663944",
+          title: "Recently Reported Incidents",
+          key: "RecentlyReportedIncidents",
           isAllowed: this?.permissions?.notifiedEmail
         },
         {
@@ -1124,9 +1211,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.15876452855409506',
-          title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats',
+          i: "0.15876452855409506",
+          title: "Recently Posted Threats",
+          key: "RecentlyPostedThreats",
           isAllowed: this?.permissions?.communityPosts
         },
         {
@@ -1140,9 +1227,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.3901775633662319',
-          key: 'Reporters',
-          title: 'Reporters',
+          i: "0.3901775633662319",
+          key: "Reporters",
+          title: "Reporters",
           isAllowed: this?.permissions?.reporters
         },
         {
@@ -1156,9 +1243,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.8761474288298772',
-          key: 'TopRules',
-          title: 'Top Rules',
+          i: "0.8761474288298772",
+          key: "TopRules",
+          title: "Top Rules",
           isAllowed: this?.permissions?.topRules
         },
         {
@@ -1173,8 +1260,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'RecentCampaigns',
-          title: 'Recent Campaigns',
+          key: "RecentCampaigns",
+          title: "Recent Campaigns",
           isAllowed: this?.permissions?.recentCampaignsCard
         },
         {
@@ -1189,8 +1276,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'MostPhishedUsers',
-          title: 'Most Phished Users',
+          key: "MostPhishedUsers",
+          title: "Most Phished Users",
           isAllowed: this?.permissions?.mostPhishedUsersCard
         },
         {
@@ -1205,8 +1292,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'MostEngagedCampaigns',
-          title: 'Most Engaged Campaigns',
+          key: "MostEngagedCampaigns",
+          title: "Most Engaged Campaigns",
           isAllowed: this?.permissions?.mostEngagedCampaignsCard
         },
         {
@@ -1221,8 +1308,8 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          key: 'TopPhishingSimulationReporters',
-          title: 'Top Phishing Simulation Reporters',
+          key: "TopPhishingSimulationReporters",
+          title: "Top Phishing Simulation Reporters",
           isAllowed: true,
           isDashboardWidget: true
         },
@@ -1238,50 +1325,53 @@ export default {
           minH: 6,
           maxH: 6,
           i: createRandomCryptStringNumber(),
-          title: 'Phishing Simulation Repeat Offenders Rate',
-          key: 'RepeatOffendersUsersRateWidget',
+          title: "Phishing Simulation Repeat Offenders Rate",
+          key: "RepeatOffendersUsersRateWidget",
           card: {
-            title: 'Phishing Simulation Repeat Offenders Rate',
-            parentKey: 'Reduce external phishing attack risk by lowering repeat clickers.',
-            key: 'RepeatOffendersUsersRateWidget',
-            resourceId: 'mpdEh10N5E4d'
+            title: "Phishing Simulation Repeat Offenders Rate",
+            parentKey:
+              "Reduce external phishing attack risk by lowering repeat clickers.",
+            key: "RepeatOffendersUsersRateWidget",
+            resourceId: "mpdEh10N5E4d"
           },
           isAllowed: true,
-          parentKey: 'Phishing Metrics',
-          chartType: 'stackedBar',
-          dateInterval: 'month',
-          startDate: this.$moment(Date.now()).subtract(3, 'months').format(getTimeZoneForMoment()),
+          parentKey: "Phishing Metrics",
+          chartType: "stackedBar",
+          dateInterval: "month",
+          startDate: this.$moment(Date.now())
+            .subtract(3, "months")
+            .format(getTimeZoneForMoment()),
           endDate: this.$moment(Date.now()).format(getTimeZoneForMoment()),
           isDashboardWidget: true
         }
-      ]
+      ];
       widgets = widgets.reduce((acc, widget) => {
-        this.removeAvailableWidget(widget)
+        this.removeAvailableWidget(widget);
         if (widget.isAllowed) {
-          acc.push(widget)
+          acc.push(widget);
         }
-        return acc
-      }, [])
-      return widgets
+        return acc;
+      }, []);
+      return widgets;
     },
     callForPostWidgets() {
       const payload = this.layout.reduce(
         (acc, widget) => {
-          const { settings } = acc
-          const { x, y, w, h, title, key } = widget
-          settings.push({ x, y, w, h, title, key })
-          return acc
+          const { settings } = acc;
+          const { x, y, w, h, title, key } = widget;
+          settings.push({ x, y, w, h, title, key });
+          return acc;
         },
         { settings: [] }
-      )
+      );
       postWidgets(payload).finally(() => {
-        this.editMode = false
-      })
+        this.editMode = false;
+      });
     },
     handleSaveChanges() {
-      this.handleDeleteShadows()
-      this.callForPostWidgets()
+      this.handleDeleteShadows();
+      this.callForPostWidgets();
     }
   }
-}
+};
 </script>

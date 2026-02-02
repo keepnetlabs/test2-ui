@@ -12,6 +12,7 @@ const login = {
     company: null,
     hasAgenticAILicense: false,
     agenticAIEnabled: false,
+    agenticAIExecutionMode: 'ApprovalGated',
     loginWhiteLabel: {
       brandName: "",
       favIconUrl: "",
@@ -23,7 +24,8 @@ const login = {
     loginWhiteLabel: (state) => state.loginWhiteLabel,
     getCurrentCompany: (state) => state.company,
     getHasAgenticAILicense: (state) => state.hasAgenticAILicense,
-    getAgenticAIEnabled: (state) => state.agenticAIEnabled
+    getAgenticAIEnabled: (state) => state.agenticAIEnabled,
+    getAgenticAIExecutionMode: (state) => state.agenticAIExecutionMode
   },
   mutations: {
     SET_PAGE_NUMBER(state, payload) {
@@ -50,6 +52,9 @@ const login = {
     },
     SET_AGENTIC_AI_ENABLED(state, payload) {
       state.agenticAIEnabled = !!payload;
+    },
+    SET_AGENTIC_AI_EXECUTION_MODE(state, payload) {
+      state.agenticAIExecutionMode = payload;
     }
   },
   actions: {
@@ -141,8 +146,14 @@ const login = {
       if (!state.hasAgenticAILicense) return Promise.resolve(false);
       return getAgenticAISettings({ snackbar: { hideError: true } })
         .then((response) => {
-          const enabled = !!response?.data?.data?.agenticAIEnabled;
+          // API does not return an explicit enabled flag anymore.
+          // If we get a successful response with data, we consider it enabled/available.
+          const data = response?.data?.data;
+          const enabled = !!data;
           commit("SET_AGENTIC_AI_ENABLED", enabled);
+          if(data && data.executionMode) {
+             commit("SET_AGENTIC_AI_EXECUTION_MODE", data.executionMode);
+          }
           return enabled;
         })
         .catch(() => {

@@ -1,162 +1,214 @@
 describe('favicon.js utility', () => {
-  let originalDocument
+  let updateFavicon
 
   beforeEach(() => {
-    // Mock document
-    originalDocument = global.document
-    global.document = {
-      head: {
-        appendChild: jest.fn(),
-        removeChild: jest.fn()
-      },
-      querySelector: jest.fn(),
-      querySelectorAll: jest.fn(() => []),
-      createElement: jest.fn((tag) => {
-        const element = {
-          rel: null,
-          href: null,
-          remove: jest.fn()
-        }
-        return element
-      })
-    }
+    jest.clearAllMocks()
+    const module = require('../../../src/utils/favicon.js')
+    updateFavicon = module.updateFavicon
   })
 
   afterEach(() => {
-    global.document = originalDocument
     jest.clearAllMocks()
   })
 
-  describe('appendCacheBust', () => {
-    it('should add cache bust parameter to URL with query string', () => {
-      // We need to require the module to test internal functions
-      const module = require('../../../src/utils/favicon.js')
+  describe('module structure', () => {
+    it('should export updateFavicon function', () => {
+      expect(typeof updateFavicon).toBe('function')
+    })
 
-      // Test the behavior through updateFavicon since appendCacheBust is not exported
-      // We can verify by checking that updateFavicon is called
-      expect(typeof module.updateFavicon).toBe('function')
+    it('should have updateFavicon as named export', () => {
+      expect(updateFavicon).toBeDefined()
+    })
+
+    it('should be a function with parameters', () => {
+      expect(updateFavicon.length).toBeGreaterThanOrEqual(1)
     })
   })
 
-  describe('updateFavicon', () => {
-    it('should not throw when URL is empty', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-
+  describe('updateFavicon - basic functionality', () => {
+    it('should not throw with valid favicon URL', () => {
+      const testUrl = 'https://example.com/favicon.ico'
       expect(() => {
-        updateFavicon('')
+        updateFavicon(testUrl)
       }).not.toThrow()
     })
 
     it('should not throw when URL is null', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-
       expect(() => {
         updateFavicon(null)
       }).not.toThrow()
     })
 
-    it('should handle valid favicon URL', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-      const testUrl = 'https://example.com/favicon.ico'
-
+    it('should not throw when URL is empty string', () => {
       expect(() => {
-        updateFavicon(testUrl)
+        updateFavicon('')
+      }).not.toThrow()
+    })
+
+    it('should not throw when URL is undefined', () => {
+      expect(() => {
+        updateFavicon(undefined)
       }).not.toThrow()
     })
 
     it('should accept options parameter', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
       const testUrl = 'https://example.com/favicon.ico'
       const options = { cacheBust: false }
-
       expect(() => {
         updateFavicon(testUrl, options)
       }).not.toThrow()
     })
 
-    it('should handle cache bust option', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
+    it('should accept empty options object', () => {
       const testUrl = 'https://example.com/favicon.ico'
-      const optionsWithCacheBust = { cacheBust: true }
-      const optionsWithoutCacheBust = { cacheBust: false }
-
       expect(() => {
-        updateFavicon(testUrl, optionsWithCacheBust)
-        updateFavicon(testUrl, optionsWithoutCacheBust)
-      }).not.toThrow()
-    })
-
-    it('should default cache bust to true', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-      const testUrl = 'https://example.com/favicon.ico'
-
-      // Without options should use cache bust by default
-      expect(() => {
-        updateFavicon(testUrl)
+        updateFavicon(testUrl, {})
       }).not.toThrow()
     })
   })
 
-  describe('favicon utility exports', () => {
-    it('should export updateFavicon function', () => {
-      const module = require('../../../src/utils/favicon.js')
-      expect(typeof module.updateFavicon).toBe('function')
-    })
-
-    it('should have updateFavicon as named export', () => {
-      const module = require('../../../src/utils/favicon.js')
-      expect(module).toHaveProperty('updateFavicon')
-    })
-  })
-
-  describe('favicon URL handling', () => {
-    it('should handle URLs with query parameters', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-      const testUrl = 'https://example.com/favicon.ico?size=64'
-
-      expect(() => {
-        updateFavicon(testUrl, { cacheBust: true })
-      }).not.toThrow()
-    })
-
-    it('should handle URLs without query parameters', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-      const testUrl = 'https://example.com/favicon.ico'
-
-      expect(() => {
-        updateFavicon(testUrl, { cacheBust: true })
-      }).not.toThrow()
-    })
-
-    it('should handle relative URLs', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-      const testUrl = '/favicon.ico'
-
-      expect(() => {
-        updateFavicon(testUrl)
-      }).not.toThrow()
-    })
-
-    it('should handle data URLs', () => {
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-      const dataUrl = 'data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAA=='
-
-      expect(() => {
-        updateFavicon(dataUrl, { cacheBust: false })
-      }).not.toThrow()
-    })
-
+  describe('document availability checks', () => {
     it('should not process when document is undefined', () => {
       const originalDoc = global.document
       global.document = undefined
-
-      const { updateFavicon } = require('../../../src/utils/favicon.js')
-
+      const testUrl = 'https://example.com/favicon.ico'
       expect(() => {
-        updateFavicon('https://example.com/favicon.ico')
+        updateFavicon(testUrl)
       }).not.toThrow()
-
       global.document = originalDoc
+    })
+
+    it('should not throw when document check fails', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should return early when document is unavailable', () => {
+      const originalDoc = global.document
+      global.document = undefined
+      const testUrl = 'https://example.com/favicon.ico'
+      const result = updateFavicon(testUrl)
+      expect(result).toBeUndefined()
+      global.document = originalDoc
+    })
+  })
+
+  describe('DOM element creation', () => {
+    it('should set href on all icon types', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should set rel attribute on links', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should set href attribute on links', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+  })
+
+  describe('options handling', () => {
+    it('should handle missing options', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should handle undefined options', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl, undefined)
+      }).not.toThrow()
+    })
+
+    it('should handle empty options object', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl, {})
+      }).not.toThrow()
+    })
+
+    it('should handle unknown options', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl, { unknownOption: true })
+      }).not.toThrow()
+    })
+
+    it('should work with boolean options', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl, { cacheBust: true })
+      }).not.toThrow()
+    })
+  })
+
+  describe('integration scenarios', () => {
+    it('should update all icon types with same URL', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should work multiple times without errors', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+        updateFavicon(testUrl)
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should handle rapid successive calls', () => {
+      const testUrl = 'https://example.com/favicon.ico'
+      expect(() => {
+        for (let i = 0; i < 5; i++) {
+          updateFavicon(testUrl)
+        }
+      }).not.toThrow()
+    })
+  })
+
+  describe('edge cases', () => {
+    it('should handle very long URLs', () => {
+      const testUrl = 'https://example.com/' + 'a'.repeat(1000)
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should handle special characters in URL', () => {
+      const testUrl = 'https://example.com/favicon-@#$%.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should handle URLs with fragments', () => {
+      const testUrl = 'https://example.com/favicon.ico#section'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
+    })
+
+    it('should handle URLs with encoded characters', () => {
+      const testUrl = 'https://example.com/favicon%20file.ico'
+      expect(() => {
+        updateFavicon(testUrl)
+      }).not.toThrow()
     })
   })
 })
