@@ -229,14 +229,26 @@ export function getAIAllySettings() {
   return testRequest.get('/companies/ai')
 }
 
+export function getAgenticAIMetadata() {
+  return testRequest.get('/companies/agentic-ai-settings/metadata')
+}
+
 export function getAgenticAISettings(config = {}) {
   // NOTE: no global loader here; use local skeleton loaders in UI
-  return testRequest.get('/companies/agentic-ai', { ...config })
+  return testRequest.get('/companies/agentic-ai-settings', { ...config })
+}
+
+export function updateAgenticAISettings(payload = {}) {
+  return testRequest.patch('/companies/agentic-ai-settings', payload)
+}
+
+export function resetAgenticAISettings() {
+  return testRequest.post('/companies/agentic-ai-settings/reset')
 }
 
 export function saveAgenticAISettings(payload = {}) {
-  // NOTE: no global loader here; use local skeleton loaders in UI
-  return testRequest.post('/companies/agentic-ai', payload)
+  // Deprecated/Compatibility wrapper if needed, or mapped to update
+  return updateAgenticAISettings(payload)
 }
 export function generateNotificationTemplateTranslation(payload = {}) {
   return testRequest.post('/companies/email-templates/translate', payload)

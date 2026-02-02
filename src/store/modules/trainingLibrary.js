@@ -339,13 +339,17 @@ const trainingLibrary = {
       const filter = state.filters.find(
         (f) => f && payload && f.key === payload.key
       );
-      filter.items = payload.items;
+      if (filter) {
+        filter.items = payload.items;
+      }
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
       const filter = state.filters.find(
         (f) => f && payload && f.key === payload.key
       );
-      filter.show = payload.show;
+      if (filter) {
+        filter.show = payload.show;
+      }
     },
     SET_DEFAULT_TABLE_FILTERS(state) {
       const filters = localStorage.getItem("training-library-filters");

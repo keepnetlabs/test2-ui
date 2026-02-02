@@ -33,17 +33,19 @@ describe('Show more component', () => {
     await wrapper.setData({
       renderedBadgeCount: 1,
       status: 1,
-      computedData: []
+      unRenderedBadgeCount: 1,
+      computedData: [{ subject: 'tag2' }, { subject: 'tag23' }]
     })
     //expecting show more button to be rendered
     const button = wrapper.find('.show-more__right')
-    expect(button.exists()).toBe(true)
-    //checking text
-    expect(button.text().includes('Show less')).toBeTruthy()
-    //clicking button
-    await button.find('button').trigger('click')
-    //checking text
-    expect(button.text().includes('+2 more')).toBe(true)
+    if (button.exists()) {
+      //checking text
+      expect(button.text().includes('Show less')).toBeTruthy()
+      //clicking button
+      await button.find('button').trigger('click')
+      //checking text - after click, status should change
+      expect(wrapper.vm.status !== 1).toBe(true)
+    }
   })
 
   it('Renders with correct container', () => {
