@@ -214,5 +214,177 @@ describe('tableReload.js store module', () => {
       tableReloadStore.actions.setTableReload({ commit }, true)
       expect(state.tableReload).toBe(true)
     })
+
+    it('full workflow: action -> mutation -> state', () => {
+      const state = { tableReload: false }
+      const commit = jest.fn((mutationName, payload) => {
+        tableReloadStore.mutations[mutationName](state, payload)
+      })
+
+      tableReloadStore.actions.setTableReload({ commit }, true)
+      expect(commit).toHaveBeenCalledWith('setTableReload', true)
+      expect(state.tableReload).toBe(true)
+    })
+
+    it('can perform sequential toggle operations', () => {
+      const state = { tableReload: false }
+      const commit = (mutationName, payload) => {
+        tableReloadStore.mutations[mutationName](state, payload)
+      }
+
+      // Toggle on
+      tableReloadStore.actions.setTableReload({ commit }, true)
+      expect(state.tableReload).toBe(true)
+
+      // Toggle off
+      tableReloadStore.actions.setTableReload({ commit }, false)
+      expect(state.tableReload).toBe(false)
+
+      // Toggle on again
+      tableReloadStore.actions.setTableReload({ commit }, true)
+      expect(state.tableReload).toBe(true)
+    })
+
+    it('maintains state consistency through multiple operations', () => {
+      const state = { tableReload: false }
+      const commit = (mutationName, payload) => {
+        tableReloadStore.mutations[mutationName](state, payload)
+      }
+
+      const initialState = state.tableReload
+      expect(initialState).toBe(false)
+
+      tableReloadStore.actions.setTableReload({ commit }, true)
+      expect(state.tableReload).toBe(true)
+
+      tableReloadStore.actions.setTableReload({ commit }, { force: true })
+      expect(typeof state.tableReload).toBe('object')
+    })
+  })
+
+  describe('edge cases', () => {
+    it('handles empty payload object', () => {
+      const state = { tableReload: false }
+      tableReloadStore.mutations.setTableReload(state, {})
+      expect(state.tableReload).toEqual({})
+    })
+
+    it('handles array payload', () => {
+      const state = { tableReload: false }
+      const array = [1, 2, 3]
+      tableReloadStore.mutations.setTableReload(state, array)
+      expect(state.tableReload).toEqual(array)
+    })
+
+    it('handles very large object payload', () => {
+      const state = { tableReload: false }
+      const largeObj = {}
+      for (let i = 0; i < 1000; i++) {
+        largeObj[`key${i}`] = `value${i}`
+      }
+      tableReloadStore.mutations.setTableReload(state, largeObj)
+      expect(Object.keys(state.tableReload).length).toBe(1000)
+    })
+
+    it('handles zero as payload', () => {
+      const state = { tableReload: false }
+      tableReloadStore.mutations.setTableReload(state, 0)
+      expect(state.tableReload).toBe(0)
+    })
+
+    it('handles empty string as payload', () => {
+      const state = { tableReload: false }
+      tableReloadStore.mutations.setTableReload(state, '')
+      expect(state.tableReload).toBe('')
+    })
+  })
+
+  describe('type safety', () => {
+    it('state property exists', () => {
+      expect(tableReloadStore.state).toBeDefined()
+    })
+
+    it('mutation function is callable', () => {
+      expect(typeof tableReloadStore.mutations.setTableReload).toBe('function')
+    })
+
+    it('action function is callable', () => {
+      expect(typeof tableReloadStore.actions.setTableReload).toBe('function')
+    })
+
+    it('state values can be any type', () => {
+      const testValues = [true, false, null, undefined, 'string', 123, {}, []]
+      testValues.forEach(value => {
+        const state = { tableReload: false }
+        tableReloadStore.mutations.setTableReload(state, value)
+        expect(state.tableReload).toEqual(value)
+      })
+    })
+
+    it('action does not modify context', () => {
+      const context = { commit: jest.fn() }
+      tableReloadStore.actions.setTableReload(context, true)
+      expect(context.commit).toHaveBeenCalled()
+      expect(Object.keys(context).length).toBe(1)
+    })
+
+    it('getter property exists even if empty', () => {
+      expect(tableReloadStore).toHaveProperty('getters')
+      expect(typeof tableReloadStore.getters).toBe('object')
+    })
+  })
+
+  describe('state mutations behavior', () => {
+    it('does not create new state, mutates existing', () => {
+      const state = { tableReload: false }
+      const stateBefore = state
+      tableReloadStore.mutations.setTableReload(state, true)
+      expect(state === stateBefore).toBe(true)
+    })
+
+    it('preserves other state properties', () => {
+      const state = { tableReload: false, other: 'value' }
+      tableReloadStore.mutations.setTableReload(state, true)
+      expect(state.other).toBe('value')
+    })
+
+    it('can reset state to original value', () => {
+      const state = { tableReload: false }
+      tableReloadStore.mutations.setTableReload(state, true)
+      expect(state.tableReload).toBe(true)
+      tableReloadStore.mutations.setTableReload(state, false)
+      expect(state.tableReload).toBe(false)
+    })
+  })
+
+  describe('action payload handling', () => {
+    it('default payload is empty object', () => {
+      const commit = jest.fn()
+      tableReloadStore.actions.setTableReload({ commit })
+      expect(commit).toHaveBeenCalledWith('setTableReload', {})
+    })
+
+    it('explicit undefined uses default empty object', () => {
+      const commit = jest.fn()
+      tableReloadStore.actions.setTableReload({ commit }, undefined)
+      expect(commit).toHaveBeenCalledWith('setTableReload', {})
+    })
+
+    it('boolean payloads are preserved', () => {
+      const commit = jest.fn()
+      tableReloadStore.actions.setTableReload({ commit }, true)
+      expect(commit).toHaveBeenCalledWith('setTableReload', true)
+
+      const commit2 = jest.fn()
+      tableReloadStore.actions.setTableReload({ commit: commit2 }, false)
+      expect(commit2).toHaveBeenCalledWith('setTableReload', false)
+    })
+
+    it('complex payloads are passed through', () => {
+      const commit = jest.fn()
+      const complex = { nested: { data: [1, 2, 3] }, flag: true }
+      tableReloadStore.actions.setTableReload({ commit }, complex)
+      expect(commit).toHaveBeenCalledWith('setTableReload', complex)
+    })
   })
 })

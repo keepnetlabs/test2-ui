@@ -169,6 +169,100 @@ describe('executiveReports.js store module', () => {
     })
   })
 
+  describe('chart type values', () => {
+    it('contains all required chart type values', () => {
+      const requiredValues = ['bar', 'gauge', 'pie', 'line', 'stackedBar', 'doughnut', 'table']
+      requiredValues.forEach(value => {
+        const found = executiveReportsStore.state.chartTypes.find(t => t.value === value)
+        expect(found).toBeDefined()
+      })
+    })
+
+    it('all chart types have unique values', () => {
+      const values = executiveReportsStore.state.chartTypes.map(t => t.value)
+      const uniqueValues = new Set(values)
+      expect(uniqueValues.size).toBe(values.length)
+    })
+
+    it('all chart types have text descriptions', () => {
+      executiveReportsStore.state.chartTypes.forEach(type => {
+        expect(type.text.length).toBeGreaterThan(0)
+      })
+    })
+
+    it('bar chart is first in list', () => {
+      expect(executiveReportsStore.state.chartTypes[0].value).toBe('bar')
+    })
+
+    it('table chart is last in list', () => {
+      const lastIndex = executiveReportsStore.state.chartTypes.length - 1
+      expect(executiveReportsStore.state.chartTypes[lastIndex].value).toBe('table')
+    })
+  })
+
+  describe('date interval values', () => {
+    it('contains all required date interval values', () => {
+      const requiredValues = ['day', 'week', 'month', 'quarter', 'year']
+      requiredValues.forEach(value => {
+        const found = executiveReportsStore.state.dateIntervals.find(d => d.value === value)
+        expect(found).toBeDefined()
+      })
+    })
+
+    it('all date intervals have unique values', () => {
+      const values = executiveReportsStore.state.dateIntervals.map(d => d.value)
+      const uniqueValues = new Set(values)
+      expect(uniqueValues.size).toBe(values.length)
+    })
+
+    it('all date intervals have text descriptions', () => {
+      executiveReportsStore.state.dateIntervals.forEach(interval => {
+        expect(interval.text.length).toBeGreaterThan(0)
+      })
+    })
+
+    it('daily is first interval', () => {
+      expect(executiveReportsStore.state.dateIntervals[0].value).toBe('day')
+    })
+
+    it('yearly is last interval', () => {
+      const lastIndex = executiveReportsStore.state.dateIntervals.length - 1
+      expect(executiveReportsStore.state.dateIntervals[lastIndex].value).toBe('year')
+    })
+  })
+
+  describe('getter return values', () => {
+    beforeEach(() => {
+      state = executiveReportsStore.state
+    })
+
+    it('all getters return arrays', () => {
+      expect(Array.isArray(executiveReportsStore.getters.getValueTypes(state))).toBe(true)
+      expect(Array.isArray(executiveReportsStore.getters.getCategories(state))).toBe(true)
+      expect(Array.isArray(executiveReportsStore.getters.getGroupedBy(state))).toBe(true)
+      expect(Array.isArray(executiveReportsStore.getters.getTargetGroups(state))).toBe(true)
+      expect(Array.isArray(executiveReportsStore.getters.getChartTypes(state))).toBe(true)
+      expect(Array.isArray(executiveReportsStore.getters.getDateIntervals(state))).toBe(true)
+    })
+
+    it('chart types getter returns populated array', () => {
+      const types = executiveReportsStore.getters.getChartTypes(state)
+      expect(types.length).toBeGreaterThan(0)
+    })
+
+    it('date intervals getter returns populated array', () => {
+      const intervals = executiveReportsStore.getters.getDateIntervals(state)
+      expect(intervals.length).toBeGreaterThan(0)
+    })
+
+    it('custom arrays are empty by default', () => {
+      expect(executiveReportsStore.getters.getValueTypes(state)).toHaveLength(0)
+      expect(executiveReportsStore.getters.getCategories(state)).toHaveLength(0)
+      expect(executiveReportsStore.getters.getGroupedBy(state)).toHaveLength(0)
+      expect(executiveReportsStore.getters.getTargetGroups(state)).toHaveLength(0)
+    })
+  })
+
   describe('integration tests', () => {
     beforeEach(() => {
       state = JSON.parse(JSON.stringify(executiveReportsStore.state))
@@ -222,6 +316,85 @@ describe('executiveReports.js store module', () => {
         { id: 2, name: 'Malware' }
       ]
       expect(executiveReportsStore.getters.getCategories(state)).toHaveLength(2)
+    })
+
+    it('can update multiple arrays simultaneously', () => {
+      state.valueTypes = [{ id: 1, name: 'Count' }]
+      state.categories = [{ id: 1, name: 'Category' }]
+      state.groupedBy = [{ id: 1, name: 'Group' }]
+      state.targetGroups = [{ id: 1, name: 'Target' }]
+
+      expect(executiveReportsStore.getters.getValueTypes(state)).toHaveLength(1)
+      expect(executiveReportsStore.getters.getCategories(state)).toHaveLength(1)
+      expect(executiveReportsStore.getters.getGroupedBy(state)).toHaveLength(1)
+      expect(executiveReportsStore.getters.getTargetGroups(state)).toHaveLength(1)
+    })
+
+    it('can clear custom arrays', () => {
+      state.valueTypes = [{ id: 1, name: 'Count' }]
+      expect(executiveReportsStore.getters.getValueTypes(state)).toHaveLength(1)
+
+      state.valueTypes = []
+      expect(executiveReportsStore.getters.getValueTypes(state)).toHaveLength(0)
+    })
+
+    it('chart types remain unchanged when custom arrays update', () => {
+      const chartTypesBefore = executiveReportsStore.getters.getChartTypes(state).length
+      state.valueTypes = [{ id: 1, name: 'Count' }]
+      const chartTypesAfter = executiveReportsStore.getters.getChartTypes(state).length
+      expect(chartTypesAfter).toBe(chartTypesBefore)
+    })
+  })
+
+  describe('type safety', () => {
+    beforeEach(() => {
+      state = executiveReportsStore.state
+    })
+
+    it('state object has all required properties', () => {
+      expect(state).toHaveProperty('valueTypes')
+      expect(state).toHaveProperty('categories')
+      expect(state).toHaveProperty('groupedBy')
+      expect(state).toHaveProperty('targetGroups')
+      expect(state).toHaveProperty('chartTypes')
+      expect(state).toHaveProperty('dateIntervals')
+    })
+
+    it('all getters are functions', () => {
+      expect(typeof executiveReportsStore.getters.getValueTypes).toBe('function')
+      expect(typeof executiveReportsStore.getters.getCategories).toBe('function')
+      expect(typeof executiveReportsStore.getters.getGroupedBy).toBe('function')
+      expect(typeof executiveReportsStore.getters.getTargetGroups).toBe('function')
+      expect(typeof executiveReportsStore.getters.getChartTypes).toBe('function')
+      expect(typeof executiveReportsStore.getters.getDateIntervals).toBe('function')
+    })
+
+    it('mutations is empty object', () => {
+      expect(Object.keys(executiveReportsStore.mutations).length).toBe(0)
+    })
+
+    it('actions has callForData function', () => {
+      expect(typeof executiveReportsStore.actions.callForData).toBe('function')
+    })
+
+    it('namespaced is true', () => {
+      expect(executiveReportsStore.namespaced).toBe(true)
+    })
+  })
+
+  describe('state immutability', () => {
+    it('state copies are independent', () => {
+      const state1 = JSON.parse(JSON.stringify(executiveReportsStore.state))
+      const state2 = JSON.parse(JSON.stringify(executiveReportsStore.state))
+
+      state1.valueTypes = [{ id: 1, name: 'Test' }]
+      expect(state2.valueTypes).toHaveLength(0)
+    })
+
+    it('chart types array is not modified externally', () => {
+      const originalLength = executiveReportsStore.state.chartTypes.length
+      const types = executiveReportsStore.getters.getChartTypes(executiveReportsStore.state)
+      expect(types.length).toBe(originalLength)
     })
   })
 })

@@ -170,6 +170,155 @@ describe('datatable.js store module', () => {
     })
   })
 
+  describe('state management', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('state is initially empty', () => {
+      expect(Object.keys(state.tables).length).toBe(0)
+    })
+
+    it('tables is object type', () => {
+      expect(typeof state.tables).toBe('object')
+    })
+
+    it('tables is not null', () => {
+      expect(state.tables).not.toBeNull()
+    })
+  })
+
+  describe('key handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('key is used as property name', () => {
+      const payload = { key: 'myTable', data: [] }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.myTable).toBeDefined()
+    })
+
+    it('key is removed from stored object', () => {
+      const payload = { key: 'table1', columns: ['a', 'b'] }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.table1).not.toHaveProperty('key')
+    })
+
+    it('can use numeric keys', () => {
+      const payload = { key: 'table123', data: [] }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.table123).toBeDefined()
+    })
+
+    it('can use special characters in key', () => {
+      const payload = { key: 'table-name_v2', data: [] }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables['table-name_v2']).toBeDefined()
+    })
+  })
+
+  describe('pagination handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('can store pagination info', () => {
+      const payload = {
+        key: 'paginatedTable',
+        pagination: { page: 1, pageSize: 20, total: 100 }
+      }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.paginatedTable.pagination.page).toBe(1)
+      expect(state.tables.paginatedTable.pagination.total).toBe(100)
+    })
+
+    it('can update page number', () => {
+      const payload1 = { key: 'table', pagination: { page: 1, pageSize: 20 } }
+      tableStore.mutations.setTable(state, payload1)
+      const payload2 = { key: 'table', pagination: { page: 2, pageSize: 20 } }
+      tableStore.mutations.setTable(state, payload2)
+      expect(state.tables.table.pagination.page).toBe(2)
+    })
+
+    it('can handle different page sizes', () => {
+      const sizes = [10, 20, 50, 100]
+      sizes.forEach((size, index) => {
+        const payload = {
+          key: 'table',
+          pagination: { page: 1, pageSize: size, total: 500 }
+        }
+        tableStore.mutations.setTable(state, payload)
+        expect(state.tables.table.pagination.pageSize).toBe(size)
+      })
+    })
+  })
+
+  describe('sorting handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('can store sorting info', () => {
+      const payload = {
+        key: 'sortedTable',
+        sorting: { field: 'name', order: 'asc' }
+      }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.sortedTable.sorting.field).toBe('name')
+      expect(state.tables.sortedTable.sorting.order).toBe('asc')
+    })
+
+    it('can change sorting field', () => {
+      const payload1 = { key: 'table', sorting: { field: 'name', order: 'asc' } }
+      tableStore.mutations.setTable(state, payload1)
+      const payload2 = { key: 'table', sorting: { field: 'date', order: 'desc' } }
+      tableStore.mutations.setTable(state, payload2)
+      expect(state.tables.table.sorting.field).toBe('date')
+      expect(state.tables.table.sorting.order).toBe('desc')
+    })
+
+    it('can toggle sort order', () => {
+      const payload = { key: 'table', sorting: { field: 'id', order: 'asc' } }
+      tableStore.mutations.setTable(state, payload)
+      payload.sorting.order = 'desc'
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.table.sorting.order).toBe('desc')
+    })
+  })
+
+  describe('column handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('can store column definitions', () => {
+      const payload = {
+        key: 'table',
+        columns: [
+          { field: 'id', label: 'ID' },
+          { field: 'name', label: 'Name' }
+        ]
+      }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.table.columns).toHaveLength(2)
+    })
+
+    it('can store simple column names', () => {
+      const payload = { key: 'table', columns: ['id', 'name', 'email'] }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.table.columns).toHaveLength(3)
+    })
+
+    it('can update columns', () => {
+      const payload1 = { key: 'table', columns: ['col1', 'col2'] }
+      tableStore.mutations.setTable(state, payload1)
+      const payload2 = { key: 'table', columns: ['col1', 'col2', 'col3'] }
+      tableStore.mutations.setTable(state, payload2)
+      expect(state.tables.table.columns).toHaveLength(3)
+    })
+  })
+
   describe('integration tests', () => {
     beforeEach(() => {
       state = JSON.parse(JSON.stringify(tableStore.state))
@@ -249,6 +398,118 @@ describe('datatable.js store module', () => {
       commit('setTable', payload)
       expect(state.tables.testTable).not.toHaveProperty('key')
       expect(state.tables.testTable.name).toBe('Test Table')
+    })
+
+    it('full workflow: action to mutation to state', () => {
+      const commit = jest.fn((mutationName, payload) => {
+        tableStore.mutations[mutationName](state, payload)
+      })
+
+      const payload = {
+        key: 'workflowTable',
+        data: [{ id: 1 }],
+        pagination: { page: 1, pageSize: 10 }
+      }
+      tableStore.actions.setTable({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('setTable', payload)
+      expect(state.tables.workflowTable).toBeDefined()
+    })
+
+    it('can handle rapid table updates', () => {
+      const commit = (mutationName, payload) => {
+        tableStore.mutations[mutationName](state, payload)
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const payload = {
+          key: 'rapidTable',
+          data: Array(i + 1).fill({}),
+          page: i
+        }
+        commit('setTable', payload)
+      }
+      expect(state.tables.rapidTable.data).toHaveLength(5)
+      expect(state.tables.rapidTable.page).toBe(4)
+    })
+  })
+
+  describe('edge cases', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('handles empty data array', () => {
+      const payload = { key: 'emptyTable', data: [] }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.emptyTable.data).toHaveLength(0)
+    })
+
+    it('handles large data sets', () => {
+      const largeData = Array.from({ length: 10000 }, (_, i) => ({ id: i }))
+      const payload = { key: 'largeTable', data: largeData }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.largeTable.data).toHaveLength(10000)
+    })
+
+    it('handles null data', () => {
+      const payload = { key: 'nullTable', data: null }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.nullTable.data).toBeNull()
+    })
+
+    it('handles nested complex objects', () => {
+      const payload = {
+        key: 'complexTable',
+        data: [
+          {
+            id: 1,
+            user: { name: 'Alice', contact: { email: 'alice@example.com' } }
+          }
+        ]
+      }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.complexTable.data[0].user.contact.email).toBe('alice@example.com')
+    })
+
+    it('overwrites existing table completely', () => {
+      const payload1 = { key: 'table', data: [{ id: 1 }], name: 'Old' }
+      tableStore.mutations.setTable(state, payload1)
+      const payload2 = { key: 'table', data: [{ id: 2 }], name: 'New' }
+      tableStore.mutations.setTable(state, payload2)
+      expect(state.tables.table.data[0].id).toBe(2)
+      expect(state.tables.table.name).toBe('New')
+    })
+  })
+
+  describe('type safety', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(tableStore.state))
+    })
+
+    it('state tables is object type', () => {
+      expect(typeof state.tables).toBe('object')
+    })
+
+    it('mutation is function', () => {
+      expect(typeof tableStore.mutations.setTable).toBe('function')
+    })
+
+    it('action is function', () => {
+      expect(typeof tableStore.actions.setTable).toBe('function')
+    })
+
+    it('can store any property on table', () => {
+      const payload = {
+        key: 'table',
+        customProp1: 'value1',
+        customProp2: 123,
+        customProp3: { nested: true },
+        customProp4: [1, 2, 3]
+      }
+      tableStore.mutations.setTable(state, payload)
+      expect(state.tables.table.customProp1).toBe('value1')
+      expect(state.tables.table.customProp2).toBe(123)
+      expect(state.tables.table.customProp3.nested).toBe(true)
     })
   })
 })

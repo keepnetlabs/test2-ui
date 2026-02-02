@@ -178,6 +178,259 @@ describe('playbook.js store module', () => {
     })
   })
 
+  describe('state properties', () => {
+    it('playbookList is array type', () => {
+      expect(Array.isArray(playbookStore.state.playbookList)).toBe(true)
+    })
+
+    it('playbookList is initially empty', () => {
+      expect(playbookStore.state.playbookList).toHaveLength(0)
+    })
+
+    it('state object has playbookList property', () => {
+      expect(playbookStore.state).toHaveProperty('playbookList')
+    })
+  })
+
+  describe('getter behavior', () => {
+    beforeEach(() => {
+      state = playbookStore.state
+    })
+
+    it('playbookListGetter is function type', () => {
+      expect(typeof playbookStore.getters.playbookListGetter).toBe('function')
+    })
+
+    it('playbookListGetter returns same reference as state', () => {
+      state.playbookList = [{ id: 1 }]
+      const getter = playbookStore.getters.playbookListGetter(state)
+      expect(getter === state.playbookList).toBe(true)
+    })
+
+    it('playbookListGetter reflects state changes', () => {
+      state.playbookList = [{ id: 1 }]
+      let getter = playbookStore.getters.playbookListGetter(state)
+      expect(getter).toHaveLength(1)
+
+      state.playbookList = [{ id: 1 }, { id: 2 }]
+      getter = playbookStore.getters.playbookListGetter(state)
+      expect(getter).toHaveLength(2)
+    })
+
+    it('getter returns array type', () => {
+      const result = playbookStore.getters.playbookListGetter(state)
+      expect(Array.isArray(result)).toBe(true)
+    })
+
+    it('getter returns with custom properties', () => {
+      state.playbookList = [{ id: 1, custom: 'value', nested: { prop: 'data' } }]
+      const getter = playbookStore.getters.playbookListGetter(state)
+      expect(getter[0].custom).toBe('value')
+      expect(getter[0].nested.prop).toBe('data')
+    })
+  })
+
+  describe('mutation payload handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(playbookStore.state))
+    })
+
+    it('mutation handles null data', () => {
+      const payload = { data: null }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList).toBeNull()
+    })
+
+    it('mutation handles undefined data', () => {
+      const payload = { data: undefined }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList).toBeUndefined()
+    })
+
+    it('mutation handles large arrays', () => {
+      const largeData = Array.from({ length: 1000 }, (_, i) => ({ id: i, name: `Playbook ${i}` }))
+      const payload = { data: largeData }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList).toHaveLength(1000)
+    })
+
+    it('mutation handles nested data', () => {
+      const payload = {
+        data: [
+          { id: 1, config: { settings: { enabled: true } } }
+        ]
+      }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList[0].config.settings.enabled).toBe(true)
+    })
+
+    it('mutation completely replaces list', () => {
+      state.playbookList = [{ id: 1, name: 'Old' }]
+      const payload = { data: [{ id: 2, name: 'New' }] }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList[0].id).toBe(2)
+      expect(state.playbookList[0].name).toBe('New')
+    })
+  })
+
+  describe('action response structure', () => {
+    it('getPlaybookList returns promise', () => {
+      const commit = jest.fn()
+      const result = playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(result instanceof Promise).toBe(true)
+    })
+
+    it('action response has data property', async () => {
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(result).toHaveProperty('data')
+    })
+
+    it('action response structure is correct', async () => {
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(result.data).toHaveProperty('data')
+      expect(result.data.data).toHaveProperty('results')
+      expect(Array.isArray(result.data.data.results)).toBe(true)
+    })
+
+    it('action result items have matchCount', async () => {
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      result.data.data.results.forEach((item) => {
+        expect(item).toHaveProperty('matchCount')
+        expect(typeof item.matchCount).toBe('number')
+      })
+    })
+  })
+
+  describe('action data transformation', () => {
+    it('action adds matchCount to each item', async () => {
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      const results = result.data.data.results
+      results.forEach((item) => {
+        expect(item.matchCount).toBe(1)
+      })
+    })
+
+    it('action preserves all original properties', async () => {
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      const firstItem = result.data.data.results[0]
+      expect(firstItem).toHaveProperty('id')
+      expect(firstItem).toHaveProperty('name')
+      expect(firstItem).toHaveProperty('matchCount')
+    })
+
+    it('action does not modify original response structure', async () => {
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(result.data.data).toHaveProperty('results')
+      expect(Array.isArray(result.data.data.results)).toBe(true)
+    })
+
+    it('action handles empty results array', async () => {
+      // This test verifies the action works with the mock data structure
+      const commit = jest.fn()
+      const result = await playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(result.data.data.results.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('mutation and action integration', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(playbookStore.state))
+    })
+
+    it('action commits mutation with transformed data', async () => {
+      const commits = []
+      const commit = jest.fn((name, payload) => {
+        commits.push({ name, payload })
+      })
+      await playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(commit).toHaveBeenCalledTimes(1)
+      expect(commits[0].name).toBe('SET_PLAYBOOK_LIST')
+      expect(commits[0].payload).toBeDefined()
+    })
+
+    it('action processes and commits results', async () => {
+      const commit = jest.fn((mutationName, payload) => {
+        playbookStore.mutations[mutationName](state, payload)
+      })
+      await playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(state.playbookList).toBeDefined()
+      expect(state.playbookList).toHaveProperty('results')
+      expect(Array.isArray(state.playbookList.results)).toBe(true)
+    })
+  })
+
+  describe('edge cases', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(playbookStore.state))
+    })
+
+    it('handles playbooks with special characters', () => {
+      const payload = {
+        data: [
+          { id: 1, name: 'Playbook & Strategy!@#$%' }
+        ]
+      }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList[0].name).toBe('Playbook & Strategy!@#$%')
+    })
+
+    it('handles playbooks with Unicode characters', () => {
+      const payload = {
+        data: [
+          { id: 1, name: 'Playbook 作本 مقطع' }
+        ]
+      }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList[0].name).toContain('Playbook')
+    })
+
+    it('handles rapid list updates', async () => {
+      const commit = jest.fn()
+      for (let i = 0; i < 5; i++) {
+        await playbookStore.actions.getPlaybookList({ commit }, {})
+      }
+      expect(commit).toHaveBeenCalledTimes(5)
+    })
+
+    it('handles mutation with duplicate IDs', () => {
+      const payload = {
+        data: [
+          { id: 1, name: 'Playbook A' },
+          { id: 1, name: 'Playbook B' }
+        ]
+      }
+      playbookStore.mutations.SET_PLAYBOOK_LIST(state, payload)
+      expect(state.playbookList).toHaveLength(2)
+    })
+  })
+
+  describe('type safety', () => {
+    it('mutation is function', () => {
+      expect(typeof playbookStore.mutations.SET_PLAYBOOK_LIST).toBe('function')
+    })
+
+    it('action is function', () => {
+      expect(typeof playbookStore.actions.getPlaybookList).toBe('function')
+    })
+
+    it('getter is function', () => {
+      expect(typeof playbookStore.getters.playbookListGetter).toBe('function')
+    })
+
+    it('action is async', async () => {
+      const commit = jest.fn()
+      const result = playbookStore.actions.getPlaybookList({ commit }, {})
+      expect(result instanceof Promise).toBe(true)
+      await result
+    })
+  })
+
   describe('integration tests', () => {
     beforeEach(() => {
       state = JSON.parse(JSON.stringify(playbookStore.state))

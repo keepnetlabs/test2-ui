@@ -359,6 +359,334 @@ describe('dashboard.js store module', () => {
     })
   })
 
+  describe('state properties detailed', () => {
+    it('all state properties exist', () => {
+      expect(dashboardStore.state).toHaveProperty('popupFeedback')
+      expect(dashboardStore.state).toHaveProperty('dropdownCompanies')
+      expect(dashboardStore.state).toHaveProperty('selectedCompany')
+      expect(dashboardStore.state).toHaveProperty('selectedCompanyObject')
+      expect(dashboardStore.state).toHaveProperty('isSwitchDialogOpen')
+    })
+
+    it('dropdownCompanies is array type', () => {
+      expect(Array.isArray(dashboardStore.state.dropdownCompanies)).toBe(true)
+    })
+
+    it('selectedCompanyObject is object type', () => {
+      expect(typeof dashboardStore.state.selectedCompanyObject).toBe('object')
+    })
+
+    it('selectedCompanyObject has logoUrl and name', () => {
+      expect(dashboardStore.state.selectedCompanyObject).toHaveProperty('logoUrl')
+      expect(dashboardStore.state.selectedCompanyObject).toHaveProperty('name')
+    })
+
+    it('popupFeedback is boolean', () => {
+      expect(typeof dashboardStore.state.popupFeedback).toBe('boolean')
+    })
+
+    it('isSwitchDialogOpen is boolean', () => {
+      expect(typeof dashboardStore.state.isSwitchDialogOpen).toBe('boolean')
+    })
+
+    it('selectedCompany is string', () => {
+      expect(typeof dashboardStore.state.selectedCompany).toBe('string')
+    })
+  })
+
+  describe('getter behavior detailed', () => {
+    beforeEach(() => {
+      state = dashboardStore.state
+    })
+
+    it('isPopupOpened is function type', () => {
+      expect(typeof dashboardStore.getters.isPopupOpened).toBe('function')
+    })
+
+    it('getIsSwitchDialogOpen is function type', () => {
+      expect(typeof dashboardStore.getters.getIsSwitchDialogOpen).toBe('function')
+    })
+
+    it('getCompanyDropdowns is function type', () => {
+      expect(typeof dashboardStore.getters.getCompanyDropdowns).toBe('function')
+    })
+
+    it('getCurrentCompanyObject is function type', () => {
+      expect(typeof dashboardStore.getters.getCurrentCompanyObject).toBe('function')
+    })
+
+    it('getCompanyDropdowns returns same reference', () => {
+      const getter = dashboardStore.getters.getCompanyDropdowns(state)
+      expect(getter === state.dropdownCompanies).toBe(true)
+    })
+
+    it('getCurrentCompanyObject returns same reference', () => {
+      const getter = dashboardStore.getters.getCurrentCompanyObject(state)
+      expect(getter === state.selectedCompanyObject).toBe(true)
+    })
+
+    it('getters reflect state changes', () => {
+      state.popupFeedback = true
+      expect(dashboardStore.getters.isPopupOpened(state)).toBe(true)
+      state.popupFeedback = false
+      expect(dashboardStore.getters.isPopupOpened(state)).toBe(false)
+    })
+
+    it('getCompanyDropdowns returns array type', () => {
+      const getter = dashboardStore.getters.getCompanyDropdowns(state)
+      expect(Array.isArray(getter)).toBe(true)
+    })
+  })
+
+  describe('mutation payload handling detailed', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(dashboardStore.state))
+      localStorage.clear()
+    })
+
+    it('SET_DROPDOWN_COMPANIES handles null', () => {
+      dashboardStore.mutations.SET_DROPDOWN_COMPANIES(state, null)
+      expect(state.dropdownCompanies).toBeNull()
+    })
+
+    it('SET_DROPDOWN_COMPANIES handles large arrays', () => {
+      const largeList = Array.from({ length: 100 }, (_, i) => ({
+        id: i,
+        name: `Company ${i}`
+      }))
+      dashboardStore.mutations.SET_DROPDOWN_COMPANIES(state, largeList)
+      expect(state.dropdownCompanies).toHaveLength(100)
+    })
+
+    it('SET_SELECTED_COMPANY handles undefined companyResourceId', () => {
+      localStorage.setItem('selectedCompanyName', 'Test')
+      localStorage.setItem('selectedCompanyRequestId', 'req-123')
+      const payload = { id: 1 }
+      dashboardStore.mutations.SET_SELECTED_COMPANY(state, payload)
+      expect(state.selectedCompany).toBeDefined()
+    })
+
+    it('SET_SELECTED_COMPANY preserves payload id', () => {
+      localStorage.setItem('selectedCompanyName', 'Test')
+      localStorage.setItem('selectedCompanyRequestId', 'req-123')
+      const payload = { id: 99, companyResourceId: 'res-123' }
+      dashboardStore.mutations.SET_SELECTED_COMPANY(state, payload)
+      expect(state.selectedCompany.id).toBe('req-123')
+    })
+
+    it('SET_SWITCH_DIALOG handles multiple toggles', () => {
+      for (let i = 0; i < 5; i++) {
+        const value = i % 2 === 0
+        dashboardStore.mutations.SET_SWITCH_DIALOG(state, value)
+        expect(state.isSwitchDialogOpen).toBe(value)
+      }
+    })
+
+    it('CHANGE_FEEDBACK_POPUP handles multiple toggles', () => {
+      for (let i = 0; i < 5; i++) {
+        const value = i % 2 === 0
+        dashboardStore.mutations.CHANGE_FEEDBACK_POPUP(state, value)
+        expect(state.popupFeedback).toBe(value)
+      }
+    })
+
+    it('CHANGE_FEEDBACK_POPUP can set to null', () => {
+      dashboardStore.mutations.CHANGE_FEEDBACK_POPUP(state, null)
+      expect(state.popupFeedback).toBeNull()
+    })
+
+    it('SET_SWITCH_DIALOG can set to null', () => {
+      dashboardStore.mutations.SET_SWITCH_DIALOG(state, null)
+      expect(state.isSwitchDialogOpen).toBeNull()
+    })
+  })
+
+  describe('action behavior detailed', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(dashboardStore.state))
+      localStorage.clear()
+    })
+
+    it('logoutUser returns promise', async () => {
+      const commit = jest.fn()
+      const result = dashboardStore.actions.logoutUser({ commit })
+      expect(result instanceof Promise).toBe(true)
+      await result
+    })
+
+    it('setSwitchDialog is synchronous', () => {
+      const commit = jest.fn()
+      const result = dashboardStore.actions.setSwitchDialog({ commit }, true)
+      expect(result).toBeUndefined()
+    })
+
+    it('selectCompany returns promise', () => {
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+      const result = dashboardStore.actions.selectCompany(
+        { commit, dispatch, state: dashboardStore.state },
+        { companyResourceId: 'res-123' }
+      )
+      expect(result instanceof Promise).toBe(true)
+    })
+
+    it('getDropdownCompanies returns promise when not CompanyAdmin', () => {
+      const commit = jest.fn()
+      const result = dashboardStore.actions.getDropdownCompanies({ commit }, 'RegularUser')
+      expect(result instanceof Promise).toBe(true)
+    })
+
+    it('changeFeedbackPopup is synchronous', () => {
+      const commit = jest.fn()
+      const result = dashboardStore.actions.changeFeedbackPopup({ commit }, true)
+      expect(result).toBeUndefined()
+    })
+
+    it('setSwitchDialog commits exactly once', () => {
+      const commit = jest.fn()
+      dashboardStore.actions.setSwitchDialog({ commit }, true)
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('changeFeedbackPopup commits exactly once', () => {
+      const commit = jest.fn()
+      dashboardStore.actions.changeFeedbackPopup({ commit }, true)
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('type safety and consistency', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(dashboardStore.state))
+      localStorage.clear()
+    })
+
+    it('all mutations are functions', () => {
+      Object.values(dashboardStore.mutations).forEach((mutation) => {
+        expect(typeof mutation).toBe('function')
+      })
+    })
+
+    it('all getters are functions', () => {
+      Object.values(dashboardStore.getters).forEach((getter) => {
+        expect(typeof getter).toBe('function')
+      })
+    })
+
+    it('all actions are functions', () => {
+      Object.values(dashboardStore.actions).forEach((action) => {
+        expect(typeof action).toBe('function')
+      })
+    })
+
+    it('module is properly namespaced', () => {
+      expect(dashboardStore.namespaced).toBe(true)
+      expect(typeof dashboardStore.namespaced).toBe('boolean')
+    })
+
+    it('state is not null', () => {
+      expect(dashboardStore.state).not.toBeNull()
+    })
+
+    it('state mutations do not create new state', () => {
+      const initialState = state
+      dashboardStore.mutations.CHANGE_FEEDBACK_POPUP(state, true)
+      expect(state === initialState).toBe(true)
+    })
+
+    it('state copies are independent', () => {
+      const state1 = JSON.parse(JSON.stringify(dashboardStore.state))
+      const state2 = JSON.parse(JSON.stringify(dashboardStore.state))
+      state1.popupFeedback = true
+      expect(state2.popupFeedback).toBe(false)
+    })
+  })
+
+  describe('edge cases and data transitions', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(dashboardStore.state))
+      localStorage.clear()
+    })
+
+    it('handles company list with special characters', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      const companies = [
+        { id: 1, name: 'Company & Partners!@#' },
+        { id: 2, name: 'Société Française' }
+      ]
+      commit('SET_DROPDOWN_COMPANIES', companies)
+      expect(state.dropdownCompanies[0].name).toBe('Company & Partners!@#')
+    })
+
+    it('handles rapid toggle sequences', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      for (let i = 0; i < 20; i++) {
+        commit('CHANGE_FEEDBACK_POPUP', i % 2 === 0)
+        commit('SET_SWITCH_DIALOG', i % 2 !== 0)
+      }
+      expect(state.popupFeedback).toBe(false)
+      expect(state.isSwitchDialogOpen).toBe(true)
+    })
+
+    it('handles localStorage interaction edge cases', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      localStorage.setItem('selectedCompanyName', '')
+      localStorage.setItem('selectedCompanyRequestId', '')
+      const payload = { id: 1, companyResourceId: '' }
+      commit('SET_SELECTED_COMPANY', payload)
+      expect(state.selectedCompany).toBeDefined()
+    })
+
+    it('handles selectedCompanyObject with very long URLs', () => {
+      const longUrl = 'https://example.com/' + 'a'.repeat(500) + '.png'
+      state.selectedCompanyObject = {
+        logoUrl: longUrl,
+        name: 'Test'
+      }
+      expect(state.selectedCompanyObject.logoUrl).toBe(longUrl)
+    })
+
+    it('handles empty company list', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      commit('SET_DROPDOWN_COMPANIES', [])
+      expect(state.dropdownCompanies).toHaveLength(0)
+    })
+
+    it('handles all dialogs and popups closed', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      commit('CHANGE_FEEDBACK_POPUP', false)
+      commit('SET_SWITCH_DIALOG', false)
+      expect(state.popupFeedback).toBe(false)
+      expect(state.isSwitchDialogOpen).toBe(false)
+    })
+
+    it('handles all dialogs and popups open', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      commit('CHANGE_FEEDBACK_POPUP', true)
+      commit('SET_SWITCH_DIALOG', true)
+      expect(state.popupFeedback).toBe(true)
+      expect(state.isSwitchDialogOpen).toBe(true)
+    })
+  })
+
   describe('integration tests', () => {
     beforeEach(() => {
       state = JSON.parse(JSON.stringify(dashboardStore.state))
@@ -466,6 +794,49 @@ describe('dashboard.js store module', () => {
 
       expect(state.popupFeedback).toBe(false)
       expect(state.isSwitchDialogOpen).toBe(false)
+    })
+
+    it('full workflow: load companies, select, open dialogs, reset', () => {
+      const commit = (mutationName, payload) => {
+        dashboardStore.mutations[mutationName](state, payload)
+      }
+
+      // Load companies
+      const companies = [
+        { id: 1, name: 'Company 1', logo: 'logo1.png' },
+        { id: 2, name: 'Company 2', logo: 'logo2.png' }
+      ]
+      commit('SET_DROPDOWN_COMPANIES', companies)
+      expect(state.dropdownCompanies).toHaveLength(2)
+
+      // Open dialogs
+      commit('CHANGE_FEEDBACK_POPUP', true)
+      commit('SET_SWITCH_DIALOG', true)
+
+      // Set company
+      localStorage.setItem('selectedCompanyName', 'Company 1')
+      localStorage.setItem('selectedCompanyRequestId', 'req-001')
+      commit('SET_SELECTED_COMPANY', { id: 1, companyResourceId: 'res-001' })
+
+      // Reset
+      commit('CHANGE_FEEDBACK_POPUP', false)
+      commit('SET_SWITCH_DIALOG', false)
+      commit('SET_DROPDOWN_COMPANIES', [])
+
+      expect(state.popupFeedback).toBe(false)
+      expect(state.isSwitchDialogOpen).toBe(false)
+      expect(state.dropdownCompanies).toHaveLength(0)
+    })
+
+    it('can manage company object properties', () => {
+      state.selectedCompanyObject = {
+        logoUrl: 'https://example.com/logo.png',
+        name: 'Test Company'
+      }
+
+      const getter = dashboardStore.getters.getCurrentCompanyObject(state)
+      expect(getter.logoUrl).toBe('https://example.com/logo.png')
+      expect(getter.name).toBe('Test Company')
     })
   })
 })
