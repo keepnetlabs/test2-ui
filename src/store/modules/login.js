@@ -2,7 +2,7 @@ import { resetPassword, twoStepLogin } from "@/api/auth";
 import AuthenticationService from "../../services/authentication";
 import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 import { getWhiteLabelByUrl } from "@/api/whitelabel";
-import { getCompanyByID, getAgenticAISettings } from "@/api/company";
+import { getCompanyByID, getAgenticAISettings, getAgenticAIStatus } from "@/api/company";
 import { updateFavicon } from "@/utils/favicon";
 const login = {
   namespaced: true,
@@ -144,12 +144,10 @@ const login = {
       // default to false until backend says true
       commit("SET_AGENTIC_AI_ENABLED", false);
       if (!state.hasAgenticAILicense) return Promise.resolve(false);
-      return getAgenticAISettings({ snackbar: { hideError: true } })
+      return getAgenticAIStatus()
         .then((response) => {
-          // API does not return an explicit enabled flag anymore.
-          // If we get a successful response with data, we consider it enabled/available.
           const data = response?.data?.data;
-          const enabled = !!data;
+          const enabled = !!data?.agenticAIEnabled;
           commit("SET_AGENTIC_AI_ENABLED", enabled);
           if(data && data.executionMode) {
              commit("SET_AGENTIC_AI_EXECUTION_MODE", data.executionMode);
