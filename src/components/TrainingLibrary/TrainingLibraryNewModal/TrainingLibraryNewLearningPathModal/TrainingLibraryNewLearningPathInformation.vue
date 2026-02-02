@@ -23,6 +23,13 @@
         :items="getCategories"
       ></KSelect>
     </FormGroup>
+    <InputTrainingLevel
+      v-model="formData.level"
+      :items="getLevels"
+      :required="false"
+      sub-title="Select the level of knowledge required for this learning path"
+      placeholder="Select learning path level"
+    />
     <InputCompliance v-model="formData.compliances" />
     <InputBehaviour v-model="formData.behaviours" />
     <InputSelectRoles
@@ -32,7 +39,10 @@
       item-value="value"
       sub-title="Select intended role for this learning path"
     />
-    <FormGroup :title="labels.Description" :sub-title="labels.DescriptionLearningPathSub">
+    <FormGroup
+      :title="labels.Description"
+      :sub-title="labels.DescriptionLearningPathSub"
+    >
       <InputAIDescription
         v-model.trim="formData.description"
         id="input--new-training-training-description"
@@ -48,7 +58,7 @@
         :show-generate-button="true"
         :has-generated="hasGenerated"
         :is-generate-disabled="isGenerateDisabled"
-        tooltip-message="To generate an AI-powered description, complete key fields like Learning Path Name, Category, Training Level and Role."
+        tooltip-message="To generate an AI-powered description, complete key fields like Learning Path Name, Category and Role."
         @generate="handleGenerate"
         @generating-changed="$emit('generating-changed', $event)"
       />
@@ -61,7 +71,10 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup :title="labels.CoverImage" :sub-title="labels.UploadCoverImageForTheLearningPath">
+    <FormGroup
+      :title="labels.CoverImage"
+      :sub-title="labels.UploadCoverImageForTheLearningPath"
+    >
       <KFileUpload
         ref="refCoverImageFileUpload"
         id="input--new-training-image"
@@ -87,25 +100,27 @@
 </template>
 
 <script>
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import labels from '@/model/constants/labels'
-import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InputTag from '@/components/Common/Inputs/InputTag'
-import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import * as Validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
-import { mapGetters } from 'vuex'
-import InputCompliance from '@/components/Common/Inputs/InputCompliance.vue'
-import InputBehaviour from '@/components/Common/Inputs/InputBehaviour.vue'
-import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
-import InputSelectRoles from '@/components/Common/Inputs/InputSelectRoles.vue'
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import InputEntityName from "@/components/Common/Inputs/InputEntityName";
+import labels from "@/model/constants/labels";
+import InputAIDescription from "@/components/Common/Inputs/InputAIDescription";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import InputTag from "@/components/Common/Inputs/InputTag";
+import KFileUpload from "@/components/Common/FileUpload/FileUpload";
+import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
+import * as Validations from "@/utils/validations";
+import { scrollToComponent } from "@/utils/functions";
+import { mapGetters } from "vuex";
+import InputCompliance from "@/components/Common/Inputs/InputCompliance.vue";
+import InputBehaviour from "@/components/Common/Inputs/InputBehaviour.vue";
+import useAIDescriptionGeneration from "@/hooks/useAIDescriptionGeneration";
+import InputSelectRoles from "@/components/Common/Inputs/InputSelectRoles.vue";
+import InputTrainingLevel from "@/components/Common/Inputs/InputTrainingLevel.vue";
 export default {
-  name: 'TrainingLibraryNewLearningPathInformation',
+  name: "TrainingLibraryNewLearningPathInformation",
   mixins: [useAIDescriptionGeneration],
   components: {
+    InputTrainingLevel,
     InputBehaviour,
     InputCompliance,
     MakeAvailableFor,
@@ -134,21 +149,23 @@ export default {
       formData: {
         coverImage: null,
         compliances: [],
-        name: '',
-        description: '',
-        category: '',
+        level: "",
+        name: "",
+        description: "",
+        category: "",
         roleIds: [],
         behaviours: [],
         tags: [],
         availableForRequests: [],
         coverImageUrl: null
       }
-    }
+    };
   },
   computed: {
     ...mapGetters({
-      getCategories: 'trainingLibraryHelpers/getCategories',
-      getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
+      getCategories: "trainingLibraryHelpers/getCategories",
+      getTargetAudiences: "trainingLibraryHelpers/getTargetAudiences",
+      getLevels: "trainingLibraryHelpers/getLevels"
     }),
     canAutoGenerateDescription() {
       return (
@@ -159,12 +176,15 @@ export default {
         !this.isGenerateLoading &&
         !this.hasGenerated &&
         !this.hasGenerationError
-      )
+      );
     },
     isGenerateDisabled() {
       // If description has more than 5 characters, enable button
-      if (this.formData.description && this.formData.description.trim().length > 5) {
-        return this.isGenerateLoading
+      if (
+        this.formData.description &&
+        this.formData.description.trim().length > 5
+      ) {
+        return this.isGenerateLoading;
       }
       // Otherwise check required fields
       return (
@@ -172,83 +192,83 @@ export default {
         !this.formData.category ||
         !this.formData.roleIds?.length ||
         this.isGenerateLoading
-      )
+      );
     }
   },
   methods: {
     handleCoverImageChange(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.formData.coverImage = null
-        return
+        this.formData.coverImage = null;
+        return;
       }
-      this.formData.coverImage = file
+      this.formData.coverImage = file;
     },
     validateForm() {
-      const { refForm } = this.$refs
+      const { refForm } = this.$refs;
       if (refForm.validate()) {
-        return true
+        return true;
       } else {
         this.$nextTick(() => {
-          const el = refForm.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
+          const el = refForm.$el.querySelector(".error--text");
+          scrollToComponent(el);
+        });
       }
-      return false
+      return false;
     },
     setFormData(formData = {}) {
       if (formData.coverImage) {
         this.coverImageFilePreview = [
           {
             url: formData.coverImage.imageUrl,
-            name: formData.coverImage.name || 'Cover Image'
+            name: formData.coverImage.name || "Cover Image"
           }
-        ]
-        this.formData.coverImageUrl = formData.coverImage.imageUrl
+        ];
+        this.formData.coverImageUrl = formData.coverImage.imageUrl;
       }
       this.formData = {
         ...this.formData,
         ...formData
-      }
+      };
     },
     handleCoverImageClear() {
-      this.coverImageFilePreview = []
-      this.formData.coverImage = ''
-      this.formData.coverImageUrl = ''
+      this.coverImageFilePreview = [];
+      this.formData.coverImage = "";
+      this.formData.coverImageUrl = "";
     },
     setMakeAvailableForData(availableForList = []) {
       if (this?.$refs?.refMakeAvailableFor && availableForList?.length) {
         const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
           availableForList
-        )
+        );
         if (!availableForListFromBackend.length) {
           this.formData.availableForRequests = [
             {
-              id: 'MyCompanyOnly',
-              label: 'My company only',
-              type: 'MyCompanyOnly',
+              id: "MyCompanyOnly",
+              label: "My company only",
+              type: "MyCompanyOnly",
               resourceId: null
             }
-          ]
+          ];
         } else {
-          this.formData.availableForRequests = availableForListFromBackend
+          this.formData.availableForRequests = availableForListFromBackend;
         }
       } else {
         this.formData.availableForRequests = [
           {
-            id: 'MyCompanyOnly',
-            label: 'My company only',
-            type: 'MyCompanyOnly',
+            id: "MyCompanyOnly",
+            label: "My company only",
+            type: "MyCompanyOnly",
             resourceId: null
           }
-        ]
+        ];
       }
     },
     async handleGenerate() {
       if (this.isGenerateDisabled || this.isGenerateLoading) {
-        return
+        return;
       }
-      this.isGenerateLoading = true
-      this.hasGenerationError = false
+      this.isGenerateLoading = true;
+      this.hasGenerationError = false;
 
       try {
         const generatedDescription = await this.generateAIDescription({
@@ -256,27 +276,27 @@ export default {
           category: this.formData.category,
           roleIds: this.formData.roleIds,
           description: this.formData.description
-        })
+        });
 
         if (generatedDescription) {
-          this.formData.description = generatedDescription
-          this.hasGenerated = true
+          this.formData.description = generatedDescription;
+          this.hasGenerated = true;
         } else {
           this.formData.description = `This learning path is designed for ${
-            this.formData.roleIds?.length ? 'selected roles' : 'users'
-          }.`
-          this.hasGenerated = false
+            this.formData.roleIds?.length ? "selected roles" : "users"
+          }.`;
+          this.hasGenerated = false;
         }
       } catch (error) {
-        console.error('Failed to generate AI description:', error)
-        this.hasGenerationError = true
+        console.error("Failed to generate AI description:", error);
+        this.hasGenerationError = true;
         this.formData.description = `This learning path is designed for ${
-          this.formData.roleIds?.length ? 'selected roles' : 'users'
-        }.`
+          this.formData.roleIds?.length ? "selected roles" : "users"
+        }.`;
       } finally {
-        this.isGenerateLoading = false
+        this.isGenerateLoading = false;
       }
     }
   }
-}
+};
 </script>

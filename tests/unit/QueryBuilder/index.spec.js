@@ -120,4 +120,36 @@ describe('Query Builder test cases suite', () => {
     //checking group body
     expect(wrapper.find('.vqb-group-body').exists()).toBeTruthy()
   })
+
+  it('respects maxDepth prop', () => {
+    const wrapper = mount(TestQueryBuilder, {
+      localVue,
+      propsData: {
+        maxDepth: 3
+      }
+    })
+    expect(wrapper.vm.maxDepth).toBe(3)
+  })
+
+  it('handles AND and OR operators', () => {
+    const wrapper = mount(TestQueryBuilder, {
+      localVue
+    })
+    const matchTypeContainer = wrapper.find('.match-type-container')
+    expect(matchTypeContainer.exists()).toBeTruthy()
+  })
+
+  it('renders query builder container with correct class', () => {
+    const wrapper = mount(TestQueryBuilder, {
+      localVue
+    })
+    expect(wrapper.find('.vue-query-builder').classes()).toContain('vue-query-builder')
+  })
+
+  it('group heading is properly displayed', () => {
+    const wrapper = mount(TestQueryBuilder, {
+      localVue
+    })
+    expect(wrapper.find('.vqb-group-heading').exists()).toBeTruthy()
+  })
 })

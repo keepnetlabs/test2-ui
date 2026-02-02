@@ -146,6 +146,8 @@ export default {
           trainingContents,
           availableForList,
           category,
+          level,
+          duration,
           type,
           compliances,
           behaviours,
@@ -164,6 +166,23 @@ export default {
           } else if (targetAudience) {
             resolvedRoleIds = [normalizeRoleId(targetAudience)].filter(Boolean);
           }
+          const levels = this.$store.getters["trainingLibraryHelpers/getLevels"] || [];
+          const durations =
+            this.$store.getters["trainingLibraryHelpers/getDurations"] || [];
+          const resolvedLevel = levels.find(
+            (item) =>
+              item?.name === level ||
+              item?.text === level ||
+              String(item?.id) === String(level) ||
+              String(item?.value) === String(level)
+          );
+          const resolvedDuration = durations.find(
+            (item) =>
+              item?.name === duration ||
+              item?.text === duration ||
+              String(item?.id) === String(duration) ||
+              String(item?.value) === String(duration)
+          );
           refTrainingCourseInformation.setFormData({
             coverImage,
             name,
@@ -172,6 +191,8 @@ export default {
             tags: tagNames,
             roleIds: resolvedRoleIds,
             category,
+            level: resolvedLevel?.id || level || "",
+            duration: resolvedDuration?.id || duration || "",
             compliances: compliances.map(({ complianceId }) => complianceId),
             behaviours: behaviours.map(({ behaviourId }) => behaviourId)
           });
@@ -233,6 +254,8 @@ export default {
             name,
             description,
             category,
+            level,
+            duration,
             roleIds,
             tagNames,
             availableForRequests,
@@ -244,6 +267,8 @@ export default {
             name,
             description,
             category,
+            level,
+            duration,
             roleIds,
             tagNames,
             availableForRequests,
@@ -287,6 +312,8 @@ export default {
           name,
           description,
           category,
+          level,
+          duration,
           roleIds,
           tags,
           availableForRequests,
@@ -306,6 +333,8 @@ export default {
       payload.append("trainingDetail.name", name);
       payload.append("trainingDetail.description", description);
       payload.append("trainingDetail.category", category);
+      payload.append("trainingDetail.level", level);
+      payload.append("trainingDetail.duration", duration);
       roleIds.forEach((roleId, index) => {
         payload.append(`trainingDetail.RoleIds[${index}]`, roleId);
       });

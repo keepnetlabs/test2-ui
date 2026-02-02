@@ -214,6 +214,8 @@ export const PROPERTY_STORE = {
   OWNER: 'owner',
   FROMEMAIL: 'fromEmail',
   CATEGORY: 'category',
+  LEVEL: 'level',
+  DURATION: 'duration',
   DISTRIBUTED: 'distributed',
   CAMPAIGN_STATUS: 'campaignStatus',
   LANGUAGES: 'languages',

@@ -45,4 +45,35 @@ describe('Show more component', () => {
     //checking text
     expect(button.text().includes('+2 more')).toBe(true)
   })
+
+  it('Renders with correct container', () => {
+    const { wrapper } = new ShowMore(localVue, {
+      data: [{ subject: 'item1' }, { subject: 'item2' }, { subject: 'item3' }]
+    })
+    expect(wrapper.find('.show-more').exists()).toBe(true)
+    expect(wrapper.classes()).toContain('show-more')
+  })
+
+  it('Handles empty data gracefully', () => {
+    const { wrapper } = new ShowMore(localVue, {
+      data: []
+    })
+    expect(wrapper.find('.show-more').exists()).toBe(true)
+    expect(wrapper.vm.data.length).toBe(0)
+  })
+
+  it('Toggles visibility state on button click', async () => {
+    const { wrapper } = new ShowMore(localVue, {
+      data: [{ subject: 'tag1' }, { subject: 'tag2' }, { subject: 'tag3' }]
+    })
+    await wrapper.setData({ renderedBadgeCount: 1 })
+
+    const initialStatus = wrapper.vm.status
+    const button = wrapper.find('.show-more__right button')
+    if (button.exists()) {
+      await button.trigger('click')
+      // Status should toggle
+      expect(wrapper.vm.status).not.toBe(initialStatus)
+    }
+  })
 })

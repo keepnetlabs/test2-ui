@@ -3,6 +3,7 @@
     v-if="src"
     allowfullscreen
     title="Scorm Preview"
+    allow="microphone; downloads"
     :src="src"
     style="width: 100vw; height: 100vh; border-width: 0;"
   ></iframe>

@@ -38,6 +38,52 @@ describe('Input caller phone number component', () => {
         value: '+905372086061'
       }
     })
-    expect(wrapper.vm.getPhoneNumberCountry(wrapper.vm.value)).toBe('Türkiye')
+    const country = wrapper.vm.getPhoneNumberCountry(wrapper.vm.value)
+    // Intl.DisplayNames can return either "Turkey" or "Türkiye" depending on system locale data
+    expect(['Turkey', 'Türkiye']).toContain(country)
+  })
+
+  it('handles empty phone number', () => {
+    const wrapper = mount(InputCallerPhoneNumber, {
+      localVue,
+      propsData: {
+        value: ''
+      }
+    })
+    expect(wrapper.vm.value).toBe('')
+  })
+
+  it('validates phone number object creation', () => {
+    const wrapper = mount(InputCallerPhoneNumber, {
+      localVue,
+      propsData: {
+        value: '+905372086061'
+      }
+    })
+    const phoneObj = wrapper.vm.createPhoneNumberObj(wrapper.vm.value)
+    expect(phoneObj).toBeTruthy()
+    expect(typeof phoneObj).toBe('object')
+  })
+
+  it('formats various phone numbers correctly', () => {
+    const wrapper = mount(InputCallerPhoneNumber, {
+      localVue,
+      propsData: {
+        value: '+905372086061'
+      }
+    })
+
+    // Turkish number
+    const formattedTR = wrapper.vm.getPhoneNumberFormatted('+905372086061')
+    expect(formattedTR).toBeTruthy()
+    expect(formattedTR).toContain('+90')
+  })
+
+  it('renders component labels correctly', () => {
+    const wrapper = mount(InputCallerPhoneNumber, {
+      localVue
+    })
+    expect(wrapper.text()).toContain('Caller Phone Number')
+    expect(wrapper.text()).toContain('Select caller phone number for this campaign')
   })
 })

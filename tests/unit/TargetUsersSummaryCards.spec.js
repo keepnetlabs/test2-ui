@@ -55,4 +55,47 @@ describe("TargetUsersSummaryCards", () => {
     await wrapper.findAll(".target-users-summary-card").at(1).trigger("click");
     expect(wrapper.emitted().select).toBeUndefined();
   });
+
+  it("displays card titles correctly", () => {
+    const wrapper = mount(TargetUsersSummaryCards, {
+      localVue,
+      vuetify,
+      propsData: { items }
+    });
+    expect(wrapper.text()).toContain("Active Users");
+    expect(wrapper.text()).toContain("Inactive Users");
+  });
+
+  it("displays card values correctly", () => {
+    const wrapper = mount(TargetUsersSummaryCards, {
+      localVue,
+      vuetify,
+      propsData: { items }
+    });
+    expect(wrapper.text()).toContain("120");
+    expect(wrapper.text()).toContain("0");
+  });
+
+  it("renders correct number of cards", () => {
+    const wrapper = mount(TargetUsersSummaryCards, {
+      localVue,
+      vuetify,
+      propsData: { items }
+    });
+    const cards = wrapper.findAll(".target-users-summary-card");
+    expect(cards.length).toBe(2);
+  });
+
+  it("handles card with different colors", () => {
+    const customItems = [
+      { key: "test1", title: "Test 1", value: 50, color: "primary", disabled: false },
+      { key: "test2", title: "Test 2", value: 30, color: "error", disabled: false }
+    ];
+    const wrapper = mount(TargetUsersSummaryCards, {
+      localVue,
+      vuetify,
+      propsData: { items: customItems }
+    });
+    expect(wrapper.findAll(".target-users-summary-card").length).toBe(2);
+  });
 });

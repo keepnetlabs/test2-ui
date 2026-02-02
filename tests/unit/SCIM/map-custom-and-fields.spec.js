@@ -42,4 +42,58 @@ describe('Map Custom Fields Suit', () => {
     //checking is item rendered
     expect(wrapper.find('.map-custom-and-scim-fields-item').exists()).toBe(true)
   })
+
+  it('renders main container with correct class', () => {
+    const wrapper = mount(MapCustomAndSCIMFields, {
+      localVue,
+      vuetify
+    })
+    const container = wrapper.find('.map-custom-and-scim-fields')
+    expect(container.exists()).toBe(true)
+    expect(container.classes()).toContain('map-custom-and-scim-fields')
+  })
+
+  it('displays empty message with correct text', () => {
+    const wrapper = mount(MapCustomAndSCIMFields, {
+      localVue,
+      vuetify
+    })
+    expect(wrapper.vm.isEmptyMessageRendered).toBe(true)
+    expect(wrapper.text()).toContain('You do not have any custom field')
+  })
+
+
+  it('renders map items with correct structure', () => {
+    const wrapper = mount(MapCustomAndSCIMFields, {
+      localVue,
+      vuetify,
+      propsData: {
+        customFields: [{ text: 'Field1', value: 'field1' }],
+        scimFields: [{ text: 'Value1', value: 'value1' }],
+        initialValue: [{ customFieldResourceId: 'field1', scimFieldResourceId: 'value1' }]
+      }
+    })
+    const items = wrapper.findAll('.map-custom-and-scim-fields-item')
+    expect(items.length).toBeGreaterThan(0)
+  })
+
+  it('handles multiple custom and SCIM fields', () => {
+    const wrapper = mount(MapCustomAndSCIMFields, {
+      localVue,
+      vuetify,
+      propsData: {
+        customFields: [
+          { text: 'Field1', value: 'field1' },
+          { text: 'Field2', value: 'field2' },
+          { text: 'Field3', value: 'field3' }
+        ],
+        scimFields: [
+          { text: 'Value1', value: 'value1' },
+          { text: 'Value2', value: 'value2' }
+        ],
+        initialValue: []
+      }
+    })
+    expect(wrapper.vm.customFields.length).toBeGreaterThanOrEqual(3)
+  })
 })

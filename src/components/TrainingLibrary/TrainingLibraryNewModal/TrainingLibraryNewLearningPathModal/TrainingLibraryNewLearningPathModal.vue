@@ -157,6 +157,7 @@ export default {
             compliances,
             description,
             name,
+            level,
             tagNames,
             targetAudience,
             roleIds,
@@ -188,6 +189,7 @@ export default {
               compliances: compliances.map((c) => c.complianceId),
               description,
               name,
+              level,
               tags: tagNames,
               roleIds: resolvedRoleIds,
               coverImage
@@ -296,6 +298,7 @@ export default {
           name,
           description,
           category,
+          level,
           roleIds,
           tags,
           availableForRequests,
@@ -313,6 +316,7 @@ export default {
         payload.append("TrainingDetail.name", name);
         payload.append("TrainingDetail.description", description);
         payload.append("TrainingDetail.category", category);
+        payload.append("TrainingDetail.level", level);
         roleIds.forEach((roleId, index) => {
           payload.append(`TrainingDetail.RoleIds[${index}]`, roleId);
         });
@@ -375,6 +379,7 @@ export default {
         payload.append("name", name);
         payload.append("description", description);
         payload.append("category", category);
+        payload.append("level", level);
         roleIds.forEach((roleId, index) => {
           payload.append(`RoleIds[${index}]`, roleId);
         });

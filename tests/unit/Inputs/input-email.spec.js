@@ -64,4 +64,53 @@ describe('Input company component', () => {
 
     expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
   })
+
+  it('accepts valid email addresses', async () => {
+    const wrapper = mount(TestInputEmailWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    const validEmails = ['test@example.com', 'user.name@domain.co.uk', 'info@company.org']
+    for (const email of validEmails) {
+      await inputHelper.addData(email, textInput, wrapper)
+      expect(wrapper.find('input').element.value).toContain(email)
+    }
+  })
+
+
+  it('rejects email starting with space', async () => {
+    const wrapper = mount(TestInputEmailWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('  valid@email.com', textInput, wrapper)
+    const errorMsg = wrapper.find('.v-messages__message').text()
+    expect(errorMsg.includes('Cannot start with space')).toBeTruthy()
+  })
+
+  it('enforces required field validation', async () => {
+    const wrapper = mount(TestInputEmailWrapper, {
+      localVue
+    })
+    const inputHelper = new InputHelper()
+    const textInput = wrapper.find('input')
+
+    await inputHelper.addData('', textInput, wrapper)
+    const errorMsg = wrapper.find('.v-messages__message').text()
+    expect(errorMsg.includes('Required')).toBeTruthy()
+  })
+
+  it('renders input with correct attributes', () => {
+    const wrapper = mount(TestInputEmailWrapper, {
+      localVue
+    })
+    const input = wrapper.find('input')
+    expect(input.exists()).toBe(true)
+    expect(input.attributes('placeholder')).toEqual('Enter an email address')
+    expect(input.attributes('autocomplete')).toEqual('off')
+  })
 })

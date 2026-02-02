@@ -150,6 +150,82 @@ describe('Vishing template preview step', () => {
     ).toBeFalsy()
   })
 
+  it('displays correct step title with step number and type', () => {
+    const step = {
+      inputType: 'Pause',
+      inputText: null,
+      inputUrl: null,
+      inputDigit: 0,
+      duration: 5,
+      isVishingStep: false
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      vuetify,
+      propsData: {
+        step: step,
+        index: 2
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step__title').text()).toEqual('Step 3 - Pause')
+  })
+
+  it('renders correct duration text for pause steps', () => {
+    const step = {
+      inputType: 'Pause',
+      inputText: null,
+      inputUrl: null,
+      inputDigit: 0,
+      duration: 15,
+      isVishingStep: false
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      vuetify,
+      propsData: {
+        step: step,
+        index: 0
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step__pause-duration-text').text()).toEqual(
+      'Pause for 15 seconds'
+    )
+  })
+
+  it('renders badge components for tags', () => {
+    const step = {
+      inputType: 'TextToSpeech',
+      inputText: 'Required audio',
+      inputUrl: null,
+      inputDigit: 5,
+      duration: 0,
+      isVishingStep: true
+    }
+    const wrapper = mount(VishingTemplatePreviewStep, {
+      vuetify,
+      propsData: {
+        step: step,
+        index: 0
+      },
+      stubs: {
+        Badge: MockBadge,
+        AudioPlayer: MockAudioPlayer
+      }
+    })
+
+    expect(wrapper.find('.vishing-template-preview-step__tags').exists()).toBeTruthy()
+    expect(wrapper.find('.vishing-template-preview-step__tags__required-digit-tag').exists()).toBeTruthy()
+  })
+
+
   //   it('should play and pause audio successfully', async () => {
   //     const step = {
   //       inputType: 'FileUpload',

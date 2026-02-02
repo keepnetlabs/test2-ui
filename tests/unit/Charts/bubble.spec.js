@@ -21,4 +21,43 @@ describe('Bubble component', () => {
 
     expect(wrapper.vm['chartData']).toBeTruthy()
   })
+
+  it('Chart has correct data structure', () => {
+    const wrapper = mount(TestBubble, { localVue })
+    expect(wrapper.vm.chartData).toBeInstanceOf(Object)
+  })
+
+  it('Chart element renders with correct ID', () => {
+    const wrapper = mount(TestBubble, { localVue })
+    const chartElement = wrapper.find('#bubble-chart')
+    expect(chartElement.exists()).toBe(true)
+    expect(chartElement.element.id).toBe('bubble-chart')
+  })
+
+  it('Canvas rendering monitor is present', () => {
+    const wrapper = mount(TestBubble, { localVue })
+    expect(wrapper.find('.chartjs-render-monitor').exists()).toBe(true)
+    expect(wrapper.find('canvas').exists()).toBe(true)
+  })
+
+
+  it('chartData is properly structured', () => {
+    const wrapper = mount(TestBubble, { localVue })
+    expect(wrapper.vm.chartData).toBeInstanceOf(Object)
+    expect(Object.keys(wrapper.vm.chartData).length).toBeGreaterThan(0)
+  })
+
+  it('canvas element is rendered and visible', () => {
+    const wrapper = mount(TestBubble, { localVue })
+    const canvas = wrapper.find('canvas')
+    expect(canvas.exists()).toBe(true)
+    expect(canvas.element).toBeDefined()
+  })
+
+  it('chart container has correct class names', () => {
+    const wrapper = mount(TestBubble, { localVue })
+    const chartElement = wrapper.find('#bubble-chart')
+    const classes = chartElement.classes()
+    expect(classes).toContain('chartjs-render-monitor')
+  })
 })

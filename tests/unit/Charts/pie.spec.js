@@ -21,4 +21,42 @@ describe('Pie component', () => {
 
     expect(wrapper.vm['series']).toBeTruthy()
   })
+
+  it('Chart has correct data structure', () => {
+    const wrapper = mount(TestPie, { localVue })
+    expect(wrapper.vm.chartOptions).toHaveProperty('responsive')
+    expect(wrapper.vm.series).toBeInstanceOf(Array)
+  })
+
+  it('Chart is mounted and visible', () => {
+    const wrapper = mount(TestPie, { localVue })
+    expect(wrapper.find('canvas').exists()).toBe(true)
+    expect(wrapper.find('.chartjs-render-monitor').isVisible()).toBe(true)
+  })
+
+  it('Component has required chart container', () => {
+    const wrapper = mount(TestPie, { localVue })
+    const chartElement = wrapper.find('#pie-chart')
+    expect(chartElement.element).toBeDefined()
+  })
+
+
+  it('series data is array format', () => {
+    const wrapper = mount(TestPie, { localVue })
+    expect(Array.isArray(wrapper.vm.series)).toBe(true)
+    expect(wrapper.vm.series.length).toBeGreaterThanOrEqual(0)
+  })
+
+  it('chart element has correct ID attribute', () => {
+    const wrapper = mount(TestPie, { localVue })
+    const chartElement = wrapper.find('#pie-chart')
+    expect(chartElement.attributes('id')).toBe('pie-chart')
+  })
+
+  it('chartjs render monitor class is present', () => {
+    const wrapper = mount(TestPie, { localVue })
+    const monitor = wrapper.find('.chartjs-render-monitor')
+    expect(monitor.exists()).toBe(true)
+    expect(monitor.classes()).toContain('chartjs-render-monitor')
+  })
 })

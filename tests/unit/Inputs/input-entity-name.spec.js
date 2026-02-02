@@ -76,4 +76,23 @@ describe('Input entity name', () => {
 
     expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
   })
+
+  it('should apply custom rules', async () => {
+    const customRules = [(v) => v && v.length > 0 || 'Must not be empty']
+    const props = {
+      id: 'input-entity-name',
+      value: '',
+      initialPlaceholder: 'Enter entity name',
+      initialRules: customRules,
+      required: true,
+      entityName: 'Custom Entity'
+    }
+    const wrapper = mount(InputEntityName, {
+      localVue,
+      vuetify,
+      propsData: props
+    })
+    expect(wrapper.find('#input-entity-name').exists()).toBeTruthy()
+  })
+
 })

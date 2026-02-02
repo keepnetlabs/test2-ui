@@ -159,34 +159,41 @@ const whitelabel = {
       })
     },
     callForSystemInfoSummary(context = {}, payload = {}) {
-      callForSystemInfoSummary().then((response) => {
-        const { versionInfo, companyLicense, company, summary = {} } = response?.data || {
-          versionInfo: {
-            data: {
-              version: ''
+      callForSystemInfoSummary()
+        .then((response) => {
+          const { versionInfo, companyLicense, company, summary = {} } = response?.data || {
+            versionInfo: {
+              data: {
+                version: ''
+              }
+            },
+            companyLicense: {
+              data: ''
             }
-          },
-          companyLicense: {
-            data: ''
           }
-        }
-        context.commit('SET_SYSTEM_VERSION', versionInfo?.data?.version || '')
-        if (payload.checkExceedDialog && typeof companyLicense.data === 'object') {
-          const { isLicenseExceeded, isLimited } = companyLicense.data
-          context.commit('SET_COMPANY_LICENSE', companyLicense?.data || '')
-          if (isLimited && isLicenseExceeded) {
-            context.dispatch('toggleShowExceedDialog')
+          context.commit('SET_SYSTEM_VERSION', versionInfo?.data?.version || '')
+          if (payload.checkExceedDialog && typeof companyLicense.data === 'object') {
+            const { isLicenseExceeded, isLimited } = companyLicense.data
+            context.commit('SET_COMPANY_LICENSE', companyLicense?.data || '')
+            if (isLimited && isLicenseExceeded) {
+              context.dispatch('toggleShowExceedDialog')
+            }
           }
-        }
-        if (summary?.data?.countryCode) {
-          context.commit('SET_DATA', {
-            countryCode: summary?.data?.countryCode
-          })
-        }
-        if (company?.data?.countryName) {
-          context.commit('SET_COUNTRY_NAME', company.data.countryName)
-        }
-      })
+          if (summary?.data?.countryCode) {
+            context.commit('SET_DATA', {
+              countryCode: summary?.data?.countryCode
+            })
+          }
+          if (company?.data?.countryName) {
+            context.commit('SET_COUNTRY_NAME', company.data.countryName)
+          }
+        })
+        .catch((err) => {
+          // Non-critical: system version, license dialog, country. UI continues without this data.
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('[whitelabel] system-info/summary failed', err?.response?.status, err)
+          }
+        })
     },
     resetState(context = {}) {
       context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))

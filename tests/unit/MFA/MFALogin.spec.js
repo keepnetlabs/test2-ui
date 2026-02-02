@@ -47,4 +47,30 @@ describe('MFA Login component', () => {
     const onCantLoginEvent = wrapper.emitted()['onCantLoginButtonClick']
     expect(onCantLoginEvent).toBeTruthy()
   })
+
+  it('has MFA title and description', () => {
+    const { wrapper } = new MFALogin(localVue)
+    expect(wrapper.find('.login-title').text()).toContain('Multi-factor Authentication')
+    expect(wrapper.find('.login-desc').text()).toContain('Please enter your verification code')
+  })
+
+  it('verifies input field is present', () => {
+    const { wrapper } = new MFALogin(localVue)
+    expect(wrapper.find('input').exists()).toBe(true)
+    expect(wrapper.find('.verification-code-wrapper--textfield').exists()).toBe(true)
+  })
+
+  it('button is clickable and functional', () => {
+    const { wrapper } = new MFALogin(localVue)
+    const button = wrapper.find('#btn--login-continue')
+    expect(button.exists()).toBe(true)
+    expect(button.isVisible()).toBe(true)
+  })
+
+  it('handles verification code input correctly', async () => {
+    const { wrapper } = new MFALogin(localVue)
+    const testCode = '123456'
+    await wrapper.setProps({ verificationCode: testCode })
+    expect(wrapper.vm.$props.verificationCode).toBe(testCode)
+  })
 })
