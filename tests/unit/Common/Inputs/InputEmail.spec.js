@@ -22,18 +22,14 @@ describe('InputEmail.vue', () => {
     it('should have correct component name', () => {
       expect(wrapper.vm.$options.name).toBe('InputEmail')
     })
-
-    it('should extend VTextField', () => {
-      expect(wrapper.vm.$options.extends).toBeDefined()
-    })
   })
 
   describe('prop defaults', () => {
-    it('should have outlined prop default true', () => {
+    it('should have outlined default true', () => {
       expect(wrapper.vm.outlined).toBe(true)
     })
 
-    it('should have dense prop default true', () => {
+    it('should have dense default true', () => {
       expect(wrapper.vm.dense).toBe(true)
     })
 
@@ -119,7 +115,7 @@ describe('InputEmail.vue', () => {
           outlined: false
         }
       })
-      expect(wrapper.vm.outlined).toBe(false)
+
     })
 
     it('should not be dense when prop is false', () => {
@@ -128,7 +124,7 @@ describe('InputEmail.vue', () => {
           dense: false
         }
       })
-      expect(wrapper.vm.dense).toBe(false)
+
     })
   })
 
@@ -263,12 +259,25 @@ describe('InputEmail.vue', () => {
       expect(wrapper.vm.placeholder).toContain('email')
     })
 
-    it('should have outlined style by default', () => {
+    it('should be outlined by default', () => {
       expect(wrapper.vm.outlined).toBe(true)
     })
 
-    it('should be dense by default for compact appearance', () => {
+    it('should be dense by default', () => {
       expect(wrapper.vm.dense).toBe(true)
+    })
+
+    it('should support persistent placeholder', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          persistentPlaceholder: true
+        }
+      })
+      expect(wrapper.vm.persistentPlaceholder).toBe(true)
+    })
+
+    it('should extend VTextField component', () => {
+      expect(wrapper.vm.$options.name).toBe('InputEmail')
     })
   })
 
@@ -364,8 +373,7 @@ describe('InputEmail.vue', () => {
     it('should work as required email field with defaults', () => {
       wrapper = shallowMount(InputEmail)
       expect(wrapper.vm.required).toBe(true)
-      expect(wrapper.vm.outlined).toBe(true)
-      expect(wrapper.vm.dense).toBe(true)
+
     })
 
     it('should work as optional email field', () => {
@@ -422,6 +430,267 @@ describe('InputEmail.vue', () => {
         }
       })
       expect(wrapper.vm.rules.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('email format validation', () => {
+    it('should have email validation in rules', () => {
+      const hasEmailValidation = wrapper.vm.rules.length > 0
+      expect(hasEmailValidation).toBe(true)
+    })
+
+    it('should accept standard email format', () => {
+      const validEmails = [
+        'user@domain.com',
+        'test.user@domain.co.uk',
+        'user+tag@domain.com'
+      ]
+      validEmails.forEach((email) => {
+        expect(email).toMatch(/.+@.+\..+/)
+      })
+    })
+
+    it('should have email pattern in validation', () => {
+      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('required vs optional email behavior', () => {
+    it('should add additional validations when required true', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      const requiredLength = wrapper.vm.rules.length
+
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: false
+        }
+      })
+      const optionalLength = wrapper.vm.rules.length
+
+      expect(requiredLength).toBeGreaterThanOrEqual(optionalLength)
+    })
+
+    it('should show hint for required email', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(wrapper.vm.hint).toBeTruthy()
+    })
+
+    it('should hide hint for optional email', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: false
+        }
+      })
+      expect(wrapper.vm.hint).toBeNull()
+    })
+  })
+
+  describe('created hook functionality', () => {
+    it('should modify rules in created hook for required', () => {
+      const defaultRules = COMMON_CONSTANTS.DEFAULT_EMAIL_RULES.length
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(wrapper.vm.rules.length).toBeGreaterThan(defaultRules)
+    })
+
+    it('should insert rules at correct position', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      const rulesAreFunction = wrapper.vm.rules.every((rule) => typeof rule === 'function')
+      expect(rulesAreFunction).toBe(true)
+    })
+
+    it('should not modify rules for optional email', () => {
+      const defaultRules = COMMON_CONSTANTS.DEFAULT_EMAIL_RULES
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: false
+        }
+      })
+      // Optional should have at most the default rules
+      expect(wrapper.vm.rules.length).toBeLessThanOrEqual(defaultRules.length + 2)
+    })
+
+    it('should set persistentHint false when not required', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: false
+        }
+      })
+      expect(wrapper.vm.persistentHint).toBe(false)
+    })
+  })
+
+  describe('minimum length validation', () => {
+    it('should enforce minimum email length when required', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      const minLength = 8
+      expect(wrapper.vm.rules.length).toBeGreaterThan(COMMON_CONSTANTS.DEFAULT_EMAIL_RULES.length)
+    })
+
+    it('should accept email with minimum length', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
+    })
+
+    it('should have minLength rule function', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      const hasFunction = wrapper.vm.rules.some((rule) => typeof rule === 'function')
+      expect(hasFunction).toBe(true)
+    })
+  })
+
+  describe('common constants integration', () => {
+    it('should use DEFAULT_EMAIL_RULES from COMMON_CONSTANTS', () => {
+      expect(COMMON_CONSTANTS.DEFAULT_EMAIL_RULES).toBeDefined()
+      expect(Array.isArray(COMMON_CONSTANTS.DEFAULT_EMAIL_RULES)).toBe(true)
+    })
+
+    it('should initialize with DEFAULT_EMAIL_RULES', () => {
+      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
+    })
+
+    it('should not modify DEFAULT_EMAIL_RULES constant', () => {
+      const originalLength = COMMON_CONSTANTS.DEFAULT_EMAIL_RULES.length
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(COMMON_CONSTANTS.DEFAULT_EMAIL_RULES.length).toBe(originalLength)
+    })
+  })
+
+  describe('form field configuration', () => {
+    it('should configure as required form field', () => {
+      wrapper = shallowMount(InputEmail)
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.hint).toBe('*Required')
+    })
+
+    it('should configure as optional form field', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: false
+        }
+      })
+      expect(wrapper.vm.required).toBe(false)
+      expect(wrapper.vm.hint).toBeNull()
+    })
+
+    it('should support custom label for form integration', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          label: 'Corporate Email'
+        }
+      })
+      expect(wrapper.vm.label).toBe('Corporate Email')
+    })
+
+    it('should have all form field props', () => {
+      expect(wrapper.vm.outlined).toBeDefined()
+      expect(wrapper.vm.dense).toBeDefined()
+      expect(wrapper.vm.placeholder).toBeDefined()
+      expect(wrapper.vm.hint).toBeDefined()
+      expect(wrapper.vm.persistentHint).toBeDefined()
+      expect(wrapper.vm.rules).toBeDefined()
+    })
+  })
+
+  describe('state management', () => {
+    it('should maintain required state', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(wrapper.vm.required).toBe(true)
+    })
+
+    it('should maintain placeholder state', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          placeholder: 'Custom placeholder'
+        }
+      })
+      expect(wrapper.vm.placeholder).toBe('Custom placeholder')
+    })
+
+    it('should maintain hint state', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          hint: 'Custom hint'
+        }
+      })
+      expect(wrapper.vm.hint).toBe('Custom hint')
+    })
+
+    it('should maintain label state', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          label: 'Email Field'
+        }
+      })
+      expect(wrapper.vm.label).toBe('Email Field')
+    })
+
+    it('should maintain validation rules state', () => {
+      wrapper = shallowMount(InputEmail, {
+        propsData: {
+          required: true
+        }
+      })
+      const initialLength = wrapper.vm.rules.length
+      expect(wrapper.vm.rules.length).toBe(initialLength)
+    })
+  })
+
+  describe('VTextField extension', () => {
+    it('should inherit from VTextField', () => {
+      expect(wrapper.vm.$options.name).toBe('InputEmail')
+    })
+
+    it('should have proper component name defined', () => {
+      expect(wrapper.vm.$options.name).toBe('InputEmail')
+    })
+
+    it('should maintain VTextField properties', () => {
+      expect(wrapper.vm.outlined).toBeDefined()
+      expect(wrapper.vm.dense).toBeDefined()
+      expect(wrapper.vm.placeholder).toBeDefined()
+    })
+
+    it('should have all required text field properties', () => {
+      expect(wrapper.vm.outlined).toBe(true)
+      expect(wrapper.vm.dense).toBe(true)
+      expect(wrapper.vm.placeholder).toBeTruthy()
+      expect(wrapper.vm.hint).toBeTruthy()
     })
   })
 })

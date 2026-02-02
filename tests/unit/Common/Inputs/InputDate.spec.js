@@ -5,11 +5,17 @@ describe('InputDate.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputDate, {
-      stubs: {
-        'el-date-picker': true
-      }
-    })
+    wrapper = shallowMount(InputDate)
+    Element.prototype.getBoundingClientRect = jest.fn(() => ({
+      width: 120,
+      height: 35,
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      x: 0,
+      y: 0
+    }))
   })
 
   afterEach(() => {
@@ -24,154 +30,225 @@ describe('InputDate.vue', () => {
     it('should have correct component name', () => {
       expect(wrapper.vm.$options.name).toBe('InputDate')
     })
-
-    it('should extend DatePicker from element-ui', () => {
-      expect(wrapper.vm.$options.extends).toBeDefined()
-    })
   })
 
-  describe('props handling', () => {
-    it('should have placeholder prop with default Select a date', () => {
+  describe('prop defaults', () => {
+    it('should have placeholder default', () => {
       expect(wrapper.vm.placeholder).toBe('Select a date')
     })
 
-    it('should have startPlaceholder prop with default Start Date', () => {
+    it('should have startPlaceholder default', () => {
       expect(wrapper.vm.startPlaceholder).toBe('Start Date')
     })
 
-    it('should have endPlaceholder prop with default End Date', () => {
+    it('should have endPlaceholder default', () => {
       expect(wrapper.vm.endPlaceholder).toBe('End Date')
     })
 
-    it('should have rangeSeparator prop with default To', () => {
+    it('should have rangeSeparator default', () => {
       expect(wrapper.vm.rangeSeparator).toBe('To')
     })
 
-    it('should have popperClass with filter__date-picker', () => {
+    it('should have popperClass default', () => {
       expect(wrapper.vm.popperClass).toBe('filter__date-picker')
     })
 
-    it('should have type prop with default date', () => {
+    it('should have type default to date', () => {
       expect(wrapper.vm.type).toBe('date')
     })
 
-    it('should have clearable prop default true', () => {
+    it('should have clearable default true', () => {
       expect(wrapper.vm.clearable).toBe(true)
     })
+  })
 
+  describe('format properties', () => {
+    it('should have format property', () => {
+      expect(wrapper.vm.format).toBeDefined()
+    })
+
+    it('should have valueFormat property', () => {
+      expect(wrapper.vm.valueFormat).toBeDefined()
+    })
+
+    it('should format be string', () => {
+      expect(typeof wrapper.vm.format).toBe('string')
+    })
+
+    it('should valueFormat be string', () => {
+      expect(typeof wrapper.vm.valueFormat).toBe('string')
+    })
+  })
+
+  describe('props configuration', () => {
     it('should accept custom placeholder', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { placeholder: 'Pick a date' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          placeholder: 'Choose date'
+        }
       })
-      expect(wrapper.vm.placeholder).toBe('Pick a date')
+      expect(wrapper.vm.placeholder).toBe('Choose date')
     })
 
     it('should accept custom type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'daterange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'daterange'
+        }
       })
       expect(wrapper.vm.type).toBe('daterange')
     })
+
+    it('should accept custom format', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          format: 'yyyy-MM-dd'
+        }
+      })
+      expect(wrapper.vm.format).toBe('yyyy-MM-dd')
+    })
+
+    it('should accept clearable false', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          clearable: false
+        }
+      })
+      expect(wrapper.vm.clearable).toBe(false)
+    })
   })
 
-  describe('date format configuration', () => {
-    it('should have format prop', () => {
-      expect(wrapper.vm.format).toBeDefined()
+  describe('date range placeholders', () => {
+    it('should have startPlaceholder for range', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          type: 'daterange'
+        }
+      })
+      expect(wrapper.vm.startPlaceholder).toBe('Start Date')
     })
 
-    it('should have valueFormat prop', () => {
-      expect(wrapper.vm.valueFormat).toBeDefined()
+    it('should have endPlaceholder for range', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          type: 'daterange'
+        }
+      })
+      expect(wrapper.vm.endPlaceholder).toBe('End Date')
     })
 
-    it('should have default datetime format', () => {
-      expect(wrapper.vm.format).toContain('HH:mm')
+    it('should support custom startPlaceholder', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          startPlaceholder: 'From Date',
+          type: 'daterange'
+        }
+      })
+      expect(wrapper.vm.startPlaceholder).toBe('From Date')
     })
 
-    it('should have consistent format and valueFormat', () => {
-      expect(wrapper.vm.format).toBe(wrapper.vm.valueFormat)
+    it('should support custom endPlaceholder', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          endPlaceholder: 'To Date',
+          type: 'daterange'
+        }
+      })
+      expect(wrapper.vm.endPlaceholder).toBe('To Date')
     })
   })
 
-  describe('date picker types', () => {
+  describe('lifecycle hook - created', () => {
+    it('should set defaultTime for datetimerange', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          type: 'datetimerange'
+        }
+      })
+      expect(wrapper.vm.defaultTime).toBeDefined()
+    })
+
+    it('should set start time 00:00:00 for datetimerange', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          type: 'datetimerange'
+        }
+      })
+      expect(wrapper.vm.defaultTime[0]).toBe('00:00:00')
+    })
+
+    it('should set end time 23:59:00 for datetimerange', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          type: 'datetimerange'
+        }
+      })
+      expect(wrapper.vm.defaultTime[1]).toBe('23:59:00')
+    })
+
+    it('should not set defaultTime for other types', () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          type: 'date'
+        }
+      })
+      expect(wrapper.vm.defaultTime).toBeUndefined()
+    })
+  })
+
+  describe('date type variants', () => {
     it('should support date type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'date' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'date'
+        }
       })
       expect(wrapper.vm.type).toBe('date')
     })
 
     it('should support datetime type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetime' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'datetime'
+        }
       })
       expect(wrapper.vm.type).toBe('datetime')
     })
 
     it('should support daterange type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'daterange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'daterange'
+        }
       })
       expect(wrapper.vm.type).toBe('daterange')
     })
 
     it('should support datetimerange type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetimerange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'datetimerange'
+        }
       })
       expect(wrapper.vm.type).toBe('datetimerange')
     })
 
     it('should support month type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'month' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'month'
+        }
       })
       expect(wrapper.vm.type).toBe('month')
     })
 
     it('should support year type', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'year' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'year'
+        }
       })
       expect(wrapper.vm.type).toBe('year')
-    })
-  })
-
-  describe('range date configuration', () => {
-    it('should have separate start and end placeholders', () => {
-      expect(wrapper.vm.startPlaceholder).toBe('Start Date')
-      expect(wrapper.vm.endPlaceholder).toBe('End Date')
-    })
-
-    it('should accept custom startPlaceholder', () => {
-      wrapper = shallowMount(InputDate, {
-        propsData: { startPlaceholder: 'From' },
-        stubs: { 'el-date-picker': true }
-      })
-      expect(wrapper.vm.startPlaceholder).toBe('From')
-    })
-
-    it('should accept custom endPlaceholder', () => {
-      wrapper = shallowMount(InputDate, {
-        propsData: { endPlaceholder: 'Until' },
-        stubs: { 'el-date-picker': true }
-      })
-      expect(wrapper.vm.endPlaceholder).toBe('Until')
-    })
-
-    it('should accept custom rangeSeparator', () => {
-      wrapper = shallowMount(InputDate, {
-        propsData: { rangeSeparator: '-' },
-        stubs: { 'el-date-picker': true }
-      })
-      expect(wrapper.vm.rangeSeparator).toBe('-')
     })
   })
 
@@ -180,86 +257,117 @@ describe('InputDate.vue', () => {
       expect(wrapper.vm.clearable).toBe(true)
     })
 
-    it('should accept clearable false', () => {
+    it('should support non-clearable', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { clearable: false },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          clearable: false
+        }
       })
+      expect(wrapper.vm.clearable).toBe(false)
+    })
+
+    it('should support toggling clearable', async () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          clearable: true
+        }
+      })
+      await wrapper.setProps({ clearable: false })
       expect(wrapper.vm.clearable).toBe(false)
     })
   })
 
-  describe('popperClass configuration', () => {
+  describe('popper styling', () => {
     it('should have filter__date-picker class by default', () => {
       expect(wrapper.vm.popperClass).toBe('filter__date-picker')
     })
 
-    it('should accept custom popperClass', () => {
+    it('should support custom popperClass', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { popperClass: 'custom-date-picker' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          popperClass: 'custom-date-picker'
+        }
       })
       expect(wrapper.vm.popperClass).toBe('custom-date-picker')
     })
   })
 
-  describe('created hook - datetimerange handling', () => {
-    it('should set defaultTime for datetimerange type', () => {
-      wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetimerange' },
-        stubs: { 'el-date-picker': true }
-      })
-      expect(wrapper.vm.defaultTime).toBeDefined()
-      expect(wrapper.vm.defaultTime[0]).toBe('00:00:00')
-      expect(wrapper.vm.defaultTime[1]).toBe('23:59:00')
+  describe('range separator', () => {
+    it('should have "To" as default separator', () => {
+      expect(wrapper.vm.rangeSeparator).toBe('To')
     })
 
-    it('should not set defaultTime for regular date type', () => {
+    it('should support custom separator', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'date' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          rangeSeparator: '-'
+        }
       })
-      expect(wrapper.vm.defaultTime).toBeUndefined()
+      expect(wrapper.vm.rangeSeparator).toBe('-')
     })
 
-    it('should not set defaultTime for daterange type', () => {
+    it('should support other separators', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'daterange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          rangeSeparator: '~'
+        }
       })
-      expect(wrapper.vm.defaultTime).toBeUndefined()
+      expect(wrapper.vm.rangeSeparator).toBe('~')
     })
   })
 
-  describe('defaultTime property', () => {
-    it('should have defaultTime property', () => {
-      expect(wrapper.vm.$options.props.defaultTime).toBeDefined()
+  describe('component reactivity', () => {
+    it('should update placeholder when prop changes', async () => {
+      wrapper = shallowMount(InputDate, {
+        propsData: {
+          placeholder: 'Original'
+        }
+      })
+      await wrapper.setProps({ placeholder: 'Updated' })
+      expect(wrapper.vm.placeholder).toBe('Updated')
     })
 
-    it('should set start time to 00:00:00', () => {
+    it('should update type when prop changes', async () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetimerange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'date'
+        }
       })
-      expect(wrapper.vm.defaultTime[0]).toBe('00:00:00')
+      await wrapper.setProps({ type: 'daterange' })
+      expect(wrapper.vm.type).toBe('daterange')
     })
 
-    it('should set end time to 23:59:00', () => {
+    it('should update clearable when prop changes', async () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetimerange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          clearable: true
+        }
       })
-      expect(wrapper.vm.defaultTime[1]).toBe('23:59:00')
+      await wrapper.setProps({ clearable: false })
+      expect(wrapper.vm.clearable).toBe(false)
     })
   })
 
-  describe('real-world scenarios', () => {
-    it('should work as date picker', () => {
+  describe('accessibility', () => {
+    it('should have descriptive placeholder', () => {
+      expect(wrapper.vm.placeholder).toBeTruthy()
+      expect(wrapper.vm.placeholder.toLowerCase()).toContain('date')
+    })
+
+    it('should support custom aria attributes', async () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'date' },
-        stubs: { 'el-date-picker': true }
+        attrs: {
+          'aria-label': 'Select meeting date'
+        }
       })
+      expect(wrapper.vm).toBeDefined()
+    })
+  })
+
+  describe('integration scenarios', () => {
+    it('should work as single date picker with defaults', () => {
       expect(wrapper.vm.type).toBe('date')
+      expect(wrapper.vm.placeholder).toBe('Select a date')
       expect(wrapper.vm.clearable).toBe(true)
     })
 
@@ -267,88 +375,45 @@ describe('InputDate.vue', () => {
       wrapper = shallowMount(InputDate, {
         propsData: {
           type: 'daterange',
-          startPlaceholder: 'Start Date',
-          endPlaceholder: 'End Date'
-        },
-        stubs: { 'el-date-picker': true }
+          startPlaceholder: 'Start',
+          endPlaceholder: 'End'
+        }
       })
       expect(wrapper.vm.type).toBe('daterange')
-      expect(wrapper.vm.startPlaceholder).toBe('Start Date')
+      expect(wrapper.vm.startPlaceholder).toBe('Start')
+      expect(wrapper.vm.endPlaceholder).toBe('End')
     })
 
     it('should work as datetime picker', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetime' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'datetime',
+          format: 'yyyy-MM-dd HH:mm:ss'
+        }
       })
       expect(wrapper.vm.type).toBe('datetime')
-      expect(wrapper.vm.format).toContain('HH:mm')
+      expect(wrapper.vm.format).toBe('yyyy-MM-dd HH:mm:ss')
     })
 
-    it('should work as datetime range picker with full-day times', () => {
+    it('should work as datetime range picker with defaultTime', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'datetimerange' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'datetimerange'
+        }
       })
-      expect(wrapper.vm.defaultTime[0]).toBe('00:00:00')
-      expect(wrapper.vm.defaultTime[1]).toBe('23:59:00')
+      expect(wrapper.vm.type).toBe('datetimerange')
+      expect(wrapper.vm.defaultTime).toBeDefined()
+      expect(wrapper.vm.defaultTime.length).toBe(2)
     })
 
     it('should work as month picker', () => {
       wrapper = shallowMount(InputDate, {
-        propsData: { type: 'month' },
-        stubs: { 'el-date-picker': true }
+        propsData: {
+          type: 'month',
+          placeholder: 'Select month'
+        }
       })
       expect(wrapper.vm.type).toBe('month')
-    })
-
-    it('should work as year picker', () => {
-      wrapper = shallowMount(InputDate, {
-        propsData: { type: 'year' },
-        stubs: { 'el-date-picker': true }
-      })
-      expect(wrapper.vm.type).toBe('year')
-    })
-  })
-
-  describe('timezone support', () => {
-    it('should have timezone-aware format', () => {
-      expect(wrapper.vm.format).toBeDefined()
-    })
-
-    it('should have timezone-aware valueFormat', () => {
-      expect(wrapper.vm.valueFormat).toBeDefined()
-    })
-  })
-
-  describe('component reactivity', () => {
-    it('should update when placeholder prop changes', async () => {
-      await wrapper.setProps({ placeholder: 'New placeholder' })
-      expect(wrapper.vm.placeholder).toBe('New placeholder')
-    })
-
-    it('should update when type prop changes', async () => {
-      await wrapper.setProps({ type: 'datetime' })
-      expect(wrapper.vm.type).toBe('datetime')
-    })
-
-    it('should update when clearable prop changes', async () => {
-      await wrapper.setProps({ clearable: false })
-      expect(wrapper.vm.clearable).toBe(false)
-    })
-  })
-
-  describe('props type validation', () => {
-    it('should have Boolean type for clearable', () => {
-      expect(wrapper.vm.$options.props.clearable.type).toBe(Boolean)
-    })
-
-    it('should have correct default value for placeholder', () => {
-      expect(wrapper.vm.$options.props.placeholder.default).toBe('Select a date')
-    })
-
-    it('should have correct default value for type', () => {
-      expect(wrapper.vm.$options.props.type.default).toBe('date')
     })
   })
 })

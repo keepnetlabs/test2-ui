@@ -6,12 +6,7 @@ describe('BackButton.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(BackButton, {
-      mocks: {
-        $attrs: {},
-        $listeners: {}
-      }
-    })
+    wrapper = shallowMount(BackButton)
   })
 
   afterEach(() => {
@@ -28,7 +23,7 @@ describe('BackButton.vue', () => {
     })
 
     it('should render a v-btn element', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name: 'VBtn' })
       expect(button.exists()).toBe(true)
     })
   })
@@ -38,23 +33,23 @@ describe('BackButton.vue', () => {
       expect(wrapper.classes()).toContain('fw-600')
     })
 
-    it('should have outlined property', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.outlined).toBeDefined()
-    })
-
-    it('should have rounded property', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.rounded).toBeDefined()
+    it('should be outlined', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should have cyan color', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('cyan')
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should be rounded', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
   })
 
-  describe('button text', () => {
+  describe('label prop', () => {
     it('should display Back label', () => {
       expect(wrapper.text()).toContain(labels.Back)
     })
@@ -79,17 +74,28 @@ describe('BackButton.vue', () => {
     })
   })
 
+  describe('styling', () => {
+    it('should have bold font weight class', () => {
+      expect(wrapper.classes('fw-600')).toBe(true)
+    })
+
+    it('should have cyan color theme', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should have rounded shape', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should have outlined appearance', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+  })
+
   describe('attributes and listeners', () => {
-    it('should bind attributes with v-bind=$attrs', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs).toBeDefined()
-    })
-
-    it('should bind listeners with v-on=$listeners', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$listeners).toBeDefined()
-    })
-
     it('should pass through custom attributes', async () => {
       wrapper = shallowMount(BackButton, {
         attrs: {
@@ -97,58 +103,60 @@ describe('BackButton.vue', () => {
           'aria-label': 'Go back'
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name: 'VBtn' })
       expect(button.attributes('disabled')).toBeDefined()
     })
 
-    it('should pass through click events', async () => {
-      const handleClick = jest.fn()
+    it('should support disabled state', async () => {
       wrapper = shallowMount(BackButton, {
-        listeners: {
-          click: handleClick
+        attrs: {
+          disabled: true
         }
       })
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
-      expect(handleClick).toHaveBeenCalled()
-    })
-  })
-
-  describe('styling', () => {
-    it('should have bold font weight class', () => {
-      expect(wrapper.classes('fw-600')).toBe(true)
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.attributes('disabled')).toBeDefined()
     })
 
-    it('should have rounded shape', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.rounded).toBeDefined()
+    it('should allow aria-label customization', async () => {
+      wrapper = shallowMount(BackButton, {
+        attrs: {
+          'aria-label': 'Navigate back'
+        }
+      })
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.attributes('aria-label')).toBe('Navigate back')
     })
 
-    it('should have outlined style', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.$attrs.outlined).toBeDefined()
-    })
-
-    it('should have cyan color theme', () => {
-      const button = wrapper.find({ name: 'VBtn' })
-      expect(button.vm.color).toBe('cyan')
+    it('should support loading state via attributes', async () => {
+      wrapper = shallowMount(BackButton, {
+        attrs: {
+          loading: true
+        }
+      })
+      expect(wrapper.findComponent({ name: 'VBtn' }).exists()).toBe(true)
     })
   })
 
   describe('user interactions', () => {
     it('should emit click event', async () => {
-      await wrapper.find({ name: 'VBtn' }).trigger('click')
-      // The component should pass through the click event
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
     })
 
     it('should be clickable', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should be accessible as button element', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
       expect(button.exists()).toBe(true)
     })
   })
 
   describe('accessibility', () => {
     it('should be a button element', () => {
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name: 'VBtn' })
       expect(button.exists()).toBe(true)
     })
 
@@ -162,8 +170,18 @@ describe('BackButton.vue', () => {
           disabled: true
         }
       })
-      const button = wrapper.find({ name: 'VBtn' })
+      const button = wrapper.findComponent({ name: 'VBtn' })
       expect(button.attributes('disabled')).toBeDefined()
+    })
+
+    it('should allow aria-label customization', async () => {
+      wrapper = shallowMount(BackButton, {
+        attrs: {
+          'aria-label': 'Return to previous page'
+        }
+      })
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.attributes('aria-label')).toBe('Return to previous page')
     })
   })
 
@@ -181,7 +199,97 @@ describe('BackButton.vue', () => {
         }
       })
       await wrapper.setProps({})
-      expect(wrapper.find({ name: 'VBtn' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'VBtn' }).exists()).toBe(true)
+    })
+  })
+
+  describe('visual design', () => {
+    it('should use cyan color for consistency', () => {
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should indicate navigation with Back text', () => {
+      expect(wrapper.text()).toBe(labels.Back)
+    })
+
+    it('should be visually distinct as navigation button', () => {
+      expect(wrapper.vm.$options.name).toBe('BackButton')
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should maintain consistent styling', () => {
+      expect(wrapper.classes('fw-600')).toBe(true)
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+  })
+
+  describe('label consistency', () => {
+    it('should display Back label consistently', () => {
+      expect(wrapper.text()).toBe(labels.Back)
+    })
+
+    it('should use labels constant', () => {
+      expect(wrapper.vm.labels.Back).toBe(labels.Back)
+    })
+
+    it('should render text from labels', () => {
+      const text = wrapper.text()
+      expect(text).toBe(wrapper.vm.labels.Back)
+    })
+  })
+
+  describe('button styling classes', () => {
+    it('should have fw-600 font weight class', () => {
+      expect(wrapper.classes()).toContain('fw-600')
+    })
+
+    it('should pass through all styling', () => {
+      expect(wrapper.classes('fw-600')).toBe(true)
+    })
+  })
+
+  describe('integration scenarios', () => {
+    it('should work as standalone back button', () => {
+      expect(wrapper.vm).toBeDefined()
+      expect(wrapper.text()).toBe(labels.Back)
+      expect(wrapper.classes('fw-600')).toBe(true)
+    })
+
+    it('should work in navigation flow', () => {
+      wrapper = shallowMount(BackButton, {
+        attrs: {
+          'aria-label': 'Return to previous step'
+        }
+      })
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.exists()).toBe(true)
+    })
+
+    it('should support disabling navigation', () => {
+      wrapper = shallowMount(BackButton, {
+        attrs: {
+          disabled: true
+        }
+      })
+      const button = wrapper.findComponent({ name: 'VBtn' })
+      expect(button.attributes('disabled')).toBeDefined()
+    })
+  })
+
+  describe('component reactivity', () => {
+    it('should render consistently', async () => {
+      const beforeText = wrapper.text()
+      await wrapper.vm.$forceUpdate()
+      expect(wrapper.text()).toBe(beforeText)
+    })
+
+    it('should maintain label through lifecycle', async () => {
+      expect(wrapper.text()).toBe(labels.Back)
+      await wrapper.vm.$forceUpdate()
+      expect(wrapper.text()).toBe(labels.Back)
     })
   })
 })

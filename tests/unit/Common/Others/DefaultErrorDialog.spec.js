@@ -1,12 +1,11 @@
 import { shallowMount } from '@vue/test-utils'
-import InputPhone from '@/components/Common/Inputs/InputPhone.vue'
-import labels from '@/model/constants/labels'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 
-describe('InputPhone.vue', () => {
+describe('DefaultErrorDialog.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = shallowMount(InputPhone)
+    wrapper = shallowMount(DefaultErrorDialog)
   })
 
   afterEach(() => {
