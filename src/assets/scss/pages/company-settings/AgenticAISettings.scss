@@ -9,13 +9,12 @@
   flex-direction: column;
   margin-top: 4px;
 }
-.agentic-ai-settings__execution-mode-option
-  + .agentic-ai-settings__execution-mode-option {
+.agentic-ai-settings__execution-mode-option + .agentic-ai-settings__execution-mode-option {
   margin-top: 16px;
 }
 .agentic-ai-settings__section-description {
   margin: 0;
-  margin-top:2px;
+  margin-top: 2px;
   font-size: 14px;
   color: #5c616b;
 }
@@ -29,10 +28,8 @@
   font-weight: 400;
   line-height: 19px;
   margin-left: 36px !important;
-  
 }
-.agentic-ai-settings__execution-mode-option
-  .v-input--selection-controls__input {
+.agentic-ai-settings__execution-mode-option .v-input--selection-controls__input {
   margin-right: 12px;
 }
 .agentic-ai-settings__execution-mode-radio .v-radio__label {
@@ -103,19 +100,19 @@
 
 .accordion-group__title {
   color: var(--Black-Black, #383b41);
-  font-feature-settings: 'liga' off, 'clig' off;
+  font-feature-settings: "liga" off, "clig" off;
   font-family: "Open Sans";
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
   line-height: 21px;
-  margin:0;
+  margin: 0;
 }
 
 .accordion-group__subtitle {
   margin: 0;
   color: var(--Black-Black, #383b41);
-  font-feature-settings: 'liga' off, 'clig' off;
+  font-feature-settings: "liga" off, "clig" off;
   font-family: "Open Sans";
   font-size: 12px;
   font-style: normal;
@@ -132,16 +129,15 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 12px;
-  margin-left: 32px;
+  margin-left: 48px;
   margin-bottom: 16px;
 }
 
 .safeguard-detail-card {
   border-radius: 8px;
   background: var(--Gray-Very-Light-Gray, #fafafa);
-  padding: 10px 12px;
+  padding: 4px 16px;
   min-height: 36px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -156,9 +152,7 @@
 
 .safeguard-detail-title {
   flex: 1;
-  color: var(--black-black-72, rgba(56, 59, 65, 0.72));
-  font-feature-settings: 'liga' off, 'clig' off;
-  font-family: "Open Sans";
+  color: #383b41;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;

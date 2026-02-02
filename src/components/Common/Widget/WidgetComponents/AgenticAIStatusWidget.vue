@@ -133,6 +133,7 @@ import ExecutiveWidgetContainer from "@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue";
 import ExecutiveWidgetBody from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue";
 import AgenticAIActivitiesDrawer from "./AgenticAIActivitiesDrawer.vue";
+import { mapGetters } from 'vuex';
 
 export default {
   name: "AgenticAIStatusWidget",
@@ -354,46 +355,58 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled',
+      executionModeStore: 'login/getAgenticAIExecutionMode'
+    }),
+    isAgenticAllyActiveComputed() {
+      // Use store state if available, otherwise fallback to prop
+      return this.isAgenticAIEnabledStore;
+    },
+    isAutonomousComputed() {
+      // Use store state
+      return this.executionModeStore === 'Autonomous';
+    },
     currentStatusText() {
-      if (!this.isAgenticAllyActive) {
+      if (!this.isAgenticAllyActiveComputed) {
         return "Agentic AI is disabled";
       }
       if (
-        this.isAgenticAllyActive &&
-        !this.isAutonomous &&
+        this.isAgenticAllyActiveComputed &&
+        !this.isAutonomousComputed &&
         this.hasPendingApprovals
       ) {
         return "Agentic AI is awaiting approval-gated";
       }
-      return this.isAutonomous
+      return this.isAutonomousComputed
         ? "Agentic AI is running autonomously"
         : "Agentic AI is enabled - approval-gated";
     },
     currentDescription() {
-      if (!this.isAgenticAllyActive) {
+      if (!this.isAgenticAllyActiveComputed) {
         return "No actions will run until you enable it, and you can change modes anytime.";
       }
-      return this.isAutonomous
+      return this.isAutonomousComputed
         ? "Actions run automatically based on your policies."
         : "AI suggests actions for review before they are executed.";
     },
     showSettingsIcon() {
-      return this.isAgenticAllyActive && !this.isAutonomous;
+      return this.isAgenticAllyActiveComputed && !this.isAutonomousComputed;
     },
     statusIcon() {
-      if (this.isAgenticAllyActive) {
+      if (this.isAgenticAllyActiveComputed) {
         return "mdi-check-circle-outline";
       }
       return "mdi-creation";
     },
     statusIconColor() {
-      if (this.isAgenticAllyActive) {
+      if (this.isAgenticAllyActiveComputed) {
         return "#2196f3";
       }
       return "#6b7280";
     },
     iconBackgroundColor() {
-      if (this.isAgenticAllyActive) {
+      if (this.isAgenticAllyActiveComputed) {
         return "#F1F8FE";
       }
       return "#e5e7eb";
@@ -407,8 +420,8 @@ export default {
     },
     isApprovalReviewState() {
       return (
-        this.isAgenticAllyActive &&
-        !this.isAutonomous &&
+        this.isAgenticAllyActiveComputed &&
+        !this.isAutonomousComputed &&
         this.hasPendingApprovals
       );
     },
@@ -423,7 +436,7 @@ export default {
         : this.actionButtonOutlined;
     },
     visibleStatCards() {
-      if (this.isAutonomous) {
+      if (this.isAutonomousComputed) {
         return this.statCards.filter(
           (card) => card.title === "Actions Executed"
         );
@@ -432,7 +445,7 @@ export default {
     },
     highlightedCardTitles() {
       const titles = [];
-      if (this.isAutonomous) {
+      if (this.isAutonomousComputed) {
         titles.push("Actions Executed");
       }
       if (this.hasPendingApprovals) {

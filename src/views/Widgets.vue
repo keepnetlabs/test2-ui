@@ -693,7 +693,7 @@ export default {
             if (widget.isAllowed) acc.push(widget);
             return acc;
           }, []);
-          this.ensureAgenticAIWidget(this.layout);
+          // this.ensureAgenticAIWidget(this.layout);
           this.newItemY = this.layout.reduce((acc, item) => {
             acc += item.h;
             return acc;

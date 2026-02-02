@@ -109,7 +109,12 @@
 <script>
 import CompanySettingsHeader from "@/components/Company Settings/CompanySettingsHeader.vue";
 import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
-import { getAgenticAISettings, saveAgenticAISettings } from "@/api/company";
+import {
+  getAgenticAISettings,
+  updateAgenticAISettings,
+  resetAgenticAISettings,
+  getAgenticAIMetadata
+} from "@/api/company";
 import DatatableLoading from "@/components/SkeletonLoading/DatatableLoading.vue";
 import FormGroup from "@/components/SmallComponents/FormGroup.vue";
 import AccordionGroup from "@/components/SmallComponents/AccordionGroup.vue";
@@ -144,8 +149,8 @@ export default {
         executiveBoardComplianceTraining: false,
         riskEscalationEnabled: false,
         repeatOffenderIdentification: false,
-        escalatedSimulationTraining: false,
-        managerVisibilityHighRisk: false,
+        escalatedSimulationTrainingPath: false,
+        managerVisibilityOnHighRisk: false,
         positiveReinforcementEnabled: false,
         securityChampionRecognition: false,
         fastPhishingReporterAppreciation: false,
@@ -176,7 +181,9 @@ export default {
         postIncidentTrainingAssignment: false
       },
       isFetching: true,
-      isSaving: false
+      isSaving: false,
+      metadata: null,
+      localToApiKeyMap: {}
     };
   },
   computed: {
@@ -442,7 +449,7 @@ export default {
                 "Apply stricter simulation and training paths for high-risk users.",
               showCheckbox: true,
               checkboxModel: this.behavioralPolicySettings,
-              checkboxField: "escalatedSimulationTraining",
+              checkboxField: "escalatedSimulationTrainingPath",
               checkboxDisabled: !this.hasAgenticAILicense,
               checkboxOnChange: this.handleRiskEscalationCheckboxChange
             },
@@ -452,7 +459,7 @@ export default {
                 "Notify managers when users or teams reach elevated risk levels.",
               showCheckbox: true,
               checkboxModel: this.behavioralPolicySettings,
-              checkboxField: "managerVisibilityHighRisk",
+              checkboxField: "managerVisibilityOnHighRisk",
               checkboxDisabled: !this.hasAgenticAILicense,
               checkboxOnChange: this.handleRiskEscalationCheckboxChange
             }
@@ -776,8 +783,8 @@ export default {
     riskEscalationCheckboxFields() {
       return [
         "repeatOffenderIdentification",
-        "escalatedSimulationTraining",
-        "managerVisibilityHighRisk"
+        "escalatedSimulationTrainingPath",
+        "managerVisibilityOnHighRisk"
       ];
     },
 
@@ -833,55 +840,194 @@ export default {
   mounted() {
     this.fetchAgenticAISettings();
   },
+  watch: {
+    'agenticAISettings.executionMode'(val, oldVal) {
+      if(val !== oldVal && this.agenticAISettings.isAgenticAIEnabled && !this.isFetching) {
+        this.updateSettings({ executionMode: val === 'autonomous' ? 'Autonomous' : 'ApprovalGated' });
+      }
+    }
+  },
   methods: {
-    fetchAgenticAISettings() {
+    async fetchAgenticAISettings() {
       if (!this.hasAgenticAILicense) {
         this.isFetching = false;
         return;
       }
       this.isFetching = true;
-      getAgenticAISettings()
-        .then((response) => {
-          const enabled = !!response?.data?.data?.agenticAIEnabled;
-          this.agenticAISettings.isAgenticAIEnabled = enabled;
-        })
-        .finally(() => {
-          this.isFetching = false;
+      try {
+        const [metadataRes, settingsRes] = await Promise.all([
+          getAgenticAIMetadata(),
+          getAgenticAISettings()
+        ]);
+        
+        this.metadata = metadataRes?.data?.data || {};
+        this.buildLocalToApiKeyMap(this.metadata);
+
+        const data = settingsRes?.data?.data || {};
+        
+        // Default to enabled if we can fetch settings or assume user has access based on license
+        this.agenticAISettings.isAgenticAIEnabled = true; 
+        
+        this.agenticAISettings.executionMode = data.executionMode === 'Autonomous' ? 'autonomous' : 'approval';
+        
+        const backendPolicies = data.behavioralPolicies || {};
+        
+        // Reset all local policies (except switches logic which we handle below)
+        const allKeys = [
+          ...this.behavioralPolicyCheckboxFields,
+          ...this.complianceTrainingCheckboxFields,
+          ...this.riskEscalationCheckboxFields,
+          ...this.positiveReinforcementCheckboxFields,
+          ...this.difficultyProgressionCheckboxFields,
+          ...this.nudgesCheckboxFields,
+          ...this.trainingEnablementCheckboxFields
+        ];
+        
+        allKeys.forEach(k => { this.behavioralPolicySettings[k] = false; });
+
+        // Map backend keys to local keys
+        for (const [key, value] of Object.entries(backendPolicies)) {
+           const childKey = key.split('.')[1];
+           if (childKey && Object.prototype.hasOwnProperty.call(this.behavioralPolicySettings, childKey)) {
+             this.behavioralPolicySettings[childKey] = value;
+           }
+        }
+
+        // Update enable switches based on child states
+        this.handleBehavioralPolicyCheckboxChange({ skipSave: true });
+        this.handleComplianceTrainingCheckboxChange({ skipSave: true });
+        this.handleRiskEscalationCheckboxChange({ skipSave: true });
+        this.handlePositiveReinforcementCheckboxChange({ skipSave: true });
+        this.handleDifficultyProgressionCheckboxChange({ skipSave: true });
+        this.handleNudgesCheckboxChange({ skipSave: true });
+        this.handleTrainingEnablementCheckboxChange({ skipSave: true });
+
+      } catch (error) {
+        console.error("Failed to fetch Agentic AI settings", error);
+      } finally {
+        this.isFetching = false;
+      }
+    },
+    buildLocalToApiKeyMap(metadata) {
+      this.localToApiKeyMap = {};
+      if(!metadata || !metadata.behavioralPolicies) return;
+      
+      metadata.behavioralPolicies.forEach(parent => {
+         if(parent.items) {
+           parent.items.forEach(child => {
+             this.localToApiKeyMap[child.key] = `${parent.key}.${child.key}`;
+           });
+         }
+      });
+    },
+    getApiKeyForLocalKey(localKey) {
+       if (this.localToApiKeyMap[localKey]) return this.localToApiKeyMap[localKey];
+       
+       const fieldGroups = [
+          { group: 'simulationCadence', fields: this.behavioralPolicyCheckboxFields },
+          { group: 'complianceTrainingPolicies', fields: this.complianceTrainingCheckboxFields },
+          { group: 'riskEscalation', fields: this.riskEscalationCheckboxFields },
+          { group: 'positiveReinforcement', fields: this.positiveReinforcementCheckboxFields }, 
+          { group: 'difficultyAndProgression', fields: this.difficultyProgressionCheckboxFields }, 
+          { group: 'nudges', fields: this.nudgesCheckboxFields },
+          { group: 'trainingAndEnablement', fields: this.trainingEnablementCheckboxFields } 
+       ];
+       
+       for(const group of fieldGroups) {
+          if(group.fields.includes(localKey)) return `${group.group}.${localKey}`;
+       }
+       return localKey;
+    },
+    async updateSettings(payload) {
+      this.isSaving = true;
+      try {
+        await updateAgenticAISettings(payload);
+        this.$store.dispatch("common/createSnackBar", {
+            message: "Settings updated successfully",
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: "mdi-check-circle"
         });
+
+        if (payload.executionMode) {
+           this.$store.commit("login/SET_AGENTIC_AI_EXECUTION_MODE", payload.executionMode);
+        }
+      } catch (error) {
+        this.$store.dispatch("common/createSnackBar", {
+            message: "Failed to save settings",
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: "mdi-alert"
+        });
+      } finally {
+        this.isSaving = false;
+      }
+    },
+    async updatePolicy(localKey, value) {
+       if (this.isFetching) return;
+       const apiKey = this.getApiKeyForLocalKey(localKey);
+       const payload = {
+         behavioralPolicies: {
+           [apiKey]: value
+         }
+       };
+       await this.updateSettings(payload);
     },
     handleAgenticAIToggle(val) {
       if (!this.hasAgenticAILicense) return;
-      const previousValue = !val;
       this.isSaving = true;
-      saveAgenticAISettings({ agenticAIEnabled: val })
-        .then(() => {
-          const message = val
-            ? "Agentic AI is now enabled."
-            : "Agentic AI is now disabled.";
-          this.$store.dispatch("common/createSnackBar", {
-            message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: "mdi-information"
-          });
-          // keep global state in sync so ChatPanel can react immediately
-          this.$store.dispatch("login/getAgenticAIEnabled");
-        })
-        .catch(() => {
-          // revert UI state on failure
-          this.agenticAISettings.isAgenticAIEnabled = previousValue;
-        })
-        .finally(() => {
-          this.isSaving = false;
-        });
+      
+      if (val) {
+        updateAgenticAISettings({ executionMode: 'ApprovalGated' })
+          .then(() => {
+             this.agenticAISettings.isAgenticAIEnabled = true;
+             this.$store.dispatch("common/createSnackBar", {
+                message: "Agentic AI is now enabled.",
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: "mdi-information"
+             });
+             this.$store.dispatch("login/getAgenticAIEnabled");
+          })
+          .catch(() => {
+             this.agenticAISettings.isAgenticAIEnabled = false; 
+          })
+          .finally(() => { this.isSaving = false; });
+      } else {
+        resetAgenticAISettings()
+          .then(() => {
+             this.agenticAISettings.isAgenticAIEnabled = false;
+             this.fetchAgenticAISettings(); 
+             this.$store.dispatch("common/createSnackBar", {
+                message: "Agentic AI is now disabled.",
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: "mdi-information"
+             });
+             this.$store.dispatch("login/getAgenticAIEnabled");
+          })
+          .catch(() => {
+             this.agenticAISettings.isAgenticAIEnabled = true; 
+          })
+          .finally(() => { this.isSaving = false; });
+      }
     },
     handleSimulationCadenceSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.simulationCadenceEnabled;
+
       const fields = this.behavioralPolicyCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+      
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handleBehavioralPolicyCheckboxChange() {
+    handleBehavioralPolicyCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.behavioralPolicyCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -891,15 +1037,36 @@ export default {
       ) {
         this.behavioralPolicySettings.simulationCadenceEnabled = anyChecked;
       }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
     handleComplianceTrainingSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.complianceTrainingEnabled;
+      
       const fields = this.complianceTrainingCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handleComplianceTrainingCheckboxChange() {
+    handleComplianceTrainingCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.complianceTrainingCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -909,16 +1076,37 @@ export default {
       ) {
         this.behavioralPolicySettings.complianceTrainingEnabled = anyChecked;
       }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
     handleRiskEscalationSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.riskEscalationEnabled;
+      
       const fields = this.riskEscalationCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handleRiskEscalationCheckboxChange() {
+    handleRiskEscalationCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.riskEscalationCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -926,15 +1114,36 @@ export default {
       if (this.behavioralPolicySettings.riskEscalationEnabled !== anyChecked) {
         this.behavioralPolicySettings.riskEscalationEnabled = anyChecked;
       }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
     handlePositiveReinforcementSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.positiveReinforcementEnabled;
+      
       const fields = this.positiveReinforcementCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+      
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handlePositiveReinforcementCheckboxChange() {
+    handlePositiveReinforcementCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.positiveReinforcementCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -945,16 +1154,37 @@ export default {
       ) {
         this.behavioralPolicySettings.positiveReinforcementEnabled = anyChecked;
       }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
     handleDifficultyProgressionSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.difficultyProgressionEnabled;
+      
       const fields = this.difficultyProgressionCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+      
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handleDifficultyProgressionCheckboxChange() {
+    handleDifficultyProgressionCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.difficultyProgressionCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -965,15 +1195,36 @@ export default {
       ) {
         this.behavioralPolicySettings.difficultyProgressionEnabled = anyChecked;
       }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
     handleNudgesSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.nudgesEnabled;
+      
       const fields = this.nudgesCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+      
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handleNudgesCheckboxChange() {
+    handleNudgesCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.nudgesCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -981,16 +1232,37 @@ export default {
       if (this.behavioralPolicySettings.nudgesEnabled !== anyChecked) {
         this.behavioralPolicySettings.nudgesEnabled = anyChecked;
       }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
     handleTrainingEnablementSwitchChange(value) {
+      const skipSave = typeof value === 'object' && value.skipSave;
+      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.trainingEnablementEnabled;
+      
       const fields = this.trainingEnablementCheckboxFields;
+      const policyUpdate = {};
+      
       fields.forEach((field) => {
-        this.behavioralPolicySettings[field] = value;
+        this.behavioralPolicySettings[field] = actualValue;
+        const key = this.getApiKeyForLocalKey(field);
+        policyUpdate[key] = actualValue;
       });
+      
+      if(!skipSave) {
+        this.updateSettings({ behavioralPolicies: policyUpdate });
+      }
     },
 
-    handleTrainingEnablementCheckboxChange() {
+    handleTrainingEnablementCheckboxChange(arg) {
+      const skipSave = arg && arg.skipSave;
       const fields = this.trainingEnablementCheckboxFields;
       const anyChecked = fields.some(
         (field) => this.behavioralPolicySettings[field]
@@ -999,6 +1271,15 @@ export default {
         this.behavioralPolicySettings.trainingEnablementEnabled !== anyChecked
       ) {
         this.behavioralPolicySettings.trainingEnablementEnabled = anyChecked;
+      }
+      
+      if(!skipSave) {
+        const policyUpdate = {};
+        fields.forEach(f => {
+           const key = this.getApiKeyForLocalKey(f);
+           policyUpdate[key] = this.behavioralPolicySettings[f];
+        });
+        this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     }
   }
