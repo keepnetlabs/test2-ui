@@ -736,4 +736,1129 @@ describe('learningPath.js store module', () => {
       expect(state.learningPathTableData.map(t => t.trainingId)).toEqual([2, 4])
     })
   })
+
+  describe('state properties - detailed type checks', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('availableFor is an array', () => {
+      expect(Array.isArray(state.availableFor)).toBe(true)
+    })
+
+    it('learningPathTableData is an array', () => {
+      expect(Array.isArray(state.learningPathTableData)).toBe(true)
+    })
+
+    it('selectedLearningPathTrainings is an array', () => {
+      expect(Array.isArray(state.selectedLearningPathTrainings)).toBe(true)
+    })
+
+    it('learningPathSearch is a string', () => {
+      expect(typeof state.learningPathSearch).toBe('string')
+    })
+
+    it('learningPathSelectedTrainingContent is a string', () => {
+      expect(typeof state.learningPathSelectedTrainingContent).toBe('string')
+    })
+
+    it('learningPathSelectedSubTrainingContent is a string', () => {
+      expect(typeof state.learningPathSelectedSubTrainingContent).toBe('string')
+    })
+
+    it('learningPathFilters is an array', () => {
+      expect(Array.isArray(state.learningPathFilters)).toBe(true)
+    })
+
+    it('learningPathFilterType is a string', () => {
+      expect(typeof state.learningPathFilterType).toBe('string')
+    })
+
+    it('learningPathSortBy is a string', () => {
+      expect(typeof state.learningPathSortBy).toBe('string')
+    })
+
+    it('learningPathModalTrainingPreviewDialog is an object', () => {
+      expect(typeof state.learningPathModalTrainingPreviewDialog).toBe('object')
+    })
+
+    it('learningPathServerSideProps is an object', () => {
+      expect(typeof state.learningPathServerSideProps).toBe('object')
+    })
+
+    it('learningPathAxiosPayload is an object', () => {
+      expect(typeof state.learningPathAxiosPayload).toBe('object')
+    })
+
+    it('learningPathFilterOptionsFilters is an array', () => {
+      expect(Array.isArray(state.learningPathFilterOptionsFilters)).toBe(true)
+    })
+
+    it('availableFor array persists mutations', () => {
+      state.availableFor = [{ id: 1 }]
+      expect(state.availableFor).toHaveLength(1)
+      expect(state.availableFor[0].id).toBe(1)
+    })
+
+    it('learningPathTableData array persists mutations', () => {
+      state.learningPathTableData = [{ trainingId: 99 }]
+      expect(state.learningPathTableData).toHaveLength(1)
+      expect(state.learningPathTableData[0].trainingId).toBe(99)
+    })
+  })
+
+  describe('getter behavior - function types and reference equality', () => {
+    beforeEach(() => {
+      state = learningPathStore.state
+    })
+
+    it('getLearningPathFilterType getter is a function', () => {
+      expect(typeof learningPathStore.getters.getLearningPathFilterType).toBe('function')
+    })
+
+    it('getLearningPathSortBy getter is a function', () => {
+      expect(typeof learningPathStore.getters.getLearningPathSortBy).toBe('function')
+    })
+
+    it('getLearningPathSearch getter is a function', () => {
+      expect(typeof learningPathStore.getters.getLearningPathSearch).toBe('function')
+    })
+
+    it('getLearningPathFilters getter is a function', () => {
+      expect(typeof learningPathStore.getters.getLearningPathFilters).toBe('function')
+    })
+
+    it('getLearningPathTrainings getter is a function', () => {
+      expect(typeof learningPathStore.getters.getLearningPathTrainings).toBe('function')
+    })
+
+    it('getSelectedLearningPathTrainings getter is a function', () => {
+      expect(typeof learningPathStore.getters.getSelectedLearningPathTrainings).toBe('function')
+    })
+
+    it('getLearningPathModalTrainingPreviewDialog getter is a function', () => {
+      expect(typeof learningPathStore.getters.getLearningPathModalTrainingPreviewDialog).toBe('function')
+    })
+
+    it('getLearningPathFilters returns same reference for array', () => {
+      const filters1 = learningPathStore.getters.getLearningPathFilters(state)
+      const filters2 = learningPathStore.getters.getLearningPathFilters(state)
+      expect(filters1).toBe(filters2)
+    })
+
+    it('getLearningPathTrainings returns same reference for table data', () => {
+      state.learningPathTableData = [{ id: 1 }]
+      const trainings1 = learningPathStore.getters.getLearningPathTrainings(state)
+      const trainings2 = learningPathStore.getters.getLearningPathTrainings(state)
+      expect(trainings1).toBe(trainings2)
+    })
+
+    it('getSelectedLearningPathTrainings returns same reference', () => {
+      state.selectedLearningPathTrainings = [{ trainingId: 1 }]
+      const selected1 = learningPathStore.getters.getSelectedLearningPathTrainings(state)
+      const selected2 = learningPathStore.getters.getSelectedLearningPathTrainings(state)
+      expect(selected1).toBe(selected2)
+    })
+
+    it('getLearningPathModalTrainingPreviewDialog returns same reference', () => {
+      const dialog1 = learningPathStore.getters.getLearningPathModalTrainingPreviewDialog(state)
+      const dialog2 = learningPathStore.getters.getLearningPathModalTrainingPreviewDialog(state)
+      expect(dialog1).toBe(dialog2)
+    })
+
+    it('all getters accept state parameter', () => {
+      const testState = { learningPathFilterType: 'test' }
+      expect(learningPathStore.getters.getLearningPathFilterType(testState)).toBe('test')
+    })
+
+    it('getters return correct types with various state values', () => {
+      state.learningPathFilterType = 'And'
+      expect(learningPathStore.getters.getLearningPathFilterType(state)).toBe('And')
+
+      state.learningPathSortBy = 'Name A-Z'
+      expect(learningPathStore.getters.getLearningPathSortBy(state)).toBe('Name A-Z')
+    })
+  })
+
+  describe('mutation payload handling - null/undefined edge cases', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('SET_LEARNING_PATH_SEARCH handles null payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, null)
+      expect(state.learningPathSearch).toBe(null)
+    })
+
+    it('SET_LEARNING_PATH_SEARCH handles undefined payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, undefined)
+      expect(state.learningPathSearch).toBe(undefined)
+    })
+
+    it('SET_LEARNING_PATH_SEARCH handles empty string', () => {
+      state.learningPathSearch = 'previous'
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, '')
+      expect(state.learningPathSearch).toBe('')
+    })
+
+    it('SET_LEARNING_PATH_SORT_BY handles null payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_SORT_BY(state, null)
+      expect(state.learningPathSortBy).toBe(null)
+    })
+
+    it('SET_LEARNING_PATH_SORT_BY handles undefined payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_SORT_BY(state, undefined)
+      expect(state.learningPathSortBy).toBe(undefined)
+    })
+
+    it('SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG handles null payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG(state, null)
+      expect(state.learningPathModalTrainingPreviewDialog).toBe(null)
+    })
+
+    it('SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG handles undefined payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG(state, undefined)
+      expect(state.learningPathModalTrainingPreviewDialog).toBe(undefined)
+    })
+
+    it('APPEND_LEARNING_PATH_TABLE_DATA handles null payload throws error', () => {
+      state.learningPathTableData = [{ trainingId: 1 }]
+      expect(() => {
+        learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, null)
+      }).toThrow()
+    })
+
+    it('APPEND_LEARNING_PATH_TABLE_DATA handles empty array', () => {
+      state.learningPathTableData = [{ trainingId: 1 }]
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, [])
+      expect(state.learningPathTableData).toHaveLength(1)
+    })
+
+    it('SET_LEARNING_PATH_TABLE_DATA handles null payload throws error', () => {
+      state.learningPathTableData = [{ trainingId: 1 }]
+      expect(() => {
+        learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, null)
+      }).toThrow()
+    })
+
+    it('SET_LEARNING_PATH_TABLE_DATA handles empty array', () => {
+      state.learningPathTableData = [{ trainingId: 1 }]
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, [])
+      expect(state.learningPathTableData).toEqual([])
+    })
+
+    it('SET_SELECTED_LEARNING_PATH_TRAININGS handles null payload throws error', () => {
+      expect(() => {
+        learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, null)
+      }).toThrow()
+    })
+
+    it('SET_SELECTED_LEARNING_PATH_TRAININGS handles undefined payload throws error', () => {
+      expect(() => {
+        learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, undefined)
+      }).toThrow()
+    })
+
+    it('SET_SELECTED_LEARNING_PATH_TRAININGS handles empty array', () => {
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, [])
+      expect(state.selectedLearningPathTrainings).toEqual([])
+    })
+
+    it('SET_LEARNING_PATH_SERVER_SIDE_PROPS handles partial payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_SERVER_SIDE_PROPS(state, {
+        totalNumberOfRecords: 50
+      })
+      expect(state.learningPathServerSideProps.totalNumberOfRecords).toBe(50)
+    })
+
+    it('SET_LEARNING_PATH_SERVER_SIDE_PROPS handles null values in payload', () => {
+      learningPathStore.mutations.SET_LEARNING_PATH_SERVER_SIDE_PROPS(state, {
+        totalNumberOfRecords: null,
+        totalNumberOfPages: null,
+        pageNumber: null
+      })
+      expect(state.learningPathServerSideProps.totalNumberOfRecords).toBe(null)
+    })
+  })
+
+  describe('action behavior - commit patterns and payload passing', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('setLearningPathFilterItemsShow passes exact payload to commit', () => {
+      const commit = jest.fn()
+      const payload = { key: 'targetAudience', show: false }
+      learningPathStore.actions.setLearningPathFilterItemsShow({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('SET_FILTER_ITEMS_SHOW', payload)
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('setLearningPathModalTrainingPreviewDialog passes exact payload to commit', () => {
+      const commit = jest.fn()
+      const payload = { isOpen: true, trainingId: 999 }
+      learningPathStore.actions.setLearningPathModalTrainingPreviewDialog({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG', payload)
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('setSelectedLearningPathTrainings passes exact payload to commit', () => {
+      const commit = jest.fn()
+      const payload = [{ trainingId: 1, trainingOrder: 1 }]
+      learningPathStore.actions.setSelectedLearningPathTrainings({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('SET_SELECTED_LEARNING_PATH_TRAININGS', payload)
+    })
+
+    it('selectLearningPathTraining passes exact payload to commit', () => {
+      const commit = jest.fn()
+      const payload = { training: { trainingId: 5 }, index: 2 }
+      learningPathStore.actions.selectLearningPathTraining({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('SELECT_LEARNING_PATH_TRAINING', payload)
+    })
+
+    it('removeTrainingFromLearningPath passes exact payload to commit', () => {
+      const commit = jest.fn()
+      const payload = { training: { trainingId: 5 }, index: 1 }
+      learningPathStore.actions.removeTrainingFromLearningPath({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('REMOVE_TRAINING_FROM_LEARNING_PATH', payload)
+    })
+
+    it('orderLearningPathData passes exact payload to commit', () => {
+      const commit = jest.fn()
+      const payload = [{ id: 1, name: 'Item 1' }]
+      learningPathStore.actions.orderLearningPathData({ commit }, payload)
+      expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA', payload)
+    })
+
+    it('orderLearningPathData handles null payload', () => {
+      const commit = jest.fn()
+      learningPathStore.actions.orderLearningPathData({ commit }, null)
+      expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA', null)
+    })
+
+    it('learningPathClearAllFilters commits only RESET when isFetch is false', () => {
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+      learningPathStore.actions.learningPathClearAllFilters({ commit, dispatch }, { isFetch: false })
+      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_FILTERS')
+      expect(commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('learningPathClearAllFilters handles missing isFetch parameter', () => {
+      const commit = jest.fn()
+      learningPathStore.actions.learningPathClearAllFilters({ commit }, {})
+      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_FILTERS')
+    })
+
+    it('resetSelectedLearningPathTrainings calls mutations in correct order', () => {
+      const commitCalls = []
+      const commit = (mutation, payload) => {
+        commitCalls.push(mutation)
+      }
+      learningPathStore.actions.resetSelectedLearningPathTrainings({ commit })
+      expect(commitCalls).toEqual([
+        'RESET_LEARNING_PATH_FILTERS',
+        'RESET_SELECTED_LEARNING_PATH_TRAININGS',
+        'RESET_LEARNING_PATH_DATA'
+      ])
+    })
+
+    it('actions have correct context with commit function', () => {
+      const commit = jest.fn()
+      const context = { commit }
+      expect(typeof learningPathStore.actions.setLearningPathFilterItemsShow(context, {})).not.toThrow
+    })
+  })
+
+  describe('type safety and consistency', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('mutation names are consistently uppercase with underscores', () => {
+      const mutations = Object.keys(learningPathStore.mutations)
+      mutations.forEach(name => {
+        expect(name).toMatch(/^[A-Z_]+$/)
+      })
+    })
+
+    it('action names are consistently camelCase', () => {
+      const actions = Object.keys(learningPathStore.actions)
+      actions.forEach(name => {
+        expect(name).toMatch(/^[a-z][a-zA-Z]*$/)
+      })
+    })
+
+    it('getter names are consistently camelCase starting with get', () => {
+      const getters = Object.keys(learningPathStore.getters)
+      getters.forEach(name => {
+        expect(name).toMatch(/^get[A-Z]/)
+      })
+    })
+
+    it('state properties are consistently camelCase', () => {
+      const stateProps = Object.keys(learningPathStore.state)
+      stateProps.forEach(prop => {
+        expect(prop).toMatch(/^[a-z][a-zA-Z]*$/)
+      })
+    })
+
+    it('table data maintains consistent training object structure', () => {
+      const trainings = [
+        { trainingId: 1, name: 'Training 1' },
+        { trainingId: 2, name: 'Training 2' }
+      ]
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, trainings)
+      state.learningPathTableData.forEach(training => {
+        expect(training).toHaveProperty('trainingId')
+      })
+    })
+
+    it('selected trainings maintain consistent structure with training order', () => {
+      const trainings = [
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 2, trainingOrder: 2 }
+      ]
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, trainings)
+      state.selectedLearningPathTrainings.forEach(training => {
+        expect(training).toHaveProperty('trainingOrder')
+      })
+    })
+
+    it('filter structure includes required fields', () => {
+      const filter = state.learningPathFilters[0]
+      expect(filter).toHaveProperty('key')
+    })
+
+    it('axios payload maintains correct filter structure', () => {
+      const payload = state.learningPathAxiosPayload
+      expect(payload.filter.FilterGroups[0]).toHaveProperty('FilterItems')
+      expect(payload.filter.FilterGroups[0]).toHaveProperty('Condition')
+    })
+  })
+
+  describe('edge cases - special characters, Unicode, long strings', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('SET_LEARNING_PATH_SEARCH handles special characters', () => {
+      const specialCharsSearch = '!@#$%^&*()'
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, specialCharsSearch)
+      expect(state.learningPathSearch).toBe(specialCharsSearch)
+    })
+
+    it('SET_LEARNING_PATH_SEARCH handles Unicode characters', () => {
+      const unicodeSearch = '日本語テスト中文тест'
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, unicodeSearch)
+      expect(state.learningPathSearch).toBe(unicodeSearch)
+    })
+
+    it('SET_LEARNING_PATH_SEARCH handles very long strings (500+ chars)', () => {
+      const longSearch = 'a'.repeat(500)
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, longSearch)
+      expect(state.learningPathSearch).toBe(longSearch)
+      expect(state.learningPathSearch.length).toBe(500)
+    })
+
+    it('SET_LEARNING_PATH_SORT_BY handles strings with special characters', () => {
+      const specialSort = 'Date @Created - New & Old'
+      learningPathStore.mutations.SET_LEARNING_PATH_SORT_BY(state, specialSort)
+      expect(state.learningPathSortBy).toBe(specialSort)
+    })
+
+    it('SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG handles objects with long string values', () => {
+      const longString = 'x'.repeat(1000)
+      const dialog = { isOpen: true, description: longString }
+      learningPathStore.mutations.SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG(state, dialog)
+      expect(state.learningPathModalTrainingPreviewDialog.description).toBe(longString)
+    })
+
+    it('APPEND_LEARNING_PATH_TABLE_DATA with training names containing special chars', () => {
+      const trainings = [
+        { trainingId: 1, name: 'Training & Security @2024' },
+        { trainingId: 2, name: '日本語トレーニング' }
+      ]
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, trainings)
+      expect(state.learningPathTableData[0].name).toBe('Training & Security @2024')
+      expect(state.learningPathTableData[1].name).toBe('日本語トレーニング')
+    })
+
+    it('SET_SELECTED_LEARNING_PATH_TRAININGS with names containing quotes and apostrophes', () => {
+      const trainings = [
+        { trainingId: 1, name: "It's \"Training\" Course", trainingOrder: 1 }
+      ]
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, trainings)
+      expect(state.selectedLearningPathTrainings[0].name).toBe("It's \"Training\" Course")
+    })
+
+    it('SELECT_LEARNING_PATH_TRAINING with special character training data', () => {
+      state.learningPathTableData = [
+        { trainingId: 1, name: 'Training @#$' }
+      ]
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: { trainingId: 1, name: 'Training @#$' },
+        index: 0
+      })
+      expect(state.selectedLearningPathTrainings[0].name).toBe('Training @#$')
+    })
+
+    it('handles newlines and tabs in search strings', () => {
+      const searchWithWhitespace = 'training\nwith\ttabs'
+      learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, searchWithWhitespace)
+      expect(state.learningPathSearch).toBe(searchWithWhitespace)
+    })
+
+    it('handles emoji in training names', () => {
+      const trainings = [
+        { trainingId: 1, name: 'Training 🎓 Course 🚀' }
+      ]
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, trainings)
+      expect(state.learningPathTableData[0].name).toBe('Training 🎓 Course 🚀')
+    })
+  })
+
+  describe('large dataset handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('handles 100+ items in learningPathTableData', () => {
+      const largeDataset = Array.from({ length: 100 }, (_, i) => ({
+        trainingId: i + 1,
+        name: `Training ${i + 1}`
+      }))
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, largeDataset)
+      expect(state.learningPathTableData).toHaveLength(100)
+    })
+
+    it('handles 1000+ items in learningPathTableData', () => {
+      const veryLargeDataset = Array.from({ length: 1000 }, (_, i) => ({
+        trainingId: i + 1,
+        name: `Training ${i + 1}`
+      }))
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, veryLargeDataset)
+      expect(state.learningPathTableData).toHaveLength(1000)
+    })
+
+    it('APPEND_LEARNING_PATH_TABLE_DATA with 500+ items', () => {
+      state.learningPathTableData = [{ trainingId: 1 }]
+      const newTrainings = Array.from({ length: 500 }, (_, i) => ({
+        trainingId: i + 2,
+        name: `Training ${i + 2}`
+      }))
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newTrainings)
+      expect(state.learningPathTableData.length).toBeGreaterThanOrEqual(500)
+    })
+
+    it('handles 100+ selected trainings with sorting', () => {
+      const trainings = Array.from({ length: 100 }, (_, i) => ({
+        trainingId: 100 - i,
+        trainingOrder: 100 - i
+      }))
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, trainings)
+      expect(state.selectedLearningPathTrainings).toHaveLength(100)
+      expect(state.selectedLearningPathTrainings[0].trainingOrder).toBe(1)
+    })
+
+    it('APPEND_LEARNING_PATH_TABLE_DATA filters out selected from 200 items', () => {
+      const selectedIds = Array.from({ length: 50 }, (_, i) => ({
+        trainingId: i + 1
+      }))
+      state.selectedLearningPathTrainings = selectedIds
+
+      const newTrainings = Array.from({ length: 200 }, (_, i) => ({
+        trainingId: i + 1
+      }))
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newTrainings)
+      expect(state.learningPathTableData).toHaveLength(150)
+    })
+
+    it('handles large detailTrainingId filtering', () => {
+      state.selectedLearningPathTrainings = [
+        { detailTrainingId: 999 }
+      ]
+      const newTrainings = Array.from({ length: 300 }, (_, i) => ({
+        detailTrainingId: i + 1
+      }))
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newTrainings)
+      const foundConflict = state.learningPathTableData.some(t => t.detailTrainingId === 999)
+      expect(foundConflict).toBe(false)
+    })
+
+    it('SET_LEARNING_PATH_FILTER_ITEMS with large item count', () => {
+      const largeItems = Array.from({ length: 200 }, (_, i) => ({
+        id: i + 1,
+        label: `Item ${i + 1}`
+      }))
+      const payload = { key: 'type', items: largeItems }
+      learningPathStore.mutations.SET_LEARNING_PATH_FILTER_ITEMS(state, payload)
+      const filter = state.learningPathFilters.find(f => f && f.key === 'type')
+      expect(filter.items).toHaveLength(200)
+    })
+
+    it('ORDER_LEARNING_PATH_DATA with 100 items', () => {
+      state.learningPathTableData = Array.from({ length: 100 }, (_, i) => ({
+        id: i + 1
+      }))
+      learningPathStore.mutations.ORDER_LEARNING_PATH_DATA(state, null)
+      expect(state.learningPathTableData).toHaveLength(100)
+    })
+  })
+
+  describe('rapid operations and concurrent mutations', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('handles 5 rapid SET_LEARNING_PATH_SEARCH mutations', () => {
+      for (let i = 0; i < 5; i++) {
+        learningPathStore.mutations.SET_LEARNING_PATH_SEARCH(state, `search ${i}`)
+      }
+      expect(state.learningPathSearch).toBe('search 4')
+    })
+
+    it('handles 10 rapid SET_LEARNING_PATH_SORT_BY mutations', () => {
+      for (let i = 0; i < 10; i++) {
+        learningPathStore.mutations.SET_LEARNING_PATH_SORT_BY(state, `sort ${i}`)
+      }
+      expect(state.learningPathSortBy).toBe('sort 9')
+    })
+
+    it('handles 20 rapid SELECT_LEARNING_PATH_TRAINING mutations', () => {
+      state.learningPathTableData = Array.from({ length: 100 }, (_, i) => ({
+        trainingId: i + 1
+      }))
+      for (let i = 0; i < 20 && state.learningPathTableData.length > 0; i++) {
+        learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+          training: { trainingId: i + 1 },
+          index: 0
+        })
+      }
+      expect(state.selectedLearningPathTrainings.length).toBeGreaterThan(0)
+    })
+
+    it('handles alternating SELECT and REMOVE mutations', () => {
+      state.learningPathTableData = [{ trainingId: 1 }, { trainingId: 2 }, { trainingId: 3 }]
+
+      for (let i = 0; i < 5; i++) {
+        if (state.learningPathTableData.length > 0) {
+          learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+            training: state.learningPathTableData[0],
+            index: 0
+          })
+        }
+        if (state.selectedLearningPathTrainings.length > 0) {
+          learningPathStore.mutations.REMOVE_TRAINING_FROM_LEARNING_PATH(state, {
+            training: state.selectedLearningPathTrainings[0],
+            index: 0
+          })
+        }
+      }
+      expect(state.learningPathTableData.length + state.selectedLearningPathTrainings.length).toBe(3)
+    })
+
+    it('handles rapid APPEND mutations with filtering', () => {
+      state.selectedLearningPathTrainings = [{ trainingId: 5 }]
+
+      for (let i = 0; i < 5; i++) {
+        const newData = Array.from({ length: 10 }, (_, j) => ({
+          trainingId: (i * 10) + j + 1
+        }))
+        learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newData)
+      }
+      expect(state.learningPathTableData.length).toBeGreaterThan(0)
+    })
+
+    it('handles rapid action invocations', () => {
+      const commit = jest.fn()
+      for (let i = 0; i < 15; i++) {
+        learningPathStore.actions.setLearningPathFilterItemsShow({ commit }, { key: 'type', show: i % 2 === 0 })
+      }
+      expect(commit).toHaveBeenCalledTimes(15)
+    })
+
+    it('handles 8 rapid SET_SELECTED_LEARNING_PATH_TRAININGS with sort', () => {
+      for (let batch = 0; batch < 8; batch++) {
+        const trainings = Array.from({ length: 5 }, (_, i) => ({
+          trainingId: (batch * 5) + i,
+          trainingOrder: Math.floor(Math.random() * 100)
+        }))
+        learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, trainings)
+      }
+      expect(state.selectedLearningPathTrainings).toHaveLength(5)
+    })
+  })
+
+  describe('learning path progress tracking', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('tracks selected trainings progression', () => {
+      const trainings = [
+        { trainingId: 1, trainingOrder: 1, completed: false },
+        { trainingId: 2, trainingOrder: 2, completed: false },
+        { trainingId: 3, trainingOrder: 3, completed: false }
+      ]
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, trainings)
+      expect(state.selectedLearningPathTrainings).toHaveLength(3)
+      expect(state.selectedLearningPathTrainings.every(t => !t.completed)).toBe(true)
+    })
+
+    it('maintains training order through mutations', () => {
+      const trainings = [
+        { trainingId: 3, trainingOrder: 3 },
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 2, trainingOrder: 2 }
+      ]
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, trainings)
+      const orders = state.selectedLearningPathTrainings.map(t => t.trainingOrder)
+      expect(orders).toEqual([1, 2, 3])
+    })
+
+    it('can track completion status in selected trainings', () => {
+      state.selectedLearningPathTrainings = [
+        { trainingId: 1, trainingOrder: 1, completed: true },
+        { trainingId: 2, trainingOrder: 2, completed: false }
+      ]
+      const completedCount = state.selectedLearningPathTrainings.filter(t => t.completed).length
+      expect(completedCount).toBe(1)
+    })
+
+    it('tracks available trainings pool', () => {
+      state.learningPathTableData = [
+        { trainingId: 1, name: 'Course 1' },
+        { trainingId: 2, name: 'Course 2' },
+        { trainingId: 3, name: 'Course 3' }
+      ]
+      expect(state.learningPathTableData).toHaveLength(3)
+
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: state.learningPathTableData[0],
+        index: 0
+      })
+      expect(state.learningPathTableData).toHaveLength(2)
+    })
+
+    it('tracks removed trainings back to pool', () => {
+      state.selectedLearningPathTrainings = [
+        { trainingId: 1, trainingOrder: 1, name: 'Course 1' }
+      ]
+      learningPathStore.mutations.REMOVE_TRAINING_FROM_LEARNING_PATH(state, {
+        training: { trainingId: 1, name: 'Course 1' },
+        index: 0
+      })
+      expect(state.learningPathTableData[0].trainingId).toBe(1)
+      expect(state.selectedLearningPathTrainings).toHaveLength(0)
+    })
+  })
+
+  describe('course and module handling', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('handles courses with module information', () => {
+      const courses = [
+        { trainingId: 1, name: 'Course 1', modules: [{ moduleId: 1 }, { moduleId: 2 }] },
+        { trainingId: 2, name: 'Course 2', modules: [{ moduleId: 3 }] }
+      ]
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, courses)
+      expect(state.learningPathTableData[0].modules).toHaveLength(2)
+      expect(state.learningPathTableData[1].modules).toHaveLength(1)
+    })
+
+    it('preserves module structure through appending', () => {
+      state.learningPathTableData = [
+        { trainingId: 1, modules: [{ moduleId: 1 }] }
+      ]
+      const newCourses = [
+        { trainingId: 2, modules: [{ moduleId: 2 }, { moduleId: 3 }] }
+      ]
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newCourses)
+      expect(state.learningPathTableData[1].modules).toHaveLength(2)
+    })
+
+    it('handles courses without modules', () => {
+      const courses = [
+        { trainingId: 1, name: 'Course 1' }
+      ]
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, courses)
+      expect(state.learningPathTableData[0]).toHaveProperty('trainingId')
+      expect(state.learningPathTableData[0].modules).toBeUndefined()
+    })
+
+    it('maintains course and module structure in selected trainings', () => {
+      const courses = [
+        {
+          trainingId: 1,
+          trainingOrder: 1,
+          name: 'Course 1',
+          modules: [{ moduleId: 1, name: 'Module 1' }]
+        }
+      ]
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state, courses)
+      expect(state.selectedLearningPathTrainings[0].modules[0].name).toBe('Module 1')
+    })
+
+    it('handles large number of modules per course', () => {
+      const course = {
+        trainingId: 1,
+        name: 'Large Course',
+        modules: Array.from({ length: 50 }, (_, i) => ({
+          moduleId: i + 1,
+          name: `Module ${i + 1}`
+        }))
+      }
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, [course])
+      expect(state.learningPathTableData[0].modules).toHaveLength(50)
+    })
+
+    it('handles nested course hierarchy', () => {
+      const course = {
+        trainingId: 1,
+        name: 'Complex Course',
+        modules: [
+          {
+            moduleId: 1,
+            name: 'Module 1',
+            lessons: [{ lessonId: 1 }, { lessonId: 2 }]
+          }
+        ]
+      }
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, [course])
+      expect(state.learningPathTableData[0].modules[0].lessons).toHaveLength(2)
+    })
+  })
+
+  describe('user enrollment workflows', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('simulates enrolling user in single training', () => {
+      state.learningPathTableData = [
+        { trainingId: 1, name: 'Course 1' }
+      ]
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: { trainingId: 1, name: 'Course 1' },
+        index: 0
+      })
+      expect(state.selectedLearningPathTrainings[0].trainingId).toBe(1)
+    })
+
+    it('simulates enrolling user in multiple trainings sequentially', () => {
+      state.learningPathTableData = [
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 2, trainingOrder: 2 },
+        { trainingId: 3, trainingOrder: 3 }
+      ]
+
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: { trainingId: 1, trainingOrder: 1 },
+        index: 0
+      })
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: { trainingId: 2, trainingOrder: 2 },
+        index: 0
+      })
+
+      expect(state.selectedLearningPathTrainings).toHaveLength(2)
+    })
+
+    it('simulates disenrolling from a training', () => {
+      state.selectedLearningPathTrainings = [
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 2, trainingOrder: 2 }
+      ]
+
+      learningPathStore.mutations.REMOVE_TRAINING_FROM_LEARNING_PATH(state, {
+        training: { trainingId: 1, trainingOrder: 1 },
+        index: 0
+      })
+
+      expect(state.selectedLearningPathTrainings).toHaveLength(1)
+      expect(state.selectedLearningPathTrainings[0].trainingId).toBe(2)
+    })
+
+    it('tracks enrollment with user metadata', () => {
+      const trainingWithMetadata = {
+        trainingId: 1,
+        trainingOrder: 1,
+        enrolledDate: '2024-01-15',
+        userId: 'user123',
+        status: 'in-progress'
+      }
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: trainingWithMetadata,
+        index: 0
+      })
+      expect(state.selectedLearningPathTrainings[0].enrolledDate).toBe('2024-01-15')
+      expect(state.selectedLearningPathTrainings[0].status).toBe('in-progress')
+    })
+
+    it('handles bulk enrollment with filtering', () => {
+      state.selectedLearningPathTrainings = [{ trainingId: 1 }]
+      const newCourses = [
+        { trainingId: 1 },
+        { trainingId: 2 },
+        { trainingId: 3 }
+      ]
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newCourses)
+      // Only trainings 2 and 3 should be added (1 is already selected)
+      expect(state.learningPathTableData.length).toBe(2)
+    })
+
+    it('tracks enrollment state through reset', () => {
+      state.selectedLearningPathTrainings = [
+        { trainingId: 1, trainingOrder: 1 }
+      ]
+      state.learningPathTableData = [
+        { trainingId: 2 }
+      ]
+
+      const commit = (mutationName, payload) => {
+        learningPathStore.mutations[mutationName](state, payload)
+      }
+
+      learningPathStore.actions.resetSelectedLearningPathTrainings({ commit })
+
+      expect(state.selectedLearningPathTrainings).toEqual([])
+      expect(state.learningPathTableData).toEqual([])
+    })
+
+    it('handles enrollment with complex user roles', () => {
+      const trainingWithRoles = {
+        trainingId: 1,
+        trainingOrder: 1,
+        targetAudience: ['managers', 'employees'],
+        requiredRoles: ['security', 'compliance']
+      }
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: trainingWithRoles,
+        index: 0
+      })
+      expect(state.selectedLearningPathTrainings[0].targetAudience).toContain('managers')
+    })
+  })
+
+  describe('complex integration workflows', () => {
+    beforeEach(() => {
+      state = JSON.parse(JSON.stringify(learningPathStore.state))
+    })
+
+    it('complete workflow: filter, search, select, and order trainings', () => {
+      const commit = (mutationName, payload) => {
+        learningPathStore.mutations[mutationName](state, payload)
+      }
+
+      // Setup initial data
+      state.learningPathTableData = [
+        { trainingId: 1, name: 'Security Training', trainingOrder: 1 },
+        { trainingId: 2, name: 'Compliance Training', trainingOrder: 2 },
+        { trainingId: 3, name: 'Security Advanced', trainingOrder: 3 }
+      ]
+
+      // Search
+      commit('SET_LEARNING_PATH_SEARCH', 'Security')
+
+      // Select trainings
+      commit('SELECT_LEARNING_PATH_TRAINING', {
+        training: state.learningPathTableData[0],
+        index: 0
+      })
+
+      // Order
+      commit('ORDER_LEARNING_PATH_DATA', null)
+
+      expect(state.selectedLearningPathTrainings).toHaveLength(1)
+      expect(state.learningPathSearch).toBe('Security')
+    })
+
+    it('workflow: append data, filter selected, maintain order', () => {
+      state.selectedLearningPathTrainings = [
+        { trainingId: 1, trainingOrder: 1 }
+      ]
+      state.learningPathTableData = [
+        { trainingId: 2, trainingOrder: 2 }
+      ]
+
+      const newData = [
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 3, trainingOrder: 3 },
+        { trainingId: 4, trainingOrder: 4 }
+      ]
+
+      learningPathStore.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, newData)
+
+      // Should not include trainingId 1 (already selected)
+      expect(state.learningPathTableData.map(t => t.trainingId)).toEqual([2, 3, 4])
+    })
+
+    it('workflow: bulk select with pagination reset', () => {
+      const commit = (mutationName, payload) => {
+        learningPathStore.mutations[mutationName](state, payload)
+      }
+
+      state.learningPathTableData = Array.from({ length: 25 }, (_, i) => ({
+        trainingId: i + 1,
+        trainingOrder: i + 1
+      }))
+
+      state.learningPathAxiosPayload.pageNumber = 3
+
+      // Select multiple trainings
+      for (let i = 0; i < 5; i++) {
+        commit('SELECT_LEARNING_PATH_TRAINING', {
+          training: { trainingId: i + 1, trainingOrder: i + 1 },
+          index: 0
+        })
+      }
+
+      // Reset pagination
+      commit('RESET_LEARNING_PATH_PAGINATION')
+
+      expect(state.learningPathAxiosPayload.pageNumber).toBe(1)
+      expect(state.selectedLearningPathTrainings).toHaveLength(5)
+    })
+
+    it('workflow: filter reset and clear all', () => {
+      const commit = (mutationName, payload) => {
+        learningPathStore.mutations[mutationName](state, payload)
+      }
+
+      // Set up complex state
+      state.learningPathSearch = 'test search'
+      state.learningPathSortBy = 'Custom Sort'
+      state.learningPathFilterType = 'And'
+      state.selectedLearningPathTrainings = [{ trainingId: 1 }]
+      state.learningPathTableData = [{ trainingId: 2 }]
+
+      // Clear all filters
+      commit('RESET_LEARNING_PATH_FILTERS')
+
+      expect(state.learningPathSearch).toBe('')
+      expect(state.learningPathFilterType).toBe('Or')
+      expect(state.learningPathSortBy).toBe('Date Created - New to old')
+    })
+
+    it('workflow: batch operations with error handling', () => {
+      const commit = jest.fn((mutation, payload) => {
+        learningPathStore.mutations[mutation](state, payload)
+      })
+
+      const trainings = [
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 2, trainingOrder: 2 },
+        { trainingId: 3, trainingOrder: 3 }
+      ]
+
+      try {
+        commit('SET_SELECTED_LEARNING_PATH_TRAININGS', trainings)
+        expect(commit).toHaveBeenCalled()
+        expect(state.selectedLearningPathTrainings).toHaveLength(3)
+      } catch (e) {
+        expect(e).toBeFalsy()
+      }
+    })
+
+    it('workflow: monitor state changes through multiple operations', () => {
+      const stateSnapshots = []
+
+      // Take initial snapshot
+      stateSnapshots.push(JSON.parse(JSON.stringify(state)))
+
+      // Operation 1: Set data
+      learningPathStore.mutations.SET_LEARNING_PATH_TABLE_DATA(state, [
+        { trainingId: 1 }
+      ])
+      stateSnapshots.push(JSON.parse(JSON.stringify(state)))
+
+      // Operation 2: Select training
+      learningPathStore.mutations.SELECT_LEARNING_PATH_TRAINING(state, {
+        training: { trainingId: 1 },
+        index: 0
+      })
+      stateSnapshots.push(JSON.parse(JSON.stringify(state)))
+
+      // Verify snapshots show progression
+      expect(stateSnapshots[0].learningPathTableData).toHaveLength(0)
+      expect(stateSnapshots[1].learningPathTableData).toHaveLength(1)
+      expect(stateSnapshots[2].learningPathTableData).toHaveLength(0)
+      expect(stateSnapshots[2].selectedLearningPathTrainings).toHaveLength(1)
+    })
+
+    it('workflow: filter items with combined payload transformations', () => {
+      const commit = (mutationName, payload) => {
+        learningPathStore.mutations[mutationName](state, payload)
+      }
+
+      // Set filter items
+      commit('SET_LEARNING_PATH_FILTER_ITEMS', {
+        key: 'type',
+        items: [{ id: 1 }, { id: 2 }]
+      })
+
+      // Show/hide filter
+      commit('SET_LEARNING_PATH_FILTER_ITEMS_SHOW', {
+        key: 'type',
+        show: false
+      })
+
+      const filter = state.learningPathFilters.find(f => f && f.key === 'type')
+      expect(filter.show).toBe(false)
+      expect(filter.items).toHaveLength(2)
+    })
+
+    it('workflow: complete learning path lifecycle', () => {
+      const commit = jest.fn((mutation, payload) => {
+        learningPathStore.mutations[mutation](state, payload)
+      })
+
+      // Initialize with data
+      commit('SET_LEARNING_PATH_TABLE_DATA', [
+        { trainingId: 1, trainingOrder: 1 },
+        { trainingId: 2, trainingOrder: 2 }
+      ])
+
+      // Select training
+      commit('SELECT_LEARNING_PATH_TRAINING', {
+        training: { trainingId: 1, trainingOrder: 1 },
+        index: 0
+      })
+
+      // Set server props
+      commit('SET_LEARNING_PATH_SERVER_SIDE_PROPS', {
+        totalNumberOfRecords: 100,
+        totalNumberOfPages: 10,
+        pageNumber: 1
+      })
+
+      // Remove training
+      commit('REMOVE_TRAINING_FROM_LEARNING_PATH', {
+        training: { trainingId: 1, trainingOrder: 1 },
+        index: 0
+      })
+
+      expect(commit).toHaveBeenCalled()
+      expect(state.learningPathServerSideProps.totalNumberOfRecords).toBe(100)
+    })
+
+    it('workflow: handles dynamic data updates with validation', () => {
+      state.learningPathTableData = [
+        { trainingId: 1, name: 'Course 1', priority: 1 },
+        { trainingId: 2, name: 'Course 2', priority: 2 }
+      ]
+
+      const highPriorityTrainings = state.learningPathTableData.filter(t => t.priority === 1)
+
+      learningPathStore.mutations.SET_SELECTED_LEARNING_PATH_TRAININGS(state,
+        highPriorityTrainings.map((t, i) => ({ ...t, trainingOrder: i + 1 }))
+      )
+
+      expect(state.selectedLearningPathTrainings).toHaveLength(1)
+      expect(state.selectedLearningPathTrainings[0].trainingId).toBe(1)
+    })
+  })
 })

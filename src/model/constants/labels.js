@@ -776,7 +776,7 @@ export const labels = {
   WhiteLabelingSubTitle:
     'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
   WhiteListingSubTitle:
-    'Allow emails to be recieved without being filtered by antispam and other applications',
+    'Allow emails to be received without being filtered by antispam and other applications',
   CreateFirstSystemUser: 'Create First System User',
   CreateFirstSystemUserSubTitle:
     'Create the first user for this new company. You skip this step for now.',

@@ -82,7 +82,7 @@
         <template #title>
           <p class="agentic-ai-settings__section-title">Safeguards</p>
           <p class="agentic-ai-settings__section-description">
-            This safeguard is mandatory to ensure ethical, compliant, and
+            This safeguard is mandatory to ensure ethical, compliant and
             predictable AI behavior.
           </p>
         </template>
@@ -202,22 +202,22 @@ export default {
             {
               title: "Simulation Frequency Cap",
               tooltip:
-                "Control how frequently phishing simulations are delivered to different user groups."
+                "Limit how often any user can receive phishing simulations within a defined time window."
             },
             {
               title: "Training Cooldown Window",
               tooltip:
-                "Ensure users have space between learning actions to prevent fatigue."
+                "Prevent repeated training enrollments within a short period after completion."
             },
             {
               title: "Holiday & Blackout Periods",
               tooltip:
-                "Automatically pause simulations during pre-defined holidays or blackout dates."
+                "Pause simulations, training, and nudges during defined holidays or blackout dates."
             },
             {
               title: "Timezone Awareness",
               tooltip:
-                "Respect each user's local timezone when scheduling AI actions."
+                "Schedule all AI actions based on each user’s local timezone."
             }
           ],
           description: "",
@@ -227,12 +227,12 @@ export default {
         {
           title: "Ethical & Governance Safeguards",
           subtitle:
-            "Ensure AI behavior aligns with ethical standards, human rights, and organizational governance.",
+            "Ensure AI behavior aligns with ethical standards, human rights and organizational governance.",
           children: [
             {
               title: "Ethical AI Communication",
               tooltip:
-                "Enforce ethical behavior, human rights, and transparency in line with ISO 26000."
+                "Enforce ethical behavior, human rights and transparency in line with ISO 26000."
             },
             {
               title: "Organizational Governance Alignment",
@@ -257,7 +257,7 @@ export default {
         {
           title: "Clarity, Accessibility & Cultural Safeguards",
           subtitle:
-            "Guarantee clear, inclusive, accessible, and culturally appropriate AI communication.",
+            "Guarantee clear, inclusive, accessible and culturally appropriate AI communication.",
           children: [
             {
               title: "Plain Language Enforcement",
@@ -267,7 +267,7 @@ export default {
             {
               title: "Accessibility-Aware Language",
               tooltip:
-                "Generate accessible content aligned with WCAG guidance for users with reading, visual, or hearing difficulties."
+                "Generate accessible content aligned with WCAG guidance for users with reading, visual or hearing difficulties."
             },
             {
               title: "Transparent AI Communication",
@@ -842,9 +842,15 @@ export default {
     this.fetchAgenticAISettings();
   },
   watch: {
-    'agenticAISettings.executionMode'(val, oldVal) {
-      if(val !== oldVal && this.agenticAISettings.isAgenticAIEnabled && !this.isFetching) {
-        this.updateSettings({ executionMode: val === 'autonomous' ? 'Autonomous' : 'ApprovalGated' });
+    "agenticAISettings.executionMode"(val, oldVal) {
+      if (
+        val !== oldVal &&
+        this.agenticAISettings.isAgenticAIEnabled &&
+        !this.isFetching
+      ) {
+        this.updateSettings({
+          executionMode: val === "autonomous" ? "Autonomous" : "ApprovalGated"
+        });
       }
     }
   },
@@ -861,20 +867,21 @@ export default {
           getAgenticAISettings(),
           getAgenticAIStatus()
         ]);
-        
+
         this.metadata = metadataRes?.data?.data || {};
         this.buildLocalToApiKeyMap(this.metadata);
 
         const data = settingsRes?.data?.data || {};
         const statusData = statusRes?.data?.data || {};
-        
-        this.agenticAISettings.executionMode = data.executionMode === 'Autonomous' ? 'autonomous' : 'approval';
-        
+
+        this.agenticAISettings.executionMode =
+          data.executionMode === "Autonomous" ? "autonomous" : "approval";
+
         // Determine enabled state from explicit status endpoint
         this.agenticAISettings.isAgenticAIEnabled = !!statusData.agenticAIEnabled;
-        
+
         const backendPolicies = data.behavioralPolicies || {};
-        
+
         // Reset all local policies (except switches logic which we handle below)
         const allKeys = [
           ...this.behavioralPolicyCheckboxFields,
@@ -885,15 +892,23 @@ export default {
           ...this.nudgesCheckboxFields,
           ...this.trainingEnablementCheckboxFields
         ];
-        
-        allKeys.forEach(k => { this.behavioralPolicySettings[k] = false; });
+
+        allKeys.forEach((k) => {
+          this.behavioralPolicySettings[k] = false;
+        });
 
         // Map backend keys to local keys
         for (const [key, value] of Object.entries(backendPolicies)) {
-           const childKey = key.split('.')[1];
-           if (childKey && Object.prototype.hasOwnProperty.call(this.behavioralPolicySettings, childKey)) {
-             this.behavioralPolicySettings[childKey] = value;
-           }
+          const childKey = key.split(".")[1];
+          if (
+            childKey &&
+            Object.prototype.hasOwnProperty.call(
+              this.behavioralPolicySettings,
+              childKey
+            )
+          ) {
+            this.behavioralPolicySettings[childKey] = value;
+          }
         }
 
         // Update enable switches based on child states
@@ -904,7 +919,6 @@ export default {
         this.handleDifficultyProgressionCheckboxChange({ skipSave: true });
         this.handleNudgesCheckboxChange({ skipSave: true });
         this.handleTrainingEnablementCheckboxChange({ skipSave: true });
-
       } catch (error) {
         console.error("Failed to fetch Agentic AI settings", error);
       } finally {
@@ -915,115 +929,157 @@ export default {
     },
     buildLocalToApiKeyMap(metadata) {
       this.localToApiKeyMap = {};
-      if(!metadata || !metadata.behavioralPolicies) return;
-      
-      metadata.behavioralPolicies.forEach(parent => {
-         if(parent.items) {
-           parent.items.forEach(child => {
-             this.localToApiKeyMap[child.key] = `${parent.key}.${child.key}`;
-           });
-         }
+      if (!metadata || !metadata.behavioralPolicies) return;
+
+      metadata.behavioralPolicies.forEach((parent) => {
+        if (parent.items) {
+          parent.items.forEach((child) => {
+            this.localToApiKeyMap[child.key] = `${parent.key}.${child.key}`;
+          });
+        }
       });
     },
     getApiKeyForLocalKey(localKey) {
-       if (this.localToApiKeyMap[localKey]) return this.localToApiKeyMap[localKey];
-       
-       const fieldGroups = [
-          { group: 'simulationCadence', fields: this.behavioralPolicyCheckboxFields },
-          { group: 'complianceTrainingPolicies', fields: this.complianceTrainingCheckboxFields },
-          { group: 'riskEscalation', fields: this.riskEscalationCheckboxFields },
-          { group: 'positiveReinforcement', fields: this.positiveReinforcementCheckboxFields }, 
-          { group: 'difficultyAndProgression', fields: this.difficultyProgressionCheckboxFields }, 
-          { group: 'nudges', fields: this.nudgesCheckboxFields },
-          { group: 'trainingAndEnablement', fields: this.trainingEnablementCheckboxFields } 
-       ];
-       
-       for(const group of fieldGroups) {
-          if(group.fields.includes(localKey)) return `${group.group}.${localKey}`;
-       }
-       return localKey;
+      if (this.localToApiKeyMap[localKey])
+        return this.localToApiKeyMap[localKey];
+
+      const fieldGroups = [
+        {
+          group: "simulationCadence",
+          fields: this.behavioralPolicyCheckboxFields
+        },
+        {
+          group: "complianceTrainingPolicies",
+          fields: this.complianceTrainingCheckboxFields
+        },
+        { group: "riskEscalation", fields: this.riskEscalationCheckboxFields },
+        {
+          group: "positiveReinforcement",
+          fields: this.positiveReinforcementCheckboxFields
+        },
+        {
+          group: "difficultyAndProgression",
+          fields: this.difficultyProgressionCheckboxFields
+        },
+        { group: "nudges", fields: this.nudgesCheckboxFields },
+        {
+          group: "trainingAndEnablement",
+          fields: this.trainingEnablementCheckboxFields
+        }
+      ];
+
+      for (const group of fieldGroups) {
+        if (group.fields.includes(localKey))
+          return `${group.group}.${localKey}`;
+      }
+      return localKey;
     },
     async updateSettings(payload) {
       if (this.isFetching) return;
       this.isSaving = true;
       try {
         await updateAgenticAISettings(payload);
+
+        let message = "Settings updated successfully";
+        if (payload.executionMode) {
+          message =
+            payload.executionMode === "Autonomous"
+              ? "AI actions will now execute automatically."
+              : "AI actions now require approval before execution.";
+        } else if (payload.behavioralPolicies) {
+           const values = Object.values(payload.behavioralPolicies);
+           const isEnabled = values.length > 0 && values[0] === true;
+           message = isEnabled 
+             ? "This policy is now active and applied immediately."
+             : "This policy is now inactive and no longer applied.";
+        }
+
         this.$store.dispatch("common/createSnackBar", {
-            message: "Settings updated successfully",
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: "mdi-check-circle"
+          message: message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: "mdi-check-circle"
         });
 
         if (payload.executionMode) {
-           this.$store.commit("login/SET_AGENTIC_AI_EXECUTION_MODE", payload.executionMode);
+          this.$store.commit(
+            "login/SET_AGENTIC_AI_EXECUTION_MODE",
+            payload.executionMode
+          );
         }
       } catch (error) {
         this.$store.dispatch("common/createSnackBar", {
-            message: "Failed to saving settings",
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: "mdi-alert"
+          message: "Failed to saving settings",
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: "mdi-alert"
         });
       } finally {
         this.isSaving = false;
       }
     },
     async updatePolicy(localKey, value) {
-       if (this.isFetching) return;
-       const apiKey = this.getApiKeyForLocalKey(localKey);
-       const payload = {
-         behavioralPolicies: {
-           [apiKey]: value
-         }
-       };
-       await this.updateSettings(payload);
+      if (this.isFetching) return;
+      const apiKey = this.getApiKeyForLocalKey(localKey);
+      const payload = {
+        behavioralPolicies: {
+          [apiKey]: value
+        }
+      };
+      await this.updateSettings(payload);
     },
     handleAgenticAIToggle(val) {
       if (!this.hasAgenticAILicense) return;
       this.isSaving = true;
-      
+
       toggleAgenticAIStatus({ agenticAIEnabled: val })
         .then(() => {
-           this.agenticAISettings.isAgenticAIEnabled = val;
-           const msg = val ? "Agentic AI is now enabled." : "Agentic AI is now disabled.";
-           this.$store.dispatch("common/createSnackBar", {
-              message: msg,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: "mdi-information"
-           });
-           
-           if (val) {
-             // If enabled, we might want to also ensure default settings are set or fetched?
-             // But for now, just sync store.
-             this.$store.dispatch("login/getAgenticAIEnabled");
-           } else {
-             this.$store.dispatch("login/setAgenticAIEnabled", false);
-           }
+          this.agenticAISettings.isAgenticAIEnabled = val;
+          const msg = val
+            ? "Agentic AI is now enabled."
+            : "Agentic AI is now disabled.";
+          this.$store.dispatch("common/createSnackBar", {
+            message: msg,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: "mdi-information"
+          });
+
+          if (val) {
+            // If enabled, we might want to also ensure default settings are set or fetched?
+            // But for now, just sync store.
+            this.$store.dispatch("login/getAgenticAIEnabled");
+          } else {
+            this.$store.dispatch("login/setAgenticAIEnabled", false);
+          }
         })
         .catch(() => {
-           // Revert switch on error
-           this.agenticAISettings.isAgenticAIEnabled = !val;
-           this.$store.dispatch("common/createSnackBar", {
-              message: `Failed to ${val ? 'enable' : 'disable'} Agentic AI.`,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: "mdi-alert"
-           });
+          // Revert switch on error
+          this.agenticAISettings.isAgenticAIEnabled = !val;
+          this.$store.dispatch("common/createSnackBar", {
+            message: `Failed to ${val ? "enable" : "disable"} Agentic AI.`,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: "mdi-alert"
+          });
         })
-        .finally(() => { this.isSaving = false; });
+        .finally(() => {
+          this.isSaving = false;
+        });
     },
     handleSimulationCadenceSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.simulationCadenceEnabled;
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.simulationCadenceEnabled;
 
       const fields = this.behavioralPolicyCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1039,30 +1095,33 @@ export default {
       ) {
         this.behavioralPolicySettings.simulationCadenceEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
     handleComplianceTrainingSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.complianceTrainingEnabled;
-      
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.complianceTrainingEnabled;
+
       const fields = this.complianceTrainingCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
 
-      if(!skipSave) {
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1078,31 +1137,34 @@ export default {
       ) {
         this.behavioralPolicySettings.complianceTrainingEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
 
     handleRiskEscalationSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.riskEscalationEnabled;
-      
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.riskEscalationEnabled;
+
       const fields = this.riskEscalationCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
 
-      if(!skipSave) {
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1116,30 +1178,33 @@ export default {
       if (this.behavioralPolicySettings.riskEscalationEnabled !== anyChecked) {
         this.behavioralPolicySettings.riskEscalationEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
     handlePositiveReinforcementSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.positiveReinforcementEnabled;
-      
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.positiveReinforcementEnabled;
+
       const fields = this.positiveReinforcementCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1156,31 +1221,34 @@ export default {
       ) {
         this.behavioralPolicySettings.positiveReinforcementEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
 
     handleDifficultyProgressionSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.difficultyProgressionEnabled;
-      
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.difficultyProgressionEnabled;
+
       const fields = this.difficultyProgressionCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1197,30 +1265,33 @@ export default {
       ) {
         this.behavioralPolicySettings.difficultyProgressionEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
     handleNudgesSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.nudgesEnabled;
-      
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.nudgesEnabled;
+
       const fields = this.nudgesCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1234,31 +1305,34 @@ export default {
       if (this.behavioralPolicySettings.nudgesEnabled !== anyChecked) {
         this.behavioralPolicySettings.nudgesEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
 
     handleTrainingEnablementSwitchChange(value) {
-      const skipSave = typeof value === 'object' && value.skipSave;
-      const actualValue = typeof value === 'boolean' ? value : this.behavioralPolicySettings.trainingEnablementEnabled;
-      
+      const skipSave = typeof value === "object" && value.skipSave;
+      const actualValue =
+        typeof value === "boolean"
+          ? value
+          : this.behavioralPolicySettings.trainingEnablementEnabled;
+
       const fields = this.trainingEnablementCheckboxFields;
       const policyUpdate = {};
-      
+
       fields.forEach((field) => {
         this.behavioralPolicySettings[field] = actualValue;
         const key = this.getApiKeyForLocalKey(field);
         policyUpdate[key] = actualValue;
       });
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
     },
@@ -1274,12 +1348,12 @@ export default {
       ) {
         this.behavioralPolicySettings.trainingEnablementEnabled = anyChecked;
       }
-      
-      if(!skipSave) {
+
+      if (!skipSave) {
         const policyUpdate = {};
-        fields.forEach(f => {
-           const key = this.getApiKeyForLocalKey(f);
-           policyUpdate[key] = this.behavioralPolicySettings[f];
+        fields.forEach((f) => {
+          const key = this.getApiKeyForLocalKey(f);
+          policyUpdate[key] = this.behavioralPolicySettings[f];
         });
         this.updateSettings({ behavioralPolicies: policyUpdate });
       }
