@@ -112,8 +112,9 @@ import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 import {
   getAgenticAISettings,
   updateAgenticAISettings,
-  resetAgenticAISettings,
-  getAgenticAIMetadata
+  getAgenticAIMetadata,
+  toggleAgenticAIStatus,
+  getAgenticAIStatus
 } from "@/api/company";
 import DatatableLoading from "@/components/SkeletonLoading/DatatableLoading.vue";
 import FormGroup from "@/components/SmallComponents/FormGroup.vue";
@@ -855,20 +856,22 @@ export default {
       }
       this.isFetching = true;
       try {
-        const [metadataRes, settingsRes] = await Promise.all([
+        const [metadataRes, settingsRes, statusRes] = await Promise.all([
           getAgenticAIMetadata(),
-          getAgenticAISettings()
+          getAgenticAISettings(),
+          getAgenticAIStatus()
         ]);
         
         this.metadata = metadataRes?.data?.data || {};
         this.buildLocalToApiKeyMap(this.metadata);
 
         const data = settingsRes?.data?.data || {};
+        const statusData = statusRes?.data?.data || {};
         
         this.agenticAISettings.executionMode = data.executionMode === 'Autonomous' ? 'autonomous' : 'approval';
         
-        // Default to enabled if we can fetch settings or assume user has access based on license
-        this.agenticAISettings.isAgenticAIEnabled = true;
+        // Determine enabled state from explicit status endpoint
+        this.agenticAISettings.isAgenticAIEnabled = !!statusData.agenticAIEnabled;
         
         const backendPolicies = data.behavioralPolicies || {};
         
@@ -978,31 +981,34 @@ export default {
       if (!this.hasAgenticAILicense) return;
       this.isSaving = true;
       
-      if (val) {
-        updateAgenticAISettings({ executionMode: 'ApprovalGated' })
-          .then(() => {
-             this.agenticAISettings.isAgenticAIEnabled = true;
-             this.$store.dispatch("common/createSnackBar", {
-                message: "Agentic AI is now enabled.",
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: "mdi-information"
-             });
+      toggleAgenticAIStatus({ agenticAIEnabled: val })
+        .then(() => {
+           this.agenticAISettings.isAgenticAIEnabled = val;
+           const msg = val ? "Agentic AI is now enabled." : "Agentic AI is now disabled.";
+           this.$store.dispatch("common/createSnackBar", {
+              message: msg,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: "mdi-information"
+           });
+           
+           if (val) {
+             // If enabled, we might want to also ensure default settings are set or fetched?
+             // But for now, just sync store.
              this.$store.dispatch("login/getAgenticAIEnabled");
-          })
-          .catch(() => {
-             this.agenticAISettings.isAgenticAIEnabled = false; 
-          })
-          .finally(() => { this.isSaving = false; });
-      } else {
-         this.agenticAISettings.isAgenticAIEnabled = false;
-         this.$store.dispatch("common/createSnackBar", {
-            message: "Agentic AI is now disabled.",
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: "mdi-information"
-         });
-         this.$store.dispatch("login/setAgenticAIEnabled", false);
-         this.isSaving = false;
-      }
+           } else {
+             this.$store.dispatch("login/setAgenticAIEnabled", false);
+           }
+        })
+        .catch(() => {
+           // Revert switch on error
+           this.agenticAISettings.isAgenticAIEnabled = !val;
+           this.$store.dispatch("common/createSnackBar", {
+              message: `Failed to ${val ? 'enable' : 'disable'} Agentic AI.`,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: "mdi-alert"
+           });
+        })
+        .finally(() => { this.isSaving = false; });
     },
     handleSimulationCadenceSwitchChange(value) {
       const skipSave = typeof value === 'object' && value.skipSave;

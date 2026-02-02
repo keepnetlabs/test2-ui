@@ -246,6 +246,15 @@ export function resetAgenticAISettings() {
   return testRequest.post('/companies/agentic-ai-settings/reset')
 }
 
+export function getAgenticAIStatus() {
+  return testRequest.get('/companies/agentic-ai')
+}
+
+export function toggleAgenticAIStatus(payload = {}) {
+  // Legacy/Alternate endpoint for master switch toggle
+  return testRequest.post('/companies/agentic-ai', payload)
+}
+
 export function saveAgenticAISettings(payload = {}) {
   // Deprecated/Compatibility wrapper if needed, or mapped to update
   return updateAgenticAISettings(payload)
