@@ -191,6 +191,13 @@ export default {
       timeoutId: null
     }
   },
+  watch: {
+    tab(val) {
+      if (val === 'agentic-ai-settings' && this.hasAgenticAILicense) {
+        this.$store.dispatch('login/getAgenticAIEnabled')
+      }
+    }
+  },
   computed: {
     ...mapGetters({
       getSMTPSettingsSearchPermissions: 'permissions/getSMTPSettingsSearchPermissions',
