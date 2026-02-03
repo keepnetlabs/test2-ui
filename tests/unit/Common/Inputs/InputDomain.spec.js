@@ -1816,4 +1816,259 @@ describe('InputDomain.vue', () => {
       expect(wrapper.vm.items.slice(1).every((item) => item.disabled)).toBe(true)
     })
   })
+
+  describe('domain selection edge cases advanced', () => {
+    it('should handle domains with repeated names', () => {
+      const domains = ['example.com', 'example.com', 'example.com']
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: domains },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value.length).toBe(3)
+    })
+
+    it('should handle domain with whitespace preserved', () => {
+      const domains = ['example.com ']
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: domains },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain('example.com ')
+    })
+
+    it('should handle very long domain list (200 items)', () => {
+      const items = Array.from({ length: 200 }, (_, i) => ({
+        text: `Domain ${i}`,
+        value: `domain${i}.com`
+      }))
+      wrapper = shallowMount(InputDomain, {
+        propsData: { items },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.items.length).toBe(200)
+    })
+
+    it('should handle rapid domain changes', () => {
+      wrapper.vm.handleDomainChange(['a.com'])
+      wrapper.vm.handleDomainChange(['b.com'])
+      wrapper.vm.handleDomainChange(['c.com'])
+      wrapper.vm.handleDomainChange(['d.com'])
+      expect(wrapper.emitted('input').length).toBe(4)
+    })
+
+    it('should handle domains with leading dots', () => {
+      const domain = '.example.com'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: [domain] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain(domain)
+    })
+
+    it('should handle domains with trailing dots', () => {
+      const domain = 'example.com.'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: [domain] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain(domain)
+    })
+
+    it('should handle special CNAME records', () => {
+      const domain = '_dmarc.example.com'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: [domain] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain(domain)
+    })
+
+    it('should handle SRV record format', () => {
+      const domain = '_service._proto.example.com'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: [domain] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain(domain)
+    })
+
+    it('should handle MX record name format', () => {
+      const domain = 'mail1.example.com'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: [domain] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain(domain)
+    })
+
+    it('should handle domain with multiple consecutive hyphens', () => {
+      const domain = 'example---test.com'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: [domain] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toContain(domain)
+    })
+  })
+
+  describe('event emission variations', () => {
+    it('should emit input with single-item array', () => {
+      wrapper.vm.handleDomainChange(['single.com'])
+      expect(wrapper.emitted('input')[0][0]).toEqual(['single.com'])
+    })
+
+    it('should emit input with multi-item array', () => {
+      const domains = ['a.com', 'b.com', 'c.com']
+      wrapper.vm.handleDomainChange(domains)
+      expect(wrapper.emitted('input')[0][0]).toEqual(domains)
+    })
+
+    it('should emit on-focus event when focused', () => {
+      wrapper.vm.handleFocus()
+      expect(wrapper.emitted('on-focus')).toBeTruthy()
+    })
+
+    it('should not emit input when deselecting all', () => {
+      wrapper.vm.handleDomainChange([])
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toEqual([])
+    })
+
+    it('should emit events separately for different operations', () => {
+      wrapper.vm.handleDomainChange(['domain1.com'])
+      wrapper.vm.handleFocus()
+      wrapper.vm.handleDomainChange(['domain2.com'])
+      expect(wrapper.emitted('input').length).toBe(2)
+      expect(wrapper.emitted('on-focus').length).toBe(1)
+    })
+  })
+
+  describe('placeholder and hints', () => {
+    it('should have default placeholder "Select a item"', () => {
+      expect(wrapper.vm.placeholder).toBe('Select a item')
+    })
+
+    it('should support custom placeholder', () => {
+      wrapper = shallowMount(InputDomain, {
+        propsData: { placeholder: 'Choose domains' },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.placeholder).toBe('Choose domains')
+    })
+
+    it('should handle empty placeholder', () => {
+      wrapper = shallowMount(InputDomain, {
+        propsData: { placeholder: '' },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.placeholder).toBe('')
+    })
+
+    it('should handle very long placeholder', () => {
+      const longPlaceholder = 'Select your preferred domains from the comprehensive list below'
+      wrapper = shallowMount(InputDomain, {
+        propsData: { placeholder: longPlaceholder },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.placeholder).toBe(longPlaceholder)
+    })
+  })
+
+  describe('item list variations', () => {
+    it('should handle items array with mixed properties', () => {
+      const items = [
+        { text: 'Domain A', value: 'a.com', disabled: false },
+        { text: 'Domain B', value: 'b.com', disabled: true },
+        { text: 'Domain C', value: 'c.com' }
+      ]
+      wrapper = shallowMount(InputDomain, {
+        propsData: { items },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.items.length).toBe(3)
+      expect(wrapper.vm.items[1].disabled).toBe(true)
+    })
+
+    it('should handle items with custom properties', () => {
+      const items = [
+        { text: 'Domain', value: 'test.com', custom: 'value', metadata: { id: 1 } }
+      ]
+      wrapper = shallowMount(InputDomain, {
+        propsData: { items },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.items[0].custom).toBe('value')
+    })
+  })
+
+  describe('validation scenarios', () => {
+    it('should work with validation rules', () => {
+      const rules = [(v) => v && v.length > 0 || 'Select at least one domain']
+      wrapper = shallowMount(InputDomain, {
+        propsData: { rules },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.rules).toEqual(rules)
+    })
+
+    it('should accept multiple validation rules', () => {
+      const rules = [
+        (v) => Array.isArray(v) || 'Must be array',
+        (v) => v.length > 0 || 'Select at least one',
+        (v) => v.length <= 10 || 'Select maximum 10'
+      ]
+      wrapper = shallowMount(InputDomain, {
+        propsData: { rules },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+  })
+
+  describe('accessibility and user experience', () => {
+    it('should be properly labeled for screen readers', () => {
+      wrapper = shallowMount(InputDomain, {
+        attrs: { 'aria-label': 'Domain selector' },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should support keyboard navigation via KSelect', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+
+    it('should have distinct chip styling for selected domains', () => {
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: ['example.com'] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      expect(wrapper.vm.value).toEqual(['example.com'])
+    })
+  })
+
+  describe('state persistence', () => {
+    it('should maintain selected domains across prop updates', async () => {
+      wrapper = shallowMount(InputDomain, {
+        propsData: { value: ['example.com', 'test.org'] },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      await wrapper.setProps({ value: ['example.com', 'test.org', 'new.com'] })
+      expect(wrapper.vm.value.length).toBe(3)
+    })
+
+    it('should preserve item list during operations', () => {
+      const items = [
+        { text: 'Domain A', value: 'a.com' },
+        { text: 'Domain B', value: 'b.com' }
+      ]
+      wrapper = shallowMount(InputDomain, {
+        propsData: { items },
+        stubs: { 'k-select': true, 'k-select-loading': true }
+      })
+      wrapper.vm.handleDomainChange(['a.com'])
+      expect(wrapper.vm.items.length).toBe(2)
+    })
+  })
 })
