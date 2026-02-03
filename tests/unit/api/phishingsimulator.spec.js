@@ -705,6 +705,32 @@ describe('phishingsimulator API', () => {
         payload
       )
     })
+
+    it('should call getGeneratedAIEmailTemplate', async () => {
+      await phishingApi.getGeneratedAIEmailTemplate()
+      expect(testRequest.get).toHaveBeenCalledWith('/phishing-simulator/email-templates')
+    })
+
+    it('should call getAIGenerationOptions', async () => {
+      await phishingApi.getAIGenerationOptions()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/email-templates/ai-generation-options'
+      )
+    })
+
+    it('should call getGeneratedAILandingPageTemplate', async () => {
+      await phishingApi.getGeneratedAILandingPageTemplate()
+      expect(testRequest.get).toHaveBeenCalledWith('/phishing-simulator/landing-page-template')
+    })
+
+    it('should call getEmailTemplateTranslation', async () => {
+      const payload = { templateId: 'template-123', language: 'es' }
+      await phishingApi.getEmailTemplateTranslation(payload)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/translated-email-templates',
+        payload
+      )
+    })
   })
 
   describe('configuration operations', () => {
@@ -780,6 +806,20 @@ describe('phishingsimulator API', () => {
         { responseType: 'blob' }
       )
     })
+
+    it('should call getMergedTextForPhishing with default payload', async () => {
+      await phishingApi.getMergedTextForPhishing()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'phishing-simulator/email-templates/merge-tags',
+        expect.objectContaining({
+          reportAllPages: false,
+          pageNumber: 1,
+          pageSize: 10,
+          orderBy: 'Name',
+          ascending: true
+        })
+      )
+    })
   })
 
   describe('red flag operations', () => {
@@ -805,6 +845,30 @@ describe('phishingsimulator API', () => {
           headers: { 'Content-Type': 'application/json' }
         })
       )
+    })
+  })
+
+  describe('red flag worker url selection', () => {
+    it('should use prod worker url when origin is not test or localhost', async () => {
+      const originalLocation = window.location
+      delete window.location
+      window.location = { origin: 'https://app.keepnet.com' }
+
+      jest.resetModules()
+      const axiosLocal = require('axios')
+      const phishingApiLocal = require('@/api/phishingsimulator')
+
+      const payload = { text: 'check' }
+      await phishingApiLocal.checkRedFlags(payload)
+      expect(axiosLocal.post).toHaveBeenCalledWith(
+        expect.stringContaining('https://r-flg.keepnetlabs.com?method=flag'),
+        payload,
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+
+      window.location = originalLocation
     })
   })
 

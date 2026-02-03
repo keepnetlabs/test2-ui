@@ -160,7 +160,8 @@ export function getDataTableFieldLabel(field = "") {
     Medium: "Medium",
     Hard: "Hard",
     "not in use": "Not In Use",
-    "in use": "In Use"
+    "in use": "In Use",
+    "waiting for approval": "Waiting for Approval"
   };
   return fieldMap[field] || defField;
 }

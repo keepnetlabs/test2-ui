@@ -1035,6 +1035,138 @@ describe('quishing API', () => {
     })
   })
 
+  describe('template creation with attachments', () => {
+    const basePayload = {
+      name: 'Template',
+      description: 'Desc',
+      categoryResourceId: 'cat-1',
+      tags: [],
+      difficultyResourceId: 'diff-1',
+      availableForRequests: [],
+      fromAddress: 'from@example.com',
+      fromName: 'From',
+      subject: 'Subject',
+      template: '<html></html>',
+      languageTypeResourceId: 'lang-1',
+      isDuplicated: false,
+      duplicatedTemplateResourceId: null
+    }
+
+    it('should create email template with attachment file name', async () => {
+      const payload = {
+        ...basePayload,
+        isAttachmentBasedTemplate: true,
+        isAddedNewPhishingFile: true,
+        isPhishingFileModified: true,
+        phishingFileName: 'file.pdf',
+        attachmentFiles: [{ name: 'file.pdf' }],
+        importedEmailAttachments: [new Blob(['x'], { type: 'application/pdf' })]
+      }
+      await quishingApi.createQuishingEmailTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should update email template with attachment fileName', async () => {
+      const payload = {
+        ...basePayload,
+        isAttachmentBasedTemplate: true,
+        isAddedNewPhishingFile: true,
+        isPhishingFileModified: false,
+        phishingFileName: 'file.xlsx',
+        attachmentFiles: [{ fileName: 'file.xlsx' }],
+        importedEmailAttachments: [new Blob(['x'], { type: 'application/vnd.ms-excel' })]
+      }
+      await quishingApi.updateQuishingEmailTemplate(payload, 'template-1')
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates/template-1',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should fall back to phishingFileName when attachment is missing', async () => {
+      const payload = {
+        ...basePayload,
+        isAttachmentBasedTemplate: true,
+        isAddedNewPhishingFile: false,
+        isPhishingFileModified: false,
+        phishingFileName: 'fallback.docx',
+        attachmentFiles: [],
+        importedEmailAttachments: [new Blob(['x'], { type: 'application/vnd.openxmlformats' })]
+      }
+      await quishingApi.createQuishingEmailTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should create printout template with multipart form data', async () => {
+      const payload = {
+        ...basePayload,
+        isDuplicated: true,
+        duplicatedTemplateResourceId: 'dup-1',
+        type: 'printout'
+      }
+      await quishingApi.createQuishingPrintoutTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should update printout template with multipart form data', async () => {
+      const payload = {
+        ...basePayload,
+        type: 'printout'
+      }
+      await quishingApi.updateQuishingPrintoutTemplate(payload, 'printout-1')
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-templates/printout-1',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+  })
+
+  describe('excluded IP operations', () => {
+    it('should call getQuishingExcludedIPAddresses', async () => {
+      await quishingApi.getQuishingExcludedIPAddresses()
+      expect(testRequest.get).toHaveBeenCalledWith('/quishing-simulator/excluded-ip-list')
+    })
+
+    it('should call postQuishingExcludedIPAddresses', async () => {
+      const payload = { ips: ['1.1.1.1'] }
+      await quishingApi.postQuishingExcludedIPAddresses(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/excluded-ip',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+  })
+
   describe('configuration operations', () => {
     it('should call getDefaultCompanySmtpSetting', async () => {
       await quishingApi.getDefaultCompanySmtpSetting()

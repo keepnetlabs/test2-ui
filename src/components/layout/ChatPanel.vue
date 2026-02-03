@@ -287,6 +287,15 @@ export default {
     handleBtnClick() {
       this.toggleChat();
     },
+    handleExternalOpen() {
+      if (!this.agenticAIEnabled) return;
+      if (!this.chatUrl) {
+        this.fetchAgentLoginUrl();
+      }
+      if (!this.isExpanded) {
+        this.toggleChat();
+      }
+    },
 
     fetchAgentLoginUrl() {
       getAgentLoginUrl({ sessionId: this.sessionId })
@@ -321,6 +330,7 @@ export default {
 
     // İframe'den gelen mesajları dinle
     window.addEventListener("message", this.handleIframeMessage);
+    window.addEventListener("open-agentic-ai-chat", this.handleExternalOpen);
   },
 
   beforeDestroy() {
@@ -331,6 +341,7 @@ export default {
     }
     // Event listener'ı kaldır
     window.removeEventListener("message", this.handleIframeMessage);
+    window.removeEventListener("open-agentic-ai-chat", this.handleExternalOpen);
     // Diğer chat-popup elemanını aç
     const otherChatPopup = document.querySelector(".chat-popup");
     if (otherChatPopup) {
