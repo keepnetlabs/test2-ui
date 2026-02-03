@@ -96,7 +96,7 @@ import ExecutiveReportsTrainingCompletionBar from "@/components/ExecutiveReports
 import ExecutiveReportsIndustryPhishingRiskScore from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue";
 import ExecutiveReportsImpactOfPhishingAwarenessTraining from "@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue";
 import ExecutiveReportAvgPhishingSimClickerRate from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue";
-
+import AgenticAIStatusWidget from "@/components/Common/Widget/WidgetComponents/AgenticAIStatusWidget.vue";
 export default {
   name: "Widgets",
   components: {
@@ -104,7 +104,7 @@ export default {
     AvailableWidgets,
     AppModal,
     CreateOrEditRule,
-
+    AgenticAIStatusWidget
   },
   props: {
     permissions: {
@@ -366,7 +366,22 @@ export default {
           title: "Most Engaged Campaigns",
           isAllowed: this?.permissions?.mostEngagedCampaignsCard
         },
-
+        AgenticAIStatusWidget: {
+          x: 0,
+          y: 0,
+          w: 4,
+          minW: 3,
+          defaultW: 4,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          key: "AgenticAIStatusWidget",
+          title: "Agentic AI Status",
+          isAllowed: true
+        },
         TopPhishingSimulationReporters: {
           x: 0,
           y: 0,
@@ -644,7 +659,11 @@ export default {
           key: "RepeatOffendersUsersRateWidget",
           isAllowed: true
         },
-
+        {
+          name: "Agentic AI Status",
+          key: "AgenticAIStatusWidget",
+          isAllowed: true
+        }
       ],
       style:
         ".vue-grid-layout.smartwidget {box-shadow:none;" +
@@ -674,7 +693,7 @@ export default {
             if (widget.isAllowed) acc.push(widget);
             return acc;
           }, []);
-
+          this.ensureAgenticAIWidget(this.layout);
           this.newItemY = this.layout.reduce((acc, item) => {
             acc += item.h;
             return acc;
@@ -869,7 +888,8 @@ export default {
           return ExecutiveReportsImpactOfPhishingAwarenessTraining;
         case "RepeatOffendersUsersRateWidget":
           return ExecutiveReportAvgPhishingSimClickerRate;
-
+        case "AgenticAIStatusWidget":
+          return AgenticAIStatusWidget;
         default:
           return;
       }
@@ -897,11 +917,42 @@ export default {
       });
     },
 
-
+    ensureAgenticAIWidget(layoutArray) {
+      if (
+        !layoutArray.find((widget) => widget.key === "AgenticAIStatusWidget")
+      ) {
+        this.removeAvailableWidget({ key: "AgenticAIStatusWidget" });
+        this.availableWidgets = this.availableWidgets.filter(
+          (widget) => widget.key !== "AgenticAIStatusWidget"
+        );
+        const widget = {
+          ...this.allWidgets.AgenticAIStatusWidget,
+          i: createRandomCryptStringNumber(),
+          x: 0,
+          y: 0
+        };
+        layoutArray.unshift(widget);
+      }
+    },
 
     getDefaultLayoutObject() {
       let widgets = [
-
+        {
+          x: 8,
+          y: 0,
+          w: 4,
+          minW: 3,
+          defaultW: 4,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          key: "AgenticAIStatusWidget",
+          title: "Agentic AI Status",
+          isAllowed: true
+        },
         {
           x: 0,
           y: 0,

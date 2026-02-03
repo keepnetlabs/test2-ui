@@ -331,6 +331,218 @@ describe('awarenessEducator API', () => {
     })
   })
 
+  describe('training report operations', () => {
+    it('should call getTrainingReportSummary with default trainingType', async () => {
+      const id = 'enroll-123'
+      await awarenessApi.getTrainingReportSummary(id)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/${id}/summary?trainingType=0`
+      )
+    })
+
+    it('should call getTrainingReportSummary with trainingType override', async () => {
+      const id = 'enroll-123'
+      await awarenessApi.getTrainingReportSummary(id, 2)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/${id}/summary?trainingType=2`
+      )
+    })
+
+    it('should call searchTrainingReportUsers and inject trainingType into payload', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchTrainingReportUsers(payload, 'enroll-123', 3)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/enroll-123/users/search`,
+        expect.objectContaining({ trainingType: 3 })
+      )
+    })
+
+    it('should call getTrainingReportInteractions with interactionType and trainingType', async () => {
+      await awarenessApi.getTrainingReportInteractions('enroll-1', 'res-1', 4, 2)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/interactions/res-1?emailEventType=4&trainingType=2`
+      )
+    })
+
+    it('should call getTrainingReportInteractions with only trainingType', async () => {
+      await awarenessApi.getTrainingReportInteractions('enroll-1', 'res-1', null, 1)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/interactions/res-1?trainingType=1`
+      )
+    })
+
+    it('should call getTrainingReportNonTargetUserInteractions', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.getTrainingReportNonTargetUserInteractions(
+        'enroll-1',
+        'user-1',
+        3,
+        payload
+      )
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/anonymous/enroll-1/user-detail/user-1?emailEventType=3`,
+        payload
+      )
+    })
+
+    it('should call exportTrainingReport', async () => {
+      await awarenessApi.exportTrainingReport('enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/export`,
+        {},
+        { responseType: 'blob' }
+      )
+    })
+  })
+
+  describe('report details and downloads', () => {
+    it('should call getTrainingReportCertificateEmailDetails', async () => {
+      await awarenessApi.getTrainingReportCertificateEmailDetails('enroll-1', 'mail-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/email-event/mail-1/reminder`
+      )
+    })
+
+    it('should call getTrainingReportExamResultSessions', async () => {
+      await awarenessApi.getTrainingReportExamResultSessions('enroll-1', 'user-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/exam-result-sessions/user-1`
+      )
+    })
+
+    it('should call downloadTrainingPackage', async () => {
+      const payload = { enrollmentId: 'enroll-1' }
+      await awarenessApi.downloadTrainingPackage(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/enrollments/scorm-proxy',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call downloadEnrollmentPackage', async () => {
+      await awarenessApi.downloadEnrollmentPackage('enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/enrollments/downloadscormproxy/enroll-1',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+  })
+
+  describe('misc training operations', () => {
+    it('should call downloadPoster', async () => {
+      const payload = { trainingId: 'training-1', languageId: 'en' }
+      await awarenessApi.downloadPoster(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/trainings/download', payload, {
+        responseType: 'blob'
+      })
+    })
+
+    it('should call getTrainingItems', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.getTrainingItems(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/trainings/search-summary', payload)
+    })
+
+    it('should call getPhishedLandingPage', async () => {
+      await awarenessApi.getPhishedLandingPage('enroll-1')
+      expect(testRequest.get).toHaveBeenCalledWith('/enrollments/enroll-1/content')
+    })
+
+    it('should call getTrainingTypeCount with options', async () => {
+      const payload = { filters: {} }
+      const options = { timeout: 5000 }
+      await awarenessApi.getTrainingTypeCount(payload, options)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/trainings/get-training-type-count',
+        payload,
+        options
+      )
+    })
+  })
+
+  describe('catalog lookups and favorites', () => {
+    it('should call getVendors', async () => {
+      await awarenessApi.getVendors()
+      expect(testRequest.get).toHaveBeenCalledWith('/trainings/vendors')
+    })
+
+    it('should call getBehaviours', async () => {
+      await awarenessApi.getBehaviours()
+      expect(testRequest.get).toHaveBeenCalledWith('/trainings/behaviours')
+    })
+
+    it('should call getCompliances', async () => {
+      await awarenessApi.getCompliances()
+      expect(testRequest.get).toHaveBeenCalledWith('/trainings/compliances')
+    })
+
+    it('should call getTrainingTypes', async () => {
+      await awarenessApi.getTrainingTypes()
+      expect(testRequest.get).toHaveBeenCalledWith('/trainings/types')
+    })
+
+    it('should call getTrainingLevels', async () => {
+      await awarenessApi.getTrainingLevels()
+      expect(testRequest.get).toHaveBeenCalledWith('/trainings/levels')
+    })
+
+    it('should call getTrainingDurations', async () => {
+      await awarenessApi.getTrainingDurations()
+      expect(testRequest.get).toHaveBeenCalledWith('/trainings/durations')
+    })
+
+    it('should call addToFavorite', async () => {
+      await awarenessApi.addToFavorite('training-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/trainings/training-1/favourite',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call removeFromFavorite', async () => {
+      await awarenessApi.removeFromFavorite('training-1')
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/trainings/training-1/favourite',
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+  })
+
+  describe('proxy and notifications', () => {
+    it('should call searchProxyTargetUsers', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchProxyTargetUsers(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/anonymous/enroll-1',
+        payload
+      )
+    })
+
+    it('should call getProxyTargetUserById', async () => {
+      await awarenessApi.getProxyTargetUserById('user-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/training-reports/anonymous/{enrollmentId}/detail/user-1'
+      )
+    })
+
+    it('should call searchMicrosoftTeamsSendingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchMicrosoftTeamsSendingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith('/notifications/enroll-1/search', payload)
+    })
+
+    it('should call resendMicrosoftTeamsSendingReportEmails', async () => {
+      const payload = { ids: ['msg-1'] }
+      await awarenessApi.resendMicrosoftTeamsSendingReportEmails(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/enrollments/resend-teams', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+  })
+
   describe('HTTP method consistency', () => {
     it('should use GET for read operations', async () => {
       await awarenessApi.getTraining('id')

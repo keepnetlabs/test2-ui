@@ -54,6 +54,33 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="handleRefresh"
       >
+        <template #datatable-row-actions="{ scope }">
+          <DefaultButtonRowAction
+            icon="mdi-eye"
+            :id="getViewActionId(scope.$index)"
+            text="View"
+            :scope="scope"
+            @on-click="handleView(scope.row)"
+          />
+          <RowActionsMenu v-if="isWaitingForApproval(scope.row)">
+            <DefaultMenuRowAction
+              id="btn-agentic-ai-activity-approve"
+              icon="mdi-check-circle-outline"
+              text="Approve"
+              class-name="agentic-ai-activities-drawer__menu-item"
+              :scope="scope"
+              @on-click="handleApprove(scope.row)"
+            />
+            <DefaultMenuRowAction
+              id="btn-agentic-ai-activity-reject"
+              icon="mdi-close-circle-outline"
+              text="Reject"
+              class-name="agentic-ai-activities-drawer__menu-item"
+              :scope="scope"
+              @on-click="handleReject(scope.row)"
+            />
+          </RowActionsMenu>
+        </template>
       </DataTable>
     </div>
   </VNavigationDrawer>
@@ -62,11 +89,17 @@
 <script>
 import DataTable from "@/components/DataTable";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
+import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 
 export default {
   name: "AgenticAIActivitiesDrawer",
   components: {
-    DataTable
+    DataTable,
+    DefaultButtonRowAction,
+    DefaultMenuRowAction,
+    RowActionsMenu
   },
   props: {
     value: {
@@ -270,6 +303,21 @@ export default {
     handleRefresh() {
       this.fetchActivities();
     },
+    isWaitingForApproval(row = {}) {
+      return row.status === "Waiting for Approval";
+    },
+    getViewActionId(index) {
+      return `btn-agentic-ai-activity-view-${index}`;
+    },
+    handleView(row) {
+      this.$emit("on-view", row);
+    },
+    handleApprove(row) {
+      this.$emit("on-approve", row);
+    },
+    handleReject(row) {
+      this.$emit("on-reject", row);
+    },
     moveToBody() {
       const target = this.getDrawerTarget();
       if (!this.$el || this.$el === target) {
@@ -280,7 +328,11 @@ export default {
       }
       this.$nextTick(this.refreshTableLayout);
     },
-    handleDrawerClickOutside() {
+    handleDrawerClickOutside(event) {
+      const target = event?.target;
+      if (target && target.closest('.v-menu__content')) {
+        return;
+      }
       this.handleClose();
     },
     handleClose() {
@@ -292,3 +344,16 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.agentic-ai-activities-drawer__menu-item {
+  background-color: #757575;
+  border-radius: 6px;
+  margin: 4px 8px;
+}
+
+.agentic-ai-activities-drawer__menu-item :deep(.v-icon),
+.agentic-ai-activities-drawer__menu-item :deep(span) {
+  color: #ffffff;
+}
+</style>

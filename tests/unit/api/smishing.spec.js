@@ -6,7 +6,12 @@ jest.mock('@/utils/testRequest', () => ({
   patch: jest.fn().mockReturnValue(Promise.resolve({}))
 }))
 
+jest.mock('axios', () => ({
+  post: jest.fn().mockReturnValue(Promise.resolve({}))
+}))
+
 import testRequest from '@/utils/testRequest'
+import axios from 'axios'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import smishingApi from '@/api/smishing'
 
@@ -478,6 +483,248 @@ describe('smishing API', () => {
         `/smishing-simulator/smishing-campaign-job/resend/list/${id}/${instanceGroup}`,
         payload,
         { snackbar: COMMON_SNACKBAR }
+      )
+    })
+  })
+
+  describe('report exports and previews', () => {
+    it('should call exportCampaignJobType', async () => {
+      const payload = { filters: {} }
+      const id = 'campaign-123'
+      const instanceGroup = 'group-1'
+      await smishingApi.exportCampaignJobType('clicked', payload, id, instanceGroup)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/smishing-simulator/smishing-campaign-job-report/clicked/search/export/${id}/${instanceGroup}`,
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call downloadSmishingReport', async () => {
+      const id = 'campaign-123'
+      const instanceGroup = 'group-1'
+      await smishingApi.downloadSmishingReport(id, instanceGroup)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/smishing-simulator/smishing-campaign-job-report/export/${id}/${instanceGroup}`,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call downloadSmishingReport2', async () => {
+      const id = 'campaign-123'
+      await smishingApi.downloadSmishingReport2(id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/smishing-simulator/smishing-campaign-job-report/${id}/search/export`,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call landing page template preview content', async () => {
+      const id = 'page-123'
+      const campaignId = 'campaign-123'
+      const instanceGroup = 'group-1'
+      await smishingApi.getSmishingCampaignLandingPageTemplatePreviewContent(
+        id,
+        campaignId,
+        instanceGroup
+      )
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/smishing-simulator/smishing-campaign-job-report/summary/${campaignId}/${instanceGroup}/landing-page-template/${id}`
+      )
+    })
+
+    it('should call text message template preview content', async () => {
+      const id = 'template-123'
+      const campaignId = 'campaign-123'
+      const instanceGroup = 'group-1'
+      await smishingApi.getSmishingCampaignTextMessageTemplatePreviewContent(
+        id,
+        campaignId,
+        instanceGroup
+      )
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/smishing-simulator/smishing-campaign-job-report/summary/${campaignId}/${instanceGroup}/text-templates/${id}`
+      )
+    })
+  })
+
+  describe('DNS and domain operations', () => {
+    it('should call getDnsServiceList', async () => {
+      const payload = { page: 1 }
+      await smishingApi.getDnsServiceList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/dns-services/search',
+        payload
+      )
+    })
+
+    it('should call createDnsServiceList', async () => {
+      const payload = { name: 'dns-1' }
+      await smishingApi.createDnsServiceList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/dns-services',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call testConnection', async () => {
+      const payload = { host: 'example.com' }
+      const id = 'dns-1'
+      await smishingApi.testConnection(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `smishing-simulator/dns-services/${id}/test`,
+        payload
+      )
+    })
+
+    it('should call updateDnsServiceList', async () => {
+      const payload = { name: 'dns-2' }
+      const id = 'dns-1'
+      await smishingApi.updateDnsServiceList(payload, id)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `smishing-simulator/dns-services/${id}`,
+        payload,
+        { loading: true, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call getDnsService', async () => {
+      const id = 'dns-1'
+      await smishingApi.getDnsService(id)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `smishing-simulator/dns-services/${id}`,
+        { loading: true }
+      )
+    })
+
+    it('should call deleteEmailTemplate for dns service', async () => {
+      const id = 'dns-1'
+      await smishingApi.deleteEmailTemplate(id)
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        `smishing-simulator/dns-services/${id}`,
+        { loading: true, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call exportDnsService', async () => {
+      const payload = { filters: {} }
+      await smishingApi.exportDnsService(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/dns-services/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getDomainsList', async () => {
+      const payload = { page: 1 }
+      await smishingApi.getDomainsList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/domain-records/search',
+        payload
+      )
+    })
+
+    it('should call createDomain', async () => {
+      const payload = { name: 'example.com' }
+      await smishingApi.createDomain(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/domain-records',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call updateDomain', async () => {
+      const payload = { name: 'example.org' }
+      const id = 'domain-1'
+      await smishingApi.updateDomain(payload, id)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `smishing-simulator/domain-records/${id}`,
+        payload,
+        { loading: true, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteDomainRecord', async () => {
+      const id = 'domain-1'
+      await smishingApi.deleteDomainRecord(id)
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        `smishing-simulator/domain-records/${id}`,
+        { loading: true, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call exportDomains', async () => {
+      const payload = { filters: {} }
+      await smishingApi.exportDomains(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/domain-records/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getDomainData', async () => {
+      await smishingApi.getDomainData()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'smishing-simulator/domain-records/form-details'
+      )
+    })
+
+    it('should call getDomainEditData', async () => {
+      const id = 'domain-1'
+      await smishingApi.getDomainEditData(id)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `smishing-simulator/domain-records/${id}`,
+        { loading: true }
+      )
+    })
+
+    it('should call testDomainConnection', async () => {
+      const payload = { host: 'example.com' }
+      await smishingApi.testDomainConnection(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'smishing-simulator/domain-records/test',
+        payload
+      )
+    })
+  })
+
+  describe('excluded IPs and external moderation', () => {
+    it('should call getExcludedIPAddresses', async () => {
+      await smishingApi.getExcludedIPAddresses()
+      expect(testRequest.get).toHaveBeenCalledWith('/smishing-simulator/excluded-ip-list')
+    })
+
+    it('should call postExcludedIPAddresses', async () => {
+      const payload = { ips: ['1.1.1.1'] }
+      await smishingApi.postExcludedIPAddresses(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/smishing-simulator/excluded-ip',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call checkSmishingTextRisk via axios', async () => {
+      const text = 'test message'
+      await smishingApi.checkSmishingTextRisk(text)
+      expect(axios.post).toHaveBeenCalledWith(
+        expect.stringContaining('txt-enhance'),
+        { method: 'check', text },
+        { timeout: 100000 }
+      )
+    })
+
+    it('should call enhanceSmishingText via axios', async () => {
+      const text = 'improve this'
+      await smishingApi.enhanceSmishingText(text)
+      expect(axios.post).toHaveBeenCalledWith(
+        expect.stringContaining('txt-enhance'),
+        { method: 'enhance', text },
+        { timeout: 100000 }
       )
     })
   })
