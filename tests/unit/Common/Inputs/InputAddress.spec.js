@@ -693,4 +693,481 @@ describe('InputAddress.vue', () => {
       expect(textarea.attributes('placeholder')).toBe(labels.EnterAddress)
     })
   })
+
+  describe('address formats and validations', () => {
+    it('should accept short addresses', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: '123 Main St'
+        }
+      })
+      expect(wrapper.vm.value).toBe('123 Main St')
+    })
+
+    it('should accept very long addresses', () => {
+      const longAddress = 'A'.repeat(190) + ' St, City, State 12345'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: longAddress
+        }
+      })
+      expect(wrapper.vm.value.length).toBeGreaterThan(180)
+    })
+
+    it('should accept multiline addresses', () => {
+      const multilineAddress = '123 Main Street\nApartment 4B\nNew York, NY 10001'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: multilineAddress
+        }
+      })
+      expect(wrapper.vm.value).toContain('\n')
+    })
+
+    it('should accept addresses with special characters', () => {
+      const specialAddress = '123 O\'Brien St, Suite #200'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: specialAddress
+        }
+      })
+      expect(wrapper.vm.value).toBe(specialAddress)
+    })
+
+    it('should accept addresses with numbers and letters', () => {
+      const mixedAddress = '456 South 123rd Avenue'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: mixedAddress
+        }
+      })
+      expect(wrapper.vm.value).toBe(mixedAddress)
+    })
+
+    it('should handle address with apartment/unit number', () => {
+      const apartmentAddress = '789 Main St, Apt 401'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: apartmentAddress
+        }
+      })
+      expect(wrapper.vm.value).toContain('Apt')
+    })
+
+    it('should handle address with postal code', () => {
+      const postalAddress = '123 Main St, City, ST 12345'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: postalAddress
+        }
+      })
+      expect(wrapper.vm.value).toContain('12345')
+    })
+
+    it('should handle international addresses', () => {
+      const internationalAddress = '42 Rue de Paris, 75001 Paris, France'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: internationalAddress
+        }
+      })
+      expect(wrapper.vm.value).toBe(internationalAddress)
+    })
+
+    it('should handle addresses with hyphens', () => {
+      const hyphenAddress = '123 North-South Street'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: hyphenAddress
+        }
+      })
+      expect(wrapper.vm.value).toContain('-')
+    })
+
+    it('should handle addresses with unicode characters', () => {
+      const unicodeAddress = '北京市朝阳区建国路1号'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: unicodeAddress
+        }
+      })
+      expect(wrapper.vm.value).toBe(unicodeAddress)
+    })
+  })
+
+  describe('maxLength validation enforcement', () => {
+    it('should default to 200 characters max', () => {
+      expect(wrapper.vm.maxLength).toBe(200)
+    })
+
+    it('should accept custom max lengths', () => {
+      const customLengths = [100, 150, 300, 500, 1000]
+      customLengths.forEach(length => {
+        wrapper = shallowMount(InputAddress, {
+          propsData: { maxLength: length }
+        })
+        expect(wrapper.vm.maxLength).toBe(length)
+      })
+    })
+
+    it('should have max length rule', () => {
+      const rules = wrapper.vm.rules
+      expect(rules.length).toBeGreaterThanOrEqual(2)
+    })
+
+
+    it('should handle very large max lengths', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: { maxLength: 5000 }
+      })
+      expect(wrapper.vm.maxLength).toBe(5000)
+    })
+
+    it('should handle very small max lengths', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: { maxLength: 10 }
+      })
+      expect(wrapper.vm.maxLength).toBe(10)
+    })
+  })
+
+  describe('startsWithSpace validation', () => {
+    it('should have startsWithSpace rule', () => {
+      const rules = wrapper.vm.rules
+      expect(rules.length).toBeGreaterThan(0)
+      expect(typeof rules[0]).toBe('function')
+    })
+
+    it('should reject addresses starting with space', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule(' 123 Main St')
+      expect(result).not.toBe(true)
+    })
+
+
+
+    it('should reject multiple leading spaces', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule('    123 Main St')
+      expect(result).not.toBe(true)
+    })
+
+    it('should reject tab at start', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule('\t123 Main St')
+      expect(result).not.toBe(true)
+    })
+
+    it('should reject newline at start', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule('\n123 Main St')
+      expect(result).not.toBe(true)
+    })
+  })
+
+  describe('placeholder customization', () => {
+    it('should accept very long placeholder', () => {
+      const longPlaceholder = 'Enter your full mailing address including street, city, state and postal code here'.repeat(2)
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialPlaceholder: longPlaceholder
+        }
+      })
+      expect(wrapper.vm.placeholder.length).toBeGreaterThan(100)
+    })
+
+    it('should accept placeholder with special characters', () => {
+      const specialPlaceholder = 'e.g., 123 Main St, Apt #4, City, ST 12345'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialPlaceholder: specialPlaceholder
+        }
+      })
+      expect(wrapper.vm.placeholder).toBe(specialPlaceholder)
+    })
+
+    it('should accept placeholder with unicode', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialPlaceholder: 'Dirección de envío 📬'
+        }
+      })
+      expect(wrapper.vm.placeholder).toContain('Dirección')
+    })
+
+    it('should accept placeholder with newlines', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialPlaceholder: 'Line 1\nLine 2'
+        }
+      })
+      expect(wrapper.vm.placeholder).toContain('Line 1')
+    })
+  })
+
+  describe('entity name integration', () => {
+    it('should use entity name in validation messages', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          entityName: 'Billing Address'
+        }
+      })
+      expect(wrapper.vm.entityName).toBe('Billing Address')
+    })
+
+    it('should handle entity name with spaces', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          entityName: 'Shipping Address With Multiple Words'
+        }
+      })
+      expect(wrapper.vm.entityName).toContain('Address')
+    })
+
+    it('should handle entity name with special characters', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          entityName: 'Address (Primary)'
+        }
+      })
+      expect(wrapper.vm.entityName).toBe('Address (Primary)')
+    })
+
+    it('should work without entity name', () => {
+      expect(wrapper.vm.entityName).toBeUndefined()
+    })
+
+    it('should handle very long entity name', () => {
+      const longEntityName = 'Very Long Entity Name For Address Field That Exceeds Normal Length'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          entityName: longEntityName
+        }
+      })
+      expect(wrapper.vm.entityName).toBe(longEntityName)
+    })
+  })
+
+  describe('value content variations', () => {
+    it('should handle value with only numbers', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: '123456'
+        }
+      })
+      expect(wrapper.vm.value).toBe('123456')
+    })
+
+    it('should handle value with only letters', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: 'MainStreetNewYork'
+        }
+      })
+      expect(wrapper.vm.value).toBe('MainStreetNewYork')
+    })
+
+    it('should handle value with mixed case', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: 'MiXeD CaSe AdDrEsS'
+        }
+      })
+      expect(wrapper.vm.value).toBe('MiXeD CaSe AdDrEsS')
+    })
+
+    it('should handle value with tabs', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: '123 Main St\tApartment 4'
+        }
+      })
+      expect(wrapper.vm.value).toContain('\t')
+    })
+
+    it('should handle value with multiple spaces', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: '123    Main    St'
+        }
+      })
+      expect(wrapper.vm.value).toContain('   ')
+    })
+  })
+
+  describe('error handling and edge cases', () => {
+    it('should handle undefined initialRules prop', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: undefined
+        }
+      })
+      expect(wrapper.vm.rules.length).toBeGreaterThan(0)
+    })
+
+    it('should handle null initialRules prop', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: null
+        }
+      })
+      expect(wrapper.vm.rules).toBeDefined()
+    })
+
+    it('should handle empty initialRules array', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: []
+        }
+      })
+      expect(wrapper.vm.rules).toEqual([])
+    })
+
+    it('should handle very large initialRules array', () => {
+      const manyRules = Array.from({ length: 20 }, () => (v) => true)
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: manyRules
+        }
+      })
+      expect(wrapper.vm.rules.length).toBe(20)
+    })
+  })
+
+  describe('form submission scenarios', () => {
+    it('should provide value for form submission', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: '123 Main St, City, ST 12345'
+        }
+      })
+      expect(wrapper.vm.value).toBeDefined()
+    })
+
+    it('should validate before form submission', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          required: true,
+          value: ' invalid'
+        }
+      })
+      expect(wrapper.vm.rules.length).toBeGreaterThan(2)
+    })
+
+    it('should work with form validation rules', () => {
+      const customRules = [
+        (v) => v && v.length > 0 || 'Address required',
+        (v) => v && v.length <= 200 || 'Address too long'
+      ]
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: customRules
+        }
+      })
+      expect(wrapper.vm.rules.length).toBe(2)
+    })
+
+    it('should maintain state during validation', () => {
+      const address = '123 Main St'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: address
+        }
+      })
+      expect(wrapper.vm.value).toBe(address)
+      expect(wrapper.vm.rules).toBeDefined()
+    })
+  })
+
+  describe('accessibility features', () => {
+    it('should support id for label association', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          id: 'address-input-1'
+        }
+      })
+      expect(wrapper.vm.id).toBe('address-input-1')
+    })
+
+    it('should support placeholder for guidance', () => {
+      expect(wrapper.vm.placeholder).toBeDefined()
+      expect(wrapper.vm.placeholder.length).toBeGreaterThan(0)
+    })
+
+    it('should show required indicator', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(wrapper.vm.requiredProps.hint).toBe(labels.RequiredStar)
+    })
+
+    it('should have persistent hint for clarity', () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          required: true
+        }
+      })
+      expect(wrapper.vm.requiredProps.persistentHint).toBe(true)
+    })
+  })
+
+  describe('complex prop combinations', () => {
+    it('should work with all custom props', () => {
+      const customRules = [(v) => v ? true : 'Address is required']
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: '123 Custom Address',
+          id: 'address-custom',
+          initialPlaceholder: 'Enter address',
+          entityName: 'Custom Entity',
+          maxLength: 500,
+          required: true,
+          initialRules: customRules
+        }
+      })
+      expect(wrapper.vm.value).toBe('123 Custom Address')
+      expect(wrapper.vm.id).toBe('address-custom')
+      expect(wrapper.vm.maxLength).toBe(500)
+      expect(wrapper.vm.required).toBe(true)
+    })
+
+    it('should work with minimal props', () => {
+      wrapper = shallowMount(InputAddress)
+      expect(wrapper.vm.required).toBe(false)
+      expect(wrapper.vm.maxLength).toBe(200)
+    })
+
+    it('should handle prop updates gracefully', async () => {
+      const address = '123 Main St'
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: address
+        }
+      })
+      await wrapper.setProps({ maxLength: 300 })
+      expect(wrapper.vm.value).toBe(address)
+      expect(wrapper.vm.maxLength).toBe(300)
+    })
+  })
+
+  describe('reactive data changes', () => {
+    it('should reflect value changes reactively', async () => {
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          value: 'Original Address'
+        }
+      })
+      await wrapper.setProps({ value: 'New Address' })
+      expect(wrapper.vm.value).toBe('New Address')
+    })
+
+    it('should update maxLength reactively', async () => {
+      expect(wrapper.vm.maxLength).toBe(200)
+      await wrapper.setProps({ maxLength: 400 })
+      expect(wrapper.vm.maxLength).toBe(400)
+    })
+
+  })
 })

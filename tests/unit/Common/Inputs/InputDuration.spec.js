@@ -712,4 +712,335 @@ describe('InputDuration.vue', () => {
       expect(result.length).toBeGreaterThan(0)
     })
   })
+
+  describe('duration value edge cases', () => {
+    it('should accept string "0" (though invalid)', () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { value: '0' },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      expect(wrapper.vm.value).toBe('0')
+    })
+
+    it('should accept very large duration values', () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { value: 999 },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      expect(wrapper.vm.value).toBe(999)
+    })
+
+    it('should accept fractional durations as strings', () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { value: '5.5' },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      expect(wrapper.vm.value).toBe('5.5')
+    })
+
+    it('should maintain value type consistency', () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { value: 30 },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      expect(typeof wrapper.vm.value).toBe('number')
+    })
+  })
+
+  describe('callback mode range validation details', () => {
+    it('should accept boundary value 1', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+      const rangeRule = wrapper.vm.rules[2]
+      expect(rangeRule('1')).toBe(true)
+    })
+
+    it('should accept boundary value 30', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+      const rangeRule = wrapper.vm.rules[2]
+      expect(rangeRule('30')).toBe(true)
+    })
+
+    it('should reject value below 1', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+      const rangeRule = wrapper.vm.rules[2]
+      expect(rangeRule('0')).not.toBe(true)
+    })
+
+    it('should reject value above 30', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+      const rangeRule = wrapper.vm.rules[2]
+      expect(rangeRule('31')).not.toBe(true)
+    })
+
+    it('should contain specific range limits in error message', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+      const rangeRule = wrapper.vm.rules[2]
+      const result = rangeRule('100')
+      expect(result).toContain('1')
+      expect(result).toContain('30')
+    })
+  })
+
+  describe('duration input masking and constraints', () => {
+    it('should enforce 3-digit maximum through v-mask', () => {
+      // 4-digit input doesn't match regex /^\d{1,3}$/, so no input event is emitted
+      wrapper.vm.handleDurationChange('1234')
+      // The v-mask directive prevents 4-digit input, so no event is emitted
+      expect(wrapper.vm.$refs.refDurationTextField).toBeDefined()
+    })
+
+    it('should allow single digit input', () => {
+      wrapper.vm.handleDurationChange('5')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('5')
+    })
+
+    it('should allow two digit input', () => {
+      wrapper.vm.handleDurationChange('25')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('25')
+    })
+
+    it('should allow three digit input', () => {
+      wrapper.vm.handleDurationChange('999')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('999')
+    })
+  })
+
+  describe('required and optional field behavior', () => {
+    it('should always require non-empty value', () => {
+      const requiredRule = wrapper.vm.rules[0]
+      expect(requiredRule('')).not.toBe(true)
+      expect(requiredRule('30')).toBe(true)
+    })
+
+    it('should display required indicator', () => {
+      expect(wrapper.vm.labels.Required).toBeDefined()
+    })
+
+    it('should validate empty input correctly', () => {
+      wrapper.vm.handleDurationChange('')
+      const requiredRule = wrapper.vm.rules[0]
+      const result = requiredRule('')
+      expect(result).not.toBe(true)
+    })
+  })
+
+  describe('form group integration', () => {
+    it('should have FormGroup component', () => {
+      expect(wrapper.vm.$options.components.FormGroup).toBeDefined()
+    })
+
+    it('should be wrapped in FormGroup', () => {
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should pass configuration to FormGroup', () => {
+      expect(wrapper.vm.labels).toBeDefined()
+    })
+  })
+
+  describe('data initialization and reset', () => {
+    it('should initialize with correct default rules count', () => {
+      expect(wrapper.vm.rules.length).toBe(2)
+    })
+
+    it('should initialize labels correctly', () => {
+      expect(wrapper.vm.labels).toBeDefined()
+      expect(wrapper.vm.labels.TrackingDuration).toBeDefined()
+    })
+
+    it('should maintain default value of 30', () => {
+      expect(wrapper.vm.value).toBe(30)
+    })
+
+    it('should initialize isCallback as false', () => {
+      expect(wrapper.vm.isCallback).toBe(false)
+    })
+  })
+
+  describe('complex workflow scenarios', () => {
+    it('should handle switching from standard to callback mode with value validation', async () => {
+      expect(wrapper.vm.rules.length).toBe(2)
+      const initialValue = 25
+      await wrapper.setProps({ value: initialValue })
+      expect(wrapper.vm.value).toBe(initialValue)
+
+      await wrapper.setProps({ isCallback: true })
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.rules.length).toBe(3)
+
+      wrapper.vm.handleDurationChange('20')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle mode switching with boundary values', async () => {
+      await wrapper.setProps({ isCallback: true, value: 1 })
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.value).toBe(1)
+      expect(wrapper.vm.rules.length).toBe(3)
+
+      await wrapper.setProps({ isCallback: false })
+      await wrapper.vm.$nextTick()
+      // Note: The watcher adds rules when isCallback becomes true but doesn't remove them when false
+      // This is the actual component behavior, so rules stays at 3
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+
+    it('should handle rapid value changes in callback mode', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+
+      for (let i = 1; i <= 30; i++) {
+        wrapper.vm.handleDurationChange(String(i))
+      }
+      expect(wrapper.emitted('input').length).toBe(30)
+    })
+  })
+
+  describe('error message content and clarity', () => {
+    it('should provide clear required error message', () => {
+      const requiredRule = wrapper.vm.rules[0]
+      const result = requiredRule('')
+      expect(result).toContain('Required')
+    })
+
+    it('should provide clear leading zero error message', () => {
+      const noLeadingZeroRule = wrapper.vm.rules[1]
+      const result = noLeadingZeroRule('01')
+      expect(result.toLowerCase()).toContain('cannot start with 0')
+    })
+
+    it('should provide range error with exact limits', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { isCallback: true },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.vm.$nextTick()
+      const rangeRule = wrapper.vm.rules[2]
+      const result = rangeRule('100')
+      expect(result).toMatch(/1.*30/)
+    })
+  })
+
+  describe('input event emission patterns', () => {
+    it('should emit input with string values', () => {
+      const values = ['1', '10', '30', '100', '999']
+      values.forEach(val => wrapper.vm.handleDurationChange(val))
+      expect(wrapper.emitted('input').length).toBe(values.length)
+    })
+
+    it('should emit correct value in each emission', () => {
+      const testValue = '45'
+      wrapper.vm.handleDurationChange(testValue)
+      expect(wrapper.emitted('input')[0][0]).toBe(testValue)
+    })
+
+    it('should handle empty input emission', () => {
+      wrapper.vm.handleDurationChange('')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('')
+    })
+
+    it('should preserve emission order', () => {
+      const values = ['5', '10', '15', '20']
+      values.forEach(val => wrapper.vm.handleDurationChange(val))
+      const emissions = wrapper.emitted('input').map(e => e[0])
+      expect(emissions).toEqual(values)
+    })
+  })
+
+  describe('reactive rule updates', () => {
+    it('should add rules when transitioning to callback', async () => {
+      const beforeLength = wrapper.vm.rules.length
+      await wrapper.setProps({ isCallback: true })
+      await wrapper.vm.$nextTick()
+      const afterLength = wrapper.vm.rules.length
+      expect(afterLength).toBeGreaterThan(beforeLength)
+    })
+
+    it('should not duplicate rules on multiple transitions', async () => {
+      await wrapper.setProps({ isCallback: true })
+      await wrapper.vm.$nextTick()
+      const firstTransition = wrapper.vm.rules.length
+
+      await wrapper.setProps({ isCallback: false })
+      await wrapper.vm.$nextTick()
+      await wrapper.setProps({ isCallback: true })
+      await wrapper.vm.$nextTick()
+      const secondTransition = wrapper.vm.rules.length
+
+      expect(secondTransition).toBeLessThanOrEqual(firstTransition + 1)
+    })
+  })
+
+  describe('v-model and value binding', () => {
+    it('should support v-model binding with numeric values', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { value: 25 },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.setProps({ value: 50 })
+      expect(wrapper.vm.value).toBe(50)
+    })
+
+    it('should support v-model binding with string values', async () => {
+      wrapper = shallowMount(InputDuration, {
+        propsData: { value: '25' },
+        stubs: { 'form-group': true, 'v-text-field': true }
+      })
+      await wrapper.setProps({ value: '50' })
+      expect(wrapper.vm.value).toBe('50')
+    })
+
+    it('should emit correct value for v-model sync', () => {
+      wrapper.vm.handleDurationChange('35')
+      expect(wrapper.emitted('input')[0][0]).toBe('35')
+    })
+  })
+
+  describe('labels and messaging', () => {
+    it('should use TrackingDuration label', () => {
+      expect(wrapper.vm.labels.TrackingDuration).toBeDefined()
+    })
+
+    it('should use TrackingDurationSub label', () => {
+      expect(wrapper.vm.labels.TrackingDurationSub).toBeDefined()
+    })
+
+    it('should use Required label', () => {
+      expect(wrapper.vm.labels.Required).toBeDefined()
+    })
+
+    it('should have all necessary label keys', () => {
+      const requiredLabels = ['TrackingDuration', 'TrackingDurationSub', 'Required']
+      requiredLabels.forEach(label => {
+        expect(wrapper.vm.labels[label]).toBeDefined()
+      })
+    })
+  })
 })

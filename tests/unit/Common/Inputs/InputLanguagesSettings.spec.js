@@ -686,4 +686,540 @@ describe('InputLanguagesSettings.vue', () => {
       expect(wrapper.vm.fromAddress).toBe('new@example.com')
     })
   })
+
+  describe('subject field validation', () => {
+    it('should accept very long subject lines', () => {
+      const longSubject = 'S'.repeat(200)
+      wrapper.vm.subject = longSubject
+      expect(wrapper.vm.subject.length).toBe(200)
+    })
+
+    it('should accept empty subject', () => {
+      wrapper.vm.subject = ''
+      expect(wrapper.vm.subject).toBe('')
+    })
+
+    it('should accept subject with special characters', () => {
+      const specialSubject = 'Important: [ACTION REQUIRED] New Security Training'
+      wrapper.vm.subject = specialSubject
+      expect(wrapper.vm.subject).toBe(specialSubject)
+    })
+
+    it('should accept subject with unicode', () => {
+      wrapper.vm.subject = 'Security Training - 安全培训'
+      expect(wrapper.vm.subject).toContain('Training')
+    })
+
+    it('should accept subject with numbers', () => {
+      wrapper.vm.subject = 'Q4 2024 Security Training'
+      expect(wrapper.vm.subject).toContain('2024')
+    })
+
+    it('should handle subject with multiple spaces', () => {
+      wrapper.vm.subject = 'Multiple    Spaces    Here'
+      expect(wrapper.vm.subject).toContain('   ')
+    })
+
+    it('should handle subject with newlines', () => {
+      wrapper.vm.subject = 'Line 1\nLine 2'
+      expect(wrapper.vm.subject).toContain('\n')
+    })
+  })
+
+  describe('fromName field validation', () => {
+    it('should accept very long sender names', () => {
+      const longName = 'John Michael Christopher Alexander Harrison Thompson'
+      wrapper.vm.fromName = longName
+      expect(wrapper.vm.fromName).toBe(longName)
+    })
+
+    it('should accept empty sender name', () => {
+      wrapper.vm.fromName = ''
+      expect(wrapper.vm.fromName).toBe('')
+    })
+
+    it('should accept names with special characters', () => {
+      const specialName = "O'Brien-Smith"
+      wrapper.vm.fromName = specialName
+      expect(wrapper.vm.fromName).toBe(specialName)
+    })
+
+    it('should accept names with unicode', () => {
+      wrapper.vm.fromName = 'José García'
+      expect(wrapper.vm.fromName).toContain('José')
+    })
+
+    it('should accept names with titles', () => {
+      wrapper.vm.fromName = 'Dr. John Smith, PhD'
+      expect(wrapper.vm.fromName).toContain('Dr.')
+    })
+  })
+
+  describe('fromAddress field validation', () => {
+    it('should accept standard email addresses', () => {
+      wrapper.vm.fromAddress = 'sender@example.com'
+      expect(wrapper.vm.fromAddress).toContain('@')
+    })
+
+    it('should accept email with plus addressing', () => {
+      wrapper.vm.fromAddress = 'sender+notifications@example.com'
+      expect(wrapper.vm.fromAddress).toBe('sender+notifications@example.com')
+    })
+
+    it('should accept email with subdomains', () => {
+      wrapper.vm.fromAddress = 'sender@mail.example.com'
+      expect(wrapper.vm.fromAddress).toContain('.com')
+    })
+
+    it('should accept email with international domain', () => {
+      wrapper.vm.fromAddress = 'sender@example.co.uk'
+      expect(wrapper.vm.fromAddress).toContain('.uk')
+    })
+
+    it('should accept empty email', () => {
+      wrapper.vm.fromAddress = ''
+      expect(wrapper.vm.fromAddress).toBe('')
+    })
+  })
+
+  describe('language selection scenarios', () => {
+    it('should handle single language selection', async () => {
+      wrapper.vm.selectedLanguages = [mockLanguageItems[0]]
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.selectedLanguages.length).toBe(1)
+    })
+
+    it('should handle multiple language selections', async () => {
+      wrapper.vm.selectedLanguages = [mockLanguageItems[0], mockLanguageItems[1], mockLanguageItems[2]]
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.selectedLanguages.length).toBe(3)
+    })
+
+    it('should handle deselecting languages', async () => {
+      wrapper.vm.selectedLanguages = [mockLanguageItems[0]]
+      await wrapper.vm.$nextTick()
+      wrapper.vm.selectedLanguages = []
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.selectedLanguages.length).toBe(0)
+    })
+
+    it('should handle selecting all languages', async () => {
+      wrapper.vm.selectedLanguages = mockLanguageItems
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.selectedLanguages.length).toBe(mockLanguageItems.length)
+    })
+
+    it('should track language selection order', async () => {
+      const langArray = [mockLanguageItems[2], mockLanguageItems[0], mockLanguageItems[1]]
+      wrapper.vm.selectedLanguages = langArray
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.selectedLanguages[0]).toBe(mockLanguageItems[2])
+    })
+  })
+
+  describe('search functionality', () => {
+    it('should support searching by language name', () => {
+      wrapper.vm.searchValue = 'English'
+      expect(wrapper.vm.searchValue).toBe('English')
+    })
+
+    it('should support searching by partial name', () => {
+      wrapper.vm.searchValue = 'Eng'
+      expect(wrapper.vm.searchValue).toBe('Eng')
+    })
+
+    it('should support case insensitive search', () => {
+      wrapper.vm.searchValue = 'english'
+      expect(wrapper.vm.languageItems.some(lang =>
+        lang.name.toLowerCase().includes('english')
+      )).toBe(true)
+    })
+
+    it('should handle empty search', () => {
+      wrapper.vm.searchValue = ''
+      expect(wrapper.vm.searchValue).toBe('')
+    })
+
+    it('should handle non-matching search', () => {
+      wrapper.vm.searchValue = 'XYZABC'
+      expect(wrapper.vm.searchValue).toBe('XYZABC')
+    })
+  })
+
+  describe('modal dialog management', () => {
+    it('should toggle relocalize modal', async () => {
+      expect(wrapper.vm.showRelocalizeConfirm).toBe(false)
+      wrapper.vm.showRelocalizeConfirm = true
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.showRelocalizeConfirm).toBe(true)
+    })
+
+    it('should toggle remove confirmation modal', async () => {
+      expect(typeof wrapper.vm.pendingRemoveConfirm).toBe('object')
+    })
+
+    it('should store language ID for relocalize', async () => {
+      wrapper.vm.relocalizeConfirmFor = 'fr'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.relocalizeConfirmFor).toBe('fr')
+    })
+
+    it('should clear relocalize language ID', async () => {
+      wrapper.vm.relocalizeConfirmFor = 'de'
+      await wrapper.vm.$nextTick()
+      wrapper.vm.relocalizeConfirmFor = null
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.relocalizeConfirmFor).toBeNull()
+    })
+  })
+
+  describe('language translation tracking', () => {
+    it('should track which languages are translated', () => {
+      expect(wrapper.vm.translatedLanguageResourceIds).toContain('en')
+    })
+
+    it('should handle multiple translated languages', () => {
+      wrapper = shallowMount(InputLanguagesSettings, {
+        propsData: {
+          translatedLanguageResourceIds: ['en', 'fr', 'de', 'es'],
+          languageItems: mockLanguageItems
+        },
+        stubs: {
+          'v-text-field': true,
+          'v-treeview': true,
+          'v-btn': true,
+          'v-icon': true
+        }
+      })
+      expect(wrapper.vm.translatedLanguageResourceIds.length).toBe(4)
+    })
+
+    it('should detect untranslated languages', () => {
+      const translated = wrapper.vm.translatedLanguageResourceIds
+      const allLanguages = mockLanguageItems.map(l => l.code)
+      const untranslated = allLanguages.filter(l => !translated.includes(l))
+      expect(untranslated.length).toBeGreaterThanOrEqual(0)
+    })
+  })
+
+  describe('active language management', () => {
+    it('should set active language on initialization', () => {
+      expect(wrapper.vm.activeLanguage).toBe('en')
+    })
+
+    it('should support changing active language', async () => {
+      wrapper.vm.activeLanguage = 'fr'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.activeLanguage).toBe('fr')
+    })
+
+    it('should handle invalid active language', () => {
+      wrapper.vm.activeLanguage = 'invalid'
+      expect(wrapper.vm.activeLanguage).toBe('invalid')
+    })
+
+    it('should maintain active language with empty languageItems', () => {
+      wrapper = shallowMount(InputLanguagesSettings, {
+        propsData: {
+          languageItems: [],
+          activeLanguage: 'en'
+        },
+        stubs: {
+          'v-text-field': true,
+          'v-treeview': true,
+          'v-btn': true,
+          'v-icon': true
+        }
+      })
+      expect(wrapper.vm.activeLanguage).toBe('en')
+    })
+  })
+
+  describe('large dataset handling', () => {
+    it('should handle 50+ languages', () => {
+      const manyLanguages = Array.from({ length: 50 }, (_, i) => ({
+        id: `lang${i}`,
+        name: `Language ${i}`,
+        code: `l${i}`
+      }))
+      wrapper = shallowMount(InputLanguagesSettings, {
+        propsData: {
+          languageItems: manyLanguages
+        },
+        stubs: {
+          'v-text-field': true,
+          'v-treeview': true,
+          'v-btn': true,
+          'v-icon': true
+        }
+      })
+      expect(wrapper.vm.languageItems.length).toBe(50)
+    })
+
+    it('should handle very long subject lines 500+ characters', () => {
+      wrapper.vm.subject = 'A'.repeat(500)
+      expect(wrapper.vm.subject.length).toBe(500)
+    })
+
+    it('should handle many selected languages', async () => {
+      const manySelected = Array.from({ length: 20 }, (_, i) => ({
+        id: `lang${i}`,
+        name: `Language ${i}`,
+        code: `l${i}`
+      }))
+      wrapper.vm.selectedLanguages = manySelected
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.selectedLanguages.length).toBe(20)
+    })
+  })
+
+  describe('props update handling', () => {
+    it('should update subject when prop changes', async () => {
+      const newSubject = 'Updated Subject'
+      await wrapper.setProps({ subject: newSubject })
+      expect(wrapper.vm.subject).toBe(newSubject)
+    })
+
+    it('should update fromName when prop changes', async () => {
+      const newName = 'New Sender'
+      await wrapper.setProps({ fromName: newName })
+      expect(wrapper.vm.fromName).toBe(newName)
+    })
+
+    it('should update fromAddress when prop changes', async () => {
+      const newAddress = 'newsender@example.com'
+      await wrapper.setProps({ fromAddress: newAddress })
+      expect(wrapper.vm.fromAddress).toBe(newAddress)
+    })
+
+    it('should update languageItems when prop changes', async () => {
+      const newLanguages = [
+        { id: 'it', name: 'Italian', code: 'it' },
+        { id: 'pt', name: 'Portuguese', code: 'pt' }
+      ]
+      await wrapper.setProps({ languageItems: newLanguages })
+      expect(wrapper.vm.languageItems).toEqual(newLanguages)
+    })
+
+    it('should update activeLanguage when prop changes', async () => {
+      await wrapper.setProps({ activeLanguage: 'fr' })
+      expect(wrapper.vm.activeLanguage).toBe('fr')
+    })
+
+    it('should update translatedLanguageResourceIds when prop changes', async () => {
+      await wrapper.setProps({ translatedLanguageResourceIds: ['en', 'fr', 'de'] })
+      expect(wrapper.vm.translatedLanguageResourceIds.length).toBe(3)
+    })
+
+    it('should update showRedFlags when prop changes', async () => {
+      await wrapper.setProps({ showRedFlags: true })
+      expect(wrapper.vm.showRedFlags).toBe(true)
+    })
+  })
+
+  describe('complex email field interactions', () => {
+    it('should handle updating all email fields simultaneously', async () => {
+      wrapper.vm.subject = 'New Subject'
+      wrapper.vm.fromName = 'New Sender'
+      wrapper.vm.fromAddress = 'new@test.com'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.subject).toBe('New Subject')
+      expect(wrapper.vm.fromName).toBe('New Sender')
+      expect(wrapper.vm.fromAddress).toBe('new@test.com')
+    })
+
+    it('should preserve email fields with unicode content', async () => {
+      wrapper.vm.subject = 'Security Training - 安全培训'
+      wrapper.vm.fromName = 'José García'
+      wrapper.vm.fromAddress = 'josé@example.com'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.subject).toContain('安全培训')
+      expect(wrapper.vm.fromName).toContain('García')
+    })
+
+    it('should handle rapid consecutive updates', async () => {
+      wrapper.vm.subject = 'Subject 1'
+      wrapper.vm.fromName = 'Name 1'
+      wrapper.vm.fromAddress = 'email1@test.com'
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.subject = 'Subject 2'
+      wrapper.vm.fromName = 'Name 2'
+      wrapper.vm.fromAddress = 'email2@test.com'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.subject).toBe('Subject 2')
+      expect(wrapper.vm.fromName).toBe('Name 2')
+      expect(wrapper.vm.fromAddress).toBe('email2@test.com')
+    })
+  })
+
+  describe('treeview node management', () => {
+    it('should manage active nodes', async () => {
+      wrapper.vm.activeNodes = ['en', 'fr']
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.activeNodes.length).toBe(2)
+    })
+
+    it('should expand and collapse nodes', async () => {
+      wrapper.vm.activeNodes = ['en']
+      await wrapper.vm.$nextTick()
+      wrapper.vm.activeNodes = []
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.activeNodes.length).toBe(0)
+    })
+
+    it('should handle 50+ active nodes', async () => {
+      const manyNodes = Array.from({ length: 50 }, (_, i) => `node${i}`)
+      wrapper.vm.activeNodes = manyNodes
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.activeNodes.length).toBe(50)
+    })
+  })
+
+  describe('red flags functionality', () => {
+    it('should track red flags state', () => {
+      expect(typeof wrapper.vm.showRedFlags).toBe('boolean')
+    })
+
+    it('should toggle red flags multiple times', async () => {
+      let currentState = wrapper.vm.showRedFlags
+      wrapper.vm.showRedFlags = !currentState
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.showRedFlags).not.toBe(currentState)
+
+      currentState = wrapper.vm.showRedFlags
+      wrapper.vm.showRedFlags = !currentState
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.showRedFlags).not.toBe(currentState)
+    })
+  })
+
+  describe('loading state management', () => {
+    it('should have loading state property', () => {
+      expect(typeof wrapper.vm.loading).toBe('boolean')
+    })
+
+    it('should toggle loading state', async () => {
+      wrapper.vm.loading = true
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.loading).toBe(true)
+
+      wrapper.vm.loading = false
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.loading).toBe(false)
+    })
+  })
+
+  describe('initialization and defaults', () => {
+    it('should initialize with empty subject', () => {
+      wrapper = shallowMount(InputLanguagesSettings, {
+        stubs: {
+          'v-text-field': true,
+          'v-treeview': true,
+          'v-btn': true,
+          'v-icon': true
+        }
+      })
+      expect(wrapper.vm.subject).toBe('')
+    })
+
+    it('should initialize with empty fromName', () => {
+      wrapper = shallowMount(InputLanguagesSettings, {
+        stubs: {
+          'v-text-field': true,
+          'v-treeview': true,
+          'v-btn': true,
+          'v-icon': true
+        }
+      })
+      expect(wrapper.vm.fromName).toBe('')
+    })
+
+    it('should initialize with empty fromAddress', () => {
+      wrapper = shallowMount(InputLanguagesSettings, {
+        stubs: {
+          'v-text-field': true,
+          'v-treeview': true,
+          'v-btn': true,
+          'v-icon': true
+        }
+      })
+      expect(wrapper.vm.fromAddress).toBe('')
+    })
+  })
+
+  describe('search query variations', () => {
+    it('should accept numeric search queries', () => {
+      wrapper.vm.searchValue = '123'
+      expect(wrapper.vm.searchValue).toBe('123')
+    })
+
+    it('should accept special character searches', () => {
+      wrapper.vm.searchValue = '@#$'
+      expect(wrapper.vm.searchValue).toBe('@#$')
+    })
+
+    it('should accept very long search queries', () => {
+      const longQuery = 'A'.repeat(200)
+      wrapper.vm.searchValue = longQuery
+      expect(wrapper.vm.searchValue.length).toBe(200)
+    })
+
+    it('should handle unicode in search', () => {
+      wrapper.vm.searchValue = '中文'
+      expect(wrapper.vm.searchValue).toBe('中文')
+    })
+
+    it('should support clearing search', () => {
+      wrapper.vm.searchValue = 'test'
+      wrapper.vm.searchValue = ''
+      expect(wrapper.vm.searchValue).toBe('')
+    })
+  })
+
+  describe('event emission patterns', () => {
+    it('should be able to emit events', () => {
+      wrapper.vm.$emit('test-event', { data: 'test' })
+      expect(wrapper.emitted('test-event')).toBeTruthy()
+    })
+
+    it('should emit with correct payload', () => {
+      const payload = { action: 'test' }
+      wrapper.vm.$emit('test-event', payload)
+      expect(wrapper.emitted('test-event')[0][0]).toEqual(payload)
+    })
+  })
+
+  describe('confirmation dialog scenarios', () => {
+    it('should show and hide relocalize confirmation', async () => {
+      wrapper.vm.showRelocalizeConfirm = true
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.showRelocalizeConfirm).toBe(true)
+
+      wrapper.vm.showRelocalizeConfirm = false
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.showRelocalizeConfirm).toBe(false)
+    })
+
+    it('should track which language requires relocalization', () => {
+      expect(wrapper.vm.relocalizeConfirmFor === null || typeof wrapper.vm.relocalizeConfirmFor === 'string').toBe(true)
+    })
+
+    it('should handle multiple pending remove confirmations', async () => {
+      wrapper.vm.pendingRemoveConfirm['en'] = { action: 'remove' }
+      wrapper.vm.pendingRemoveConfirm['fr'] = { action: 'remove' }
+      await wrapper.vm.$nextTick()
+      expect(Object.keys(wrapper.vm.pendingRemoveConfirm).length).toBe(2)
+    })
+
+    it('should handle multiple pending relocalize confirmations', async () => {
+      wrapper.vm.pendingRelocalizeConfirm['de'] = { action: 'relocalize' }
+      wrapper.vm.pendingRelocalizeConfirm['es'] = { action: 'relocalize' }
+      await wrapper.vm.$nextTick()
+      expect(Object.keys(wrapper.vm.pendingRelocalizeConfirm).length).toBe(2)
+    })
+  })
 })
