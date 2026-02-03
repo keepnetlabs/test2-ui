@@ -1,165 +1,158 @@
-const mockStorage = {
-  data: {},
-  getItem(key) {
-    return this.data[key] || null
-  },
-  setItem(key, value) {
-    this.data[key] = value
-  },
-  removeItem(key) {
-    delete this.data[key]
-  },
-  clear() {
-    this.data = {}
-  }
-}
-
-Object.defineProperty(global, 'localStorage', {
-  value: mockStorage,
-  writable: true,
-  configurable: true
-})
-
-const mockStore = {
-  dispatch: jest.fn().mockResolvedValue({}),
-  getters: {
-    'usersDashboard/getToken': 'dashboard-token'
-  }
-}
-
-const mockRouter = {
-  push: jest.fn().mockResolvedValue({}),
-  history: {
-    current: {
-      name: 'home'
-    }
-  }
-}
+const mockRequestHandlers = {}
+const mockResponseHandlers = {}
+let mockToken = 'token-123'
 
 jest.mock('axios', () => ({
-  create: jest.fn().mockReturnValue({
+  create: jest.fn(() => ({
     interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() }
+      request: {
+        use: jest.fn((onFulfilled, onRejected) => {
+          mockRequestHandlers.onFulfilled = onFulfilled
+          mockRequestHandlers.onRejected = onRejected
+        })
+      },
+      response: {
+        use: jest.fn((onFulfilled, onRejected) => {
+          mockResponseHandlers.onFulfilled = onFulfilled
+          mockResponseHandlers.onRejected = onRejected
+        })
+      }
     }
-  })
+  }))
 }))
 
-jest.mock('@/router', () => mockRouter)
-jest.mock('@/store', () => mockStore)
+jest.mock('@/store', () => ({
+  getters: {
+    get 'usersDashboard/getToken'() {
+      return mockToken
+    }
+  },
+  dispatch: jest.fn()
+}))
 
-describe('usersDashboardRequest utility', () => {
+jest.mock('@/router', () => ({
+  history: {
+    current: { name: 'some-route' }
+  },
+  push: jest.fn(() => Promise.resolve())
+}))
+
+import axios from 'axios'
+import store from '@/store'
+import router from '@/router'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+
+describe('usersDashboardRequest', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockStorage.clear()
-    mockStore.getters['usersDashboard/getToken'] = 'dashboard-token'
-  })
-
-  describe('module export and structure', () => {
-    it('should export usersDashboardService instance', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service).toBeDefined()
-    })
-
-    it('should export service with interceptors', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service.interceptors).toBeDefined()
-      expect(service.interceptors.request).toBeDefined()
-      expect(service.interceptors.response).toBeDefined()
-    })
-
-    it('should have request interceptor with use method', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(typeof service.interceptors.request.use).toBe('function')
-    })
-
-    it('should have response interceptor with use method', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(typeof service.interceptors.response.use).toBe('function')
+    mockToken = 'token-123'
+    global.APP_CONFIG = {
+      VUE_APP_APP_API_TEST: 'https://test-api.keepnetlabs.com/api',
+      VUE_APP_API_KEY: 'api-key'
+    }
+    jest.isolateModules(() => {
+      require('@/utils/usersDashboardRequest')
     })
   })
 
-  describe('users dashboard integration', () => {
-    it('should be configured for users dashboard API', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service).toBeDefined()
-    })
+  it('adds auth headers and shows loader on request', () => {
+    const config = { loading: true, headers: {} }
+    const result = mockRequestHandlers.onFulfilled(config)
 
-    it('should use usersDashboard store getter for token', () => {
-      expect(mockStore.getters['usersDashboard/getToken']).toBeDefined()
-    })
+    expect(store.dispatch).toHaveBeenCalledWith(
+      'common/activateLoader',
+      COMMON_CONSTANTS.ENABLELOADER
+    )
+    expect(result.headers.authorization).toBe('Bearer token-123')
+    expect(result.headers['X-IR-API-KEY']).toBe('api-key')
+  })
 
-    it('should have router integration', () => {
-      expect(mockRouter.push).toBeDefined()
-    })
+  it('hides loader and shows snackbar on response', () => {
+    const response = {
+      config: { loading: true, snackbar: { show: true, icon: 'i', color: 'c' } },
+      data: { message: 'ok' }
+    }
+    const result = mockResponseHandlers.onFulfilled(response)
 
-    it('should have store integration', () => {
-      expect(mockStore.dispatch).toBeDefined()
+    expect(store.dispatch).toHaveBeenCalledWith(
+      'common/activateLoader',
+      COMMON_CONSTANTS.DISABLELOADER
+    )
+    expect(store.dispatch).toHaveBeenCalledWith('common/createSnackBar', {
+      message: 'ok',
+      icon: 'i',
+      color: 'c'
+    })
+    expect(result).toBe(response)
+  })
+
+  it('returns resolved empty object on canceled error', async () => {
+    const result = await mockResponseHandlers.onRejected({ message: 'canceled' })
+    expect(result).toEqual({})
+  })
+
+  it('shows timeout snackbar on ECONNABORTED', async () => {
+    const error = {
+      code: 'ECONNABORTED',
+      message: 'timeout of 100000ms exceeded',
+      config: {}
+    }
+    await expect(mockResponseHandlers.onRejected(error)).rejects.toBe(error)
+    expect(store.dispatch).toHaveBeenCalledWith('common/createSnackBar', {
+      color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+      message: 'Your request took too long. Please check your connection and try again.',
+      icon: 'mdi-alert'
     })
   })
 
-  describe('request/response handling', () => {
-    it('should be configured with request interceptor', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service.interceptors.request).toBeDefined()
-    })
-
-    it('should be configured with response interceptor', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service.interceptors.response).toBeDefined()
-    })
-
-    it('should support loading state management', () => {
-      expect(mockStore.dispatch).toBeDefined()
-    })
-
-    it('should support snackbar notifications', () => {
-      expect(mockStore.dispatch).toBeDefined()
-    })
+  it('logs out and redirects on 401', async () => {
+    const error = {
+      response: { status: 401 },
+      config: {},
+      request: {}
+    }
+    await expect(mockResponseHandlers.onRejected(error)).rejects.toBe(error)
+    expect(store.dispatch).toHaveBeenCalledWith('usersDashboard/logout')
+    expect(store.dispatch).toHaveBeenCalledWith('common/resetSnackbars')
+    expect(router.push).toHaveBeenCalledWith({ name: 'users-dashboard-login' })
   })
 
-  describe('users dashboard-specific error handling', () => {
-    it('should dispatch logout on session expiry', () => {
-      expect(mockStore.dispatch).toBeDefined()
-    })
+  it('parses json blob error and shows snackbar', async () => {
+    global.FileReader = class {
+      readAsText() {
+        this.result = JSON.stringify({ message: 'Bad request' })
+        this.onload()
+      }
+    }
 
-    it('should redirect to users-dashboard-login on 401', () => {
-      expect(mockRouter.push).toBeDefined()
-    })
+    const error = {
+      request: { responseType: 'blob' },
+      response: {
+        status: 500,
+        data: new Blob([JSON.stringify({ message: 'Bad request' })], {
+          type: 'application/json'
+        })
+      },
+      config: {}
+    }
 
-    it('should handle 503 service unavailable', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service).toBeDefined()
-    })
-
-    it('should handle request cancellation', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service.interceptors.response).toBeDefined()
-    })
-
-    it('should handle timeout errors', () => {
-      expect(mockStore.dispatch).toBeDefined()
-    })
-
-    it('should handle blob response errors', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service).toBeDefined()
-    })
+    await expect(mockResponseHandlers.onRejected(error)).rejects.toBe(error)
+    expect(store.dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({
+        color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+        message: 'Bad request',
+        icon: 'mdi-alert'
+      }),
+      { root: true }
+    )
   })
 
-  describe('header injection capability', () => {
-    it('should support authorization header from store', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service.interceptors.request).toBeDefined()
-    })
-
-    it('should support API key header', () => {
-      const service = require('@/utils/usersDashboardRequest').default
-      expect(service.interceptors.request).toBeDefined()
-    })
-
-    it('should support dynamic token retrieval', () => {
-      expect(mockStore.getters['usersDashboard/getToken']).toBeDefined()
-    })
+  it('redirects to users-dashboard-login when token is missing', async () => {
+    mockToken = ''
+    const error = { response: { status: 404 }, config: {}, request: {} }
+    await expect(mockResponseHandlers.onRejected(error)).rejects.toBe(error)
+    expect(store.dispatch).toHaveBeenCalledWith('common/resetSnackbars')
+    expect(router.push).toHaveBeenCalledWith('/users-dashboard-login')
   })
 })

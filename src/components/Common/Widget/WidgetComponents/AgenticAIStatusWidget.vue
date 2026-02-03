@@ -13,7 +13,7 @@
               <button
                 class="agentic-ai-widget__chat"
                 type="button"
-                @click="navigateToAgenticAISettings"
+                @click="handleChatWithAgenticAI"
               >
                 <v-icon size="20" color="#2196f3">mdi-creation</v-icon>
                 <span>Chat With Agentic AI</span>
@@ -234,8 +234,10 @@ export default {
           fixed: false,
           filterableType: "select",
           filterableItems: ["Executed", "Waiting for Approval", "Rejected"],
+          fullWidth: false,
           props: {
             outlined: false,
+            size: "auto",
             style: {
               color: "#ffffff"
             }
@@ -474,6 +476,9 @@ export default {
           query: { tab: "agentic-ai-settings" }
         });
       }
+    },
+    handleChatWithAgenticAI() {
+      window.dispatchEvent(new CustomEvent("open-agentic-ai-chat"));
     }
   }
 };
