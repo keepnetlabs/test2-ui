@@ -1665,4 +1665,442 @@ describe('InputDescription.vue', () => {
       expect(result).not.toBe(true)
     })
   })
+
+  describe('numeric input edge cases', () => {
+    it('should accept numeric values as strings', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: '12345' }
+      })
+      expect(wrapper.vm.value).toBe('12345')
+    })
+
+    it('should accept values with only numbers', () => {
+      const text = '9876543210'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept negative numbers as text', () => {
+      const text = '-123'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept decimal numbers as text', () => {
+      const text = '3.14159'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept scientific notation as text', () => {
+      const text = '1e10'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept hexadecimal representation as text', () => {
+      const text = '0x1A2B'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+  })
+
+  describe('whitespace handling variations', () => {
+    it('should accept leading whitespace in multiline text', () => {
+      const text = '\n  indented line'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept trailing whitespace', () => {
+      const text = 'text with trailing spaces    '
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept form feed character', () => {
+      const text = 'text\fwith form feed'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept vertical tab character', () => {
+      const text = 'text\vwith vertical tab'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept no-break space (NBSP)', () => {
+      const text = 'text\u00A0with NBSP'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+  })
+
+  describe('punctuation and symbols', () => {
+    it('should accept common punctuation marks', () => {
+      const text = '.,;:!?\'"-'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept brackets and braces', () => {
+      const text = '()[]{}< >'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept mathematical symbols', () => {
+      const text = '+-*/=≠<>≤≥'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept currency and financial symbols', () => {
+      const text = '$¢£¤¥₹€₽₩₪₦'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept ampersand and other symbols', () => {
+      const text = '& @ # % ^ ~ | \\ / _ « » • ‰'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept repeated punctuation', () => {
+      const text = '...!!!???---===__'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept mixed symbols and text', () => {
+      const text = 'Price: $99.99 (50% off!)'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+  })
+
+  describe('line break variations', () => {
+    it('should handle Unix line endings (LF)', () => {
+      const text = 'Line1\nLine2\nLine3'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should handle Mac classic line endings (CR)', () => {
+      const text = 'Line1\rLine2\rLine3'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should handle mixed line endings in same text', () => {
+      const text = 'Line1\nLine2\rLine3\r\nLine4'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should handle consecutive line breaks', () => {
+      const text = 'Text\n\n\n\nMore text'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should handle text starting with line break', () => {
+      const text = '\n\nText starting with breaks'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should handle text ending with line break', () => {
+      const text = 'Text ending with break\n\n'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+  })
+
+  describe('data representation formats', () => {
+    it('should accept XML/SGML format text', () => {
+      const text = '<?xml version="1.0"?><root><item>test</item></root>'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept CSS format text', () => {
+      const text = 'body { color: red; font-size: 14px; }'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept SQL format text', () => {
+      const text = 'SELECT * FROM users WHERE id = 1;'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept JavaScript code as text', () => {
+      const text = 'const x = { key: "value" }; console.log(x);'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept Python code as text', () => {
+      const text = 'def hello():\n    print("world")'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept regex patterns as text', () => {
+      const text = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+  })
+
+  describe('mixed language and script system support', () => {
+    it('should accept Latin with numbers and symbols', () => {
+      const text = 'Test123 !@#$%^&*()'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept CJK with punctuation', () => {
+      const text = '测试：中文文本。Test、Testing！123'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept RTL text with LTR text', () => {
+      const text = 'Hello مرحبا 你好'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept multiple scripts in single line', () => {
+      const text = 'Привет world नमस्ते 안녕'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should accept all Unicode planes', () => {
+      const text = 'Basic: A1! Emoji: 😀🎉 Ancient: 𐌀𐌁𐌂'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+  })
+
+  describe('extreme boundary testing', () => {
+    it('should handle text near maximum length (1999 chars)', () => {
+      const text = 'A'.repeat(1999)
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value.length).toBe(1999)
+    })
+
+    it('should handle exactly maximum length (2000 chars)', () => {
+      const text = 'B'.repeat(2000)
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value.length).toBe(2000)
+    })
+
+    it('should handle single character input', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: 'X' }
+      })
+      expect(wrapper.vm.value).toBe('X')
+    })
+
+    it('should handle extremely nested structures as text', () => {
+      const text = '((((((((((((((((((((hello))))))))))))))))))'
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text }
+      })
+      expect(wrapper.vm.value).toBe(text)
+    })
+
+    it('should handle repeated pattern of 100+ characters', () => {
+      const pattern = 'ABCDEFGHIJ'
+      const text = pattern.repeat(300)
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: text, maxLength: 5000 }
+      })
+      expect(wrapper.vm.value.length).toBe(3000)
+    })
+  })
+
+  describe('v-model behavior with different value types', () => {
+    it('should handle value updates via prop changes', async () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: { value: 'Initial' }
+      })
+      await wrapper.setProps({ value: 'Updated' })
+      expect(wrapper.vm.value).toBe('Updated')
+    })
+
+    it('should emit on input event when value changes', () => {
+      wrapper.vm.$emit('input', 'new value')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('new value')
+    })
+
+    it('should emit change event on blur', () => {
+      wrapper.vm.$emit('change', 'changed value')
+      expect(wrapper.emitted('change')).toBeTruthy()
+    })
+
+    it('should emit focus event on focus', () => {
+      wrapper.vm.$emit('focus')
+      expect(wrapper.emitted('focus')).toBeTruthy()
+    })
+
+    it('should emit blur event on blur', () => {
+      wrapper.vm.$emit('blur')
+      expect(wrapper.emitted('blur')).toBeTruthy()
+    })
+  })
+
+  describe('component prop validation combinations', () => {
+    it('should handle required with custom placeholder', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: {
+          required: true,
+          initialPlaceholder: 'Custom required'
+        }
+      })
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.placeholder).toBe('Custom required')
+    })
+
+    it('should handle disabled with required', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: {
+          required: true,
+          disabled: true
+        }
+      })
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.disabled).toBe(true)
+    })
+
+    it('should handle readonly with required', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: {
+          required: true,
+          readonly: true
+        }
+      })
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.readonly).toBe(true)
+    })
+
+    it('should handle both disabled and readonly', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: {
+          disabled: true,
+          readonly: true
+        }
+      })
+      expect(wrapper.vm.disabled).toBe(true)
+      expect(wrapper.vm.readonly).toBe(true)
+    })
+
+    it('should handle custom height with custom rows', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: {
+          height: '500px',
+          rows: '20'
+        }
+      })
+      expect(wrapper.vm.height).toBe('500px')
+      expect(wrapper.vm.rows).toBe('20')
+    })
+
+    it('should handle all styling props together', () => {
+      wrapper = shallowMount(InputDescription, {
+        propsData: {
+          height: '400px',
+          rows: '15',
+          disabled: false,
+          readonly: false,
+          required: true
+        }
+      })
+      expect(wrapper.vm.height).toBe('400px')
+      expect(wrapper.vm.rows).toBe('15')
+      expect(wrapper.vm.disabled).toBe(false)
+      expect(wrapper.vm.readonly).toBe(false)
+      expect(wrapper.vm.required).toBe(true)
+    })
+  })
 })

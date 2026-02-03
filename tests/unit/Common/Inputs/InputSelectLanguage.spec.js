@@ -763,4 +763,202 @@ describe('InputSelectLanguage.vue', () => {
       expect(wrapper.vm.persistentHint).toBe(true)
     })
   })
+
+  describe('advanced itemDisabled scenarios', () => {
+    it('should handle items with complex disable conditions', () => {
+      const items = [
+        { text: 'English', value: 'en', isDisabled: false },
+        { text: 'Spanish', value: 'es', isDisabled: true },
+        { text: 'Mandarin', value: 'zh', isDisabled: false }
+      ]
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: { items },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.itemDisabled(items[1])).toBe(true)
+    })
+
+    it('should handle items without isDisabled property gracefully', () => {
+      const items = [
+        { text: 'English', value: 'en' },
+        { text: 'French', value: 'fr' }
+      ]
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: { items },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.itemDisabled(items[0])).toBeFalsy()
+    })
+
+    it('should consistently evaluate all items', () => {
+      const evaluations = mockItems.map(item => wrapper.vm.itemDisabled(item))
+      const expectedPattern = [false, false, true, false, false]
+      expect(evaluations).toEqual(expectedPattern)
+    })
+  })
+
+  describe('menu props configuration', () => {
+    it('should have offsetY set to true by default', () => {
+      expect(wrapper.vm.menuProps.offsetY).toBe(true)
+    })
+
+    it('should allow custom menu props', () => {
+      const customMenuProps = { offsetY: false, offsetX: true }
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: { items: mockItems, value: 'en', menuProps: customMenuProps },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.menuProps.offsetX).toBe(true)
+    })
+  })
+
+  describe('language change workflow', () => {
+    it('should handle complete language change workflow', () => {
+      wrapper.vm.handleLanguageChange('es')
+      expect(wrapper.emitted('input')[0][0]).toBe('es')
+
+      wrapper.vm.handleLanguageChange('fr')
+      expect(wrapper.emitted('input')[1][0]).toBe('fr')
+
+      wrapper.vm.handleLanguageChange('de')
+      expect(wrapper.emitted('input').length).toBe(3)
+    })
+
+    it('should handle switching to same language twice', () => {
+      wrapper.vm.handleLanguageChange('en')
+      wrapper.vm.handleLanguageChange('en')
+      expect(wrapper.emitted('input').length).toBe(2)
+    })
+
+    it('should handle language list updates during selection', async () => {
+      const newItems = [
+        { text: 'Italian', value: 'it', isDisabled: false },
+        { text: 'Portuguese', value: 'pt', isDisabled: false }
+      ]
+      wrapper.vm.handleLanguageChange('it')
+      await wrapper.setProps({ items: newItems })
+      expect(wrapper.vm.items.length).toBe(2)
+    })
+  })
+
+  describe('disabled options and item handling', () => {
+    it('should identify disabled languages correctly', () => {
+      const frenchItem = mockItems.find(item => item.value === 'fr')
+      expect(wrapper.vm.itemDisabled(frenchItem)).toBe(true)
+    })
+
+    it('should count disabled items in list', () => {
+      const disabledCount = mockItems.filter(item => wrapper.vm.itemDisabled(item)).length
+      expect(disabledCount).toBe(1)
+    })
+
+    it('should handle selection of enabled items only', () => {
+      const enabledItems = mockItems.filter(item => !wrapper.vm.itemDisabled(item))
+      expect(enabledItems.length).toBe(4)
+    })
+
+    it('should allow emitting disabled language value if needed', () => {
+      wrapper.vm.handleLanguageChange('fr')
+      expect(wrapper.emitted('input')[0][0]).toBe('fr')
+    })
+  })
+
+  describe('large language lists', () => {
+    it('should handle 50+ languages', () => {
+      const manyLanguages = Array.from({ length: 60 }, (_, i) => ({
+        text: `Language ${i}`,
+        value: `lang${i}`,
+        isDisabled: i % 5 === 0
+      }))
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: { items: manyLanguages, value: 'lang0' },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.items.length).toBe(60)
+    })
+
+    it('should handle rapid navigation through many languages', () => {
+      const languages = Array.from({ length: 30 }, (_, i) => `lang${i}`)
+      languages.forEach(lang => wrapper.vm.handleLanguageChange(lang))
+      expect(wrapper.emitted('input').length).toBe(30)
+    })
+  })
+
+  describe('value binding edge cases', () => {
+    it('should handle numeric language codes', () => {
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: {
+          items: [{ text: 'Language 1', value: 1 }],
+          value: 1
+        },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe(1)
+    })
+
+    it('should handle boolean-like string values', () => {
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: {
+          items: [{ text: 'Active', value: 'true' }],
+          value: 'true'
+        },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('true')
+    })
+
+    it('should handle empty string value', () => {
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: {
+          items: [{ text: 'None', value: '' }],
+          value: ''
+        },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('')
+    })
+
+    it('should handle special character values', () => {
+      wrapper = shallowMount(InputSelectLanguage, {
+        propsData: {
+          items: [{ text: 'Special', value: 'zh-CN' }],
+          value: 'zh-CN'
+        },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('zh-CN')
+    })
+  })
+
+  describe('item text and value mapping', () => {
+    it('should correctly display item text', () => {
+      expect(wrapper.vm.items[0].text).toBe('English')
+      expect(wrapper.vm.items[1].text).toBe('Spanish')
+    })
+
+    it('should correctly map item values', () => {
+      expect(wrapper.vm.items[0].value).toBe('en')
+      expect(wrapper.vm.items[1].value).toBe('es')
+    })
+
+    it('should preserve all item properties during selection', () => {
+      wrapper.vm.handleLanguageChange('es')
+      expect(wrapper.vm.items[1].isDisabled).toBe(false)
+    })
+  })
+
+  describe('reactive behavior during language updates', () => {
+    it('should emit updated value after prop changes', async () => {
+      await wrapper.setProps({ value: 'es' })
+      wrapper.vm.handleLanguageChange('es')
+      expect(wrapper.emitted('input')[0][0]).toBe('es')
+    })
+
+    it('should handle multiple rapid property changes', async () => {
+      await wrapper.setProps({ value: 'en' })
+      await wrapper.setProps({ value: 'fr' })
+      await wrapper.setProps({ value: 'de' })
+      expect(wrapper.vm.value).toBe('de')
+    })
+  })
 })

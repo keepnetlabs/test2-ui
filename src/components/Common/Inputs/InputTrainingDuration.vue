@@ -1,5 +1,5 @@
 <template>
-  <FormGroup has-hint :title="title" :sub-title="subTitle">
+  <FormGroup :title="title" :sub-title="subTitle">
     <KSelect
       :value="value"
       :items="items"

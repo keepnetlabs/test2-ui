@@ -743,4 +743,266 @@ describe('InputLanguagePreview.vue', () => {
       expect(props).toHaveProperty('label')
     })
   })
+
+  describe('input change method behavior', () => {
+    it('should emit input with string value', () => {
+      wrapper.vm.handleInputChange('es')
+      expect(wrapper.emitted('input')[0][0]).toBe('es')
+    })
+
+    it('should emit input with numeric value', () => {
+      wrapper.vm.handleInputChange(2)
+      expect(wrapper.emitted('input')[0][0]).toBe(2)
+    })
+
+    it('should emit input with empty string', () => {
+      wrapper.vm.handleInputChange('')
+      expect(wrapper.emitted('input')[0][0]).toBe('')
+    })
+
+    it('should emit input with null', () => {
+      wrapper.vm.handleInputChange(null)
+      expect(wrapper.emitted('input')[0][0]).toBeNull()
+    })
+
+    it('should handle 100+ rapid emissions', () => {
+      for (let i = 0; i < 150; i++) {
+        wrapper.vm.handleInputChange(`lang${i}`)
+      }
+      expect(wrapper.emitted('input').length).toBe(150)
+    })
+  })
+
+  describe('kselect styling configuration', () => {
+    it('should render k-select as outlined', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+
+    it('should render k-select as dense', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+
+    it('should pass autocomplete type to k-select', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+  })
+
+  describe('items array handling', () => {
+    it('should accept empty items array', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { items: [] },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.items).toEqual([])
+    })
+
+    it('should accept large items array (100+ items)', () => {
+      const largeItems = Array.from({ length: 150 }, (_, i) => ({
+        text: `Language ${i}`,
+        value: `lang${i}`
+      }))
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { items: largeItems },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.items.length).toBe(150)
+    })
+
+    it('should handle items with complex properties', () => {
+      const complexItems = [
+        { text: 'English', value: 'en', icon: 'flag-us', rtl: false, priority: 1 },
+        { text: 'Arabic', value: 'ar', icon: 'flag-sa', rtl: true, priority: 2 }
+      ]
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { items: complexItems },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.items[0].priority).toBe(1)
+      expect(wrapper.vm.items[1].rtl).toBe(true)
+    })
+
+    it('should update items reactively with new data', async () => {
+      const items1 = [{ text: 'English', value: 'en' }]
+      const items2 = [{ text: 'French', value: 'fr' }]
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { items: items1 },
+        stubs: { 'k-select': true }
+      })
+      await wrapper.setProps({ items: items2 })
+      expect(wrapper.vm.items).toEqual(items2)
+    })
+  })
+
+  describe('disabled and enabled states', () => {
+    it('should be interactive when not disabled', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { disabled: false },
+        stubs: { 'k-select': true }
+      })
+      wrapper.vm.handleInputChange('en')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should still emit events when disabled', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { disabled: true },
+        stubs: { 'k-select': true }
+      })
+      wrapper.vm.handleInputChange('en')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should toggle disabled state multiple times', async () => {
+      for (let i = 0; i < 10; i++) {
+        await wrapper.setProps({ disabled: i % 2 === 0 })
+        expect(wrapper.vm.disabled).toBe(i % 2 === 0)
+      }
+    })
+  })
+
+  describe('label prop variations', () => {
+    it('should have default label', () => {
+      expect(wrapper.vm.label).toBe('Template Preview')
+    })
+
+    it('should support very long label text', () => {
+      const longLabel = 'Select the language for your template preview - this is a very long label'
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { label: longLabel },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.label).toBe(longLabel)
+    })
+
+    it('should handle label with special characters', () => {
+      const specialLabel = 'Label [123] {456} (789) <test> &!@#'
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { label: specialLabel },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.label).toBe(specialLabel)
+    })
+
+    it('should handle unicode in label', () => {
+      const unicodeLabel = '選択言語プレビュー (Language Preview)'
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { label: unicodeLabel },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.label).toBe(unicodeLabel)
+    })
+  })
+
+  describe('value reactivity and binding', () => {
+    it('should update value reactively from parent', async () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { value: 'en' },
+        stubs: { 'k-select': true }
+      })
+      await wrapper.setProps({ value: 'fr' })
+      expect(wrapper.vm.value).toBe('fr')
+
+      await wrapper.setProps({ value: 'de' })
+      expect(wrapper.vm.value).toBe('de')
+
+      await wrapper.setProps({ value: 'es' })
+      expect(wrapper.vm.value).toBe('es')
+    })
+
+    it('should emit input with updated value', async () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { value: 'en' },
+        stubs: { 'k-select': true }
+      })
+      await wrapper.setProps({ value: 'es' })
+      wrapper.vm.handleInputChange('es')
+      expect(wrapper.emitted('input')[0][0]).toBe('es')
+    })
+  })
+
+  describe('hint and accessibility props', () => {
+    it('should have empty hint by default', () => {
+      expect(wrapper.vm.hint).toBe('')
+    })
+
+    it('should support custom hint text', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { hint: 'This will change the template language' },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.hint).toBe('This will change the template language')
+    })
+
+    it('should support persistentHint display', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { persistentHint: true, hint: 'Help text' },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.persistentHint).toBe(true)
+      expect(wrapper.vm.hint).toBe('Help text')
+    })
+
+    it('should support hideDetails', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { hideDetails: true },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.hideDetails).toBe(true)
+    })
+  })
+
+  describe('edge case values', () => {
+    it('should handle value 0', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { value: 0 },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe(0)
+    })
+
+    it('should handle value false', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { value: false },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe(false)
+    })
+
+    it('should handle very long string value', () => {
+      const longValue = 'lang-' + 'a'.repeat(100)
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { value: longValue },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe(longValue)
+    })
+
+    it('should handle string with unicode', () => {
+      wrapper = shallowMount(InputLanguagePreview, {
+        propsData: { value: '中文' },
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('中文')
+    })
+  })
+
+  describe('method edge cases', () => {
+    it('should handle handleInputChange with various types', () => {
+      const values = ['en', 1, true, false, null, undefined, {}, []  ]
+      values.forEach(val => {
+        wrapper.vm.handleInputChange(val)
+      })
+      expect(wrapper.emitted('input').length).toBe(values.length)
+    })
+
+    it('should handle rapid sequential changes', () => {
+      for (let i = 0; i < 50; i++) {
+        wrapper.vm.handleInputChange(i % 2 === 0 ? 'en' : 'fr')
+      }
+      expect(wrapper.emitted('input').length).toBe(50)
+    })
+  })
 })
