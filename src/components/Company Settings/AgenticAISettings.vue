@@ -987,11 +987,11 @@ export default {
               ? "AI actions will now execute automatically."
               : "AI actions now require approval before execution.";
         } else if (payload.behavioralPolicies) {
-           const values = Object.values(payload.behavioralPolicies);
-           const isEnabled = values.length > 0 && values[0] === true;
-           message = isEnabled 
-             ? "This policy is now active and applied immediately."
-             : "This policy is now inactive and no longer applied.";
+          const values = Object.values(payload.behavioralPolicies);
+          const isEnabled = values.some((value) => value === true);
+          message = isEnabled
+            ? "This policy is now active and applied immediately."
+            : "This policy is now inactive and no longer applied.";
         }
 
         this.$store.dispatch("common/createSnackBar", {
