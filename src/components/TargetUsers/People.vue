@@ -1161,6 +1161,17 @@ export default {
         return value !== undefined && value !== null ? value : null;
       }, null);
     },
+    autoClearEmptySummarySelection() {
+      const keysToCheck = ["active", "inactive", "deleted"];
+      const nextKeys = this.activeSummaryKeys.filter((key) => {
+        if (!keysToCheck.includes(key)) return true;
+        return (this.summaryCounts?.[key] || 0) > 0;
+      });
+      if (nextKeys.length !== this.activeSummaryKeys.length) {
+        this.activeSummaryKeys = nextKeys;
+        this.applySummaryFilter();
+      }
+    },
     normalizeCountSummary(data) {
       const summaryData = data?.data || data || {};
       const monthlyActiveUsers = summaryData?.monthlyActiveUsers || [];
@@ -1198,6 +1209,7 @@ export default {
           if (selectedMonthly.count !== undefined) {
             this.summaryCounts.monthly = selectedMonthly.count;
           }
+          this.autoClearEmptySummarySelection();
         })
         .catch(() => {
           this.summaryCounts = {
@@ -1210,6 +1222,7 @@ export default {
           this.monthlyActiveUsers = [];
           this.monthlySelectedIndex = 0;
           this.monthlyPeriodKey = "";
+          this.autoClearEmptySummarySelection();
         })
         .finally(() => {
           this.summaryLoading = false;
