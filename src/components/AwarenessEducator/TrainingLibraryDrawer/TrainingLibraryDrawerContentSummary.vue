@@ -399,7 +399,9 @@ export default {
           text: levelText
         })
       }
-      const durationText = data.durationDisplayName || data.duration
+      const durationText = this.isLearningPath
+        ? this.getLearningPathDurationText()
+        : data.durationDisplayName || data.duration
       if (durationText) {
         cards.splice(levelText ? 3 : 2, 0, {
           icon: 'mdi-clock-outline',
@@ -410,6 +412,60 @@ export default {
     }
   },
   methods: {
+    getLearningPathDurationText() {
+      const trainingGroups =
+        this.trainingDetails?.trainingGroups || this.trainingData.trainingGroups
+
+      if (!Array.isArray(trainingGroups) || trainingGroups.length === 0) {
+        return ''
+      }
+
+      const parsedDurations = trainingGroups.map((group) =>
+        this.parseDurationToMinutes(group?.duration, group?.durationDisplayName)
+      )
+
+      if (parsedDurations.some((value) => value <= 0)) {
+        return ''
+      }
+
+      const totalMinutes = parsedDurations.reduce((total, value) => total + value, 0)
+
+      if (!totalMinutes) return ''
+
+      const hours = Math.floor(totalMinutes / 60)
+      const minutes = totalMinutes % 60
+
+      if (hours > 0 && minutes > 0) {
+        return `${hours} hour${hours === 1 ? '' : 's'} ${minutes} minute${
+          minutes === 1 ? '' : 's'
+        }`
+      }
+      if (hours > 0) {
+        return `${hours} hour${hours === 1 ? '' : 's'}`
+      }
+      return `${minutes} minute${minutes === 1 ? '' : 's'}`
+    },
+    parseDurationToMinutes(duration, durationDisplayName) {
+      const normalizedDisplay = (durationDisplayName || '').toString().toLowerCase()
+      const displayMatch = normalizedDisplay.match(/(\d+)\s*(hour|minute)/)
+      if (displayMatch) {
+        const value = Number(displayMatch[1])
+        const unit = displayMatch[2]
+        return unit === 'hour' ? value * 60 : value
+      }
+
+      if (typeof duration === 'number') return duration
+
+      const normalized = (duration || '').toString()
+      const hourMatch = normalized.match(/Hour(\d+)/i)
+      if (hourMatch) return Number(hourMatch[1]) * 60
+      const minuteMatch = normalized.match(/Minute(\d+)/i)
+      if (minuteMatch) return Number(minuteMatch[1])
+      const numericMatch = normalized.match(/^(\d+)$/)
+      if (numericMatch) return Number(numericMatch[1])
+
+      return 0
+    },
     processLearningPathSteps() {
       // trainingDetails'den veya trainingData'dan al
       const trainingGroups =
