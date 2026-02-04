@@ -18,14 +18,19 @@
                 <v-icon size="20" color="#2196f3">mdi-creation</v-icon>
                 <span>Chat With Agentic AI</span>
               </button>
-              <button
-                v-if="showSettingsIcon"
-                class="agentic-ai-widget__settings"
-                type="button"
-                @click="navigateToAgenticAISettings"
-              >
-                <v-icon size="20" color="#2196f3">mdi-cog</v-icon>
-              </button>
+              <v-tooltip bottom opacity="1" v-if="showSettingsIcon">
+                <template #activator="{ on }">
+                  <button
+                    class="agentic-ai-widget__settings"
+                    type="button"
+                    v-on="on"
+                    @click="navigateToAgenticAISettings"
+                  >
+                    <v-icon size="20" color="#2196f3">mdi-cog</v-icon>
+                  </button>
+                </template>
+                <span class="tooltip-span">Agentic AI Settings</span>
+              </v-tooltip>
             </div>
           </div>
           <ExecutiveWidgetBody>
@@ -393,7 +398,7 @@ export default {
         : "AI suggests actions for review before they are executed.";
     },
     showSettingsIcon() {
-      return this.isAgenticAllyActiveComputed && !this.isAutonomousComputed;
+      return !this.isAutonomousComputed || !this.isAgenticAllyActiveComputed;
     },
     statusIcon() {
       if (this.isAgenticAllyActiveComputed) {

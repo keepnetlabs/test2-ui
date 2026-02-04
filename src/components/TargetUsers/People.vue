@@ -209,18 +209,37 @@
       <template #selection-all-slot>
         <v-tooltip bottom opacity="1">
           <template v-slot:activator="{ on }">
-            <v-btn
-              class="btn-selected-hover mr-1"
-              icon
-              v-on="on"
-              @click="handleAddUsersSelectionClick"
-            >
-              <v-icon class="selection-icons" color="white"
-                >mdi-account-plus</v-icon
+            <span v-on="on">
+              <v-btn
+                class="btn-selected-hover mr-1"
+                icon
+                :style="getAddUsersButtonStyle"
+                @click="handleAddUsersSelectionClick"
               >
-            </v-btn>
+                <v-icon class="selection-icons" color="white"
+                  >mdi-account-plus</v-icon
+                >
+              </v-btn>
+            </span>
           </template>
-          <span class="tooltip-span">Add users to a group</span>
+          <span class="tooltip-span">{{ addUsersTooltip }}</span>
+        </v-tooltip>
+        <v-tooltip bottom opacity="1">
+          <template v-slot:activator="{ on }">
+            <span v-on="on">
+              <v-btn
+                class="btn-selected-hover mr-1"
+                icon
+                :style="getDeleteSelectionButtonStyle"
+                @click="handleDeleteSelectionClick"
+              >
+                <v-icon class="selection-icons" color="white"
+                  >mdi-delete</v-icon
+                >
+              </v-btn>
+            </span>
+          </template>
+          <span class="tooltip-span">{{ deleteSelectionTooltip }}</span>
         </v-tooltip>
       </template>
       <template #addUsers>
@@ -740,7 +759,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         iEmpty: {
@@ -914,6 +933,34 @@ export default {
     },
     canRenderRepeatedOffendersAlertBox() {
       return this.repeatedOffendersCount > 0;
+    },
+    hasDeletedSelection() {
+      return this.selection.some((item) => {
+        if (item?.isDeleted) return true;
+        return String(item?.status || "").trim().toLowerCase() === "deleted";
+      });
+    },
+    getAddUsersButtonStyle() {
+      if (!this.hasDeletedSelection) return null;
+      return {
+        opacity: 0.5,
+        pointerEvents: "none"
+      };
+    },
+    addUsersTooltip() {
+      if (!this.hasDeletedSelection) return "Add users to a group";
+      return "Deleted users cannot be added to a group.";
+    },
+    getDeleteSelectionButtonStyle() {
+      if (!this.hasDeletedSelection) return null;
+      return {
+        opacity: 0.5,
+        pointerEvents: "none"
+      };
+    },
+    deleteSelectionTooltip() {
+      if (!this.hasDeletedSelection) return "Delete";
+      return "Deleted users cannot be deleted.";
     }
   },
   watch: {
@@ -1648,6 +1695,14 @@ export default {
       this.toggleCustomFieldsModal();
     },
     handleMultipleDelete(selections, excludedItems, selectAll) {
+      if (
+        selections.some((item) => {
+          if (item?.isDeleted) return true;
+          return String(item?.status || "").trim().toLowerCase() === "deleted";
+        })
+      ) {
+        return;
+      }
       this.isMultipleDelete = true;
       this.multipleDeletedUserCount = selectAll
         ? this.serverSideProps.totalNumberOfRecords
@@ -1704,6 +1759,12 @@ export default {
         });
     },
     handleDeleteUser(selectedUser, selections) {
+      if (
+        selectedUser?.isDeleted ||
+        String(selectedUser?.status || "").trim().toLowerCase() === "deleted"
+      ) {
+        return;
+      }
       this.loading = true;
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
@@ -1871,6 +1932,10 @@ export default {
     },
     handleSelectionChange(selection = []) {
       this.selection = selection;
+    },
+    handleDeleteSelectionClick() {
+      if (this.hasDeletedSelection) return;
+      this.$refs?.refPeopleTable?.handleDelete?.(this.selection);
     },
     handleAddUsersSelectionClick() {
       this.selectedUserToAddToGroup = this.selection;

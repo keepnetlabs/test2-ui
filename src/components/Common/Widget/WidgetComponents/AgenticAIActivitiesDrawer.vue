@@ -309,17 +309,19 @@ export default {
     },
     normalizeStatus(status = "") {
       const normalized = String(status).trim().toLowerCase();
-      if (normalized === "waiting for approval") {
-        return "Waiting for Approval";
-      }
-      return status;
+      const cleaned = normalized.replace(/[_-]+/g, " ");
+      const statusMap = {
+        "waiting for approval": "Waiting for Approval",
+        executed: "Executed",
+        rejected: "Rejected"
+      };
+      if (statusMap[cleaned]) return statusMap[cleaned];
+      if (!cleaned) return status;
+      return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
     },
     isWaitingForApproval(row = {}) {
-      return (
-        String(row.status || "")
-          .trim()
-          .toLowerCase() === "waiting for approval"
-      );
+      const normalized = String(row.status || "").trim().toLowerCase();
+      return normalized.replace(/[_-]+/g, " ") === "waiting for approval";
     },
     getViewActionId(index) {
       return `btn-agentic-ai-activity-view-${index}`;
@@ -359,4 +361,3 @@ export default {
   }
 };
 </script>
-
