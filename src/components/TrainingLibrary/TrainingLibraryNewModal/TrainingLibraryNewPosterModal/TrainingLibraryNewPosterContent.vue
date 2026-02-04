@@ -128,7 +128,7 @@ export default {
           const isContentValid = val.every(
             (content) => (content.file || content?.filePreviews?.length) && content.languageId
           )
-          const isVendorValid = this.formData.vendorId
+          const isVendorValid = this.canSaveVendor ? this.formData.vendorId : true
           if (isContentValid && isVendorValid) {
             this.$emit('update:isActionButtonDisabled', false)
           } else {
@@ -143,7 +143,7 @@ export default {
           const isContentValid = this.formData.contentByLanguage.every(
             (content) => (content.file || content?.filePreviews?.length) && content.languageId
           )
-          const isVendorValid = this.formData.vendorId
+          const isVendorValid = this.canSaveVendor ? this.formData.vendorId : true
           if (isContentValid && isVendorValid) {
             this.$emit('update:isActionButtonDisabled', false)
           } else {

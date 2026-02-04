@@ -54,6 +54,33 @@
         @searchChangedEvent="handleSearchChange"
         @refreshAction="handleRefresh"
       >
+        <template #datatable-row-actions="{ scope }">
+          <DefaultButtonRowAction
+            icon="mdi-eye"
+            :id="getViewActionId(scope.$index)"
+            text="View"
+            :scope="scope"
+            @on-click="handleView(scope.row)"
+          />
+          <RowActionsMenu v-if="isWaitingForApproval(scope.row)">
+            <DefaultMenuRowAction
+              id="btn-agentic-ai-activity-approve"
+              icon="mdi-check-circle-outline"
+              text="Approve"
+              class-name="agentic-ai-activities-drawer__menu-item"
+              :scope="scope"
+              @on-click="handleApprove(scope.row)"
+            />
+            <DefaultMenuRowAction
+              id="btn-agentic-ai-activity-reject"
+              icon="mdi-close-circle-outline"
+              text="Reject"
+              class-name="agentic-ai-activities-drawer__menu-item"
+              :scope="scope"
+              @on-click="handleReject(scope.row)"
+            />
+          </RowActionsMenu>
+        </template>
       </DataTable>
     </div>
   </VNavigationDrawer>
@@ -62,11 +89,17 @@
 <script>
 import DataTable from "@/components/DataTable";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
+import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
+import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 
 export default {
   name: "AgenticAIActivitiesDrawer",
   components: {
-    DataTable
+    DataTable,
+    DefaultButtonRowAction,
+    DefaultMenuRowAction,
+    RowActionsMenu
   },
   props: {
     value: {
@@ -224,8 +257,12 @@ export default {
         1
       );
       const pagedData = this.applyPagination(sorted, pageNumber, pageSize);
+      const normalizedPagedData = pagedData.map((row) => ({
+        ...row,
+        status: this.normalizeStatus(row.status)
+      }));
       const response = await this.mockApiRequest({
-        data: pagedData,
+        data: normalizedPagedData,
         totalNumberOfRecords,
         totalNumberOfPages
       });
@@ -270,6 +307,34 @@ export default {
     handleRefresh() {
       this.fetchActivities();
     },
+    normalizeStatus(status = "") {
+      const normalized = String(status).trim().toLowerCase();
+      const cleaned = normalized.replace(/[_-]+/g, " ");
+      const statusMap = {
+        "waiting for approval": "Waiting for Approval",
+        executed: "Executed",
+        rejected: "Rejected"
+      };
+      if (statusMap[cleaned]) return statusMap[cleaned];
+      if (!cleaned) return status;
+      return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
+    },
+    isWaitingForApproval(row = {}) {
+      const normalized = String(row.status || "").trim().toLowerCase();
+      return normalized.replace(/[_-]+/g, " ") === "waiting for approval";
+    },
+    getViewActionId(index) {
+      return `btn-agentic-ai-activity-view-${index}`;
+    },
+    handleView(row) {
+      this.$emit("on-view", row);
+    },
+    handleApprove(row) {
+      this.$emit("on-approve", row);
+    },
+    handleReject(row) {
+      this.$emit("on-reject", row);
+    },
     moveToBody() {
       const target = this.getDrawerTarget();
       if (!this.$el || this.$el === target) {
@@ -280,7 +345,11 @@ export default {
       }
       this.$nextTick(this.refreshTableLayout);
     },
-    handleDrawerClickOutside() {
+    handleDrawerClickOutside(event) {
+      const target = event?.target;
+      if (target && target.closest('.v-menu__content')) {
+        return;
+      }
       this.handleClose();
     },
     handleClose() {

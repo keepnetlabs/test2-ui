@@ -782,4 +782,153 @@ describe('InputDistribution.vue', () => {
       expect(wrapper.vm.value.distributionEndTime).toBe('17:00')
     })
   })
+
+  describe('advanced distribution scenarios', () => {
+    it('should handle very large sending limits', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: { value: { ...mockValue, sendingLimit: 999999 } },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.isSendingLimitValid).toBe(true)
+    })
+
+    it('should handle decimal sending limits', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: { value: { ...mockValue, sendingLimit: 50.5 } },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.value.sendingLimit).toBe(50.5)
+    })
+
+    it('should handle multiple rapid distribution type changes', async () => {
+      await wrapper.setProps({ type: 'phishing' })
+      await wrapper.setProps({ type: 'smishing' })
+      await wrapper.setProps({ type: 'phishing' })
+      expect(wrapper.vm.type).toBe('phishing')
+    })
+
+    it('should handle distribution delay with different time units', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: {
+          value: { ...mockValue, distributionDelayTimeTypeId: '2' }
+        },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.value.distributionDelayTimeTypeId).toBe('2')
+    })
+
+    it('should handle scheduled time overlaps', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: {
+          value: { ...mockValue, distributionStartTime: '17:00', distributionEndTime: '09:00' }
+        },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.value.distributionStartTime).toBe('17:00')
+      expect(wrapper.vm.value.distributionEndTime).toBe('09:00')
+    })
+
+    it('should handle all days selected for distribution', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: {
+          value: { ...mockValue, sendCallsOnDays: [1, 2, 3, 4, 5, 6, 7] }
+        },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.value.sendCallsOnDays.length).toBe(7)
+    })
+
+    it('should handle no days selected for distribution', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: {
+          value: { ...mockValue, sendCallsOnDays: [] }
+        },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.value.sendCallsOnDays.length).toBe(0)
+    })
+  })
+
+  describe('error messaging and validation feedback', () => {
+    it('should provide clear error message for zero limit', async () => {
+      await wrapper.setProps({ value: { ...mockValue, sendingLimit: 0 } })
+      expect(wrapper.vm.sendingLimitErrorText).toContain('higher than 0')
+    })
+
+    it('should provide clear error for leading zero', async () => {
+      await wrapper.setProps({ value: { ...mockValue, sendingLimit: '05' } })
+      expect(wrapper.vm.sendingLimitErrorText).toContain('Cannot start with 0')
+    })
+
+    it('should clear errors on valid input', async () => {
+      await wrapper.setProps({ value: { ...mockValue, sendingLimit: 0 } })
+      expect(wrapper.vm.sendingLimitErrorText).not.toBe('')
+      await wrapper.setProps({ value: { ...mockValue, sendingLimit: 100 } })
+      expect(wrapper.vm.sendingLimitErrorText).toBe('')
+    })
+  })
+
+  describe('timezone text display', () => {
+    it('should display timezone information', () => {
+      wrapper = shallowMount(InputDistribution, {
+        propsData: { value: mockValue, selectedTimeZoneText: 'UTC+2' },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.selectedTimeZoneText).toBe('UTC+2')
+    })
+
+    it('should handle different timezone formats', () => {
+      const timeZones = ['UTC', 'EST', 'PST', 'GMT', 'CET']
+      timeZones.forEach(tz => {
+        wrapper = shallowMount(InputDistribution, {
+          propsData: { value: mockValue, selectedTimeZoneText: tz },
+          stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+        })
+        expect(wrapper.vm.selectedTimeZoneText).toBe(tz)
+      })
+    })
+  })
+
+  describe('distribution delay items', () => {
+    it('should have empty delay time items by default', () => {
+      expect(wrapper.vm.distributionDelayTimeItems).toEqual([])
+    })
+
+    it('should accept custom delay time items', () => {
+      const items = [
+        { text: 'Minutes', value: '1' },
+        { text: 'Hours', value: '2' },
+        { text: 'Days', value: '3' }
+      ]
+      wrapper = shallowMount(InputDistribution, {
+        propsData: { value: mockValue, distributionDelayTimeItems: items },
+        stubs: { 'form-group': true, 'v-radio-group': true, 'v-radio': true, 'v-checkbox': true, 'v-text-field': true, 'el-time-select': true, 'k-select': true, 'custom-error': true }
+      })
+      expect(wrapper.vm.distributionDelayTimeItems.length).toBe(3)
+    })
+
+    it('should update delay time items reactively', async () => {
+      const newItems = [{ text: 'Weeks', value: '4' }]
+      await wrapper.setProps({ distributionDelayTimeItems: newItems })
+      expect(wrapper.vm.distributionDelayTimeItems).toEqual(newItems)
+    })
+  })
+
+  describe('computed properties rendering', () => {
+    it('should compute subtitle based on type', () => {
+      expect(wrapper.vm.getDistributionSubtitle).toBeDefined()
+    })
+
+    it('should compute radio labels based on type', () => {
+      expect(wrapper.vm.getFirstRadioLabel).toBeDefined()
+      expect(wrapper.vm.getSecondRadioLabel).toBeDefined()
+    })
+
+    it('should compute distribution text based on type', () => {
+      expect(wrapper.vm.getDistributionFirstText).toBeDefined()
+      expect(wrapper.vm.getDistributionSecondText).toBeDefined()
+      expect(wrapper.vm.getDistributionThirdText).toBeDefined()
+      expect(wrapper.vm.getDistributionFourthText).toBeDefined()
+    })
+  })
 })

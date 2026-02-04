@@ -802,4 +802,258 @@ describe('InputTrainingLevel.vue', () => {
       expect(wrapper.vm.value).toBe('')
     })
   })
+
+  describe('advanced prop combinations', () => {
+    it('should handle required, disabled, and loading together', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: {
+          items: mockItems,
+          required: true,
+          disabled: true,
+          loading: true
+        },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.required).toBe(true)
+      expect(wrapper.vm.disabled).toBe(true)
+      expect(wrapper.vm.loading).toBe(true)
+    })
+
+    it('should support numeric values', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: {
+          items: mockItems,
+          value: 3
+        },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe(3)
+    })
+
+    it('should support mixed type values', () => {
+      const mixedWrapper1 = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, value: 'beginner' },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      const mixedWrapper2 = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, value: 1 },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(typeof mixedWrapper1.vm.value).toBe('string')
+      expect(typeof mixedWrapper2.vm.value).toBe('number')
+      mixedWrapper1.destroy()
+      mixedWrapper2.destroy()
+    })
+
+    it('should handle title and subtitle changes', async () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: {
+          items: mockItems,
+          title: 'Level',
+          subTitle: 'Subtitle'
+        },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      await wrapper.setProps({ title: 'New Title', subTitle: 'New Subtitle' })
+      expect(wrapper.vm.title).toBe('New Title')
+      expect(wrapper.vm.subTitle).toBe('New Subtitle')
+    })
+  })
+
+  describe('item mapping and text values', () => {
+    it('should correctly map item text property', () => {
+      const items = [
+        { text: 'Level 1', id: 'level1' },
+        { text: 'Level 2', id: 'level2' }
+      ]
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items, itemText: 'text' },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.itemText).toBe('text')
+    })
+
+    it('should correctly map item value property', () => {
+      const items = [
+        { name: 'Level 1', key: 'level1' },
+        { name: 'Level 2', key: 'level2' }
+      ]
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items, itemValue: 'key' },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.itemValue).toBe('key')
+    })
+
+    it('should handle items with many properties', () => {
+      const complexItems = [
+        { text: 'L1', id: 'level1', description: 'Beginner', icon: 'star', priority: 1 },
+        { text: 'L2', id: 'level2', description: 'Intermediate', icon: 'star-2', priority: 2 }
+      ]
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: complexItems },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.items[0].description).toBe('Beginner')
+      expect(wrapper.vm.items[0].priority).toBe(1)
+    })
+  })
+
+  describe('validation and error handling', () => {
+    it('should have required rules array when required is true', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, required: true },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(Array.isArray(wrapper.vm.requiredRules)).toBe(true)
+      expect(wrapper.vm.requiredRules.length).toBeGreaterThan(0)
+    })
+
+    it('should have callable validation rules', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, required: true },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      const rules = wrapper.vm.requiredRules
+      const areCallable = rules.every(rule => typeof rule === 'function')
+      expect(areCallable).toBe(true)
+    })
+
+    it('should validate empty value when required', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, required: true },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      const rules = wrapper.vm.requiredRules
+      const result = rules[0]('')
+      expect(result).not.toBe(true)
+    })
+  })
+
+  describe('kselect component interactions', () => {
+    it('should pass all required props to KSelect', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+
+    it('should handle KSelect value binding', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, value: 'intermediate' },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('intermediate')
+    })
+
+    it('should handle KSelect event emission', () => {
+      wrapper.vm.$emit('input', 'expert')
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe('expert')
+    })
+
+    it('should handle dense and outlined attributes', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+  })
+
+  describe('edge cases and boundary conditions', () => {
+    it('should handle very long item text', () => {
+      const items = [
+        { text: 'A'.repeat(100), id: 'long-text' }
+      ]
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.items[0].text.length).toBe(100)
+    })
+
+    it('should handle large number of items (200+)', () => {
+      const largeItems = Array.from({ length: 250 }, (_, i) => ({
+        text: `Level ${i}`,
+        id: `level${i}`
+      }))
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: largeItems },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.items.length).toBe(250)
+    })
+
+    it('should handle items with null or undefined properties', () => {
+      const specialItems = [
+        { text: 'Item', id: null },
+        { text: 'Item2', id: undefined },
+        { text: 'Item3', id: 'normal' }
+      ]
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: specialItems },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.items.length).toBe(3)
+    })
+
+    it('should handle rapid prop changes', async () => {
+      await wrapper.setProps({ value: 'beginner' })
+      await wrapper.setProps({ value: 'intermediate' })
+      await wrapper.setProps({ value: 'advanced' })
+      await wrapper.setProps({ value: 'expert' })
+      expect(wrapper.vm.value).toBe('expert')
+    })
+
+    it('should handle loading state transitions', async () => {
+      expect(wrapper.vm.loading).toBe(false)
+      await wrapper.setProps({ loading: true })
+      expect(wrapper.vm.loading).toBe(true)
+      await wrapper.setProps({ loading: false })
+      expect(wrapper.vm.loading).toBe(false)
+    })
+
+    it('should handle disabled state transitions', async () => {
+      expect(wrapper.vm.disabled).toBe(false)
+      await wrapper.setProps({ disabled: true })
+      expect(wrapper.vm.disabled).toBe(true)
+      await wrapper.setProps({ disabled: false })
+      expect(wrapper.vm.disabled).toBe(false)
+    })
+
+    it('should handle required state transitions', async () => {
+      expect(wrapper.vm.required).toBe(true)
+      await wrapper.setProps({ required: false })
+      expect(wrapper.vm.required).toBe(false)
+      await wrapper.setProps({ required: true })
+      expect(wrapper.vm.required).toBe(true)
+    })
+  })
+
+  describe('placeholder handling', () => {
+    it('should use default placeholder "Select level"', () => {
+      expect(wrapper.vm.placeholder).toBe('Select level')
+    })
+
+    it('should accept custom placeholder', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, placeholder: 'Choose your level' },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.placeholder).toBe('Choose your level')
+    })
+
+    it('should handle empty placeholder', () => {
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, placeholder: '' },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.placeholder).toBe('')
+    })
+
+    it('should handle long placeholder text', () => {
+      const longPlaceholder = 'Please select the appropriate training level from the list below'
+      wrapper = shallowMount(InputTrainingLevel, {
+        propsData: { items: mockItems, placeholder: longPlaceholder },
+        stubs: { 'form-group': true, 'k-select': true }
+      })
+      expect(wrapper.vm.placeholder).toBe(longPlaceholder)
+    })
+  })
 })

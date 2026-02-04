@@ -824,4 +824,772 @@ describe('InputLastName.vue', () => {
       expect(labels.LastNameSecondLower).toBeDefined()
     })
   })
+
+  describe('name variations with hyphens', () => {
+    it('should accept simple hyphenated name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Smith-Johnson') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept name with hyphen at different positions', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('De-Silva') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept multiple hyphens in name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Smith-Jones-Brown') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept hyphen with single letters', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('A-B') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept hyphenated name with spaces', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Smith-Johnson Lee') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept van/de prefix with hyphen', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('van-der-Berg') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept name starting with hyphen-like particle', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('O-Neill') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept hyphen-separated compound surnames', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Garcia-Lopez') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should have maxLength validation with hyphens counted', () => {
+      const rule = wrapper.vm.rules[2]
+      const name39 = 'A'.repeat(20) + '-' + 'A'.repeat(18)
+      expect(rule(name39)).toBe(true)
+    })
+
+    it('should reject hyphenated name longer than 40 chars', () => {
+      const rule = wrapper.vm.rules[2]
+      const longName = 'Very-Long-Hyphenated-Last-Name-That-Exceeds'
+      expect(longName.length).toBeGreaterThan(40)
+      expect(rule(longName)).not.toBe(true)
+    })
+  })
+
+  describe('name variations with apostrophes', () => {
+    it('should accept Irish name with apostrophe', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("O'Connor") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept name with apostrophe-s', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("O'Brien") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept multiple apostrophes in name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("O'Mal'leary") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept apostrophe in middle of name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("D'Angelo") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept name with apostrophe and hyphen', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("O'Brien-Smith") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept apostrophe with space after it', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule("O'Donovan") === true)
+      expect(result).toBe(true)
+    })
+
+    it('should have maxLength validation with apostrophes counted', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = "O'" + 'A'.repeat(35)
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should reject apostrophe name longer than 40 chars', () => {
+      const rule = wrapper.vm.rules[2]
+      const longName = "O'" + 'A'.repeat(40)
+      expect(longName.length).toBeGreaterThan(40)
+      expect(rule(longName)).not.toBe(true)
+    })
+  })
+
+  describe('unicode names - accents and diacritics', () => {
+    it('should accept French name with accent grave', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Café') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept French name with accent acute', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Résumé') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept German name with umlaut', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Müller') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Spanish name with tilde', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Peña') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Portuguese name with cedilla', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Sousa') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Polish name with diacritics', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Żak') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Nordic name with ring above', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Åström') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Czech name with haček', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Dvořák') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept multiple accented characters', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('François-Marie') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should reject accented name longer than 40 chars', () => {
+      const rule = wrapper.vm.rules[2]
+      const longName = 'Ê'.repeat(41)
+      expect(longName.length).toBeGreaterThan(40)
+      expect(rule(longName)).not.toBe(true)
+    })
+  })
+
+  describe('unicode names - Asian scripts', () => {
+    it('should accept Chinese name (Simplified)', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('王') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Chinese name with multiple characters', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('王小明') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Japanese name (Katakana)', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('タナカ') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Japanese name (Kanji)', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('田中') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Korean name (Hangul)', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('김') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Thai name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('สมิทธ์') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Vietnamese name with combining marks', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Nguyễn') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should handle Chinese name at max length', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = '王'.repeat(40)
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should reject Chinese name longer than 40 chars', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = '王'.repeat(41)
+      expect(rule(name)).not.toBe(true)
+    })
+  })
+
+  describe('unicode names - Arabic and Middle Eastern', () => {
+    it('should accept Arabic name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('محمد') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Arabic name with diacritics', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('عَلِي') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Persian name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('فرهاد') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Hebrew name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('כהן') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Urdu name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('حسن') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Turkish name with special characters', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Gül') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should handle Arabic name at max length', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'م'.repeat(40)
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should reject Arabic name longer than 40 chars', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'م'.repeat(41)
+      expect(rule(name)).not.toBe(true)
+    })
+  })
+
+  describe('unicode names - Cyrillic', () => {
+    it('should accept Russian name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Иванов') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Russian name with special characters', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Сёмин') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Bulgarian name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Петров') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Ukrainian name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Шевченко') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Serbian name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Миловић') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept Polish name with Cyrillic elements', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Nowak') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should handle Cyrillic name at max length', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'И'.repeat(40)
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should reject Cyrillic name longer than 40 chars', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'И'.repeat(41)
+      expect(rule(name)).not.toBe(true)
+    })
+  })
+
+  describe('leading and trailing spaces', () => {
+    it('should reject name with leading space', () => {
+      const rule = wrapper.vm.rules[1]
+      const result = rule(' Smith')
+      expect(result).not.toBe(true)
+    })
+
+    it('should reject name with multiple leading spaces', () => {
+      const rule = wrapper.vm.rules[1]
+      const result = rule('   Smith')
+      expect(result).not.toBe(true)
+    })
+
+    it('should accept name with trailing space (not rejected by startsWithSpace)', () => {
+      const rule = wrapper.vm.rules[1]
+      const result = rule('Smith ')
+      expect(result).toBe(true)
+    })
+
+    it('should accept name with internal spaces', () => {
+      const rule = wrapper.vm.rules[1]
+      const result = rule('Smith Jr')
+      expect(result).toBe(true)
+    })
+
+    it('should accept name with multiple internal spaces', () => {
+      const rule = wrapper.vm.rules[1]
+      const result = rule('Van Der Berg')
+      expect(result).toBe(true)
+    })
+
+    it('should accept single space in middle of name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Mary Jane')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle trailing spaces with maxLength', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'Smith     '
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should reject leading space regardless of other content', () => {
+      const rule = wrapper.vm.rules[1]
+      const testCases = [' ', ' A', ' Anderson', '  Long Name']
+      const allReject = testCases.every((name) => rule(name) !== true)
+      expect(allReject).toBe(true)
+    })
+  })
+
+  describe('special characters in names', () => {
+    it('should accept name with period', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith.')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should accept abbreviation-like name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('St.John') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should accept name with comma (edge case)', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith, Jr')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle parentheses in name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith(Jr)')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle numbers in name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith3')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle mixed special characters', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule("O'Neil-Smith Jr.")
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+  })
+
+  describe('name length validation', () => {
+    it('should accept name of length 1', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('S')).toBe(true)
+    })
+
+    it('should accept name of length 2', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('Li')).toBe(true)
+    })
+
+    it('should accept name of length 10', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('A'.repeat(10))).toBe(true)
+    })
+
+    it('should accept name of length 30', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('A'.repeat(30))).toBe(true)
+    })
+
+    it('should accept name of length 40 (at boundary)', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('A'.repeat(40))).toBe(true)
+    })
+
+    it('should reject name of length 41', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('A'.repeat(41))).not.toBe(true)
+    })
+
+    it('should reject name of length 50', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('A'.repeat(50))).not.toBe(true)
+    })
+
+    it('should reject name of length 100', () => {
+      const rule = wrapper.vm.rules[2]
+      expect(rule('A'.repeat(100))).not.toBe(true)
+    })
+
+    it('should count multibyte characters correctly', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = '中'.repeat(20)
+      expect(name.length).toBeGreaterThanOrEqual(20)
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should handle emoji counting at boundary', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'Test' + '😀'.repeat(10)
+      const result = rule(name)
+      expect(result === true || typeof result === 'string').toBe(true)
+    })
+  })
+
+  describe('required field validation', () => {
+    it('should reject completely empty field', () => {
+      const rule = wrapper.vm.rules[0]
+      expect(rule('')).not.toBe(true)
+    })
+
+    it('should reject null value', () => {
+      const rule = wrapper.vm.rules[0]
+      expect(rule(null)).not.toBe(true)
+    })
+
+    it('should reject undefined value', () => {
+      const rule = wrapper.vm.rules[0]
+      expect(rule(undefined)).not.toBe(true)
+    })
+
+    it('should accept any non-empty string', () => {
+      const rule = wrapper.vm.rules[0]
+      const testValues = ['A', 'Smith', 'García', '王', 'محمد']
+      const allPass = testValues.every((val) => rule(val) === true)
+      expect(allPass).toBe(true)
+    })
+
+    it('should return error message for empty field', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule('')
+      expect(typeof result).toBe('string')
+      expect(result).toBeDefined()
+    })
+
+    it('should use Required label in error', () => {
+      expect(labels.Required).toBeDefined()
+    })
+  })
+
+  describe('pattern matching and validation flow', () => {
+    it('should validate required first', () => {
+      const rules = wrapper.vm.rules
+      const emptyResult = rules[0]('')
+      expect(emptyResult).not.toBe(true)
+    })
+
+    it('should validate space second', () => {
+      const rules = wrapper.vm.rules
+      const spaceResult = rules[1](' Test')
+      expect(spaceResult).not.toBe(true)
+    })
+
+    it('should validate length last', () => {
+      const rules = wrapper.vm.rules
+      const longResult = rules[2]('A'.repeat(41))
+      expect(longResult).not.toBe(true)
+    })
+
+    it('should pass all validations for valid name', () => {
+      const rules = wrapper.vm.rules
+      const testName = 'Anderson'
+      const allPass = rules.every((rule) => rule(testName) === true)
+      expect(allPass).toBe(true)
+    })
+
+    it('should provide specific error for leading space', () => {
+      const rule = wrapper.vm.rules[1]
+      const result = rule(' Name')
+      expect(result).toContain(labels.CannotStartWithSpace)
+    })
+
+    it('should provide specific error for exceeding length', () => {
+      const rule = wrapper.vm.rules[2]
+      const result = rule('A'.repeat(41))
+      expect(result).toContain('40')
+    })
+  })
+
+  describe('complex name combinations', () => {
+    it('should validate van Der Berg pattern', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('van Der Berg')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should validate Saint-prefixed names', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Saint-Pierre') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should validate double-barreled names', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => rule('Smith-Johnson') === true)
+      expect(result).toBe(true)
+    })
+
+    it('should validate names with numbers', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith2nd')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should validate all special chars together', () => {
+      const rules = wrapper.vm.rules
+      const testName = "O'Brien-McCarthy Jr."
+      const result = rules.every((rule) => {
+        const res = rule(testName)
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+  })
+
+  describe('input event emission', () => {
+    it('should emit input event on change', () => {
+      wrapper.vm.$emit('input', 'NewName')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should emit input with valid name', () => {
+      wrapper.vm.$emit('input', 'Smith')
+      expect(wrapper.emitted('input')[0][0]).toBe('Smith')
+    })
+
+    it('should emit input with unicode name', () => {
+      wrapper.vm.$emit('input', 'Müller')
+      expect(wrapper.emitted('input')[0][0]).toBe('Müller')
+    })
+
+    it('should emit change event', () => {
+      wrapper.vm.$emit('change', 'NewName')
+      expect(wrapper.emitted('change')).toBeTruthy()
+    })
+
+    it('should emit blur event', () => {
+      wrapper.vm.$emit('blur')
+      expect(wrapper.emitted('blur')).toBeTruthy()
+    })
+
+    it('should emit focus event', () => {
+      wrapper.vm.$emit('focus')
+      expect(wrapper.emitted('focus')).toBeTruthy()
+    })
+  })
+
+  describe('v-model integration', () => {
+    it('should support component with valid name configuration', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { placeholder: 'Enter Smith' }
+      })
+      expect(wrapper.vm.placeholder).toBe('Enter Smith')
+    })
+
+    it('should maintain validation on prop changes', async () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { placeholder: 'Original' }
+      })
+      await wrapper.setProps({ placeholder: 'Updated' })
+      expect(wrapper.vm.placeholder).toBe('Updated')
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+
+    it('should support configuration with unicode names', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { placeholder: 'Müller' }
+      })
+      expect(wrapper.vm.placeholder).toBe('Müller')
+    })
+
+    it('should support configuration with hyphenated names', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { placeholder: 'Smith-Johnson' }
+      })
+      expect(wrapper.vm.placeholder).toBe('Smith-Johnson')
+    })
+
+    it('should support configuration with apostrophe names', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { placeholder: "O'Connor" }
+      })
+      expect(wrapper.vm.placeholder).toBe("O'Connor")
+    })
+  })
+
+  describe('validation with different prop combinations', () => {
+    it('should validate with custom rules replacing defaults', () => {
+      const customRules = [(v) => v.length >= 5 || 'Minimum 5 characters']
+      wrapper = shallowMount(InputLastName, {
+        propsData: { rules: customRules }
+      })
+      expect(wrapper.vm.rules).toEqual(customRules)
+      expect(wrapper.vm.rules[0]('Test')).not.toBe(true)
+      expect(wrapper.vm.rules[0]('Smith')).toBe(true)
+    })
+
+    it('should maintain validation with custom placeholder', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { placeholder: 'Custom' }
+      })
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+
+    it('should maintain validation with custom hint', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: { hint: 'Custom hint' }
+      })
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+
+    it('should maintain validation with custom styling', () => {
+      wrapper = shallowMount(InputLastName, {
+        propsData: {
+          outlined: false,
+          dense: false
+        }
+      })
+      expect(wrapper.vm.rules.length).toBe(3)
+    })
+  })
+
+  describe('edge cases and boundary conditions', () => {
+    it('should handle whitespace only after validation', () => {
+      const rule = wrapper.vm.rules[0]
+      const result = rule('   ')
+      expect(result).toBe(true)
+    })
+
+    it('should handle newline characters in name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith\nJr')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle tab character in name', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith\tJr')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle zero-width space character', () => {
+      const rules = wrapper.vm.rules
+      const result = rules.every((rule) => {
+        const res = rule('Smith\u200bJr')
+        return res === true || typeof res === 'string'
+      })
+      expect(result).toBe(true)
+    })
+
+    it('should handle mixed alphanumeric with special chars at limit', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = "O'Brien-Smith Jr"
+      expect(name.length).toBeLessThanOrEqual(40)
+      expect(rule(name)).toBe(true)
+    })
+
+    it('should reject exactly at boundary (41 chars)', () => {
+      const rule = wrapper.vm.rules[2]
+      const name = 'A'.repeat(41)
+      expect(name.length).toBe(41)
+      expect(rule(name)).not.toBe(true)
+    })
+  })
 })

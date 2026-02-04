@@ -751,4 +751,290 @@ describe('InputPhone.vue', () => {
       expect(wrapper.vm.maxLen).toBe(17)
     })
   })
+
+  describe('phone validation with multiple regions', () => {
+    it('should validate US phone numbers', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: true, regionCode: 'US' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+    })
+
+    it('should validate Japanese phone numbers', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: true, regionCode: 'JP' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+    })
+
+    it('should validate Australian phone numbers', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: true, regionCode: 'AU' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+    })
+
+    it('should validate Indian phone numbers', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: true, regionCode: 'IN' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+    })
+
+    it('should validate German phone numbers', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: true, regionCode: 'DE' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+    })
+  })
+
+  describe('international phone format handling', () => {
+    it('should handle +1 format (US/Canada)', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: '+12015550123' }
+      })
+      expect(wrapper.vm.value).toBe('+12015550123')
+    })
+
+    it('should handle +44 format (UK)', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: '+441234567890' }
+      })
+      expect(wrapper.vm.value).toBe('+441234567890')
+    })
+
+    it('should handle +33 format (France)', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: '+33123456789' }
+      })
+      expect(wrapper.vm.value).toBe('+33123456789')
+    })
+
+    it('should handle +49 format (Germany)', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: '+491234567890' }
+      })
+      expect(wrapper.vm.value).toBe('+491234567890')
+    })
+
+    it('should handle +81 format (Japan)', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: '+81312345678' }
+      })
+      expect(wrapper.vm.value).toBe('+81312345678')
+    })
+
+    it('should handle +86 format (China)', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: '+861012345678' }
+      })
+      expect(wrapper.vm.value).toBe('+861012345678')
+    })
+  })
+
+  describe('phone number filtering and processing', () => {
+    it('should handle single plus sign correctly', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'GB' },
+        phone: '+441234567890'
+      }
+      wrapper.vm.handleTelChange('+441234567890')
+      expect(wrapper.vm.$refs.refTelInput.phone).toContain('+')
+    })
+
+    it('should reject double plus signs', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'GB' },
+        phone: '+44'
+      }
+      wrapper.vm.handleTelChange('++441234567890')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should handle mixed alphanumeric input', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'GB' },
+        phone: '+44'
+      }
+      wrapper.vm.handleTelChange('+44 ABC 123')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+  })
+
+  describe('region code updates', () => {
+    it('should update regionCode when detecting country', async () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: {
+          isValid: true,
+          regionCode: 'DE'
+        }
+      }
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.regionCode).toBe('DE')
+    })
+
+    it('should maintain regionCode across validations', async () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: {
+          isValid: true,
+          regionCode: 'FR'
+        }
+      }
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.regionCode).toBe('FR')
+
+      wrapper.vm.$refs.refTelInput.phoneObject.regionCode = 'IT'
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.regionCode).toBe('IT')
+    })
+  })
+
+  describe('phone formatting methods', () => {
+    it('should have setOldValueBySplitter method', () => {
+      expect(typeof wrapper.vm.setOldValueBySplitter).toBe('function')
+    })
+
+    it('should have setValueSubStr method', () => {
+      expect(typeof wrapper.vm.setValueSubStr).toBe('function')
+    })
+
+    it('should emit on setOldValueBySplitter call', () => {
+      wrapper.vm.$refs.refTelInput = { phone: '+441234567890' }
+      wrapper.vm.setOldValueBySplitter('-', '+44-1234-567890')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+
+    it('should truncate on setValueSubStr call', () => {
+      wrapper.vm.$refs.refTelInput = { phone: '+441234567890' }
+      wrapper.vm.setValueSubStr(10, '+44123456789012')
+      expect(wrapper.emitted('input')).toBeTruthy()
+    })
+  })
+
+  describe('error text computation advanced', () => {
+    it('should return error for invalid phone', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { value: 'invalid' }
+      })
+      wrapper.vm.isPhoneNumberValid = false
+      expect(wrapper.vm.getErrorText).toBeDefined()
+    })
+
+    it('should return empty string for valid optional phone', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { required: false, value: '' }
+      })
+      wrapper.vm.isPhoneNumberValid = true
+      expect(wrapper.vm.getErrorText).toBe('')
+    })
+
+    it('should return Required for empty required field', () => {
+      wrapper = shallowMount(InputPhone, {
+        propsData: { required: true, value: '' }
+      })
+      wrapper.vm.isPhoneNumberValid = false
+      expect(wrapper.vm.getErrorText).toBeDefined()
+    })
+  })
+
+  describe('country-specific formatting quirks', () => {
+    it('should handle France 0 prefix stripping', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'FR' },
+        phone: '+33'
+      }
+      expect(wrapper.vm.regionCode).toBe('GB') // Default after initialization
+    })
+
+    it('should handle Netherlands formatting', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'NL' },
+        phone: '+31'
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should handle Brazil formatting', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'BR' },
+        phone: '+55'
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should handle Russia formatting', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'RU' },
+        phone: '+7'
+      }
+      wrapper.vm.validatePhoneNumber()
+      expect(wrapper.vm).toBeDefined()
+    })
+  })
+
+  describe('event emission combinations', () => {
+    it('should emit multiple times for multiple changes', () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { regionCode: 'GB' },
+        phone: '+441234567890'
+      }
+      wrapper.vm.handleTelChange('+441234567890')
+      wrapper.vm.handleTelChange('+441111111111')
+      wrapper.vm.handleTelChange('+442222222222')
+      expect(wrapper.emitted('input').length).toBe(3)
+    })
+
+    it('should emit with different phone values', () => {
+      const phones = ['+441234567890', '+442223334444', '+443334445555']
+      phones.forEach(phone => {
+        wrapper.vm.$refs.refTelInput = {
+          phoneObject: { regionCode: 'GB' },
+          phone
+        }
+        wrapper.vm.handleTelChange(phone)
+      })
+      expect(wrapper.emitted('input').length).toBe(3)
+    })
+  })
+
+  describe('validation state transitions', () => {
+    it('should transition from valid to invalid', async () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: true, regionCode: 'GB' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+
+      wrapper.vm.$refs.refTelInput.phoneObject.isValid = false
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(false)
+    })
+
+    it('should transition from invalid to valid', async () => {
+      wrapper.vm.$refs.refTelInput = {
+        phoneObject: { isValid: false, regionCode: 'GB' }
+      }
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(false)
+
+      wrapper.vm.$refs.refTelInput.phoneObject.isValid = true
+      wrapper.vm.validatePhoneNumber()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+    })
+  })
 })

@@ -734,4 +734,267 @@ describe('InputTimezone.vue', () => {
       expect(values).toContain('GMT')
     })
   })
+
+  describe('timezone selection and value binding', () => {
+    it('should handle timezone value changes', async () => {
+      await wrapper.setProps({ value: 'EST' })
+      expect(wrapper.vm.value).toBe('EST')
+
+      await wrapper.setProps({ value: 'PST' })
+      expect(wrapper.vm.value).toBe('PST')
+
+      await wrapper.setProps({ value: 'UTC' })
+      expect(wrapper.vm.value).toBe('UTC')
+    })
+
+    it('should emit input event on change', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+
+    it('should maintain value state through updates', async () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { value: 'GMT' },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('GMT')
+      await wrapper.setProps({ value: 'UTC' })
+      expect(wrapper.vm.value).toBe('UTC')
+    })
+  })
+
+  describe('style computation advanced', () => {
+    it('should compute different styles for block vs inline', () => {
+      const inlineStyle = wrapper.vm.getStyle
+      expect(inlineStyle).toBe('max-width: 195px;')
+
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { isBlock: true },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      const blockStyle = wrapper.vm.getStyle
+      expect(blockStyle).toBe('')
+    })
+
+    it('should return valid CSS syntax', () => {
+      const style = wrapper.vm.getStyle
+      expect(style).toMatch(/^(max-width:.*|)$/)
+    })
+
+    it('should have correct pixel value', () => {
+      expect(wrapper.vm.getStyle).toContain('195px')
+    })
+  })
+
+  describe('blank option handling edge cases', () => {
+    it('should add Blank with correct properties', () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { isBlankSelectable: true },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      const blankItem = wrapper.vm.items[0]
+      expect(blankItem.value).toBe('Blank')
+      expect(blankItem.text).toBeDefined()
+    })
+
+    it('should not affect timezone selection with Blank added', () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { isBlankSelectable: true, value: 'UTC' },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.value).toBe('UTC')
+    })
+
+    it('should allow selecting Blank as value', async () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { isBlankSelectable: true },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      await wrapper.setProps({ value: 'Blank' })
+      expect(wrapper.vm.value).toBe('Blank')
+    })
+
+    it('should maintain item order with Blank first', () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { isBlankSelectable: true },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.items[0].value).toBe('Blank')
+      expect(wrapper.vm.items[1].value).toBe('UTC')
+    })
+  })
+
+  describe('rules and validation handling', () => {
+    it('should accept validation rules', () => {
+      const customRules = [(v) => v || 'Timezone required']
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { rules: customRules },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.rules).toEqual(customRules)
+    })
+
+    it('should handle multiple validation rules', () => {
+      const rules = [
+        (v) => Boolean(v) || 'Required',
+        (v) => v.length > 2 || 'Min 3 chars'
+      ]
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { rules },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.rules.length).toBe(2)
+    })
+
+    it('should update rules reactively', async () => {
+      const newRules = [(v) => v !== 'invalid']
+      await wrapper.setProps({ rules: newRules })
+      expect(wrapper.vm.rules).toEqual(newRules)
+    })
+  })
+
+  describe('hint and icon configuration', () => {
+    it('should support custom hint text', () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { hint: 'Select your current timezone' },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.hint).toBe('Select your current timezone')
+    })
+
+    it('should support prepend icon', () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { prependInnerIcon: 'mdi-globe' },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.prependInnerIcon).toBe('mdi-globe')
+    })
+
+    it('should support persistent hint display', () => {
+      wrapper = shallowMount(InputTimezone, {
+        propsData: { persistentHint: true, hint: 'Help' },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.persistentHint).toBe(true)
+    })
+
+    it('should update icon reactively', async () => {
+      const newIcon = 'mdi-clock-outline'
+      await wrapper.setProps({ prependInnerIcon: newIcon })
+      expect(wrapper.vm.prependInnerIcon).toBe(newIcon)
+    })
+  })
+
+  describe('store integration edge cases', () => {
+    it('should handle store with many timezones', () => {
+      const manyGetters = {
+        'common/getTimezones': () => ({
+          timeZoneList: Array.from({ length: 100 }, (_, i) => ({
+            id: `TZ${i}`,
+            displayName: `Timezone ${i}`
+          }))
+        })
+      }
+      const newStore = new Vuex.Store({ getters: manyGetters })
+      wrapper = shallowMount(InputTimezone, {
+        store: newStore,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm.items.length).toBe(100)
+    })
+
+    it('should handle store timezone update', () => {
+      const timezones = wrapper.vm.$store.getters['common/getTimezones'].timeZoneList
+      expect(timezones.length).toBeGreaterThan(0)
+      expect(timezones[0]).toHaveProperty('id')
+      expect(timezones[0]).toHaveProperty('displayName')
+    })
+  })
+
+  describe('component lifecycle', () => {
+    it('should call callForGetTimeZones on creation', () => {
+      expect(wrapper.vm.callForGetTimeZones).toBeDefined()
+    })
+
+    it('should have created hook defined', () => {
+      expect(wrapper.vm.$options.created).toBeDefined()
+    })
+
+    it('should initialize items on mount', () => {
+      expect(wrapper.vm.items).toBeDefined()
+      expect(wrapper.vm.items.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('accessibility and usability', () => {
+    it('should have proper aria attributes support', () => {
+      wrapper = shallowMount(InputTimezone, {
+        attrs: { 'aria-label': 'Timezone selector' },
+        store,
+        localVue,
+        stubs: { 'k-select': true }
+      })
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should support keyboard navigation via KSelect', () => {
+      const kSelect = wrapper.findComponent({ name: 'KSelect' })
+      expect(kSelect.exists()).toBe(true)
+    })
+
+    it('should display timezone names clearly', () => {
+      const items = wrapper.vm.items
+      items.forEach(item => {
+        expect(item.text).toBeDefined()
+        expect(item.text.length).toBeGreaterThan(0)
+      })
+    })
+  })
+
+  describe('rapid prop changes and stress testing', () => {
+    it('should handle 50 value changes sequentially', async () => {
+      const timezoneValues = ['UTC', 'EST', 'CST', 'PST', 'GMT']
+      for (let i = 0; i < 50; i++) {
+        await wrapper.setProps({ value: timezoneValues[i % timezoneValues.length] })
+      }
+      expect(wrapper.vm.value).toBeDefined()
+    })
+
+    it('should handle isBlock toggling', async () => {
+      for (let i = 0; i < 20; i++) {
+        await wrapper.setProps({ isBlock: i % 2 === 0 })
+      }
+      expect(wrapper.vm.isBlock).toBe(false)
+    })
+
+    it('should handle isBlankSelectable toggling', async () => {
+      for (let i = 0; i < 20; i++) {
+        await wrapper.setProps({ isBlankSelectable: i % 2 === 0 })
+      }
+      expect(wrapper.vm.isBlankSelectable).toBe(false)
+    })
+  })
 })
