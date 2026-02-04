@@ -370,7 +370,7 @@ export default {
           x: 0,
           y: 0,
           w: 4,
-          minW: 3,
+          minW: 6,
           defaultW: 4,
           midW: 6,
           h: 6,
@@ -751,7 +751,15 @@ export default {
         }
       });
       this.layout = this.layout.map((item) => {
-        const itemWidth = item.w;
+        let itemWidth = item.w;
+        if (item.key === "AgenticAIStatusWidget") {
+          if (newBreakpoint === "sm" || newBreakpoint === "xs") {
+            const desiredWidth = item.midW || item.defaultW || itemWidth;
+            itemWidth = Math.min(desiredWidth, bdCol);
+          } else if (newBreakpoint === "lg") {
+            itemWidth = item.defaultW || itemWidth;
+          }
+        }
         xValue = x;
         x += itemWidth;
         if (x > bdCol) {
@@ -941,7 +949,7 @@ export default {
           x: 8,
           y: 0,
           w: 4,
-          minW: 3,
+          minW: 6,
           defaultW: 4,
           midW: 6,
           h: 6,
