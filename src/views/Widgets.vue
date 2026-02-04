@@ -369,9 +369,9 @@ export default {
         AgenticAIStatusWidget: {
           x: 0,
           y: 0,
-          w: 4,
+          w: 6,
           minW: 6,
-          defaultW: 4,
+          defaultW: 6,
           midW: 6,
           h: 6,
           defaultH: 6,
@@ -948,9 +948,9 @@ export default {
         {
           x: 8,
           y: 0,
-          w: 4,
+          w: 6,
           minW: 6,
-          defaultW: 4,
+          defaultW: 6,
           midW: 6,
           h: 6,
           defaultH: 6,

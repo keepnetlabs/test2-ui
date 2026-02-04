@@ -257,8 +257,12 @@ export default {
         1
       );
       const pagedData = this.applyPagination(sorted, pageNumber, pageSize);
+      const normalizedPagedData = pagedData.map((row) => ({
+        ...row,
+        status: this.normalizeStatus(row.status)
+      }));
       const response = await this.mockApiRequest({
-        data: pagedData,
+        data: normalizedPagedData,
         totalNumberOfRecords,
         totalNumberOfPages
       });
@@ -303,8 +307,19 @@ export default {
     handleRefresh() {
       this.fetchActivities();
     },
+    normalizeStatus(status = "") {
+      const normalized = String(status).trim().toLowerCase();
+      if (normalized === "waiting for approval") {
+        return "Waiting for Approval";
+      }
+      return status;
+    },
     isWaitingForApproval(row = {}) {
-      return row.status === "Waiting for Approval";
+      return (
+        String(row.status || "")
+          .trim()
+          .toLowerCase() === "waiting for approval"
+      );
     },
     getViewActionId(index) {
       return `btn-agentic-ai-activity-view-${index}`;
@@ -345,15 +360,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.agentic-ai-activities-drawer__menu-item {
-  background-color: #757575;
-  border-radius: 6px;
-  margin: 4px 8px;
-}
-
-.agentic-ai-activities-drawer__menu-item :deep(.v-icon),
-.agentic-ai-activities-drawer__menu-item :deep(span) {
-  color: #ffffff;
-}
-</style>
