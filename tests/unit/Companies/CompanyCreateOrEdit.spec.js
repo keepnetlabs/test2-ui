@@ -2,6 +2,30 @@ import { createLocalVue, shallowMount } from "@vue/test-utils";
 import CompanyCreateOrEdit from "@/components/Companies/CompanyCreateOrEdit.vue";
 import { customVuetify as vuetify } from "../utils";
 
+jest.mock("@/api/company", () => ({
+  createCompany: jest.fn(() => Promise.resolve({ data: { data: {} } })),
+  expiryDateLimited: jest.fn(() => Promise.resolve({ data: { data: {} } })),
+  searchCompanies: jest.fn(() => Promise.resolve({ data: { data: { results: [] } } })),
+  searchCompanyGroupsWithParents: jest.fn(() =>
+    Promise.resolve({ data: { data: { results: [] } } })
+  ),
+  updateCompany: jest.fn(() => Promise.resolve({}))
+}));
+
+jest.mock("@/api/common", () => ({
+  getLicences: jest.fn(() => Promise.resolve({ data: { data: [] } })),
+  getCountryTimezones: jest.fn(() => Promise.resolve({ data: { data: [] } }))
+}));
+
+jest.mock("@/helper-classes/lookup-local-storage", () => ({
+  getMultiple: jest.fn(() => Promise.resolve([])),
+  getSingle: jest.fn(() => Promise.resolve([]))
+}));
+
+jest.mock("@/api/callback", () => ({
+  getAvailableCallbackNumbers: jest.fn(() => Promise.resolve({ data: { data: [] } }))
+}));
+
 describe("CompanyCreateOrEdit date formatting", () => {
   const localVue = createLocalVue();
 
@@ -22,16 +46,6 @@ describe("CompanyCreateOrEdit date formatting", () => {
       propsData: {
         edit: false
       },
-      methods: {
-        callForExpiryDateLimited: jest.fn(),
-        getLookupContents: jest.fn(),
-        getCompanyGroups: jest.fn(),
-        fetchCountryTimezones: jest.fn(),
-        callForGetTimeZones: jest.fn(),
-        callForLanguages: jest.fn(),
-        callForCompanyGroups: jest.fn(),
-        callForExpiryDateLimited: jest.fn()
-      },
       data() {
         return {
           ...CompanyCreateOrEdit.data(),
@@ -44,6 +58,12 @@ describe("CompanyCreateOrEdit date formatting", () => {
         "StepperFooter",
         "InputAddress",
         "InputDescription",
+        "InputAIDescription",
+        "InputTag",
+        "InputCompliance",
+        "InputBehaviour",
+        "InputSelectRoles",
+        "MakeAvailableFor",
         "ConfigureNewCompanyDialog",
         "KSelect",
         "InputUrl",
@@ -51,7 +71,20 @@ describe("CompanyCreateOrEdit date formatting", () => {
         "InputEntityName",
         "AlertBox",
         "CallbackNumberWarningModal",
-        "FormGroup"
+        "FormGroup",
+        "el-form",
+        "el-form-item",
+        "v-form",
+        "v-list-item",
+        "v-list-item-content",
+        "v-list-item-title",
+        "v-text-field",
+        "v-btn",
+        "v-icon",
+        "v-divider",
+        "v-list",
+        "v-menu",
+        "v-card"
       ]
     });
   };
