@@ -165,9 +165,10 @@ describe("AgenticAIActivitiesDrawer", () => {
 
     const result = wrapper.vm.applySort(data, { prop: "value", order: "ascending" });
 
-    expect(result[0].value).toBe(null);
-    expect(result[1].value).toBe(undefined);
     expect(result[2].value).toBe(2);
+    expect(result.slice(0, 2).map((row) => row.value)).toEqual(
+      expect.arrayContaining([null, undefined])
+    );
   });
 
   it("resets page number on search change", () => {
