@@ -483,5 +483,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" src="./AgenticAIStatusWidget.scss"></style>
