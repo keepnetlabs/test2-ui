@@ -314,14 +314,15 @@
                           item.points
                         "
                       >
-                        <span class="gamification-report__timeline-item-bold-text"
+                        <span class="gamification-report__timeline-item-middle-text ml-0"
                           >{{ selectedRow.firstName }} {{ selectedRow.lastName }}</span
                         >
-                        earned
                         <span class="gamification-report__timeline-item-bold-text"
-                          >{{ item?.points?.toString().replace('-', '') }}</span
+                          >
+                        earned
+                        {{ item?.points?.toString().replace('-', '') }} points </span
                         >
-                        points after reporting the email
+                        after reporting the email
                         <span class="gamification-report__timeline-item-bold-text"
                           >{{ item.name }}</span
                         >, which resulted in
