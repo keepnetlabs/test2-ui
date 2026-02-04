@@ -2,6 +2,11 @@ import { createLocalVue, shallowMount } from "@vue/test-utils";
 import CompanyCreateOrEdit from "@/components/Companies/CompanyCreateOrEdit.vue";
 import { customVuetify as vuetify } from "../utils";
 
+jest.mock("@/directives/select-search-handler", () => ({
+  bind: jest.fn(),
+  unbind: jest.fn()
+}));
+
 jest.mock("@/api/company", () => ({
   createCompany: jest.fn(() => Promise.resolve({ data: { data: {} } })),
   expiryDateLimited: jest.fn(() => Promise.resolve({ data: { data: {} } })),
@@ -64,6 +69,7 @@ describe("CompanyCreateOrEdit date formatting", () => {
         "InputBehaviour",
         "InputSelectRoles",
         "MakeAvailableFor",
+        "ConfigureCompanyStepHeader",
         "ConfigureNewCompanyDialog",
         "KSelect",
         "InputUrl",
@@ -72,6 +78,12 @@ describe("CompanyCreateOrEdit date formatting", () => {
         "AlertBox",
         "CallbackNumberWarningModal",
         "FormGroup",
+        "v-col",
+        "v-stepper",
+        "v-stepper-header",
+        "v-stepper-step",
+        "v-stepper-items",
+        "v-stepper-content",
         "el-form",
         "el-form-item",
         "v-form",
