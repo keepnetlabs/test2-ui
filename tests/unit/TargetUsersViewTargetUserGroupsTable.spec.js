@@ -74,6 +74,7 @@ describe("TargetUsersViewTargetUserGroupsTable", () => {
   it("filters search values by filterable columns", () => {
     const wrapper = mountFactory();
     const validField = wrapper.vm.tableOptions.columns[0].property;
+    wrapper.vm.tableOptions.columns.push({ property: "NonFilterable" });
 
     wrapper.vm.handleSearchChange({
       filter: {
