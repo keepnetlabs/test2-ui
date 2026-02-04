@@ -307,14 +307,38 @@
                       }}</span>
                     </div>
                     <span class="gamification-report__timeline-item-middle-text">
-                      The reported email with
-                      <span class="gamification-report__timeline-item-bold-text">{{
-                        item.name
-                      }}</span>
-                      subject was analyzed by the incident responder and resulted in
-                      <span class="gamification-report__timeline-item-bold-text"
-                        >{{ item.result }}.</span
+                      <template
+                        v-if="
+                          item.ActionType === 'Reported Email' &&
+                          ['Malicious', 'Phishing'].includes(item.result) &&
+                          item.points
+                        "
                       >
+                        <span class="gamification-report__timeline-item-bold-text"
+                          >{{ selectedRow.firstName }} {{ selectedRow.lastName }}</span
+                        >
+                        earned
+                        <span class="gamification-report__timeline-item-bold-text"
+                          >{{ item?.points?.toString().replace('-', '') }}</span
+                        >
+                        points after reporting the email
+                        <span class="gamification-report__timeline-item-bold-text"
+                          >{{ item.name }}</span
+                        >, which resulted in
+                        <span class="gamification-report__timeline-item-bold-text"
+                          >{{ item.result }}.</span
+                        >
+                      </template>
+                      <template v-else>
+                        The reported email with
+                        <span class="gamification-report__timeline-item-bold-text">{{
+                          item.name
+                        }}</span>
+                        subject was analyzed by the incident responder and resulted in
+                        <span class="gamification-report__timeline-item-bold-text"
+                          >{{ item.result }}.</span
+                        >
+                      </template>
                     </span>
                     <div>
                       <span class="gamification-report__timeline-item-bottom-text">{{
