@@ -141,6 +141,12 @@ describe("AgenticAIStatusWidget", () => {
       "login/getAgenticAIExecutionMode": "Autonomous"
     });
     expect(autoWrapper.vm.showSettingsIcon).toBe(false);
+
+    const disabledWrapper = mountFactory({
+      "login/getAgenticAIEnabled": false,
+      "login/getAgenticAIExecutionMode": "Autonomous"
+    });
+    expect(disabledWrapper.vm.showSettingsIcon).toBe(true);
   });
 
   it("returns status icon color based on active state", () => {

@@ -46,6 +46,22 @@ describe("AgenticAIActivitiesDrawer", () => {
     );
   });
 
+  it("normalizes executed and rejected statuses", () => {
+    const wrapper = mountFactory();
+    expect(wrapper.vm.normalizeStatus("executed")).toBe("Executed");
+    expect(wrapper.vm.normalizeStatus("rejected")).toBe("Rejected");
+  });
+
+  it("normalizes statuses with underscores or hyphens", () => {
+    const wrapper = mountFactory();
+    expect(wrapper.vm.normalizeStatus("waiting_for_approval")).toBe(
+      "Waiting for Approval"
+    );
+    expect(wrapper.vm.normalizeStatus("waiting-for-approval")).toBe(
+      "Waiting for Approval"
+    );
+  });
+
   it("treats waiting for approval status as actionable regardless of case", () => {
     const wrapper = mountFactory();
     expect(wrapper.vm.isWaitingForApproval({ status: "waiting for approval" })).toBe(
