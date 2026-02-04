@@ -341,9 +341,9 @@
                                   formData.LicenseStartDate &&
                                   formData.LicenseEndDate)
                               "
-                              >({{ formData.LicenseStartDate | moment('YYYY.MM.DD') }}
+                              >({{ formData.LicenseStartDate | moment(selectionDateFormat) }}
                               -
-                              {{ formData.LicenseEndDate | moment('YYYY.MM.DD') }})</template
+                              {{ formData.LicenseEndDate | moment(selectionDateFormat) }})</template
                             >
                           </span>
                         </template>
@@ -798,6 +798,12 @@ export default {
 
       return `dd.MM.yyyy`
     },
+    selectionDateFormat() {
+      if (this.dateFormat) {
+        return this.dateFormat.replaceAll('/', '.')
+      }
+      return 'YYYY.MM.DD'
+    },
     getTimeFormat() {
       if (this.timeFormat) {
         if (this.timeFormat === '12h') return 'hh:mm a'
@@ -1113,9 +1119,26 @@ export default {
     disabledEndDates(val) {
       let selectedStartDate = new Date()
       if (this.formData.LicenseStartDate) {
-        const [day, month, year] =
-          this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/') || []
-        selectedStartDate = new Date(year, month - 1, day)
+        const datePart = this.formData?.LicenseStartDate?.split(' ')?.[0] || ''
+        const separator = datePart.includes('/') ? '/' : '.'
+        const [firstPart, secondPart, thirdPart] = datePart.split(separator)
+        let year, month, day
+        if (this.dateFormat === 'YYYY/MM/DD') {
+          year = firstPart
+          month = secondPart
+          day = thirdPart
+        } else if (this.dateFormat === 'MM/DD/YYYY') {
+          month = firstPart
+          day = secondPart
+          year = thirdPart
+        } else {
+          day = firstPart
+          month = secondPart
+          year = thirdPart
+        }
+        if (year && month && day) {
+          selectedStartDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+        }
       }
       const selectedStartDateInMs = selectedStartDate.getTime() + 1000 * 60 * 60 * 24
       return selectedStartDateInMs > val.getTime() || val.getTime() < new Date().getTime()
