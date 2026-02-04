@@ -183,13 +183,22 @@ export default {
                 Boolean
               );
             }
+            const levels =
+              this.$store.getters["trainingLibraryHelpers/getLevels"] || [];
+            const resolvedLevel = levels.find(
+              (item) =>
+                item?.name === level ||
+                item?.text === level ||
+                String(item?.id) === String(level) ||
+                String(item?.value) === String(level)
+            );
             refTrainingCourseInformation.setFormData({
               behaviours: behaviours.map((b) => b.behaviourId),
               category,
               compliances: compliances.map((c) => c.complianceId),
               description,
               name,
-              level,
+              level: resolvedLevel?.id || level || "",
               tags: tagNames,
               roleIds: resolvedRoleIds,
               coverImage
