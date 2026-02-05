@@ -324,7 +324,7 @@ export default {
         })
         Promise.all(promises)
           .then(() => {
-            this.$refs.refTable.resetSelectableParams()
+            this.$refs?.refTable?.resetSelectableParams?.()
             this.callForData()
           })
           .finally(() => {
@@ -337,7 +337,7 @@ export default {
           notificationActivityLogId: this.selectedRow.id
         })
           .then(() => {
-            this.$refs.refTable.resetSelectableParams()
+            this.$refs?.refTable?.resetSelectableParams?.()
             this.callForData()
           })
           .finally(() => {
