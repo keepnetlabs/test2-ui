@@ -167,9 +167,9 @@
                   {{ item }}
                 </span>
                 <span
-                  v-if="!showAllIndicators && observedMoreCount > 0"
+                  v-if="!showAllObservedIndicators && observedMoreCount > 0"
                   class="email-details-ai-analyze__pill email-details-ai-analyze__pill--more email-details-ai-analyze__pill--clickable"
-                  @click="toggleIndicators"
+                  @click="toggleObservedIndicators"
                 >
                   +{{ observedMoreCount }} more
                 </span>
@@ -186,9 +186,9 @@
                   {{ item }}
                 </span>
                 <span
-                  v-if="!showAllIndicators && notObservedMoreCount > 0"
+                  v-if="!showAllNotObservedIndicators && notObservedMoreCount > 0"
                   class="email-details-ai-analyze__pill email-details-ai-analyze__pill--more email-details-ai-analyze__pill--clickable"
-                  @click="toggleIndicators"
+                  @click="toggleNotObservedIndicators"
                 >
                   +{{ notObservedMoreCount }} more
                 </span>
@@ -228,14 +228,18 @@
             <span class="email-details-ai-analyze__section-index">5</span>
             Actions Recommended
           </div>
-          <ul class="email-details-ai-analyze__list">
-            <li
+          <div class="email-details-ai-analyze__actions">
+            <div
               v-for="(item, index) in report.actions_recommended"
               :key="`act-${index}`"
+              class="email-details-ai-analyze__action-item"
             >
-              {{ item }}
-            </li>
-          </ul>
+              <v-icon class="email-details-ai-analyze__action-icon" color="#43a047"
+                >mdi-check-circle</v-icon
+              >
+              <span class="email-details-ai-analyze__body-text">{{ item }}</span>
+            </div>
+          </div>
         </div>
 
         <div
@@ -245,9 +249,14 @@
             <span class="email-details-ai-analyze__section-index">6</span>
             Confidence Limitations
           </div>
-          <p class="email-details-ai-analyze__body-text">
-            {{ report.confidence_limitations }}
-          </p>
+          <div class="email-details-ai-analyze__callout">
+            <v-icon class="email-details-ai-analyze__callout-icon" color="#1173C1"
+              >mdi-information</v-icon
+            >
+            <p class="email-details-ai-analyze__body-text">
+              {{ report.confidence_limitations }}
+            </p>
+          </div>
         </div>
       </div>
     </v-card>
@@ -276,7 +285,8 @@ export default {
       isLoadingReport: true,
       loadError: "",
       report: null,
-      showAllIndicators: false,
+      showAllObservedIndicators: false,
+      showAllNotObservedIndicators: false,
       staticReport: {
         executive_summary: {
           email_category: "Marketing",
@@ -368,11 +378,11 @@ export default {
   computed: {
     observedIndicators() {
       const observed = this.report?.risk_indicators?.observed || [];
-      return this.showAllIndicators ? observed : observed.slice(0, 4);
+      return this.showAllObservedIndicators ? observed : observed.slice(0, 4);
     },
     notObservedIndicators() {
       const notObserved = this.report?.risk_indicators?.not_observed || [];
-      return this.showAllIndicators ? notObserved : notObserved.slice(0, 4);
+      return this.showAllNotObservedIndicators ? notObserved : notObserved.slice(0, 4);
     },
     observedMoreCount() {
       const observed = this.report?.risk_indicators?.observed || [];
@@ -454,8 +464,11 @@ export default {
       if (normalized.includes("pending")) return getBtnStatusColor("pending");
       return getBtnStatusColor(normalized);
     },
-    toggleIndicators() {
-      this.showAllIndicators = !this.showAllIndicators;
+    toggleObservedIndicators() {
+      this.showAllObservedIndicators = !this.showAllObservedIndicators;
+    },
+    toggleNotObservedIndicators() {
+      this.showAllNotObservedIndicators = !this.showAllNotObservedIndicators;
     }
   },
   mounted() {
