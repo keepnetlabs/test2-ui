@@ -390,7 +390,14 @@ export default {
               this.defaultListData = [...this.listData]
             }
             if (!templateResourceId) {
-              this.listData[this.selectedPreviousIndex].selected = true
+              const defaultIndex =
+                this.listData[this.selectedPreviousIndex] !== undefined
+                  ? this.selectedPreviousIndex
+                  : 0
+              if (this.listData[defaultIndex]) {
+                this.listData[defaultIndex].selected = true
+                this.selectedPreviousIndex = defaultIndex
+              }
             }
             if (!isInitial) return
             if (templateResourceId) {
@@ -402,7 +409,9 @@ export default {
                 this.listData[index].selected = true
               }
             } else {
-              this.setSelectedTemplate(this.listData[0], 0, true)
+              if (this.listData[0]) {
+                this.setSelectedTemplate(this.listData[0], 0, true)
+              }
             }
             this.defaultListData = [...this.listData]
           }
@@ -430,6 +439,7 @@ export default {
       }
     },
     setSelectedTemplate(item, index, isInitial = false) {
+      if (!item) return
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
