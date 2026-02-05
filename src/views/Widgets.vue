@@ -115,7 +115,12 @@ export default {
     }
   },
   data() {
+    const isTestEnvironment =
+      window.location.hostname.includes("test-ui.devkeepnet.com") ||
+      window.location.hostname.includes("localhost");
+
     return {
+      isTestEnvironment,
       activeBreakpoint: "lg",
       initialLayout: [],
       initialAvailableWidgets: [],
@@ -380,7 +385,7 @@ export default {
           i: createRandomCryptStringNumber(),
           key: "AgenticAIStatusWidget",
           title: "Agentic AI Status",
-          isAllowed: true
+          isAllowed: isTestEnvironment
         },
         TopPhishingSimulationReporters: {
           x: 0,
@@ -662,7 +667,7 @@ export default {
         {
           name: "Agentic AI Status",
           key: "AgenticAIStatusWidget",
-          isAllowed: true
+          isAllowed: isTestEnvironment
         }
       ],
       style:
@@ -693,7 +698,9 @@ export default {
             if (widget.isAllowed) acc.push(widget);
             return acc;
           }, []);
-          this.ensureAgenticAIWidget(this.layout);
+          if (this.isTestEnvironment) {
+            this.ensureAgenticAIWidget(this.layout);
+          }
           this.newItemY = this.layout.reduce((acc, item) => {
             acc += item.h;
             return acc;
@@ -926,6 +933,8 @@ export default {
     },
 
     ensureAgenticAIWidget(layoutArray) {
+      if (!this.isTestEnvironment) return;
+
       if (
         !layoutArray.find((widget) => widget.key === "AgenticAIStatusWidget")
       ) {
@@ -945,22 +954,6 @@ export default {
 
     getDefaultLayoutObject() {
       let widgets = [
-        {
-          x: 8,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: createRandomCryptStringNumber(),
-          key: "AgenticAIStatusWidget",
-          title: "Agentic AI Status",
-          isAllowed: true
-        },
         {
           x: 0,
           y: 0,
@@ -1353,6 +1346,24 @@ export default {
           isDashboardWidget: true
         }
       ];
+      if (this.isTestEnvironment) {
+        widgets.unshift({
+          x: 8,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: createRandomCryptStringNumber(),
+          key: "AgenticAIStatusWidget",
+          title: "Agentic AI Status",
+          isAllowed: true
+        });
+      }
       widgets = widgets.reduce((acc, widget) => {
         this.removeAvailableWidget(widget);
         if (widget.isAllowed) {
