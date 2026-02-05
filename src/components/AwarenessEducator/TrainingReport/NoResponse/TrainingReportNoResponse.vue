@@ -294,7 +294,7 @@ export default {
       AwarenessEducatorService.resendTrainingNoResponseList(this.resendPayload, this.id)
         .then(() => {
           this.toggleIsShowResendDialog()
-          this.$refs.refTable.resetSelectableParams()
+          this.$refs?.refTable?.resetSelectableParams?.()
           this.callForData()
         })
         .finally(() => {
