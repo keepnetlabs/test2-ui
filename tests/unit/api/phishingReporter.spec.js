@@ -342,5 +342,234 @@ describe('phishingReporter API', () => {
         { responseType: 'blob' }
       )
     })
+
+    it('should handle numeric and string IDs', async () => {
+      await phishingReporterApi.deletePhishingReporterUser(123)
+      expect(testRequest.delete).toHaveBeenCalled()
+
+      testRequest.delete.mockClear()
+      await phishingReporterApi.deletePhishingReporterUser('user-abc')
+      expect(testRequest.delete).toHaveBeenCalled()
+    })
+
+    it('should handle large bulk delete operations', async () => {
+      const userIds = Array.from({ length: 100 }, (_, i) => `user-${i}`)
+      const payload = { userIds }
+      await phishingReporterApi.bulkDeletePhishingUsers(payload)
+      expect(testRequest.delete).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenable objects', () => {
+      const results = [
+        phishingReporterApi.getPhishingReportSummary({}),
+        phishingReporterApi.getPhishingReporter(),
+        phishingReporterApi.getPhishingReporterImg(),
+        phishingReporterApi.searchPhishingReporterUser({}),
+        phishingReporterApi.deletePhishingReporterUser('id'),
+        phishingReporterApi.bulkDeletePhishingUsers({}),
+        phishingReporterApi.createPhishingReporter({}),
+        phishingReporterApi.getDefaultSettingsForLanguage({}),
+        phishingReporterApi.exportPhishingReporterUserList({}),
+        phishingReporterApi.exportPhishingReporterDownloadHistory({}),
+        phishingReporterApi.searchGeneratedApplicationHistory({}),
+        phishingReporterApi.generateOutlookAddIn(),
+        phishingReporterApi.downloadOutlookAddIn('id'),
+        phishingReporterApi.generateGoogleWorkSpaceAddIn(),
+        phishingReporterApi.generateO365AddIn(),
+        phishingReporterApi.downloadSpamReport({}),
+        phishingReporterApi.generateDiagnosticTool(),
+        phishingReporterApi.downloadDiagnosticTool('id'),
+        phishingReporterApi.createGraphAccount({}),
+        phishingReporterApi.connectGraphAccount({}),
+        phishingReporterApi.updateApplicationLevelAccount(true),
+        phishingReporterApi.deleteGraphAccount()
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+      })
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export all required functions', () => {
+      expect(typeof phishingReporterApi.getPhishingReportSummary).toBe('function')
+      expect(typeof phishingReporterApi.getPhishingReporter).toBe('function')
+      expect(typeof phishingReporterApi.getPhishingReporterImg).toBe('function')
+      expect(typeof phishingReporterApi.searchPhishingReporterUser).toBe('function')
+      expect(typeof phishingReporterApi.deletePhishingReporterUser).toBe('function')
+      expect(typeof phishingReporterApi.bulkDeletePhishingUsers).toBe('function')
+      expect(typeof phishingReporterApi.createPhishingReporter).toBe('function')
+      expect(typeof phishingReporterApi.getDefaultSettingsForLanguage).toBe('function')
+      expect(typeof phishingReporterApi.exportPhishingReporterUserList).toBe('function')
+      expect(typeof phishingReporterApi.exportPhishingReporterDownloadHistory).toBe('function')
+      expect(typeof phishingReporterApi.searchGeneratedApplicationHistory).toBe('function')
+      expect(typeof phishingReporterApi.generateOutlookAddIn).toBe('function')
+      expect(typeof phishingReporterApi.downloadOutlookAddIn).toBe('function')
+      expect(typeof phishingReporterApi.generateGoogleWorkSpaceAddIn).toBe('function')
+      expect(typeof phishingReporterApi.generateO365AddIn).toBe('function')
+      expect(typeof phishingReporterApi.downloadSpamReport).toBe('function')
+      expect(typeof phishingReporterApi.generateDiagnosticTool).toBe('function')
+      expect(typeof phishingReporterApi.downloadDiagnosticTool).toBe('function')
+      expect(typeof phishingReporterApi.createGraphAccount).toBe('function')
+      expect(typeof phishingReporterApi.connectGraphAccount).toBe('function')
+      expect(typeof phishingReporterApi.updateApplicationLevelAccount).toBe('function')
+      expect(typeof phishingReporterApi.deleteGraphAccount).toBe('function')
+    })
+
+    it('should export at least 22 functions', () => {
+      const functions = Object.values(phishingReporterApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThanOrEqual(22)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle phishing reporter setup workflow', async () => {
+      await phishingReporterApi.getPhishingReporter()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await phishingReporterApi.createPhishingReporter({ enabled: true })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle user search and deletion workflow', async () => {
+      await phishingReporterApi.searchPhishingReporterUser({ page: 1 })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.delete.mockClear()
+      await phishingReporterApi.deletePhishingReporterUser('user-1')
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle add-in generation and download workflow', async () => {
+      await phishingReporterApi.generateOutlookAddIn()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await phishingReporterApi.downloadOutlookAddIn('addin-1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle graph account setup workflow', async () => {
+      await phishingReporterApi.createGraphAccount({ accountId: 'account-1' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.put.mockClear()
+      await phishingReporterApi.updateApplicationLevelAccount(true)
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.delete.mockClear()
+      await phishingReporterApi.deleteGraphAccount()
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel reporter operations', async () => {
+      const results = await Promise.all([
+        phishingReporterApi.getPhishingReporter(),
+        phishingReporterApi.getPhishingReporterImg(),
+        phishingReporterApi.searchPhishingReporterUser({})
+      ])
+
+      expect(results).toHaveLength(3)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle report summary with date range', async () => {
+      const payload = { startDate: '2024-01-01', endDate: '2024-12-31' }
+      await phishingReporterApi.getPhishingReportSummary(payload)
+      expect(testRequest.get).toHaveBeenCalled()
+    })
+
+    it('should handle user search with pagination', async () => {
+      const payload = { page: 2, pageSize: 50 }
+      await phishingReporterApi.searchPhishingReporterUser(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/phishing-reporter/search', payload)
+    })
+
+    it('should handle bulk delete with multiple IDs', async () => {
+      const payload = { userIds: ['user-1', 'user-2', 'user-3'] }
+      await phishingReporterApi.bulkDeletePhishingUsers(payload)
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/phishing-reporter-users/bulk-delete',
+        expect.objectContaining({ data: payload })
+      )
+    })
+
+    it('should handle add-in download with ID parameter', async () => {
+      const id = 'addin-123'
+      await phishingReporterApi.downloadOutlookAddIn(id)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/phishing-reporter/download/outlook-addin/${id}`,
+        expect.any(Object)
+      )
+    })
+
+    it('should handle graph account with account ID', async () => {
+      const payload = { accountId: 'graph-account-1' }
+      await phishingReporterApi.createGraphAccount(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-reporter/link-graph-account',
+        payload,
+        expect.any(Object)
+      )
+    })
+
+    it('should handle application level account with boolean flag', async () => {
+      const isGranted = true
+      await phishingReporterApi.updateApplicationLevelAccount(isGranted)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `/phishing-reporter/app-permission-access/${isGranted}`,
+        { isGranted },
+        expect.any(Object)
+      )
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate report summary errors', async () => {
+      const error = new Error('Report fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.getPhishingReportSummary({})).rejects.toThrow('Report fetch failed')
+    })
+
+    it('should propagate user search errors', async () => {
+      const error = new Error('User search failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.searchPhishingReporterUser({})).rejects.toThrow('User search failed')
+    })
+
+    it('should propagate deletion errors', async () => {
+      const error = new Error('Deletion failed')
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.deletePhishingReporterUser('id')).rejects.toThrow('Deletion failed')
+    })
+
+    it('should propagate add-in generation errors', async () => {
+      const error = new Error('Add-in generation failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.generateOutlookAddIn()).rejects.toThrow('Add-in generation failed')
+    })
+
+    it('should propagate add-in download errors', async () => {
+      const error = new Error('Add-in download failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.downloadOutlookAddIn('id')).rejects.toThrow('Add-in download failed')
+    })
+
+    it('should propagate graph account errors', async () => {
+      const error = new Error('Graph account operation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.createGraphAccount({})).rejects.toThrow('Graph account operation failed')
+    })
+
+    it('should propagate export errors', async () => {
+      const error = new Error('Export failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(phishingReporterApi.exportPhishingReporterUserList({})).rejects.toThrow('Export failed')
+    })
   })
 })
