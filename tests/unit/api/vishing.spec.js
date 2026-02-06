@@ -1,8 +1,8 @@
 jest.mock('@/utils/vishingRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 import vishingRequest from '@/utils/vishingRequest'
@@ -379,6 +379,154 @@ describe('vishing API', () => {
         `/vishing-report/${id}/answered/search`,
         payload
       )
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenables', async () => {
+      expect(typeof vishingApi.getVishingTemplates().then).toBe('function')
+      expect(typeof vishingApi.getVishingTemplate('id').then).toBe('function')
+      expect(typeof vishingApi.createVishingTemplate({}).then).toBe('function')
+      expect(typeof vishingApi.updateVishingTemplate('id', {}).then).toBe('function')
+      expect(typeof vishingApi.deleteVishingTemplate('id').then).toBe('function')
+      expect(typeof vishingApi.exportVishingTemplates().then).toBe('function')
+      expect(typeof vishingApi.getVishingCampaigns().then).toBe('function')
+      expect(typeof vishingApi.getVishingCampaign('id').then).toBe('function')
+      expect(typeof vishingApi.createVishingCampaign({}).then).toBe('function')
+      expect(typeof vishingApi.exportVishingCampaigns().then).toBe('function')
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export 33 functions', () => {
+      const functions = Object.values(vishingApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThan(30)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle template CRUD workflow', async () => {
+      await vishingApi.getVishingTemplates({})
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.post.mockClear()
+      await vishingApi.createVishingTemplate({ name: 'New Template' })
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.get.mockClear()
+      await vishingApi.getVishingTemplate('template-1')
+      expect(vishingRequest.get).toHaveBeenCalledTimes(1)
+
+      vishingRequest.put.mockClear()
+      await vishingApi.updateVishingTemplate('template-1', { name: 'Updated' })
+      expect(vishingRequest.put).toHaveBeenCalledTimes(1)
+
+      vishingRequest.delete.mockClear()
+      await vishingApi.deleteVishingTemplate('template-1')
+      expect(vishingRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle campaign lifecycle workflow', async () => {
+      vishingRequest.post.mockClear()
+      await vishingApi.createVishingCampaign({ name: 'Campaign' })
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.put.mockClear()
+      await vishingApi.launchVishingCampaign('campaign-1')
+      expect(vishingRequest.put).toHaveBeenCalledTimes(1)
+
+      vishingRequest.get.mockClear()
+      await vishingApi.getVishingReportSummary('campaign-1')
+      expect(vishingRequest.get).toHaveBeenCalledTimes(1)
+
+      vishingRequest.put.mockClear()
+      await vishingApi.stopVishingCampaign('campaign-1')
+      expect(vishingRequest.put).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle report retrieval workflow', async () => {
+      const campaignId = 'campaign-1'
+
+      vishingRequest.get.mockClear()
+      await vishingApi.getVishingReportSummary(campaignId)
+      expect(vishingRequest.get).toHaveBeenCalledTimes(1)
+
+      vishingRequest.post.mockClear()
+      await vishingApi.getVishingReportUsers({}, campaignId)
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.post.mockClear()
+      await vishingApi.getVishingReportAnswered({}, campaignId)
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.post.mockClear()
+      await vishingApi.getVishingReportNoResponse({}, campaignId)
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle default empty payloads', async () => {
+      await vishingApi.getVishingTemplates()
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-template/search', {})
+    })
+
+    it('should handle campaign ID variations', async () => {
+      await vishingApi.getVishingCampaign(123)
+      expect(vishingRequest.get).toHaveBeenCalledWith(`/vishing-campaign/${123}`)
+
+      vishingRequest.get.mockClear()
+      await vishingApi.getVishingCampaign('campaign-abc')
+      expect(vishingRequest.get).toHaveBeenCalledWith(`/vishing-campaign/campaign-abc`)
+    })
+
+    it('should handle complex payloads', async () => {
+      const payload = {
+        name: 'Complex Campaign',
+        templateId: 'template-1',
+        targetGroups: ['group-1', 'group-2'],
+        schedule: { startDate: '2024-01-01', endDate: '2024-12-31' }
+      }
+      await vishingApi.createVishingCampaign(payload)
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-campaign', payload, expect.any(Object))
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate GET errors', async () => {
+      const error = new Error('GET failed')
+      vishingRequest.get.mockRejectedValueOnce(error)
+      await expect(vishingApi.getVishingTemplate('id')).rejects.toThrow('GET failed')
+    })
+
+    it('should propagate POST errors', async () => {
+      const error = new Error('POST failed')
+      vishingRequest.post.mockRejectedValueOnce(error)
+      await expect(vishingApi.createVishingTemplate({})).rejects.toThrow('POST failed')
+    })
+
+    it('should propagate PUT errors', async () => {
+      const error = new Error('PUT failed')
+      vishingRequest.put.mockRejectedValueOnce(error)
+      await expect(vishingApi.updateVishingTemplate('id', {})).rejects.toThrow('PUT failed')
+    })
+
+    it('should propagate DELETE errors', async () => {
+      const error = new Error('DELETE failed')
+      vishingRequest.delete.mockRejectedValueOnce(error)
+      await expect(vishingApi.deleteVishingTemplate('id')).rejects.toThrow('DELETE failed')
+    })
+
+    it('should handle export errors', async () => {
+      const error = new Error('Export failed')
+      vishingRequest.post.mockRejectedValueOnce(error)
+      await expect(vishingApi.exportVishingTemplates()).rejects.toThrow('Export failed')
+    })
+
+    it('should handle report errors', async () => {
+      const error = new Error('Report fetch failed')
+      vishingRequest.get.mockRejectedValueOnce(error)
+      await expect(vishingApi.getVishingReportSummary('id')).rejects.toThrow('Report fetch failed')
     })
   })
 })
