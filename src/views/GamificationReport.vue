@@ -420,7 +420,7 @@ export default {
       }
     },
     getDateRangeText() {
-      if (this.selectedDateRange?.length < 2) return
+      if (!Array.isArray(this.selectedDateRange) || this.selectedDateRange.length < 2) return
       const firstDateLeft = this.selectedDateRange?.[0]?.split?.(' ')?.[0] || ''
       const lastDateLeft = this.selectedDateRange?.[1]?.split?.(' ')?.[0] || ''
       if (!firstDateLeft || !lastDateLeft) return ''
@@ -431,7 +431,7 @@ export default {
     selectedDateRange: {
       deep: true,
       handler(val) {
-        if (val?.length < 2) return
+        if (!Array.isArray(val) || val.length < 2) return
         this.axiosPayload.startDate = val[0]
         this.axiosPayload.endDate = val[1]
         this.callForData()
@@ -515,7 +515,7 @@ export default {
         })
     },
     handleDateRangeChange(dateRange) {
-      if (dateRange?.length < 2) return
+      if (!Array.isArray(dateRange) || dateRange.length < 2) return
       this.axiosPayload.startDate = dateRange[0]
       this.axiosPayload.endDate = dateRange[1]
       this.callForData()
