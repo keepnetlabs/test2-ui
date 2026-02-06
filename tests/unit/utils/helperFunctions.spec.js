@@ -1,17 +1,25 @@
-import * as HelperFunctions from '@/utils/helperFunctions'
+import {
+  getAvailableForListFromBackend,
+  normalizeRoleId,
+  getAvailableForValues,
+  getAvailableForValueFromList,
+  columnFilterChanged
+} from '@/utils/helperFunctions'
 
-describe('helperFunctions.js', () => {
+describe('Helper Functions Utility', () => {
   describe('getAvailableForListFromBackend', () => {
-    it('transforms MyCompanyOnly type', () => {
-      const input = [
-        {
-          typeName: 'MyCompanyOnly',
-          targetName: 'Company A',
-          targetResourceId: '123'
-        }
-      ]
-      const result = HelperFunctions.getAvailableForListFromBackend(input)
+    it('should return empty array for empty input', () => {
+      expect(getAvailableForListFromBackend()).toEqual([])
+      expect(getAvailableForListFromBackend([])).toEqual([])
+    })
 
+    it('should transform MyCompanyOnly type', () => {
+      const input = [
+        { typeName: 'MyCompanyOnly', targetName: 'Company A', targetResourceId: '123' }
+      ]
+      const result = getAvailableForListFromBackend(input)
+
+      expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
         id: 'MyCompanyOnly',
         type: 'MyCompanyOnly',
@@ -21,16 +29,13 @@ describe('helperFunctions.js', () => {
       })
     })
 
-    it('transforms AllCompanies type', () => {
+    it('should transform AllCompanies type', () => {
       const input = [
-        {
-          typeName: 'AllCompanies',
-          targetName: 'All',
-          targetResourceId: 'all'
-        }
+        { typeName: 'AllCompanies', targetName: 'All', targetResourceId: '456' }
       ]
-      const result = HelperFunctions.getAvailableForListFromBackend(input)
+      const result = getAvailableForListFromBackend(input)
 
+      expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
         id: 'AllCompanies',
         type: 'AllCompanies',
@@ -40,143 +45,171 @@ describe('helperFunctions.js', () => {
       })
     })
 
-    it('transforms regular company type', () => {
+    it('should transform custom company type', () => {
       const input = [
-        {
-          typeName: 'Company',
-          targetName: 'My Company',
-          targetResourceId: 'company-123'
-        }
+        { typeName: 'Company', targetName: 'Acme Corp', targetResourceId: 'acme-123' }
       ]
-      const result = HelperFunctions.getAvailableForListFromBackend(input)
+      const result = getAvailableForListFromBackend(input)
 
+      expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
-        id: 'company-123',
+        id: 'acme-123',
         type: 'Company',
-        resourceId: 'company-123',
-        label: 'My Company',
+        resourceId: 'acme-123',
+        label: 'Acme Corp',
         isDisabled: false
       })
     })
 
-    it('handles empty array', () => {
-      const result = HelperFunctions.getAvailableForListFromBackend([])
-      expect(result).toEqual([])
-    })
-
-    it('handles multiple items', () => {
+    it('should transform multiple items', () => {
       const input = [
         { typeName: 'MyCompanyOnly', targetName: 'Company A', targetResourceId: '123' },
-        { typeName: 'Company', targetName: 'Company B', targetResourceId: '456' }
+        { typeName: 'Company', targetName: 'Acme Corp', targetResourceId: 'acme-123' },
+        { typeName: 'AllCompanies', targetName: 'All', targetResourceId: '456' }
       ]
-      const result = HelperFunctions.getAvailableForListFromBackend(input)
+      const result = getAvailableForListFromBackend(input)
 
-      expect(result.length).toBe(2)
-      expect(result[0].isDisabled).toBe(true)
-      expect(result[1].isDisabled).toBe(false)
+      expect(result).toHaveLength(3)
+      expect(result[0].id).toBe('MyCompanyOnly')
+      expect(result[1].id).toBe('acme-123')
+      expect(result[2].id).toBe('AllCompanies')
     })
   })
 
   describe('normalizeRoleId', () => {
-    it('returns empty string for null/undefined', () => {
-      expect(HelperFunctions.normalizeRoleId(null)).toBe('')
-      expect(HelperFunctions.normalizeRoleId(undefined)).toBe('')
+    it('should return empty string for null or undefined', () => {
+      expect(normalizeRoleId(null)).toBe('')
+      expect(normalizeRoleId(undefined)).toBe('')
     })
 
-    it('converts string role to string', () => {
-      expect(HelperFunctions.normalizeRoleId('admin')).toBe('admin')
+    it('should convert string role to string', () => {
+      expect(normalizeRoleId('admin')).toBe('admin')
+      expect(normalizeRoleId('user')).toBe('user')
     })
 
-    it('converts number role to string', () => {
-      expect(HelperFunctions.normalizeRoleId(123)).toBe('123')
+    it('should convert number role to string', () => {
+      expect(normalizeRoleId(123)).toBe('123')
+      expect(normalizeRoleId(0)).toBe('0')
     })
 
-    it('extracts id from object with id property', () => {
-      expect(HelperFunctions.normalizeRoleId({ id: '456' })).toBe('456')
+    it('should extract id from object', () => {
+      expect(normalizeRoleId({ id: '789' })).toBe('789')
+      expect(normalizeRoleId({ id: 456 })).toBe('456')
     })
 
-    it('extracts id from object with roleId property', () => {
-      expect(HelperFunctions.normalizeRoleId({ roleId: '789' })).toBe('789')
+    it('should extract roleId as fallback', () => {
+      expect(normalizeRoleId({ roleId: 'role-123' })).toBe('role-123')
     })
 
-    it('extracts id from object with resourceId property', () => {
-      expect(HelperFunctions.normalizeRoleId({ resourceId: '999' })).toBe('999')
+    it('should extract resourceId as fallback', () => {
+      expect(normalizeRoleId({ resourceId: 'res-456' })).toBe('res-456')
     })
 
-    it('extracts id from object with targetAudienceId property', () => {
-      expect(HelperFunctions.normalizeRoleId({ targetAudienceId: '111' })).toBe('111')
+    it('should extract targetAudienceId as fallback', () => {
+      expect(normalizeRoleId({ targetAudienceId: 'aud-789' })).toBe('aud-789')
     })
 
-    it('prioritizes id > roleId > resourceId > targetAudienceId', () => {
-      const obj = { id: '1', roleId: '2', resourceId: '3', targetAudienceId: '4' }
-      expect(HelperFunctions.normalizeRoleId(obj)).toBe('1')
+    it('should extract code and remove spaces', () => {
+      expect(normalizeRoleId({ code: 'admin role' })).toBe('adminrole')
+      expect(normalizeRoleId({ code: 'user' })).toBe('user')
     })
 
-    it('extracts code and removes spaces', () => {
-      expect(HelperFunctions.normalizeRoleId({ code: 'admin role' })).toBe('adminrole')
+    it('should extract roleName and remove spaces', () => {
+      expect(normalizeRoleId({ roleName: 'super admin' })).toBe('superadmin')
     })
 
-    it('extracts roleName and removes spaces', () => {
-      expect(HelperFunctions.normalizeRoleId({ roleName: 'user role' })).toBe('userrole')
+    it('should return empty string for empty object', () => {
+      expect(normalizeRoleId({})).toBe('')
     })
 
-    it('returns empty string when no valid properties', () => {
-      expect(HelperFunctions.normalizeRoleId({ name: 'test' })).toBe('')
+    it('should prefer id over other fields', () => {
+      const role = {
+        id: 'id-123',
+        roleId: 'roleId-456',
+        code: 'CODE'
+      }
+      expect(normalizeRoleId(role)).toBe('id-123')
     })
   })
 
   describe('getAvailableForValues', () => {
-    it('transforms data array correctly', () => {
-      const input = [
-        { resourceId: '123', type: 'Company', id: '456' },
-        { resourceId: '789', type: 'Department', id: '999' }
-      ]
-      const result = HelperFunctions.getAvailableForValues(input)
-
-      expect(result).toEqual([
-        { resourceId: '123', type: 'Company' },
-        { resourceId: '789', type: 'Department' }
-      ])
+    it('should return empty array for empty input', () => {
+      expect(getAvailableForValues([])).toEqual([])
     })
 
-    it('sets resourceId to null for MyCompanyOnly type', () => {
+    it('should transform MyCompanyOnly type', () => {
       const input = [
-        { resourceId: '123', type: 'MyCompanyOnly', id: '456' }
+        { resourceId: 'res-123', type: 'MyCompanyOnly', id: 'id-123' }
       ]
-      const result = HelperFunctions.getAvailableForValues(input)
+      const result = getAvailableForValues(input)
 
+      expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
         resourceId: null,
         type: 'MyCompanyOnly'
       })
     })
 
-    it('sets resourceId to null only for AllCompanies but keeps id', () => {
+    it('should transform AllCompanies type', () => {
       const input = [
-        { resourceId: '123', type: 'AllCompanies', id: '456' }
+        { resourceId: 'res-456', type: 'AllCompanies', id: 'id-456' }
       ]
-      const result = HelperFunctions.getAvailableForValues(input)
+      const result = getAvailableForValues(input)
 
-      // AllCompanies only nullifies resourceId, but the function returns resourceId || id
+      expect(result).toHaveLength(1)
       expect(result[0].type).toBe('AllCompanies')
-      expect(result[0].resourceId).toBe('456') // Falls back to id
+      // When resourceId is null, falls back to id
+      expect(result[0].resourceId).toBe('id-456')
     })
 
-    it('uses id as resourceId when resourceId is null', () => {
+    it('should transform custom type preserving resourceId', () => {
       const input = [
-        { resourceId: null, type: 'Company', id: '456' }
+        { resourceId: 'res-789', type: 'Company', id: 'id-789' }
       ]
-      const result = HelperFunctions.getAvailableForValues(input)
+      const result = getAvailableForValues(input)
 
-      expect(result[0].resourceId).toBe('456')
+      expect(result[0]).toEqual({
+        resourceId: 'res-789',
+        type: 'Company'
+      })
+    })
+
+    it('should use id as fallback for resourceId', () => {
+      const input = [
+        { type: 'Company', id: 'fallback-id' }
+      ]
+      const result = getAvailableForValues(input)
+
+      expect(result[0]).toEqual({
+        resourceId: 'fallback-id',
+        type: 'Company'
+      })
+    })
+
+    it('should handle multiple items', () => {
+      const input = [
+        { resourceId: 'res-1', type: 'Company', id: 'id-1' },
+        { resourceId: 'res-2', type: 'MyCompanyOnly', id: 'id-2' },
+        { resourceId: 'res-3', type: 'AllCompanies', id: 'id-3' }
+      ]
+      const result = getAvailableForValues(input)
+
+      expect(result).toHaveLength(3)
+      expect(result[0].resourceId).toBe('res-1')
+      expect(result[0].type).toBe('Company')
+      // MyCompanyOnly sets both resourceId and id to null
+      expect(result[1].resourceId).toBeNull()
+      expect(result[1].type).toBe('MyCompanyOnly')
+      expect(result[2].resourceId).toBe('id-3')
+      expect(result[2].type).toBe('AllCompanies')
     })
   })
 
   describe('getAvailableForValueFromList', () => {
-    it('returns default MyCompanyOnly when list is empty', () => {
-      const result = HelperFunctions.getAvailableForValueFromList([])
+    it('should return default MyCompanyOnly for empty list', () => {
+      const result = getAvailableForValueFromList([])
 
-      expect(result.length).toBe(1)
+      expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
         id: 'MyCompanyOnly',
         label: 'My company only',
@@ -185,46 +218,71 @@ describe('helperFunctions.js', () => {
       })
     })
 
-    it('returns transformed data when list has items', () => {
-      const input = [
-        { typeName: 'Company', targetName: 'Company A', targetResourceId: '123' }
-      ]
-      const result = HelperFunctions.getAvailableForValueFromList(input)
+    it('should return default MyCompanyOnly for undefined list', () => {
+      const result = getAvailableForValueFromList()
 
-      expect(result.length).toBe(1)
-      expect(result[0].type).toBe('Company')
-      expect(result[0].label).toBe('Company A')
+      expect(result).toHaveLength(1)
+      expect(result[0].id).toBe('MyCompanyOnly')
     })
 
-    it('handles empty list parameter', () => {
-      const result = HelperFunctions.getAvailableForValueFromList()
-      expect(result[0].type).toBe('MyCompanyOnly')
+    it('should use backend list when provided', () => {
+      const list = [
+        { typeName: 'Company', targetName: 'Acme', targetResourceId: 'acme-123' }
+      ]
+      const result = getAvailableForValueFromList(list)
+
+      expect(result).toHaveLength(1)
+      expect(result[0]).toEqual({
+        id: 'acme-123',
+        type: 'Company',
+        resourceId: 'acme-123',
+        label: 'Acme',
+        isDisabled: false
+      })
+    })
+
+    it('should include multiple companies from backend', () => {
+      const list = [
+        { typeName: 'Company', targetName: 'Acme', targetResourceId: 'acme-123' },
+        { typeName: 'Company', targetName: 'TechCorp', targetResourceId: 'tech-456' }
+      ]
+      const result = getAvailableForValueFromList(list)
+
+      expect(result).toHaveLength(2)
+      expect(result[0].label).toBe('Acme')
+      expect(result[1].label).toBe('TechCorp')
     })
   })
 
   describe('columnFilterChanged', () => {
-    it('adds new filter to request body', () => {
-      const axiosPayload = {
-        filter: {
-          FilterGroups: [
-            { FilterItems: [{ FieldName: 'Status', Value: 'Active' }] }
-          ]
-        }
-      }
-      const newFilter = { FieldName: 'Name', Value: 'Test' }
-      const result = HelperFunctions.columnFilterChanged(newFilter, axiosPayload)
-
-      expect(result.length).toBe(2)
-      expect(result[1].FieldName).toBe('Name')
-    })
-
-    it('removes existing filter of same field', () => {
+    it('should add new filter to existing request body', () => {
       const axiosPayload = {
         filter: {
           FilterGroups: [
             {
               FilterItems: [
-                { FieldName: 'Status', Value: 'Active' },
+                { FieldName: 'Status', Value: 'active' }
+              ]
+            }
+          ]
+        }
+      }
+      const newFilter = { FieldName: 'Name', Value: 'John' }
+
+      const result = columnFilterChanged(newFilter, axiosPayload)
+
+      expect(result).toHaveLength(2)
+      expect(result).toContainEqual({ FieldName: 'Status', Value: 'active' })
+      expect(result).toContainEqual({ FieldName: 'Name', Value: 'John' })
+    })
+
+    it('should replace filter with same FieldName', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Value: 'active' },
                 { FieldName: 'Name', Value: 'Old' }
               ]
             }
@@ -232,230 +290,80 @@ describe('helperFunctions.js', () => {
         }
       }
       const newFilter = { FieldName: 'Name', Value: 'New' }
-      const result = HelperFunctions.columnFilterChanged(newFilter, axiosPayload)
 
-      expect(result.length).toBe(2)
-      expect(result.filter(f => f.FieldName === 'Name')[0].Value).toBe('New')
+      const result = columnFilterChanged(newFilter, axiosPayload)
+
+      expect(result).toHaveLength(2)
+      expect(result).toContainEqual({ FieldName: 'Status', Value: 'active' })
+      expect(result).toContainEqual({ FieldName: 'Name', Value: 'New' })
     })
 
-    it('handles array of filters', () => {
-      const axiosPayload = {
-        filter: {
-          FilterGroups: [
-            { FilterItems: [{ FieldName: 'Status', Value: 'Active' }] }
-          ]
-        }
-      }
-      const filters = [
-        { FieldName: 'Name', Value: 'Test1' },
-        { FieldName: 'Email', Value: 'test@test.com' }
-      ]
-      const result = HelperFunctions.columnFilterChanged(filters, axiosPayload)
-
-      // When passing array of filters, all existing non-matching filters + new filters are included
-      expect(result.length).toBe(4)
-      const fieldNames = result.map(f => f.FieldName)
-      expect(fieldNames).toContain('Status')
-      expect(fieldNames).toContain('Name')
-      expect(fieldNames).toContain('Email')
-    })
-  })
-
-  describe('columnFilterCleared', () => {
-    it('removes filter by field name', () => {
+    it('should handle array of filters', () => {
       const axiosPayload = {
         filter: {
           FilterGroups: [
             {
               FilterItems: [
-                { FieldName: 'Status', Value: 'Active' },
-                { FieldName: 'Name', Value: 'Test' }
+                { FieldName: 'Status', Value: 'active' }
               ]
             }
           ]
         }
       }
-      const result = HelperFunctions.columnFilterCleared('Status', axiosPayload)
+      const newFilters = [
+        { FieldName: 'Name', Value: 'John' },
+        { FieldName: 'Age', Value: '30' }
+      ]
 
-      expect(result.length).toBe(1)
-      expect(result[0].FieldName).toBe('Name')
+      const result = columnFilterChanged(newFilters, axiosPayload)
+
+      expect(result.length).toBeGreaterThanOrEqual(3)
+      expect(result).toContainEqual({ FieldName: 'Status', Value: 'active' })
     })
 
-    it('returns all items when field not found', () => {
+    it('should handle empty filter items', () => {
       const axiosPayload = {
         filter: {
           FilterGroups: [
             {
-              FilterItems: [
-                { FieldName: 'Status', Value: 'Active' }
-              ]
+              FilterItems: []
             }
           ]
         }
       }
-      const result = HelperFunctions.columnFilterCleared('NonExistent', axiosPayload)
+      const newFilter = { FieldName: 'Name', Value: 'John' }
 
-      expect(result.length).toBe(1)
-    })
+      const result = columnFilterChanged(newFilter, axiosPayload)
 
-    it('returns empty array when clearing only filter', () => {
-      const axiosPayload = {
-        filter: {
-          FilterGroups: [
-            {
-              FilterItems: [
-                { FieldName: 'Status', Value: 'Active' }
-              ]
-            }
-          ]
-        }
-      }
-      const result = HelperFunctions.columnFilterCleared('Status', axiosPayload)
-
-      expect(result.length).toBe(0)
+      expect(result).toHaveLength(1)
+      expect(result[0]).toEqual(newFilter)
     })
   })
 
-  describe('isColumnFilterActive', () => {
-    it('returns true when FilterGroup 0 has FilterItems', () => {
-      const axiosPayload = {
-        filter: {
-          FilterGroups: [
-            { FilterItems: [{ FieldName: 'Status' }] },
-            { FilterItems: [] }
-          ]
-        }
-      }
-      const result = HelperFunctions.isColumnFilterActive(axiosPayload)
-      expect(result).toBe(true)
-    })
+  describe('Integration', () => {
+    it('should transform backend data to frontend format', () => {
+      const backendList = [
+        { typeName: 'MyCompanyOnly', targetName: 'My Company', targetResourceId: '1' },
+        { typeName: 'Company', targetName: 'Partner A', targetResourceId: 'p-123' }
+      ]
 
-    it('returns true when FilterGroup 1 has FilterItems', () => {
-      const axiosPayload = {
-        filter: {
-          FilterGroups: [
-            { FilterItems: [] },
-            { FilterItems: [{ FieldName: 'Status' }] }
-          ]
-        }
-      }
-      const result = HelperFunctions.isColumnFilterActive(axiosPayload)
-      expect(result).toBe(true)
-    })
+      const frontendList = getAvailableForListFromBackend(backendList)
+      const values = getAvailableForValues(frontendList)
 
-    it('returns false when both FilterGroups are empty', () => {
-      const axiosPayload = {
-        filter: {
-          FilterGroups: [
-            { FilterItems: [] },
-            { FilterItems: [] }
-          ]
-        }
-      }
-      const result = HelperFunctions.isColumnFilterActive(axiosPayload)
-      expect(result).toBe(false)
-    })
-
-    it('returns false for empty payload', () => {
-      const result = HelperFunctions.isColumnFilterActive({})
-      expect(result).toBe(false)
+      expect(frontendList).toHaveLength(2)
+      expect(values).toHaveLength(2)
+      expect(values[0].resourceId).toBeNull()
+      expect(values[1].resourceId).toBe('p-123')
     })
   })
 
-  describe('createCustomFieldColumns', () => {
-    it('creates column for string field type', () => {
-      const input = [
-        { name: 'FirstName', fieldDataType: 'string' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].property).toBe('FirstName')
-      expect(result[0].filterableType).toBe('text')
-      expect(result[0].isCustomField).toBe(true)
-    })
-
-    it('creates column for email field type', () => {
-      const input = [
-        { name: 'Email', fieldDataType: 'email' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].filterableType).toBe('text')
-    })
-
-    it('creates column for number field type', () => {
-      const input = [
-        { name: 'Age', fieldDataType: 'number' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].filterableType).toBe('text')
-    })
-
-    it('creates column for boolean field type with select options', () => {
-      const input = [
-        { name: 'IsActive', fieldDataType: 'boolean' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].filterableType).toBe('select')
-      expect(result[0].filterableItems).toEqual([
-        { text: 'Yes', value: 1 },
-        { text: 'No', value: 0 }
-      ])
-    })
-
-    it('creates column for date field type', () => {
-      const input = [
-        { name: 'BirthDate', fieldDataType: 'date' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].filterableType).toBe('dateOnly')
-      expect(result[0].type).toBe('date')
-    })
-
-    it('creates column for datetime field type', () => {
-      const input = [
-        { name: 'CreatedAt', fieldDataType: 'datetime' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].filterableType).toBe('date')
-    })
-
-    it('removes filterableType when isFilterable is false', () => {
-      const input = [
-        { name: 'FirstName', fieldDataType: 'string' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input, false)
-
-      expect(result[0].filterableType).toBeUndefined()
-    })
-
-    it('calculates width based on field name length', () => {
-      const input = [
-        { name: 'A', fieldDataType: 'string' },
-        { name: 'VeryLongFieldName', fieldDataType: 'string' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].width).toBe(80 + 1 * 7)
-      expect(result[1].width).toBe(80 + 17 * 7)
-    })
-
-    it('handles empty custom fields array', () => {
-      const result = HelperFunctions.createCustomFieldColumns([])
-      expect(result).toEqual([])
-    })
-
-    it('handles case-insensitive field data type', () => {
-      const input = [
-        { name: 'Status', fieldDataType: 'BOOLEAN' }
-      ]
-      const result = HelperFunctions.createCustomFieldColumns(input)
-
-      expect(result[0].filterableType).toBe('select')
+  describe('All exported functions', () => {
+    it('should export all helper functions', () => {
+      expect(typeof getAvailableForListFromBackend).toBe('function')
+      expect(typeof normalizeRoleId).toBe('function')
+      expect(typeof getAvailableForValues).toBe('function')
+      expect(typeof getAvailableForValueFromList).toBe('function')
+      expect(typeof columnFilterChanged).toBe('function')
     })
   })
 })

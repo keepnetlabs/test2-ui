@@ -1,6 +1,13 @@
 import { shallowMount } from '@vue/test-utils'
+
+// Mock the Widgets component to avoid loading its dependencies
+jest.mock('@/views/Widgets', () => ({
+  name: 'Widgets',
+  template: '<div></div>'
+}))
+
+// Must import after mocking
 import Dashboard from '@/views/Dashboard.vue'
-import Widgets from '@/views/Widgets'
 
 describe('Dashboard.vue', () => {
   let wrapper

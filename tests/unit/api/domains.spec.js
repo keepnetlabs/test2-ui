@@ -1,206 +1,254 @@
-jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
-}))
-
+import * as DomainsAPI from '@/api/domains'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-import * as domainsApi from '@/api/domains'
 
-describe('domains API', () => {
+jest.mock('@/utils/testRequest', () => ({
+  post: jest.fn().mockResolvedValue({ data: {} }),
+  put: jest.fn().mockResolvedValue({ data: {} }),
+  get: jest.fn().mockResolvedValue({ data: {} }),
+  delete: jest.fn().mockResolvedValue({ data: {} })
+}))
+
+jest.mock('@/model/constants/commonConstants', () => ({
+  COMMON_SNACKBAR: { color: 'red', duration: 5000 }
+}))
+
+describe('Domains API', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  describe('domain operations', () => {
-    it('should call getDomainsList', async () => {
-      const payload = { page: 1 }
-      await domainsApi.getDomainsList(payload)
+  describe('getDomainsList', () => {
+    it('should call POST with search payload', async () => {
+      const payload = { page: 1, pageSize: 10 }
+      await DomainsAPI.getDomainsList(payload)
       expect(testRequest.post).toHaveBeenCalledWith('phishing-simulator/domain-records/search', payload)
     })
 
-    it('should call createDomain', async () => {
-      const payload = { name: 'example.com' }
-      await domainsApi.createDomain(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        'phishing-simulator/domain-records',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call updateDomain', async () => {
-      const id = 'domain-123'
-      const payload = { name: 'example.com', ttl: 3600 }
-      await domainsApi.updateDomain(payload, id)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        `phishing-simulator/domain-records/${id}`,
-        payload,
-        { loading: true, snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call deleteEmailTemplate', async () => {
-      const id = 'domain-123'
-      await domainsApi.deleteEmailTemplate(id)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        `phishing-simulator/domain-records/${id}`,
-        { loading: true, snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = DomainsAPI.getDomainsList({})
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('domain configuration operations', () => {
-    it('should call getDomainData', async () => {
-      await domainsApi.getDomainData()
+  describe('createDomain', () => {
+    it('should call POST with COMMON_SNACKBAR', async () => {
+      const payload = { domain: 'example.com' }
+      await DomainsAPI.createDomain(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('phishing-simulator/domain-records', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = DomainsAPI.createDomain({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateDomain', () => {
+    it('should call PUT with id, payload, loading and COMMON_SNACKBAR', async () => {
+      const payload = { domain: 'updated.com' }
+      await DomainsAPI.updateDomain(payload, 'domain-123')
+      expect(testRequest.put).toHaveBeenCalledWith('phishing-simulator/domain-records/domain-123', payload, {
+        loading: true,
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = DomainsAPI.updateDomain({}, 'id-1')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('deleteEmailTemplate', () => {
+    it('should call DELETE with id, loading and COMMON_SNACKBAR', async () => {
+      await DomainsAPI.deleteEmailTemplate('domain-456')
+      expect(testRequest.delete).toHaveBeenCalledWith('phishing-simulator/domain-records/domain-456', {
+        loading: true,
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = DomainsAPI.deleteEmailTemplate('id-2')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('exportDnsService', () => {
+    it('should call POST with blob responseType', async () => {
+      const payload = { filter: 'all' }
+      await DomainsAPI.exportDnsService(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('phishing-simulator/domain-records/search/export', payload, {
+        responseType: 'blob'
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = DomainsAPI.exportDnsService({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getDomainData', () => {
+    it('should call GET endpoint', async () => {
+      await DomainsAPI.getDomainData()
       expect(testRequest.get).toHaveBeenCalledWith('phishing-simulator/domain-records/form-details')
     })
 
-    it('should call getDomainEditData', async () => {
-      const resId = 'domain-123'
-      await domainsApi.getDomainEditData(resId)
-      expect(testRequest.get).toHaveBeenCalledWith(
-        `phishing-simulator/domain-records/${resId}`,
-        { loading: true }
-      )
-    })
-
-    it('should call testDomainConnection', async () => {
-      const payload = { domain: 'example.com' }
-      await domainsApi.testDomainConnection(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        'phishing-simulator/domain-records/test',
-        payload
-      )
+    it('should return thenable', () => {
+      const result = DomainsAPI.getDomainData()
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('export operations', () => {
-    it('should call exportDnsService', async () => {
-      const payload = { filters: {} }
-      await domainsApi.exportDnsService(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        'phishing-simulator/domain-records/search/export',
-        payload,
-        { responseType: 'blob' }
-      )
+  describe('getDomainEditData', () => {
+    it('should call GET with loading flag', async () => {
+      await DomainsAPI.getDomainEditData('domain-789')
+      expect(testRequest.get).toHaveBeenCalledWith('phishing-simulator/domain-records/domain-789', {
+        loading: true
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = DomainsAPI.getDomainEditData('id-3')
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('HTTP method consistency', () => {
+  describe('testDomainConnection', () => {
+    it('should call POST without snackbar', async () => {
+      const payload = { testData: 'sample' }
+      await DomainsAPI.testDomainConnection(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('phishing-simulator/domain-records/test', payload)
+    })
+
+    it('should return thenable', () => {
+      const result = DomainsAPI.testDomainConnection({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('HTTP Method Consistency', () => {
+    it('should use POST for search and mutations', async () => {
+      await DomainsAPI.getDomainsList({})
+      await DomainsAPI.createDomain({})
+      await DomainsAPI.testDomainConnection({})
+      expect(testRequest.post).toHaveBeenCalledTimes(3)
+    })
+
     it('should use GET for read operations', async () => {
-      await domainsApi.getDomainData()
-      expect(testRequest.get).toHaveBeenCalled()
-    })
-
-    it('should use POST for search and create', async () => {
-      const payload = { page: 1 }
-      await domainsApi.getDomainsList(payload)
-      expect(testRequest.post).toHaveBeenCalled()
+      await DomainsAPI.getDomainData()
+      await DomainsAPI.getDomainEditData('1')
+      expect(testRequest.get).toHaveBeenCalledTimes(2)
     })
 
     it('should use PUT for updates', async () => {
-      const payload = { name: 'updated.com' }
-      await domainsApi.updateDomain(payload, 'domain-123')
-      expect(testRequest.put).toHaveBeenCalled()
+      await DomainsAPI.updateDomain({}, '1')
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
     })
 
-    it('should use DELETE for deletes', async () => {
-      await domainsApi.deleteEmailTemplate('domain-123')
-      expect(testRequest.delete).toHaveBeenCalled()
-    })
-  })
-
-  describe('snackbar and loading consistency', () => {
-    it('should include loading for domain retrieval', async () => {
-      const resId = 'domain-123'
-      await domainsApi.getDomainEditData(resId)
-      expect(testRequest.get).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ loading: true })
-      )
-    })
-
-    it('should use COMMON_SNACKBAR for creation', async () => {
-      const payload = { name: 'example.com' }
-      await domainsApi.createDomain(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        expect.any(String),
-        payload,
-        expect.objectContaining({ snackbar: COMMON_SNACKBAR })
-      )
-    })
-
-    it('should include loading and snackbar for updates', async () => {
-      const payload = { name: 'updated.com' }
-      await domainsApi.updateDomain(payload, 'domain-123')
-      expect(testRequest.put).toHaveBeenCalledWith(
-        expect.any(String),
-        payload,
-        expect.objectContaining({
-          loading: true,
-          snackbar: COMMON_SNACKBAR
-        })
-      )
+    it('should use DELETE for deletions', async () => {
+      await DomainsAPI.deleteEmailTemplate('1')
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
     })
   })
 
-  describe('blob response type', () => {
-    it('should use blob responseType for exports', async () => {
-      const payload = { filters: {} }
-      await domainsApi.exportDnsService(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        expect.any(String),
-        payload,
-        expect.objectContaining({ responseType: 'blob' })
-      )
+  describe('Snackbar Configuration', () => {
+    it('should include snackbar for create and update', async () => {
+      testRequest.post.mockClear()
+      testRequest.put.mockClear()
+
+      await DomainsAPI.createDomain({})
+      expect(testRequest.post.mock.calls[0][2]).toHaveProperty('snackbar')
+
+      await DomainsAPI.updateDomain({}, '1')
+      expect(testRequest.put.mock.calls[0][2]).toHaveProperty('snackbar')
+    })
+
+    it('should not include snackbar for test operations', async () => {
+      testRequest.post.mockClear()
+      await DomainsAPI.testDomainConnection({})
+      expect(testRequest.post.mock.calls[0][2]).toBeUndefined()
     })
   })
 
-  describe('edge cases', () => {
-    it('should handle domain creation with DNS records', async () => {
-      const payload = {
-        name: 'example.com',
-        dnsRecords: [
-          { type: 'A', value: '192.168.1.1' },
-          { type: 'MX', value: 'mail.example.com' }
-        ]
-      }
-      await domainsApi.createDomain(payload)
-      expect(testRequest.post).toHaveBeenCalled()
+  describe('All Exported Functions', () => {
+    it('should export 8 functions', () => {
+      const functions = Object.values(DomainsAPI).filter(x => typeof x === 'function')
+      expect(functions).toHaveLength(8)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle domain CRUD workflow', async () => {
+      // Get form data
+      await DomainsAPI.getDomainData()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      // Create domain
+      testRequest.post.mockClear()
+      await DomainsAPI.createDomain({ domain: 'test.com' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      // Get domain for edit
+      testRequest.get.mockClear()
+      await DomainsAPI.getDomainEditData('1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      // Update domain
+      testRequest.put.mockClear()
+      await DomainsAPI.updateDomain({ domain: 'updated.com' }, '1')
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      // Delete domain
+      testRequest.delete.mockClear()
+      await DomainsAPI.deleteEmailTemplate('1')
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
     })
 
-    it('should handle domain update with SSL configuration', async () => {
-      const payload = {
-        name: 'example.com',
-        sslEnabled: true,
-        sslCertificate: 'cert-123'
-      }
-      await domainsApi.updateDomain(payload, 'domain-123')
-      expect(testRequest.put).toHaveBeenCalled()
+    it('should handle parallel requests', async () => {
+      const results = await Promise.all([
+        DomainsAPI.getDomainsList({}),
+        DomainsAPI.getDomainData(),
+        DomainsAPI.testDomainConnection({})
+      ])
+
+      expect(results).toHaveLength(3)
+      expect(testRequest.post).toHaveBeenCalledTimes(2)
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate POST errors', async () => {
+      const error = new Error('Domain creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+
+      await expect(DomainsAPI.createDomain({})).rejects.toThrow('Domain creation failed')
     })
 
-    it('should handle domain connection test', async () => {
-      const payload = {
-        domain: 'subdomain.example.com',
-        recordType: 'CNAME',
-        expectedValue: 'target.example.com'
-      }
-      await domainsApi.testDomainConnection(payload)
-      expect(testRequest.post).toHaveBeenCalled()
+    it('should propagate GET errors', async () => {
+      const error = new Error('Form data not found')
+      testRequest.get.mockRejectedValueOnce(error)
+
+      await expect(DomainsAPI.getDomainData()).rejects.toThrow('Form data not found')
     })
 
-    it('should handle domain export with date filters', async () => {
-      const payload = {
-        filters: {
-          dateRange: { start: '2024-01-01', end: '2024-12-31' },
-          status: ['active', 'pending']
-        }
-      }
-      await domainsApi.exportDnsService(payload)
-      expect(testRequest.post).toHaveBeenCalled()
+    it('should propagate PUT errors', async () => {
+      const error = new Error('Update failed')
+      testRequest.put.mockRejectedValueOnce(error)
+
+      await expect(DomainsAPI.updateDomain({}, '1')).rejects.toThrow('Update failed')
+    })
+
+    it('should propagate DELETE errors', async () => {
+      const error = new Error('Delete failed')
+      testRequest.delete.mockRejectedValueOnce(error)
+
+      await expect(DomainsAPI.deleteEmailTemplate('1')).rejects.toThrow('Delete failed')
     })
   })
 })

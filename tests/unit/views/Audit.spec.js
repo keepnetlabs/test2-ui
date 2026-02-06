@@ -1,7 +1,4 @@
 import { shallowMount } from '@vue/test-utils'
-import Audit from '@/views/Audit.vue'
-import DataTable from '@/components/DataTable'
-import KContainer from '@/components/KContainer/KContainer'
 
 jest.mock('@/api/dashboard', () => ({
   getAuditLogs: jest.fn().mockResolvedValue({
@@ -14,6 +11,21 @@ jest.mock('@/api/dashboard', () => ({
   }),
   exportAuditLog: jest.fn().mockResolvedValue({})
 }))
+
+jest.mock('@/utils/helperFunctions', () => ({
+  columnFilterChanged: jest.fn(() => []),
+  columnFilterCleared: jest.fn(() => [])
+}))
+
+jest.mock('@/helper-classes/server-side-table-props', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
+// Import after mocks
+import Audit from '@/views/Audit.vue'
+import DataTable from '@/components/DataTable'
+import KContainer from '@/components/KContainer/KContainer'
 
 jest.mock('@/utils/helperFunctions', () => ({
   columnFilterChanged: jest.fn((filter) => []),

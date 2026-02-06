@@ -1,582 +1,814 @@
-jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  patch: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
-}))
-
+import * as CompanyAPI from '@/api/company'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-import * as companyApi from '@/api/company'
 
-describe('company API', () => {
+jest.mock('@/utils/testRequest', () => ({
+  post: jest.fn().mockResolvedValue({ data: {} }),
+  put: jest.fn().mockResolvedValue({ data: {} }),
+  get: jest.fn().mockResolvedValue({ data: {} }),
+  delete: jest.fn().mockResolvedValue({ data: {} }),
+  patch: jest.fn().mockResolvedValue({ data: {} })
+}))
+
+jest.mock('@/model/constants/commonConstants', () => ({
+  COMMON_SNACKBAR: { color: 'red', duration: 5000 }
+}))
+
+describe('Company API', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  describe('company search operations', () => {
-    it('should call searchCompanies', async () => {
-      const payload = { page: 1 }
-      await companyApi.searchCompanies(payload)
+  describe('searchCompanies', () => {
+    it('should call POST with search payload', async () => {
+      const payload = { page: 1, pageSize: 10 }
+      await CompanyAPI.searchCompanies(payload)
       expect(testRequest.post).toHaveBeenCalledWith('/companies/search', payload)
     })
 
-    it('should call searchGroupCompanies', async () => {
-      const id = 'group-123'
-      const payload = { page: 1 }
-      await companyApi.searchGroupCompanies(id, payload)
-      expect(testRequest.post).toHaveBeenCalledWith(`/company-groups/${id}/companies/search`, payload)
-    })
-
-    it('should call getMyCompanies', async () => {
-      await companyApi.getMyCompanies()
-      expect(testRequest.get).toHaveBeenCalledWith('/companies/my')
-    })
-
-    it('should call getCompanyList', async () => {
-      await companyApi.getCompanyList()
-      expect(testRequest.get).toHaveBeenCalledWith('/companies/my')
-    })
-
-    it('should call getCompanyListForThreatSharing', async () => {
-      await companyApi.getCompanyListForThreatSharing()
-      expect(testRequest.get).toHaveBeenCalledWith('/companies/community-companies')
+    it('should return thenable', () => {
+      const result = CompanyAPI.searchCompanies({})
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('company management operations', () => {
-    it('should call getCompanyByID', async () => {
-      const id = 'company-123'
-      await companyApi.getCompanyByID(id)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/${id}`, { loading: true })
+  describe('searchGroupCompanies', () => {
+    it('should call POST with group id and payload', async () => {
+      const payload = { filter: 'active' }
+      await CompanyAPI.searchGroupCompanies('group-123', payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/group-123/companies/search', payload)
     })
 
-    it('should call getCompanyByID with loading false', async () => {
-      const id = 'company-123'
-      await companyApi.getCompanyByID(id, false)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/${id}`, { loading: false })
+    it('should return thenable', () => {
+      const result = CompanyAPI.searchGroupCompanies('1', {})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getMyCompanies', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getMyCompanies()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/my')
     })
 
-    it('should call createCompany', async () => {
-      const payload = { name: 'New Company', LicenseStartDate: '01/01/2024' }
-      await companyApi.createCompany(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies',
-        expect.any(FormData),
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.getMyCompanies()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('exportCompanies', () => {
+    it('should call POST with blob responseType', async () => {
+      const payload = { filter: 'all' }
+      await CompanyAPI.exportCompanies(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/search/export', payload, {
+        responseType: 'blob'
+      })
     })
 
-    it('should call updateCompany', async () => {
-      const id = 'company-123'
-      const payload = { name: 'Updated Company', LicenseEndDate: '12/31/2024' }
-      await companyApi.updateCompany(id, payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        `/companies/${id}`,
-        expect.any(FormData),
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.exportCompanies({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('exportCompanyGroup', () => {
+    it('should call POST with blob responseType', async () => {
+      const payload = { filter: 'all' }
+      await CompanyAPI.exportCompanyGroup(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/search/export', payload, {
+        responseType: 'blob'
+      })
     })
 
-    it('should call updateInitializeCompany', async () => {
-      const payload = { isInitialized: true }
-      await companyApi.updateInitializeCompany(payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        '/companies/limited',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.exportCompanyGroup({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('exportCompanyGroupDetails', () => {
+    it('should call POST with id, payload and blob responseType', async () => {
+      const payload = { filter: 'active' }
+      await CompanyAPI.exportCompanyGroupDetails(payload, 'group-456')
+      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/group-456/companies/search/export', payload, {
+        responseType: 'blob'
+      })
     })
 
-    it('should call deleteCompany', async () => {
-      const id = 'company-123'
-      await companyApi.deleteCompany(id)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        `companies/${id}`,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.exportCompanyGroupDetails({}, 'id-1')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('deleteCompany', () => {
+    it('should call DELETE with COMMON_SNACKBAR', async () => {
+      await CompanyAPI.deleteCompany('company-789')
+      expect(testRequest.delete).toHaveBeenCalledWith('companies/company-789', {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call bulkDeleteCompanies', async () => {
-      const payload = { companyIds: ['company-1', 'company-2'] }
-      await companyApi.bulkDeleteCompanies(payload)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        '/companies/bulk-delete',
-        { data: payload, snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.deleteCompany('id-2')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('deleteCompanyGroup', () => {
+    it('should call DELETE with COMMON_SNACKBAR', async () => {
+      await CompanyAPI.deleteCompanyGroup('group-abc')
+      expect(testRequest.delete).toHaveBeenCalledWith('/company-groups/group-abc', {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call getCheckCompanyLicense', async () => {
-      const id = 'company-123'
-      await companyApi.getCheckCompanyLicense(id)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/${id}/license-check`)
+    it('should return thenable', () => {
+      const result = CompanyAPI.deleteCompanyGroup('id-3')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getCompanyByID', () => {
+    it('should call GET with loading flag by default', async () => {
+      await CompanyAPI.getCompanyByID('company-123')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/company-123', { loading: true })
     })
 
-    it('should call expiryDateLimited', async () => {
-      const date = '2024-01-01'
-      await companyApi.expiryDateLimited(date)
+    it('should respect loading parameter', async () => {
+      await CompanyAPI.getCompanyByID('1', false)
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/1', { loading: false })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCompanyByID('id-4')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('searchCompanyGroups', () => {
+    it('should call POST with payload', async () => {
+      const payload = { page: 1 }
+      await CompanyAPI.searchCompanyGroups(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/search', payload)
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.searchCompanyGroups({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('searchCompanyGroupsWithParents', () => {
+    it('should call POST with payload', async () => {
+      const payload = { filter: 'active' }
+      await CompanyAPI.searchCompanyGroupsWithParents(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/search-with-parent', payload)
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.searchCompanyGroupsWithParents({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('createCompanyGroups', () => {
+    it('should call POST with COMMON_SNACKBAR', async () => {
+      const payload = { name: 'New Group' }
+      await CompanyAPI.createCompanyGroups(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/company-groups', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.createCompanyGroups({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('expiryDateLimited', () => {
+    it('should call POST with date', async () => {
+      const date = '2024-12-31'
+      await CompanyAPI.expiryDateLimited(date)
       expect(testRequest.post).toHaveBeenCalledWith('/companies/licenseexpirydate', {
         licenseStartDate: date
       })
     })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.expiryDateLimited('2024-01-01')
+      expect(typeof result.then).toBe('function')
+    })
   })
 
-  describe('company group operations', () => {
-    it('should call searchCompanyGroups', async () => {
-      const payload = { page: 1 }
-      await companyApi.searchCompanyGroups(payload)
-      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/search', payload)
+  describe('createCompany', () => {
+    it('should call POST with FormData and COMMON_SNACKBAR', async () => {
+      const payload = { CompanyName: 'Test Co', LicenseStartDate: '12/31/2024' }
+      await CompanyAPI.createCompany(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies', expect.any(FormData), {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call searchCompanyGroupsWithParents', async () => {
-      const payload = { page: 1 }
-      await companyApi.searchCompanyGroupsWithParents(payload)
-      expect(testRequest.post).toHaveBeenCalledWith('/company-groups/search-with-parent', payload)
+    it('should transform date format', async () => {
+      const payload = { LicenseStartDate: '01/15/2024 10:00', LicenseEndDate: '12/31/2024 23:59' }
+      await CompanyAPI.createCompany(payload)
+      const calls = testRequest.post.mock.calls
+      expect(calls[0][1]).toBeInstanceOf(FormData)
     })
 
-    it('should call createCompanyGroups', async () => {
-      const payload = { name: 'New Group' }
-      await companyApi.createCompanyGroups(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/company-groups',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.createCompany({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateCompany', () => {
+    it('should call PUT with id, FormData and COMMON_SNACKBAR', async () => {
+      const payload = { CompanyName: 'Updated Co' }
+      await CompanyAPI.updateCompany('company-123', payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/company-123', expect.any(FormData), {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call updateCompanyGroup', async () => {
-      const id = 'group-123'
+    it('should return thenable', () => {
+      const result = CompanyAPI.updateCompany('id-5', {})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateInitializeCompany', () => {
+    it('should call PUT with COMMON_SNACKBAR', async () => {
+      const payload = { initialized: true }
+      await CompanyAPI.updateInitializeCompany(payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/limited', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.updateInitializeCompany({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateCompanyGroup', () => {
+    it('should call PUT with id, payload and COMMON_SNACKBAR', async () => {
       const payload = { name: 'Updated Group' }
-      await companyApi.updateCompanyGroup(id, payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        `/company-groups/${id}`,
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+      await CompanyAPI.updateCompanyGroup('group-456', payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/company-groups/group-456', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call deleteCompanyGroup', async () => {
-      const id = 'group-123'
-      await companyApi.deleteCompanyGroup(id)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        `/company-groups/${id}`,
-        { snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call bulkDeleteCompanyGroups', async () => {
-      const payload = { groupIds: ['group-1', 'group-2'] }
-      await companyApi.bulkDeleteCompanyGroups(payload)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        '/company-groups/bulk-delete',
-        { data: payload, snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call addCompanyToCompanyGroup', async () => {
-      const resourceId = 'group-123'
-      const payload = { companyIds: ['company-1'] }
-      await companyApi.addCompanyToCompanyGroup(resourceId, payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        `/company-groups/${resourceId}/participants`,
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call addCompanyToCompanyGroup with defaults', async () => {
-      await companyApi.addCompanyToCompanyGroup()
-      expect(testRequest.put).toHaveBeenCalledWith(
-        '/company-groups//participants',
-        {},
-        { snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call removeCompanyToCompanyGroup', async () => {
-      const resourceId = 'group-123'
-      const payload = { companyIds: ['company-1'] }
-      await companyApi.removeCompanyToCompanyGroup(resourceId, payload)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        `/company-groups/${resourceId}/participants`,
-        { data: payload, snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call removeCompanyToCompanyGroup with defaults', async () => {
-      await companyApi.removeCompanyToCompanyGroup()
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        '/company-groups//participants',
-        { data: {}, snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.updateCompanyGroup('id-6', {})
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('email template operations', () => {
-    it('should call searchEmailTemplate', async () => {
+  describe('addCompanyToCompanyGroup', () => {
+    it('should call PUT with resourceId, payload and COMMON_SNACKBAR', async () => {
+      const payload = { companies: ['comp-1'] }
+      await CompanyAPI.addCompanyToCompanyGroup('group-789', payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/company-groups/group-789/participants', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should handle default empty values', async () => {
+      await CompanyAPI.addCompanyToCompanyGroup()
+      expect(testRequest.put).toHaveBeenCalledWith('/company-groups//participants', {}, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.addCompanyToCompanyGroup('id-7', {})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('removeCompanyToCompanyGroup', () => {
+    it('should call DELETE with resourceId, payload and COMMON_SNACKBAR', async () => {
+      const payload = { companies: ['comp-1'] }
+      await CompanyAPI.removeCompanyToCompanyGroup('group-abc', payload)
+      expect(testRequest.delete).toHaveBeenCalledWith('/company-groups/group-abc/participants', {
+        data: payload,
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.removeCompanyToCompanyGroup('id-8', {})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getCompanyList', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getCompanyList()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/my')
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCompanyList()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getCompanyListForThreatSharing', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getCompanyListForThreatSharing()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/community-companies')
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCompanyListForThreatSharing()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('searchEmailTemplate', () => {
+    it('should call POST with payload', async () => {
       const payload = { page: 1 }
-      await companyApi.searchEmailTemplate(payload)
+      await CompanyAPI.searchEmailTemplate(payload)
       expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates/search', payload)
     })
 
-    it('should call searchEmailTemplate with default payload', async () => {
-      await companyApi.searchEmailTemplate()
+    it('should handle empty payload', async () => {
+      await CompanyAPI.searchEmailTemplate()
       expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates/search', {})
     })
 
-    it('should call createEmailTemplate', async () => {
-      const payload = { name: 'New Template' }
-      await companyApi.createEmailTemplate(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies/email-templates',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.searchEmailTemplate()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('createEmailTemplate', () => {
+    it('should call POST with COMMON_SNACKBAR', async () => {
+      const payload = { name: 'Template 1' }
+      await CompanyAPI.createEmailTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call createEmailTemplate with default payload', async () => {
-      await companyApi.createEmailTemplate()
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies/email-templates',
-        {},
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.createEmailTemplate({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getEmailTemplate', () => {
+    it('should call GET with template id', async () => {
+      await CompanyAPI.getEmailTemplate('template-123')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/template-123')
     })
 
-    it('should call getEmailTemplate', async () => {
-      const resourceId = 'template-123'
-      await companyApi.getEmailTemplate(resourceId)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/email-templates/${resourceId}`)
+    it('should return thenable', () => {
+      const result = CompanyAPI.getEmailTemplate('id-9')
+      expect(typeof result.then).toBe('function')
     })
+  })
 
-    it('should call getDefaultEmailTemplate', async () => {
-      const resourceId = 'template-123'
-      await companyApi.getDefaultEmailTemplate(resourceId)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/email-templates/${resourceId}/default`)
-    })
-
-    it('should call getNotificationTemplatesDeliverySettings', async () => {
-      await companyApi.getNotificationTemplatesDeliverySettings()
+  describe('getNotificationTemplatesDeliverySettings', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getNotificationTemplatesDeliverySettings()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/email-delivery-setting-list')
     })
 
-    it('should call updateEmailTemplate', async () => {
-      const resourceId = 'template-123'
-      const payload = { name: 'Updated Template' }
-      await companyApi.updateEmailTemplate(resourceId, payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        `/companies/email-templates/${resourceId}`,
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.getNotificationTemplatesDeliverySettings()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getDefaultEmailTemplate', () => {
+    it('should call GET with template id', async () => {
+      await CompanyAPI.getDefaultEmailTemplate('template-456')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/template-456/default')
     })
 
-    it('should call deleteEmailTemplate', async () => {
-      const resourceId = 'template-123'
-      await companyApi.deleteEmailTemplate(resourceId)
-      expect(testRequest.delete).toHaveBeenCalledWith(
-        `/companies/email-templates/${resourceId}`,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.getDefaultEmailTemplate('id-10')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('exportEmailTemplate', () => {
+    it('should call POST with blob responseType', async () => {
+      const payload = { filter: 'all' }
+      await CompanyAPI.exportEmailTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates/search/export', payload, {
+        responseType: 'blob'
+      })
     })
 
-    it('should call getMergedTags', async () => {
-      const resourceId = 'template-123'
-      await companyApi.getMergedTags(resourceId)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/email-templates/merge-tags/${resourceId}`)
+    it('should return thenable', () => {
+      const result = CompanyAPI.exportEmailTemplate({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateEmailTemplate', () => {
+    it('should call PUT with COMMON_SNACKBAR', async () => {
+      const payload = { name: 'Updated' }
+      await CompanyAPI.updateEmailTemplate('template-789', payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/email-templates/template-789', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call getCategories', async () => {
-      await companyApi.getCategories()
+    it('should return thenable', () => {
+      const result = CompanyAPI.updateEmailTemplate('id-11', {})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getMergedTags', () => {
+    it('should call GET with template id', async () => {
+      await CompanyAPI.getMergedTags('template-abc')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/merge-tags/template-abc')
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getMergedTags('id-12')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('deleteEmailTemplate', () => {
+    it('should call DELETE with COMMON_SNACKBAR', async () => {
+      await CompanyAPI.deleteEmailTemplate('template-def')
+      expect(testRequest.delete).toHaveBeenCalledWith('/companies/email-templates/template-def', {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.deleteEmailTemplate('id-13')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getCategories', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getCategories()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/categorylookup')
     })
 
-    it('should call getTemplateTypes', async () => {
-      await companyApi.getTemplateTypes()
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCategories()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getTemplateTypes', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getTemplateTypes()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/typelookup')
     })
 
-    it('should call makeDefaultTemplate', async () => {
-      const resourceId = 'template-123'
-      const payload = {}
-      await companyApi.makeDefaultTemplate(resourceId, payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        `/companies/email-templates/make-default/${resourceId}`,
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
-    })
-
-    it('should call exportEmailTemplate', async () => {
-      const payload = { filters: {} }
-      await companyApi.exportEmailTemplate(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies/email-templates/search/export',
-        payload,
-        { responseType: 'blob' }
-      )
-    })
-
-    it('should call generateNotificationTemplateTranslation', async () => {
-      const payload = { templateId: 'template-123' }
-      await companyApi.generateNotificationTemplateTranslation(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies/email-templates/translate',
-        payload
-      )
-    })
-
-    it('should call getNotificationTemplateTranslation', async () => {
-      await companyApi.getNotificationTemplateTranslation()
-      expect(testRequest.get).toHaveBeenCalledWith('/companies/translated-email-templates')
+    it('should return thenable', () => {
+      const result = CompanyAPI.getTemplateTypes()
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('privacy and data operations', () => {
-    it('should call getCompanyPrivacy', async () => {
-      await companyApi.getCompanyPrivacy()
+  describe('getCheckCompanyLicense', () => {
+    it('should call GET with company id', async () => {
+      await CompanyAPI.getCheckCompanyLicense('company-123')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/company-123/license-check')
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCheckCompanyLicense('id-14')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('bulkDeleteCompanies', () => {
+    it('should call DELETE with payload and COMMON_SNACKBAR', async () => {
+      const payload = { companyIds: ['comp-1', 'comp-2'] }
+      await CompanyAPI.bulkDeleteCompanies(payload)
+      expect(testRequest.delete).toHaveBeenCalledWith('/companies/bulk-delete', {
+        data: payload,
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.bulkDeleteCompanies({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('bulkDeleteCompanyGroups', () => {
+    it('should call DELETE with payload and COMMON_SNACKBAR', async () => {
+      const payload = { groupIds: ['group-1'] }
+      await CompanyAPI.bulkDeleteCompanyGroups(payload)
+      expect(testRequest.delete).toHaveBeenCalledWith('/company-groups/bulk-delete', {
+        data: payload,
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.bulkDeleteCompanyGroups({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('makeDefaultTemplate', () => {
+    it('should call PUT with COMMON_SNACKBAR', async () => {
+      const payload = { default: true }
+      await CompanyAPI.makeDefaultTemplate('template-123', payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/email-templates/make-default/template-123', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.makeDefaultTemplate('id-15', {})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getCompanyPrivacy', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getCompanyPrivacy()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/privacy')
     })
 
-    it('should call updateCompanyPrivacy', async () => {
-      const payload = { privacySettings: {} }
-      await companyApi.updateCompanyPrivacy(payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        '/companies/privacy',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCompanyPrivacy()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateCompanyPrivacy', () => {
+    it('should call PUT with COMMON_SNACKBAR', async () => {
+      const payload = { privacyEnabled: true }
+      await CompanyAPI.updateCompanyPrivacy(payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/privacy', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call getCompanyDataPrivacy', async () => {
-      await companyApi.getCompanyDataPrivacy()
+    it('should return thenable', () => {
+      const result = CompanyAPI.updateCompanyPrivacy({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getTimeByTimeZone', () => {
+    it('should call GET with timeZoneId', async () => {
+      await CompanyAPI.getTimeByTimeZone('EST')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/get-current-time/EST')
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getTimeByTimeZone('PST')
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getCompanyDataPrivacy', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getCompanyDataPrivacy()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/privacymask')
     })
 
-    it('should call saveCompanyDataPrivacy', async () => {
-      const payload = { maskingRules: {} }
-      await companyApi.saveCompanyDataPrivacy(payload)
-      expect(testRequest.put).toHaveBeenCalledWith(
-        '/companies/privacymask',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.getCompanyDataPrivacy()
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('timezone operations', () => {
-    it('should call getTimeByTimeZone', async () => {
-      const timeZoneId = 'UTC'
-      await companyApi.getTimeByTimeZone(timeZoneId)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/get-current-time/${timeZoneId}`)
+  describe('saveCompanyDataPrivacy', () => {
+    it('should call PUT with COMMON_SNACKBAR', async () => {
+      const payload = { maskData: true }
+      await CompanyAPI.saveCompanyDataPrivacy(payload)
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/privacymask', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.saveCompanyDataPrivacy({})
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('AI settings operations', () => {
-    it('should call saveAIAllySettings', async () => {
+  describe('saveAIAllySettings', () => {
+    it('should call POST with COMMON_SNACKBAR', async () => {
       const payload = { enabled: true }
-      await companyApi.saveAIAllySettings(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies/ai',
-        payload,
-        { snackbar: COMMON_SNACKBAR }
-      )
+      await CompanyAPI.saveAIAllySettings(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/ai', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
     })
 
-    it('should call getAIAllySettings', async () => {
-      await companyApi.getAIAllySettings()
+    it('should return thenable', () => {
+      const result = CompanyAPI.saveAIAllySettings({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getAIAllySettings', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getAIAllySettings()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/ai')
     })
 
-    it('should call getAgenticAIMetadata', async () => {
-      await companyApi.getAgenticAIMetadata()
+    it('should return thenable', () => {
+      const result = CompanyAPI.getAIAllySettings()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getAgenticAIMetadata', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getAgenticAIMetadata()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai-settings/metadata')
     })
 
-    it('should call getAgenticAISettings', async () => {
-      const config = { timeout: 5000 }
-      await companyApi.getAgenticAISettings(config)
-      expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai-settings', config)
+    it('should return thenable', () => {
+      const result = CompanyAPI.getAgenticAIMetadata()
+      expect(typeof result.then).toBe('function')
     })
+  })
 
-    it('should call getAgenticAISettings with default config', async () => {
-      await companyApi.getAgenticAISettings()
+  describe('getAgenticAISettings', () => {
+    it('should call GET without config', async () => {
+      await CompanyAPI.getAgenticAISettings()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai-settings', {})
     })
 
-    it('should call updateAgenticAISettings', async () => {
-      const payload = { settings: {} }
-      await companyApi.updateAgenticAISettings(payload)
+    it('should merge custom config', async () => {
+      const config = { loading: false }
+      await CompanyAPI.getAgenticAISettings(config)
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai-settings', config)
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getAgenticAISettings()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('updateAgenticAISettings', () => {
+    it('should call PATCH', async () => {
+      const payload = { setting: 'value' }
+      await CompanyAPI.updateAgenticAISettings(payload)
       expect(testRequest.patch).toHaveBeenCalledWith('/companies/agentic-ai-settings', payload)
     })
 
-    it('should call resetAgenticAISettings', async () => {
-      await companyApi.resetAgenticAISettings()
+    it('should return thenable', () => {
+      const result = CompanyAPI.updateAgenticAISettings({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('resetAgenticAISettings', () => {
+    it('should call POST endpoint', async () => {
+      await CompanyAPI.resetAgenticAISettings()
       expect(testRequest.post).toHaveBeenCalledWith('/companies/agentic-ai-settings/reset')
     })
 
-    it('should call getAgenticAIStatus', async () => {
-      await companyApi.getAgenticAIStatus()
+    it('should return thenable', () => {
+      const result = CompanyAPI.resetAgenticAISettings()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getAgenticAIStatus', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getAgenticAIStatus()
       expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai')
     })
 
-    it('should call toggleAgenticAIStatus', async () => {
+    it('should return thenable', () => {
+      const result = CompanyAPI.getAgenticAIStatus()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('toggleAgenticAIStatus', () => {
+    it('should call POST with payload', async () => {
       const payload = { enabled: true }
-      await companyApi.toggleAgenticAIStatus(payload)
+      await CompanyAPI.toggleAgenticAIStatus(payload)
       expect(testRequest.post).toHaveBeenCalledWith('/companies/agentic-ai', payload)
     })
 
-    it('should call saveAgenticAISettings', async () => {
-      const payload = { settings: {} }
-      await companyApi.saveAgenticAISettings(payload)
+    it('should return thenable', () => {
+      const result = CompanyAPI.toggleAgenticAIStatus({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('saveAgenticAISettings', () => {
+    it('should call updateAgenticAISettings internally', async () => {
+      const payload = { setting: 'value' }
+      await CompanyAPI.saveAgenticAISettings(payload)
       expect(testRequest.patch).toHaveBeenCalledWith('/companies/agentic-ai-settings', payload)
     })
-  })
 
-  describe('export operations', () => {
-    it('should call exportCompanies', async () => {
-      const payload = { filters: {} }
-      await companyApi.exportCompanies(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/companies/search/export',
-        payload,
-        { responseType: 'blob' }
-      )
-    })
-
-    it('should call exportCompanyGroup', async () => {
-      const payload = { filters: {} }
-      await companyApi.exportCompanyGroup(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        '/company-groups/search/export',
-        payload,
-        { responseType: 'blob' }
-      )
-    })
-
-    it('should call exportCompanyGroupDetails', async () => {
-      const id = 'group-123'
-      const payload = { filters: {} }
-      await companyApi.exportCompanyGroupDetails(payload, id)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        `/company-groups/${id}/companies/search/export`,
-        payload,
-        { responseType: 'blob' }
-      )
+    it('should return thenable', () => {
+      const result = CompanyAPI.saveAgenticAISettings({})
+      expect(typeof result.then).toBe('function')
     })
   })
 
-  describe('HTTP method consistency', () => {
+  describe('generateNotificationTemplateTranslation', () => {
+    it('should call POST', async () => {
+      const payload = { templateId: '123', language: 'es' }
+      await CompanyAPI.generateNotificationTemplateTranslation(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates/translate', payload)
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.generateNotificationTemplateTranslation({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getNotificationTemplateTranslation', () => {
+    it('should call GET endpoint', async () => {
+      await CompanyAPI.getNotificationTemplateTranslation()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/translated-email-templates')
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getNotificationTemplateTranslation()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export 52 functions', () => {
+      const functions = Object.values(CompanyAPI).filter(x => typeof x === 'function')
+      expect(functions).toHaveLength(52)
+    })
+  })
+
+  describe('HTTP Method Usage', () => {
     it('should use GET for read operations', async () => {
-      await companyApi.getMyCompanies()
-      expect(testRequest.get).toHaveBeenCalled()
+      await CompanyAPI.getMyCompanies()
+      await CompanyAPI.getCompanyByID('1')
+      await CompanyAPI.getCategories()
+      await CompanyAPI.getCompanyPrivacy()
+      expect(testRequest.get).toHaveBeenCalledTimes(4)
     })
 
-    it('should use POST for search operations', async () => {
-      const payload = { page: 1 }
-      await companyApi.searchCompanies(payload)
-      expect(testRequest.post).toHaveBeenCalled()
+    it('should use POST for creation and search', async () => {
+      await CompanyAPI.searchCompanies({})
+      await CompanyAPI.createEmailTemplate({})
+      await CompanyAPI.saveAIAllySettings({})
+      expect(testRequest.post).toHaveBeenCalledTimes(3)
     })
 
-    it('should use PUT for update operations', async () => {
-      const id = 'company-123'
-      const payload = { name: 'Updated' }
-      await companyApi.updateCompany(id, payload)
-      expect(testRequest.put).toHaveBeenCalled()
+    it('should use PUT for updates', async () => {
+      await CompanyAPI.updateCompanyPrivacy({})
+      await CompanyAPI.updateCompanyGroup('1', {})
+      expect(testRequest.put).toHaveBeenCalledTimes(2)
     })
 
-    it('should use DELETE for delete operations', async () => {
-      await companyApi.deleteCompany('company-123')
-      expect(testRequest.delete).toHaveBeenCalled()
+    it('should use DELETE for deletions', async () => {
+      await CompanyAPI.deleteCompany('1')
+      await CompanyAPI.deleteEmailTemplate('1')
+      expect(testRequest.delete).toHaveBeenCalledTimes(2)
     })
 
-    it('should use PATCH for partial updates', async () => {
-      const payload = { settings: {} }
-      await companyApi.updateAgenticAISettings(payload)
-      expect(testRequest.patch).toHaveBeenCalled()
-    })
-  })
-
-  describe('snackbar consistency', () => {
-    it('should use COMMON_SNACKBAR for mutations', async () => {
-      const payload = { name: 'New Company' }
-      await companyApi.createCompany(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(FormData),
-        expect.objectContaining({ snackbar: COMMON_SNACKBAR })
-      )
-    })
-
-    it('should use COMMON_SNACKBAR for group operations', async () => {
-      const payload = { name: 'New Group' }
-      await companyApi.createCompanyGroups(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        expect.any(String),
-        payload,
-        expect.objectContaining({ snackbar: COMMON_SNACKBAR })
-      )
+    it('should use PATCH for agentic AI settings', async () => {
+      await CompanyAPI.updateAgenticAISettings({})
+      expect(testRequest.patch).toHaveBeenCalledTimes(1)
     })
   })
 
-  describe('blob response type for exports', () => {
-    it('should use blob responseType for company exports', async () => {
-      const payload = { filters: {} }
-      await companyApi.exportCompanies(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        expect.any(String),
-        payload,
-        expect.objectContaining({ responseType: 'blob' })
-      )
+  describe('Error Handling', () => {
+    it('should propagate POST errors', async () => {
+      const error = new Error('Creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(CompanyAPI.createCompany({})).rejects.toThrow('Creation failed')
     })
 
-    it('should use blob responseType for template exports', async () => {
-      const payload = { filters: {} }
-      await companyApi.exportEmailTemplate(payload)
-      expect(testRequest.post).toHaveBeenCalledWith(
-        expect.any(String),
-        payload,
-        expect.objectContaining({ responseType: 'blob' })
-      )
-    })
-  })
-
-  describe('edge cases', () => {
-    it('should handle company creation with license dates', async () => {
-      const payload = {
-        name: 'Company',
-        LicenseStartDate: '01/01/2024 10:00:00',
-        LicenseEndDate: '12/31/2024 23:59:59'
-      }
-      await companyApi.createCompany(payload)
-      expect(testRequest.post).toHaveBeenCalled()
+    it('should propagate GET errors', async () => {
+      const error = new Error('Not found')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(CompanyAPI.getMyCompanies()).rejects.toThrow('Not found')
     })
 
-    it('should handle bulk delete with multiple IDs', async () => {
-      const payload = { companyIds: ['company-1', 'company-2', 'company-3'] }
-      await companyApi.bulkDeleteCompanies(payload)
-      expect(testRequest.delete).toHaveBeenCalled()
-    })
-
-    it('should handle company group management with empty payload', async () => {
-      await companyApi.addCompanyToCompanyGroup('group-123', {})
-      expect(testRequest.put).toHaveBeenCalled()
-    })
-
-    it('should handle email template operations with special characters', async () => {
-      const resourceId = 'template-123!@#'
-      await companyApi.getEmailTemplate(resourceId)
-      expect(testRequest.get).toHaveBeenCalledWith(`/companies/email-templates/${resourceId}`)
-    })
-
-    it('should handle AI settings updates without snackbar', async () => {
-      const payload = { settings: {} }
-      await companyApi.updateAgenticAISettings(payload)
-      expect(testRequest.patch).toHaveBeenCalledWith(
-        '/companies/agentic-ai-settings',
-        payload
-      )
+    it('should propagate DELETE errors', async () => {
+      const error = new Error('Delete failed')
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(CompanyAPI.deleteCompany('1')).rejects.toThrow('Delete failed')
     })
   })
 })
