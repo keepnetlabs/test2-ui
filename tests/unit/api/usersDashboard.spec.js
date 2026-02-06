@@ -291,5 +291,255 @@ describe('usersDashboard API', () => {
       await usersDashboardApi.getUserTimeline(payload)
       expect(usersDashboardRequest.post).toHaveBeenCalled()
     })
+
+    it('should handle special characters in email', async () => {
+      const email = 'user+test@example.com'
+      await usersDashboardApi.sendMagicLink(email)
+      expect(usersDashboardRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle numeric and string enrollment IDs', async () => {
+      await usersDashboardApi.downloadCertificate(123)
+      expect(usersDashboardRequest.get).toHaveBeenCalled()
+
+      usersDashboardRequest.get.mockClear()
+      await usersDashboardApi.downloadCertificate('enrollment-xyz')
+      expect(usersDashboardRequest.get).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('login should return thenable', () => {
+      const result = usersDashboardApi.login('user@example.com')
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('loginWithSaml should return thenable', () => {
+      const result = usersDashboardApi.loginWithSaml({})
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('sendMagicLink should return thenable', () => {
+      const result = usersDashboardApi.sendMagicLink('user@example.com')
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('loginWithMagicLink should return thenable', () => {
+      const result = usersDashboardApi.loginWithMagicLink('token')
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getPhishingResult should return thenable', () => {
+      const result = usersDashboardApi.getPhishingResult()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getTopPerformance should return thenable', () => {
+      const result = usersDashboardApi.getTopPerformance()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getUserInfo should return thenable', () => {
+      const result = usersDashboardApi.getUserInfo()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getMyBadges should return thenable', () => {
+      const result = usersDashboardApi.getMyBadges()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getMyLearning should return thenable', () => {
+      const result = usersDashboardApi.getMyLearning()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getMyCertificates should return thenable', () => {
+      const result = usersDashboardApi.getMyCertificates()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('downloadCertificate should return thenable', () => {
+      const result = usersDashboardApi.downloadCertificate('id-1')
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getUserTimeline should return thenable', () => {
+      const result = usersDashboardApi.getUserTimeline({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export all required functions', () => {
+      expect(typeof usersDashboardApi.login).toBe('function')
+      expect(typeof usersDashboardApi.loginWithSaml).toBe('function')
+      expect(typeof usersDashboardApi.sendMagicLink).toBe('function')
+      expect(typeof usersDashboardApi.loginWithMagicLink).toBe('function')
+      expect(typeof usersDashboardApi.getPhishingResult).toBe('function')
+      expect(typeof usersDashboardApi.getTopPerformance).toBe('function')
+      expect(typeof usersDashboardApi.getUserInfo).toBe('function')
+      expect(typeof usersDashboardApi.getMyBadges).toBe('function')
+      expect(typeof usersDashboardApi.getMyLearning).toBe('function')
+      expect(typeof usersDashboardApi.getMyCertificates).toBe('function')
+      expect(typeof usersDashboardApi.downloadCertificate).toBe('function')
+      expect(typeof usersDashboardApi.getUserTimeline).toBe('function')
+    })
+
+    it('should export at least 12 functions', () => {
+      const functions = Object.values(usersDashboardApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThanOrEqual(12)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle authentication workflow', async () => {
+      const username = 'user@example.com'
+      await usersDashboardApi.login(username)
+      expect(usersDashboardRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle dashboard data retrieval workflow', async () => {
+      await usersDashboardApi.getPhishingResult()
+      await usersDashboardApi.getTopPerformance()
+      await usersDashboardApi.getUserInfo()
+      await usersDashboardApi.getMyBadges()
+
+      expect(usersDashboardRequest.get).toHaveBeenCalledTimes(4)
+    })
+
+    it('should handle learning and certification workflow', async () => {
+      await usersDashboardApi.getMyLearning()
+      expect(usersDashboardRequest.post).toHaveBeenCalledTimes(1)
+
+      usersDashboardRequest.post.mockClear()
+      await usersDashboardApi.getMyCertificates()
+      expect(usersDashboardRequest.post).toHaveBeenCalledTimes(1)
+
+      usersDashboardRequest.get.mockClear()
+      await usersDashboardApi.downloadCertificate('enrollment-1')
+      expect(usersDashboardRequest.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel dashboard operations', async () => {
+      const results = await Promise.all([
+        usersDashboardApi.getPhishingResult(),
+        usersDashboardApi.getTopPerformance(),
+        usersDashboardApi.getUserInfo(),
+        usersDashboardApi.getMyBadges()
+      ])
+
+      expect(results).toHaveLength(4)
+      expect(usersDashboardRequest.get).toHaveBeenCalledTimes(4)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle login with email parameter', async () => {
+      const email = 'user@example.com'
+      await usersDashboardApi.login(email)
+      expect(usersDashboardRequest.post).toHaveBeenCalledWith(
+        '/securitygrowthauth/login',
+        { username: email },
+        expect.any(Object)
+      )
+    })
+
+    it('should handle SAML login with full credentials', async () => {
+      const payload = {
+        username: 'user@company.com',
+        authcode: 'saml-code-123',
+        relayState: 'relay-state-data'
+      }
+      await usersDashboardApi.loginWithSaml(payload)
+      expect(authTestRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle magic link send with various email formats', async () => {
+      const emails = [
+        'user@example.com',
+        'user+tag@example.com',
+        'first.last@example.co.uk'
+      ]
+
+      for (const email of emails) {
+        usersDashboardRequest.post.mockClear()
+        await usersDashboardApi.sendMagicLink(email)
+        expect(usersDashboardRequest.post).toHaveBeenCalledWith(
+          '/securitygrowthauth/send-magic-link',
+          { email },
+          expect.any(Object)
+        )
+      }
+    })
+
+    it('should handle timeline with pagination parameters', async () => {
+      const payload = { page: 2, pageSize: 50 }
+      await usersDashboardApi.getUserTimeline(payload)
+      expect(usersDashboardRequest.post).toHaveBeenCalledWith(
+        '/securitygrowthdashboard/user-timeline',
+        payload,
+        expect.any(Object)
+      )
+    })
+
+    it('should handle certificate download with different ID formats', async () => {
+      const enrollmentId = 'enrollment-123'
+      await usersDashboardApi.downloadCertificate(enrollmentId)
+      expect(usersDashboardRequest.get).toHaveBeenCalledWith(
+        `/securitygrowthdashboard/certificate-download/${enrollmentId}`,
+        expect.any(Object)
+      )
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate login errors', async () => {
+      const error = new Error('Login failed')
+      usersDashboardRequest.post.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.login('user@example.com')).rejects.toThrow('Login failed')
+    })
+
+    it('should propagate SAML login errors', async () => {
+      const error = new Error('SAML authentication failed')
+      authTestRequest.post.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.loginWithSaml({})).rejects.toThrow('SAML authentication failed')
+    })
+
+    it('should propagate magic link send errors', async () => {
+      const error = new Error('Magic link send failed')
+      usersDashboardRequest.post.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.sendMagicLink('user@example.com')).rejects.toThrow('Magic link send failed')
+    })
+
+    it('should propagate magic link login errors', async () => {
+      const error = new Error('Magic link login failed')
+      authTestRequest.post.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.loginWithMagicLink('token')).rejects.toThrow('Magic link login failed')
+    })
+
+    it('should propagate dashboard data errors', async () => {
+      const error = new Error('Dashboard fetch failed')
+      usersDashboardRequest.get.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.getPhishingResult()).rejects.toThrow('Dashboard fetch failed')
+    })
+
+    it('should propagate learning data errors', async () => {
+      const error = new Error('Learning data fetch failed')
+      usersDashboardRequest.post.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.getMyLearning()).rejects.toThrow('Learning data fetch failed')
+    })
+
+    it('should propagate certificate download errors', async () => {
+      const error = new Error('Certificate download failed')
+      usersDashboardRequest.get.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.downloadCertificate('id-1')).rejects.toThrow('Certificate download failed')
+    })
+
+    it('should propagate timeline errors', async () => {
+      const error = new Error('Timeline fetch failed')
+      usersDashboardRequest.post.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.getUserTimeline({})).rejects.toThrow('Timeline fetch failed')
+    })
   })
 })
