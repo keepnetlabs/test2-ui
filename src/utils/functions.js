@@ -753,34 +753,69 @@ export function createCopyToClipboardSnackbar() {
     icon: "mdi-checkbox-marked-circle "
   });
 }
+
+function createCopyToClipboardErrorSnackbar() {
+  store.dispatch("common/createSnackBar", {
+    message: "Failed to copy to clipboard",
+    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+    icon: "mdi-close-circle"
+  });
+}
+
+function copyToClipboardWithExecCommand(textToCopy) {
+  try {
+    let textArea = document.createElement("textarea");
+    textArea.value = textToCopy;
+    // make the textarea out of viewport
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const isCopied = document.execCommand("copy");
+    textArea.remove();
+    return isCopied;
+  } catch (e) {
+    return false;
+  }
+}
 export function copyToClipboard(textToCopy) {
   // navigator clipboard api needs a secure context (https)
   try {
-    if (navigator.clipboard && window.isSecureContext) {
-      // navigator clipboard api method'
-      createCopyToClipboardSnackbar();
-      return navigator.clipboard.writeText(textToCopy);
-    } else {
-      // text area method
-      let textArea = document.createElement("textarea");
-      textArea.value = textToCopy;
-      // make the textarea out of viewport
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      return new Promise((res, rej) => {
-        if (document.execCommand("copy")) {
-          res();
-          createCopyToClipboardSnackbar();
-        } else rej("something went wrong");
+    const normalizedText = textToCopy == null ? "" : String(textToCopy);
 
-        textArea.remove();
-      });
+    if (navigator.clipboard && window.isSecureContext) {
+      // navigator clipboard api method
+      return navigator.clipboard
+        .writeText(normalizedText)
+        .then(() => {
+          createCopyToClipboardSnackbar();
+          return true;
+        })
+        .catch(() => {
+          const isFallbackCopied = copyToClipboardWithExecCommand(normalizedText);
+          if (isFallbackCopied) {
+            createCopyToClipboardSnackbar();
+            return true;
+          }
+          createCopyToClipboardErrorSnackbar();
+          return false;
+        });
     }
-  } catch (e) {}
+
+    const isCopied = copyToClipboardWithExecCommand(normalizedText);
+    if (isCopied) {
+      createCopyToClipboardSnackbar();
+      return Promise.resolve(true);
+    }
+
+    createCopyToClipboardErrorSnackbar();
+    return Promise.resolve(false);
+  } catch (e) {
+    createCopyToClipboardErrorSnackbar();
+    return Promise.resolve(false);
+  }
 }
 
 export function formatSeconds(seconds = 0) {

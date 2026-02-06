@@ -1,12 +1,12 @@
 jest.mock('@/utils/emailThreatSimulatorRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({})
 }))
 
 import emailThreatSimulatorRequest from '@/utils/emailThreatSimulatorRequest'

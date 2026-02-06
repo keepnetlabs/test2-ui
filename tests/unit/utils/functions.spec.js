@@ -14,6 +14,7 @@ import {
   createRandomCryptStringNumber,
   copyToClipboard
 } from '@/utils/functions'
+import store from '@/store'
 
 describe('Utils Functions', () => {
   describe('getBtnStatusColor', () => {
@@ -486,8 +487,95 @@ describe('Utils Functions', () => {
   })
 
   describe('copyToClipboard', () => {
+    let originalClipboard
+    let originalExecCommand
+    let dispatchSpy
+
+    beforeEach(() => {
+      originalClipboard = navigator.clipboard
+      originalExecCommand = document.execCommand
+      dispatchSpy = jest.spyOn(store, 'dispatch').mockImplementation(() => {})
+      Object.defineProperty(window, 'isSecureContext', {
+        value: true,
+        configurable: true
+      })
+    })
+
+    afterEach(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: originalClipboard,
+        configurable: true
+      })
+      document.execCommand = originalExecCommand
+      dispatchSpy.mockRestore()
+      jest.clearAllMocks()
+    })
+
     it('should be a callable function', () => {
       expect(typeof copyToClipboard).toBe('function')
+    })
+
+    it('should return true and show success snackbar when Clipboard API succeeds', async () => {
+      const writeTextMock = jest.fn().mockResolvedValue(undefined)
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: writeTextMock },
+        configurable: true
+      })
+      document.execCommand = jest.fn()
+
+      const result = await copyToClipboard('copy-value')
+
+      expect(result).toBe(true)
+      expect(writeTextMock).toHaveBeenCalledWith('copy-value')
+      expect(document.execCommand).not.toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(
+        'common/createSnackBar',
+        expect.objectContaining({
+          message: 'Copied to Clipboard'
+        })
+      )
+    })
+
+    it('should fallback to execCommand and return true when Clipboard API is rejected', async () => {
+      const writeTextMock = jest.fn().mockRejectedValue(new Error('NotAllowedError'))
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: writeTextMock },
+        configurable: true
+      })
+      document.execCommand = jest.fn().mockReturnValue(true)
+
+      const result = await copyToClipboard('fallback-copy')
+
+      expect(result).toBe(true)
+      expect(writeTextMock).toHaveBeenCalledWith('fallback-copy')
+      expect(document.execCommand).toHaveBeenCalledWith('copy')
+      expect(store.dispatch).toHaveBeenCalledWith(
+        'common/createSnackBar',
+        expect.objectContaining({
+          message: 'Copied to Clipboard'
+        })
+      )
+    })
+
+    it('should return false and show error snackbar when Clipboard API and fallback both fail', async () => {
+      const writeTextMock = jest.fn().mockRejectedValue(new Error('NotAllowedError'))
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: writeTextMock },
+        configurable: true
+      })
+      document.execCommand = jest.fn().mockReturnValue(false)
+
+      const result = await copyToClipboard('cannot-copy')
+
+      expect(result).toBe(false)
+      expect(writeTextMock).toHaveBeenCalledWith('cannot-copy')
+      expect(document.execCommand).toHaveBeenCalledWith('copy')
+      expect(store.dispatch).toHaveBeenCalledWith(
+        'common/createSnackBar',
+        expect.objectContaining({
+          message: 'Failed to copy to clipboard'
+        })
+      )
     })
   })
 

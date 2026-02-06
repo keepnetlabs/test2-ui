@@ -1,12 +1,12 @@
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 jest.mock('@/utils/uploadRequest', () => ({
-  post: jest.fn().mockReturnValue(Promise.resolve({}))
+  post: jest.fn().mockResolvedValue({})
 }))
 
 import testRequest from '@/utils/testRequest'
@@ -500,6 +500,117 @@ describe('threatSharing API', () => {
       }
       await threatSharingApi.getAllCommunityList(payload)
       expect(testRequest.post).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenables', async () => {
+      expect(typeof threatSharingApi.getAllCommunityList({}).then).toBe('function')
+      expect(typeof threatSharingApi.getMyCommunityList({}).then).toBe('function')
+      expect(typeof threatSharingApi.createCommunity({}).then).toBe('function')
+      expect(typeof threatSharingApi.getCommunityDetails('id').then).toBe('function')
+      expect(typeof threatSharingApi.uploadEmlOrMsg(new File([], '')).then).toBe('function')
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export 44+ functions', () => {
+      const functions = Object.values(threatSharingApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThan(40)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle community creation and membership workflow', async () => {
+      testRequest.post.mockClear()
+      await threatSharingApi.createCommunity({ name: 'Community' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await threatSharingApi.joinCommunity('community-1')
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await threatSharingApi.getCommunityMembers('community-1', {})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle threat intel sharing workflow', async () => {
+      uploadRequest.post.mockClear()
+      const file = new File(['content'], 'threat.eml')
+      await threatSharingApi.uploadEmlOrMsg(file)
+      expect(uploadRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await threatSharingApi.createCommunityPost({ title: 'Threat' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel community operations', async () => {
+      const results = await Promise.all([
+        threatSharingApi.getAllCommunityList({}),
+        threatSharingApi.getMyCommunityList({}),
+        threatSharingApi.getInvitations()
+      ])
+
+      expect(results).toHaveLength(3)
+      expect(testRequest.post).toHaveBeenCalledTimes(2)
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle complex search payloads', async () => {
+      const payload = {
+        page: 1,
+        pageSize: 50,
+        filters: { status: ['active'], type: 'email' }
+      }
+      await threatSharingApi.getAllCommunityList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('communities/search/all', payload)
+    })
+
+    it('should handle file uploads with callbacks', async () => {
+      const file = new File(['content'], 'file.eml')
+      const onProgress = jest.fn()
+      await threatSharingApi.uploadEmlOrMsg(file, onProgress)
+      expect(uploadRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle localStorage integration', async () => {
+      localStorage.getItem.mockReturnValue('custom-company-id')
+      await threatSharingApi.getsuggestedCommunities()
+      expect(localStorage.getItem).toHaveBeenCalledWith('companyRequestId')
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate API errors', async () => {
+      const error = new Error('API Error')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(threatSharingApi.getAllCommunityList({})).rejects.toThrow('API Error')
+
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(threatSharingApi.getCommunityDetails('id')).rejects.toThrow('API Error')
+
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(threatSharingApi.deleteCommunity('id')).rejects.toThrow('API Error')
+    })
+
+    it('should handle upload errors', async () => {
+      const error = new Error('Upload failed')
+      uploadRequest.post.mockRejectedValueOnce(error)
+      const file = new File([], 'test.eml')
+      await expect(threatSharingApi.uploadEmlOrMsg(file)).rejects.toThrow('Upload failed')
+    })
+
+    it('should handle community operation errors', async () => {
+      const error = new Error('Community operation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(threatSharingApi.createCommunity({})).rejects.toThrow('Community operation failed')
+
+      testRequest.put.mockRejectedValueOnce(error)
+      await expect(threatSharingApi.updateCommunity('id', {})).rejects.toThrow('Community operation failed')
     })
   })
 })

@@ -1,10 +1,10 @@
 jest.mock('@/utils/usersDashboardRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({})
 }))
 
 jest.mock('@/utils/authTestRequest', () => ({
-  post: jest.fn().mockReturnValue(Promise.resolve({}))
+  post: jest.fn().mockResolvedValue({})
 }))
 
 jest.mock('@/utils/functions', () => ({
