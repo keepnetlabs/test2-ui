@@ -484,5 +484,262 @@ describe('mailConfiguration API', () => {
       await mailConfigurationApi.getDomainList(payload)
       expect(testRequest.post).toHaveBeenCalled()
     })
+
+    it('should handle numeric and string configuration IDs', async () => {
+      await mailConfigurationApi.getO365MailData(123)
+      expect(testRequest.get).toHaveBeenCalled()
+
+      testRequest.get.mockClear()
+      await mailConfigurationApi.getO365MailData('config-abc')
+      expect(testRequest.get).toHaveBeenCalled()
+    })
+
+    it('should handle URLs with special characters', async () => {
+      const url = 'https://tenant@company.onmicrosoft.com'
+      await mailConfigurationApi.deleteO365(url)
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        `mail-configurations/o365/${url}`,
+        expect.any(Object)
+      )
+    })
+
+    it('should handle Google Workspace configuration with custom domain', async () => {
+      const payload = {
+        name: 'Google Workspace',
+        customerId: 'customer-123',
+        domain: 'company.com'
+      }
+      await mailConfigurationApi.createGoogleWorkSpace(payload)
+      expect(testRequest.post).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenable objects', () => {
+      const results = [
+        mailConfigurationApi.getMailConfigurationList({}),
+        mailConfigurationApi.getO365MailData('id'),
+        mailConfigurationApi.getEWSMailData('id'),
+        mailConfigurationApi.getGoogleWorkSpace('id'),
+        mailConfigurationApi.createO365({}),
+        mailConfigurationApi.updateO365({}, 'url'),
+        mailConfigurationApi.deleteO365('url'),
+        mailConfigurationApi.createEWS({}),
+        mailConfigurationApi.updateEWS({}, 'url'),
+        mailConfigurationApi.deleteEWS('url'),
+        mailConfigurationApi.createGoogleWorkSpace({}),
+        mailConfigurationApi.updateGoogleWorkSpace({}, 'id'),
+        mailConfigurationApi.deleteGoogleWorkSpace('id'),
+        mailConfigurationApi.getDomainList({}),
+        mailConfigurationApi.exportMailConfiguration({})
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+      })
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export all required functions', () => {
+      expect(typeof mailConfigurationApi.getMailConfigurationList).toBe('function')
+      expect(typeof mailConfigurationApi.getO365MailData).toBe('function')
+      expect(typeof mailConfigurationApi.getEWSMailData).toBe('function')
+      expect(typeof mailConfigurationApi.getGoogleWorkSpace).toBe('function')
+      expect(typeof mailConfigurationApi.createO365).toBe('function')
+      expect(typeof mailConfigurationApi.updateO365).toBe('function')
+      expect(typeof mailConfigurationApi.deleteO365).toBe('function')
+      expect(typeof mailConfigurationApi.createEWS).toBe('function')
+      expect(typeof mailConfigurationApi.updateEWS).toBe('function')
+      expect(typeof mailConfigurationApi.deleteEWS).toBe('function')
+      expect(typeof mailConfigurationApi.createGoogleWorkSpace).toBe('function')
+      expect(typeof mailConfigurationApi.updateGoogleWorkSpace).toBe('function')
+      expect(typeof mailConfigurationApi.deleteGoogleWorkSpace).toBe('function')
+      expect(typeof mailConfigurationApi.getDomainList).toBe('function')
+      expect(typeof mailConfigurationApi.exportMailConfiguration).toBe('function')
+    })
+
+    it('should export at least 15 functions', () => {
+      const functions = Object.values(mailConfigurationApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThanOrEqual(15)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle O365 configuration full workflow', async () => {
+      await mailConfigurationApi.getMailConfigurationList({})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await mailConfigurationApi.createO365({ name: 'O365' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await mailConfigurationApi.getO365MailData('config-1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      testRequest.put.mockClear()
+      await mailConfigurationApi.updateO365({ name: 'Updated' }, 'https://example.com')
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.delete.mockClear()
+      await mailConfigurationApi.deleteO365('https://example.com')
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle EWS configuration workflow', async () => {
+      await mailConfigurationApi.createEWS({ name: 'EWS' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await mailConfigurationApi.getEWSMailData('config-1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle Google Workspace configuration workflow', async () => {
+      await mailConfigurationApi.createGoogleWorkSpace({ name: 'Google' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await mailConfigurationApi.getGoogleWorkSpace('config-1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel mail configuration operations', async () => {
+      const results = await Promise.all([
+        mailConfigurationApi.getMailConfigurationList({}),
+        mailConfigurationApi.getO365MailData('id'),
+        mailConfigurationApi.getEWSMailData('id')
+      ])
+
+      expect(results).toHaveLength(3)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle mail configuration search with pagination', async () => {
+      const payload = { page: 2, pageSize: 50 }
+      await mailConfigurationApi.getMailConfigurationList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/mail-configurations/search', payload)
+    })
+
+    it('should handle O365 creation with various configurations', async () => {
+      const configs = [
+        { name: 'O365 1', tenantId: 'tenant-1' },
+        { name: 'O365 2', applicationId: 'app-2' },
+        { name: 'O365 3', directoryId: 'dir-3' }
+      ]
+
+      for (const config of configs) {
+        testRequest.post.mockClear()
+        await mailConfigurationApi.createO365(config)
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+
+    it('should handle update with different URL formats', async () => {
+      const urls = [
+        'https://outlook.office365.com',
+        'https://tenant.onmicrosoft.com',
+        'https://exchange.example.com'
+      ]
+
+      for (const url of urls) {
+        testRequest.put.mockClear()
+        await mailConfigurationApi.updateO365({ name: 'Updated' }, url)
+        expect(testRequest.put).toHaveBeenCalledWith(
+          `mail-configurations/o365/${url}`,
+          expect.any(Object),
+          expect.any(Object)
+        )
+      }
+    })
+
+    it('should handle domain list with complex filters', async () => {
+      const payload = {
+        tenantId: 'tenant-123',
+        filter: 'verified',
+        limit: 100
+      }
+      await mailConfigurationApi.getDomainList(payload)
+      expect(testRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle export with various filter combinations', async () => {
+      const payloads = [
+        { filters: { type: 'o365' } },
+        { filters: { type: 'ews' } },
+        { filters: { type: 'google' } },
+        { filters: { status: 'active' } }
+      ]
+
+      for (const payload of payloads) {
+        testRequest.post.mockClear()
+        await mailConfigurationApi.exportMailConfiguration(payload)
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate getMailConfigurationList errors', async () => {
+      const error = new Error('List fetch failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.getMailConfigurationList({})).rejects.toThrow('List fetch failed')
+    })
+
+    it('should propagate getO365MailData errors', async () => {
+      const error = new Error('O365 data fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.getO365MailData('id')).rejects.toThrow('O365 data fetch failed')
+    })
+
+    it('should propagate getEWSMailData errors', async () => {
+      const error = new Error('EWS data fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.getEWSMailData('id')).rejects.toThrow('EWS data fetch failed')
+    })
+
+    it('should propagate createO365 errors', async () => {
+      const error = new Error('O365 creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.createO365({})).rejects.toThrow('O365 creation failed')
+    })
+
+    it('should propagate updateO365 errors', async () => {
+      const error = new Error('O365 update failed')
+      testRequest.put.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.updateO365({}, 'url')).rejects.toThrow('O365 update failed')
+    })
+
+    it('should propagate deleteO365 errors', async () => {
+      const error = new Error('O365 deletion failed')
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.deleteO365('url')).rejects.toThrow('O365 deletion failed')
+    })
+
+    it('should propagate createEWS errors', async () => {
+      const error = new Error('EWS creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.createEWS({})).rejects.toThrow('EWS creation failed')
+    })
+
+    it('should propagate createGoogleWorkSpace errors', async () => {
+      const error = new Error('Google Workspace creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.createGoogleWorkSpace({})).rejects.toThrow('Google Workspace creation failed')
+    })
+
+    it('should propagate getDomainList errors', async () => {
+      const error = new Error('Domain list fetch failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.getDomainList({})).rejects.toThrow('Domain list fetch failed')
+    })
+
+    it('should propagate exportMailConfiguration errors', async () => {
+      const error = new Error('Export failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(mailConfigurationApi.exportMailConfiguration({})).rejects.toThrow('Export failed')
+    })
   })
 })
