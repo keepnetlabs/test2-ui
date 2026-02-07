@@ -1,6 +1,6 @@
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({})
 }))
 
 import testRequest from '@/utils/testRequest'
@@ -95,6 +95,136 @@ describe('settings API', () => {
       }
       await settingsApi.setSystemUserSettings(payload)
       expect(testRequest.put).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenables', async () => {
+      expect(typeof settingsApi.getTimezone().then).toBe('function')
+      expect(typeof settingsApi.getSystemUserSettings().then).toBe('function')
+      expect(typeof settingsApi.setSystemUserSettings({}).then).toBe('function')
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export 3 functions', () => {
+      const functions = Object.values(settingsApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBe(3)
+    })
+
+    it('should export specific functions', () => {
+      expect(typeof settingsApi.getTimezone).toBe('function')
+      expect(typeof settingsApi.getSystemUserSettings).toBe('function')
+      expect(typeof settingsApi.setSystemUserSettings).toBe('function')
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle timezone retrieval workflow', async () => {
+      testRequest.get.mockClear()
+      await settingsApi.getTimezone()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+      expect(testRequest.get).toHaveBeenCalledWith('/timezone/timezones')
+    })
+
+    it('should handle settings update workflow', async () => {
+      testRequest.get.mockClear()
+      testRequest.put.mockClear()
+      await settingsApi.getSystemUserSettings()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      const payload = { timezone: 'UTC' }
+      await settingsApi.setSystemUserSettings(payload)
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel settings operations', async () => {
+      const results = await Promise.all([
+        settingsApi.getTimezone(),
+        settingsApi.getSystemUserSettings(),
+        settingsApi.setSystemUserSettings({ timezone: 'GMT' })
+      ])
+
+      expect(results).toHaveLength(3)
+      expect(testRequest.get).toHaveBeenCalledTimes(2)
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle empty payload for getTimezone', async () => {
+      await settingsApi.getTimezone()
+      expect(testRequest.get).toHaveBeenCalledWith('/timezone/timezones')
+    })
+
+    it('should handle various timezone payloads', async () => {
+      const timezones = ['UTC', 'America/New_York', 'Europe/London', 'Asia/Tokyo']
+
+      for (const tz of timezones) {
+        testRequest.put.mockClear()
+        await settingsApi.setSystemUserSettings({ timezone: tz })
+        expect(testRequest.put).toHaveBeenCalledWith(
+          '/system-users/settings',
+          { timezone: tz },
+          expect.objectContaining({ loading: true, snackbar: COMMON_SNACKBAR })
+        )
+      }
+    })
+
+    it('should handle complex settings objects', async () => {
+      const complexPayload = {
+        timezone: 'UTC',
+        language: 'en',
+        dateFormat: 'YYYY-MM-DD',
+        timeFormat: '24h',
+        theme: 'dark'
+      }
+
+      await settingsApi.setSystemUserSettings(complexPayload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/system-users/settings',
+        complexPayload,
+        expect.objectContaining({ loading: true, snackbar: COMMON_SNACKBAR })
+      )
+    })
+
+    it('should maintain loading state in config', async () => {
+      const payload = { timezone: 'UTC' }
+      await settingsApi.setSystemUserSettings(payload)
+
+      const callArgs = testRequest.put.mock.calls[0]
+      expect(callArgs[2].loading).toBe(true)
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate timezone retrieval errors', async () => {
+      const error = new Error('Timezone API Error')
+      testRequest.get.mockRejectedValueOnce(error)
+
+      await expect(settingsApi.getTimezone()).rejects.toThrow('Timezone API Error')
+    })
+
+    it('should propagate settings update errors', async () => {
+      const error = new Error('Settings Update Failed')
+      testRequest.put.mockRejectedValueOnce(error)
+
+      await expect(settingsApi.setSystemUserSettings({})).rejects.toThrow('Settings Update Failed')
+    })
+
+    it('should propagate system user settings retrieval errors', async () => {
+      const error = new Error('Settings Retrieval Failed')
+      testRequest.get.mockRejectedValueOnce(error)
+
+      await expect(settingsApi.getSystemUserSettings()).rejects.toThrow('Settings Retrieval Failed')
+    })
+
+    it('should handle multiple sequential error scenarios', async () => {
+      testRequest.get.mockRejectedValueOnce(new Error('Error 1'))
+      testRequest.put.mockRejectedValueOnce(new Error('Error 2'))
+
+      await expect(settingsApi.getTimezone()).rejects.toThrow('Error 1')
+      await expect(settingsApi.setSystemUserSettings({})).rejects.toThrow('Error 2')
     })
   })
 })

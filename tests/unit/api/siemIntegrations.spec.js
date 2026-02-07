@@ -1,8 +1,8 @@
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 import testRequest from '@/utils/testRequest'
@@ -305,6 +305,211 @@ describe('siemIntegrations API', () => {
       }
       await siemIntegrationsApi.searchSIEMIntegrations(payload)
       expect(testRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle numeric and string resource IDs', async () => {
+      await siemIntegrationsApi.getSIEMIntegration(123)
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/siem-settings/123')
+
+      testRequest.get.mockClear()
+      await siemIntegrationsApi.getSIEMIntegration('siem-abc')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/siem-settings/siem-abc')
+    })
+
+    it('should handle special characters in SIEM names', async () => {
+      const payload = { name: 'SIEM-@-#-2024' }
+      await siemIntegrationsApi.createSIEMIntegration(payload)
+      expect(testRequest.post).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenable objects', () => {
+      const results = [
+        siemIntegrationsApi.searchSIEMIntegrations({}),
+        siemIntegrationsApi.getSIEMIntegration('id'),
+        siemIntegrationsApi.createSIEMIntegration({}),
+        siemIntegrationsApi.updateSIEMIntegration('id', {}),
+        siemIntegrationsApi.deleteSIEMIntegration('id'),
+        siemIntegrationsApi.testSIEMIntegration({}),
+        siemIntegrationsApi.exportSIEMIntegrations({})
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+      })
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export all required functions', () => {
+      expect(typeof siemIntegrationsApi.searchSIEMIntegrations).toBe('function')
+      expect(typeof siemIntegrationsApi.getSIEMIntegration).toBe('function')
+      expect(typeof siemIntegrationsApi.createSIEMIntegration).toBe('function')
+      expect(typeof siemIntegrationsApi.updateSIEMIntegration).toBe('function')
+      expect(typeof siemIntegrationsApi.deleteSIEMIntegration).toBe('function')
+      expect(typeof siemIntegrationsApi.testSIEMIntegration).toBe('function')
+      expect(typeof siemIntegrationsApi.exportSIEMIntegrations).toBe('function')
+    })
+
+    it('should export at least 7 functions', () => {
+      const functions = Object.values(siemIntegrationsApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThanOrEqual(7)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle SIEM integration full CRUD workflow', async () => {
+      await siemIntegrationsApi.searchSIEMIntegrations({})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await siemIntegrationsApi.createSIEMIntegration({ name: 'New SIEM' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await siemIntegrationsApi.getSIEMIntegration('siem-1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      testRequest.put.mockClear()
+      await siemIntegrationsApi.updateSIEMIntegration('siem-1', { name: 'Updated' })
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.delete.mockClear()
+      await siemIntegrationsApi.deleteSIEMIntegration('siem-1')
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle connection test and creation workflow', async () => {
+      const testPayload = { endpoint: 'https://siem.example.com', apiKey: 'key' }
+      await siemIntegrationsApi.testSIEMIntegration(testPayload)
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      const createPayload = { name: 'SIEM', ...testPayload }
+      await siemIntegrationsApi.createSIEMIntegration(createPayload)
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel SIEM operations', async () => {
+      const results = await Promise.all([
+        siemIntegrationsApi.searchSIEMIntegrations({}),
+        siemIntegrationsApi.getSIEMIntegration('siem-1')
+      ])
+
+      expect(results).toHaveLength(2)
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle SIEM search with pagination', async () => {
+      const payload = { page: 2, pageSize: 50 }
+      await siemIntegrationsApi.searchSIEMIntegrations(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/siem-settings/search', payload)
+    })
+
+    it('should handle SIEM creation with various integration types', async () => {
+      const types = ['splunk', 'elastic', 'qradar', 'sumologic']
+      for (const type of types) {
+        testRequest.post.mockClear()
+        await siemIntegrationsApi.createSIEMIntegration({ name: 'SIEM', type })
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+
+    it('should handle SIEM update with partial fields', async () => {
+      const payload = { endpoint: 'https://newsiem.example.com' }
+      await siemIntegrationsApi.updateSIEMIntegration('siem-1', payload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/companies/siem-settings/siem-1',
+        payload,
+        expect.any(Object)
+      )
+    })
+
+    it('should handle test with various authentication methods', async () => {
+      const credentials = [
+        { username: 'admin', password: 'pass' },
+        { apiKey: 'api-key-123' },
+        { bearerToken: 'token-abc' }
+      ]
+
+      for (const cred of credentials) {
+        testRequest.post.mockClear()
+        const payload = { endpoint: 'https://siem.example.com', ...cred }
+        await siemIntegrationsApi.testSIEMIntegration(payload)
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+
+    it('should handle export with complex filter payloads', async () => {
+      const payload = {
+        filters: {
+          status: ['active', 'inactive'],
+          type: ['splunk', 'elastic'],
+          dateRange: { start: '2024-01-01', end: '2024-12-31' }
+        }
+      }
+      await siemIntegrationsApi.exportSIEMIntegrations(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/companies/siem-settings/search/export',
+        payload,
+        expect.any(Object)
+      )
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate searchSIEMIntegrations errors', async () => {
+      const error = new Error('Search failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.searchSIEMIntegrations({})).rejects.toThrow('Search failed')
+    })
+
+    it('should propagate getSIEMIntegration errors', async () => {
+      const error = new Error('Fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.getSIEMIntegration('id')).rejects.toThrow('Fetch failed')
+    })
+
+    it('should propagate createSIEMIntegration errors', async () => {
+      const error = new Error('Creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.createSIEMIntegration({})).rejects.toThrow('Creation failed')
+    })
+
+    it('should propagate updateSIEMIntegration errors', async () => {
+      const error = new Error('Update failed')
+      testRequest.put.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.updateSIEMIntegration('id', {})).rejects.toThrow('Update failed')
+    })
+
+    it('should propagate deleteSIEMIntegration errors', async () => {
+      const error = new Error('Deletion failed')
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.deleteSIEMIntegration('id')).rejects.toThrow('Deletion failed')
+    })
+
+    it('should propagate testSIEMIntegration errors', async () => {
+      const error = new Error('Connection test failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.testSIEMIntegration({})).rejects.toThrow('Connection test failed')
+    })
+
+    it('should propagate exportSIEMIntegrations errors', async () => {
+      const error = new Error('Export failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(siemIntegrationsApi.exportSIEMIntegrations({})).rejects.toThrow('Export failed')
+    })
+
+    it('should handle multiple sequential error scenarios', async () => {
+      testRequest.post.mockRejectedValueOnce(new Error('Error 1'))
+      testRequest.get.mockRejectedValueOnce(new Error('Error 2'))
+
+      await expect(siemIntegrationsApi.searchSIEMIntegrations({})).rejects.toThrow('Error 1')
+      await expect(siemIntegrationsApi.getSIEMIntegration('id')).rejects.toThrow('Error 2')
     })
   })
 })

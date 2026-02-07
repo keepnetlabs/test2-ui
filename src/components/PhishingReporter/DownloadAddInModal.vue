@@ -358,8 +358,7 @@ import DownloadAddInListItem from '@/components/PhishingReporter/DownloadAddInLi
 import AlertBox from '@/components/AlertBox.vue'
 import DelegatedLevelAuthorizationDialog from '@/components/PhishingReporter/DelegatedLevelAuthorizationDialog.vue'
 import ApplicationLevelAuthorizationDialog from '@/components/PhishingReporter/ApplicationLevelAuthorizationDialog.vue'
-import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { copyToClipboard } from '@/utils/functions'
 export default {
   name: 'DownloadAddInModal',
   props: {
@@ -409,12 +408,7 @@ export default {
       this.isDelegatedLevelAuthorizing = true
       this.handleConnectAccount()
         .then((link) => {
-          navigator.clipboard.writeText(link)
-          this.$store.dispatch('common/createSnackBar', {
-            message: labels.CopiedToClipboard,
-            icon: 'mdi-checkbox-marked-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
+          copyToClipboard(link)
         })
         .finally(() => {
           this.closeDelegatedLevelAuthorizationDialog()
@@ -575,12 +569,7 @@ export default {
       this.isApplicationLevelAuthorizing = true
       this.handleConnectApplicationLevelAccount()
         .then((link) => {
-          navigator.clipboard.writeText(link)
-          this.$store.dispatch('common/createSnackBar', {
-            message: labels.CopiedToClipboard,
-            icon: 'mdi-checkbox-marked-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
+          copyToClipboard(link)
         })
         .finally(() => {
           this.closeApplicationLevelDialog()

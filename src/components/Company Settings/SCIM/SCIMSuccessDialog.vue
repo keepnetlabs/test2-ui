@@ -75,8 +75,10 @@ export default {
     },
     handleCopyToClipboard() {
       copyToClipboard(this.apiKey)
-        .then(() => {
-          this.handleClose()
+        .then((isCopied) => {
+          if (isCopied) {
+            this.handleClose()
+          }
         })
         .catch(() => {})
     }

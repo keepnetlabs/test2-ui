@@ -550,24 +550,17 @@ export default {
       if (this.isStep2) {
         this.getMicrosoftTeamsAppAuthorizeLink().then((link) => {
           if (link) {
-            navigator.clipboard.writeText(link)
-            this.$store.dispatch('common/createSnackBar', {
-              message: labels.CopiedToClipboard,
-              icon: 'mdi-checkbox-marked-circle',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            copyToClipboard(link).then((isCopied) => {
+              if (isCopied) {
+                this.handleCloseModal()
+              }
             })
-            this.handleCloseModal()
           }
         })
       } else {
         this.getMicrosoftTeamsOboIntegrationLink().then((link) => {
           if (link) {
-            navigator.clipboard.writeText(link)
-            this.$store.dispatch('common/createSnackBar', {
-              message: labels.CopiedToClipboard,
-              icon: 'mdi-checkbox-marked-circle',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-            })
+            copyToClipboard(link)
           }
         })
       }

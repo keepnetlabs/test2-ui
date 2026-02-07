@@ -1,15 +1,15 @@
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 jest.mock('@/utils/vishingRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 import testRequest from '@/utils/testRequest'
@@ -416,6 +416,270 @@ describe('callback API', () => {
       expect(testRequest.get).toHaveBeenCalledWith(
         `/callback-simulator/settings/available-numbers?companyResourceId=${encodeURIComponent(companyId)}`
       )
+    })
+
+    it('should handle numeric and string template IDs', async () => {
+      await callbackApi.getCallbackTemplate(123)
+      expect(vishingRequest.get).toHaveBeenCalledWith('/callback-simulator/callback-template/123')
+
+      vishingRequest.get.mockClear()
+      await callbackApi.getCallbackTemplate('template-abc')
+      expect(vishingRequest.get).toHaveBeenCalledWith('/callback-simulator/callback-template/template-abc')
+    })
+
+    it('should handle bulk delete with multiple IDs', async () => {
+      const payload = { ids: Array.from({ length: 10 }, (_, i) => `template-${i}`) }
+      await callbackApi.bulkDeleteCallbackTemplates(payload)
+      expect(vishingRequest.delete).toHaveBeenCalled()
+    })
+
+    it('should handle language selection in preview', async () => {
+      const id = 'template-123'
+      await callbackApi.getCallbackTemplatePreview(id, 'en')
+      expect(vishingRequest.get).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenable objects', () => {
+      const results = [
+        callbackApi.searchCallbackTemplates({}),
+        callbackApi.getCallbackTemplate('id'),
+        callbackApi.createCallbackTemplate({}),
+        callbackApi.updateCallbackTemplate('id', {}),
+        callbackApi.deleteCallbackTemplate('id'),
+        callbackApi.bulkDeleteCallbackTemplates({ ids: [] }),
+        callbackApi.exportCallbackTemplates({}),
+        callbackApi.getCallbackTemplatePreview('id'),
+        callbackApi.getVoiceUrl({}),
+        callbackApi.searchEmailTemplates({}),
+        callbackApi.getEmailTemplate('id'),
+        callbackApi.createEmailTemplate({}),
+        callbackApi.updateEmailTemplate('id', {}),
+        callbackApi.deleteEmailTemplate('id'),
+        callbackApi.bulkDeleteEmailTemplates({ ids: [] }),
+        callbackApi.exportEmailTemplates({}),
+        callbackApi.getMergeTags(),
+        callbackApi.searchCallbackScenarios({}),
+        callbackApi.getCallbackScenario('id'),
+        callbackApi.createCallbackScenario({}),
+        callbackApi.getAvailableCallbackNumbers('company-id'),
+        callbackApi.createCallbackCampaign({})
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+      })
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export all required callback template functions', () => {
+      expect(typeof callbackApi.searchCallbackTemplates).toBe('function')
+      expect(typeof callbackApi.getCallbackTemplate).toBe('function')
+      expect(typeof callbackApi.createCallbackTemplate).toBe('function')
+      expect(typeof callbackApi.updateCallbackTemplate).toBe('function')
+      expect(typeof callbackApi.deleteCallbackTemplate).toBe('function')
+      expect(typeof callbackApi.bulkDeleteCallbackTemplates).toBe('function')
+      expect(typeof callbackApi.exportCallbackTemplates).toBe('function')
+      expect(typeof callbackApi.getCallbackTemplatePreview).toBe('function')
+      expect(typeof callbackApi.getVoiceUrl).toBe('function')
+    })
+
+    it('should export all required email template functions', () => {
+      expect(typeof callbackApi.searchEmailTemplates).toBe('function')
+      expect(typeof callbackApi.getEmailTemplate).toBe('function')
+      expect(typeof callbackApi.createEmailTemplate).toBe('function')
+      expect(typeof callbackApi.updateEmailTemplate).toBe('function')
+      expect(typeof callbackApi.deleteEmailTemplate).toBe('function')
+      expect(typeof callbackApi.bulkDeleteEmailTemplates).toBe('function')
+      expect(typeof callbackApi.exportEmailTemplates).toBe('function')
+      expect(typeof callbackApi.getMergeTags).toBe('function')
+    })
+
+    it('should export all required scenario and campaign functions', () => {
+      expect(typeof callbackApi.searchCallbackScenarios).toBe('function')
+      expect(typeof callbackApi.getCallbackScenario).toBe('function')
+      expect(typeof callbackApi.createCallbackScenario).toBe('function')
+      expect(typeof callbackApi.getAvailableCallbackNumbers).toBe('function')
+      expect(typeof callbackApi.createCallbackCampaign).toBe('function')
+    })
+
+    it('should export at least 25 functions', () => {
+      const functions = Object.values(callbackApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThanOrEqual(25)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle callback template full CRUD workflow', async () => {
+      await callbackApi.searchCallbackTemplates({})
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.post.mockClear()
+      await callbackApi.createCallbackTemplate({ name: 'New Template' })
+      expect(vishingRequest.post).toHaveBeenCalledTimes(1)
+
+      vishingRequest.get.mockClear()
+      await callbackApi.getCallbackTemplate('template-1')
+      expect(vishingRequest.get).toHaveBeenCalledTimes(1)
+
+      vishingRequest.put.mockClear()
+      await callbackApi.updateCallbackTemplate('template-1', { name: 'Updated' })
+      expect(vishingRequest.put).toHaveBeenCalledTimes(1)
+
+      vishingRequest.delete.mockClear()
+      await callbackApi.deleteCallbackTemplate('template-1')
+      expect(vishingRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle email template workflow', async () => {
+      await callbackApi.searchEmailTemplates({})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await callbackApi.createEmailTemplate({ name: 'Email Template' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle scenario creation workflow', async () => {
+      await callbackApi.searchCallbackScenarios({})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await callbackApi.createCallbackScenario({ name: 'Scenario' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel callback operations', async () => {
+      const results = await Promise.all([
+        callbackApi.searchCallbackTemplates({}),
+        callbackApi.getMergeTags(),
+        callbackApi.getAvailableCallbackNumbers('company-1')
+      ])
+
+      expect(results).toHaveLength(3)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle template search with pagination', async () => {
+      const payload = { page: 2, pageSize: 50 }
+      await callbackApi.searchCallbackTemplates(payload)
+      expect(vishingRequest.post).toHaveBeenCalledWith('/callback-simulator/callback-template/search', payload)
+    })
+
+    it('should handle template creation with various fields', async () => {
+      const payload = {
+        name: 'Template',
+        description: 'Description',
+        language: 'en',
+        content: 'Template content'
+      }
+      await callbackApi.createCallbackTemplate(payload)
+      expect(vishingRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle email template search with filters', async () => {
+      const payload = {
+        page: 1,
+        filters: { status: ['active'], type: ['email'] }
+      }
+      await callbackApi.searchEmailTemplates(payload)
+      expect(testRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle campaign creation with complex payload', async () => {
+      const payload = {
+        name: 'Campaign',
+        templateId: 'template-1',
+        targets: ['user-1', 'user-2'],
+        schedule: { startDate: '2024-01-01', endDate: '2024-12-31' }
+      }
+      await callbackApi.createCallbackCampaign(payload)
+      expect(testRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle bulk delete with various ID formats', async () => {
+      const idSets = [
+        { ids: ['template-1'] },
+        { ids: ['template-1', 'template-2', 'template-3'] },
+        { ids: Array.from({ length: 20 }, (_, i) => `template-${i}`) }
+      ]
+
+      for (const idSet of idSets) {
+        vishingRequest.delete.mockClear()
+        await callbackApi.bulkDeleteCallbackTemplates(idSet)
+        expect(vishingRequest.delete).toHaveBeenCalled()
+      }
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate searchCallbackTemplates errors', async () => {
+      const error = new Error('Search failed')
+      vishingRequest.post.mockRejectedValueOnce(error)
+      await expect(callbackApi.searchCallbackTemplates({})).rejects.toThrow('Search failed')
+    })
+
+    it('should propagate getCallbackTemplate errors', async () => {
+      const error = new Error('Fetch failed')
+      vishingRequest.get.mockRejectedValueOnce(error)
+      await expect(callbackApi.getCallbackTemplate('id')).rejects.toThrow('Fetch failed')
+    })
+
+    it('should propagate createCallbackTemplate errors', async () => {
+      const error = new Error('Creation failed')
+      vishingRequest.post.mockRejectedValueOnce(error)
+      await expect(callbackApi.createCallbackTemplate({})).rejects.toThrow('Creation failed')
+    })
+
+    it('should propagate updateCallbackTemplate errors', async () => {
+      const error = new Error('Update failed')
+      vishingRequest.put.mockRejectedValueOnce(error)
+      await expect(callbackApi.updateCallbackTemplate('id', {})).rejects.toThrow('Update failed')
+    })
+
+    it('should propagate deleteCallbackTemplate errors', async () => {
+      const error = new Error('Deletion failed')
+      vishingRequest.delete.mockRejectedValueOnce(error)
+      await expect(callbackApi.deleteCallbackTemplate('id')).rejects.toThrow('Deletion failed')
+    })
+
+    it('should propagate bulkDeleteCallbackTemplates errors', async () => {
+      const error = new Error('Bulk delete failed')
+      vishingRequest.delete.mockRejectedValueOnce(error)
+      await expect(callbackApi.bulkDeleteCallbackTemplates({ ids: [] })).rejects.toThrow('Bulk delete failed')
+    })
+
+    it('should propagate createEmailTemplate errors', async () => {
+      const error = new Error('Email template creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(callbackApi.createEmailTemplate({})).rejects.toThrow('Email template creation failed')
+    })
+
+    it('should propagate getMergeTags errors', async () => {
+      const error = new Error('Merge tags fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(callbackApi.getMergeTags()).rejects.toThrow('Merge tags fetch failed')
+    })
+
+    it('should propagate createCallbackScenario errors', async () => {
+      const error = new Error('Scenario creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(callbackApi.createCallbackScenario({})).rejects.toThrow('Scenario creation failed')
+    })
+
+    it('should propagate getAvailableCallbackNumbers errors', async () => {
+      const error = new Error('Available numbers fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(callbackApi.getAvailableCallbackNumbers('company-1')).rejects.toThrow('Available numbers fetch failed')
+    })
+
+    it('should propagate createCallbackCampaign errors', async () => {
+      const error = new Error('Campaign creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(callbackApi.createCallbackCampaign({})).rejects.toThrow('Campaign creation failed')
     })
   })
 })
