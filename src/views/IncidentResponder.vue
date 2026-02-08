@@ -72,7 +72,8 @@
       >
         <v-card
           style="
-            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2),
+              0 2px 10px rgba(0, 0, 0, 0.12);
             border-radius: 12px;
           "
         >
@@ -103,11 +104,15 @@
             wait-extended-view-api
             :table="clusteredTableData"
             :axios-payload.sync="clusteredTableAxios"
-            :saved-filters-local-storage-key="clusteredTable.savedFiltersLocalStorageKey"
+            :saved-filters-local-storage-key="
+              clusteredTable.savedFiltersLocalStorageKey
+            "
             :saved-table-settings-local-storage-key="
               clusteredTable.savedTableSettingsLocalStorageKey
             "
-            :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
+            :is-extended-view-cancel-button-disabled="
+              isExtendedViewCancelButtonDisabled
+            "
             :server-side-props="serverSideClusteredProps"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :extended-view-loading="extendedViewLoading"
@@ -132,7 +137,9 @@
             @refreshAction="callForClusteredTable"
             @columnFilterChanged="clusteredColumnFilterChanged"
             @columnFilterCleared="clusteredColumnFilterCleared"
-            @server-side-page-number-changed="serverSideClusteredPageNumberChanged"
+            @server-side-page-number-changed="
+              serverSideClusteredPageNumberChanged
+            "
             @server-side-size-changed="serverSideClusteredSizeChanged"
             @searchChangedEvent="handleClusteredSearchChange"
             @sortChangedEvent="sortClusteredChanged"
@@ -158,7 +165,11 @@
                     scope.row.matchingPlaybooks.length === 0
                   "
                 >
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                  {{
+                    scope.row.source === "Auto"
+                      ? "Auto Analysis"
+                      : scope.row.source
+                  }}
                 </span>
                 <template v-else>
                   <span
@@ -202,7 +213,9 @@
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
                 ></v-checkbox>
-                <div class="incident-responder-extended-view-is-notify-sub-label">
+                <div
+                  class="incident-responder-extended-view-is-notify-sub-label"
+                >
                   Email Template: {{ getEmailTemplateName }}
                   <span @click="handleEmailTemplateChange">Change</span>
                 </div>
@@ -217,7 +230,10 @@
                   @change="handleMessageChange"
                 ></v-checkbox>
               </div>
-              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
+              <div
+                class="row-edit-div"
+                v-if="extendedView.isMessage && extendedView.isNotify"
+              >
                 <v-textarea
                   id="input--incident-responder-custom-message"
                   outlined
@@ -263,14 +279,20 @@
             change-footer-position
             active-cluster=""
             :axios-payload.sync="requestBodyReportedEmails"
-            :saved-filters-local-storage-key="emails.savedFiltersLocalStorageKey"
-            :saved-table-settings-local-storage-key="emails.savedTableSettingsLocalStorageKey"
+            :saved-filters-local-storage-key="
+              emails.savedFiltersLocalStorageKey
+            "
+            :saved-table-settings-local-storage-key="
+              emails.savedTableSettingsLocalStorageKey
+            "
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :table="reportedEmailsData"
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
-            :is-extended-view-cancel-button-disabled="isExtendedViewCancelButtonDisabled"
+            :is-extended-view-cancel-button-disabled="
+              isExtendedViewCancelButtonDisabled
+            "
             :extended-view-calling-api="extendedViewCallingApi"
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
             :is-custom-overflowed-column="isCustomOverflowedColumn"
@@ -294,6 +316,7 @@
             @onEditClick="onEditClick"
             @handleEdit="handleEdit"
             @handleReAnalyze="handleReAnalyze"
+            @handleAnalyzeWithAI="handleAnalyzeWithAI"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
             @refreshAction="callForSearchNotifiedMail"
@@ -305,9 +328,14 @@
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template
-                v-if="scope.column.property === 'subject' || scope.column.property === 'reportedBy'"
+                v-if="
+                  scope.column.property === 'subject' ||
+                  scope.column.property === 'reportedBy'
+                "
               >
-                <span v-if="!selectedCluster"> {{ scope.row[col.property] }}</span>
+                <span v-if="!selectedCluster">
+                  {{ scope.row[col.property] }}</span
+                >
                 <div class="reported-email-subject__container" v-else>
                   <div class="reported-email-subject">
                     <span> {{ scope.row[col.property] }}</span>
@@ -327,7 +355,11 @@
                     scope.row.matchingPlaybooks.length === 0
                   "
                 >
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                  {{
+                    scope.row.source === "Auto"
+                      ? "Auto Analysis"
+                      : scope.row.source
+                  }}
                 </span>
                 <template v-else>
                   <span
@@ -371,7 +403,9 @@
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
                 ></v-checkbox>
-                <div class="incident-responder-extended-view-is-notify-sub-label">
+                <div
+                  class="incident-responder-extended-view-is-notify-sub-label"
+                >
                   Email Template: {{ getEmailTemplateName }}
                   <span @click="handleEmailTemplateChange">Change</span>
                 </div>
@@ -386,7 +420,10 @@
                   @change="handleMessageChange"
                 ></v-checkbox>
               </div>
-              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
+              <div
+                class="row-edit-div"
+                v-if="extendedView.isMessage && extendedView.isNotify"
+              >
                 <v-textarea
                   outlined
                   dense
@@ -421,17 +458,22 @@
         <div v-if="getIncidentResponderTopRulesPermission" class="column">
           <TopRules
             style="
-              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2),
+                0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               min-height: 300px;
               transform: translateY(0px);
             "
           />
         </div>
-        <div v-if="getIncidentResponderRunningInvestigationsPermission" class="column">
+        <div
+          v-if="getIncidentResponderRunningInvestigationsPermission"
+          class="column"
+        >
           <RecentInvestigations
             style="
-              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2),
+                0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               transform: translateY(0px);
             "
@@ -446,7 +488,8 @@
         >
           <RecentlyReportedIncidents
             style="
-              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2),
+                0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               min-height: 300px;
               transform: translateY(0px);
@@ -461,7 +504,8 @@
         >
           <ReportedEmailTrends
             style="
-              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.12);
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2),
+                0 2px 10px rgba(0, 0, 0, 0.12);
               border-radius: 12px;
               min-height: 300px;
               transform: translateY(0px);
@@ -479,47 +523,52 @@ import {
   searchNotifiedMail,
   updateNotifiedEmail,
   updateNotifiedEmailBulk
-} from '@/api/incidentResponder'
+} from "@/api/incidentResponder";
 import {
   getDataTableFieldLabel,
   getDefaultAxiosPayload,
   handleIsSafari,
   setSafariClusterFix
-} from '@/utils/functions'
-import DataTableColorfulText from '@/components/DataTableComponents/DataTableColorfulText'
+} from "@/utils/functions";
+import DataTableColorfulText from "@/components/DataTableComponents/DataTableColorfulText";
 import {
   exportNotifiedEmails,
   getNotifiedEmailForEdit,
   getNotifiedEmail
-} from '@/api/notifiedEmail'
-import Datatable from '@/components/DataTable'
-import FilterByHashModal from '@/components/IncidentResponder/FilterByHashModal'
-import NewInvestigation from '@/components/Investigation/NewInvestigation'
-import AppModal from '@/components/AppModal'
-import { mapActions, mapGetters } from 'vuex'
+} from "@/api/notifiedEmail";
+import Datatable from "@/components/DataTable";
+import FilterByHashModal from "@/components/IncidentResponder/FilterByHashModal";
+import NewInvestigation from "@/components/Investigation/NewInvestigation";
+import AppModal from "@/components/AppModal";
+import { mapActions, mapGetters } from "vuex";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import { required, startsWith, maxLength } from '@/utils/validations'
-import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
-import labels from '@/model/constants/labels'
-import * as Validations from '@/utils/validations'
-import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
-import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
-import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import IncidentResponderHeaderCards from '@/components/IncidentResponder/Dashboard/IncidentResponderHeaderCards'
-import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
-import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
-import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
-import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
-import ConfirmationRequiredPopup from '@/components/IncidentResponder/ConfirmationRequiredPopup.vue'
+} from "@/model/constants/commonConstants";
+import { required, startsWith, maxLength } from "@/utils/validations";
+import CreateOrEditRule from "@/components/Playbook/CreateOrEditRule";
+import labels from "@/model/constants/labels";
+import * as Validations from "@/utils/validations";
+import TheRecordsButton from "@/components/IncidentResponder/TheRecordsButton";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import ReAnalyzeIncidentDialog from "@/components/IncidentResponder/ReAnalyzeIncidentDialog";
+import SelectEmailTemplateModal from "@/components/IncidentResponder/SelectEmailTemplateModal";
+import { getEmailTypesAndEmailTemplates } from "@/components/IncidentResponder/utils";
+import {
+  columnFilterChanged,
+  columnFilterCleared
+} from "@/utils/helperFunctions";
+import IncidentResponderHeaderCards from "@/components/IncidentResponder/Dashboard/IncidentResponderHeaderCards";
+import TopRules from "@/components/Common/Widget/WidgetComponents/TopRules";
+import RecentInvestigations from "@/components/Common/Widget/WidgetComponents/RecentInvestigations";
+import RecentlyReportedIncidents from "@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents";
+import ReportedEmailTrends from "@/components/Common/Widget/WidgetComponents/ReportedEmailTrends";
+import ConfirmationRequiredPopup from "@/components/IncidentResponder/ConfirmationRequiredPopup.vue";
+import axios from "axios";
+import AuthenticationService from "@/services/authentication";
 export default {
   components: {
     ConfirmationRequiredPopup,
@@ -545,12 +594,12 @@ export default {
   },
   data: () => ({
     defaultHashfilterProps: {
-      filterBy: 'MD5',
-      hash: ''
+      filterBy: "MD5",
+      hash: ""
     },
     hashfilterProps: {
-      filterBy: 'MD5',
-      hash: ''
+      filterBy: "MD5",
+      hash: ""
     },
     extendedViewCallingApi: false,
     confirmationPayload: {},
@@ -567,15 +616,15 @@ export default {
     confirmationDialogEmailCount: 0,
     confirmationDialogUserCount: 0,
     mailDetails: {
-      name: '',
-      resourceId: ''
+      name: "",
+      resourceId: ""
     },
     showReAnalyzeIncidentDialog: false,
     isCustomOverflowedColumn: false,
-    selectedCluster: '',
-    selectedTemplateResourceId: '',
+    selectedCluster: "",
+    selectedTemplateResourceId: "",
     isMultipleSelectedTemplateResourceId: false,
-    defaultSelectedTemplateResourceId: '',
+    defaultSelectedTemplateResourceId: "",
     labels,
     clusteredRow: null,
     isCustomMessageMultiple: false,
@@ -600,15 +649,15 @@ export default {
       savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.REPORTED_EMAIL,
       table: [],
       extendedViewOptions: {
-        titleKey: 'subject',
+        titleKey: "subject",
         footer: [
           {
-            label: 'Date Created',
-            key: 'createTime'
+            label: "Date Created",
+            key: "createTime"
           },
           {
-            label: 'Last update',
-            key: 'lastUpdateDate'
+            label: "Last update",
+            key: "lastUpdateDate"
           }
         ],
         col: [
@@ -616,42 +665,42 @@ export default {
             property: PROPERTY_STORE.SUBJECT,
             label: getStoreValue(PROPERTY_STORE.SUBJECT),
             isEditable: false,
-            type: 'text',
+            type: "text",
             show: true
           },
           {
             property: PROPERTY_STORE.REPORTEDBY,
             label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
             isEditable: false,
-            type: 'text',
+            type: "text",
             show: true
           },
           {
             property: PROPERTY_STORE.RESOURCEID,
-            label: 'Case Id',
+            label: "Case Id",
             isEditable: false,
-            type: 'text',
+            type: "text",
             show: true
           },
           {
             property: PROPERTY_STORE.ANALYSISSOURCE,
-            label: 'Analysis Source',
+            label: "Analysis Source",
             isEditable: false,
-            type: 'analysisSource',
+            type: "analysisSource",
             show: true
           },
           {
             property: PROPERTY_STORE.RESULT,
             label: getStoreValue(PROPERTY_STORE.RESULT),
             isEditable: true,
-            type: 'badge',
+            type: "badge",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                return row.status === 'BeingAnalyzed'
+                return row.status === "BeingAnalyzed";
               },
               props: {
-                items: ['Phishing', 'Malicious', 'Undetected', 'Simulation']
+                items: ["Phishing", "Malicious", "Undetected", "Simulation"]
               }
             },
             show: true
@@ -660,52 +709,56 @@ export default {
             property: PROPERTY_STORE.STATUS,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             isEditable: true,
-            type: 'colorfulText',
+            type: "colorfulText",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                return row.status === 'BeingAnalyzed'
+                return row.status === "BeingAnalyzed";
               },
               props: {
                 items: [
-                  'Open',
-                  'Closed',
-                  { text: labels.InProgress, value: 'InProgress' },
-                  { text: labels.FalsePositive, value: 'FalsePositive' }
+                  "Open",
+                  "Closed",
+                  { text: labels.InProgress, value: "InProgress" },
+                  { text: labels.FalsePositive, value: "FalsePositive" }
                 ]
               }
             },
             show: true
           },
           {
-            property: 'tags',
-            label: 'Tags',
+            property: "tags",
+            label: "Tags",
             isEditable: true,
-            type: 'smallBadge',
+            type: "smallBadge",
             editOptions: {
-              component: 'combobox',
+              component: "combobox",
               props: {
-                placeholder: 'Enter Tags'
+                placeholder: "Enter Tags"
               }
             },
             show: true,
-            filterableType: 'text'
+            filterableType: "text"
           },
           {
-            property: 'note',
+            property: "note",
             label: labels.Notes,
             isEditable: true,
-            type: 'text',
+            type: "text",
             editOptions: {
-              component: 'textarea',
+              component: "textarea",
               getDisabledValue() {
-                return false
+                return false;
               },
               props: {
-                placeholder: 'Enter Notes',
+                placeholder: "Enter Notes",
                 rules: [
                   (v) =>
-                    Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Notes, 256))
+                    Validations.maxLength(
+                      v,
+                      256,
+                      labels.getMaxLengthMessage(labels.Notes, 256)
+                    )
                 ]
               }
             },
@@ -716,275 +769,296 @@ export default {
       addButton: {
         show: true,
         icon: null,
-        label: 'FILTER BY MD5 OR sha512 Hash',
-        action: 'on-filter-by-hash',
-        tooltip: 'FILTER BY MD5 OR sha512 Hash',
-        type: 'secondary',
-        id: 'btn-select--show-filter-by-hash'
+        label: "FILTER BY MD5 OR sha512 Hash",
+        action: "on-filter-by-hash",
+        tooltip: "FILTER BY MD5 OR sha512 Hash",
+        type: "secondary",
+        id: "btn-select--show-filter-by-hash"
       },
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: 'left',
+          fixed: "left",
           sortable: true,
           show: true,
-          type: 'slot',
+          type: "slot",
           width: 200,
           isEditable: false,
           isCustomOverflowedColumn: true,
-          filterableType: 'text',
-          parentRect: 'reported-email-subject',
+          filterableType: "text",
+          parentRect: "reported-email-subject",
           overrideWidth: true
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
           hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
           isEditable: false,
-          type: 'attachment',
+          type: "attachment",
           width: 160
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '260',
+          type: "text",
+          width: "260",
           isEditable: false,
-          filterableType: 'text'
+          filterableType: "text"
         },
         {
-          property: 'senderIp',
-          filterableCustomFieldName: 'SenderIp',
-          label: 'Sender IP',
+          property: "senderIp",
+          filterableCustomFieldName: "SenderIp",
+          label: "Sender IP",
           isEditable: false,
-          type: 'text',
+          type: "text",
           show: true,
-          filterableType: 'text',
+          filterableType: "text",
           width: 200
         },
         {
           property: PROPERTY_STORE.RESOURCEID,
           show: false,
-          label: 'Case Id',
-          type: 'text',
+          label: "Case Id",
+          type: "text",
           isEditable: false,
           hideOnSettingsPopup: true
         },
         {
           property: PROPERTY_STORE.ANALYSISSOURCE,
           isEditable: false,
-          align: 'center',
-          label: 'Analysis Source',
+          align: "center",
+          label: "Analysis Source",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'analysisSource',
-          filterableType: 'text',
-          width: '200',
+          type: "analysisSource",
+          filterableType: "text",
+          width: "200",
           fullWidth: true
         },
         {
           property: PROPERTY_STORE.RESULT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'badge',
+          type: "badge",
           isEditable: true,
-          filterableType: 'select',
-          filterableItems: ['Undetected', 'Malicious', 'Phishing', 'Simulation'],
-          editOptions: {
-            component: 'select',
-            getDisabledValue(row) {
-              return row.status === 'BeingAnalyzed'
-            },
-            props: {
-              items: ['Phishing', 'Malicious', { text: labels.NonMalicious, value: 'NonMalicious' }]
-            }
-          },
-          props: {
-            style: {
-              maxWidth: '100px'
-            }
-          },
-          width: '150'
-        },
-        {
-          property: PROPERTY_STORE.STATUS,
-          isEditable: true,
-          align: 'center',
-          label: getStoreValue(PROPERTY_STORE.STATUS),
-          fixed: false,
-          sortable: true,
-          show: true,
-          type: 'slot',
-          width: '150',
-          showColorfulText: true,
-          fullWidth: true,
-          filterableType: 'select',
+          filterableType: "select",
           filterableItems: [
-            { text: labels.InAnalysis, value: 'BeingAnalyzed' },
-            labels.Open,
-            labels.Closed,
-            { text: labels.InProgress, value: 'InProgress' },
-            { text: labels.FalsePositive, value: 'FalsePositive' }
+            "Undetected",
+            "Malicious",
+            "Phishing",
+            "Simulation"
           ],
           editOptions: {
-            component: 'select',
+            component: "select",
             getDisabledValue(row) {
-              return row.status === 'BeingAnalyzed'
+              return row.status === "BeingAnalyzed";
             },
             props: {
               items: [
-                'Open',
-                'Closed',
-                { text: 'In Progress', value: 'InProgress' },
-                { text: 'False Positive', value: 'FalsePositive' }
+                "Phishing",
+                "Malicious",
+                { text: labels.NonMalicious, value: "NonMalicious" }
               ]
             }
           },
           props: {
-            style: { maxWidth: '110px' }
+            style: {
+              maxWidth: "100px"
+            }
+          },
+          width: "150"
+        },
+        {
+          property: PROPERTY_STORE.STATUS,
+          isEditable: true,
+          align: "center",
+          label: getStoreValue(PROPERTY_STORE.STATUS),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "slot",
+          width: "150",
+          showColorfulText: true,
+          fullWidth: true,
+          filterableType: "select",
+          filterableItems: [
+            { text: labels.InAnalysis, value: "BeingAnalyzed" },
+            labels.Open,
+            labels.Closed,
+            { text: labels.InProgress, value: "InProgress" },
+            { text: labels.FalsePositive, value: "FalsePositive" }
+          ],
+          editOptions: {
+            component: "select",
+            getDisabledValue(row) {
+              return row.status === "BeingAnalyzed";
+            },
+            props: {
+              items: [
+                "Open",
+                "Closed",
+                { text: "In Progress", value: "InProgress" },
+                { text: "False Positive", value: "FalsePositive" }
+              ]
+            }
+          },
+          props: {
+            style: { maxWidth: "110px" }
           }
         },
         {
           property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
+          type: "text",
           editOptions: {
-            component: 'datepicker'
+            component: "datepicker"
           },
-          width: '230',
-          filterableType: 'date'
+          width: "230",
+          filterableType: "date"
         },
         {
           property: PROPERTY_STORE.SENDERNAME,
           isEditable: false,
-          align: 'left',
+          align: "left",
           label: LABEL_STORE.SENDERNAME,
           fixed: false,
           sortable: false,
           show: false,
-          type: 'text',
-          width: '200',
+          type: "text",
+          width: "200",
           fullWidth: true,
-          filterableType: 'text'
+          filterableType: "text"
         },
         {
           property: PROPERTY_STORE.SENDERADDRESS,
           isEditable: false,
-          align: 'left',
+          align: "left",
           label: LABEL_STORE.SENDERADDRESS,
           fixed: false,
           sortable: false,
           show: false,
-          type: 'text',
-          width: '200',
+          type: "text",
+          width: "200",
           fullWidth: true,
-          filterableType: 'text'
+          filterableType: "text"
         },
         {
-          property: 'tags',
-          align: 'left',
+          property: "tags",
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'smallBadge',
+          type: "smallBadge",
           isEditable: true,
           editOptions: {
-            component: 'combobox',
+            component: "combobox",
             props: {
-              placeholder: 'Enter Tags'
+              placeholder: "Enter Tags"
             }
           },
-          width: '150',
-          filterableType: 'text'
+          width: "150",
+          filterableType: "text"
         }
       ],
       firstColumnProperties: {
-        parentRect: 'reported-email-subject',
+        parentRect: "reported-email-subject",
         overrideWidth: true,
-        fixed: 'left',
+        fixed: "left",
         isCustomOverflowedColumn: true,
-        type: 'slot'
+        type: "slot"
       },
       subjectColumn: {
         property: PROPERTY_STORE.SUBJECT,
-        align: 'left',
+        align: "left",
         label: getStoreValue(PROPERTY_STORE.SUBJECT),
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text',
+        type: "text",
         width: 200,
         isEditable: false,
-        filterableType: 'text'
+        filterableType: "text"
       },
       reportedByColumn: {
         property: PROPERTY_STORE.REPORTEDBY,
-        align: 'left',
+        align: "left",
         editable: false,
         label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text',
-        width: '260',
+        type: "text",
+        width: "260",
         isEditable: false,
-        filterableType: 'text'
+        filterableType: "text"
       },
       rowActions: [
         {
           name: labels.Edit,
-          id: 'btn-edit--incident-responder-emails-row-actions',
-          icon: 'mdi-pencil',
-          action: 'edit',
+          id: "btn-edit--incident-responder-emails-row-actions",
+          icon: "mdi-pencil",
+          action: "edit",
           isNotShow: true
         },
         {
           name: labels.PreviewEmail,
-          id: 'btn-preview-email--incident-responder-emails-row-actions',
-          icon: 'mdi-eye',
-          action: 'irPreview'
+          id: "btn-preview-email--incident-responder-emails-row-actions",
+          icon: "mdi-eye",
+          action: "irPreview"
         },
         {
           name: labels.Details,
-          id: 'btn-details--incident-responder-emails-row-actions',
-          icon: 'mdi-text-box-multiple',
-          action: 'handleDetails'
+          id: "btn-details--incident-responder-emails-row-actions",
+          icon: "mdi-text-box-multiple",
+          action: "handleDetails"
         },
         {
           name: labels.Investigate,
-          id: 'btn-investigate--incident-responder-emails-row-actions',
-          icon: 'mdi-magnify',
-          action: 'handleInvestigate'
+          id: "btn-investigate--incident-responder-emails-row-actions",
+          icon: "mdi-magnify",
+          action: "handleInvestigate"
         },
         {
           name: labels.ReAnalyze,
-          id: 'btn-re-analyze--incident-responder-emails-row-actions',
-          icon: 'mdi-refresh',
-          action: 'handleReAnalyze',
+          id: "btn-re-analyze--incident-responder-emails-row-actions",
+          icon: "mdi-refresh",
+          action: "handleReAnalyze",
           disabled: false
-        }
+        },
+        ...(window.location.hostname.includes("localhost") ||
+        window.location.hostname.includes("test-ui.devkeepnet.com")
+          ? [
+              {
+                name: "Analyze with AI",
+                id:
+                  "btn-analyze-with-ai--incident-responder-emails-row-actions",
+                icon: "mdi-creation",
+                action: "handleAnalyzeWithAI"
+              }
+            ]
+          : [])
       ],
       addMenu: {
         show: true,
@@ -994,8 +1068,8 @@ export default {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right',
-        id: 'btn-empty--incident-responder-phishing-reporter'
+        icon: "mdi-arrow-right",
+        id: "btn-empty--incident-responder-phishing-reporter"
       },
       selectEvent: {
         clipboard: true,
@@ -1009,172 +1083,179 @@ export default {
     extendedView: {
       isNotify: true,
       isMessage: false,
-      customMessage: ''
+      customMessage: ""
     },
     defaultExtendedViewValues: {
       isNotify: true,
       isMessage: false,
-      customMessage: ''
+      customMessage: ""
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: getDefaultAxiosPayload(),
     isReportedEmailsClusteredLoading: false,
     clusteredTable: {
-      savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
-      savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL,
+      savedFiltersLocalStorageKey:
+        DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
+      savedTableSettingsLocalStorageKey:
+        TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL,
       addButton: {
         show: true,
         icon: null,
-        label: 'FILTER BY MD5 OR sha512 Hash',
-        action: 'on-filter-by-hash',
-        tooltip: 'FILTER BY MD5 OR sha512 Hash',
-        type: 'secondary',
-        id: 'btn-select--show-filter-by-hash'
+        label: "FILTER BY MD5 OR sha512 Hash",
+        action: "on-filter-by-hash",
+        tooltip: "FILTER BY MD5 OR sha512 Hash",
+        type: "secondary",
+        id: "btn-select--show-filter-by-hash"
       },
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: 'left',
+          fixed: "left",
           sortable: true,
           show: true,
-          type: 'text',
-          width: '300',
+          type: "text",
+          width: "300",
           isEditable: false,
-          filterableType: 'text'
+          filterableType: "text"
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
           hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
           isEditable: false,
-          type: 'attachment',
+          type: "attachment",
           width: 160
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '260',
+          type: "text",
+          width: "260",
           isEditable: false,
-          filterableType: 'text'
+          filterableType: "text"
         },
         {
           property: PROPERTY_STORE.RESOURCEID,
           show: false,
-          label: 'Case Id',
-          type: 'text',
+          label: "Case Id",
+          type: "text",
           isEditable: false,
           hideOnSettingsPopup: true
         },
         {
           property: PROPERTY_STORE.ANALYSISSOURCE,
           isEditable: false,
-          align: 'center',
-          label: 'Analysis Source',
+          align: "center",
+          label: "Analysis Source",
           fixed: false,
           sortable: false,
           show: true,
-          filterableType: 'text',
-          type: 'analysisSource',
-          width: '200',
+          filterableType: "text",
+          type: "analysisSource",
+          width: "200",
           fullWidth: true
         },
         {
           property: PROPERTY_STORE.RESULT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'badge',
+          type: "badge",
           isEditable: true,
-          filterableType: 'select',
-          filterableItems: ['Undetected', 'Malicious', 'Phishing', 'Simulation'],
+          filterableType: "select",
+          filterableItems: [
+            "Undetected",
+            "Malicious",
+            "Phishing",
+            "Simulation"
+          ],
           props: {
             style: {
-              maxWidth: '110px'
+              maxWidth: "110px"
             }
           },
-          width: '150'
+          width: "150"
         },
         {
           property: PROPERTY_STORE.STATUS,
           isEditable: true,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'slot',
-          width: '150',
+          type: "slot",
+          width: "150",
           showColorfulText: true,
           fullWidth: true,
-          filterableType: 'select',
+          filterableType: "select",
           filterableItems: [
-            { text: labels.InAnalysis, value: 'BeingAnalyzed' },
+            { text: labels.InAnalysis, value: "BeingAnalyzed" },
             labels.Open,
             labels.Closed,
-            { text: labels.InProgress, value: 'InProgress' },
-            { text: labels.FalsePositive, value: 'FalsePositive' }
+            { text: labels.InProgress, value: "InProgress" },
+            { text: labels.FalsePositive, value: "FalsePositive" }
           ],
           props: {
-            style: { maxWidth: '110px' }
+            style: { maxWidth: "110px" }
           }
         },
         {
           property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '230',
-          filterableType: 'date'
+          type: "text",
+          width: "230",
+          filterableType: "date"
         },
         {
-          property: 'tags',
-          align: 'left',
+          property: "tags",
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'smallBadge',
+          type: "smallBadge",
           isEditable: true,
-          width: '150',
-          filterableType: 'text'
+          width: "150",
+          filterableType: "text"
         }
       ],
       iEmpty: {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right',
-        id: 'btn-empty--incident-responder-cluster-phishing-reporter'
+        icon: "mdi-arrow-right",
+        id: "btn-empty--incident-responder-cluster-phishing-reporter"
       },
       extendedViewOptions: {
-        titleKey: 'subject',
+        titleKey: "subject",
         footer: [
           {
-            label: 'Date Created',
-            key: 'createTime'
+            label: "Date Created",
+            key: "createTime"
           },
           {
-            label: 'Last update',
-            key: 'lastUpdateDate'
+            label: "Last update",
+            key: "lastUpdateDate"
           }
         ],
         col: [
@@ -1182,42 +1263,42 @@ export default {
             property: PROPERTY_STORE.SUBJECT,
             label: getStoreValue(PROPERTY_STORE.SUBJECT),
             isEditable: false,
-            type: 'text',
+            type: "text",
             show: true
           },
           {
             property: PROPERTY_STORE.REPORTEDBY,
             label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
             isEditable: false,
-            type: 'text',
+            type: "text",
             show: true
           },
           {
             property: PROPERTY_STORE.RESOURCEID,
-            label: 'Case Id',
+            label: "Case Id",
             isEditable: false,
-            type: 'text',
+            type: "text",
             show: true
           },
           {
             property: PROPERTY_STORE.ANALYSISSOURCE,
-            label: 'Analysis Source',
+            label: "Analysis Source",
             isEditable: false,
-            type: 'analysisSource',
+            type: "analysisSource",
             show: true
           },
           {
             property: PROPERTY_STORE.RESULT,
             label: getStoreValue(PROPERTY_STORE.RESULT),
             isEditable: true,
-            type: 'badge',
+            type: "badge",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                return row.status === 'BeingAnalyzed'
+                return row.status === "BeingAnalyzed";
               },
               props: {
-                items: ['Phishing', 'Malicious', 'Undetected', 'Simulation']
+                items: ["Phishing", "Malicious", "Undetected", "Simulation"]
               }
             },
             show: true
@@ -1226,51 +1307,55 @@ export default {
             property: PROPERTY_STORE.STATUS,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             isEditable: true,
-            type: 'colorfulText',
+            type: "colorfulText",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                return row.status === 'BeingAnalyzed'
+                return row.status === "BeingAnalyzed";
               },
               props: {
                 items: [
-                  'Open',
-                  'Closed',
-                  { text: labels.InProgress, value: 'InProgress' },
-                  { text: labels.FalsePositive, value: 'FalsePositive' }
+                  "Open",
+                  "Closed",
+                  { text: labels.InProgress, value: "InProgress" },
+                  { text: labels.FalsePositive, value: "FalsePositive" }
                 ]
               }
             },
             show: true
           },
           {
-            property: 'tags',
-            label: 'Tags',
+            property: "tags",
+            label: "Tags",
             isEditable: true,
-            type: 'smallBadge',
+            type: "smallBadge",
             editOptions: {
-              component: 'combobox',
+              component: "combobox",
               props: {
-                placeholder: 'Enter Tags'
+                placeholder: "Enter Tags"
               }
             },
             show: true
           },
           {
-            property: 'note',
+            property: "note",
             label: labels.Notes,
             isEditable: true,
-            type: 'text',
+            type: "text",
             editOptions: {
-              component: 'textarea',
+              component: "textarea",
               getDisabledValue() {
-                return false
+                return false;
               },
               props: {
-                placeholder: 'Enter Notes',
+                placeholder: "Enter Notes",
                 rules: [
                   (v) =>
-                    Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Notes, 256))
+                    Validations.maxLength(
+                      v,
+                      256,
+                      labels.getMaxLengthMessage(labels.Notes, 256)
+                    )
                 ]
               }
             },
@@ -1287,28 +1372,30 @@ export default {
       rowActions: [
         {
           name: labels.Edit,
-          icon: 'mdi-pencil',
-          id: 'btn-edit--incident-responder-clustered-emails-row-actions',
-          action: 'edit',
+          icon: "mdi-pencil",
+          id: "btn-edit--incident-responder-clustered-emails-row-actions",
+          action: "edit",
           isNotShow: true
         },
         {
           name: labels.PreviewEmail,
-          id: 'btn-preview-email--incident-responder-clustered-emails-row-actions',
-          icon: 'mdi-eye',
-          action: 'irPreview'
+          id:
+            "btn-preview-email--incident-responder-clustered-emails-row-actions",
+          icon: "mdi-eye",
+          action: "irPreview"
         },
         {
           name: labels.Details,
-          id: 'btn-details--incident-responder-clustered-emails-row-actions',
-          icon: 'mdi-text-box-multiple',
-          action: 'handleDetails'
+          id: "btn-details--incident-responder-clustered-emails-row-actions",
+          icon: "mdi-text-box-multiple",
+          action: "handleDetails"
         },
         {
           name: labels.Investigate,
-          id: 'btn-investigate--incident-responder-clustered-emails-row-actions',
-          icon: 'mdi-magnify',
-          action: 'handleInvestigate'
+          id:
+            "btn-investigate--incident-responder-clustered-emails-row-actions",
+          icon: "mdi-magnify",
+          action: "handleInvestigate"
         }
       ]
     },
@@ -1318,93 +1405,94 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      getIncidentResponderTopRulesPermission: 'permissions/getIncidentResponderTopRulesPermission',
+      getIncidentResponderTopRulesPermission:
+        "permissions/getIncidentResponderTopRulesPermission",
       getIncidentResponderRunningInvestigationsPermission:
-        'permissions/getIncidentResponderRunningInvestigationsPermission',
+        "permissions/getIncidentResponderRunningInvestigationsPermission",
       getIncidentResponderNotifiedEmailPermission:
-        'permissions/getIncidentResponderNotifiedEmailPermission',
+        "permissions/getIncidentResponderNotifiedEmailPermission",
       getIncidentResponderNotifiedEmailReAnalyze:
-        'permissions/getIncidentResponderNotifiedEmailReAnalyze',
+        "permissions/getIncidentResponderNotifiedEmailReAnalyze",
       getDashboardReportedEmailTrendsPermission:
-        'permissions/getDashboardReportedEmailTrendsPermission'
+        "permissions/getDashboardReportedEmailTrendsPermission"
     }),
     isParentTableHashFilterActive() {
-      return !!this.requestBodyReportedEmails?.filter?.FilterGroups[0]?.FilterItems.find((item) =>
-        ['MD5', 'SHA512'].includes(item.FieldName)
-      )
+      return !!this.requestBodyReportedEmails?.filter?.FilterGroups[0]?.FilterItems.find(
+        (item) => ["MD5", "SHA512"].includes(item.FieldName)
+      );
     },
     isClusteredTableHashFilterActive() {
-      return !!this.clusteredTableAxios?.filter?.FilterGroups[0]?.FilterItems.find((item) =>
-        ['MD5', 'SHA512'].includes(item.FieldName)
-      )
+      return !!this.clusteredTableAxios?.filter?.FilterGroups[0]?.FilterItems.find(
+        (item) => ["MD5", "SHA512"].includes(item.FieldName)
+      );
     },
     getReportedEmailTitle() {
       return this.isShowingClusteredTable
         ? this.clusteredRow[this.getClusteredField(this.selectedCluster)]
-        : labels.ReportedEmails
+        : labels.ReportedEmails;
     },
     getReportedEmailDescription() {
       return this.isShowingClusteredTable
         ? `Reported emails clustered by ${this.selectedCluster}`
-        : labels.SummaryOfReportedEmails
+        : labels.SummaryOfReportedEmails;
     },
     getTitle() {
-      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
+      return `${this.selectedPlaybookId ? "Edit" : "Create New"} Rule`;
     },
     getIconName() {
-      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
+      return `${this.selectedPlaybookId ? "mdi-pencil" : "mdi-plus"}`;
     },
     getEmailTemplateName() {
-      if (this.isMultipleSelectedTemplateResourceId) return '(Multiple Values)'
+      if (this.isMultipleSelectedTemplateResourceId) return "(Multiple Values)";
       const template = this.emailTemplates.find(
         (item) => item.resourceId === this.selectedTemplateResourceId
-      )
-      const rightSideText = template?.isDefault ? `(${labels.Default})` : ''
-      return template && `${template.name} ${rightSideText}`
+      );
+      const rightSideText = template?.isDefault ? `(${labels.Default})` : "";
+      return template && `${template.name} ${rightSideText}`;
     }
   },
   watch: {
     isParentTableHashFilterActive(val) {
       if (val) {
-        this.emails.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
-        this.emails.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.emails.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`;
+        this.emails.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`;
       } else {
-        this.emails.addButton.label = `FILTER BY MD5 OR sha512 Hash`
-        this.emails.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
+        this.emails.addButton.label = `FILTER BY MD5 OR sha512 Hash`;
+        this.emails.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`;
       }
     },
     isClusteredTableHashFilterActive(val) {
       if (val) {
-        this.clusteredTable.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`
-        this.clusteredTable.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.label = `CLEAR FILTER BY MD5 OR sha512 Hash`;
+        this.clusteredTable.addButton.tooltip = `CLEAR FILTER BY MD5 OR sha512 Hash`;
       } else {
-        this.clusteredTable.addButton.label = `FILTER BY MD5 OR sha512 Hash`
-        this.clusteredTable.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`
+        this.clusteredTable.addButton.label = `FILTER BY MD5 OR sha512 Hash`;
+        this.clusteredTable.addButton.tooltip = `FILTER BY MD5 OR sha512 Hash`;
       }
     },
     getIncidentResponderNotifiedEmailReAnalyze: {
       immediate: true,
       handler(newValue) {
-        this.emails.rowActions[4].disabled = !newValue
+        this.emails.rowActions[4].disabled = !newValue;
       }
     }
   },
   created() {
-    this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
-    this.getReportedEmailPersistentStateAndLoad()
-    this.getClusteredEmailPersistentStateAndLoad()
+    this.$store.dispatch("widgets/callForWidgets", { isLoading: false });
+    this.getReportedEmailPersistentStateAndLoad();
+    this.getClusteredEmailPersistentStateAndLoad();
     if (handleIsSafari()) {
-      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
-        return setSafariClusterFix(obj, 'subject')
-      }
+      this.bindPropsIsSafari["handleSetCellClass"] = (obj) => {
+        return setSafariClusterFix(obj, "subject");
+      };
     }
-    this.getEmailTypesAndEmailTemplates()
+    this.getEmailTypesAndEmailTemplates();
   },
   beforeDestroy() {
-    const tableState = this.$refs.refReportedEmails.getState()
-    let clusteredTableState
+    const tableState = this.$refs.refReportedEmails.getState();
+    let clusteredTableState;
     if (this.isShowingClusteredTable) {
-      clusteredTableState = this.$refs.refReportedEmailsClustered.getState()
+      clusteredTableState = this.$refs.refReportedEmailsClustered.getState();
     }
     const payload = {
       tableState,
@@ -1413,182 +1501,198 @@ export default {
       serverSideClusteredProps: this.serverSideClusteredProps,
       clusteredRow: this.clusteredRow,
       selectedCluster: this.selectedCluster,
-      requestBodyReportedEmails: JSON.parse(JSON.stringify(this.requestBodyReportedEmails)),
+      requestBodyReportedEmails: JSON.parse(
+        JSON.stringify(this.requestBodyReportedEmails)
+      ),
       clusteredTableAxios: JSON.parse(JSON.stringify(this.clusteredTableAxios)),
       isShowingClusteredTable: this.isShowingClusteredTable
-    }
-    this.$store.dispatch('datatable/setTable', {
-      key: 'Incident Responder',
+    };
+    this.$store.dispatch("datatable/setTable", {
+      key: "Incident Responder",
       payload
-    })
+    });
   },
   methods: {
     ...mapActions({
-      getCurrentUser: 'auth/getCurrentUser'
+      getCurrentUser: "auth/getCurrentUser"
     }),
     handleConfirmationRequiredClose() {
-      this.isExtendedViewSaveButtonDisabled = false
-      this.isShowConfirmationRequired = false
+      this.isExtendedViewSaveButtonDisabled = false;
+      this.isShowConfirmationRequired = false;
     },
     handleFilterByHash() {
-      if (this.isParentTableHashFilterActive || this.isClusteredTableHashFilterActive) {
-        this.clearFilterByHashProps()
+      if (
+        this.isParentTableHashFilterActive ||
+        this.isClusteredTableHashFilterActive
+      ) {
+        this.clearFilterByHashProps();
       } else {
-        this.isFilterByHashModalVisible = true
+        this.isFilterByHashModalVisible = true;
       }
     },
     clearFilterByHashProps() {
-      this.hashfilterProps = { ...this.defaultHashfilterProps }
+      this.hashfilterProps = { ...this.defaultHashfilterProps };
       if (this.isShowingClusteredTable) {
         const clusteredHashFilterIndex = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.findIndex(
-          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
-        )
+          (item) => ["MD5", "SHA512"].includes(item.FieldName)
+        );
         if (clusteredHashFilterIndex !== -1) {
           this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(
             clusteredHashFilterIndex,
             1
-          )
+          );
         }
-        this.callForClusteredTable()
+        this.callForClusteredTable();
       } else {
         const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
-          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
-        )
+          (item) => ["MD5", "SHA512"].includes(item.FieldName)
+        );
         if (hashFilterIndex !== -1) {
           this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.splice(
             hashFilterIndex,
             1
-          )
+          );
         }
-        this.callForSearchNotifiedMail()
+        this.callForSearchNotifiedMail();
       }
     },
     confirmFilterByHash() {
       if (this.clusteredRow) {
         const hashFilterIndex = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.findIndex(
-          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
-        )
+          (item) => ["MD5", "SHA512"].includes(item.FieldName)
+        );
         if (hashFilterIndex !== -1) {
           this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[
             hashFilterIndex
-          ].FieldName = this.hashfilterProps.filterBy
+          ].FieldName = this.hashfilterProps.filterBy;
           this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[
             hashFilterIndex
-          ].Value = this.hashfilterProps.hash
-          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[hashFilterIndex].Operator =
-            '='
+          ].Value = this.hashfilterProps.hash;
+          this.clusteredTableAxios.filter.FilterGroups[0].FilterItems[
+            hashFilterIndex
+          ].Operator = "=";
         } else {
           this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.push({
             FieldName: this.hashfilterProps.filterBy,
             Value: this.hashfilterProps.hash,
-            Operator: '='
-          })
+            Operator: "="
+          });
         }
-        this.callForClusteredTable()
+        this.callForClusteredTable();
       } else {
         const hashFilterIndex = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.findIndex(
-          (item) => ['MD5', 'SHA512'].includes(item.FieldName)
-        )
+          (item) => ["MD5", "SHA512"].includes(item.FieldName)
+        );
         if (hashFilterIndex !== -1) {
           this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
             hashFilterIndex
-          ].FieldName = this.hashfilterProps.filterBy
+          ].FieldName = this.hashfilterProps.filterBy;
           this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
             hashFilterIndex
-          ].Value = this.hashfilterProps.hash
+          ].Value = this.hashfilterProps.hash;
           this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems[
             hashFilterIndex
-          ].Operator = '='
+          ].Operator = "=";
         } else {
-          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.push({
-            FieldName: this.hashfilterProps.filterBy,
-            Value: this.hashfilterProps.hash,
-            Operator: '='
-          })
+          this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.push(
+            {
+              FieldName: this.hashfilterProps.filterBy,
+              Value: this.hashfilterProps.hash,
+              Operator: "="
+            }
+          );
         }
-        this.callForSearchNotifiedMail()
+        this.callForSearchNotifiedMail();
       }
-      this.closeFilterByHashModal()
+      this.closeFilterByHashModal();
     },
     closeFilterByHashModal() {
-      this.isFilterByHashModalVisible = false
+      this.isFilterByHashModalVisible = false;
     },
     handleOnExtendedViewStatusChange(status) {
       if (!status) {
-        this.extendedViewValue = []
-        this.waitingItemForApiItems = []
+        this.extendedViewValue = [];
+        this.waitingItemForApiItems = [];
       }
     },
     handleEmailTemplateChange() {
-      this.toggleEmailTemplateModal()
+      this.toggleEmailTemplateModal();
     },
     getEmailTypesAndEmailTemplates() {
       getEmailTypesAndEmailTemplates().then((response) => {
-        const [emailTemplatesResponse, templateTypesResponse] = response
-        this.emailTemplates = emailTemplatesResponse.data.data.results
+        const [emailTemplatesResponse, templateTypesResponse] = response;
+        this.emailTemplates = emailTemplatesResponse.data.data.results;
         if (this.emailTemplates[0]) {
-          this.emailTemplates[0].isDefault = true
+          this.emailTemplates[0].isDefault = true;
         }
-        this.templateTypes = templateTypesResponse
-      })
+        this.templateTypes = templateTypesResponse;
+      });
     },
     toggleEmailTemplateModal() {
-      this.isShowEmailTemplateModal = !this.isShowEmailTemplateModal
+      this.isShowEmailTemplateModal = !this.isShowEmailTemplateModal;
     },
-    handleConfirmSelectedEmailTemplate(resourceId = '') {
-      this.selectedTemplateResourceId = resourceId
-      this.isMultipleSelectedTemplateResourceId = false
-      this.toggleEmailTemplateModal()
+    handleConfirmSelectedEmailTemplate(resourceId = "") {
+      this.selectedTemplateResourceId = resourceId;
+      this.isMultipleSelectedTemplateResourceId = false;
+      this.toggleEmailTemplateModal();
     },
     getReportedEmailPersistentStateAndLoad() {
       if (this.isLoadState) {
-        const persistentStateContainer = this.isPersistentState()
+        const persistentStateContainer = this.isPersistentState();
         if (persistentStateContainer) {
-          this.requestBodyReportedEmails = persistentStateContainer.requestBodyReportedEmails
-          this.initMethods(true)
-          const { tableState, serverSideProps, selectedCluster } = persistentStateContainer
-          this.serverSideProps = serverSideProps
+          this.requestBodyReportedEmails =
+            persistentStateContainer.requestBodyReportedEmails;
+          this.initMethods(true);
+          const {
+            tableState,
+            serverSideProps,
+            selectedCluster
+          } = persistentStateContainer;
+          this.serverSideProps = serverSideProps;
           if (selectedCluster) {
-            this.changeFirstColumnWidth(360)
+            this.changeFirstColumnWidth(360);
           }
-          this.selectedCluster = selectedCluster
-          this.dynamicReportedEmailProps = { persistentState: tableState }
+          this.selectedCluster = selectedCluster;
+          this.dynamicReportedEmailProps = { persistentState: tableState };
         } else {
-          this.initMethods()
+          this.initMethods();
         }
       } else {
-        this.initMethods()
+        this.initMethods();
       }
     },
     initDatas() {
-      this.callForSearchNotifiedMail()
+      this.callForSearchNotifiedMail();
       if (this.clusteredRow) {
-        this.callForClusteredTable()
+        this.callForClusteredTable();
       }
-      this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
-      this.$refs.refIncidentResponderCards.callForData()
+      this.$store.dispatch("widgets/callForWidgets", { isLoading: false });
+      this.$refs.refIncidentResponderCards.callForData();
     },
     toggleShowReAnalyzeDialog() {
-      this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
+      this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog;
     },
     isPersistentState() {
       return (
-        this.$store.state['datatable'].tables['Incident Responder'] &&
-        this.$store.state['datatable'].tables['Incident Responder'].payload
-      )
+        this.$store.state["datatable"].tables["Incident Responder"] &&
+        this.$store.state["datatable"].tables["Incident Responder"].payload
+      );
     },
     handleMessageChange(val) {
       if (!val) {
-        this.extendedView.customMessage = ''
+        this.extendedView.customMessage = "";
       }
     },
     getClusteredEmailPersistentStateAndLoad() {
       if (!this.isLoadState) {
-        return
+        return;
       }
-      const persistentStateContainer = this.isPersistentState()
-      if (!persistentStateContainer || !persistentStateContainer.isShowingClusteredTable) {
-        return
+      const persistentStateContainer = this.isPersistentState();
+      if (
+        !persistentStateContainer ||
+        !persistentStateContainer.isShowingClusteredTable
+      ) {
+        return;
       }
       const {
         isShowingClusteredTable,
@@ -1596,136 +1700,179 @@ export default {
         serverSideClusteredProps,
         clusteredRow,
         clusteredTableState
-      } = persistentStateContainer
+      } = persistentStateContainer;
 
-      this.clusteredTableAxios = clusteredTableAxios
-      this.serverSideClusteredProps = serverSideClusteredProps
-      this.clusteredRow = clusteredRow
-      this.dynamicClusterProps = { persistentState: clusteredTableState }
-      this.isShowingClusteredTable = isShowingClusteredTable
+      this.clusteredTableAxios = clusteredTableAxios;
+      this.serverSideClusteredProps = serverSideClusteredProps;
+      this.clusteredRow = clusteredRow;
+      this.dynamicClusterProps = { persistentState: clusteredTableState };
+      this.isShowingClusteredTable = isShowingClusteredTable;
     },
     handleReAnalyze(row = {}) {
-      this.mailDetails.name = row.subject
-      this.mailDetails.resourceId = row.resourceId
-      this.toggleShowReAnalyzeDialog()
+      this.mailDetails.name = row.subject;
+      this.mailDetails.resourceId = row.resourceId;
+      this.toggleShowReAnalyzeDialog();
+    },
+    handleAnalyzeWithAI(row = {}) {
+      const accessToken = AuthenticationService.getToken();
+      const apiBaseUrl =
+        APP_CONFIG?.VUE_APP_ROOT_API || "https://test-api.devkeepnet.com";
+      const body = {
+        id: row.resourceId,
+        accessToken,
+        apiBaseUrl
+      };
+      const isLocalhost = window.location.hostname.includes("localhost");
+      const url = isLocalhost
+        ? "http://localhost:4111/email-ir/analyze"
+        : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";
+      axios
+        .post(url, body, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(() => {
+          this.$store.dispatch("common/createSnackBar", {
+            message: "Analyze with AI process started.",
+            icon: "mdi-check-circle",
+            color: "#4caf50"
+          });
+        })
+        .catch((error) => {
+          console.error("Error calling analyze with AI:", error);
+          this.$store.dispatch("common/createSnackBar", {
+            message: "Failed to start Analyze with AI.",
+            icon: "mdi-alert-circle",
+            color: "#f44336"
+          });
+        });
     },
     handleBackClick() {
-      this.isShowingClusteredTable = false
-      this.clusteredRow = null
-      this.clusteredTable.columns[0].fixed = 'left'
-      this.resetClusteredTableParams()
+      this.isShowingClusteredTable = false;
+      this.clusteredRow = null;
+      this.clusteredTable.columns[0].fixed = "left";
+      this.resetClusteredTableParams();
     },
     resetClusteredTableParams() {
-      this.clusteredTableAxios.pageNumber = 1
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = []
-      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = []
+      this.clusteredTableAxios.pageNumber = 1;
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = [];
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [];
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.requestBodyReportedEmails.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSearchNotifiedMail()
+      this.requestBodyReportedEmails.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.callForSearchNotifiedMail();
     },
     serverSideClusteredSizeChanged(pageSize = 10) {
-      this.clusteredTableAxios.pageSize = pageSize
-      this.serverSideClusteredProps.pageSize = pageSize
-      this.resetClusteredPageNumber()
-      this.callForClusteredTable()
+      this.clusteredTableAxios.pageSize = pageSize;
+      this.serverSideClusteredProps.pageSize = pageSize;
+      this.resetClusteredPageNumber();
+      this.callForClusteredTable();
     },
     resetClusteredPageNumber() {
-      this.clusteredTableAxios.pageNumber = 1
-      this.serverSideClusteredProps.pageNumber = 1
+      this.clusteredTableAxios.pageNumber = 1;
+      this.serverSideClusteredProps.pageNumber = 1;
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.requestBodyReportedEmails.pageNumber = pageNumber
-      this.callForSearchNotifiedMail()
+      this.requestBodyReportedEmails.pageNumber = pageNumber;
+      this.callForSearchNotifiedMail();
     },
     serverSideClusteredPageNumberChanged(pageNumber = 1) {
-      this.clusteredTableAxios.pageNumber = pageNumber
-      this.callForClusteredTable()
+      this.clusteredTableAxios.pageNumber = pageNumber;
+      this.callForClusteredTable();
     },
     sortChanged({ order, prop } = {}) {
-      this.requestBodyReportedEmails.ascending = order === 'ascending'
-      this.requestBodyReportedEmails.orderBy = prop
-      this.callForSearchNotifiedMail()
+      this.requestBodyReportedEmails.ascending = order === "ascending";
+      this.requestBodyReportedEmails.orderBy = prop;
+      this.callForSearchNotifiedMail();
     },
     sortClusteredChanged({ order, prop } = {}) {
-      this.clusteredTableAxios.ascending = order === 'ascending'
-      this.clusteredTableAxios.orderBy = prop
-      this.callForClusteredTable()
+      this.clusteredTableAxios.ascending = order === "ascending";
+      this.clusteredTableAxios.orderBy = prop;
+      this.callForClusteredTable();
     },
-    changeColumnsOrder(selectedCluster = '') {
-      selectedCluster = this.getClusteredField(selectedCluster)
-      const { columns } = this.emails
+    changeColumnsOrder(selectedCluster = "") {
+      selectedCluster = this.getClusteredField(selectedCluster);
+      const { columns } = this.emails;
       if (selectedCluster === PROPERTY_STORE.SUBJECT) {
         if (columns[0].property !== PROPERTY_STORE.SUBJECT) {
-          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[2]))
-          const copyOfReportedBy = JSON.parse(JSON.stringify(this.emails.reportedByColumn))
+          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[2]));
+          const copyOfReportedBy = JSON.parse(
+            JSON.stringify(this.emails.reportedByColumn)
+          );
           this.$set(this.emails.columns, 0, {
             ...JSON.parse(JSON.stringify(this.emails.subjectColumn)),
             ...this.emails.firstColumnProperties,
             fixed: this.emails.columns[0].fixed
-          })
-          this.$set(this.emails.columns, 1, copyOfAttachmentCount)
-          this.$set(this.emails.columns, 2, copyOfReportedBy)
+          });
+          this.$set(this.emails.columns, 1, copyOfAttachmentCount);
+          this.$set(this.emails.columns, 2, copyOfReportedBy);
         }
       } else if (selectedCluster === PROPERTY_STORE.REPORTEDBY) {
         if (columns[0].property !== PROPERTY_STORE.REPORTEDBY) {
-          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[1]))
-          const copyOfSubject = JSON.parse(JSON.stringify(this.emails.subjectColumn))
+          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[1]));
+          const copyOfSubject = JSON.parse(
+            JSON.stringify(this.emails.subjectColumn)
+          );
           this.$set(this.emails.columns, 0, {
             ...JSON.parse(JSON.stringify(this.emails.reportedByColumn)),
             ...this.emails.firstColumnProperties,
             fixed: this.emails.columns[0].fixed
-          })
-          this.$set(this.emails.columns, 1, copyOfSubject)
-          this.$set(this.emails.columns, 2, copyOfAttachmentCount)
+          });
+          this.$set(this.emails.columns, 1, copyOfSubject);
+          this.$set(this.emails.columns, 2, copyOfAttachmentCount);
         }
       }
     },
-    clusterChanged(selectedCluster = '') {
-      this.resetTableFilters()
-      this.changeColumnsOrder(selectedCluster)
-      this.changeFirstColumnWidth(360)
-      this.hashfilterProps = { ...this.defaultHashfilterProps }
-      this.requestBodyReportedEmails.pageNumber = 1
-      this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(selectedCluster)
-      this.isCustomOverflowedColumn = true
-      this.selectedCluster = selectedCluster
-      this.callForSearchNotifiedMail()
+    clusterChanged(selectedCluster = "") {
+      this.resetTableFilters();
+      this.changeColumnsOrder(selectedCluster);
+      this.changeFirstColumnWidth(360);
+      this.hashfilterProps = { ...this.defaultHashfilterProps };
+      this.requestBodyReportedEmails.pageNumber = 1;
+      this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(
+        selectedCluster
+      );
+      this.isCustomOverflowedColumn = true;
+      this.selectedCluster = selectedCluster;
+      this.callForSearchNotifiedMail();
     },
     resetTableFilters() {
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = []
-      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = []
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = [];
+      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [];
       if (this.$refs.refReportedEmails) {
-        const { refReportedEmails } = this.$refs
-        refReportedEmails.search = ''
-        refReportedEmails.$refs.elTableRef.clearSelection()
-        refReportedEmails.serverSideSelectionCount = 0
-        refReportedEmails.excludedResourceIdList = []
-        refReportedEmails.isSelectedAllEver = false
+        const { refReportedEmails } = this.$refs;
+        refReportedEmails.search = "";
+        refReportedEmails.$refs.elTableRef.clearSelection();
+        refReportedEmails.serverSideSelectionCount = 0;
+        refReportedEmails.excludedResourceIdList = [];
+        refReportedEmails.isSelectedAllEver = false;
       }
       if (this.$refs.refReportedEmailsClustered) {
-        const { refReportedEmailsClustered } = this.$refs
-        refReportedEmailsClustered.$refs.elTableRef.clearSelection()
-        refReportedEmailsClustered.excludedResourceIdList = []
-        refReportedEmailsClustered.isSelectedAllEver = false
-        refReportedEmailsClustered.serverSideSelectionCount = 0
+        const { refReportedEmailsClustered } = this.$refs;
+        refReportedEmailsClustered.$refs.elTableRef.clearSelection();
+        refReportedEmailsClustered.excludedResourceIdList = [];
+        refReportedEmailsClustered.isSelectedAllEver = false;
+        refReportedEmailsClustered.serverSideSelectionCount = 0;
       }
-      this.$refs.refReportedEmails.reRenderFilters({})
+      this.$refs.refReportedEmails.reRenderFilters({});
     },
     handleRecordButtonClick(row) {
-      this.clusteredRow = row
-      this.dynamicClusterProps = null
-      this.setClusteredTableFilters()
-      const persistentStateContainer = this.$refs.refReportedEmails.getState()
-      let { filterValues = {}, search, sortProps } = persistentStateContainer
+      this.clusteredRow = row;
+      this.dynamicClusterProps = null;
+      this.setClusteredTableFilters();
+      const persistentStateContainer = this.$refs.refReportedEmails.getState();
+      let { filterValues = {}, search, sortProps } = persistentStateContainer;
       const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED)
-      )
+        localStorage.getItem(
+          DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED
+        )
+      );
 
       if (savedFilter && savedFilter.filterValues) {
-        filterValues = { ...savedFilter.filterValues, ...filterValues }
+        filterValues = { ...savedFilter.filterValues, ...filterValues };
       }
       this.dynamicClusterProps = {
         persistentState: {
@@ -1742,7 +1889,7 @@ export default {
           lastColFixed: true,
           rowCount: this.countRow || 10,
           isSelectedAll: false,
-          selectedCluster: '',
+          selectedCluster: "",
           sortProps,
           serverSideSelectionCount: 0,
           isSelectedAllEver: false,
@@ -1753,29 +1900,33 @@ export default {
           selectionRowCheckboxDeterminate: false,
           multipleSelection: []
         }
-      }
-      this.callForClusteredTable()
-      this.toggleIsShowingClusteredTable()
+      };
+      this.callForClusteredTable();
+      this.toggleIsShowingClusteredTable();
     },
     setClusteredTableFilters() {
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = [
         ...this.clusteredTableAxios.filter.FilterGroups[0].FilterItems,
         ...JSON.parse(
-          JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems)
+          JSON.stringify(
+            this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+          )
         )
-      ]
+      ];
 
       this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [
         ...this.clusteredTableAxios.filter.FilterGroups[1].FilterItems,
         ...JSON.parse(
-          JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems)
+          JSON.stringify(
+            this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems
+          )
         )
-      ]
+      ];
     },
     callForClusteredTable() {
       if (this.getIncidentResponderNotifiedEmailPermission) {
-        this.isReportedEmailsClusteredLoading = true
-        this.setClusteredFilter()
+        this.isReportedEmailsClusteredLoading = true;
+        this.setClusteredFilter();
         searchNotifiedMail(this.clusteredTableAxios)
           .then((response) => {
             const {
@@ -1783,161 +1934,188 @@ export default {
               totalNumberOfPages,
               pageNumber,
               results
-            } = response.data.data
-            this.serverSideClusteredProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideClusteredProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideClusteredProps.pageNumber = pageNumber
-            this.removeClusteredFilter()
-            this.clusteredTableData = results
+            } = response.data.data;
+            this.serverSideClusteredProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideClusteredProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideClusteredProps.pageNumber = pageNumber;
+            this.removeClusteredFilter();
+            this.clusteredTableData = results;
           })
-          .finally(() => (this.isReportedEmailsClusteredLoading = false))
+          .finally(() => (this.isReportedEmailsClusteredLoading = false));
       }
     },
     setClusteredFilter() {
-      let fieldName = this.getClusteredField(this.selectedCluster)
+      let fieldName = this.getClusteredField(this.selectedCluster);
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.unshift({
         FieldName: fieldName,
-        Operator: '=',
-        Value: this.clusteredRow[fieldName] || '{none}'
-      })
+        Operator: "=",
+        Value: this.clusteredRow[fieldName] || "{none}"
+      });
     },
-    getClusteredField(field = '') {
-      field = field.replace(/\s/, '')
-      return field.substring(0, 1).toLowerCase() + field.substring(1, field.length)
+    getClusteredField(field = "") {
+      field = field.replace(/\s/, "");
+      return (
+        field.substring(0, 1).toLowerCase() + field.substring(1, field.length)
+      );
     },
     removeClusteredFilter() {
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(0, 1)
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(0, 1);
     },
     toggleIsShowingClusteredTable() {
-      this.isShowingClusteredTable = !this.isShowingClusteredTable
+      this.isShowingClusteredTable = !this.isShowingClusteredTable;
     },
     handleListBulletedClick() {
-      this.changeFirstColumnWidth()
-      this.requestBodyReportedEmails.clusteredBy = ''
-      this.isCustomOverflowedColumn = false
-      this.selectedCluster = ''
-      this.resetTableFilters()
-      this.callForSearchNotifiedMail()
+      this.changeFirstColumnWidth();
+      this.requestBodyReportedEmails.clusteredBy = "";
+      this.isCustomOverflowedColumn = false;
+      this.selectedCluster = "";
+      this.resetTableFilters();
+      this.callForSearchNotifiedMail();
     },
     extendedViewDisableChanger() {
-      if (this.isExtendedViewSaveButtonDisabled) return true
+      if (this.isExtendedViewSaveButtonDisabled) return true;
       return (
-        JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView) &&
-        this.selectedTemplateResourceId === this.defaultSelectedTemplateResourceId
-      )
+        JSON.stringify(this.defaultExtendedViewValues) ===
+          JSON.stringify(this.extendedView) &&
+        this.selectedTemplateResourceId ===
+          this.defaultSelectedTemplateResourceId
+      );
     },
     handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.emails.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.callForSearchNotifiedMail()
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter(
+        (filterItem) => {
+          const column = this.emails.columns.find(
+            (col) =>
+              col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+          );
+          return column.filterableType;
+        }
+      );
+      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [
+        ...filterItems
+      ];
+      this.resetPageNumber();
+      this.callForSearchNotifiedMail();
     },
     handleClusteredSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.clusteredTable.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetClusteredPageNumber()
-      this.callForClusteredTable()
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter(
+        (filterItem) => {
+          const column = this.clusteredTable.columns.find(
+            (col) =>
+              col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+          );
+          return column.filterableType;
+        }
+      );
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [
+        ...filterItems
+      ];
+      this.resetClusteredPageNumber();
+      this.callForClusteredTable();
     },
     resetPageNumber() {
-      this.requestBodyReportedEmails.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.requestBodyReportedEmails.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     initMethods(isLoadState = false) {
       if (!isLoadState) {
-        this.callForSearchNotifiedMail()
+        this.callForSearchNotifiedMail();
       }
     },
     closePlaybookWithUpdate() {
-      this.togglePlaybookModal()
-      this.initMethods()
+      this.togglePlaybookModal();
+      this.initMethods();
     },
     handleRouteToInvestigationDetails(resp) {
       if (resp?.data?.data?.resourceId) {
         this.$router.push(
           `/incident-responder/investigations/investigation-details/${resp.data.data.resourceId}`
-        )
+        );
       }
     },
     handeRuleNameClick(resourceId) {
-      this.selectedPlaybookId = resourceId
-      this.showPlaybookModal = true
+      this.selectedPlaybookId = resourceId;
+      this.showPlaybookModal = true;
     },
     togglePlaybookModal() {
-      this.selectedPlaybookId = null
-      this.showPlaybookModal = !this.showPlaybookModal
+      this.selectedPlaybookId = null;
+      this.showPlaybookModal = !this.showPlaybookModal;
     },
     togglePlaybookModalWithSelected(selectedPlaybookId) {
-      this.selectedPlaybookId = selectedPlaybookId
-      this.showPlaybookModal = !this.showPlaybookModal
+      this.selectedPlaybookId = selectedPlaybookId;
+      this.showPlaybookModal = !this.showPlaybookModal;
     },
     getDataTableFieldLabel(text) {
-      return getDataTableFieldLabel(text)
+      return getDataTableFieldLabel(text);
     },
-    onEditClick({ selected: selections, isEditPopupOpen, isMultiple, isSelectedAllEver }) {
+    onEditClick({
+      selected: selections,
+      isEditPopupOpen,
+      isMultiple,
+      isSelectedAllEver
+    }) {
       if (isEditPopupOpen && selections.length) {
-        this.extendedViewLoading = true
-        if (selections.length === 1 && (!isMultiple || !this.extendedViewValue.length)) {
-          this.isMultipleSelectedTemplateResourceId = false
+        this.extendedViewLoading = true;
+        if (
+          selections.length === 1 &&
+          (!isMultiple || !this.extendedViewValue.length)
+        ) {
+          this.isMultipleSelectedTemplateResourceId = false;
           getNotifiedEmailForEdit(selections[0].resourceId)
             .then((response) => {
-              const selectedItem = response.data.data
+              const selectedItem = response.data.data;
               this.selectedTemplateResourceId =
-                selectedItem.notificationTemplateResourceId || this?.emailTemplates[0]?.resourceId
-              this.defaultSelectedTemplateResourceId = this.selectedTemplateResourceId
-              this.extendedView.isNotify = selectedItem.isNotifyUser
-              this.extendedView.customMessage = selectedItem.customMessage
-              this.extendedView.isMessage = !!selectedItem.customMessage
-              this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
-              this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
-              this.defaultExtendedViewValues.isMessage = !!selectedItem.customMessage
+                selectedItem.notificationTemplateResourceId ||
+                this?.emailTemplates[0]?.resourceId;
+              this.defaultSelectedTemplateResourceId = this.selectedTemplateResourceId;
+              this.extendedView.isNotify = selectedItem.isNotifyUser;
+              this.extendedView.customMessage = selectedItem.customMessage;
+              this.extendedView.isMessage = !!selectedItem.customMessage;
+              this.defaultExtendedViewValues.isNotify =
+                selectedItem.isNotifyUser;
+              this.defaultExtendedViewValues.customMessage =
+                selectedItem.customMessage;
+              this.defaultExtendedViewValues.isMessage = !!selectedItem.customMessage;
               this.extendedViewValue = [
                 {
                   ...selectedItem,
-                  note: selectedItem.note || '',
+                  note: selectedItem.note || "",
                   resourceId: selections[0].resourceId,
                   reportedBy: selections[0].reportedBy,
                   matchingPlaybooks: selections[0].matchingPlaybooks,
                   source: selections[0].source
                 }
-              ]
+              ];
             })
-            .finally(() => (this.extendedViewLoading = false))
-          this.hasMultipleNoteValue = false
+            .finally(() => (this.extendedViewLoading = false));
+          this.hasMultipleNoteValue = false;
         } else if (selections.length > 1 || isMultiple) {
-          const rows = []
-          let index = 0
+          const rows = [];
+          let index = 0;
 
-          this.extendedViewLoading = true
-          const promises = []
+          this.extendedViewLoading = true;
+          const promises = [];
           if (!isSelectedAllEver) {
             const removedItems = this.extendedViewValue.filter(
               (extendedViewItem) =>
-                !selections.find(({ resourceId }) => resourceId === extendedViewItem.resourceId)
-            )
+                !selections.find(
+                  ({ resourceId }) => resourceId === extendedViewItem.resourceId
+                )
+            );
             if (removedItems.length) {
               removedItems.forEach((removedItem) => {
                 const index = this.extendedViewValue.findIndex(
                   (item) => item.resourceId === removedItem.resourceId
-                )
+                );
                 this.waitingItemForApiItems.splice(
                   this.waitingItemForApiItems.indexOf(removedItem.resourceId),
                   1
-                )
+                );
 
-                this.extendedViewValue.splice(index, 1)
-              })
+                this.extendedViewValue.splice(index, 1);
+              });
               if (this.extendedViewValue.length) {
-                this.compareAndChangeExtendedViewParams(this.extendedViewValue)
+                this.compareAndChangeExtendedViewParams(this.extendedViewValue);
               }
             }
           }
@@ -1945,19 +2123,20 @@ export default {
           const newItems = selections.filter(
             (item) =>
               !this.extendedViewValue.find(
-                (extendedViewItem) => extendedViewItem.resourceId === item.resourceId
+                (extendedViewItem) =>
+                  extendedViewItem.resourceId === item.resourceId
               )
-          )
+          );
 
           newItems.map((item) => {
             if (!this.waitingItemForApiItems.includes(item.resourceId)) {
               if (!isSelectedAllEver) {
-                this.waitingItemForApiItems.push(item.resourceId)
+                this.waitingItemForApiItems.push(item.resourceId);
               }
-              promises.push(getNotifiedEmail(item.resourceId))
-              index++
+              promises.push(getNotifiedEmail(item.resourceId));
+              index++;
             }
-          })
+          });
           Promise.all(promises)
             .then((responses) => {
               responses.forEach((response, ind) => {
@@ -1968,105 +2147,119 @@ export default {
                   ind === responses.length - 1,
                   ind,
                   selections
-                )
-              })
+                );
+              });
             })
             .finally(() => {
-              this.extendedViewLoading = false
-            })
+              this.extendedViewLoading = false;
+            });
         } else {
-          this.extendedView.customMessage = ''
-          this.extendedView.isMessage = false
-          this.extendedView.isNotify = true
-          this.defaultExtendedViewValues.customMessage = ''
-          this.defaultExtendedViewValues.isMessage = false
-          this.defaultExtendedViewValues.isNotify = true
-          this.hasMultipleNoteValue = false
+          this.extendedView.customMessage = "";
+          this.extendedView.isMessage = false;
+          this.extendedView.isNotify = true;
+          this.defaultExtendedViewValues.customMessage = "";
+          this.defaultExtendedViewValues.isMessage = false;
+          this.defaultExtendedViewValues.isNotify = true;
+          this.hasMultipleNoteValue = false;
         }
       } else {
-        this.isMultipleSelectedTemplateResourceId = false
-        this.extendedViewValue = []
+        this.isMultipleSelectedTemplateResourceId = false;
+        this.extendedViewValue = [];
       }
     },
-    setExtendedViewValue(selectedItem, rows, selections, shouldRender, ind, allSelections) {
+    setExtendedViewValue(
+      selectedItem,
+      rows,
+      selections,
+      shouldRender,
+      ind,
+      allSelections
+    ) {
       rows.push({
         ...selectedItem,
-        note: selectedItem.note || '',
+        note: selectedItem.note || "",
         resourceId: selections[ind].resourceId,
         reportedBy: selections[ind].reportedBy,
         matchingPlaybooks: selections[ind].matchingPlaybooks,
         source: selections[ind].source
-      })
-      const index = this.waitingItemForApiItems.indexOf(selections[ind].resourceId)
-      if (index > -1) this.waitingItemForApiItems.splice(index, 1)
+      });
+      const index = this.waitingItemForApiItems.indexOf(
+        selections[ind].resourceId
+      );
+      if (index > -1) this.waitingItemForApiItems.splice(index, 1);
 
       if (shouldRender) {
-        this.compareAndChangeExtendedViewParams(rows, allSelections)
+        this.compareAndChangeExtendedViewParams(rows, allSelections);
       }
     },
     compareAndChangeExtendedViewParams(rows, allSelections) {
       if (allSelections && allSelections.length !== rows.length) {
-        rows = [...this.extendedViewValue, ...rows]
+        rows = [...this.extendedViewValue, ...rows];
       }
-      const note = rows[0].note
+      const note = rows[0].note;
       rows.forEach((item) => {
         if (item.note !== note) {
-          this.hasMultipleNoteValue = true
+          this.hasMultipleNoteValue = true;
         }
-      })
+      });
       const sets = {
         isNotifyUser: new Set(),
         customMessage: new Set(),
         notificationTemplateResourceId: new Set()
-      }
+      };
       rows.forEach((item) => {
-        sets.isNotifyUser.add(item.isNotifyUser)
-        sets.customMessage.add(item.customMessage)
+        sets.isNotifyUser.add(item.isNotifyUser);
+        sets.customMessage.add(item.customMessage);
         item.notificationTemplateResourceId =
-          item.notificationTemplateResourceId || this?.emailTemplates[0]?.resourceId
-        sets.notificationTemplateResourceId.add(item.notificationTemplateResourceId)
-      })
+          item.notificationTemplateResourceId ||
+          this?.emailTemplates[0]?.resourceId;
+        sets.notificationTemplateResourceId.add(
+          item.notificationTemplateResourceId
+        );
+      });
       if (sets.notificationTemplateResourceId.size > 1) {
-        this.selectedTemplateResourceId = ''
-        this.isMultipleSelectedTemplateResourceId = true
+        this.selectedTemplateResourceId = "";
+        this.isMultipleSelectedTemplateResourceId = true;
       } else {
         if (sets.notificationTemplateResourceId.size === 1) {
-          this.selectedTemplateResourceId = [...sets.notificationTemplateResourceId][0]
+          this.selectedTemplateResourceId = [
+            ...sets.notificationTemplateResourceId
+          ][0];
         }
-        this.isMultipleSelectedTemplateResourceId = false
+        this.isMultipleSelectedTemplateResourceId = false;
       }
       if (sets.isNotifyUser.size === 1) {
-        this.extendedView.isNotify = sets.isNotifyUser.has(true)
+        this.extendedView.isNotify = sets.isNotifyUser.has(true);
       } else {
-        this.extendedView.isNotify = true
+        this.extendedView.isNotify = true;
       }
       if (this.extendedView.isNotify) {
         if (sets.customMessage.size === 1) {
-          if (sets.customMessage.has('')) {
-            this.extendedView.isMessage = false
-            this.extendedView.customMessage = ''
+          if (sets.customMessage.has("")) {
+            this.extendedView.isMessage = false;
+            this.extendedView.customMessage = "";
           } else {
-            this.extendedView.isMessage = true
-            this.extendedView.customMessage = [...sets.customMessage][0]
+            this.extendedView.isMessage = true;
+            this.extendedView.customMessage = [...sets.customMessage][0];
           }
         } else {
-          this.extendedView.isMessage = true
-          this.extendedView.customMessage = ''
-          this.isCustomMessageMultiple = true
+          this.extendedView.isMessage = true;
+          this.extendedView.customMessage = "";
+          this.isCustomMessageMultiple = true;
         }
       } else {
-        this.extendedView.isMessage = false
-        this.extendedView.customMessage = ''
+        this.extendedView.isMessage = false;
+        this.extendedView.customMessage = "";
       }
-      this.defaultExtendedViewValues.isNotify = this.extendedView.isNotify
-      this.defaultExtendedViewValues.customMessage = this.extendedView.customMessage
-      this.defaultExtendedViewValues.isMessage = this.extendedView.isMessage
+      this.defaultExtendedViewValues.isNotify = this.extendedView.isNotify;
+      this.defaultExtendedViewValues.customMessage = this.extendedView.customMessage;
+      this.defaultExtendedViewValues.isMessage = this.extendedView.isMessage;
 
-      this.extendedViewValue = rows
+      this.extendedViewValue = rows;
     },
     callForSearchNotifiedMail() {
       if (this.getIncidentResponderNotifiedEmailPermission) {
-        this.reportedEmailsLoading = true
+        this.reportedEmailsLoading = true;
         searchNotifiedMail(this.requestBodyReportedEmails)
           .then((response) => {
             const {
@@ -2074,119 +2267,138 @@ export default {
               totalNumberOfPages,
               pageNumber,
               results
-            } = response.data.data
+            } = response.data.data;
 
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            this.reportedEmailsData = results || []
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
+            this.reportedEmailsData = results || [];
             if (this.selectedCluster) {
-              this.changeFirstColumnWidth(360)
+              this.changeFirstColumnWidth(360);
             }
           })
           .finally(() => {
-            this.reportedEmailsLoading = false
-          })
+            this.reportedEmailsLoading = false;
+          });
       }
     },
     changeFirstColumnWidth(width = 200) {
       if (this?.$refs?.refReportedEmails?.$refs?.elTableRef)
-        this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = width
+        this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = width;
     },
     matchingPopupClick(match) {
-      this.selectedMatch = match
-      this.showMatchingModal = true
+      this.selectedMatch = match;
+      this.showMatchingModal = true;
     },
     onEmptyBtnClicked() {
       this.$router.push({
-        path: '/incident-responder/investigations',
+        path: "/incident-responder/investigations",
         query: { openPopup: true }
-      })
+      });
     },
     onEmptyReportedEmailsBtnClicked() {
       this.$router.push({
-        name: 'Phishing Reporter',
-        params: { tab: 'phishing-reporter-settings' }
-      })
+        name: "Phishing Reporter",
+        params: { tab: "phishing-reporter-settings" }
+      });
     },
     irPreviewOnClick(row) {
       window.open(
         `${window.location.href}/reported-emails/email-details/${row.resourceId}?tab=third`
-      )
+      );
     },
     handleIsNotify(value) {
       if (!value) {
-        this.extendedView.isMessage = false
-        this.extendedView.customMessage = ''
+        this.extendedView.isMessage = false;
+        this.extendedView.customMessage = "";
       }
     },
-    handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+    handleEdit(
+      selectedRows = [],
+      excludedResourceIdList = [],
+      isSelectedAllEver = false
+    ) {
       this.confirmationPayload = {
         selectedRows,
         excludedResourceIdList,
         isSelectedAllEver
-      }
-      if (!(selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable))) {
-        this.handleEditAfterConfirmation(this.confirmationPayload)
-        return
+      };
+      if (
+        !(
+          selectedRows.length > 1 ||
+          (this.selectedCluster && !this.isShowingClusteredTable)
+        )
+      ) {
+        this.handleEditAfterConfirmation(this.confirmationPayload);
+        return;
       }
       const payload = this.getEditBulkPayload(
         selectedRows,
         excludedResourceIdList,
         isSelectedAllEver
-      )
+      );
       confirmationRequiredForEdit(payload).then((response) => {
         const {
           data: { data = {} }
-        } = response || {}
-        this.confirmationDialogUserCount = data.userCount
-        this.confirmationDialogEmailCount = data.emailCount
-        this.isShowConfirmationRequired = true
-      })
+        } = response || {};
+        this.confirmationDialogUserCount = data.userCount;
+        this.confirmationDialogEmailCount = data.emailCount;
+        this.isShowConfirmationRequired = true;
+      });
     },
     handleEditAfterConfirmation({
       selectedRows = [],
       excludedResourceIdList = [],
       isSelectedAllEver = false
     }) {
-      this.confirmationRequiredActionButtonDisabled = true
-      this.isExtendedViewSaveButtonDisabled = true
-      this.extendedViewCallingApi = true
-      if (selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable)) {
+      this.confirmationRequiredActionButtonDisabled = true;
+      this.isExtendedViewSaveButtonDisabled = true;
+      this.extendedViewCallingApi = true;
+      if (
+        selectedRows.length > 1 ||
+        (this.selectedCluster && !this.isShowingClusteredTable)
+      ) {
         const payload = this.getEditBulkPayload(
           selectedRows,
           excludedResourceIdList,
           isSelectedAllEver
-        )
+        );
         updateNotifiedEmailBulk(payload)
           .then(this.handleUpdateNotifiedEmailResponse)
-          .finally(this.handleUpdateNotifiedEmailFinally)
+          .finally(this.handleUpdateNotifiedEmailFinally);
       } else {
-        const [item] = selectedRows
-        const tag = typeof item?.tags === 'string' ? item?.tags : item?.tags?.join(',')
+        const [item] = selectedRows;
+        const tag =
+          typeof item?.tags === "string" ? item?.tags : item?.tags?.join(",");
         const payload = {
           result: item.result,
           status: item.status,
-          tag: tag || '',
-          note: item.note || '',
+          tag: tag || "",
+          note: item.note || "",
           isNotifyUser: this.extendedView.isNotify,
-          customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : '',
+          customMessage: this.extendedView.isMessage
+            ? this.extendedView.customMessage
+            : "",
           notificationTemplateResourceId: this.selectedTemplateResourceId
-        }
+        };
         updateNotifiedEmail(item.resourceId, payload)
           .then(this.handleUpdateNotifiedEmailResponse)
-          .finally(this.handleUpdateNotifiedEmailFinally)
+          .finally(this.handleUpdateNotifiedEmailFinally);
       }
     },
-    getEditBulkPayload(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
+    getEditBulkPayload(
+      selectedRows = [],
+      excludedResourceIdList = [],
+      isSelectedAllEver = false
+    ) {
       const payload = {
         resourceIdList: []
-      }
-      const cluster = this.getClusteredField(this.selectedCluster)
+      };
+      const cluster = this.getClusteredField(this.selectedCluster);
       let selectedFilter = this.isShowingClusteredTable
         ? this.clusteredTableAxios
-        : this.requestBodyReportedEmails
-      selectedFilter = JSON.parse(JSON.stringify(selectedFilter))
+        : this.requestBodyReportedEmails;
+      selectedFilter = JSON.parse(JSON.stringify(selectedFilter));
       if (this.isShowingClusteredTable) {
         if (
           !selectedFilter.filter.FilterGroups[0].FilterItems.find(
@@ -2195,16 +2407,16 @@ export default {
         ) {
           selectedFilter.filter.FilterGroups[0].FilterItems.push({
             FieldName: cluster,
-            Operator: '=',
-            Value: this.clusteredRow[cluster] || '{none}'
-          })
+            Operator: "=",
+            Value: this.clusteredRow[cluster] || "{none}"
+          });
         }
       }
       if (isSelectedAllEver) {
-        payload['selectAll'] = {
+        payload["selectAll"] = {
           filter: selectedFilter,
           excludedResourceIdList
-        }
+        };
       }
       const sets = {
         result: new Set(),
@@ -2213,66 +2425,74 @@ export default {
         note: new Set(),
         isNotifyUser: new Set(),
         customMessage: new Set()
-      }
+      };
       selectedRows.forEach((row) => {
-        payload.resourceIdList.push(row.resourceId)
+        payload.resourceIdList.push(row.resourceId);
         if (this.selectedCluster && !this.isShowingClusteredTable) {
           const item = this.reportedEmailsData.find(
             (clusteredRow) => clusteredRow.resourceId === row.resourceId
-          )
+          );
           if (item) {
             payload.resourceIdList = [
-              ...new Set([...payload.resourceIdList, ...item.clusteredResourceIdList])
-            ]
+              ...new Set([
+                ...payload.resourceIdList,
+                ...item.clusteredResourceIdList
+              ])
+            ];
           }
         }
-        sets.result.add(row.result)
-        sets.status.add(row.status)
-        const tags = typeof row?.tags === 'string' ? row?.tags : row?.tags?.join(',') || ''
-        sets.tag.add(tags)
-        sets.note.add(row.note)
-        sets.isNotifyUser.add(row.isNotifyUser)
-        sets.customMessage.add(row.customMessage)
-      })
+        sets.result.add(row.result);
+        sets.status.add(row.status);
+        const tags =
+          typeof row?.tags === "string"
+            ? row?.tags
+            : row?.tags?.join(",") || "";
+        sets.tag.add(tags);
+        sets.note.add(row.note);
+        sets.isNotifyUser.add(row.isNotifyUser);
+        sets.customMessage.add(row.customMessage);
+      });
       for (const key of Object.keys(sets)) {
         if (sets[key].size === 1) {
-          payload[key] = [...sets[key]][0]
+          payload[key] = [...sets[key]][0];
         }
-        if (key === 'isNotifyUser') {
-          payload[key] = this.extendedView.isNotify
+        if (key === "isNotifyUser") {
+          payload[key] = this.extendedView.isNotify;
         }
-        if (key === 'customMessage') {
-          payload[key] = this.extendedView.customMessage
+        if (key === "customMessage") {
+          payload[key] = this.extendedView.customMessage;
         }
       }
-      payload.notificationTemplateResourceId = this.selectedTemplateResourceId
-      return payload
+      payload.notificationTemplateResourceId = this.selectedTemplateResourceId;
+      return payload;
     },
     irDetailsOnClick(row) {
-      window.open(`${window.location.href}/reported-emails/email-details/${row.resourceId}`)
+      window.open(
+        `${window.location.href}/reported-emails/email-details/${row.resourceId}`
+      );
     },
     handleReportedEmailInvestigate(row) {
       getNotifiedEmail(row.resourceId).then((response) => {
-        this.selectedEmail = response.data.data
-        this.isWantToAddNewInvestigation = true
-      })
+        this.selectedEmail = response.data.data;
+        this.isWantToAddNewInvestigation = true;
+      });
     },
     handleUpdateNotifiedEmailResponse() {
-      this.$store.dispatch('widgets/callForWidgets', { isLoading: false })
-      this.$refs.refIncidentResponderCards.callForData()
-      this?.$refs?.refReportedEmails?.resetSelectableParams()
-      this?.$refs?.refReportedEmailsClustered?.resetSelectableParams()
-      this.callForSearchNotifiedMail()
+      this.$store.dispatch("widgets/callForWidgets", { isLoading: false });
+      this.$refs.refIncidentResponderCards.callForData();
+      this?.$refs?.refReportedEmails?.resetSelectableParams();
+      this?.$refs?.refReportedEmailsClustered?.resetSelectableParams();
+      this.callForSearchNotifiedMail();
       if (this.clusteredRow) {
-        this.callForClusteredTable()
+        this.callForClusteredTable();
       }
     },
     handleUpdateNotifiedEmailFinally() {
-      this.isExtendedViewCancelButtonDisabled = false
-      this.confirmationRequiredActionButtonDisabled = false
-      this.isExtendedViewSaveButtonDisabled = false
-      this.extendedViewCallingApi = false
-      this.isShowConfirmationRequired = false
+      this.isExtendedViewCancelButtonDisabled = false;
+      this.confirmationRequiredActionButtonDisabled = false;
+      this.isExtendedViewSaveButtonDisabled = false;
+      this.extendedViewCallingApi = false;
+      this.isShowConfirmationRequired = false;
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },
@@ -2282,106 +2502,117 @@ export default {
         const payload = {
           pageNumber: reportAllPages ? 1 : pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
-          orderBy: 'CreateTime',
+          orderBy: "CreateTime",
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          exportType: exportType === "XLS" ? "Excel" : exportType,
           filter
-        }
+        };
         exportNotifiedEmails(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
           link.download = `Reported Emails.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+            exportType.toLocaleLowerCase() === "xls"
+              ? "xlsx"
+              : exportType.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
     },
-    exportClusteredReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      this.setClusteredFilter()
+    exportClusteredReportedListEmails({
+      exportTypes,
+      reportAllPages,
+      pageNumber,
+      pageSize
+    }) {
+      this.setClusteredFilter();
       exportTypes.map((exportType, index) => {
         const payload = {
           pageNumber: reportAllPages ? 1 : pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
-          orderBy: 'CreateTime',
+          orderBy: "CreateTime",
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          exportType: exportType === "XLS" ? "Excel" : exportType,
           filter: this.clusteredTableAxios.filter
-        }
+        };
         exportNotifiedEmails(payload)
           .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
             link.download = `Reported Emails ${
               this.clusteredRow[this.getClusteredField(this.selectedCluster)]
-            }.${exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()}`
-            link.click()
+            }.${
+              exportType.toLocaleLowerCase() === "xls"
+                ? "xlsx"
+                : exportType.toLocaleLowerCase()
+            }`;
+            link.click();
           })
           .finally(() => {
             if (index === exportTypes.length - 1) {
-              this.removeClusteredFilter()
+              this.removeClusteredFilter();
             }
-          })
-      })
+          });
+      });
     },
     clusteredColumnFilterChanged(filter = {}) {
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.clusteredTableAxios
-      )
-      this.resetClusteredPageNumber()
-      this.callForClusteredTable()
+      );
+      this.resetClusteredPageNumber();
+      this.callForClusteredTable();
     },
     clusteredColumnFilterCleared(fieldName) {
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.clusteredTableAxios
-      )
+      );
       if (this.clusteredRow) {
-        this.callForClusteredTable()
+        this.callForClusteredTable();
       }
-      this.resetClusteredPageNumber()
+      this.resetClusteredPageNumber();
     },
     columnFilterChanged(filter) {
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.requestBodyReportedEmails
-      )
-      this.resetPageNumber()
-      this.callForSearchNotifiedMail()
+      );
+      this.resetPageNumber();
+      this.callForSearchNotifiedMail();
     },
     columnFilterCleared(fieldName) {
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.requestBodyReportedEmails
-      )
-      this.resetPageNumber()
-      this.callForSearchNotifiedMail()
+      );
+      this.resetPageNumber();
+      this.callForSearchNotifiedMail();
     }
   },
 
   beforeRouteLeave(to, from, next) {
-    const { refNewInvestigation } = this.$refs
+    const { refNewInvestigation } = this.$refs;
     if (refNewInvestigation && this.isWantToAddNewInvestigation) {
-      if (to.name === 'Investigation Details') {
-        return next()
+      if (to.name === "Investigation Details") {
+        return next();
       }
-      refNewInvestigation.handleClose()
-      next(false)
+      refNewInvestigation.handleClose();
+      next(false);
     } else {
-      next(true)
+      next(true);
     }
   },
   beforeRouteEnter(to, from, next) {
-    if (from.name === 'Analysis Details' && !to.params.isLoadState) {
-      next({ ...to, params: { isLoadState: true } })
+    if (from.name === "Analysis Details" && !to.params.isLoadState) {
+      next({ ...to, params: { isLoadState: true } });
     } else {
-      next()
+      next();
     }
   }
-}
+};
 </script>

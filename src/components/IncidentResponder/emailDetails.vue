@@ -312,6 +312,18 @@
               </div>
             </template>
           </el-tab-pane>
+          <el-tab-pane name="sixth" id="email-details-ai-analyze-content">
+            <template #label>
+              <v-icon class="mr-2" style="font-size: 18px; color: #1e88e5;"
+                >mdi-brain</v-icon
+              >
+              AI Analyze
+            </template>
+            <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
+            <template v-if="mailDetails">
+              <EmailDetailsAIAnalyze :id="mailDetails && mailDetails.resourceId ? mailDetails.resourceId : id" />
+            </template>
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -329,6 +341,7 @@ import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeader
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
 import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
+import EmailDetailsAIAnalyze from '@/components/IncidentResponder/EmailDetails/EmailDetailsAIAnalyze'
 import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/functions'
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
@@ -338,6 +351,7 @@ export default {
     KEmailPreview,
     EmailDetailsUrl,
     EmailDetailsPreviewFooter,
+    EmailDetailsAIAnalyze,
     EmailDetailsContentDetails,
     DatatableLoading,
     PreviewHeaderForSinglePost,
@@ -346,7 +360,12 @@ export default {
     DownloadAttachmentModal,
     Badge
   },
-  props: {},
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
   data: () => ({
     INTEGRATION_TYPES,
     isPreviewRender: false,
@@ -658,7 +677,7 @@ export default {
     },
     getPostDetails() {
       this.isLoading = true
-      getNotifiedEmail(this.$attrs.id)
+      getNotifiedEmail(this.id)
         .then((response) => {
           this.mailDetails = response.data.data
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
