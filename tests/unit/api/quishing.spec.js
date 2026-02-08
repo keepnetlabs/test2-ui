@@ -7,11 +7,11 @@ jest.mock('@/utils/testRequest')
 describe('quishing API', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    testRequest.get = jest.fn().mockReturnValue(Promise.resolve({}))
-    testRequest.post = jest.fn().mockReturnValue(Promise.resolve({}))
-    testRequest.put = jest.fn().mockReturnValue(Promise.resolve({}))
-    testRequest.delete = jest.fn().mockReturnValue(Promise.resolve({}))
-    testRequest.patch = jest.fn().mockReturnValue(Promise.resolve({}))
+    testRequest.get = jest.fn().mockResolvedValue({})
+    testRequest.post = jest.fn().mockResolvedValue({})
+    testRequest.put = jest.fn().mockResolvedValue({})
+    testRequest.delete = jest.fn().mockResolvedValue({})
+    testRequest.patch = jest.fn().mockResolvedValue({})
   })
 
   describe('scenario operations', () => {

@@ -281,4 +281,144 @@ describe('Common API', () => {
       expect(testRequest.get).toHaveBeenCalledTimes(3)
     })
   })
+
+  describe('Parameter Handling', () => {
+    it('should handle numeric and string type IDs', async () => {
+      await CommonAPI.getLookupListByTypeId(123)
+      expect(testRequest.get).toHaveBeenCalledWith('lookups/123')
+
+      testRequest.get.mockClear()
+      await CommonAPI.getLookupListByTypeId('type-abc')
+      expect(testRequest.get).toHaveBeenCalledWith('lookups/type-abc')
+    })
+
+    it('should handle empty array in lookup list', async () => {
+      const payload = { typeidlist: [] }
+      await CommonAPI.getLookupListByTypeIdList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('lookups', payload)
+    })
+
+    it('should handle multiple type IDs in array', async () => {
+      const payload = { typeidlist: [1, 2, 3, 4, 5] }
+      await CommonAPI.getLookupListByTypeIdList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('lookups', payload)
+    })
+
+    it('should handle complex lookup payload', async () => {
+      const payload = {
+        typeidlist: [100, 200, 300],
+        filters: { active: true },
+        page: 1
+      }
+      await CommonAPI.getLookupListByTypeIdList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('lookups', payload)
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('should handle zero as typeId', async () => {
+      await CommonAPI.getLookupListByTypeId(0)
+      expect(testRequest.get).toHaveBeenCalledWith('lookups/0')
+    })
+
+    it('should handle negative numbers as typeId', async () => {
+      await CommonAPI.getLookupListByTypeId(-1)
+      expect(testRequest.get).toHaveBeenCalledWith('lookups/-1')
+    })
+
+    it('should handle special characters in typeId', async () => {
+      await CommonAPI.getLookupListByTypeId('id-@-#-$')
+      expect(testRequest.get).toHaveBeenCalledWith('lookups/id-@-#-$')
+    })
+
+    it('should handle very large arrays', async () => {
+      const largeArray = Array.from({ length: 1000 }, (_, i) => i)
+      const payload = { typeidlist: largeArray }
+      await CommonAPI.getLookupListByTypeIdList(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('lookups', payload)
+    })
+
+    it('should handle response with various data structures', async () => {
+      const mockResponse = {
+        data: {
+          data: [
+            { id: 1, label: 'Item 1' },
+            { id: 2, label: 'Item 2' }
+          ]
+        },
+        headers: { 'content-type': 'application/json' }
+      }
+      testRequest.get.mockResolvedValueOnce(mockResponse)
+
+      const result = await CommonAPI.getCountryTimezones()
+      expect(result).toEqual(mockResponse)
+    })
+  })
+
+  describe('Return Value Consistency', () => {
+    it('all functions should return thenable objects', () => {
+      const results = [
+        CommonAPI.getTimezones(),
+        CommonAPI.getLicences(),
+        CommonAPI.getTicket(),
+        CommonAPI.getCountryTimezones(),
+        CommonAPI.getLookupListByTypeId(1),
+        CommonAPI.getLookupListByTypeIdList({})
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+      })
+    })
+
+    it('all functions should support async/await', async () => {
+      const timezone = await CommonAPI.getTimezones()
+      const licenses = await CommonAPI.getLicences()
+      const ticket = await CommonAPI.getTicket()
+      const countryTz = await CommonAPI.getCountryTimezones()
+      const lookup = await CommonAPI.getLookupListByTypeId(1)
+      const lookupList = await CommonAPI.getLookupListByTypeIdList({})
+
+      expect(timezone).toBeDefined()
+      expect(licenses).toBeDefined()
+      expect(ticket).toBeDefined()
+      expect(countryTz).toBeDefined()
+      expect(lookup).toBeDefined()
+      expect(lookupList).toBeDefined()
+    })
+  })
+
+  describe('Error Propagation', () => {
+    it('should propagate different error types', async () => {
+      const networkError = new Error('Network timeout')
+      testRequest.get.mockRejectedValueOnce(networkError)
+
+      await expect(CommonAPI.getTimezones()).rejects.toEqual(networkError)
+    })
+
+    it('should handle multiple sequential errors', async () => {
+      const error1 = new Error('Error 1')
+      const error2 = new Error('Error 2')
+
+      testRequest.get.mockRejectedValueOnce(error1)
+      testRequest.post.mockRejectedValueOnce(error2)
+
+      await expect(CommonAPI.getTimezones()).rejects.toThrow('Error 1')
+      await expect(CommonAPI.getLookupListByTypeIdList({})).rejects.toThrow('Error 2')
+    })
+
+    it('should handle errors in parallel requests', async () => {
+      const error = new Error('Parallel error')
+      testRequest.get.mockRejectedValueOnce(error)
+
+      try {
+        await Promise.all([
+          CommonAPI.getTimezones(),
+          CommonAPI.getLicences()
+        ])
+      } catch (e) {
+        expect(e.message).toBe('Parallel error')
+      }
+    })
+  })
 })

@@ -1,8 +1,8 @@
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 import testRequest from '@/utils/testRequest'
@@ -319,6 +319,244 @@ describe('direct-creation API', () => {
       }
       await directCreationApi.exportDirectEmailCreation(payload)
       expect(testRequest.post).toHaveBeenCalled()
+    })
+
+    it('should handle numeric and string resource IDs', async () => {
+      await directCreationApi.getDirectEmailCreation(123)
+      expect(testRequest.get).toHaveBeenCalledWith(`${API_URL}/123`)
+
+      testRequest.get.mockClear()
+      await directCreationApi.getDirectEmailCreation('email-abc')
+      expect(testRequest.get).toHaveBeenCalledWith(`${API_URL}/email-abc`)
+    })
+
+    it('should handle special characters in email names', async () => {
+      const payload = { name: 'Direct-Email-@-#-2024' }
+      await directCreationApi.createDirectEmailCreation(payload)
+      expect(testRequest.post).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenable objects', () => {
+      const results = [
+        directCreationApi.searchEmailCreations({}),
+        directCreationApi.getDirectEmailCreation('id'),
+        directCreationApi.getApplicationId(),
+        directCreationApi.getDirectEmailSettings(),
+        directCreationApi.getGoogleWorkspaceClientId(),
+        directCreationApi.createDirectEmailCreation({}),
+        directCreationApi.updateDirectEmailCreation('id', {}),
+        directCreationApi.deleteEmailCreation('id'),
+        directCreationApi.makeDefault('id', {}),
+        directCreationApi.removeDefault('id', {}),
+        directCreationApi.testDirectEmailCreation({}),
+        directCreationApi.getDomains({}),
+        directCreationApi.exportDirectEmailCreation({})
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+      })
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export all required functions', () => {
+      expect(typeof directCreationApi.searchEmailCreations).toBe('function')
+      expect(typeof directCreationApi.getDirectEmailCreation).toBe('function')
+      expect(typeof directCreationApi.getApplicationId).toBe('function')
+      expect(typeof directCreationApi.getDirectEmailSettings).toBe('function')
+      expect(typeof directCreationApi.getGoogleWorkspaceClientId).toBe('function')
+      expect(typeof directCreationApi.createDirectEmailCreation).toBe('function')
+      expect(typeof directCreationApi.updateDirectEmailCreation).toBe('function')
+      expect(typeof directCreationApi.deleteEmailCreation).toBe('function')
+      expect(typeof directCreationApi.makeDefault).toBe('function')
+      expect(typeof directCreationApi.removeDefault).toBe('function')
+      expect(typeof directCreationApi.testDirectEmailCreation).toBe('function')
+      expect(typeof directCreationApi.getDomains).toBe('function')
+      expect(typeof directCreationApi.exportDirectEmailCreation).toBe('function')
+    })
+
+    it('should export at least 13 functions', () => {
+      const functions = Object.values(directCreationApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThanOrEqual(13)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle direct email creation full CRUD workflow', async () => {
+      await directCreationApi.searchEmailCreations({})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await directCreationApi.createDirectEmailCreation({ name: 'New Email' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await directCreationApi.getDirectEmailCreation('email-1')
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      testRequest.put.mockClear()
+      await directCreationApi.updateDirectEmailCreation('email-1', { name: 'Updated' })
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.delete.mockClear()
+      await directCreationApi.deleteEmailCreation('email-1')
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle domain retrieval and testing workflow', async () => {
+      await directCreationApi.getDomains({ type: 'o365' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await directCreationApi.testDirectEmailCreation({ email: 'test@example.com' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle default email management workflow', async () => {
+      const id = 'email-1'
+      await directCreationApi.makeDefault(id, {})
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.put.mockClear()
+      await directCreationApi.removeDefault(id, {})
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle parallel direct email operations', async () => {
+      const results = await Promise.all([
+        directCreationApi.getApplicationId(),
+        directCreationApi.getDirectEmailSettings(),
+        directCreationApi.getGoogleWorkspaceClientId()
+      ])
+
+      expect(results).toHaveLength(3)
+      expect(testRequest.get).toHaveBeenCalledTimes(3)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle direct email search with pagination', async () => {
+      const payload = { page: 2, pageSize: 50 }
+      await directCreationApi.searchEmailCreations(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(`${API_URL}/search`, payload)
+    })
+
+    it('should handle direct email creation with various email types', async () => {
+      const types = ['o365', 'google', 'custom']
+      for (const type of types) {
+        testRequest.post.mockClear()
+        await directCreationApi.createDirectEmailCreation({ name: 'Email', type })
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+
+    it('should handle update with partial fields', async () => {
+      const payload = { name: 'Updated Name' }
+      await directCreationApi.updateDirectEmailCreation('email-1', payload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${API_URL}/email-1`,
+        payload,
+        expect.any(Object)
+      )
+    })
+
+    it('should handle domain retrieval with different type filters', async () => {
+      const types = ['o365', 'google', 'verified_domains', 'all']
+      for (const type of types) {
+        testRequest.post.mockClear()
+        await directCreationApi.getDomains({ type })
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+
+    it('should handle test with various email addresses', async () => {
+      const emails = ['test@example.com', 'admin@company.org', 'user+tag@domain.co.uk']
+      for (const email of emails) {
+        testRequest.post.mockClear()
+        await directCreationApi.testDirectEmailCreation({ email })
+        expect(testRequest.post).toHaveBeenCalled()
+      }
+    })
+
+    it('should handle export with complex filter payloads', async () => {
+      const payload = {
+        filters: {
+          status: ['active'],
+          type: ['o365', 'google'],
+          dateRange: { start: '2024-01-01', end: '2024-12-31' }
+        }
+      }
+      await directCreationApi.exportDirectEmailCreation(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `${API_URL}/search/export`,
+        payload,
+        expect.any(Object)
+      )
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate searchEmailCreations errors', async () => {
+      const error = new Error('Search failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(directCreationApi.searchEmailCreations({})).rejects.toThrow('Search failed')
+    })
+
+    it('should propagate getDirectEmailCreation errors', async () => {
+      const error = new Error('Fetch failed')
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(directCreationApi.getDirectEmailCreation('id')).rejects.toThrow('Fetch failed')
+    })
+
+    it('should propagate createDirectEmailCreation errors', async () => {
+      const error = new Error('Creation failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(directCreationApi.createDirectEmailCreation({})).rejects.toThrow('Creation failed')
+    })
+
+    it('should propagate updateDirectEmailCreation errors', async () => {
+      const error = new Error('Update failed')
+      testRequest.put.mockRejectedValueOnce(error)
+      await expect(directCreationApi.updateDirectEmailCreation('id', {})).rejects.toThrow('Update failed')
+    })
+
+    it('should propagate deleteEmailCreation errors', async () => {
+      const error = new Error('Deletion failed')
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(directCreationApi.deleteEmailCreation('id')).rejects.toThrow('Deletion failed')
+    })
+
+    it('should propagate testDirectEmailCreation errors', async () => {
+      const error = new Error('Test failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(directCreationApi.testDirectEmailCreation({})).rejects.toThrow('Test failed')
+    })
+
+    it('should propagate getDomains errors', async () => {
+      const error = new Error('Domain retrieval failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(directCreationApi.getDomains({})).rejects.toThrow('Domain retrieval failed')
+    })
+
+    it('should propagate exportDirectEmailCreation errors', async () => {
+      const error = new Error('Export failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(directCreationApi.exportDirectEmailCreation({})).rejects.toThrow('Export failed')
+    })
+
+    it('should propagate makeDefault errors', async () => {
+      const error = new Error('Make default failed')
+      testRequest.put.mockRejectedValueOnce(error)
+      await expect(directCreationApi.makeDefault('id', {})).rejects.toThrow('Make default failed')
+    })
+
+    it('should propagate removeDefault errors', async () => {
+      const error = new Error('Remove default failed')
+      testRequest.put.mockRejectedValueOnce(error)
+      await expect(directCreationApi.removeDefault('id', {})).rejects.toThrow('Remove default failed')
     })
   })
 })

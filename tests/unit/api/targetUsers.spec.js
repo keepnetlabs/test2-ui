@@ -1,12 +1,12 @@
 jest.mock('@/utils/testRequest', () => ({
-  get: jest.fn().mockReturnValue(Promise.resolve({})),
-  post: jest.fn().mockReturnValue(Promise.resolve({})),
-  put: jest.fn().mockReturnValue(Promise.resolve({})),
-  delete: jest.fn().mockReturnValue(Promise.resolve({}))
+  get: jest.fn().mockResolvedValue({}),
+  post: jest.fn().mockResolvedValue({}),
+  put: jest.fn().mockResolvedValue({}),
+  delete: jest.fn().mockResolvedValue({})
 }))
 
 jest.mock('@/utils/uploadRequest', () => ({
-  post: jest.fn().mockReturnValue(Promise.resolve({}))
+  post: jest.fn().mockResolvedValue({})
 }))
 
 import testRequest from '@/utils/testRequest'
@@ -461,6 +461,89 @@ describe('targetUsers API', () => {
       const options = { timeout: 5000 }
       await targetUsersApi.searchTargetGroupUsers(id, payload, options)
       expect(testRequest.post).toHaveBeenCalled()
+    })
+  })
+
+  describe('return values', () => {
+    it('all functions should return thenables or promises', async () => {
+      expect(typeof targetUsersApi.getTargetUsers({}).then).toBe('function')
+      expect(typeof targetUsersApi.getTargetUsersCountSummary().then).toBe('function')
+      expect(typeof targetUsersApi.createTargetUser({}).then).toBe('function')
+      expect(typeof targetUsersApi.exportTargetUsers().then).toBe('function')
+      expect(typeof targetUsersApi.uploadExcelOrCsvForTargetUsers(new File([], '')).then).toBe('function')
+    })
+  })
+
+  describe('All Exported Functions', () => {
+    it('should export 37+ functions', () => {
+      const functions = Object.values(targetUsersApi).filter(x => typeof x === 'function')
+      expect(functions.length).toBeGreaterThan(35)
+    })
+  })
+
+  describe('Integration Workflows', () => {
+    it('should handle user import and group workflow', async () => {
+      const file = new File(['data'], 'test.csv')
+      await targetUsersApi.uploadExcelOrCsvForTargetUsers(file)
+      expect(uploadRequest.post).toHaveBeenCalledTimes(1)
+
+      uploadRequest.post.mockClear()
+      await targetUsersApi.createTargetGroup({ name: 'Group' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle target user CRUD with groups', async () => {
+      testRequest.post.mockClear()
+      await targetUsersApi.getTargetUsers({})
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.post.mockClear()
+      await targetUsersApi.createTargetUser({ email: 'user@test.com' })
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+
+      testRequest.delete.mockClear()
+      await targetUsersApi.bulkDeleteTargetUsers({ userIds: ['u1'] })
+      expect(testRequest.delete).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Parameter Handling', () => {
+    it('should handle complex search payloads', async () => {
+      const payload = {
+        page: 1,
+        pageSize: 50,
+        filters: { status: 'active', groups: ['g1', 'g2'] }
+      }
+      await targetUsersApi.getTargetUsers(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/target-users/search', payload)
+    })
+
+    it('should handle file uploads with callbacks', async () => {
+      const file = new File(['test data'], 'data.csv')
+      const onProgress = jest.fn()
+      await targetUsersApi.uploadExcelOrCsvForTargetUsers(file, onProgress)
+      expect(uploadRequest.post).toHaveBeenCalled()
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should propagate API errors from all methods', async () => {
+      const error = new Error('API Error')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(targetUsersApi.getTargetUsers({})).rejects.toThrow('API Error')
+
+      testRequest.get.mockRejectedValueOnce(error)
+      await expect(targetUsersApi.getTargetUsersCountSummary()).rejects.toThrow('API Error')
+
+      testRequest.delete.mockRejectedValueOnce(error)
+      await expect(targetUsersApi.deleteTargetUser('id')).rejects.toThrow('API Error')
+    })
+
+    it('should handle upload errors', async () => {
+      const error = new Error('Upload failed')
+      uploadRequest.post.mockRejectedValueOnce(error)
+      const file = new File([], 'test.csv')
+      await expect(targetUsersApi.uploadExcelOrCsvForTargetUsers(file)).rejects.toThrow('Upload failed')
     })
   })
 })
