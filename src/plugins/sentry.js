@@ -108,7 +108,10 @@ const CONSTANTS = {
   IOS: [
     `TypeError: undefined is not an object (evaluating '__gCrWeb.instantSearch.setIOSParameters')`,
     `TypeError: undefined is not an object (evaluating 'a.K')`,
-    `undefined is not an object (evaluating '__gCrWeb.edgeTranslate.detectPageState')`
+    `undefined is not an object (evaluating '__gCrWeb.edgeTranslate.detectPageState')`,
+    `undefined is not an object (evaluating 'window.webkit.messageHandlers[handlerName].postMessage')`,
+    `TypeError: undefined is not an object (evaluating 'window.webkit.messageHandlers[handlerName].postMessage')`,
+    `window.webkit.messageHandlers`
   ],
   HTML2CANVAS: ["Cannot use 'in' operator to search for 'length' in null"],
   SCORM: [
