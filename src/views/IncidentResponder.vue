@@ -1046,19 +1046,7 @@ export default {
           icon: "mdi-refresh",
           action: "handleReAnalyze",
           disabled: false
-        },
-        ...(window.location.hostname.includes("localhost") ||
-        window.location.hostname.includes("test-ui.devkeepnet.com")
-          ? [
-              {
-                name: "Analyze with AI",
-                id:
-                  "btn-analyze-with-ai--incident-responder-emails-row-actions",
-                icon: "mdi-creation",
-                action: "handleAnalyzeWithAI"
-              }
-            ]
-          : [])
+        }
       ],
       addMenu: {
         show: true,
