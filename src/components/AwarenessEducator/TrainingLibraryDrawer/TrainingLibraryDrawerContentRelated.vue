@@ -33,7 +33,10 @@
         class="training-library-drawer-content-related__card"
         outlined
       >
-        <div class="training-library-drawer-content-related__card-image">
+        <div
+          class="training-library-drawer-content-related__card-image"
+          :style="getCardImageBackground(card)"
+        >
           <TrainingLibraryNewBadge
             v-if="card.isNew"
             class="training-library-drawer-content-related__card-new-badge"
@@ -285,6 +288,12 @@ export default {
     getCoverImage(coverImage) {
       if (!coverImage) return null
       return typeof coverImage === 'string' ? coverImage : coverImage.imageUrl
+    },
+    getCardImageBackground(card) {
+      if (!card?.coverImage) return {}
+      return {
+        backgroundImage: `url('${card.coverImage}')`
+      }
     },
     getTrainingRolesText(card) {
       const roles = card.trainingRoles || []

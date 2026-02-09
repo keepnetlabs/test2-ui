@@ -37,14 +37,44 @@
 
   &__card-image {
     position: relative;
-    height: 180px;
+    height: 320px;
     background: #e0e0e0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
 
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: inherit;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(6px);
+      transform: scale(1.08);
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.08);
+      z-index: 0;
+    }
+
+    & > * {
+      position: relative;
+      z-index: 1;
+    }
+
     img {
-      height: 170px;
+      height: 100%;
       width: 100%;
       -o-object-fit: contain;
       object-fit: contain;
@@ -62,14 +92,14 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    z-index: 1;
+    z-index: 6;
   }
 
   &__card-favorite-btn {
     position: absolute;
     top: 12px;
     right: 12px;
-    z-index: 1;
+    z-index: 6;
   }
 
   &__card-no-image {

@@ -3,7 +3,7 @@
     <div :class="['training-library-card__type', getBgColor]">
       {{ getTypeText }}
     </div>
-    <div class="training-library-card__img">
+    <div class="training-library-card__img" :style="getCardImageBackground">
       <TrainingLibraryNewBadge v-if="item.isNew" class="training-library-card__new-btn" />
       <TrainingLibraryFavoriteButton
         class="training-library-card__favorite-btn"
@@ -223,6 +223,18 @@ export default {
       return this.item.type === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING
         ? 'Training'
         : this.item.type
+    },
+    getCoverImageUrl() {
+      if (!this.item?.coverImage) return ''
+      return typeof this.item.coverImage === 'string'
+        ? this.item.coverImage
+        : this.item.coverImage.imageUrl || ''
+    },
+    getCardImageBackground() {
+      if (!this.getCoverImageUrl) return {}
+      return {
+        backgroundImage: `url('${this.getCoverImageUrl}')`
+      }
     }
   },
   mounted() {
