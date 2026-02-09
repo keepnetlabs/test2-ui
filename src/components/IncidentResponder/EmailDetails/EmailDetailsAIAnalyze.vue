@@ -1,6 +1,14 @@
 <template>
   <div class="email-details-ai-analyze">
-    <v-card light class="email-details-ai-analyze__card">
+    <div v-if="isLoadingReport" class="email-details-ai-analyze__loader-wrapper">
+      <EmailTemplatesAILoader
+        title="AI Analysis is running"
+        description="This process may take approximately 30 seconds. Please stay on the page during this time."
+        :loader-time="30"
+        :is-loading-finished="!isLoadingReport"
+      />
+    </div>
+    <v-card v-else light class="email-details-ai-analyze__card">
       <div class="email-details-ai-analyze__header">
         <div>
           <div class="email-details-ai-analyze__title">AI Analysis Summary</div>
@@ -40,15 +48,7 @@
         </div>
       </div>
 
-      <div v-if="isLoadingReport" class="email-details-ai-analyze__loader-wrapper">
-        <EmailTemplatesAILoader
-          title="AI is analyzing this email"
-          description="This process may take approximately 30 seconds. Please stay on the page during this time."
-          :loader-time="30"
-          :is-loading-finished="!isLoadingReport"
-        />
-      </div>
-      <div v-else-if="loadError" class="email-details-ai-analyze__empty">
+      <div v-if="loadError" class="email-details-ai-analyze__empty">
         <div class="email-details-ai-analyze__empty-title">
           AI analysis unavailable
         </div>
