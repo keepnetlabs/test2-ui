@@ -466,9 +466,40 @@
   }
   &__img {
     position: relative;
-    height: 170px;
+    height: 320px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: inherit;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(6px);
+      transform: scale(1.08);
+      z-index: 0;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.08);
+      z-index: 0;
+    }
+
+    & > * {
+      position: relative;
+      z-index: 1;
+    }
+
     img {
-      height: 170px;
+      height: 100%;
       width: 100%;
       object-fit: contain;
     }
@@ -492,11 +523,13 @@
     position: absolute;
     top: 16px;
     left: 16px;
+    z-index: 6;
   }
   &__favorite-btn {
     position: absolute;
     top: 16px;
     right: 16px;
+    z-index: 6;
   }
   &__body {
     padding: 16px;

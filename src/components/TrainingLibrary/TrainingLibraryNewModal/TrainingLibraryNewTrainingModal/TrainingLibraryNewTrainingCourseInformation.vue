@@ -78,24 +78,14 @@
         :items="[]"
       />
     </FormGroup>
-    <FormGroup
+    <TrainingLibraryCoverImageField
+      id="input--new-training-image"
       :title="labels.CoverImage"
-      :sub-title="labels.UploadCoverImageForTheTraining"
-    >
-      <KFileUpload
-        ref="refCoverImageFileUpload"
-        id="input--new-training-image"
-        show-image-preview
-        :class="['mb-6']"
-        hint="Only jpg, png files. Max. file size 2MB"
-        :extensions="['jpg', 'png']"
-        :size="2"
-        :show-file-size="false"
-        :file-previews="coverImageFilePreview"
-        @inputFile="handleCoverImageChange"
-        @on-clear="handleCoverImageClear"
-      />
-    </FormGroup>
+      :subtitle="labels.UploadCoverImageForTheTraining"
+      v-model="formData.coverImage"
+      :cover-image-url="formData.coverImageUrl"
+      @update:cover-image-url="formData.coverImageUrl = $event"
+    />
     <MakeAvailableFor
       v-model="formData.availableForRequests"
       ref="refMakeAvailableFor"
@@ -110,10 +100,8 @@
 import FormGroup from "@/components/SmallComponents/FormGroup";
 import InputEntityName from "@/components/Common/Inputs/InputEntityName";
 import labels from "@/model/constants/labels";
-import InputDescription from "@/components/Common/Inputs/InputDescription";
 import KSelect from "@/components/Common/Inputs/KSelect";
 import InputTag from "@/components/Common/Inputs/InputTag";
-import KFileUpload from "@/components/Common/FileUpload/FileUpload";
 import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
 import * as Validations from "@/utils/validations";
 import { scrollToComponent } from "@/utils/functions";
@@ -125,16 +113,17 @@ import useAIDescriptionGeneration from "@/hooks/useAIDescriptionGeneration";
 import InputSelectRoles from "@/components/Common/Inputs/InputSelectRoles.vue";
 import InputTrainingLevel from "@/components/Common/Inputs/InputTrainingLevel.vue";
 import InputTrainingDuration from "@/components/Common/Inputs/InputTrainingDuration.vue";
+import TrainingLibraryCoverImageField from "@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryCoverImageField.vue";
 export default {
   name: "TrainingLibraryNewTrainingCourseInformation",
   mixins: [useAIDescriptionGeneration],
   components: {
+    TrainingLibraryCoverImageField,
     InputTrainingDuration,
     InputTrainingLevel,
     InputBehaviour,
     InputCompliance,
     MakeAvailableFor,
-    KFileUpload,
     InputTag,
     KSelect,
     InputAIDescription,
@@ -152,7 +141,6 @@ export default {
     return {
       Validations,
       labels,
-      coverImageFilePreview: [],
       isGenerateLoading: false,
       hasGenerated: false,
       hasGenerationError: false,
@@ -208,18 +196,6 @@ export default {
     }
   },
   methods: {
-    handleCoverImageChange(file) {
-      if (Array.isArray(file) && file.length === 0) {
-        this.formData.coverImage = null;
-        return;
-      }
-      this.formData.coverImage = file;
-    },
-    handleCoverImageClear() {
-      this.coverImageFilePreview = [];
-      this.formData.coverImage = "";
-      this.formData.coverImageUrl = "";
-    },
     validateForm() {
       const { refForm } = this.$refs;
       if (refForm.validate()) {
@@ -234,12 +210,6 @@ export default {
     },
     setFormData(formData = {}) {
       if (formData.coverImage) {
-        this.coverImageFilePreview = [
-          {
-            url: formData.coverImage.imageUrl,
-            name: formData.coverImage.name || "Cover Image"
-          }
-        ];
         this.formData.coverImageUrl = formData.coverImage.imageUrl;
       }
       this.formData = {
