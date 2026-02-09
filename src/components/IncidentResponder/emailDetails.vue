@@ -317,11 +317,14 @@
               <v-icon class="mr-2" style="font-size: 18px; color: #1e88e5;"
                 >mdi-brain</v-icon
               >
-              AI Analyze
+              AI Analysis
             </template>
             <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
             <template v-if="mailDetails">
-              <EmailDetailsAIAnalyze :id="mailDetails && mailDetails.resourceId ? mailDetails.resourceId : id" />
+              <EmailDetailsAIAnalyze
+                :id="mailDetails && mailDetails.resourceId ? mailDetails.resourceId : id"
+                @update:loading="aiAnalyzeLoading = $event"
+              />
             </template>
           </el-tab-pane>
         </el-tabs>
@@ -370,6 +373,7 @@ export default {
     INTEGRATION_TYPES,
     isPreviewRender: false,
     isLoading: true,
+    aiAnalyzeLoading: false,
     panel: [],
     isCopiedShaClipboard: [],
     isCopiedMd5Clipboard: [],

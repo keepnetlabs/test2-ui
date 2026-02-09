@@ -3,12 +3,12 @@
     <v-card light class="email-details-ai-analyze__card">
       <div class="email-details-ai-analyze__header">
         <div>
-          <div class="email-details-ai-analyze__title">AI Analyze Report</div>
+          <div class="email-details-ai-analyze__title">AI Analysis Summary</div>
           <div class="email-details-ai-analyze__subtitle">
             Structured assessment summary
           </div>
         </div>
-        <div class="email-details-ai-analyze__header-badges" v-if="report">
+        <div class="email-details-ai-analyze__header-actions" v-if="report">
           <Badge
             class-name="email-details-ai-analyze__badge"
             :text="report.executive_summary.risk_level"
@@ -25,35 +25,28 @@
             :outline="false"
             :fullWidth="false"
           />
+          <v-btn
+            color="#1e88e5"
+            dark
+            depressed
+            small
+            class="email-details-ai-analyze__cta-btn"
+            @click="runAnalysis"
+            :loading="isRunningAnalysis"
+          >
+            <v-icon left small>mdi-refresh</v-icon>
+            Re-run Analysis
+          </v-btn>
         </div>
       </div>
 
-      <div v-if="isLoadingReport" class="email-details-ai-analyze__skeleton">
-        <div class="email-details-ai-analyze__skeleton-row">
-          <v-skeleton-loader type="chip" :loading="isLoadingReport" width="120" />
-          <v-skeleton-loader type="chip" :loading="isLoadingReport" width="140" />
-        </div>
-        <v-skeleton-loader type="heading" :loading="isLoadingReport" />
-        <div class="email-details-ai-analyze__skeleton-grid">
-          <v-skeleton-loader type="card" :loading="isLoadingReport" />
-          <v-skeleton-loader type="card" :loading="isLoadingReport" />
-          <v-skeleton-loader type="card" :loading="isLoadingReport" />
-          <v-skeleton-loader type="card" :loading="isLoadingReport" />
-        </div>
-        <v-skeleton-loader type="heading" :loading="isLoadingReport" class="mt-4" />
-        <v-skeleton-loader type="paragraph" :loading="isLoadingReport" />
-        <v-skeleton-loader type="heading" :loading="isLoadingReport" class="mt-4" />
-        <div class="email-details-ai-analyze__skeleton-grid">
-          <v-skeleton-loader type="chip" :loading="isLoadingReport" />
-          <v-skeleton-loader type="chip" :loading="isLoadingReport" />
-          <v-skeleton-loader type="chip" :loading="isLoadingReport" />
-          <v-skeleton-loader type="chip" :loading="isLoadingReport" />
-        </div>
-        <v-skeleton-loader type="heading" :loading="isLoadingReport" class="mt-4" />
-        <div class="email-details-ai-analyze__skeleton-grid">
-          <v-skeleton-loader type="card" :loading="isLoadingReport" />
-          <v-skeleton-loader type="card" :loading="isLoadingReport" />
-        </div>
+      <div v-if="isLoadingReport" class="email-details-ai-analyze__loader-wrapper">
+        <EmailTemplatesAILoader
+          title="AI is analyzing this email"
+          description="This process may take approximately 30 seconds. Please stay on the page during this time."
+          :loader-time="30"
+          :is-loading-finished="!isLoadingReport"
+        />
       </div>
       <div v-else-if="loadError" class="email-details-ai-analyze__empty">
         <div class="email-details-ai-analyze__empty-title">
@@ -66,8 +59,19 @@
           No AI analysis yet
         </div>
         <div class="email-details-ai-analyze__empty-text">
-          Run Analyze with AI to generate a report for this email.
+          Run AI Analysis to generate a report for this email.
         </div>
+        <v-btn
+          color="#1e88e5"
+          dark
+          depressed
+          class="email-details-ai-analyze__cta-btn mt-3"
+          @click="runAnalysis"
+          :loading="isRunningAnalysis"
+        >
+          <v-icon left>mdi-brain</v-icon>
+          Run AI Analysis
+        </v-btn>
       </div>
 
       <div v-else>
@@ -78,6 +82,9 @@
             <span class="email-details-ai-analyze__section-index">1</span>
             Executive Summary
           </div>
+          <p v-if="whyThisMatters" class="email-details-ai-analyze__section-subtitle">
+            {{ whyThisMatters }}
+          </p>
           <div class="email-details-ai-analyze__summary-grid">
             <div class="email-details-ai-analyze__summary-item">
               <span class="email-details-ai-analyze__label">Category</span>
@@ -92,8 +99,8 @@
               <span class="email-details-ai-analyze__label">Verdict</span>
               <Badge
                 class-name="email-details-ai-analyze__badge"
-                :text="report.executive_summary.verdict"
-                :color="getVerdictColor(report.executive_summary.verdict)"
+                :text="formattedVerdict"
+                :color="getVerdictColor(formattedVerdict)"
                 size="small"
                 :outline="false"
                 :fullWidth="false"
@@ -101,19 +108,21 @@
             </div>
             <div class="email-details-ai-analyze__summary-item">
               <span class="email-details-ai-analyze__label">Confidence</span>
-              <span class="email-details-ai-analyze__value">
-                {{ formatConfidence(report.executive_summary.confidence) }}
-              </span>
-              <v-progress-linear
-                class="email-details-ai-analyze__progress"
-                :value="
-                  getConfidencePercent(report.executive_summary.confidence)
-                "
-                height="6"
-                :color="getConfidenceColor(report.executive_summary.confidence)"
-                background-color="#e0e0e0"
-                rounded
-              />
+              <v-tooltip bottom nudge-left="40">
+                <template v-slot:activator="{ on, attrs }">
+                  <div class="email-details-ai-analyze__confidence-badge-wrapper" v-bind="attrs" v-on="on">
+                    <Badge
+                      class-name="email-details-ai-analyze__badge"
+                      :text="confidenceLevel"
+                      :color="getConfidenceLevelColor(confidenceLevel)"
+                      size="small"
+                      :outline="false"
+                      :fullWidth="false"
+                    />
+                  </div>
+                </template>
+                <span>{{ confidenceBasis }}</span>
+              </v-tooltip>
             </div>
             <div class="email-details-ai-analyze__summary-item">
               <span class="email-details-ai-analyze__label">Risk Level</span>
@@ -121,17 +130,6 @@
                 class-name="email-details-ai-analyze__badge"
                 :text="report.executive_summary.risk_level"
                 :color="getRiskColor(report.executive_summary.risk_level)"
-                size="small"
-                :outline="false"
-                :fullWidth="false"
-              />
-            </div>
-            <div class="email-details-ai-analyze__summary-item">
-              <span class="email-details-ai-analyze__label">Status</span>
-              <Badge
-                class-name="email-details-ai-analyze__badge"
-                :text="report.executive_summary.status"
-                :color="getStatusColor(report.executive_summary.status)"
                 size="small"
                 :outline="false"
                 :fullWidth="false"
@@ -171,7 +169,7 @@
                   class="email-details-ai-analyze__pill email-details-ai-analyze__pill--more email-details-ai-analyze__pill--clickable"
                   @click="toggleObservedIndicators"
                 >
-                  +{{ observedMoreCount }} more
+                  View all indicators
                 </span>
               </div>
             </div>
@@ -190,7 +188,7 @@
                   class="email-details-ai-analyze__pill email-details-ai-analyze__pill--more email-details-ai-analyze__pill--clickable"
                   @click="toggleNotObservedIndicators"
                 >
-                  +{{ notObservedMoreCount }} more
+                  View all indicators
                 </span>
               </div>
             </div>
@@ -265,13 +263,15 @@
 
 <script>
 import Badge from "@/components/Badge";
+import EmailTemplatesAILoader from "@/components/EmailTemplates/EmailTemplatesAILoader";
 import { getBtnPriorityColor, getBtnStatusColor } from "@/utils/functions";
 import axios from "axios";
 import AuthenticationService from "@/services/authentication";
 export default {
   name: "EmailDetailsAIAnalyze",
   components: {
-    Badge
+    Badge,
+    EmailTemplatesAILoader
   },
   props: {
     id: {
@@ -283,6 +283,7 @@ export default {
   data() {
     return {
       isLoadingReport: true,
+      isRunningAnalysis: false,
       loadError: "",
       report: null,
       showAllObservedIndicators: false,
@@ -293,8 +294,11 @@ export default {
           verdict: "No Threat Detected - Marketing Email",
           risk_level: "Low",
           confidence: 0.9,
+          confidence_level: "High",
+          confidence_basis: "Based on behavioral and contextual indicators.",
+          why_this_matters: "",
           reported_by: 1,
-          status: "Investigation Complete"
+          status: "Analysis Complete"
         },
         agent_determination:
           "This email is assessed as a legitimate external marketing communication promoting an AI-focused training/event. Technical controls show strong alignment: SPF, DKIM, and DMARC all pass for keepnetlabs.com, with clean sender IP reputation and normal Microsoft 365/Google routing. Content analysis indicates standard promotional tactics (limited seats, discounts, benefit-focused language) without any credential harvesting, financial redirection, or impersonation of authority. All embedded URLs and the sending infrastructure returned clean results from threat intelligence sources. Based on converging technical and behavioral signals, the email is classified as low-risk marketing with high confidence and no further action required beyond normal user discretion.",
@@ -356,7 +360,7 @@ export default {
             step: 6,
             title: "Final Verdict and Documentation",
             description:
-              'The investigation concluded that this is a legitimate marketing/event campaign email, not a phishing or social engineering attack. The case was documented for audit purposes with a final status of "Investigation Complete" and no remediation actions required beyond standard user awareness.'
+              'The investigation concluded that this is a legitimate marketing/event campaign email, not a phishing or social engineering attack. The case was documented for audit purposes with a final status of "Analysis Complete" and no remediation actions required beyond standard user awareness.'
           }
         ],
         blast_radius: {
@@ -376,6 +380,33 @@ export default {
     };
   },
   computed: {
+    confidenceLevel() {
+      if (this.report?.executive_summary?.confidence_level) {
+        return this.report.executive_summary.confidence_level;
+      }
+      const val = this.report?.executive_summary?.confidence;
+      if (val === null || val === undefined) return "N/A";
+      const pct = Math.round(Number(val) * 100);
+      if (pct >= 80) return "High";
+      if (pct >= 50) return "Medium";
+      return "Low";
+    },
+    confidenceBasis() {
+      return (
+        this.report?.executive_summary?.confidence_basis ||
+        "Based on behavioral and contextual indicators."
+      );
+    },
+    formattedVerdict() {
+      const verdict = this.report?.executive_summary?.verdict || "";
+      return verdict.replace(
+        "Confirmed Phishing Attack",
+        "High-Risk Phishing"
+      );
+    },
+    whyThisMatters() {
+      return this.report?.executive_summary?.why_this_matters || "";
+    },
     observedIndicators() {
       const observed = this.report?.risk_indicators?.observed || [];
       return this.showAllObservedIndicators ? observed : observed.slice(0, 4);
@@ -394,10 +425,46 @@ export default {
     }
   },
   methods: {
+    async runAnalysis() {
+      if (!this.id) return;
+      this.isRunningAnalysis = true;
+      this.isLoadingReport = true;
+      this.loadError = "";
+      this.report = null;
+      this.$emit("update:loading", true);
+      try {
+        const accessToken = AuthenticationService.getToken();
+        const apiBaseUrl =
+          APP_CONFIG?.VUE_APP_ROOT_API || "https://test-api.devkeepnet.com";
+        const body = {
+          id: this.id,
+          accessToken,
+          apiBaseUrl
+        };
+        const isLocalhost = window.location.hostname.includes("localhost");
+        const url = isLocalhost
+          ? "http://localhost:4111/email-ir/analyze"
+          : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";
+        const response = await axios.post(url, body, {
+          headers: { "Content-Type": "application/json" }
+        });
+        const payload = response?.data || {};
+        this.report = payload.report || payload.data?.report || null;
+      } catch (error) {
+        console.error("Error running AI analysis:", error);
+        this.loadError = "Unable to run AI analysis at this time.";
+        this.report = null;
+      } finally {
+        this.isRunningAnalysis = false;
+        this.isLoadingReport = false;
+        this.$emit("update:loading", false);
+      }
+    },
     async fetchReport() {
       if (!this.id) return;
       this.isLoadingReport = true;
       this.loadError = "";
+      this.$emit("update:loading", true);
       try {
         const accessToken = AuthenticationService.getToken();
         const apiBaseUrl =
@@ -422,23 +489,14 @@ export default {
         this.report = null;
       } finally {
         this.isLoadingReport = false;
+        this.$emit("update:loading", false);
       }
     },
-    formatConfidence(value) {
-      if (value === null || value === undefined || Number.isNaN(Number(value)))
-        return "N/A";
-      return `${Math.round(Number(value) * 100)}%`;
-    },
-    getConfidencePercent(value) {
-      if (value === null || value === undefined || Number.isNaN(Number(value)))
-        return 0;
-      return Math.max(0, Math.min(100, Math.round(Number(value) * 100)));
-    },
-    getConfidenceColor(value) {
-      const percent = this.getConfidencePercent(value);
-      if (percent >= 80) return "#43a047";
-      if (percent >= 50) return "#1173C1";
-      return "#fb8c00";
+    getConfidenceLevelColor(level) {
+      const normalized = (level || "").toLowerCase();
+      if (normalized === "high") return getBtnStatusColor("complete");
+      if (normalized === "medium") return getBtnStatusColor("warning");
+      return getBtnStatusColor("pending");
     },
     getRiskColor(level) {
       return getBtnPriorityColor(level) || getBtnStatusColor(level);
