@@ -405,7 +405,8 @@ export default {
         "Suspicious Email Analysis Report Update",
         "Investigation Started",
         "Investigation Expired",
-        "Investigation Finished"
+        "Investigation Finished",
+        "Security Growth Login"
       ].includes(selectedTemplateCategoryName);
     },
     getEnrollmentTemplateResourceId() {
