@@ -1542,8 +1542,10 @@ export default {
       };
     },
     getLicenseDialogBody() {
+      const currentTargetUserCount =
+        this.companyLicense?.activeUserCount ?? this.companyLicense?.totalUserCount;
       return this.companyLicense
-        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
+        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${currentTargetUserCount}.`
         : "";
     },
     isReturnMainAccountVisible() {

@@ -617,8 +617,10 @@ export default {
       getCurrentCompany: 'login/getCurrentCompany'
     }),
     getDialogBodyForExceed() {
+      const currentTargetUserCount =
+        this.companyLicense?.activeUserCount ?? this.companyLicense?.totalUserCount
       return this.companyLicense
-        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
+        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${currentTargetUserCount}.`
         : ''
     },
     getDialogBody() {
@@ -1085,7 +1087,8 @@ export default {
     showConfirmModal(actionName) {
       this.selectedActionName = actionName
       let newMemberCount = this.getLabelCount(actionName)
-      let currentMemberCount = this.companyLicense['totalUserCount']
+      let currentMemberCount =
+        this.companyLicense['activeUserCount'] ?? this.companyLicense['totalUserCount']
       let totalMemberCount = newMemberCount + currentMemberCount
       let licenseLimit = this.companyLicense['licenseLimit']
       let isLimited = this.companyLicense['isLimited']

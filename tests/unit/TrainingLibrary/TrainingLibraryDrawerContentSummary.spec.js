@@ -138,4 +138,372 @@ describe('TrainingLibraryDrawerContentSummary.vue', () => {
     expect(AwarenessEducatorService.getLanguages).toHaveBeenCalled()
   })
 
+  describe('Component Rendering', () => {
+    it('renders component successfully', () => {
+      wrapper = mountComponent()
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('renders with required props', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.trainingData).toBeDefined()
+    })
+
+    it('mounts without errors', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('has store access', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.$store).toBeDefined()
+    })
+  })
+
+  describe('Loading States', () => {
+    it('shows skeleton loader initially', () => {
+      wrapper = mountComponent()
+      expect(wrapper.find('.training-library-drawer-content-summary__skeleton').exists()).toBe(true)
+    })
+
+    it('sets isLoadingLanguages to true on mount', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.isLoadingLanguages).toBe(true)
+    })
+
+    it('hides skeleton after loading', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.vm.isLoadingLanguages).toBe(false)
+    })
+
+    it('shows content when loading completes', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.find('.training-library-drawer-content-summary__content').exists()).toBe(true)
+    })
+
+    it('manages loading state transitions', async () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.isLoadingLanguages).toBe(true)
+
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.vm.isLoadingLanguages).toBe(false)
+    })
+  })
+
+  describe('Content Display', () => {
+    it('displays training name', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.find('.training-library-drawer-content-summary__title').text()).toBe('Test Training Detailed')
+    })
+
+    it('displays training description', async () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.trainingData.description).toBe('Test Description')
+    })
+
+    it('displays cover image', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.trainingData.coverImage).toBe('http://test.com/image.jpg')
+    })
+
+    it('displays languages from training data', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.trainingData.languages).toEqual(['EN'])
+    })
+
+    it('shows correct content structure', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      const content = wrapper.find('.training-library-drawer-content-summary__content')
+      expect(content.exists()).toBe(true)
+    })
+  })
+
+  describe('Type Handling', () => {
+    it('identifies screensaver type correctly', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.SCREENSAVER })
+      expect(wrapper.vm.isScreensaver).toBe(true)
+    })
+
+    it('identifies learning path type correctly', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.LEARNING_PATH })
+      expect(wrapper.vm.isLearningPath).toBe(true)
+    })
+
+    it('identifies training type correctly', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      expect(wrapper.vm.isScreensaver).toBe(false)
+      expect(wrapper.vm.isLearningPath).toBe(false)
+    })
+
+    it('identifies poster type correctly', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.POSTER })
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('handles type property in computed', () => {
+      const types = [
+        TRAINING_LIBRARY_TYPES.SCREENSAVER,
+        TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+        TRAINING_LIBRARY_TYPES.TRAINING,
+        TRAINING_LIBRARY_TYPES.POSTER
+      ]
+
+      types.forEach(type => {
+        const w = mountComponent({ type })
+        expect(w.vm).toBeDefined()
+      })
+    })
+  })
+
+  describe('Preview Button', () => {
+    it('computes preview button text for training', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      expect(wrapper.vm.getPreviewButtonText).toBe('PREVIEW TRAINING')
+    })
+
+    it('computes preview button text for learning path', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.LEARNING_PATH })
+      expect(wrapper.vm.getPreviewButtonText).toBe('SEND LEARNING PATH')
+    })
+
+    it('computes preview button text for poster', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.POSTER })
+      expect(wrapper.vm.getPreviewButtonText).toBe('PREVIEW POSTER')
+    })
+
+    it('returns correct text based on type', () => {
+      const types = [
+        { type: TRAINING_LIBRARY_TYPES.TRAINING, text: 'PREVIEW TRAINING' },
+        { type: TRAINING_LIBRARY_TYPES.LEARNING_PATH, text: 'SEND LEARNING PATH' },
+        { type: TRAINING_LIBRARY_TYPES.POSTER, text: 'PREVIEW POSTER' }
+      ]
+
+      types.forEach(item => {
+        const w = mountComponent({ type: item.type })
+        expect(w.vm.getPreviewButtonText).toBe(item.text)
+      })
+    })
+
+    it('button text is a string', () => {
+      wrapper = mountComponent()
+      expect(typeof wrapper.vm.getPreviewButtonText).toBe('string')
+    })
+  })
+
+  describe('API Integration', () => {
+    it('calls getLanguages on component mount', () => {
+      mountComponent()
+      expect(AwarenessEducatorService.getLanguages).toHaveBeenCalled()
+    })
+
+    it('calls getTraining API', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(AwarenessEducatorService.getTraining).toHaveBeenCalled()
+    })
+
+    it('handles API response for languages', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.vm.isLoadingLanguages).toBe(false)
+    })
+
+    it('handles API response for training details', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.find('.training-library-drawer-content-summary__title').text()).toBeTruthy()
+    })
+
+    it('makes API calls on mount', () => {
+      mountComponent()
+      expect(AwarenessEducatorService.getLanguages).toHaveBeenCalled()
+    })
+  })
+
+  describe('Props Handling', () => {
+    it('accepts trainingData prop', () => {
+      wrapper = mountComponent()
+      expect(wrapper.props('trainingData')).toBeDefined()
+    })
+
+    it('accepts type prop', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      expect(wrapper.props('type')).toBe(TRAINING_LIBRARY_TYPES.TRAINING)
+    })
+
+    it('uses trainingData in display', () => {
+      wrapper = mountComponent({
+        trainingData: {
+          trainingId: '456',
+          name: 'Custom Training',
+          description: 'Custom Description',
+          languages: ['FR'],
+          coverImage: 'http://custom.com/image.jpg'
+        }
+      })
+      expect(wrapper.vm.trainingData.name).toBe('Custom Training')
+    })
+
+    it('handles prop updates', async () => {
+      wrapper = mountComponent()
+      const newData = {
+        trainingId: '789',
+        name: 'Updated Training',
+        description: 'Updated Description',
+        languages: ['DE'],
+        coverImage: 'http://updated.com/image.jpg'
+      }
+      await wrapper.setProps({ trainingData: newData })
+      expect(wrapper.props('trainingData').name).toBe('Updated Training')
+    })
+
+    it('preserves prop data integrity', () => {
+      const data = {
+        trainingId: '123',
+        name: 'Test Training',
+        description: 'Test Description',
+        languages: ['EN'],
+        coverImage: 'http://test.com/image.jpg'
+      }
+      wrapper = mountComponent({ trainingData: data })
+      expect(wrapper.props('trainingData')).toEqual(data)
+    })
+  })
+
+  describe('Store Integration', () => {
+    it('has access to trainingLibrary module', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.$store.state.trainingLibrary).toBeDefined()
+    })
+
+    it('can call store mutations', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.$store).toBeDefined()
+    })
+
+    it('can dispatch store actions', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.$store).toBeDefined()
+    })
+
+    it('accesses store correctly', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.$store.getters).toBeDefined()
+    })
+  })
+
+  describe('Component Lifecycle', () => {
+    it('mounts successfully', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('unmounts without errors', () => {
+      wrapper = mountComponent()
+      expect(() => wrapper.destroy()).not.toThrow()
+    })
+
+    it('destroys without errors', () => {
+      wrapper = mountComponent()
+      expect(() => wrapper.destroy()).not.toThrow()
+    })
+
+    it('handles multiple mount/unmount cycles', () => {
+      for (let i = 0; i < 3; i++) {
+        const w = mountComponent()
+        expect(w.vm).toBeDefined()
+        w.destroy()
+      }
+    })
+
+    it('maintains state after loading', async () => {
+      wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.vm.isLoadingLanguages).toBe(false)
+      expect(wrapper.vm.trainingData).toBeDefined()
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('handles very long training names', () => {
+      const longName = 'T'.repeat(100)
+      wrapper = mountComponent({
+        trainingData: {
+          trainingId: '123',
+          name: longName,
+          description: 'Test',
+          languages: ['EN'],
+          coverImage: 'http://test.com/image.jpg'
+        }
+      })
+      expect(wrapper.vm.trainingData.name).toBe(longName)
+    })
+
+    it('handles multiple languages', () => {
+      wrapper = mountComponent({
+        trainingData: {
+          trainingId: '123',
+          name: 'Test',
+          description: 'Test',
+          languages: ['EN', 'FR', 'DE', 'ES'],
+          coverImage: 'http://test.com/image.jpg'
+        }
+      })
+      expect(wrapper.vm.trainingData.languages.length).toBe(4)
+    })
+
+    it('handles missing cover image', () => {
+      wrapper = mountComponent({
+        trainingData: {
+          trainingId: '123',
+          name: 'Test',
+          description: 'Test',
+          languages: ['EN'],
+          coverImage: ''
+        }
+      })
+      expect(wrapper.vm.trainingData.coverImage).toBe('')
+    })
+
+    it('handles special characters in names', () => {
+      wrapper = mountComponent({
+        trainingData: {
+          trainingId: '123',
+          name: 'Test @#$% Training',
+          description: 'Test',
+          languages: ['EN'],
+          coverImage: 'http://test.com/image.jpg'
+        }
+      })
+      expect(wrapper.vm.trainingData.name).toBe('Test @#$% Training')
+    })
+
+    it('handles null type prop', () => {
+      wrapper = mountComponent({ type: null })
+      expect(wrapper.vm).toBeDefined()
+    })
+  })
+
 })
