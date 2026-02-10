@@ -410,8 +410,10 @@ export default {
       getCurrentCompany: 'login/getCurrentCompany'
     }),
     getDialogBody() {
+      const currentTargetUserCount =
+        this.companyLicense?.activeUserCount ?? this.companyLicense?.totalUserCount
       return this.companyLicense
-        ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${this.companyLicense['totalUserCount']}. Do you want to save this user?`
+        ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${currentTargetUserCount}. Do you want to save this user?`
         : ''
     },
     noTargetGroupText() {
