@@ -102,32 +102,32 @@ export const trainingLibraryFilters = [
     activeValue: [],
     isFilterActive: false
   },
-  {
-    text: 'Level',
-    icon: 'mdi-signal-cellular-3',
-    key: PROPERTY_STORE.LEVEL,
-    show: true,
-    filterType: 'search',
-    operator: 'Include',
-    activeOperator: 'Include',
-    items: [],
-    value: [],
-    activeValue: [],
-    isFilterActive: false
-  },
-  {
-    text: 'Duration',
-    icon: 'mdi-clock-outline',
-    key: PROPERTY_STORE.DURATION,
-    show: true,
-    filterType: 'search',
-    operator: 'Include',
-    activeOperator: 'Include',
-    items: [],
-    value: [],
-    activeValue: [],
-    isFilterActive: false
-  },
+  // {
+  //   text: 'Level',
+  //   icon: 'mdi-signal-cellular-3',
+  //   key: PROPERTY_STORE.LEVEL,
+  //   show: true,
+  //   filterType: 'search',
+  //   operator: 'Include',
+  //   activeOperator: 'Include',
+  //   items: [],
+  //   value: [],
+  //   activeValue: [],
+  //   isFilterActive: false
+  // },
+  // {
+  //   text: 'Duration',
+  //   icon: 'mdi-clock-outline',
+  //   key: PROPERTY_STORE.DURATION,
+  //   show: true,
+  //   filterType: 'search',
+  //   operator: 'Include',
+  //   activeOperator: 'Include',
+  //   items: [],
+  //   value: [],
+  //   activeValue: [],
+  //   isFilterActive: false
+  // },
   {
     text: 'Language',
     icon: 'mdi-web',

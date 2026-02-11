@@ -180,6 +180,9 @@
       :selectEvent="tableOptions.selectEvent"
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
+      :handle-set-cell-class="getDeletedRowCellClass"
+      :get-cell-tooltip-text="getDeletedRowTooltipText"
+      :add-row-class-name="getDeletedRowClassName"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :axios-payload.sync="payload"
@@ -990,8 +993,24 @@ export default {
     if (this.getLDAPDetailPermission) this.checkIsLDAPConfigured();
   },
   methods: {
+    getDeletedRowClassName({ row } = {}) {
+      return this.isRowTypeDeleted(row) ? " people__deleted-row" : "";
+    },
+    getDeletedRowCellClass({ row, column } = {}) {
+      if (!this.isRowTypeDeleted(row)) return "";
+      if (column?.property === PROPERTY_STORE.STATUS) return "";
+      return "people__deleted-row-cell";
+    },
+    getDeletedRowTooltipText({ row, column } = {}) {
+      if (!this.isRowTypeDeleted(row)) return "";
+      if (!column?.property || column.property === PROPERTY_STORE.STATUS) {
+        return "";
+      }
+      return "This user has been deleted";
+    },
     isRowTypeDeleted(row) {
-      return row.isDeleted;
+      if (row?.isDeleted) return true;
+      return String(row?.status || "").trim().toLowerCase() === "deleted";
     },
     getDeletedRowActionsTooltipText() {
       return "Historical activity data is retained and will be available here in an upcoming update.";
