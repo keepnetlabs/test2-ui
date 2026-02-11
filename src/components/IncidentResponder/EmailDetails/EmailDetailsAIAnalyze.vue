@@ -144,8 +144,25 @@
             Agent Determination
           </div>
           <p class="email-details-ai-analyze__body-text">
-            {{ report.agent_determination }}
+            {{
+              isAgentDeterminationExpanded
+                ? agentDeterminationText
+                : agentDeterminationPreview
+            }}
           </p>
+          <v-btn
+            v-if="isAgentDeterminationLong"
+            text
+            small
+            color="#1e88e5"
+            class="email-details-ai-analyze__metadata-toggle"
+            @click="toggleAgentDetermination"
+          >
+            <v-icon left small>
+              {{ isAgentDeterminationExpanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
+            </v-icon>
+            {{ isAgentDeterminationExpanded ? "Show less" : "Show more" }}
+          </v-btn>
         </div>
 
         <div class="email-details-ai-analyze__section">
@@ -200,23 +217,74 @@
             <span class="email-details-ai-analyze__section-index">4</span>
             Evidence Flow
           </div>
-          <div class="email-details-ai-analyze__timeline">
+          <div class="email-details-ai-analyze__evidence-stepper">
             <div
-              v-for="step in report.evidence_flow"
-              :key="step.step"
-              class="email-details-ai-analyze__timeline-item"
+              v-for="(step, index) in report.evidence_flow"
+              :key="`stepper-${step.step}`"
+              class="email-details-ai-analyze__evidence-step"
             >
               <div class="email-details-ai-analyze__timeline-step">
                 {{ step.step }}
               </div>
-              <div>
-                <div class="email-details-ai-analyze__timeline-title">
-                  {{ step.title }}
+              <div class="email-details-ai-analyze__evidence-step-label">
+                {{ step.title }}
+              </div>
+              <v-icon
+                v-if="index < report.evidence_flow.length - 1"
+                class="email-details-ai-analyze__evidence-step-arrow"
+                small
+              >
+                mdi-chevron-right
+              </v-icon>
+            </div>
+          </div>
+          <div class="email-details-ai-analyze__evidence-panels">
+            <div
+              v-for="step in report.evidence_flow"
+              :key="step.step"
+              class="email-details-ai-analyze__evidence-panel"
+              :class="{ 'email-details-ai-analyze__evidence-panel--open': isEvidenceStepOpen(step.step) }"
+            >
+              <button
+                type="button"
+                class="email-details-ai-analyze__evidence-toggle"
+                @click="toggleEvidenceStep(step.step)"
+              >
+                <div class="email-details-ai-analyze__evidence-panel-header">
+                  <div class="email-details-ai-analyze__timeline-step">
+                    {{ step.step }}
+                  </div>
+                  <div class="email-details-ai-analyze__evidence-panel-main">
+                    <div class="email-details-ai-analyze__timeline-title">
+                      {{ step.title }}
+                    </div>
+                    <div
+                      class="email-details-ai-analyze__evidence-chip"
+                      :class="`email-details-ai-analyze__evidence-chip--${getEvidenceFindingMeta(step).tone}`"
+                    >
+                      <v-icon x-small class="email-details-ai-analyze__evidence-chip-icon">
+                        {{ getEvidenceFindingMeta(step).icon }}
+                      </v-icon>
+                      {{ getEvidenceFindingMeta(step).text }}
+                    </div>
+                  </div>
+                  <v-icon class="email-details-ai-analyze__evidence-chevron" small>
+                    {{
+                      isEvidenceStepOpen(step.step)
+                        ? "mdi-chevron-up"
+                        : "mdi-chevron-down"
+                    }}
+                  </v-icon>
                 </div>
-                <div class="email-details-ai-analyze__body-text">
+              </button>
+              <transition name="email-details-ai-analyze__evidence-transition">
+                <div
+                  v-if="isEvidenceStepOpen(step.step)"
+                  class="email-details-ai-analyze__evidence-panel-body email-details-ai-analyze__body-text"
+                >
                   {{ step.description }}
                 </div>
-              </div>
+              </transition>
             </div>
           </div>
         </div>
@@ -226,16 +294,44 @@
             <span class="email-details-ai-analyze__section-index">5</span>
             Actions Recommended
           </div>
-          <div class="email-details-ai-analyze__actions">
+          <div class="email-details-ai-analyze__actions-group">
             <div
-              v-for="(item, index) in report.actions_recommended"
-              :key="`act-${index}`"
-              class="email-details-ai-analyze__action-item"
+              v-for="group in actionGroups"
+              :key="group.key"
+              class="email-details-ai-analyze__action-group"
             >
-              <v-icon class="email-details-ai-analyze__action-icon" color="#43a047"
-                >mdi-check-circle</v-icon
-              >
-              <span class="email-details-ai-analyze__body-text">{{ item }}</span>
+              <div class="email-details-ai-analyze__action-group-title">
+                <span>{{ group.title }}</span>
+                <v-tooltip bottom max-width="240">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      small
+                      color="#78909c"
+                      class="email-details-ai-analyze__action-group-info"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      mdi-information-outline
+                    </v-icon>
+                  </template>
+                  <span>{{ group.description }}</span>
+                </v-tooltip>
+              </div>
+              <div class="email-details-ai-analyze__action-group-subtitle">
+                {{ group.shortLabel }}
+              </div>
+              <div class="email-details-ai-analyze__actions">
+                <div
+                  v-for="(item, index) in group.items"
+                  :key="`${group.key}-${index}`"
+                  class="email-details-ai-analyze__action-item"
+                >
+                  <v-icon class="email-details-ai-analyze__action-icon" :color="group.iconColor">
+                    {{ group.icon }}
+                  </v-icon>
+                  <span class="email-details-ai-analyze__body-text">{{ item }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -245,7 +341,7 @@
         >
           <div class="email-details-ai-analyze__section-title">
             <span class="email-details-ai-analyze__section-index">6</span>
-            Confidence Limitations
+            Confidence & Metadata
           </div>
           <div class="email-details-ai-analyze__callout">
             <v-icon class="email-details-ai-analyze__callout-icon" color="#1173C1"
@@ -254,6 +350,34 @@
             <p class="email-details-ai-analyze__body-text">
               {{ report.confidence_limitations }}
             </p>
+          </div>
+          <v-btn
+            text
+            small
+            color="#1e88e5"
+            class="email-details-ai-analyze__metadata-toggle"
+            @click="toggleMetadata"
+          >
+            <v-icon left small>
+              {{ isMetadataExpanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
+            </v-icon>
+            {{ isMetadataExpanded ? "Hide details" : "Show details" }}
+          </v-btn>
+          <div v-if="isMetadataExpanded" class="email-details-ai-analyze__metadata">
+            <div class="email-details-ai-analyze__metadata-item">
+              <span class="email-details-ai-analyze__metadata-label">Analysis Source</span>
+              <span class="email-details-ai-analyze__metadata-value">Auto Analysis</span>
+            </div>
+            <div class="email-details-ai-analyze__metadata-item">
+              <span class="email-details-ai-analyze__metadata-label">Created At</span>
+              <span class="email-details-ai-analyze__metadata-value">
+                {{ formattedReportCreatedAt }}
+              </span>
+            </div>
+            <div class="email-details-ai-analyze__metadata-item">
+              <span class="email-details-ai-analyze__metadata-label">Analysis Engine</span>
+              <span class="email-details-ai-analyze__metadata-value">Agentic AI</span>
+            </div>
           </div>
         </div>
       </div>
@@ -264,7 +388,11 @@
 <script>
 import Badge from "@/components/Badge";
 import EmailTemplatesAILoader from "@/components/EmailTemplates/EmailTemplatesAILoader";
-import { getBtnPriorityColor, getBtnStatusColor } from "@/utils/functions";
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getTimeZoneForMoment
+} from "@/utils/functions";
 import axios from "axios";
 import AuthenticationService from "@/services/authentication";
 export default {
@@ -281,11 +409,47 @@ export default {
     }
   },
   data() {
+    const evidenceFindingMetaMap = {
+      PASS: { text: "PASS", tone: "pass", icon: "mdi-check-circle" },
+      FLAG: { text: "FLAG", tone: "flag", icon: "mdi-flag-variant" },
+      ALERT: { text: "ALERT", tone: "alert", icon: "mdi-bell-alert" },
+      HIGH: { text: "HIGH", tone: "high", icon: "mdi-arrow-up-bold-circle" },
+      SPAM: { text: "Spam", tone: "spam", icon: "mdi-email-remove" },
+      MARKETING: { text: "Marketing", tone: "marketing", icon: "mdi-bullhorn" },
+      INTERNAL: { text: "Internal", tone: "internal", icon: "mdi-office-building" },
+      "CEO FRAUD": { text: "CEO Fraud", tone: "ceo-fraud", icon: "mdi-account-tie" },
+      PHISHING: { text: "Phishing", tone: "phishing", icon: "mdi-fish" },
+      SEXTORTION: {
+        text: "Sextortion",
+        tone: "sextortion",
+        icon: "mdi-alert-octagon"
+      },
+      MALWARE: { text: "Malware", tone: "malware", icon: "mdi-bug" },
+      "SECURITY AWARENESS": {
+        text: "Security Awareness",
+        tone: "security-awareness",
+        icon: "mdi-school"
+      },
+      "OTHER SUSPICIOUS": {
+        text: "Other Suspicious",
+        tone: "other-suspicious",
+        icon: "mdi-help-rhombus"
+      },
+      BENIGN: { text: "Benign", tone: "benign", icon: "mdi-shield-check" },
+      // Legacy labels kept for backward compatibility.
+      PHISH: { text: "Phish", tone: "phishing", icon: "mdi-fish" }
+    };
+
     return {
       isLoadingReport: true,
       isRunningAnalysis: false,
       loadError: "",
       report: null,
+      reportCreatedAt: null,
+      isMetadataExpanded: true,
+      isAgentDeterminationExpanded: false,
+      openEvidenceSteps: [],
+      evidenceFindingMetaMap,
       showAllObservedIndicators: false,
       showAllNotObservedIndicators: false,
       staticReport: {
@@ -407,6 +571,16 @@ export default {
     whyThisMatters() {
       return this.report?.executive_summary?.why_this_matters || "";
     },
+    agentDeterminationText() {
+      return this.report?.agent_determination || "";
+    },
+    isAgentDeterminationLong() {
+      return this.agentDeterminationText.length > 280;
+    },
+    agentDeterminationPreview() {
+      if (!this.isAgentDeterminationLong) return this.agentDeterminationText;
+      return `${this.agentDeterminationText.slice(0, 280).trim()}...`;
+    },
     observedIndicators() {
       const observed = this.report?.risk_indicators?.observed || [];
       return this.showAllObservedIndicators ? observed : observed.slice(0, 4);
@@ -422,6 +596,61 @@ export default {
     notObservedMoreCount() {
       const notObserved = this.report?.risk_indicators?.not_observed || [];
       return Math.max(0, notObserved.length - 4);
+    },
+    formattedReportCreatedAt() {
+      if (!this.reportCreatedAt) return "N/A";
+      const format = getTimeZoneForMoment() || "YYYY/MM/DD HH:mm";
+      if (!this.$moment) return this.reportCreatedAt;
+      return this.$moment(this.reportCreatedAt).format(format);
+    },
+    actionGroups() {
+      const actions = this.report?.actions_recommended;
+
+      if (Array.isArray(actions)) {
+        return [
+          {
+            key: "legacy",
+            title: "Recommended Actions",
+            items: actions,
+            icon: "mdi-check-circle",
+            iconColor: "#43a047"
+          }
+        ];
+      }
+
+      const p1 = Array.isArray(actions?.p1_immediate) ? actions.p1_immediate : [];
+      const p2 = Array.isArray(actions?.p2_follow_up) ? actions.p2_follow_up : [];
+      const p3 = Array.isArray(actions?.p3_hardening) ? actions.p3_hardening : [];
+
+      return [
+        {
+          key: "p1",
+          title: "P1",
+          shortLabel: "Immediate",
+          description: "Immediate action required.",
+          items: p1,
+          icon: "mdi-alert-circle",
+          iconColor: "#d32f2f"
+        },
+        {
+          key: "p2",
+          title: "P2",
+          shortLabel: "Follow-up",
+          description: "Follow-up actions to complete within 24 hours.",
+          items: p2,
+          icon: "mdi-progress-clock",
+          iconColor: "#f9a825"
+        },
+        {
+          key: "p3",
+          title: "P3",
+          shortLabel: "Hardening",
+          description: "Hardening and long-term preventive improvements.",
+          items: p3,
+          icon: "mdi-shield-check",
+          iconColor: "#1e88e5"
+        }
+      ].filter((group) => group.items.length > 0);
     }
   },
   methods: {
@@ -431,6 +660,10 @@ export default {
       this.isLoadingReport = true;
       this.loadError = "";
       this.report = null;
+      this.reportCreatedAt = null;
+      this.isMetadataExpanded = true;
+      this.isAgentDeterminationExpanded = false;
+      this.openEvidenceSteps = [];
       this.$emit("update:loading", true);
       try {
         const accessToken = AuthenticationService.getToken();
@@ -450,6 +683,8 @@ export default {
         });
         const payload = response?.data || {};
         this.report = payload.report || payload.data?.report || null;
+        this.reportCreatedAt = new Date();
+        this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
       } catch (error) {
         console.error("Error running AI analysis:", error);
         this.loadError = "Unable to run AI analysis at this time.";
@@ -464,6 +699,10 @@ export default {
       if (!this.id) return;
       this.isLoadingReport = true;
       this.loadError = "";
+      this.reportCreatedAt = null;
+      this.isMetadataExpanded = true;
+      this.isAgentDeterminationExpanded = false;
+      this.openEvidenceSteps = [];
       this.$emit("update:loading", true);
       try {
         const accessToken = AuthenticationService.getToken();
@@ -483,6 +722,8 @@ export default {
         });
         const payload = response?.data || {};
         this.report = payload.report || payload.data?.report || null;
+        this.reportCreatedAt = new Date();
+        this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
       } catch (error) {
         console.error("Error fetching AI analyze report:", error);
         this.loadError = "Unable to load AI analysis report at this time.";
@@ -521,6 +762,54 @@ export default {
         return getBtnStatusColor("in progress");
       if (normalized.includes("pending")) return getBtnStatusColor("pending");
       return getBtnStatusColor(normalized);
+    },
+    getEvidenceFindingMeta(step) {
+      const rawLabel = step?.finding_label || "";
+      const label = rawLabel.trim().toUpperCase();
+
+      if (this.evidenceFindingMetaMap[label]) {
+        return this.evidenceFindingMetaMap[label];
+      }
+
+      if (label) {
+        return {
+          text: rawLabel,
+          tone: "flag",
+          icon: "mdi-information"
+        };
+      }
+
+      // Backward-compatible fallback when finding_label is not provided yet.
+      const normalizedTitle = (step?.title || "").toLowerCase();
+      if (normalizedTitle.includes("risk") || normalizedTitle.includes("threat")) {
+        return { text: "HIGH", tone: "high", icon: "mdi-arrow-up-bold-circle" };
+      }
+      if (normalizedTitle.includes("final") || normalizedTitle.includes("verdict")) {
+        return { text: "Phishing", tone: "phishing", icon: "mdi-fish" };
+      }
+      return { text: "PASS", tone: "pass", icon: "mdi-check-circle" };
+    },
+    getDefaultOpenEvidenceSteps() {
+      const firstStep = this.report?.evidence_flow?.[0]?.step;
+      return firstStep !== undefined && firstStep !== null ? [firstStep] : [];
+    },
+    isEvidenceStepOpen(stepId) {
+      return this.openEvidenceSteps.includes(stepId);
+    },
+    toggleEvidenceStep(stepId) {
+      if (this.isEvidenceStepOpen(stepId)) {
+        this.openEvidenceSteps = this.openEvidenceSteps.filter(
+          (item) => item !== stepId
+        );
+        return;
+      }
+      this.openEvidenceSteps = [...this.openEvidenceSteps, stepId];
+    },
+    toggleMetadata() {
+      this.isMetadataExpanded = !this.isMetadataExpanded;
+    },
+    toggleAgentDetermination() {
+      this.isAgentDeterminationExpanded = !this.isAgentDeterminationExpanded;
     },
     toggleObservedIndicators() {
       this.showAllObservedIndicators = !this.showAllObservedIndicators;
