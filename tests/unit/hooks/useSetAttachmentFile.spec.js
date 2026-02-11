@@ -113,19 +113,48 @@ describe('useSetAttachmentFile Hook', () => {
     })
   })
 
-  describe('Hook State Management', () => {
-    it('should initialize attachment error flag as false', () => {
+  describe('Hook Structure', () => {
+    it('should export hook with data and methods', () => {
+      expect(useSetAttachmentFile).toBeDefined()
+      expect(useSetAttachmentFile.data).toBeDefined()
+      expect(useSetAttachmentFile.methods).toBeDefined()
+    })
+
+    it('should have setAttachmentFile method', () => {
+      expect(useSetAttachmentFile.methods.setAttachmentFile).toBeDefined()
+      expect(typeof useSetAttachmentFile.methods.setAttachmentFile).toBe('function')
+    })
+
+    it('data function should return state object', () => {
+      const data = useSetAttachmentFile.data()
+      expect(data).toEqual({
+        isAttachmentError: false,
+        isPhishingFileModified: false,
+        isAddedNewPhishingFile: false
+      })
+    })
+  })
+
+  describe('State Initialization', () => {
+    it('should initialize isAttachmentError as false', () => {
       const data = useSetAttachmentFile.data()
       expect(data.isAttachmentError).toBe(false)
     })
 
-    it('should initialize phishing file modified flag as false', () => {
+    it('should initialize isPhishingFileModified as false', () => {
       const data = useSetAttachmentFile.data()
       expect(data.isPhishingFileModified).toBe(false)
     })
 
-    it('should initialize new phishing file flag as false', () => {
+    it('should initialize isAddedNewPhishingFile as false', () => {
       const data = useSetAttachmentFile.data()
+      expect(data.isAddedNewPhishingFile).toBe(false)
+    })
+
+    it('should initialize with all flags false', () => {
+      const data = useSetAttachmentFile.data()
+      expect(data.isAttachmentError).toBe(false)
+      expect(data.isPhishingFileModified).toBe(false)
       expect(data.isAddedNewPhishingFile).toBe(false)
     })
 
