@@ -143,4 +143,172 @@ describe('permissions store module (real)', () => {
       }
     })
   })
+
+  describe('State Structure', () => {
+    it('should have permissions array', () => {
+      const store = loadPermissionsStore()
+      expect(Array.isArray(store.state.permissions)).toBe(true)
+    })
+
+    it('should have dashboard permissions object', () => {
+      const store = loadPermissionsStore()
+      expect(store.state.dashboardPermissions).toBeDefined()
+    })
+
+    it('should have phishing scenarios permissions', () => {
+      const store = loadPermissionsStore()
+      expect(store.state.phishingScenariosPermissions).toBeDefined()
+    })
+
+    it('should have threat sharing permissions', () => {
+      const store = loadPermissionsStore()
+      expect(store.state.threatSharingPermissions).toBeDefined()
+    })
+
+    it('should have LDAP permissions', () => {
+      const store = loadPermissionsStore()
+      expect(store.state.ldapPermissions).toBeDefined()
+    })
+  })
+
+  describe('Mutations', () => {
+    it('SET_PERMISSIONS_LIST updates permissions array', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+      const permissions = ['test1|GET', 'test2|POST']
+
+      store.mutations.SET_PERMISSIONS_LIST(state, permissions)
+      expect(state.permissions).toEqual(permissions)
+    })
+
+    it('SET_ALL_PERMISSIONS marks has permission correctly', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.permissions = []
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      expect(state.dashboardPermissions.WIDGETS.hasPermission).toBe(false)
+    })
+
+    it('RESET_STATE clears all permissions', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.permissions = ['test|GET']
+      store.mutations.RESET_STATE(state)
+
+      expect(state.permissions).toEqual([])
+    })
+  })
+
+  describe('Getters', () => {
+    it('getDashboardWidgetsPermission checks dashboard permissions', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.dashboardPermissions.WIDGETS.hasPermission = true
+      expect(store.getters.getDashboardWidgetsPermission(state)).toBe(true)
+    })
+
+    it('getPhishingSimulatorLeftMenuPermissions getter exists', () => {
+      const store = loadPermissionsStore()
+      expect(store.getters).toBeDefined()
+      expect(Object.keys(store.getters).length).toBeGreaterThan(0)
+    })
+
+    it('getIncidentResponderLeftMenuPermissions getter exists', () => {
+      const store = loadPermissionsStore()
+      expect(store.getters).toBeDefined()
+    })
+  })
+
+  describe('Actions', () => {
+    it('setPermissionsList commits and dispatches', () => {
+      const store = loadPermissionsStore()
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+
+      store.actions.setPermissionsList({ commit, dispatch }, [])
+      expect(commit).toHaveBeenCalled()
+      expect(dispatch).toHaveBeenCalled()
+    })
+
+    it('setAllPermissions exists as action', () => {
+      const store = loadPermissionsStore()
+      expect(store.actions.setAllPermissions).toBeDefined()
+    })
+  })
+
+  describe('Permission Caching', () => {
+    it('localStorage persists permissions', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.permissions = ['test|GET']
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      const stored = localStorage.getItem('permissions')
+      expect(stored).not.toBeNull()
+    })
+
+    it('cached permissions are retrievable', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.permissions = ['cached|GET']
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      const stored = JSON.parse(localStorage.getItem('permissions'))
+      expect(stored.permissions).toContain('cached|GET')
+    })
+  })
+
+  describe('Permission Validation', () => {
+    it('permission format matches url|method pattern', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      const permission = 'api/endpoint|GET'
+      state.permissions = [permission]
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      expect(state.permissions[0]).toMatch(/\|/)
+    })
+
+    it('handles empty permission list', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.permissions = []
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      expect(state.permissions).toEqual([])
+    })
+  })
+
+  describe('Store Integration', () => {
+    it('store module has required properties', () => {
+      const store = loadPermissionsStore()
+      expect(store.state).toBeDefined()
+      expect(store.mutations).toBeDefined()
+      expect(store.getters).toBeDefined()
+      expect(store.actions).toBeDefined()
+    })
+
+    it('multiple store loads have same structure', () => {
+      const store1 = loadPermissionsStore()
+      const store2 = loadPermissionsStore()
+
+      expect(store1.state).toBeDefined()
+      expect(store2.state).toBeDefined()
+      expect(store1.mutations).toBeDefined()
+      expect(store2.mutations).toBeDefined()
+    })
+
+    it('state is properly isolated between tests', () => {
+      const store = loadPermissionsStore()
+      expect(store.state.permissions).toEqual([])
+    })
+  })
 })

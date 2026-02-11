@@ -162,7 +162,7 @@ export default {
         },
         {
           title: "Pending Approvals",
-          subtitle: "Now",
+          subtitle: "",
           value: 3,
           hasMenu: false
         }
@@ -378,12 +378,15 @@ export default {
       if (!this.isAgenticAllyActiveComputed) {
         return "Agentic AI is disabled";
       }
+      if (this.isApprovalGatedNoPendingState) {
+        return "There are no pending AI actions for approval";
+      }
       if (
         this.isAgenticAllyActiveComputed &&
         !this.isAutonomousComputed &&
         this.hasPendingApprovals
       ) {
-        return "Agentic AI is awaiting approval-gated";
+        return "AI actions are waiting for your approval";
       }
       return this.isAutonomousComputed
         ? "Agentic AI is running autonomously"
@@ -393,9 +396,12 @@ export default {
       if (!this.isAgenticAllyActiveComputed) {
         return "No actions will run until you enable it, and you can change modes anytime.";
       }
+      if (this.isApprovalGatedNoPendingState) {
+        return "AI suggests actions for review before they are executed.";
+      }
       return this.isAutonomousComputed
         ? "Actions run automatically based on your policies."
-        : "AI suggests actions for review before they are executed.";
+        : "Review and approve AI-recommended actions before they are executed.";
     },
     showSettingsIcon() {
       return !this.isAutonomousComputed || !this.isAgenticAllyActiveComputed;
@@ -430,6 +436,13 @@ export default {
         this.isAgenticAllyActiveComputed &&
         !this.isAutonomousComputed &&
         this.hasPendingApprovals
+      );
+    },
+    isApprovalGatedNoPendingState() {
+      return (
+        this.isAgenticAllyActiveComputed &&
+        !this.isAutonomousComputed &&
+        !this.hasPendingApprovals
       );
     },
     actionButtonLabelComputed() {
