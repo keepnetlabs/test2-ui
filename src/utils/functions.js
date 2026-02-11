@@ -129,18 +129,13 @@ export function getTextColor(type) {
 }
 
 export function getDataTableFieldLabel(field = "") {
-  field = String(field);
-  const defField = field;
-  field = field.trim().toLowerCase();
-  let upperCaseCount = 0;
-  for (let i = 0; i < field.length; i++) {
-    if (upperCaseCount === 2) {
-      return `${field.slice(0, i)} ${field.slice(i, field.length)}`;
-    }
-    if (field.charAt(i) === field.charAt(i).toUpperCase()) {
-      upperCaseCount++;
-    }
-  }
+  const defField = String(field).trim();
+  const normalizedField = defField
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+  const compactField = normalizedField.replace(/\s+/g, "");
+
   const fieldMap = {
     beinganalyzed: "Being Analyzed",
     inprogress: "In Progress",
@@ -150,20 +145,29 @@ export function getDataTableFieldLabel(field = "") {
     verylow: "Very Low",
     completedwitherror: "Completed with error",
     itemnotfound: "Item not found",
-    Running: "Running",
-    "Not Running": "Not Running",
+    running: "Running",
+    "not running": "Not Running",
     "n/a": "N/A",
     notinstalled: "Not Installed",
     waitingresponse: "Waiting Response",
     unknown: "N/A",
-    Easy: "Easy",
-    Medium: "Medium",
-    Hard: "Hard",
+    easy: "Easy",
+    medium: "Medium",
+    hard: "Hard",
     "not in use": "Not In Use",
     "in use": "In Use",
     "waiting for approval": "Waiting for Approval"
   };
-  return fieldMap[field] || defField;
+  if (fieldMap[normalizedField]) {
+    return fieldMap[normalizedField];
+  }
+  if (fieldMap[compactField]) {
+    return fieldMap[compactField];
+  }
+  if (/^[A-Za-z0-9]+$/.test(defField) && /[a-z][A-Z]/.test(defField)) {
+    return defField.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+  }
+  return defField;
 }
 
 export function isOwnerOrMember(membershipStatusId) {

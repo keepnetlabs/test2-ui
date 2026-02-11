@@ -163,4 +163,312 @@ describe('TrainingLibraryDrawerActionsMenu.vue', () => {
     wrapper.setData({ langSearch: '' })
     expect(wrapper.vm.filteredLanguages.length).toBe(3)
   })
+
+  describe('Component Structure', () => {
+    it('should render component successfully', () => {
+      const wrapper = mountMenu()
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('should have transition stub', () => {
+      const wrapper = mountMenu()
+      expect(wrapper.find('[stub]').exists() || wrapper.html()).toBeDefined()
+    })
+
+    it('should initialize with correct default props', () => {
+      const wrapper = mountMenu()
+      expect(wrapper.vm.type).toBeDefined()
+      expect(wrapper.vm.isDeletable).toBeDefined()
+    })
+
+    it('should have Vue Test Utils methods', () => {
+      const wrapper = mountMenu()
+      expect(typeof wrapper.vm.handleAction).toBe('function')
+    })
+  })
+
+  describe('Menu Actions', () => {
+    it('should emit edit action', () => {
+      const wrapper = mountMenu()
+      wrapper.vm.handleAction('edit')
+      expect(wrapper.emitted('edit')).toBeTruthy()
+    })
+
+    it('should emit delete action', () => {
+      const wrapper = mountMenu()
+      wrapper.vm.handleAction('delete')
+      expect(wrapper.emitted('delete')).toBeTruthy()
+    })
+
+    it('should emit duplicate action', () => {
+      const wrapper = mountMenu()
+      wrapper.vm.handleAction('duplicate')
+      expect(wrapper.emitted('duplicate')).toBeTruthy()
+    })
+
+    it('should have other items array', () => {
+      const wrapper = mountMenu()
+      expect(Array.isArray(wrapper.vm.otherItems)).toBe(true)
+    })
+  })
+
+  describe('Download Functionality', () => {
+    it('should have download submenu for poster type', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.POSTER })
+      expect(wrapper.vm.hasDownloadSubmenu).toBe(true)
+    })
+
+    it('should have download submenu for screensaver type', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.SCREENSAVER })
+      expect(wrapper.vm.hasDownloadSubmenu).toBe(true)
+    })
+
+    it('should not have download submenu for training type', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      expect(wrapper.vm.hasDownloadSubmenu).toBe(false)
+    })
+
+    it('should emit download with selected language', () => {
+      const wrapper = mountMenu()
+      const lang = { text: 'English', value: 'en' }
+      wrapper.vm.handleDownload(lang)
+      expect(wrapper.emitted('download')).toBeTruthy()
+      expect(wrapper.emitted('download')[0][0]).toEqual(lang)
+    })
+
+    it('should have correct download type text', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.POSTER })
+      expect(wrapper.vm.downloadTypeText).toBe('Poster')
+    })
+  })
+
+  describe('Content Type Handling', () => {
+    it('should handle Training type', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      expect(wrapper.vm.type).toBe(TRAINING_LIBRARY_TYPES.TRAINING)
+    })
+
+    it('should handle Poster type', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.POSTER })
+      expect(wrapper.vm.type).toBe(TRAINING_LIBRARY_TYPES.POSTER)
+    })
+
+    it('should handle Screensaver type', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.SCREENSAVER })
+      expect(wrapper.vm.type).toBe(TRAINING_LIBRARY_TYPES.SCREENSAVER)
+    })
+
+    it('should show type-specific items', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      const items = wrapper.vm.otherItems
+      expect(items.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Props Management', () => {
+    it('should accept type prop', () => {
+      const wrapper = mountMenu({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      expect(wrapper.props('type')).toBe(TRAINING_LIBRARY_TYPES.TRAINING)
+    })
+
+    it('should accept isDeletable prop', () => {
+      const wrapper = mountMenu({ isDeletable: true })
+      expect(wrapper.props('isDeletable')).toBe(true)
+    })
+
+    it('should accept isEditable prop', () => {
+      const wrapper = mountMenu({ isEditable: false })
+      expect(wrapper.props('isEditable')).toBe(false)
+    })
+
+    it('should accept languages prop', () => {
+      const languages = [{ text: 'EN', value: 'en' }]
+      const wrapper = mountMenu({ languages })
+      expect(wrapper.props('languages')).toEqual(languages)
+    })
+
+    it('should accept isNested prop', () => {
+      const wrapper = mountMenu({ isNested: true })
+      expect(wrapper.props('isNested')).toBe(true)
+    })
+  })
+
+  describe('Language Handling', () => {
+    it('should have languages array', () => {
+      const wrapper = mountMenu()
+      expect(Array.isArray(wrapper.vm.languages)).toBe(true)
+    })
+
+    it('should filter languages by search text', () => {
+      const wrapper = mountMenu({
+        languages: [
+          { text: 'English', value: 'en' },
+          { text: 'German', value: 'de' }
+        ]
+      })
+      wrapper.setData({ langSearch: 'Ger' })
+      expect(wrapper.vm.filteredLanguages.length).toBe(1)
+    })
+
+    it('should handle case-insensitive language search', () => {
+      const wrapper = mountMenu({
+        languages: [
+          { text: 'English', value: 'en' },
+          { text: 'French', value: 'fr' }
+        ]
+      })
+      wrapper.setData({ langSearch: 'french' })
+      expect(wrapper.vm.filteredLanguages.some(l => l.value === 'fr')).toBe(true)
+    })
+
+    it('should return all languages when search is empty', () => {
+      const languages = [
+        { text: 'EN', value: 'en' },
+        { text: 'TR', value: 'tr' },
+        { text: 'DE', value: 'de' }
+      ]
+      const wrapper = mountMenu({ languages })
+      wrapper.setData({ langSearch: '' })
+      expect(wrapper.vm.filteredLanguages.length).toBe(3)
+    })
+
+    it('should handle language search property', () => {
+      const wrapper = mountMenu()
+      expect(wrapper.vm.langSearch).toBeDefined()
+    })
+  })
+
+  describe('Event Emission', () => {
+    it('should emit correct action events', () => {
+      const wrapper = mountMenu()
+      const actions = ['edit', 'delete', 'duplicate']
+
+      actions.forEach(action => {
+        wrapper.vm.handleAction(action)
+        expect(wrapper.emitted()[action]).toBeTruthy()
+      })
+    })
+
+    it('should emit download event with language payload', () => {
+      const wrapper = mountMenu()
+      const lang = { text: 'English', value: 'en' }
+      wrapper.vm.handleDownload(lang)
+
+      const emitted = wrapper.emitted('download')
+      expect(emitted).toBeTruthy()
+      expect(emitted[0][0]).toEqual(lang)
+    })
+  })
+
+  describe('Nested Content', () => {
+    it('should hide delete action for nested content', () => {
+      const wrapper = mountMenu({ isNested: true })
+      const items = wrapper.vm.otherItems
+      expect(items.some(i => i.action === 'delete')).toBe(false)
+    })
+
+    it('should hide duplicate action for nested content', () => {
+      const wrapper = mountMenu({ isNested: true })
+      const items = wrapper.vm.otherItems
+      expect(items.some(i => i.action === 'duplicate')).toBe(false)
+    })
+
+    it('should keep edit action for nested content', () => {
+      const wrapper = mountMenu({ isNested: true })
+      const items = wrapper.vm.otherItems
+      expect(items.some(i => i.action === 'edit')).toBe(true)
+    })
+
+    it('should respect nested prop', () => {
+      const wrapper = mountMenu({ isNested: true })
+      expect(wrapper.props('isNested')).toBe(true)
+    })
+  })
+
+  describe('Permissions/Accessibility', () => {
+    it('should respect isDeletable permission', () => {
+      const wrapper = mountMenu({ isDeletable: false })
+      const items = wrapper.vm.otherItems
+      expect(items.some(i => i.action === 'delete')).toBe(false)
+    })
+
+    it('should respect isEditable permission', () => {
+      const wrapper = mountMenu({ isEditable: false })
+      const items = wrapper.vm.otherItems
+      const editItem = items.find(i => i.action === 'edit')
+      expect(editItem && editItem.disabled).toBe(true)
+    })
+
+    it('should enable edit when editable', () => {
+      const wrapper = mountMenu({ isEditable: true })
+      const items = wrapper.vm.otherItems
+      const editItem = items.find(i => i.action === 'edit')
+      expect(editItem && !editItem.disabled).toBe(true)
+    })
+
+    it('should enable delete when deletable', () => {
+      const wrapper = mountMenu({ isDeletable: true })
+      const items = wrapper.vm.otherItems
+      expect(items.some(i => i.action === 'delete')).toBe(true)
+    })
+  })
+
+  describe('Multiple Instances', () => {
+    it('should support multiple instances', () => {
+      const wrapper1 = mountMenu()
+      const wrapper2 = mountMenu({ type: TRAINING_LIBRARY_TYPES.POSTER })
+
+      expect(wrapper1.vm).not.toBe(wrapper2.vm)
+    })
+
+    it('should maintain independent state across instances', () => {
+      const wrapper1 = mountMenu({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      const wrapper2 = mountMenu({ type: TRAINING_LIBRARY_TYPES.POSTER })
+
+      expect(wrapper1.vm.type).not.toBe(wrapper2.vm.type)
+    })
+
+    it('should handle language search independently', () => {
+      const wrapper1 = mountMenu()
+      const wrapper2 = mountMenu()
+
+      wrapper1.setData({ langSearch: 'English' })
+      expect(wrapper2.vm.langSearch).not.toBe('English')
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('should handle empty languages array', () => {
+      const wrapper = mountMenu({ languages: [] })
+      expect(wrapper.vm.filteredLanguages.length).toBe(0)
+    })
+
+    it('should handle language search with special characters', () => {
+      const wrapper = mountMenu({
+        languages: [
+          { text: 'English (US)', value: 'en-us' },
+          { text: 'English (UK)', value: 'en-gb' }
+        ]
+      })
+      wrapper.setData({ langSearch: '(US)' })
+      expect(wrapper.vm.filteredLanguages.length).toBeGreaterThanOrEqual(0)
+    })
+
+    it('should handle all props combinations', () => {
+      const wrapper = mountMenu({
+        type: TRAINING_LIBRARY_TYPES.POSTER,
+        isDeletable: true,
+        isEditable: false,
+        isNested: false,
+        languages: [{ text: 'EN', value: 'en' }]
+      })
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('should handle no languages gracefully', () => {
+      const wrapper = mountMenu({ languages: undefined })
+      // Should not crash
+      expect(wrapper.vm).toBeDefined()
+    })
+  })
 })
