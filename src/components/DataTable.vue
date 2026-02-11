@@ -1431,6 +1431,9 @@ export default {
     handleSetCellClass: {
       type: Function
     },
+    getCellTooltipText: {
+      type: Function
+    },
     changeFooterPosition: {
       type: Boolean,
       default: false
@@ -2845,6 +2848,22 @@ export default {
      * This event fires when clicked in the cell
      */
     cellEnter(row, column, cell) {
+      if (this.getCellTooltipText) {
+        const customTooltipText = this.getCellTooltipText({ row, column, cell });
+        if (customTooltipText) {
+          const parentRect = cell.getBoundingClientRect();
+          const padding = Number(getComputedStyle(cell).paddingLeft.slice(0, -2) || 0);
+          this.showOverFlowTooltip = true;
+          this.overFlowTooltipContent = customTooltipText;
+          this.overFlowTooltipStyle = {
+            top: `${
+              parentRect.top + (this.isCustomOverflowedColumn ? 50 : 60)
+            }px`,
+            left: `${parentRect.left + this.cellPadding + Number(padding)}px`
+          };
+          return;
+        }
+      }
       this.hasOverflowTooltip(row, column, cell);
     },
     /**

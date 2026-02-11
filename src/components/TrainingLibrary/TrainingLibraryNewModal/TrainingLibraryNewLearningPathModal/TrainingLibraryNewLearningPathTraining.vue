@@ -9,11 +9,12 @@
       style="cursor: move;"
       >mdi-drag-vertical</v-icon
     >
-    <img
+    <div
       class="learning-path-content__training--cover-image"
-      :src="getCoverImage(training)"
-      alt="Learning path cover"
-    />
+      :style="getCoverImageBackground(training)"
+    >
+      <img :src="getCoverImage(training)" alt="Learning path cover" />
+    </div>
     <div class="learning-path-content__training--info">
       <div ref="refTitle">
         <VTooltip :disabled="!isRenderTitleTooltip" right :max-width="300">
@@ -130,6 +131,13 @@ export default {
         training?.coverImage?.imageUrl ||
         require('../../../../assets/img/learning-path-cover-image-placeholder.svg')
       )
+    },
+    getCoverImageBackground(training) {
+      const imageUrl = this.getCoverImage(training)
+      if (!imageUrl) return {}
+      return {
+        backgroundImage: `url('${imageUrl}')`
+      }
     },
     onClickPreview() {
       this.$emit('preview')
