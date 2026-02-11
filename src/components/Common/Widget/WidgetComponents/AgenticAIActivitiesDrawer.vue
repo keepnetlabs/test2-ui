@@ -308,10 +308,14 @@ export default {
       this.fetchActivities();
     },
     normalizeStatus(status = "") {
-      const normalized = String(status).trim().toLowerCase();
-      const cleaned = normalized.replace(/[_-]+/g, " ");
+      const cleaned = String(status)
+        .trim()
+        .toLowerCase()
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ");
       const statusMap = {
         "waiting for approval": "Waiting for Approval",
+        waitingforapproval: "Waiting for Approval",
         executed: "Executed",
         rejected: "Rejected"
       };
@@ -320,8 +324,15 @@ export default {
       return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
     },
     isWaitingForApproval(row = {}) {
-      const normalized = String(row.status || "").trim().toLowerCase();
-      return normalized.replace(/[_-]+/g, " ") === "waiting for approval";
+      const normalized = String(row.status || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ");
+      return (
+        normalized === "waiting for approval" ||
+        normalized === "waitingforapproval"
+      );
     },
     getViewActionId(index) {
       return `btn-agentic-ai-activity-view-${index}`;
