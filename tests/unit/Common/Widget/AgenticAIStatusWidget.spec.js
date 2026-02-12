@@ -52,7 +52,7 @@ describe("AgenticAIStatusWidget", () => {
     pendingCard.value = 2;
 
     expect(wrapper.vm.currentStatusText).toBe(
-      "Agentic AI is awaiting approval-gated"
+      "AI actions are waiting for your approval"
     );
   });
 
@@ -197,7 +197,7 @@ describe("AgenticAIStatusWidget", () => {
       const wrapper = mountFactory({
         "login/getAgenticAIExecutionMode": "Manual"
       });
-      expect(wrapper.vm.currentStatusText).toContain("Agentic AI");
+      expect(wrapper.vm.currentStatusText).toContain("waiting for your approval");
     });
 
     it("should show disabled status when disabled", () => {
@@ -379,7 +379,7 @@ describe("AgenticAIStatusWidget", () => {
       const wrapper = mountFactory({
         "login/getAgenticAIExecutionMode": "Manual"
       });
-      expect(wrapper.vm.currentStatusText).toContain("Agentic AI");
+      expect(wrapper.vm.currentStatusText).toContain("waiting for your approval");
     });
 
     it("should include pending approvals card in manual mode", () => {

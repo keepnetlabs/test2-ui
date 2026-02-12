@@ -261,4 +261,188 @@ describe('WidgetContainer.vue', () => {
       expect(wrapper.vm).toBeDefined()
     })
   })
+
+  describe('content projection and slots', () => {
+    it('should project HTML content', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<table><tr><td>Data</td></tr></table>'
+        }
+      })
+      expect(wrapper.text()).toContain('Data')
+    })
+
+    it('should project text content', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: 'Plain text'
+        }
+      })
+      expect(wrapper.text()).toContain('Plain text')
+    })
+
+    it('should support multiple child elements', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<div>One</div><div>Two</div><div>Three</div>'
+        }
+      })
+      expect(wrapper.text()).toContain('One')
+      expect(wrapper.text()).toContain('Two')
+      expect(wrapper.text()).toContain('Three')
+    })
+
+    it('should preserve child element structure', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<div class="child-one">Item</div>'
+        }
+      })
+      expect(wrapper.find('.child-one').exists()).toBe(true)
+    })
+  })
+
+  describe('DOM element properties', () => {
+    it('should have proper element reference', () => {
+      expect(wrapper.element).toBeDefined()
+      expect(wrapper.element.nodeType).toBe(1) // Node.ELEMENT_NODE
+    })
+
+    it('should have correct tag name', () => {
+      expect(wrapper.element.tagName).toBe('DIV')
+    })
+
+    it('should support getting attributes', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        attrs: {
+          'data-widget': 'true'
+        }
+      })
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('should maintain element through lifecycle', async () => {
+      const elementBefore = wrapper.element
+      await wrapper.vm.$nextTick()
+      const elementAfter = wrapper.element
+      expect(elementBefore).toBe(elementAfter)
+    })
+  })
+
+  describe('multiple instances', () => {
+    it('should support creating multiple instances', () => {
+      const wrapper2 = shallowMount(WidgetContainer)
+      expect(wrapper.vm).not.toBe(wrapper2.vm)
+      expect(wrapper2.classes('k-widget-container')).toBe(true)
+      wrapper2.destroy()
+    })
+
+    it('should maintain isolated state between instances', () => {
+      const wrapper2 = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<div>Instance 2</div>'
+        }
+      })
+      expect(wrapper.text()).not.toBe(wrapper2.text())
+      wrapper2.destroy()
+    })
+
+    it('should not share DOM between instances', () => {
+      const wrapper2 = shallowMount(WidgetContainer)
+      expect(wrapper.element).not.toBe(wrapper2.element)
+      wrapper2.destroy()
+    })
+  })
+
+  describe('performance characteristics', () => {
+    it('should mount efficiently', () => {
+      const start = Date.now()
+      const testWrapper = shallowMount(WidgetContainer)
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+      testWrapper.destroy()
+    })
+
+    it('should handle multiple child elements without performance issues', () => {
+      const childElements = Array(100).fill('<div>Item</div>').join('')
+      const start = Date.now()
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: childElements
+        }
+      })
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+
+    it('should destroy efficiently', () => {
+      const start = Date.now()
+      wrapper.destroy()
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(50)
+    })
+  })
+
+  describe('HTML generation', () => {
+    it('should generate valid HTML', () => {
+      const html = wrapper.html()
+      expect(html).toContain('<div')
+      expect(html).toContain('</div>')
+    })
+
+    it('should include class in HTML output', () => {
+      const html = wrapper.html()
+      expect(html).toContain('k-widget-container')
+    })
+
+    it('should be valid single element HTML', () => {
+      const html = wrapper.html()
+      const openCount = (html.match(/<div/g) || []).length
+      const closeCount = (html.match(/<\/div>/g) || []).length
+      expect(openCount).toBe(closeCount)
+    })
+
+    it('should preserve slot content in HTML', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<span id="test-span">Test</span>'
+        }
+      })
+      expect(wrapper.html()).toContain('test-span')
+    })
+  })
+
+  describe('element interaction', () => {
+    it('should be queryable by Vue test utils', () => {
+      expect(wrapper.find('.k-widget-container').exists()).toBe(true)
+    })
+
+    it('should support finding child elements', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<div class="child">Child</div>'
+        }
+      })
+      expect(wrapper.find('.child').exists()).toBe(true)
+    })
+
+    it('should support finding all children', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        slots: {
+          default: '<div>One</div><div>Two</div>'
+        }
+      })
+      const divs = wrapper.findAll('div')
+      expect(divs.length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('should be findable by CSS selectors', () => {
+      wrapper = shallowMount(WidgetContainer, {
+        attrs: {
+          id: 'my-container'
+        }
+      })
+      expect(wrapper.find('#my-container').exists()).toBe(true)
+    })
+  })
 })

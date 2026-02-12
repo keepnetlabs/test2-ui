@@ -262,9 +262,6 @@
                       class="email-details-ai-analyze__evidence-chip"
                       :class="`email-details-ai-analyze__evidence-chip--${getEvidenceFindingMeta(step).tone}`"
                     >
-                      <v-icon x-small class="email-details-ai-analyze__evidence-chip-icon">
-                        {{ getEvidenceFindingMeta(step).icon }}
-                      </v-icon>
                       {{ getEvidenceFindingMeta(step).text }}
                     </div>
                   </div>
@@ -545,15 +542,18 @@ export default {
   },
   computed: {
     confidenceLevel() {
+      if (this.report?.executive_summary?.evidence_strength) {
+        return this.report.executive_summary.evidence_strength;
+      }
       if (this.report?.executive_summary?.confidence_level) {
         return this.report.executive_summary.confidence_level;
       }
       const val = this.report?.executive_summary?.confidence;
       if (val === null || val === undefined) return "N/A";
       const pct = Math.round(Number(val) * 100);
-      if (pct >= 80) return "High";
-      if (pct >= 50) return "Medium";
-      return "Low";
+      if (pct >= 80) return "Strong";
+      if (pct >= 50) return "Moderate";
+      return "Limited";
     },
     confidenceBasis() {
       return (
@@ -735,8 +735,15 @@ export default {
     },
     getConfidenceLevelColor(level) {
       const normalized = (level || "").toLowerCase();
-      if (normalized === "high") return getBtnStatusColor("complete");
-      if (normalized === "medium") return getBtnStatusColor("warning");
+      if (normalized === "strong" || normalized === "high") {
+        return getBtnStatusColor("complete");
+      }
+      if (normalized === "moderate" || normalized === "medium") {
+        return getBtnStatusColor("warning");
+      }
+      if (normalized === "limited" || normalized === "low") {
+        return getBtnStatusColor("pending");
+      }
       return getBtnStatusColor("pending");
     },
     getRiskColor(level) {
