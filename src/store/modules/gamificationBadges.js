@@ -19,7 +19,14 @@ const gamificationBadges = {
       const cached = state.badgesByUserId[targetUserResourceId]
       if (!cached) return null
       const isExpired = Date.now() - cached.fetchedAt > CACHE_TTL_MS
-      return isExpired ? null : cached.badges
+      if (isExpired) return null
+      return (cached.badges || []).filter((b) => b.earned === true)
+    },
+    getAllBadgesForUser: (state) => (targetUserResourceId) => {
+      const cached = state.badgesByUserId[targetUserResourceId]
+      if (!cached) return null
+      const isExpired = Date.now() - cached.fetchedAt > CACHE_TTL_MS
+      return isExpired ? null : (cached.badges || [])
     },
     hasValidCache: (state) => (targetUserResourceId) => {
       const cached = state.badgesByUserId[targetUserResourceId]
@@ -68,8 +75,7 @@ const gamificationBadges = {
         const response = await getGamificationBadgesCached(targetUserResourceId)
         const raw = response?.data?.data ?? response?.data
         const allBadges = Array.isArray(raw) ? raw : raw?.badges ?? []
-        const earnedBadges = allBadges.filter((b) => b.earned === true)
-        commit('SET_BADGES', { targetUserResourceId, badges: earnedBadges })
+        commit('SET_BADGES', { targetUserResourceId, badges: allBadges })
       } catch (error) {
         console.warn('[gamificationBadges] Fetch failed for', targetUserResourceId, error)
       }

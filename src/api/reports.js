@@ -172,6 +172,14 @@ export const getGamificationBadgesCached = (targetUserResourceId) => {
   return testRequest.get(`/gamificationreport/badges-cached/${targetUserResourceId}`)
 }
 
+export const getLearningEnrollments = (targetUserResourceId, payload) => {
+  return testRequest.post(`/gamificationReport/learning/${targetUserResourceId}`, payload)
+}
+
+export const getGamificationPhishingResult = (targetUserResourceId) => {
+  return testRequest.get(`/gamificationReport/phishing-result/${targetUserResourceId}`)
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -204,5 +212,7 @@ export default {
   getUserTimeline,
   exportUserActivityDetails,
   calculateGamificationBadges,
-  getGamificationBadgesCached
+  getGamificationBadgesCached,
+  getLearningEnrollments,
+  getGamificationPhishingResult
 }

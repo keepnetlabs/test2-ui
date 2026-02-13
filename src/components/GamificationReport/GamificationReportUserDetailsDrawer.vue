@@ -1,10 +1,5 @@
 <template>
   <Fragment>
-    <GamificationReportPerformanceDetailsDrawer
-      v-if="isShowGamificationReportPerformanceDetails"
-      :selected-row="selectedRow"
-      :status="isShowGamificationReportPerformanceDetails"
-    />
     <DownloadModal
       v-if="isShowDownloadModal"
       :isShow="isWantToDownload"
@@ -28,71 +23,53 @@
       style="z-index: 10;"
     >
       <div class="gamification-report__user-details-drawer-content">
-        <div class="gamification-report__user-details-drawer-header">
-          <div class="gamification-report__user-details-drawer-header__user-info">
-            <span class="gamification-report__user-details-drawer-header__user-name">
-              {{ selectedRow.firstName }} {{ selectedRow.lastName }}
-            </span>
-            <span class="gamification-report__user-details-drawer-header__user-email">
-              {{ selectedRow.email }}
-              {{ !!selectedRow.department ? ' - ' : '' }}
-              {{ selectedRow.department }}
-            </span>
-          </div>
-          <div>
-            <VIcon class="cursor-pointer" color="#FFFFFF" large @click="$emit('on-close')"
-              >mdi-close</VIcon
-            >
-          </div>
-        </div>
-        <div class="gamification-report__user-details-drawer-card">
-          <div
-            class="gamification-report__user-details-drawer-card-content"
-            :style="{
-              gridTemplateColumns: `repeat(${productScores.length + 1}, 1fr)`
-            }"
-          >
-            <ThreeListItemLoading
-              v-if="isPerformanceRatesLoading"
-              :loading="isPerformanceRatesLoading"
-            />
-            <template v-else>
-              <div class="gamification-report__user-details-drawer-card__overall-score">
-                <span class="gamification-report__user-details-drawer-card__overall-score-text"
-                  >Overall Performance</span
-                >
-                <span
-                  class="gamification-report__user-details-drawer-card__overall-score-percentage"
-                  >{{ overallScore.percentage || 0 }}%</span
-                >
-                <span class="gamification-report__user-details-drawer-card__overall-score-points"
-                  >{{ overallScore.points || 0 }} points</span
-                >
-              </div>
-              <div
-                v-for="(item, index) in productScores"
-                :key="index"
-                class="gamification-report__user-details-drawer-card__product"
+        <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+          <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+            <div>
+              <VListItem>
+                <VListItemContent>
+                  <VListItemTitle class="k-overlay__title">
+                    User Overview
+                  </VListItemTitle>
+                  <VListItemSubtitle>
+                    An overview of {{ selectedRow.firstName }} {{ selectedRow.lastName }}'s
+                    activity and performance.
+                  </VListItemSubtitle>
+                </VListItemContent>
+              </VListItem>
+            </div>
+            <div>
+              <VIcon
+                class="cursor-pointer"
+                color="#757575"
+                @click="$emit('on-close')"
               >
-                <img
-                  :src="getCardProductIcon(item.product)"
-                  :alt="item.product"
-                  style="width: 42px; height: 42px;"
-                />
-                <span class="gamification-report__user-details-drawer-card__product-text">{{
-                  item.product
-                }}</span>
-                <span class="gamification-report__user-details-drawer-card__product-percentage">{{
-                  item.percentage
-                }}</span>
-              </div>
-            </template>
+                mdi-close
+              </VIcon>
+            </div>
           </div>
         </div>
-        <div class="gamification-report__user-details-drawer-body">
-          <h2 class="gamification-report__user-details-drawer-body-header">
-            User Activity Timeline
-          </h2>
+        <el-tabs v-model="activeTab" class="gamification-report__user-details-tabs mt-4">
+          <el-tab-pane label="Summary" name="summary">
+            <GamificationReportUserDetailsDrawerSummaryTab
+              :selected-row="selectedRow"
+              :date-payload="datePayload"
+              :overall-score="overallScore"
+              :product-scores="productScores"
+              :is-performance-rates-loading="isPerformanceRatesLoading"
+              @go-to-tab="activeTab = $event"
+            />
+          </el-tab-pane>
+          <el-tab-pane label="Activity Timeline" name="activityTimeline">
+            <div class="gamification-report__user-details-drawer-body">
+          <div class="gamification-report__user-details-drawer-body-header-wrapper">
+            <h2 class="gamification-report__user-details-drawer-body-header">
+              Activity Timeline
+            </h2>
+            <p class="gamification-report__user-details-drawer-body-subtitle">
+              A timeline of {{ selectedRow.firstName }} {{ selectedRow.lastName }}'s recent activities and their outcomes.
+            </p>
+          </div>
           <div class="gamification-report__user-details-drawer-filters-container">
             <div class="gamification-report__user-details-drawer-filters">
               <div class="gamification-report__user-details-drawer-filters-left">
@@ -125,7 +102,7 @@
                   </template>
                   <div class="training-library-filters-container">
                     <div class="training-library-filters-container__left">
-                      <div v-for="filter in filters" v-if="filter.show" :key="filter.key">
+                      <div v-for="filter in visibleFilters" :key="filter.key">
                         <VListItem
                           :class="[
                             'training-library-filtering-options-parent-list-item cursor-pointer',
@@ -634,6 +611,18 @@
             </VHover>
           </div>
         </div>
+          </el-tab-pane>
+          <el-tab-pane label="Performance Details" name="performanceDetails">
+            <GamificationReportUserDetailsDrawerPerformanceDetailsTab
+              :selected-row="selectedRow"
+            />
+          </el-tab-pane>
+          <el-tab-pane label="Badges" name="badges">
+            <GamificationReportUserDetailsDrawerBadgesTab
+              :selected-row="selectedRow"
+            />
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </VNavigationDrawer>
   </Fragment>
@@ -656,18 +645,20 @@ import TrainingLibrarySearchFilter from '@/components/TrainingLibrary/TrainingLi
 import GamificationReportUserDetailsDrawerFilterBadge from './GamificationReportUserDetailsDrawerFilterBadge.vue'
 import { getUserPerformanceRates, getUserTimeline, exportUserActivityDetails } from '@/api/reports'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import ThreeListItemLoading from '@/components/SkeletonLoading/ThreeListItemLoading'
-import GamificationReportPerformanceDetailsDrawer from './GamificationReportPerformanceDetails/GamificationReportPerformanceDetailsDrawer.vue'
+import GamificationReportUserDetailsDrawerSummaryTab from './GamificationReportUserDetailsDrawer/GamificationReportUserDetailsDrawerSummaryTab.vue'
+import GamificationReportUserDetailsDrawerPerformanceDetailsTab from './GamificationReportUserDetailsDrawer/GamificationReportUserDetailsDrawerPerformanceDetailsTab.vue'
+import GamificationReportUserDetailsDrawerBadgesTab from './GamificationReportUserDetailsDrawer/GamificationReportUserDetailsDrawerBadgesTab.vue'
 export default {
   name: 'GamificationReportUserDetailsDrawer',
   components: {
-    GamificationReportPerformanceDetailsDrawer,
+    GamificationReportUserDetailsDrawerSummaryTab,
+    GamificationReportUserDetailsDrawerPerformanceDetailsTab,
+    GamificationReportUserDetailsDrawerBadgesTab,
     Fragment,
     DownloadModal,
     TrainingLibrarySearchFilter,
     GamificationReportUserDetailsDrawerFilterBadge,
-    DatatableLoading,
-    ThreeListItemLoading
+    DatatableLoading
   },
   mixins: [useDebounce],
   props: {
@@ -694,7 +685,7 @@ export default {
   },
   data() {
     return {
-      isShowGamificationReportPerformanceDetails: false,
+      activeTab: 'summary',
       isTimelineLoading: false,
       isPerformanceRatesLoading: false,
       menu: false,
@@ -715,6 +706,7 @@ export default {
       overallScore: {},
       productScores: [],
       timeline: [],
+      hasTimelineLoaded: false,
       activityTypeFilterItems: [],
       productFilterItems: [],
       difficulityFilterItems: []
@@ -752,6 +744,9 @@ export default {
     },
     isLoadMoreVisible() {
       return this.serverSideProps.pageNumber < this.serverSideProps.totalNumberOfPages
+    },
+    visibleFilters() {
+      return this.filters.filter((f) => f.show)
     }
   },
   watch: {
@@ -785,13 +780,22 @@ export default {
     isOnlyShowFailedEvents() {
       this.serverSideProps.pageNumber = 1
       this.callForTimeline()
+    },
+    activeTab(newTab) {
+      if (newTab === 'activityTimeline' && !this.hasTimelineLoaded) {
+        this.hasTimelineLoaded = true
+        this.callForTimeline()
+      }
     }
   },
   created() {
     if (this.filters) this.handleSetActiveFilter(this.filters[0])
-    this.callForTimeline()
     this.callForPerformanceRates()
     this.callForGetTimeZones()
+    const userId = this.selectedRow?.targetUserResourceId || this.selectedRow?.resourceId
+    if (userId) {
+      this.$store.dispatch('gamificationBadges/fetchBadgesForTable', [userId])
+    }
     if (document.querySelector('.page-nav__fixed-content'))
       document.querySelector('.page-nav__fixed-content').style.background = 'transparent'
     if (document.querySelector('.user-wrapper'))
@@ -1223,8 +1227,18 @@ export default {
       }
       return ''
     },
-    handleDrawerClickOutside() {
-      if (!this.isShowDownloadModal && !this.menu) this.$emit('on-close')
+    handleDrawerClickOutside(event) {
+      if (this.isShowDownloadModal || this.menu) return
+      const target = event?.target
+      if (
+        target &&
+        (target.closest('.el-select-dropdown') ||
+          target.closest('.el-picker-panel') ||
+          target.closest('.el-popper'))
+      ) {
+        return
+      }
+      this.$emit('on-close')
     },
     getLoadMoreButtonStyle(hover) {
       return {

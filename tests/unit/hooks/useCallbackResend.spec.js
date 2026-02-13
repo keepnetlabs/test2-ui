@@ -326,4 +326,210 @@ describe('useCallbackResend Hook (useResend)', () => {
       expect(() => minimalComponent.resendItem()).toBeDefined()
     })
   })
+
+  describe('Method Chaining Patterns', () => {
+    it('should chain handleOnResend with resendItem', async () => {
+      component.handleOnResend({ campaignId: 1 })
+      expect(component.isShowResendDialog).toBe(true)
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(component.isShowResendDialog).toBe(false)
+    })
+
+    it('should support toggle after handleOnResend', () => {
+      component.handleOnResend({ campaignId: 1 })
+      component.toggleIsShowResendDialog()
+      expect(component.isShowResendDialog).toBe(false)
+    })
+
+    it('should handle rapid state transitions', async () => {
+      component.toggleIsShowResendDialog()
+      component.handleOnResend({ id: 1 })
+      component.resendPayload = { id: 1 }
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalled()
+    })
+  })
+
+  describe('Callback Service Integration', () => {
+    it('should invoke callback service with correct method', async () => {
+      component.resendPayload = { campaignId: 1 }
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalled()
+    })
+
+    it('should track API call parameters accurately', async () => {
+      component.resendPayload = { campaignId: 5 }
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      const calls = CallbackService.resendCampaignToUsers.mock.calls
+      expect(calls[calls.length - 1][0]).toBe(123)
+    })
+
+    it('should handle API parameter variations', async () => {
+      component.id = 999
+      component.resendPayload = { campaignId: 1 }
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      const calls = CallbackService.resendCampaignToUsers.mock.calls
+      expect(calls[calls.length - 1][0]).toBe(999)
+    })
+
+    it('should pass group context to API', async () => {
+      component.resendPayload = { campaignId: 1 }
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      const calls = CallbackService.resendCampaignToUsers.mock.calls
+      expect(calls[calls.length - 1][1]).toBe('test-group')
+    })
+  })
+
+  describe('Data Integrity & Persistence', () => {
+    it('should preserve payload through operations', () => {
+      const payload = { campaignId: 1, userId: 2 }
+      component.handleOnResend(payload)
+      component.toggleIsShowResendDialog()
+      expect(component.resendPayload).toEqual(payload)
+    })
+
+    it('should maintain independent state instances', () => {
+      const comp1 = { ...useResend.data(), ...useResend.methods }
+      const comp2 = { ...useResend.data(), ...useResend.methods }
+      comp1.resendPayload = { id: 1 }
+      expect(comp2.resendPayload).toBeNull()
+    })
+
+    it('should allow payload updates', () => {
+      component.resendPayload = { id: 1 }
+      component.resendPayload = { id: 2 }
+      expect(component.resendPayload.id).toBe(2)
+    })
+
+    it('should support payload clearing', () => {
+      component.resendPayload = { id: 1 }
+      component.resendPayload = null
+      expect(component.resendPayload).toBeNull()
+    })
+  })
+
+  describe('Async Operation Handling', () => {
+    it('should properly sequence async operations', async () => {
+      component.resendPayload = { campaignId: 1 }
+      component.resendItem()
+      expect(component.isResendActionButtonDisabled).toBe(true)
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(component.isResendActionButtonDisabled).toBe(false)
+    })
+
+    it('should handle rapid async calls', async () => {
+      for (let i = 0; i < 3; i++) {
+        component.resendPayload = { campaignId: i }
+        component.resendItem()
+      }
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalled()
+    })
+
+    it('should complete async workflow in order', async () => {
+      component.handleOnResend({ campaignId: 1 })
+      const payload = component.resendPayload
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.any(String),
+        payload
+      )
+    })
+  })
+
+  describe('Performance & Scalability', () => {
+    it('should toggle efficiently', () => {
+      const start = performance.now()
+      for (let i = 0; i < 100; i++) {
+        component.toggleIsShowResendDialog()
+      }
+      const duration = performance.now() - start
+      expect(duration).toBeLessThan(100)
+    })
+
+    it('should handle large payload objects', () => {
+      const largePayload = {
+        campaignId: 1,
+        users: Array(1000).fill(1).map((_, i) => i),
+        metadata: { data: 'large' }
+      }
+      component.resendPayload = largePayload
+      expect(component.resendPayload.users.length).toBe(1000)
+    })
+
+    it('should not leak memory on repeated operations', async () => {
+      for (let i = 0; i < 50; i++) {
+        component.resendPayload = { campaignId: i }
+        component.resendItem()
+      }
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalled()
+    })
+  })
+
+  describe('Error Handling & Robustness', () => {
+    it('should handle null payload gracefully', async () => {
+      component.resendPayload = null
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalled()
+    })
+
+    it('should handle undefined component id', async () => {
+      component.id = undefined
+      component.resendPayload = { campaignId: 1 }
+      component.resendItem()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(CallbackService.resendCampaignToUsers).toHaveBeenCalled()
+    })
+
+    it('should manage button state on any operation', async () => {
+      component.resendPayload = { id: 1 }
+      component.resendItem()
+      expect(component.isResendActionButtonDisabled).toBe(true)
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(component.isResendActionButtonDisabled).toBe(false)
+    })
+
+    it('should handle component with setup', () => {
+      expect(component.$refs.refTable).toBeDefined()
+      expect(component.$refs.refTable.callForData).toBeDefined()
+    })
+  })
+
+  describe('Complete Workflow Scenarios', () => {
+    it('should complete standard dialog workflow', () => {
+      component.handleOnResend({ campaignId: 1 })
+      expect(component.isShowResendDialog).toBe(true)
+      expect(CallbackService.resendCampaignToUsers).toBeDefined()
+    })
+
+    it('should handle user cancellation workflow', () => {
+      component.handleOnResend({ campaignId: 1 })
+      component.toggleIsShowResendDialog()
+      expect(component.isShowResendDialog).toBe(false)
+    })
+
+    it('should handle multiple payload updates', async () => {
+      for (let i = 0; i < 3; i++) {
+        component.resendPayload = { campaignId: i }
+      }
+      expect(component.resendPayload.campaignId).toBe(2)
+      expect(CallbackService.resendCampaignToUsers).toBeDefined()
+    })
+
+    it('should maintain payload consistency', () => {
+      component.handleOnResend({ campaignId: 1 })
+      const payload = component.resendPayload
+      expect(component.resendPayload).toEqual(payload)
+    })
+  })
 })

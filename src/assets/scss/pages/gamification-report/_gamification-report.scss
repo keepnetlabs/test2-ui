@@ -196,14 +196,27 @@
   }
 
   &__user-details-drawer-body {
-    padding: 0px 48px;
+    padding: 0 48px 0 0;
+
+    &-header-wrapper {
+      z-index: 10;
+      margin-bottom: 8px;
+      background-color: #ffffff;
+    }
 
     &-header {
-      z-index: 10;
-      padding-bottom: 8px;
-      background-color: #ffffff;
       font-weight: 600;
       font-size: 20px;
+      color: #383b41;
+      margin: 0;
+    }
+
+    &-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: #383b41;
+      margin: 0 !important;
+      line-height: 1.4;
     }
   }
 

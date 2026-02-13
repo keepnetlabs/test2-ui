@@ -302,4 +302,207 @@ describe('countryDefaultValues utility', () => {
       expect(filtered.length).toBe(countryDefaultValues.length)
     })
   })
+
+  describe('search and filter operations', () => {
+    it('should support filtering by time format', () => {
+      const twelveHourCountries = countryDefaultValues.filter((c) => c.timeFormat === '12h')
+      expect(twelveHourCountries.length).toBeGreaterThan(0)
+      expect(twelveHourCountries.every((c) => c.timeFormat === '12h')).toBe(true)
+    })
+
+    it('should support filtering by date format', () => {
+      const mmddyyFormat = countryDefaultValues.filter((c) => c.dateFormat === 'MM/dd/yyyy')
+      expect(mmddyyFormat.length).toBeGreaterThan(0)
+      expect(mmddyyFormat.every((c) => c.dateFormat === 'MM/dd/yyyy')).toBe(true)
+    })
+
+    it('should support filtering by timezone', () => {
+      const europeanTimezones = countryDefaultValues.filter((c) => c.timezone.includes('Europe'))
+      expect(europeanTimezones.length).toBeGreaterThan(0)
+    })
+
+    it('should support filtering by phone code pattern', () => {
+      const singleDigitCodes = countryDefaultValues.filter((c) => c.phoneNumberCode === '+1')
+      expect(singleDigitCodes.length).toBeGreaterThan(0)
+    })
+
+    it('should support combining multiple filters', () => {
+      const filtered = countryDefaultValues.filter(
+        (c) => c.timeFormat === '24h' && c.dateFormat === 'dd/MM/yyyy'
+      )
+      expect(filtered.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('data export and serialization', () => {
+    it('should be JSON serializable', () => {
+      const json = JSON.stringify(countryDefaultValues)
+      expect(json).toBeDefined()
+      expect(json.length).toBeGreaterThan(0)
+    })
+
+    it('should be JSON deserializable', () => {
+      const json = JSON.stringify(countryDefaultValues)
+      const deserialized = JSON.parse(json)
+      expect(Array.isArray(deserialized)).toBe(true)
+      expect(deserialized.length).toBe(countryDefaultValues.length)
+    })
+
+    it('should preserve data integrity after serialization', () => {
+      const json = JSON.stringify(countryDefaultValues)
+      const deserialized = JSON.parse(json)
+      expect(deserialized[0]).toEqual(countryDefaultValues[0])
+    })
+
+    it('should support object destructuring', () => {
+      const [firstCountry] = countryDefaultValues
+      const { name, timeFormat, dateFormat, timezone, phoneNumberCode } = firstCountry
+      expect(name).toBeDefined()
+      expect(timeFormat).toBeDefined()
+      expect(dateFormat).toBeDefined()
+      expect(timezone).toBeDefined()
+      expect(phoneNumberCode).toBeDefined()
+    })
+  })
+
+  describe('backwards compatibility', () => {
+    it('should have stable field names', () => {
+      const fieldNames = new Set()
+      countryDefaultValues.forEach((country) => {
+        Object.keys(country).forEach((key) => {
+          fieldNames.add(key)
+        })
+      })
+      expect(fieldNames.has('name')).toBe(true)
+      expect(fieldNames.has('timeFormat')).toBe(true)
+      expect(fieldNames.has('dateFormat')).toBe(true)
+      expect(fieldNames.has('timezone')).toBe(true)
+      expect(fieldNames.has('phoneNumberCode')).toBe(true)
+    })
+
+    it('should maintain expected array structure', () => {
+      expect(countryDefaultValues[0]).toHaveProperty('name')
+      expect(typeof countryDefaultValues[0].name).toBe('string')
+    })
+
+    it('should contain expected legacy countries', () => {
+      const names = countryDefaultValues.map((c) => c.name)
+      expect(names.length).toBeGreaterThan(0)
+      // Should always have some major countries
+      expect(names.some((n) => n.includes('United'))).toBe(true)
+    })
+  })
+
+  describe('integration patterns', () => {
+    it('should work with Array.from()', () => {
+      const countries = Array.from(countryDefaultValues)
+      expect(countries.length).toBe(countryDefaultValues.length)
+    })
+
+    it('should work with spread operator', () => {
+      const countries = [...countryDefaultValues]
+      expect(countries.length).toBe(countryDefaultValues.length)
+    })
+
+    it('should work with reduce', () => {
+      const phoneCodeMap = countryDefaultValues.reduce((map, country) => {
+        map[country.phoneNumberCode] = country.name
+        return map
+      }, {})
+      expect(Object.keys(phoneCodeMap).length).toBeGreaterThan(0)
+    })
+
+    it('should work with find multiple times without issues', () => {
+      const usa1 = countryDefaultValues.find((c) => c.name === 'United States of America')
+      const usa2 = countryDefaultValues.find((c) => c.name === 'United States of America')
+      expect(usa1).toEqual(usa2)
+    })
+
+    it('should work with some and every', () => {
+      expect(countryDefaultValues.some((c) => c.timeFormat === '12h')).toBe(true)
+      expect(countryDefaultValues.every((c) => c.name && c.timeFormat)).toBe(true)
+    })
+  })
+
+  describe('error handling and edge cases', () => {
+    it('should handle empty string search gracefully', () => {
+      const result = countryDefaultValues.find((c) => c.name === '')
+      expect(result).toBeUndefined()
+    })
+
+    it('should handle case-sensitive search', () => {
+      const lowercase = countryDefaultValues.find((c) => c.name === 'france')
+      expect(lowercase).toBeUndefined()
+    })
+
+    it('should handle partial name matching with filter', () => {
+      const partial = countryDefaultValues.filter((c) => c.name.includes('United'))
+      expect(partial.length).toBeGreaterThan(0)
+    })
+
+    it('should handle special character searching', () => {
+      const special = countryDefaultValues.filter((c) => c.name.includes("'"))
+      // Some countries may have apostrophes
+      expect(special.length >= 0).toBe(true)
+    })
+
+    it('should handle accessing non-existent countries gracefully', () => {
+      const nonExistent = countryDefaultValues.find((c) => c.phoneNumberCode === '+9999')
+      expect(nonExistent).toBeUndefined()
+    })
+  })
+
+  describe('multi-format support verification', () => {
+    it('should have countries with all supported time formats', () => {
+      const formats = new Set(countryDefaultValues.map((c) => c.timeFormat))
+      expect(formats.has('12h')).toBe(true)
+      expect(formats.has('24h')).toBe(true)
+    })
+
+    it('should have countries with all supported date formats', () => {
+      const dateFormats = new Set(countryDefaultValues.map((c) => c.dateFormat))
+      expect(dateFormats.size).toBeGreaterThanOrEqual(2)
+    })
+
+    it('should verify format distribution', () => {
+      const formats = countryDefaultValues.map((c) => c.timeFormat)
+      const _12h = formats.filter((f) => f === '12h').length
+      const _24h = formats.filter((f) => f === '24h').length
+      expect(_12h).toBeGreaterThan(0)
+      expect(_24h).toBeGreaterThan(0)
+    })
+  })
+
+  describe('geographic grouping patterns', () => {
+    it('should allow grouping by timezone', () => {
+      const byTimezone = countryDefaultValues.reduce((groups, country) => {
+        const tz = country.timezone
+        if (!groups[tz]) groups[tz] = []
+        groups[tz].push(country.name)
+        return groups
+      }, {})
+      expect(Object.keys(byTimezone).length).toBeGreaterThan(0)
+    })
+
+    it('should allow grouping by phone code', () => {
+      const byCode = countryDefaultValues.reduce((groups, country) => {
+        const code = country.phoneNumberCode
+        if (!groups[code]) groups[code] = []
+        groups[code].push(country.name)
+        return groups
+      }, {})
+      expect(Object.keys(byCode).length).toBeGreaterThan(0)
+    })
+
+    it('should support creating timezone-based maps', () => {
+      const timezoneMap = new Map()
+      countryDefaultValues.forEach((country) => {
+        if (!timezoneMap.has(country.timezone)) {
+          timezoneMap.set(country.timezone, [])
+        }
+        timezoneMap.get(country.timezone).push(country.name)
+      })
+      expect(timezoneMap.size).toBeGreaterThan(0)
+    })
+  })
 })

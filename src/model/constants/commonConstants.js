@@ -354,6 +354,7 @@ export const PROPERTY_STORE = {
 }
 
 export const TABLE_SETTINGS_KEYS = {
+  GAMIFICATION_TRAINING_OVERVIEW: 'GamificationTrainingOverviewTableSettings',
   LEADERBOARD: 'LeaderboardTableSettings',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportsUserTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_TABLE: 'TrainingReportsNonTargetUserTableSettings',
@@ -560,6 +561,7 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  GAMIFICATION_TRAINING_OVERVIEW: 'GamificationTrainingOverviewTable',
   LEADERBOARD: 'LeaderboardTable',
   TRAINING_REPORT_USERS_TABLE: 'TrainingReportUserTable',
   TRAINING_LIBRARY_LEARNING_PATH_TABLE: 'TrainingLibraryLearningPathTable',

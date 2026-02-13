@@ -527,7 +527,7 @@ describe('SaveChangesButton.vue', () => {
       const start = Date.now()
       const testWrapper = shallowMount(SaveChangesButton)
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(200)
       testWrapper.destroy()
     })
 

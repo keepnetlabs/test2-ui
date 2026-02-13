@@ -419,4 +419,422 @@ describe("MostEngagedCampaigns widget", () => {
       expect(wrapper.vm.empty.message).toBe(labels.EmptyMostEngagedCampaignsWidget);
     });
   });
+
+  describe("campaign count handling", () => {
+    it("should handle zero campaigns", () => {
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": []
+      });
+      expect(wrapper.vm.tableData.length).toBe(0);
+    });
+
+    it("should handle single campaign", () => {
+      const data = [{ name: "Campaign 1", phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData.length).toBe(1);
+    });
+
+    it("should handle multiple campaigns", () => {
+      const data = [
+        { name: "Campaign 1", phishedUsersCount: 10 },
+        { name: "Campaign 2", phishedUsersCount: 20 },
+        { name: "Campaign 3", phishedUsersCount: 15 }
+      ];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData.length).toBe(3);
+    });
+
+    it("should handle large number of campaigns", () => {
+      const data = Array.from({ length: 500 }, (_, i) => ({
+        name: `Campaign ${i}`,
+        phishedUsersCount: Math.floor(Math.random() * 1000)
+      }));
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData.length).toBe(500);
+    });
+  });
+
+  describe("engagement metrics handling", () => {
+    it("should handle zero phished users count", () => {
+      const data = [{ name: "Campaign 1", phishedUsersCount: 0 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].phishedUsersCount).toBe(0);
+    });
+
+    it("should handle single phished user", () => {
+      const data = [{ name: "Campaign 1", phishedUsersCount: 1 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].phishedUsersCount).toBe(1);
+    });
+
+    it("should handle multiple phished users", () => {
+      const data = [{ name: "Campaign 1", phishedUsersCount: 100 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].phishedUsersCount).toBe(100);
+    });
+
+    it("should handle very large user counts", () => {
+      const data = [
+        { name: "Campaign 1", phishedUsersCount: 1000000 },
+        { name: "Campaign 2", phishedUsersCount: 9999999 }
+      ];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].phishedUsersCount).toBe(1000000);
+      expect(wrapper.vm.tableData[1].phishedUsersCount).toBe(9999999);
+    });
+
+    it("should handle campaigns with varied user counts", () => {
+      const data = [
+        { name: "Campaign 1", phishedUsersCount: 5 },
+        { name: "Campaign 2", phishedUsersCount: 50 },
+        { name: "Campaign 3", phishedUsersCount: 500 },
+        { name: "Campaign 4", phishedUsersCount: 5000 }
+      ];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      const counts = wrapper.vm.tableData.map(c => c.phishedUsersCount);
+      expect(counts).toEqual([5, 50, 500, 5000]);
+    });
+  });
+
+  describe("campaign name handling", () => {
+    it("should handle standard campaign names", () => {
+      const data = [{ name: "Standard Campaign", phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].name).toBe("Standard Campaign");
+    });
+
+    it("should handle campaign names with numbers", () => {
+      const data = [{ name: "Campaign 2024-Q1", phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].name).toBe("Campaign 2024-Q1");
+    });
+
+    it("should handle campaign names with special characters", () => {
+      const data = [{ name: "Campaign & Promotion (Phase 1)", phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].name).toContain("&");
+    });
+
+    it("should handle campaign names with hyphens and underscores", () => {
+      const data = [{ name: "phishing-test_v2", phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].name).toBe("phishing-test_v2");
+    });
+
+    it("should handle very long campaign names", () => {
+      const longName = "A".repeat(300);
+      const data = [{ name: longName, phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].name).toHaveLength(300);
+    });
+  });
+
+  describe("column configuration", () => {
+    it("should have exactly two columns", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.columns.length).toBe(2);
+    });
+
+    it("should have columns as array", () => {
+      const wrapper = mountFactory();
+      expect(Array.isArray(wrapper.vm.columns)).toBe(true);
+    });
+
+    it("should maintain column structure with data", () => {
+      const data = [{ name: "Campaign 1", phishedUsersCount: 10 }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.columns.length).toBe(2);
+    });
+
+    it("should have consistent columns across instances", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm.columns.length).toBe(wrapper2.vm.columns.length);
+    });
+  });
+
+  describe("empty state handling", () => {
+    it("should define empty message", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.empty).toBeDefined();
+      expect(wrapper.vm.empty.message).toBeDefined();
+    });
+
+    it("should have correct empty message", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.empty.message).toBe(labels.EmptyMostEngagedCampaignsWidget);
+    });
+
+    it("should have consistent empty message", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm.empty.message).toBe(wrapper2.vm.empty.message);
+    });
+
+    it("should display empty message for empty data", () => {
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": []
+      });
+      expect(wrapper.vm.empty.message).toContain("engaged");
+    });
+  });
+
+  describe("performance characteristics", () => {
+    it("should mount efficiently", () => {
+      const startTime = Date.now();
+      mountFactory();
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(100);
+    });
+
+    it("should handle large datasets", () => {
+      const data = Array.from({ length: 1000 }, (_, i) => ({
+        name: `Campaign ${i}`,
+        phishedUsersCount: i * 10
+      }));
+      const startTime = Date.now();
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(500);
+      expect(wrapper.vm.tableData).toHaveLength(1000);
+    });
+
+    it("should access data efficiently", () => {
+      const data = Array.from({ length: 100 }, (_, i) => ({
+        name: `Campaign ${i}`,
+        phishedUsersCount: i
+      }));
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      const startTime = Date.now();
+      for (let i = 0; i < 100; i++) {
+        const tableData = wrapper.vm.tableData;
+        expect(tableData).toBeDefined();
+      }
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(50);
+    });
+  });
+
+  describe("widget component integration", () => {
+    it("should have title property", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getTitle).toBeDefined();
+      expect(wrapper.vm.getTitle).toBe(labels.MostEngagedCampaigns);
+    });
+
+    it("should have columns property", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.columns).toBeDefined();
+      expect(Array.isArray(wrapper.vm.columns)).toBe(true);
+    });
+
+    it("should have empty property", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.empty).toBeDefined();
+      expect(wrapper.vm.empty.message).toBeDefined();
+    });
+
+    it("should have tableData property", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.tableData).toBeDefined();
+      expect(Array.isArray(wrapper.vm.tableData)).toBe(true);
+    });
+
+    it("should work with all widget stubs", () => {
+      expect(() => {
+        mountFactory();
+      }).not.toThrow();
+    });
+  });
+
+  describe("multiple instances independence", () => {
+    it("should create independent instances", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm).not.toBe(wrapper2.vm);
+    });
+
+    it("should maintain separate data in multiple instances", () => {
+      const data1 = [{ name: "Campaign 1", phishedUsersCount: 100 }];
+      const data2 = [{ name: "Campaign 2", phishedUsersCount: 50 }];
+
+      const wrapper1 = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data1
+      });
+      const wrapper2 = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data2
+      });
+
+      expect(wrapper1.vm.tableData).toEqual(data1);
+      expect(wrapper2.vm.tableData).toEqual(data2);
+    });
+
+    it("should not interfere with other instances", () => {
+      const data = [{ name: "Campaign 1", phishedUsersCount: 10 }];
+      const wrapper1 = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      const wrapper2 = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": []
+      });
+
+      expect(wrapper1.vm.tableData).toHaveLength(1);
+      expect(wrapper2.vm.tableData).toHaveLength(0);
+    });
+
+    it("should share title and properties across instances", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm.getTitle).toBe(wrapper2.vm.getTitle);
+      expect(wrapper1.vm.columns.length).toBe(wrapper2.vm.columns.length);
+    });
+
+    it("should handle cleanup independently", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+
+      expect(() => {
+        wrapper1.destroy();
+        expect(wrapper2.exists()).toBe(true);
+      }).not.toThrow();
+
+      wrapper2.destroy();
+    });
+  });
+
+  describe("complex campaign scenarios", () => {
+    it("should handle campaigns with same phished user count", () => {
+      const data = [
+        { name: "Campaign A", phishedUsersCount: 50 },
+        { name: "Campaign B", phishedUsersCount: 50 },
+        { name: "Campaign C", phishedUsersCount: 50 }
+      ];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData.filter(c => c.phishedUsersCount === 50)).toHaveLength(3);
+    });
+
+    it("should handle campaigns in descending order", () => {
+      const data = [
+        { name: "Campaign 1", phishedUsersCount: 100 },
+        { name: "Campaign 2", phishedUsersCount: 50 },
+        { name: "Campaign 3", phishedUsersCount: 25 }
+      ];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].phishedUsersCount).toBe(100);
+      expect(wrapper.vm.tableData[2].phishedUsersCount).toBe(25);
+    });
+
+    it("should handle campaigns with very long names and high counts", () => {
+      const longName = "International Phishing Awareness Training - Q4 2024 " + "X".repeat(200);
+      const data = [{
+        name: longName,
+        phishedUsersCount: 5000000
+      }];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData[0].name.length).toBeGreaterThan(200);
+      expect(wrapper.vm.tableData[0].phishedUsersCount).toBe(5000000);
+    });
+
+    it("should handle rapid data changes", () => {
+      const wrapper = mountFactory();
+      for (let i = 0; i < 10; i++) {
+        const data = Array.from({ length: 100 }, (_, j) => ({
+          name: `Campaign ${i}-${j}`,
+          phishedUsersCount: i * j
+        }));
+        const wrapper2 = mountFactory({
+          "widgets/getMostEngagedCampaignsCard": data
+        });
+        expect(wrapper2.vm.tableData).toHaveLength(100);
+        wrapper2.destroy();
+      }
+    });
+  });
+
+  describe("error handling and recovery", () => {
+    it("should handle null campaign data gracefully", () => {
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": null
+      });
+      expect(wrapper.vm.$store.getters["widgets/getMostEngagedCampaignsCard"]).toBeNull();
+    });
+
+    it("should handle undefined campaign data", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.tableData).toBeDefined();
+    });
+
+    it("should continue functioning with mixed data quality", () => {
+      const data = [
+        { name: "Campaign 1", phishedUsersCount: 100 },
+        { name: null, phishedUsersCount: 50 },
+        { name: "Campaign 3", phishedUsersCount: null }
+      ];
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": data
+      });
+      expect(wrapper.vm.tableData).toHaveLength(3);
+    });
+
+    it("should maintain consistency after errors", () => {
+      const wrapper = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": []
+      });
+      expect(wrapper.vm.getTitle).toBe(labels.MostEngagedCampaigns);
+      expect(wrapper.vm.columns.length).toBe(2);
+      expect(wrapper.vm.empty.message).toBe(labels.EmptyMostEngagedCampaignsWidget);
+    });
+
+    it("should recover from empty state transitions", () => {
+      const wrapper1 = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": []
+      });
+      expect(wrapper1.vm.tableData).toHaveLength(0);
+
+      const wrapper2 = mountFactory({
+        "widgets/getMostEngagedCampaignsCard": [
+          { name: "Campaign 1", phishedUsersCount: 50 }
+        ]
+      });
+      expect(wrapper2.vm.tableData).toHaveLength(1);
+    });
+  });
 });
