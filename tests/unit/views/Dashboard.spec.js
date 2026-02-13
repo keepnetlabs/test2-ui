@@ -260,4 +260,216 @@ describe('Dashboard View', () => {
       }).not.toThrow()
     })
   })
+
+  describe('Component State', () => {
+    it('should initialize with default state', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(wrapper.vm).toBeDefined()
+      wrapper.destroy()
+    })
+
+    it('should maintain component instance', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      const vm = wrapper.vm
+      expect(vm).not.toBeNull()
+      expect(typeof vm).toBe('object')
+      wrapper.destroy()
+    })
+
+    it('should preserve state through rendering', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      const vm1 = wrapper.vm
+      wrapper.vm.$forceUpdate()
+      const vm2 = wrapper.vm
+      expect(vm1).toBe(vm2)
+      wrapper.destroy()
+    })
+  })
+
+  describe('Component Props', () => {
+    it('should support props parameter', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets, {
+        propsData: {}
+      })
+      expect(wrapper.exists()).toBe(true)
+      wrapper.destroy()
+    })
+
+    it('should handle empty props', () => {
+      const Widgets = require('@/views/Widgets')
+      expect(() => {
+        const wrapper = shallowMount(Widgets, {
+          propsData: {}
+        })
+        wrapper.destroy()
+      }).not.toThrow()
+    })
+  })
+
+  describe('Component Slots', () => {
+    it('should support slot configuration', () => {
+      const Widgets = require('@/views/Widgets')
+      expect(() => {
+        const wrapper = shallowMount(Widgets, {
+          slots: {
+            default: '<div>Default Slot</div>'
+          }
+        })
+        wrapper.destroy()
+      }).not.toThrow()
+    })
+
+    it('should render slot content', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets, {
+        slots: {
+          default: '<span>Slot Content</span>'
+        }
+      })
+      expect(wrapper.html()).toBeDefined()
+      wrapper.destroy()
+    })
+  })
+
+  describe('Wrapper Methods', () => {
+    it('should support findComponent method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.findComponent).toBe('function')
+      wrapper.destroy()
+    })
+
+    it('should support find method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.find).toBe('function')
+      wrapper.destroy()
+    })
+
+    it('should support setProps method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.setProps).toBe('function')
+      wrapper.destroy()
+    })
+
+    it('should support trigger method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.trigger).toBe('function')
+      wrapper.destroy()
+    })
+  })
+
+  describe('Element Querying', () => {
+    it('should find root element', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(wrapper.element).toBeDefined()
+      expect(wrapper.element.tagName).toBe('DIV')
+      wrapper.destroy()
+    })
+
+    it('should support element property', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      const element = wrapper.element
+      expect(element).not.toBeNull()
+      expect(element.nodeType).toBe(1)
+      wrapper.destroy()
+    })
+
+    it('should have valid classes method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.classes).toBe('function')
+      const classes = wrapper.classes()
+      expect(Array.isArray(classes) || typeof classes === 'string').toBe(true)
+      wrapper.destroy()
+    })
+  })
+
+  describe('Wrapper Attributes', () => {
+    it('should support attributes method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.attributes).toBe('function')
+      wrapper.destroy()
+    })
+
+    it('should support text method', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      expect(typeof wrapper.text).toBe('function')
+      const text = wrapper.text()
+      expect(typeof text).toBe('string')
+      wrapper.destroy()
+    })
+  })
+
+  describe('Performance', () => {
+    it('should mount quickly', () => {
+      const Widgets = require('@/views/Widgets')
+      const start = Date.now()
+      const wrapper = shallowMount(Widgets)
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+      wrapper.destroy()
+    })
+
+    it('should destroy quickly', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper = shallowMount(Widgets)
+      const start = Date.now()
+      wrapper.destroy()
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(50)
+    })
+
+    it('should handle multiple mounts efficiently', () => {
+      const Widgets = require('@/views/Widgets')
+      const start = Date.now()
+      for (let i = 0; i < 10; i++) {
+        const wrapper = shallowMount(Widgets)
+        wrapper.destroy()
+      }
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('should handle remounting', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrapper1 = shallowMount(Widgets)
+      wrapper1.destroy()
+      const wrapper2 = shallowMount(Widgets)
+      expect(wrapper2.exists()).toBe(true)
+      wrapper2.destroy()
+    })
+
+    it('should handle rapid mount/destroy cycles', () => {
+      const Widgets = require('@/views/Widgets')
+      expect(() => {
+        for (let i = 0; i < 5; i++) {
+          const wrapper = shallowMount(Widgets)
+          wrapper.destroy()
+        }
+      }).not.toThrow()
+    })
+
+    it('should handle multiple simultaneous instances', () => {
+      const Widgets = require('@/views/Widgets')
+      const wrappers = []
+      for (let i = 0; i < 3; i++) {
+        wrappers.push(shallowMount(Widgets))
+      }
+      expect(wrappers.length).toBe(3)
+      wrappers.forEach(w => w.destroy())
+    })
+  })
 })

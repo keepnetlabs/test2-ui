@@ -164,6 +164,14 @@ export const exportUserActivityDetails = (payload) => {
   })
 }
 
+export const calculateGamificationBadges = (payload) => {
+  return testRequest.post('/gamificationreport/calculate-badges', payload)
+}
+
+export const getGamificationBadgesCached = (targetUserResourceId) => {
+  return testRequest.get(`/gamificationreport/badges-cached/${targetUserResourceId}`)
+}
+
 export default {
   getReports,
   getReportDetail,
@@ -194,5 +202,7 @@ export default {
   getLeaderboardFormDetails,
   getUserPerformanceRates,
   getUserTimeline,
-  exportUserActivityDetails
+  exportUserActivityDetails,
+  calculateGamificationBadges,
+  getGamificationBadgesCached
 }
