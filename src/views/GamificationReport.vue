@@ -110,7 +110,16 @@
         @downloadEvent="exportLeaderboard"
         @on-details="handleDetails"
         @on-send-with-ai="handleSendWithAI"
-      />
+      >
+        <template #datatable-custom-column="{ scope, col }">
+          <LeaderboardBadgesColumn
+            v-if="col.property === 'badges'"
+            :badges="getBadgesForRow(scope.row)"
+            :max-visible="3"
+            :is-loading="isBadgesLoadingForRow(scope.row)"
+          />
+        </template>
+      </DataTable>
     </KContainer>
   </Fragment>
 </template>
@@ -137,10 +146,11 @@ import LeaderboardTopPerformerCard from '@/components/GamificationReport/Leaderb
 import { getTimeZone, getTimeZoneForMoment, getDefaultAxiosPayload } from '@/utils/functions'
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
+import LeaderboardBadgesColumn from '@/components/GamificationReport/LeaderboardBadgesColumn'
 import labels from '@/model/constants/labels'
 import axios from 'axios'
 import AuthenticationService from '@/services/authentication'
@@ -156,7 +166,8 @@ export default {
     InputDate,
     DatatableLoading,
     GamificationReportUserDetailsDrawer,
-    SendWithAIDialog
+    SendWithAIDialog,
+    LeaderboardBadgesColumn
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
@@ -389,6 +400,18 @@ export default {
             filterableType: 'negativeNumber',
             overrideWidth: true,
             minWidth: 175
+          },
+          {
+            property: 'badges',
+            align: 'left',
+            editable: false,
+            label: 'Badges',
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'slot',
+            overrideWidth: true,
+            minWidth: 280
           }
         ],
         iEmpty: {
@@ -410,8 +433,13 @@ export default {
     ...mapGetters({
       getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions',
       getGamificationReportTopPerformersPermissions:
-        'permissions/getGamificationReportTopPerformersPermissions'
+        'permissions/getGamificationReportTopPerformersPermissions',
+      getBadgesForUser: 'gamificationBadges/getBadgesForUser',
+      hasValidBadgesCache: 'gamificationBadges/hasValidCache',
+      isBadgesCalculating: 'gamificationBadges/isCalculating',
+      isBadgesFetching: 'gamificationBadges/isFetching'
     }),
+    ...mapState('gamificationBadges', ['badgesByUserId']),
     getDatePayload() {
       return {
         datePeriod: this.axiosPayload.datePeriod,
@@ -494,6 +522,12 @@ export default {
               ...row,
               performance: `${row.performance}%`
             })) || []
+          const userIds = (results || [])
+            .map((r) => r.targetUserResourceId)
+            .filter(Boolean)
+          if (userIds.length) {
+            this.$store.dispatch('gamificationBadges/fetchBadgesForTable', userIds)
+          }
         })
         .finally(this.setLoading)
     },
@@ -553,6 +587,17 @@ export default {
           link.click()
         })
       })
+    },
+    getBadgesForRow(row) {
+      const badges = this.getBadgesForUser(row?.targetUserResourceId)
+      return Array.isArray(badges) ? badges : []
+    },
+    isBadgesLoadingForRow(row) {
+      const userId = row?.targetUserResourceId
+      if (!userId) return false
+      const hasCache = this.hasValidBadgesCache(userId)
+      const isLoading = this.isBadgesCalculating || this.isBadgesFetching
+      return !hasCache && isLoading
     },
     handleDetails(row) {
       this.selectedRow = row

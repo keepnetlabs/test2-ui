@@ -19,6 +19,7 @@ import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
 import learningPath from '@/store/modules/learningPath'
 import executiveReports from '@/store/modules/executiveReports'
 import usersDashboard from '@/store/modules/usersDashboard'
+import gamificationBadges from '@/store/modules/gamificationBadges'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
@@ -40,7 +41,8 @@ const store = new Vuex.Store({
     trainingLibraryHelpers,
     learningPath,
     executiveReports,
-    usersDashboard
+    usersDashboard,
+    gamificationBadges
   }
 })
 
