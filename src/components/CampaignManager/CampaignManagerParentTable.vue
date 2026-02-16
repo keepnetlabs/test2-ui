@@ -91,6 +91,17 @@
           <span>{{ scope.row[col.property] }}</span>
         </span>
       </template>
+      <template v-if="scope.column.property === 'targetUsers'">
+        <span
+          v-if="isTargetUsersShowGroups(scope.row)"
+          class="campaign-manager-parent-table__target-users-groups"
+          @click.stop="handleTargetUsersGroupsClick(scope.row)"
+        >
+          {{ labels.Groups }}
+          <VIcon color="#2196f3" small>mdi-account-multiple</VIcon>
+        </span>
+        <span v-else>{{ scope.row[col.property] }}</span>
+      </template>
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions
@@ -133,6 +144,7 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
+  ACTION_STATUSES,
   COLUMNS,
   getStatusBadgeProps,
   METHOD_TYPES,
@@ -158,7 +170,8 @@ const EMITS = {
   ON_PREVIEW: 'on-preview',
   ON_DELETE: 'on-delete',
   ON_DUPLICATE: 'on-duplicate',
-  ON_LAUNCH: 'on-launch'
+  ON_LAUNCH: 'on-launch',
+  ON_TARGET_USERS_GROUPS_CLICK: 'on-target-users-groups-click'
 }
 
 export default {
@@ -177,6 +190,7 @@ export default {
   mixins: [useDefaultTableFunctions],
   data() {
     return {
+      labels,
       SCENARIO_DISTRIBUTION_TEXTS,
       METHOD_TYPES,
       CONSTANTS: {
@@ -197,8 +211,23 @@ export default {
         },
         columns: [
           COLUMNS.CAMPAIGN_NAME,
-          COLUMNS.TARGET_USERS,
-          COLUMNS.STATUS,
+          {
+            ...COLUMNS.TARGET_USERS,
+            type: 'slot',
+            width: 240,
+            showHeaderTooltip: true,
+            headerTooltip: 'Number of users in the most recent campaign instance.',
+            headerTooltipIcon: 'mdi-information-outline',
+            headerTooltipIconColor: '#757575'
+          },
+          {
+            ...COLUMNS.STATUS,
+            width: 240,
+            showHeaderTooltip: true,
+            headerTooltip: 'Current status of the most recent campaign instance.',
+            headerTooltipIcon: 'mdi-information-outline',
+            headerTooltipIconColor: '#757575'
+          },
           COLUMNS.SCENARIO_COUNT,
           COLUMNS.SCENARIO_DISTRIBUTION,
           COLUMNS.METHOD,
@@ -407,7 +436,29 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
+    },
+    isTargetUsersShowGroups(row = {}) {
+      return [ACTION_STATUSES.IDLE, ACTION_STATUSES.SCHEDULED].includes(row?.status)
+    },
+    handleTargetUsersGroupsClick(row) {
+      this.$emit('on-target-users-groups-click', row)
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.campaign-manager-parent-table__target-users-groups {
+  color: var(--Primary-Primary, #2196f3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+}
+</style>

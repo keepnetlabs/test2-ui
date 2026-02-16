@@ -723,6 +723,7 @@ export const labels = {
   CompanyAdmin: 'Company Admin',
   CertificateName: 'Certificate Name',
   NoTargetUserGroups: 'You do not have entered any groups',
+  NoTargetGroupsForCampaign: 'No target groups assigned to this campaign.',
   Default: 'Default',
   SamlName: 'SAML Name',
   AllowedDomains: 'Allowed Domains',

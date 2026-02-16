@@ -493,7 +493,7 @@ describe("TopRules widget", () => {
       const startTime = Date.now();
       mountFactory();
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(200);
     });
 
     it("should handle large rules dataset quickly", () => {

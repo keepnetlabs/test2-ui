@@ -22,6 +22,14 @@ export const axiosPayload = {
   }
 }
 
+export const CAMPAIGN_TYPE = {
+  Phishing: 1,
+  Smishing: 2,
+  Quishing: 3,
+  Callback: 4,
+  Vishing: 5
+}
+
 export const METHOD_TYPES = {
   CLICK_ONLY: 'Click-Only',
   MULTIPLE_METHOD: 'Multiple Method',
