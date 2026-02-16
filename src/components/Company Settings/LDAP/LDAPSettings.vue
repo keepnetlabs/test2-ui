@@ -55,7 +55,7 @@
       >
         <v-textarea
           v-model="formData.relativeDNs"
-          id="input--ldap-base-dn"
+          id="input--ldap-relative-dns"
           type="password"
           outlined
           dense

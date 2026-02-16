@@ -171,7 +171,7 @@ import QuishingService from '@/api/quishing'
 import { useLoading } from '@/hooks/useLoading'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
-import { openHtmlInNewWindow } from '@/utils/functions'
+import { createRandomCryptStringNumber, openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'CommonSimulatorEmailTemplatePreviewDialog',
@@ -230,7 +230,7 @@ export default {
       emailTemplateParams: {},
       templateHTML: null,
       isIndividualPrintoutButtonDisabled: false,
-      drawerId: `email-template-preview-drawer-${Math.random()}`
+      drawerId: `email-template-preview-drawer-${createRandomCryptStringNumber()}`
     }
   },
   computed: {

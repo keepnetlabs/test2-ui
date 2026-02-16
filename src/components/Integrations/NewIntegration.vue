@@ -224,7 +224,7 @@
                     ></v-text-field>
                     <v-text-field
                       v-model.trim="item.password"
-                      id="input--integration-password"
+                      :id="`input--integration-api-key-password-${index}`"
                       style="margin-top: -5px;"
                       placeholder="Enter password"
                       outlined
@@ -565,7 +565,7 @@
           </form-group>
           <form-group title="Password" has-hint v-if="isFortiNet">
             <v-text-field
-              id="input--integration-password"
+              id="input--integration-password-fortinet"
               placeholder="Enter password"
               outlined
               dense

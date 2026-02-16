@@ -126,7 +126,7 @@
                           >mdi-close-circle
                         </v-icon>
                         <PreviewHeaderForSinglePost :uploadRespond="uploadRespond" />
-                        <div id="last-preview-body-preview" class="preview-body">
+                        <div id="last-preview-body-preview-step-1" class="preview-body">
                           <k-shadow-frame
                             id="incident-preview-1"
                             :content="uploadRespond.visibleBody || uploadRespond.initialBody"
@@ -355,7 +355,7 @@
 
                       <div
                         v-if="uploadRespond.editableBody || uploadRespond.initialBody"
-                        id="last-preview-body-preview"
+                        id="last-preview-body-preview-editable"
                         class="preview-body"
                       >
                         <k-shadow-frame
@@ -365,7 +365,7 @@
                       </div>
                       <div
                         v-if="uploadRespond.editableBody || uploadRespond.initialBody"
-                        id="last-preview-body-preview"
+                        id="last-preview-body-preview-hidden"
                         class="preview-body"
                         style="display: none;"
                       >

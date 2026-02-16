@@ -204,7 +204,7 @@
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 2">
         <v-btn
-          id="btn-cancel--security-dashboard-popup"
+          id="btn-cancel--security-dashboard-popup-step-2"
           text
           color="#f56c6c"
           class="k-dialog__button"
@@ -222,7 +222,7 @@
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 3">
         <v-btn
-          id="btn-cancel--security-dashboard-popup"
+          id="btn-cancel--security-dashboard-popup-step-3"
           text
           color="#f56c6c"
           class="k-dialog__button"

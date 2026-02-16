@@ -3,7 +3,7 @@
     <KSelect
       :value="value.customFieldResourceId"
       class="map-custom-and-scim-fields-item__select"
-      id="input--add-or-edit-scim-group"
+      id="input--add-or-edit-scim-custom-field"
       outlined
       dense
       clearable
@@ -15,7 +15,7 @@
     />
     <KSelect
       :value="value.scimFieldResourceId"
-      id="input--add-or-edit-scim-group"
+      id="input--add-or-edit-scim-scim-field"
       class="map-custom-and-scim-fields-item__select ml-2"
       outlined
       dense

@@ -281,7 +281,7 @@
                             >
                               <InputEntityName
                                 v-model="editData.name"
-                                id="input--notification-template-name"
+                                id="input--notification-template-name-landing-preview-edit-1"
                                 initialPlaceholder="Enter template name"
                                 entityName="template name"
                               />
@@ -657,7 +657,7 @@
                           >
                             <InputEntityName
                               v-model="editData.name"
-                              id="input--notification-template-name"
+                              id="input--notification-template-name-landing-preview-edit-2"
                               initialPlaceholder="Enter template name"
                               entityName="template name"
                             />

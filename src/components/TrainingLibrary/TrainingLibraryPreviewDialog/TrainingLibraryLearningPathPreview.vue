@@ -4,7 +4,7 @@
       <ElTabPane
         :label="labels.LearningPathDetails"
         name="details"
-        id="campaign-manager-info--training-details-content"
+        id="campaign-manager-info--training-details-content-learning-path"
       >
         <template v-if="learningPathParams">
           <div class="training-library-preview__details-item d-flex justify-space-between">
@@ -197,7 +197,7 @@
         <ElTabPane
           :label="labels.Details"
           name="details"
-          id="campaign-manager-info--training-details-content"
+          id="campaign-manager-info--training-details-content-learning-path-details"
         >
           <template v-if="activeTrainingContentParams">
             <div class="training-library-preview__details-item">

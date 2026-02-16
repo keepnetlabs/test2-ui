@@ -142,7 +142,7 @@ export default {
             const dateA = new Date(a.earnedDate).getTime()
             const dateB = new Date(b.earnedDate).getTime()
             // Handle invalid dates
-            if (isNaN(dateA) || isNaN(dateB)) {
+            if (Number.isNaN(dateA) || Number.isNaN(dateB)) {
               return 0
             }
             return dateB - dateA

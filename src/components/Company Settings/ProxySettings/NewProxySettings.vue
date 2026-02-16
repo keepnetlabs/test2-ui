@@ -375,7 +375,7 @@ export default {
     onPortChange(val) {
       if (val.length) {
         const numberVal = Number(val)
-        const newVal = isNaN(numberVal) ? '' : val
+        const newVal = Number.isNaN(numberVal) ? '' : val
         const renderedValue = /\d/gi.test(newVal) ? newVal : this.formValues.serverPort
         this.formValues.serverPort = renderedValue
         this.$refs.refTextField.lazyValue = renderedValue

@@ -38,7 +38,7 @@
               ]"
               hint="*Required"
               persistent-hint
-              autocomplete="disabled"
+              autocomplete="off"
               height="40"
               @change="getDomainList"
             ></v-text-field>
@@ -57,7 +57,7 @@
                 (v) =>
                   validations.maxLength(v, 64, labels.getMaxLengthMessage('Application secret', 64))
               ]"
-              autocomplete="disabled"
+              autocomplete="off"
               height="40"
               @change="getDomainList"
             ></v-text-field>
@@ -75,7 +75,7 @@
               ]"
               hint="*Required"
               persistent-hint
-              autocomplete="disabled"
+              autocomplete="off"
               height="40"
               @change="getDomainList"
             ></v-text-field>

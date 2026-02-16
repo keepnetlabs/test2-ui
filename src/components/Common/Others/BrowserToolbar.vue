@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { createRandomCryptStringNumber } from '@/utils/functions'
+
 export default {
   name: 'BrowserToolbar',
   props: {
@@ -31,7 +33,7 @@ export default {
   computed: {
     formattedUrl() {
       if (!this.url) return ''
-      const randomNum = Math.floor(Math.random() * 10000000000)
+      const randomNum = createRandomCryptStringNumber()
 
       let formattedUrl = `${this.url}${randomNum}`
       if (this.pageIndex > 0) {

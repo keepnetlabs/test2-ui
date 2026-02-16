@@ -187,7 +187,7 @@ export default {
       tableOptions: {
         iEmpty: {
           message: labels.EmptyTargetUsersPeople,
-          id: 'btn-empty--target-users-people'
+          id: 'btn-empty--target-users-people-campaign-target-group'
         },
         columns: this.getColumns()
       }
