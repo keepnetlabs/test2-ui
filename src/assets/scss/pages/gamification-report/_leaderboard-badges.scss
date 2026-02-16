@@ -2,13 +2,13 @@
   &__skeleton {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
   }
 
   &__skeleton-item {
     flex-shrink: 0;
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: linear-gradient(
       90deg,
@@ -26,15 +26,15 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
   }
 
   &__badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     flex-shrink: 0;
   }
 
@@ -44,8 +44,8 @@
   }
 
   &__badge-img {
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
   }
 

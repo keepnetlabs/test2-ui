@@ -23,21 +23,36 @@ describe('learningPath store module (real)', () => {
     jest.clearAllMocks()
   })
 
+  describe('module structure', () => {
+    it('should have mutations defined', () => {
+      expect(learningPath.mutations).toBeDefined()
+    })
+    it('should have actions defined', () => {
+      expect(learningPath.actions).toBeDefined()
+    })
+    it('should have state defined', () => {
+      expect(learningPath.state).toBeDefined()
+    })
+  })
+
   describe('mutations', () => {
-    it('ORDER_LEARNING_PATH_DATA sorts unavailable trainings to the end', () => {
+    describe('data ordering and search mutations', () => {
+      it('ORDER_LEARNING_PATH_DATA sorts unavailable trainings to the end', () => {
       const state = createState()
       state.learningPathTableData = [
         { trainingId: 1, availableFor: ['SomeOtherCompany'] },
         { trainingId: 2, availableFor: ['MyCompanyOnly'] }
       ]
 
-      learningPath.mutations.ORDER_LEARNING_PATH_DATA(state, ['MyCompanyOnly'])
+        learningPath.mutations.ORDER_LEARNING_PATH_DATA(state, ['MyCompanyOnly'])
 
-      expect(state.learningPathTableData[0].trainingId).toBe(2)
-      expect(state.learningPathTableData[1].trainingId).toBe(1)
+        expect(state.learningPathTableData[0].trainingId).toBe(2)
+        expect(state.learningPathTableData[1].trainingId).toBe(1)
+      })
     })
 
-    it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD handles between operator', () => {
+    describe('filter payload mutations', () => {
+      it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD handles between operator', () => {
       const state = createState()
       const payload = {
         key: 'dateCreated',
@@ -240,21 +255,23 @@ describe('learningPath store module (real)', () => {
       expect(state.learningPathTableData).toEqual([{ trainingId: 't2' }])
     })
 
-    it('APPEND_LEARNING_PATH_TABLE_DATA excludes already selected trainings', () => {
-      const state = createState()
-      state.learningPathTableData = [{ trainingId: 't0' }]
-      state.selectedLearningPathTrainings = [{ trainingId: 't1' }]
+      it('APPEND_LEARNING_PATH_TABLE_DATA excludes already selected trainings', () => {
+        const state = createState()
+        state.learningPathTableData = [{ trainingId: 't0' }]
+        state.selectedLearningPathTrainings = [{ trainingId: 't1' }]
 
-      learningPath.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, [
-        { trainingId: 't1' },
-        { trainingId: 't2' }
-      ])
+        learningPath.mutations.APPEND_LEARNING_PATH_TABLE_DATA(state, [
+          { trainingId: 't1' },
+          { trainingId: 't2' }
+        ])
 
-      expect(state.learningPathTableData).toEqual([{ trainingId: 't0' }, { trainingId: 't2' }])
+        expect(state.learningPathTableData).toEqual([{ trainingId: 't0' }, { trainingId: 't2' }])
+      })
     })
   })
 
   describe('actions', () => {
+    describe('data loading actions', () => {
     it('callForLearningPathTableData sets trainingIds from payload and commits data', async () => {
       const state = createState()
       const commit = jest.fn()
@@ -306,113 +323,118 @@ describe('learningPath store module (real)', () => {
       )
 
       expect(commit).toHaveBeenCalledWith('APPEND_LEARNING_PATH_TABLE_DATA', [{ trainingId: 't2' }])
-      expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA')
-    })
-
-    it('setLearningPathSearch commits search and dispatches reload', () => {
-      const commit = jest.fn()
-      const dispatch = jest.fn()
-
-      learningPath.actions.setLearningPathSearch({ commit, dispatch }, 'security')
-
-      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SEARCH', 'security')
-      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SEARCH_TO_PAYLOAD')
-      expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
-    })
-
-    it('getDataAfterValidScroll increments page and dispatches append', () => {
-      const state = createState()
-      const dispatch = jest.fn()
-      state.learningPathAxiosPayload.pageNumber = 1
-      state.learningPathServerSideProps.totalNumberOfPages = 3
-      state.learningPathSearch = ''
-
-      learningPath.actions.getDataAfterValidScroll({ state, dispatch })
-
-      expect(state.learningPathAxiosPayload.pageNumber).toBe(2)
-      expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary', { isAppend: true })
-    })
-
-    it('setLearningPathSortBy commits sort payload and dispatches fetch', () => {
-      const commit = jest.fn()
-      const dispatch = jest.fn()
-
-      learningPath.actions.setLearningPathSortBy(
-        { commit, dispatch },
-        { item: { text: 'Name', orderBy: 'trainingName' }, sort: { text: 'A-Z', ascending: true } }
-      )
-
-      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SORT_BY', 'Name - A-Z')
-      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD', {
-        ascending: true,
-        orderBy: 'trainingName'
+        expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA')
       })
-      expect(dispatch).toHaveBeenCalledWith('callForLearningPathTableData')
     })
 
-    it('setLearningPathFilterToPayload commits and triggers reload', () => {
-      const commit = jest.fn()
-      const dispatch = jest.fn()
+    describe('search, sort and filter actions', () => {
+      it('setLearningPathSearch commits search and dispatches reload', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
 
-      learningPath.actions.setLearningPathFilterToPayload(
-        { commit, dispatch },
-        { key: 'category', activeValue: ['SocialEngineering'], activeOperator: 'Include' }
-      )
+        learningPath.actions.setLearningPathSearch({ commit, dispatch }, 'security')
 
-      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_FILTER_TO_PAYLOAD', {
-        key: 'category',
-        activeValue: ['SocialEngineering'],
-        activeOperator: 'Include'
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SEARCH', 'security')
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SEARCH_TO_PAYLOAD')
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
       })
-      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_PAGINATION')
-      expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
-    })
 
-    it('removeLearningPathFilterFromPayload commits and triggers reload', () => {
-      const commit = jest.fn()
-      const dispatch = jest.fn()
+      it('getDataAfterValidScroll increments page and dispatches append', () => {
+        const state = createState()
+        const dispatch = jest.fn()
+        state.learningPathAxiosPayload.pageNumber = 1
+        state.learningPathServerSideProps.totalNumberOfPages = 3
+        state.learningPathSearch = ''
 
-      learningPath.actions.removeLearningPathFilterFromPayload(
-        { commit, dispatch },
-        { key: 'vendor', filterType: 'search', activeValue: [] }
-      )
+        learningPath.actions.getDataAfterValidScroll({ state, dispatch })
 
-      expect(commit).toHaveBeenCalledWith('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD', {
-        key: 'vendor',
-        filterType: 'search',
-        activeValue: []
+        expect(state.learningPathAxiosPayload.pageNumber).toBe(2)
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary', { isAppend: true })
       })
-      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_PAGINATION')
-      expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
+
+      it('setLearningPathSortBy commits sort payload and dispatches fetch', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        learningPath.actions.setLearningPathSortBy(
+          { commit, dispatch },
+          { item: { text: 'Name', orderBy: 'trainingName' }, sort: { text: 'A-Z', ascending: true } }
+        )
+
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SORT_BY', 'Name - A-Z')
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD', {
+          ascending: true,
+          orderBy: 'trainingName'
+        })
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTableData')
+      })
+
+      it('setLearningPathFilterToPayload commits and triggers reload', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        learningPath.actions.setLearningPathFilterToPayload(
+          { commit, dispatch },
+          { key: 'category', activeValue: ['SocialEngineering'], activeOperator: 'Include' }
+        )
+
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_FILTER_TO_PAYLOAD', {
+          key: 'category',
+          activeValue: ['SocialEngineering'],
+          activeOperator: 'Include'
+        })
+        expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_PAGINATION')
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
+      })
+
+      it('removeLearningPathFilterFromPayload commits and triggers reload', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        learningPath.actions.removeLearningPathFilterFromPayload(
+          { commit, dispatch },
+          { key: 'vendor', filterType: 'search', activeValue: [] }
+        )
+
+        expect(commit).toHaveBeenCalledWith('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD', {
+          key: 'vendor',
+          filterType: 'search',
+          activeValue: []
+        })
+        expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_PAGINATION')
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
+      })
     })
 
-    it('learningPathClearAllFilters optionally dispatches fetch', () => {
-      const commit = jest.fn()
-      const dispatch = jest.fn()
+    describe('reset and management actions', () => {
+      it('learningPathClearAllFilters optionally dispatches fetch', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
 
-      learningPath.actions.learningPathClearAllFilters({ commit, dispatch }, { isFetch: true })
+        learningPath.actions.learningPathClearAllFilters({ commit, dispatch }, { isFetch: true })
 
-      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_FILTERS')
-      expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
-    })
+        expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_FILTERS')
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary')
+      })
 
-    it('resetSelectedLearningPathTrainings resets filters, selections, and data', () => {
-      const commit = jest.fn()
+      it('resetSelectedLearningPathTrainings resets filters, selections, and data', () => {
+        const commit = jest.fn()
 
-      learningPath.actions.resetSelectedLearningPathTrainings({ commit })
+        learningPath.actions.resetSelectedLearningPathTrainings({ commit })
 
-      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_FILTERS')
-      expect(commit).toHaveBeenCalledWith('RESET_SELECTED_LEARNING_PATH_TRAININGS')
-      expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_DATA')
-    })
+        expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_FILTERS')
+        expect(commit).toHaveBeenCalledWith('RESET_SELECTED_LEARNING_PATH_TRAININGS')
+        expect(commit).toHaveBeenCalledWith('RESET_LEARNING_PATH_DATA')
+      })
 
-    it('selectLearningPathTraining commits select mutation', () => {
-      const commit = jest.fn()
+      it('selectLearningPathTraining commits select mutation', () => {
+        const commit = jest.fn()
 
-      learningPath.actions.selectLearningPathTraining({ commit }, { training: { trainingId: 't1' } })
+        learningPath.actions.selectLearningPathTraining({ commit }, { training: { trainingId: 't1' } })
 
-      expect(commit).toHaveBeenCalledWith('SELECT_LEARNING_PATH_TRAINING', {
-        training: { trainingId: 't1' }
+        expect(commit).toHaveBeenCalledWith('SELECT_LEARNING_PATH_TRAINING', {
+          training: { trainingId: 't1' }
+        })
       })
     })
   })

@@ -361,9 +361,9 @@
                     </span>
                     <span v-else class="gamification-report__timeline-item-middle-text">
                       <span class="gamification-report__timeline-item-bold-text"
-                        >{{ item.name }}
-                      </span>
-                      <span>{{ getProductType(item) }} </span>
+                        >{{ item.name }}</span
+                      >
+                      <span> {{ getProductType(item) }} </span>
                       with
                       <span class="gamification-report__timeline-item-bold-text">{{
                         isProductAwareness(item) ? item.categoryDescription : item.difficultyType
