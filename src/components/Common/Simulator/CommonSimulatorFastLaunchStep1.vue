@@ -31,7 +31,7 @@
         <div class="campaign-manager-advanced-settings__other-settings-last">
           <v-checkbox
             v-model="formData.sendRandomlyUsers"
-            id="input--campaign-manager-advanced-settings-randomly-selected"
+            id="input--simulator-fast-launch-send-randomly"
             color="#2196f3"
             hide-details
           >

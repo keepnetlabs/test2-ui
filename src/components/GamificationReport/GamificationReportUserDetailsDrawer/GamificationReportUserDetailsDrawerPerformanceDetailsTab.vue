@@ -230,8 +230,8 @@ export default {
       }
     },
     handleOpenTraining(row) {
-      if (row?.trainingUrl) {
-        window.open(row.trainingUrl, '_blank', 'noopener,noreferrer')
+      if (row?.enrollmentId) {
+        window.open(`/awareness-educator/enrollments/training-report/${row.enrollmentId}`, '_blank', 'noopener,noreferrer')
       }
     },
     getPointsIcon(points, isMaxPoints) {

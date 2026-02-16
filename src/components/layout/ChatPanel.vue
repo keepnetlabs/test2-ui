@@ -92,6 +92,7 @@
         <iframe
           ref="chatIframe"
           :src="chatUrl"
+          title="Agentic AI Chat"
           class="chat-iframe"
           @load="onIframeLoad"
           frameborder="0"
