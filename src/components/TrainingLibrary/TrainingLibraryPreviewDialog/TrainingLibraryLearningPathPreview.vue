@@ -157,7 +157,7 @@
                   </div>
 
                   <VBtn
-                    id="btn-preview-indiviual-printout"
+                    id="btn-preview-learning-path-printout"
                     class="white--text btn-util btn-download-add-in"
                     style="text-transform: none;"
                     color="#2196F3"
@@ -412,7 +412,7 @@ export default {
   methods: {
     handleChangeTab(training) {
       if (!training.label.startsWith('Step')) return
-      const trainingGroupIndex = parseInt(training.index, 10) - 1
+      const trainingGroupIndex = Number.parseInt(training.index, 10) - 1
       if (trainingGroupIndex < 0) return
       const trainingGroup = this.getTrainingGroups?.[trainingGroupIndex] || {}
       this.activeTrainingContentId = trainingGroup.detailTrainingId

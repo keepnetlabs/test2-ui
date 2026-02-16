@@ -277,7 +277,7 @@ export function passwordComplexity(pwd) {
   const sSymbols = ")!@#$%^&*()";
   const nMinPwdLen = 8;
   if (pwd) {
-    nScore = parseInt(pwd.length * nMultLength);
+    nScore = Number.parseInt(pwd.length * nMultLength);
     nLength = pwd.length;
     let arrPwd = pwd.replace(/\s+/g, "")?.split(/\s*/);
     let arrPwdLen = arrPwd.length;
@@ -351,7 +351,7 @@ export function passwordComplexity(pwd) {
 
     /* Check for sequential alpha string patterns (forward and reverse) */
     for (let s = 0; s < 23; s++) {
-      let sFwd = sAlphas.substring(s, parseInt(s + 3));
+      let sFwd = sAlphas.substring(s, Number.parseInt(s + 3));
       let sRev = strReverse(sFwd);
       if (
         pwd.toLowerCase().indexOf(sFwd) !== -1 ||
@@ -363,7 +363,7 @@ export function passwordComplexity(pwd) {
     }
     /* Check for sequential numeric string patterns (forward and reverse) */
     for (let s = 0; s < 8; s++) {
-      let sFwd = sNumerics.substring(s, parseInt(s + 3));
+      let sFwd = sNumerics.substring(s, Number.parseInt(s + 3));
       let sRev = strReverse(sFwd);
       if (
         pwd.toLowerCase().indexOf(sFwd) !== -1 ||
@@ -375,7 +375,7 @@ export function passwordComplexity(pwd) {
     }
     /* Check for sequential symbol string patterns (forward and reverse) */
     for (let s = 0; s < 8; s++) {
-      let sFwd = sSymbols.substring(s, parseInt(s + 3));
+      let sFwd = sSymbols.substring(s, Number.parseInt(s + 3));
       let sRev = strReverse(sFwd);
       if (
         pwd.toLowerCase().indexOf(sFwd) !== -1 ||
@@ -388,57 +388,57 @@ export function passwordComplexity(pwd) {
 
     /* General point assignment */
     if (nAlphaUC > 0 && nAlphaUC < nLength) {
-      nScore = parseInt(nScore + (nLength - nAlphaUC) * 2);
+      nScore = Number.parseInt(nScore + (nLength - nAlphaUC) * 2);
     }
     if (nAlphaLC > 0 && nAlphaLC < nLength) {
-      nScore = parseInt(nScore + (nLength - nAlphaLC) * 2);
+      nScore = Number.parseInt(nScore + (nLength - nAlphaLC) * 2);
     }
     if (nNumber > 0 && nNumber < nLength) {
-      nScore = parseInt(nScore + nNumber * nMultNumber);
+      nScore = Number.parseInt(nScore + nNumber * nMultNumber);
     }
     if (nSymbol > 0) {
-      nScore = parseInt(nScore + nSymbol * nMultSymbol);
+      nScore = Number.parseInt(nScore + nSymbol * nMultSymbol);
     }
     if (nMidChar > 0) {
-      nScore = parseInt(nScore + nMidChar * nMultMidChar);
+      nScore = Number.parseInt(nScore + nMidChar * nMultMidChar);
     }
 
     /* Point deductions for poor practices */
     if ((nAlphaLC > 0 || nAlphaUC > 0) && nSymbol === 0 && nNumber === 0) {
       // Only Letters
-      nScore = parseInt(nScore - nLength);
+      nScore = Number.parseInt(nScore - nLength);
     }
     if (nAlphaLC === 0 && nAlphaUC === 0 && nSymbol === 0 && nNumber > 0) {
       // Only Numbers
-      nScore = parseInt(nScore - nLength);
+      nScore = Number.parseInt(nScore - nLength);
     }
     if (nRepChar > 0) {
       // Same character exists more than once
-      nScore = parseInt(nScore - nRepInc);
+      nScore = Number.parseInt(nScore - nRepInc);
     }
     if (nConsecAlphaUC > 0) {
       // Consecutive Uppercase Letters exist
-      nScore = parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC);
+      nScore = Number.parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC);
     }
     if (nConsecAlphaLC > 0) {
       // Consecutive Lowercase Letters exist
-      nScore = parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC);
+      nScore = Number.parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC);
     }
     if (nConsecNumber > 0) {
       // Consecutive Numbers exist
-      nScore = parseInt(nScore - nConsecNumber * nMultConsecNumber);
+      nScore = Number.parseInt(nScore - nConsecNumber * nMultConsecNumber);
     }
     if (nSeqAlpha > 0) {
       // Sequential alpha strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqAlpha * nMultSeqAlpha);
+      nScore = Number.parseInt(nScore - nSeqAlpha * nMultSeqAlpha);
     }
     if (nSeqNumber > 0) {
       // Sequential numeric strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqNumber * nMultSeqNumber);
+      nScore = Number.parseInt(nScore - nSeqNumber * nMultSeqNumber);
     }
     if (nSeqSymbol > 0) {
       // Sequential symbol strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqSymbol * nMultSeqSymbol);
+      nScore = Number.parseInt(nScore - nSeqSymbol * nMultSeqSymbol);
     }
     /* Determine if mandatory requirements have been met and set image indicators accordingly */
     const arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol];
@@ -451,10 +451,10 @@ export function passwordComplexity(pwd) {
     ];
     const arrCharsLen = arrChars.length;
     for (let c = 0; c < arrCharsLen; c++) {
-      let minVal = arrCharsIds[c] === "nLength" ? parseInt(nMinPwdLen - 1) : 0;
+      let minVal = arrCharsIds[c] === "nLength" ? Number.parseInt(nMinPwdLen - 1) : 0;
       if (
-        arrChars[c] === parseInt(minVal + 1) ||
-        arrChars[c] > parseInt(minVal + 1)
+        arrChars[c] === Number.parseInt(minVal + 1) ||
+        arrChars[c] > Number.parseInt(minVal + 1)
       ) {
         nReqChar++;
       }
@@ -462,7 +462,7 @@ export function passwordComplexity(pwd) {
     nRequirements = nReqChar;
     let nMinReqChars = pwd.length >= nMinPwdLen ? 3 : 4;
     if (nRequirements > nMinReqChars) {
-      nScore = parseInt(nScore + nRequirements * 2);
+      nScore = Number.parseInt(nScore + nRequirements * 2);
     }
     /* Determine complexity based on overall score */
     if (nScore > 100) {
@@ -831,7 +831,7 @@ export function copyToClipboard(textToCopy) {
 export function formatSeconds(seconds = 0) {
   const secondType = typeof seconds;
   if (secondType === "number" || secondType === "string") {
-    seconds = parseInt(seconds);
+    seconds = Number.parseInt(seconds);
     const minute = Math.floor(seconds / 60);
     seconds = seconds - minute * 60;
     return ("0" + minute).slice(-2) + ":" + ("0" + seconds).slice(-2);

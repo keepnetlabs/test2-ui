@@ -168,7 +168,7 @@
 .agentic-ai-widget__stat-card__title {
   color: var(--Black-Black, #383B41);
   font-feature-settings: "liga" off, "clig" off;
-  font-family: "Open Sans";
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -180,7 +180,7 @@
 }
 
 .agentic-ai-activities-drawer {
-  font-family: "Open Sans";
+  font-family: "Open Sans", sans-serif;
 
   .agentic-ai-activities-drawer__header {
     display: flex;

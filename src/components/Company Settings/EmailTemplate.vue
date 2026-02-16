@@ -560,7 +560,11 @@
             'mr-4',
             isHorizontalFormGroups ? 'k-form-group__title--horizontal mb-4' : 'mb-6'
           ]"
-          for="input--email-template-upload"
+          :for="
+            isShowRedFlags && !attachments.length
+              ? 'input--email-template-upload-tooltip'
+              : 'input--email-template-upload'
+          "
           style="font-weight: 600; font-size: 20px;"
           >Attach File:</label
         >
@@ -569,7 +573,7 @@
             <div v-on="on">
               <k-file-upload
                 v-if="!attachments.length"
-                id="input--email-template-upload"
+                id="input--email-template-upload-tooltip"
                 is-stand-alone
                 class="mb-2"
                 ref="refFileUpload"
@@ -1289,7 +1293,7 @@ export default {
         fromAddress: this.fromAddress,
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
-        methodTypeId: parseInt(this.methodTypeId),
+        methodTypeId: Number.parseInt(this.methodTypeId),
         isPlainText: !this.isPlainText,
         toneResourceId: this.toneResourceId,
         localizationResourceId: this.localizationResourceId

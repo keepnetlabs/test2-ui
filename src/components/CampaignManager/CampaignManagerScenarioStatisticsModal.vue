@@ -318,8 +318,8 @@ export default {
       }
       data.sort((a, b) => (a.percentage > b.percentage ? -1 : 1))
       const totalExcludedData = {
-        count: (parseInt(naData?.count) || 0) + (parseInt(unknownData?.count) || 0),
-        percentage: (parseInt(naData?.percentage) || 0) + (parseInt(unknownData?.percentage) || 0)
+        count: (Number.parseInt(naData?.count) || 0) + (Number.parseInt(unknownData?.count) || 0),
+        percentage: (Number.parseInt(naData?.percentage) || 0) + (Number.parseInt(unknownData?.percentage) || 0)
       }
       const firstData = data.slice(0, 5)
       const otherData = data.slice(5)

@@ -279,7 +279,7 @@
                     Example Individual Printout
                   </div>
                   <VBtn
-                    id="btn-preview-indiviual-printout"
+                    id="btn-preview-simulator-printout"
                     class="white--text btn-util btn-download-add-in"
                     color="#2196F3"
                     rounded
@@ -847,7 +847,8 @@ export default {
 
         this.checkRedFlagsWithRetry(payload)
           .then((res) => {
-            const { cc, fromEmail, fromName, subject, template, attachmentFileName } = res?.data
+            const { cc, fromEmail, fromName, subject, template, attachmentFileName } =
+              res?.data ?? {}
             const redFlags = {
               ccAddresses: cc,
               fromAddress: fromEmail,

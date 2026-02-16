@@ -985,7 +985,7 @@ export default {
       })
     },
     calculateTimeType(time, type, isDelayEvery) {
-      const t = parseInt(time)
+      const t = Number.parseInt(time)
       if (isDelayEvery) {
         if (type === 'minutes') {
           return t * 60

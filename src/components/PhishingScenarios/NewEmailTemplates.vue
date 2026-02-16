@@ -1425,7 +1425,8 @@ export default {
             }
             return this.checkRedFlagsWithRetry(payload)
               .then((res) => {
-                const { cc, fromEmail, fromName, subject, template, attachmentFileName } = res?.data
+                const { cc, fromEmail, fromName, subject, template, attachmentFileName } =
+                  res?.data ?? {}
                 const redFlags = {
                   ccAddresses: cc,
                   fromAddress: fromEmail,

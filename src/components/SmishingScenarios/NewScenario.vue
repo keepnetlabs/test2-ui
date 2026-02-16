@@ -757,7 +757,7 @@ export default {
       const payload = {
         ...this.formValues,
         availableForRequests: this.availableForRequests,
-        methodTypeId: parseInt(this.formValues.methodTypeId),
+        methodTypeId: Number.parseInt(this.formValues.methodTypeId),
         mfaSenderNumberResourceId: this.mfaData?.mfaSenderNumberResourceId || '',
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || ''
       }
@@ -908,8 +908,8 @@ export default {
           'difficultyTypes'
         ].find((item) => item.text === this.landingPageTemplate?.difficulty)?.value
         const maxDifficulty = Math.max(
-          parseInt(textMessageTemplateDifficultyValue),
-          parseInt(landingMessageTemplateDifficultyValue)
+          Number.parseInt(textMessageTemplateDifficultyValue),
+          Number.parseInt(landingMessageTemplateDifficultyValue)
         )
         return (
           this.scenarioDetailsLookup['difficultyTypes'].find(
@@ -928,7 +928,7 @@ export default {
     },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplate?.landingPages?.length > 1
-        ? this.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1].content || ''
+        ? this.landingPageTemplate.landingPages[Number.parseInt(this.selectedTab) - 1].content || ''
         : this.landingPageTemplate.landingPages[0].content || ''
     }
   },

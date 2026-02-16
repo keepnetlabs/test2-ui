@@ -34,7 +34,7 @@ export default {
       }
 
       const currentTime = new Date().getTime()
-      const lastShownTimeMs = parseInt(lastShownTime, 10)
+      const lastShownTimeMs = Number.parseInt(lastShownTime, 10)
 
       // Guard against corrupted data in localStorage
       if (isNaN(lastShownTimeMs)) {

@@ -1031,7 +1031,7 @@ export default {
       if (menu) {
         const { bottom } = menu.getBoundingClientRect()
         const { innerHeight } = window
-        const maxBottom = bottom + (300 - parseInt(this.menuMaxHeight.replace('px', '')))
+        const maxBottom = bottom + (300 - Number.parseInt(this.menuMaxHeight.replace('px', '')))
         if (maxBottom > innerHeight) {
           const diff = Math.round(maxBottom - innerHeight) + 8
           const newMaxHeight = 300 - diff

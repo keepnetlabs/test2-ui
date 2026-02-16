@@ -331,16 +331,17 @@ export default {
         this.callForData()
       })
     },
-    handleAddTraining(item = { text: '' }) {
-      if (item.text === this.addTrainingItems[0].text) {
+    handleAddTraining(item) {
+      const safeItem = item ?? { text: '' }
+      if (safeItem.text === this.addTrainingItems[0].text) {
         this.handleAdd()
       }
-      if (item.text === this.addTrainingItems[1].text) {
+      if (safeItem.text === this.addTrainingItems[1].text) {
         this.handleAddPoster()
       }
     },
-    handleDownloadPoster(item = {}) {
-      this.$emit(EMITS.ON_DOWNLOAD_POSTER, item)
+    handleDownloadPoster(item) {
+      this.$emit(EMITS.ON_DOWNLOAD_POSTER, item ?? {})
     }
   }
 }

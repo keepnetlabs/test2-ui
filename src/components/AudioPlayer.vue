@@ -137,7 +137,7 @@ export default {
       this.$emit('srcError')
     },
     onChangeCurrentTime(index) {
-      this.$refs.refAudio.currentTime = parseInt((index / 100) * this.audio.maxTime)
+      this.$refs.refAudio.currentTime = Number.parseInt((index / 100) * this.audio.maxTime)
     },
     onTogglePlay() {
       return this.audio.playing ? this.onPauseAudio() : this.onPlayAudio()
@@ -158,10 +158,10 @@ export default {
     },
     onTimeupdate(event) {
       this.audio.currentTime = event.target.currentTime
-      this.sliderTime = parseInt((this.audio.currentTime / this.audio.maxTime) * 100)
+      this.sliderTime = Number.parseInt((this.audio.currentTime / this.audio.maxTime) * 100)
     },
     onLoadedmetadata(event) {
-      this.audio.maxTime = parseInt(event.target.duration)
+      this.audio.maxTime = Number.parseInt(event.target.duration)
       this.canPlay = true
     }
   },

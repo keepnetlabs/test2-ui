@@ -2,7 +2,7 @@
   <div class="dropdown-question-container">
     <div class="dropdown-response-container">
       <div class="dropdown-answer-field">
-        <label class="dropdown-answer-label">User's Answer:</label>
+        <span class="dropdown-answer-label">User's Answer:</span>
         <div class="dropdown-answer-input">
           <span class="dropdown-selected-text">{{ getUserSelection }}</span>
           <i class="mdi mdi-chevron-down dropdown-icon"></i>

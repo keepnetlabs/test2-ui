@@ -415,12 +415,12 @@ export default {
   computed: {
     getSelectedTemplateHeader() {
       return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedTab) - 1]?.name || ''
+        ? this.landingPageTemplates?.[Number.parseInt(this.selectedTab) - 1]?.name || ''
         : this.landingPageTemplates?.[0]?.name || ''
     },
     getSelectedTemplateDetails() {
       return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedTab) - 1]?.content || ''
+        ? this.landingPageTemplates?.[Number.parseInt(this.selectedTab) - 1]?.content || ''
         : this.landingPageTemplates?.[0]?.content || ''
     },
     getSingleTemplateDetails() {

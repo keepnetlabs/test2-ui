@@ -35,7 +35,7 @@
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+            id="step--quishing-printout-add-or-edit-modal-campaign-summary"
             class="k-stepper__step"
             :complete="step > 4"
             :step="4"
@@ -497,7 +497,7 @@ export default {
             sendRandomlyUsersCount: targetAudienceFormData.sendRandomlyUsersCount,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
-            scheduleTypeId: parseInt(scheduleFormData.scheduleTypeId),
+            scheduleTypeId: Number.parseInt(scheduleFormData.scheduleTypeId),
             scheduledDate:
               scheduleFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null

@@ -228,7 +228,7 @@ export function isEmailSpecialCharacter(value) {
 export function port(value, message = 'Only use numbers') {
   value = getValue(value)
   if (!/^\d*$/gi.test(value)) return message
-  value = parseInt(value, 10)
+  value = Number.parseInt(value, 10)
   return (value > 0 && value <= 65536) || 'Invalid port number'
 }
 
@@ -245,7 +245,7 @@ export function isDomainUrl(value, message = 'Invalid URL') {
 }
 export function numberRangeRule(value, min = 0, max = 999, message = '') {
   if (value == '' && value == null) return false
-  if (!isNaN(parseInt(value)) && value >= min && value <= max) return true
+  if (!isNaN(Number.parseInt(value)) && value >= min && value <= max) return true
   return message || `Enter a number between ${min} and ${max}`
 }
 

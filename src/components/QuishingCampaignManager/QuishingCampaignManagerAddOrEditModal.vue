@@ -41,7 +41,7 @@
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+            id="step--campaign-manager-add-or-edit-modal-delivery-settings"
             class="k-stepper__step"
             :complete="step > 4"
             :step="4"
@@ -49,7 +49,7 @@
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+            id="step--quishing-campaign-manager-add-or-edit-modal-campaign-summary"
             class="k-stepper__step"
             :complete="step > 5"
             :step="5"
@@ -718,7 +718,7 @@ export default {
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
             duration: campaignManagerFormData.duration,
-            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
+            scheduleTypeId: Number.parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null

@@ -225,7 +225,7 @@ const whitelabel = {
         localStorage.setItem(STORAGE_KEY, new Date().getTime().toString())
       } else {
         const currentTime = new Date().getTime()
-        const lastShownTimeMs = parseInt(lastShownTime)
+        const lastShownTimeMs = Number.parseInt(lastShownTime)
         const timeDifference = currentTime - lastShownTimeMs
 
         if (timeDifference > TWENTY_FOUR_HOURS_MS) {

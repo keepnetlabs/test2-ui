@@ -2,7 +2,7 @@
   <div class="likert-question-container">
     <div class="likert-response-container">
       <div class="likert-answer-field">
-        <label class="likert-answer-label">User's Answer:</label>
+        <span class="likert-answer-label">User's Answer:</span>
         <div class="likert-answer-list">
           <div v-if="userResponses.length === 0" class="likert-item">
             <div class="likert-response-text">No likert responses found</div>

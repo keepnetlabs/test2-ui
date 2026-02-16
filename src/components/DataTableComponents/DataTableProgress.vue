@@ -1,6 +1,6 @@
 <template>
   <div class="datatable-progress">
-    <template v-if="scope.row && parseInt(scope.row[col.property]) >= 0">
+    <template v-if="hasValidProgress">
       <span
         :class="[scope.row[col.property] !== 100 && 'ml-1']"
         v-if="col.progressType !== 'plain'"
@@ -38,6 +38,13 @@ export default {
     },
     col: {
       type: Object
+    }
+  },
+  computed: {
+    hasValidProgress() {
+      if (!this.scope?.row) return false
+      const value = Number.parseInt(this.scope.row[this.col.property], 10)
+      return !Number.isNaN(value) && value >= 0
     }
   }
 }

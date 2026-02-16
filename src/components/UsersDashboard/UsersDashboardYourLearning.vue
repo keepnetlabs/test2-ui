@@ -251,7 +251,7 @@ export default {
       if (isMaxPoints === true) {
         return 'mdi-star'
       }
-      const pointsValue = parseInt(points)
+      const pointsValue = Number.parseInt(points)
       if (isNaN(pointsValue)) {
         return 'mdi-check-circle'
       }
@@ -272,7 +272,7 @@ export default {
       if (isMaxPoints === true) {
         return '#D1AD0C' // Gold color for max points
       }
-      const pointsValue = parseInt(points)
+      const pointsValue = Number.parseInt(points)
       if (isNaN(pointsValue)) {
         return '#217124'
       }

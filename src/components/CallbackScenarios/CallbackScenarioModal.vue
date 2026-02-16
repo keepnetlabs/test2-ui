@@ -552,7 +552,7 @@ export default {
     getDifficultyType() {
       return (
         this.scenarioDetailsLookup['difficultyTypes']?.find(
-          (item) => item.value === parseInt(this.generalDifficultyTypeId)
+          (item) => item.value === Number.parseInt(this.generalDifficultyTypeId)
         )?.text || ''
       )
     }

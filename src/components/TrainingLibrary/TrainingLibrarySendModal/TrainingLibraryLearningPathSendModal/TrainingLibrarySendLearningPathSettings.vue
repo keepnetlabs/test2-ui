@@ -119,7 +119,7 @@
         <v-text-field
           v-model="formData.distributionDays"
           v-mask="'#######'"
-          id="input--edit-enrollment-reminder-period-count"
+          id="input--edit-learning-path-distribution-days"
           placeholder="Enter number"
           outlined
           class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
