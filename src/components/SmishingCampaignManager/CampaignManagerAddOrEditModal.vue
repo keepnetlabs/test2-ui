@@ -41,7 +41,7 @@
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+            id="step--campaign-manager-add-or-edit-modal-sms-settings"
             class="k-stepper__step"
             :complete="step > 4"
             :step="4"
@@ -49,7 +49,7 @@
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+            id="step--smishing-campaign-manager-add-or-edit-modal-campaign-summary"
             class="k-stepper__step"
             :complete="step > 5"
             :step="5"
@@ -660,29 +660,29 @@ export default {
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
-            duration: parseInt(campaignManagerFormData.duration),
-            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
+            duration: Number.parseInt(campaignManagerFormData.duration),
+            scheduleTypeId: Number.parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null
                 : deliverySettingsFormData.scheduledDate,
             scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId,
             useTargetUserTimeZone: deliverySettingsFormData.useTargetUserTimeZone,
-            distributionTypeId: parseInt(deliverySettingsFormData.distributionTypeId),
+            distributionTypeId: Number.parseInt(deliverySettingsFormData.distributionTypeId),
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
-            distributionDelayTimeTypeId: parseInt(
+            distributionDelayTimeTypeId: Number.parseInt(
               deliverySettingsFormData.distributionDelayTimeTypeId
             ),
             distributionStartTime: deliverySettingsFormData.distributionStartTime,
             distributionEndTime: deliverySettingsFormData.distributionEndTime,
             distributionDays: deliverySettingsFormData.distributionDays,
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
-            sendingLimit: parseInt(deliverySettingsFormData.sendingLimit),
+            sendingLimit: Number.parseInt(deliverySettingsFormData.sendingLimit),
             frequency: deliverySettingsFormData.frequency,
             sendOnlyActiveUsers: targetAudienceFormData.sendOnlyActiveUsers,
             sendRandomlyUsers: targetAudienceFormData.sendRandomlyUsers,
-            sendRandomlyUsersCount: parseInt(targetAudienceFormData.sendRandomlyUsersCount),
-            sendRandomlyUsersCalculateTypeId: parseInt(
+            sendRandomlyUsersCount: Number.parseInt(targetAudienceFormData.sendRandomlyUsersCount),
+            sendRandomlyUsersCalculateTypeId: Number.parseInt(
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId
             ),
             smsProviderNumberResourceIds: deliverySettingsFormData.smsProviderNumberResourceIds

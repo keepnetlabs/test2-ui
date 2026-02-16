@@ -929,7 +929,7 @@ export default {
     },
     getCurrentLandingPageTemplate() {
       return this.summaryData.landingPageTemplate?.landingPages?.length > 1
-        ? this.summaryData.landingPageTemplate.landingPages[parseInt(this.selectedTab) - 1]
+        ? this.summaryData.landingPageTemplate.landingPages[Number.parseInt(this.selectedTab) - 1]
             .content || ''
         : this.summaryData.landingPageTemplate.landingPages[0].content || ''
     },

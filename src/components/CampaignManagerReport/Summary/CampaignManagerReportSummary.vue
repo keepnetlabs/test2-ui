@@ -259,7 +259,7 @@ export default {
       return {
         'Target Groups': this?.targetGroups || [],
         'Hyper-Personalization':
-          parseInt(campaignInfo?.sendUserPreferredLanguage) === 1
+          Number.parseInt(campaignInfo?.sendUserPreferredLanguage) === 1
             ? 'Preferred Language'
             : 'Manually',
         'Smart Grouping': smartGroupInfo,
@@ -334,11 +334,11 @@ export default {
           difficultyTypeIds
         } = scenariosGeneralInfo
         const methodText =
-          this.formDetails?.methodTypes?.find((item) => parseInt(item.value) === methodTypeId)
+          this.formDetails?.methodTypes?.find((item) => Number.parseInt(item.value) === methodTypeId)
             ?.text || ''
         const difficultyText =
           this.formDetails?.difficultyTypes
-            ?.filter((item) => difficultyTypeIds.includes(parseInt(item.value)))
+            ?.filter((item) => difficultyTypeIds.includes(Number.parseInt(item.value)))
             ?.map((item) => item.text)
             ?.join(',') || ''
         const mappedLanguageShortCodes =

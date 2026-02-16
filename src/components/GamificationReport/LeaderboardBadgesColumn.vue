@@ -95,25 +95,13 @@ export default {
     totalBadgeCount() {
       return Array.isArray(this.badges) ? this.badges.length : 0
     },
-    /** Aynı tipte sadece en yüksek level - farklı tipleri önceliklendirmek için */
-    uniqueByTypeBadges() {
-      const badges = Array.isArray(this.badges) ? this.badges : []
-      const byType = {}
-      for (const badge of badges) {
-        const type = badge.badgeType ?? badge.type
-        const key = String(type)
-        if (!byType[key] || (byType[key].level ?? 0) < (badge.level ?? 0)) {
-          byType[key] = badge
-        }
-      }
-      return Object.values(byType).sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
-    },
-    /** Tabloda gösterilecek badge'ler: ≤3 ise hepsi, >3 ise farklı tiplerden ilk 3 */
+    /** Tabloda gösterilecek badge'ler: her zaman min(3, total) badge göster. ≤3 ise hepsi, >3 ise level'a göre ilk 3 */
     visibleBadges() {
+      const sorted = [...(this.badges || [])].sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
       if (this.totalBadgeCount <= this.maxVisible) {
-        return [...(this.badges || [])].sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
+        return sorted
       }
-      return this.uniqueByTypeBadges.slice(0, this.maxVisible)
+      return sorted.slice(0, this.maxVisible)
     },
     overflowCount() {
       return this.overflowBadges.length
@@ -121,28 +109,8 @@ export default {
     /** Gizlenen tüm badge'ler: tabloda gösterilmeyenler */
     overflowBadges() {
       if (this.totalBadgeCount <= this.maxVisible) return []
-      const original = Array.isArray(this.badges) ? this.badges : []
-      const displayedTypes = this.visibleBadges.map((v) => String(v.badgeType ?? v.type))
-      const overflow = []
-      const seenPerType = {}
-      for (const badge of original) {
-        const type = String(badge.badgeType ?? badge.type)
-        const level = badge.level ?? 0
-        if (!displayedTypes.includes(type)) {
-          overflow.push(badge)
-          continue
-        }
-        const displayed = this.visibleBadges.find((v) => String(v.badgeType ?? v.type) === type)
-        if (!displayed) continue
-        const displayedLevel = displayed.level ?? 0
-        if (level < displayedLevel) {
-          overflow.push(badge)
-        } else if (level === displayedLevel) {
-          seenPerType[type] = (seenPerType[type] || 0) + 1
-          if (seenPerType[type] > 1) overflow.push(badge)
-        }
-      }
-      return overflow.sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
+      const sorted = [...(this.badges || [])].sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
+      return sorted.slice(this.maxVisible)
     },
     overflowTooltipText() {
       if (this.overflowCount <= 0) return ''

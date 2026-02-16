@@ -374,7 +374,7 @@ export default {
       if (!val || /\d{1,2}$/.test(val)) {
         this.$emit('input', {
           ...this.value,
-          duration: val.length ? parseInt(val) : null
+          duration: val.length ? Number.parseInt(val) : null
         })
       }
     },
@@ -385,7 +385,7 @@ export default {
       if (!val || /\d{1,2}$/.test(val)) {
         this.$emit('input', {
           ...this.value,
-          inputDigit: val.length ? parseInt(val) : null
+          inputDigit: val.length ? Number.parseInt(val) : null
         })
       }
     },

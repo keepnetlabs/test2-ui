@@ -2,7 +2,7 @@
   <div class="sequence-question-container">
     <div class="sequence-response-container">
       <div class="sequence-answer-field">
-        <label class="sequence-answer-label">User's Sequence:</label>
+        <span class="sequence-answer-label">User's Sequence:</span>
         <div class="sequence-answer-list">
           <div v-for="(item, index) in userSequence" :key="index" class="sequence-item">
             <div class="sequence-number">{{ index + 1 }}.</div>

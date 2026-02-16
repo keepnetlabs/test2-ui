@@ -50,7 +50,6 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 
-const HIDDEN_WIDGET_TYPES = []
 export default {
   name: 'NewExecutiveReportCommonContainer',
   components: {
@@ -86,9 +85,7 @@ export default {
     visibleCards() {
       return this.cards
         .map((card) => {
-          const widgets = (card.widgets || []).filter(
-            (widget) => !HIDDEN_WIDGET_TYPES.includes(widget.widgetType)
-          )
+          const widgets = card.widgets || []
           return {
             ...card,
             widgets

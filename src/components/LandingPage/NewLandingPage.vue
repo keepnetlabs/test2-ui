@@ -645,7 +645,7 @@ export default {
       this.isAIAllyOpen = !this.isAIAllyOpen
     },
     handleAITemplateUpdate(template) {
-      const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
+      const currentPageIndex = Number.parseInt(this.tab.replace('page', '')) - 1
       if (this.formValues.landingPages[currentPageIndex]) {
         this.$set(this.formValues.landingPages[currentPageIndex], 'content', template)
       }
@@ -659,7 +659,7 @@ export default {
     },
     handleEmailGeneratingChange(isGenerating) {
       this.isAIAllyGenerating = isGenerating
-      const currentPageIndex = parseInt(this.tab.replace('page', '')) - 1
+      const currentPageIndex = Number.parseInt(this.tab.replace('page', '')) - 1
       if (this.$refs.refEmailTemplate && this.$refs.refEmailTemplate[currentPageIndex]) {
         this.$refs.refEmailTemplate[currentPageIndex].isEmailGenerating = isGenerating
       }
@@ -668,7 +668,7 @@ export default {
       this.isPhishingLinkOpen = !this.isPhishingLinkOpen
     },
     handleEditMode() {
-      const index = parseInt(this.tab.replace('page', '')) - 1
+      const index = Number.parseInt(this.tab.replace('page', '')) - 1
       this.$refs.refEmailTemplate?.[index]?.editHtmlTemplate()
     },
     handleAssistedByAITemplate(isAssistedByAI) {
@@ -991,7 +991,7 @@ export default {
     getAndUpdateFirstIndexForPageText() {
       let newPageText
       if (this.formValues.landingPages.length === 1) {
-        const firstPageText = parseInt(this.formValues.landingPages[0].name.split(' ')[1])
+        const firstPageText = Number.parseInt(this.formValues.landingPages[0].name.split(' ')[1])
         if (firstPageText === 2) {
           this.formValues.landingPages[0].name = 'landing-page'
         }
@@ -1003,9 +1003,9 @@ export default {
       const defaultIndex = this.formValues.landingPages.length + 1
       let newPageIndex =
         this.editedLandingPages.length === 2
-          ? parseInt(this.editedLandingPages[1].name.split(' ')[1]) + 1
+          ? Number.parseInt(this.editedLandingPages[1].name.split(' ')[1]) + 1
           : defaultIndex
-      const firstPageIndex = parseInt(this?.formValues?.landingPages[0].name.split(' ')[1])
+      const firstPageIndex = Number.parseInt(this?.formValues?.landingPages[0].name.split(' ')[1])
       if (isNaN(firstPageIndex)) return newPageIndex
       if (firstPageIndex === newPageIndex) newPageIndex += 1
       if (firstPageIndex > newPageIndex) newPageIndex = firstPageIndex + 1

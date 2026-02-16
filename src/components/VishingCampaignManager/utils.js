@@ -130,7 +130,7 @@ export const getSendCallOnDays = (val) => {
     ?.split('')
     ?.reverse()
     .reduce((acc, item, index) => {
-      const number = parseInt(item)
+      const number = Number.parseInt(item)
       if (number === 0) return acc
       acc.push(Math.pow(2, index))
       return acc

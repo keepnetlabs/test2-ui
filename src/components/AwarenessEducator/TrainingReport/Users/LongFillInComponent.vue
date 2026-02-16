@@ -2,7 +2,7 @@
   <div class="long-fill-in-question-container">
     <div class="long-fill-in-response-container">
       <div class="long-fill-in-answer-field">
-        <label class="long-fill-in-answer-label">User's Answer:</label>
+        <span class="long-fill-in-answer-label">User's Answer:</span>
         <div class="long-fill-in-answer-box">
           <div class="long-fill-in-text">{{ getUserResponse }}</div>
         </div>

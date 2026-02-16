@@ -152,7 +152,7 @@ export default {
     },
     getCurrentTemplate() {
       return this.templates?.length > 1
-        ? this.templates?.[parseInt(this.selectedTab) - 1]?.content || ''
+        ? this.templates?.[Number.parseInt(this.selectedTab) - 1]?.content || ''
         : this.templates?.[0]?.content || ''
     }
   },

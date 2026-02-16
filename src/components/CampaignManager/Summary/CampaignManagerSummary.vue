@@ -391,7 +391,7 @@ export default {
     },
     canRenderAlertboxLanguage() {
       return (
-        parseInt(this.formData?.sendUserPreferredLanguage) === 1 &&
+        Number.parseInt(this.formData?.sendUserPreferredLanguage) === 1 &&
         this.getPreferredAllUsersCount > 0 &&
         !this.isVishing &&
         !this.isSmishing &&
@@ -637,7 +637,7 @@ export default {
         return {
           name: formData.name,
           'Hyper-Personalization':
-            parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
+            Number.parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
           'Smart Grouping': formData?.smartGroup?.name || 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
@@ -655,7 +655,7 @@ export default {
       return {
         name: formData.name,
         'Hyper-Personalization':
-          parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
+          Number.parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
         'Smart Grouping': formData?.smartGroup?.name || 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),

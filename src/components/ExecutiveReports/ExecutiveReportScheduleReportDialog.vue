@@ -29,7 +29,7 @@
         >
           <KSelect
             v-model.trim="formData.frequency"
-            id="input--company-manager-advanced-settings-frequency"
+            id="input--executive-report-schedule-frequency"
             dense
             outlined
             hint="*Required"
@@ -48,7 +48,7 @@
         >
           <KSelect
             v-model.trim="scheduledPageFormData.reportType"
-            id="input--company-manager-advanced-settings-frequency"
+            id="input--executive-report-schedule-report-type"
             dense
             outlined
             hint="*Required"
@@ -65,7 +65,7 @@
         >
           <KSelect
             v-model.trim="scheduledPageFormData.reportResourceId"
-            id="input--company-manager-advanced-settings-frequency"
+            id="input--executive-report-schedule-report"
             dense
             outlined
             hint="*Required"

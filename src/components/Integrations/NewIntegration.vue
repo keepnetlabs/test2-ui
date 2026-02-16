@@ -1402,7 +1402,7 @@ export default {
           data = {
             ...data,
             detectionThreshold:
-              data.detectionThreshold === '' ? null : parseInt(data.detectionThreshold)
+              data.detectionThreshold === '' ? null : Number.parseInt(data.detectionThreshold)
           }
         } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
           delete data['detectionThreshold']
@@ -1779,7 +1779,7 @@ export default {
               detectionThreshold:
                 this.formValues.detectionThreshold === ''
                   ? null
-                  : parseInt(this.formValues.detectionThreshold)
+                  : Number.parseInt(this.formValues.detectionThreshold)
             }
           } else if (this.formValues.hasOwnProperty('detectionThreshold')) {
             delete payload['detectionThreshold']

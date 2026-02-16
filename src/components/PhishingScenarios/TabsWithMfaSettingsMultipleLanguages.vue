@@ -88,7 +88,7 @@
             <BrowserToolbar
               v-if="!!getCurrentLandingPageTemplate && isPhishingScenario"
               :url="phishingUrl"
-              :page-index="parseInt(landingPageTab) - 1"
+              :page-index="Number.parseInt(landingPageTab) - 1"
               :show-toolbar="!!getCurrentLandingPageTemplate"
             />
             <KEmailPreview

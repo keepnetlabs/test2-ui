@@ -1038,7 +1038,7 @@
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
-                    <template v-if="scope.row && parseInt(scope.row.analyzedMailCount) >= 0">
+                    <template v-if="hasValidMailProgress(scope)">
                       <span
                         :class="[
                           Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) !==
@@ -1668,6 +1668,11 @@ export default {
       }
       return Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100)
     },
+    hasValidMailProgress(scope) {
+      if (!scope?.row) return false
+      const analyzed = Number.parseInt(scope.row.analyzedMailCount, 10)
+      return !Number.isNaN(analyzed) && analyzed >= 0
+    },
     exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       let fileName = 'Investigation Details '
       switch (this.activeMenu) {
@@ -1788,7 +1793,7 @@ export default {
         this.investigationDetailsData.expireDate?.split(' '),
         getTimeZoneForMoment()
       ).toDate()
-      let diffSeconds = parseInt((expireDate - today) / 1000, 10)
+      let diffSeconds = Number.parseInt((expireDate - today) / 1000, 10)
       this.diffDays = diffSeconds / (60 * 60 * 24)
       if (this.diffDays <= 0) {
         this.diffDays = 0
@@ -1806,11 +1811,11 @@ export default {
           remainingTime = remainingTime % (60 * 60)
         }
         this.totalMinutes = Math.floor(remainingTime / 60)
-        const totalSeconds = parseInt((expireDate - createDate) / 1000, 10)
+        const totalSeconds = Number.parseInt((expireDate - createDate) / 1000, 10)
         this.progressValue =
           this?.statsAndMenuData?.status === 'Finished'
             ? 100
-            : (parseInt((today - createDate) / 1000, 10) / totalSeconds) * 100
+            : (Number.parseInt((today - createDate) / 1000, 10) / totalSeconds) * 100
       }
     },
     isWantToStopConfirm() {

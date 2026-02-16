@@ -110,7 +110,7 @@
                 class="mb-2"
                 style="
                   color: #383b41;
-                  font-family: 'Open Sans';
+                  font-family: 'Open Sans', sans-serif;
                   font-size: 12px;
                   font-style: normal;
                   font-weight: 400;
@@ -122,7 +122,7 @@
               <div
                 style="
                   color: #383b41;
-                  font-family: 'Open Sans';
+                  font-family: 'Open Sans', sans-serif;
                   font-size: 12px;
                   font-style: normal;
                   font-weight: 600;

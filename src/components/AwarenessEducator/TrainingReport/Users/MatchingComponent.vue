@@ -2,7 +2,7 @@
   <div class="matching-question-container">
     <div class="matching-response-container">
       <div class="matching-answer-field">
-        <label class="matching-answer-label">User's Matches:</label>
+        <span class="matching-answer-label">User's Matches:</span>
         <div class="matching-answer-list">
           <div v-for="(match, index) in userMatches" :key="index" class="matching-item">
             <div class="matching-left">{{ match.left }}</div>

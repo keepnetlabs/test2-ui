@@ -60,7 +60,7 @@
                 </div>
 
                 <VBtn
-                  id="btn-preview-indiviual-printout"
+                  id="btn-preview-poster-printout-tabs"
                   class="white--text btn-util btn-download-add-in"
                   style="text-transform: none;"
                   color="#2196F3"
@@ -196,7 +196,7 @@
               <span class="template-preview__text--body">{{ fileName }}</span>
             </div>
             <VBtn
-              id="btn-preview-indiviual-printout"
+              id="btn-preview-poster-printout-simple"
               class="white--text btn-util btn-download-add-in"
               color="#2196F3"
               rounded

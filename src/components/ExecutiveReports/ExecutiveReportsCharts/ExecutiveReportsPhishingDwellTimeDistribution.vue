@@ -113,12 +113,12 @@ export default {
             const xData = this.chartData.datasets[2].data[dataIndex]
             let xCoord = xScale.getPixelForValue(dataIndex)
             const splittedXCoord = this.chartXScales[dataIndex].toString().split(' - ')
-            if (parseInt(splittedXCoord[0]) === xData.x) {
+            if (Number.parseInt(splittedXCoord[0]) === xData.x) {
               xCoord = xCoord - 14
-            } else if (parseInt(splittedXCoord[1]) === xData.x) {
+            } else if (Number.parseInt(splittedXCoord[1]) === xData.x) {
               xCoord = xCoord + 14
             } else {
-              const mediumValue = (parseInt(splittedXCoord[0]) + parseInt(splittedXCoord[1])) / 2
+              const mediumValue = (Number.parseInt(splittedXCoord[0]) + Number.parseInt(splittedXCoord[1])) / 2
               if (xData.x < mediumValue) xCoord = xCoord - mediumValue
               else if (xData.x > mediumValue) xCoord = xCoord + mediumValue
             }
@@ -179,8 +179,8 @@ export default {
         const { ActionRange } = item.dataObject
         averageDwellTime = item.values.find(({ name }) => name === 'AverageDwellTime').value
         const itemValue = item.values.find(({ name }) => name === 'Percentage').value
-        const numberActionRangeStart = parseInt(ActionRange.split('-')[0].trim())
-        const numberActionRangeEnd = parseInt(ActionRange.split('-')[1].trim())
+        const numberActionRangeStart = Number.parseInt(ActionRange.split('-')[0].trim())
+        const numberActionRangeEnd = Number.parseInt(ActionRange.split('-')[1].trim())
         if (numberActionRangeStart <= averageDwellTime) {
           acc.push(ActionRange)
           if (numberActionRangeEnd >= averageDwellTime) {

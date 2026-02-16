@@ -63,7 +63,7 @@
             v-if="isAwarenessEducatorTemplateSelected"
             v-bind="emailDeliveryProps"
             v-model.trim="emailDelivery"
-            id="input--company-manager-advanced-settings-smtp"
+            id="input--notification-template-email-delivery-awareness"
             class="new-integration__select"
             dense
             outlined
@@ -90,7 +90,7 @@
             v-else
             v-bind="emailDeliveryProps"
             v-model.trim="formValues.smtpSettingResourceId"
-            id="input--company-manager-advanced-settings-smtp"
+            id="input--notification-template-email-delivery-smtp"
             class="new-integration__select"
             dense
             outlined

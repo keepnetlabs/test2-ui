@@ -158,13 +158,7 @@
             </template>
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
-                <span
-                  v-if="
-                    scope.row &&
-                    scope.row.matchingPlaybooks &&
-                    scope.row.matchingPlaybooks.length === 0
-                  "
-                >
+                <span v-if="hasNoMatchingPlaybooks(scope)">
                   {{
                     scope.row.source === "Auto"
                       ? "Auto Analysis"
@@ -348,13 +342,7 @@
                 </div>
               </template>
               <template v-if="scope.column.property === 'source'">
-                <span
-                  v-if="
-                    scope.row &&
-                    scope.row.matchingPlaybooks &&
-                    scope.row.matchingPlaybooks.length === 0
-                  "
-                >
+                <span v-if="hasNoMatchingPlaybooks(scope)">
                   {{
                     scope.row.source === "Auto"
                       ? "Auto Analysis"
@@ -2032,6 +2020,13 @@ export default {
     togglePlaybookModalWithSelected(selectedPlaybookId) {
       this.selectedPlaybookId = selectedPlaybookId;
       this.showPlaybookModal = !this.showPlaybookModal;
+    },
+    hasNoMatchingPlaybooks(scope) {
+      return (
+        scope?.row &&
+        scope.row.matchingPlaybooks &&
+        scope.row.matchingPlaybooks.length === 0
+      );
     },
     getDataTableFieldLabel(text) {
       return getDataTableFieldLabel(text);

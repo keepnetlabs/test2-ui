@@ -102,7 +102,7 @@
               <v-text-field
                 v-model="formData.distributionDays"
                 v-mask="'#######'"
-                id="input--edit-enrollment-reminder-period-count"
+                id="input--edit-enrollment-distribution-days"
                 placeholder="Enter number"
                 outlined
                 class="edit-name-textfield edit-select standard-height mx-2 absolute-text-input-error"
@@ -591,7 +591,7 @@ export default {
       if (!this.isAutoEnroll) payload.enrollmentAutoEnroll = null
       if (!this.isLearningPath) delete payload.distributionDays
       if (this.isDistributionEnabled && !!payload?.distributionDays) {
-        payload.distributionDays = parseInt(payload.distributionDays)
+        payload.distributionDays = Number.parseInt(payload.distributionDays)
       } else {
         payload.distributionDays = null
       }

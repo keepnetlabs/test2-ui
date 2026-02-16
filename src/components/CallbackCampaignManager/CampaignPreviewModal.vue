@@ -32,7 +32,7 @@
       </ElTabs>
       <DatatableLoading v-if="isLoadingScenario" :loading="isLoadingScenario" />
       <ElTabs v-if="!isLoadingScenario" v-model="tab" class="k-sub-tab">
-        <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
+        <ElTabPane id="campaign-preview-modal--email" name="email" :label="labels.JustEmail">
           <div class="template-preview pt-4">
             <div v-if="!!emailTemplate" class="template-preview__text">
               <div class="mb-1">
@@ -72,7 +72,7 @@
           </div>
         </ElTabPane>
         <ElTabPane
-          id="campaign-manager-info--email-content"
+          id="campaign-preview-modal--callback"
           name="callback"
           label="Callback Template"
         >
@@ -91,7 +91,7 @@
           </div>
         </ElTabPane>
         <template v-if="!!isRenderTrainingTab">
-          <ElTabPane id="campaign-manager-info--email-content" name="training" label="Training">
+          <ElTabPane id="campaign-preview-modal--training" name="training" label="Training">
             <div class="template-preview pt-4">
               <TrainingLibraryPreview
                 v-if="selectedLanguages.length"
@@ -291,7 +291,7 @@ export default {
         })
     },
     callForScenarioDetail(event) {
-      this.setActiveScenario(this.phishingScenarios[parseInt(event.index)])
+      this.setActiveScenario(this.phishingScenarios[Number.parseInt(event.index)])
     },
     setLoading(flag = false) {
       this.isLoading = flag

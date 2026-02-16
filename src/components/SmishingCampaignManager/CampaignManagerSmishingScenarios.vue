@@ -413,7 +413,7 @@ export default {
     },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]?.content || ''
+        ? this.landingPageTemplates?.[Number.parseInt(this.selectedLandingPageTab) - 1]?.content || ''
         : this.landingPageTemplates?.[0]?.content || ''
     },
     getTemplateHeader() {
