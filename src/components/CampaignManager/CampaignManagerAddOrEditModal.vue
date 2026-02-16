@@ -73,7 +73,7 @@
             </v-stepper-step>
             <v-divider class="k-stepper__divider" />
             <v-stepper-step
-              id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+              id="step--campaign-manager-add-or-edit-modal-delivery-settings"
               class="k-stepper__step"
               :complete="step > 4"
               :step="4"
@@ -81,7 +81,7 @@
             </v-stepper-step>
             <v-divider class="k-stepper__divider" />
             <v-stepper-step
-              id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+              id="step--phishing-campaign-manager-add-or-edit-modal-campaign-summary"
               class="k-stepper__step"
               :complete="step > 5"
               :step="5"
@@ -778,7 +778,7 @@ export default {
               scenarioResourceIds: this.selectedPhishingScenarios.map(
                 (pScenario) => pScenario.resourceId
               ),
-              sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+              sendUserPreferredLanguage: Number.parseInt(this.sendUserPreferredLanguage)
             }
             if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
               payload.categoryFilter = {
@@ -787,7 +787,7 @@ export default {
               }
             }
             this.userCountDetailResponse = await getTargetGroupCountDetailExt(payload)
-            if (parseInt(this.sendUserPreferredLanguage) === 1) {
+            if (Number.parseInt(this.sendUserPreferredLanguage) === 1) {
               const hasRandomLanguage = this.userCountDetailResponse?.data?.data?.some((data) => {
                 const randomLanguage = data?.hasRandomLanguage
                 return !!randomLanguage?.find((r) => r.status === 'Yes')?.count
@@ -950,13 +950,13 @@ export default {
           delete emailReplySettings.domain
           let payload = {
             phishingScenarios,
-            sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage),
+            sendUserPreferredLanguage: Number.parseInt(this.sendUserPreferredLanguage),
             targetGroupResourceIds: this.targetGroupResourceIds,
             name: campaignManagerFormData.name,
             excludeFromReports: campaignManagerFormData.excludeFromReports,
             emailReplySettings,
             duration: campaignManagerFormData.duration,
-            scheduleTypeId: parseInt(deliverySettingsFormData.scheduleTypeId),
+            scheduleTypeId: Number.parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
               deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
                 ? null

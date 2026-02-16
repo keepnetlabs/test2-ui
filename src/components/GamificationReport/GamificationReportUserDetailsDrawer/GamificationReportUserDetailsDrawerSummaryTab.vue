@@ -577,18 +577,18 @@ export default {
       if (!dateString) return ''
       try {
         let date = new Date(dateString)
-        if (isNaN(date.getTime())) {
+        if (Number.isNaN(date.getTime())) {
           const match = String(dateString).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/)
           if (match) {
-            const day = parseInt(match[1], 10)
-            const month = parseInt(match[2], 10) - 1
-            const year = parseInt(match[3], 10)
-            const hour = parseInt(match[4], 10) || 0
-            const min = parseInt(match[5], 10) || 0
+            const day = Number.parseInt(match[1], 10)
+            const month = Number.parseInt(match[2], 10) - 1
+            const year = Number.parseInt(match[3], 10)
+            const hour = Number.parseInt(match[4], 10) || 0
+            const min = Number.parseInt(match[5], 10) || 0
             date = new Date(year, month, day, hour, min)
           }
         }
-        if (isNaN(date.getTime())) return ''
+        if (Number.isNaN(date.getTime())) return ''
         const day = String(date.getDate()).padStart(2, '0')
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const year = date.getFullYear()

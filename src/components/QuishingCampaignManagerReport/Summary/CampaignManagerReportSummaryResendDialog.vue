@@ -17,7 +17,7 @@
               <div v-on="on">
                 <v-checkbox
                   v-model="types"
-                  id="input--campaign-manager-report-email-failed-to-send"
+                  id="input--quishing-report-resend-failed-to-send"
                   color="#2196f3"
                   :disabled="!items.notDelivered || campaignDurationExpired()"
                   :value="5"
@@ -37,7 +37,7 @@
               <div v-on="on">
                 <v-checkbox
                   v-model="types"
-                  id="input--campaign-manager-report-email-failed-to-send"
+                  id="input--quishing-report-resend-opened-email"
                   color="#2196f3"
                   :disabled="!items.openedEmail || campaignDurationExpired()"
                   :value="1"
@@ -55,7 +55,7 @@
               <div v-on="on">
                 <v-checkbox
                   v-model="types"
-                  id="input--campaign-manager-report-email-failed-to-send"
+                  id="input--quishing-report-resend-scanned-qr"
                   color="#2196f3"
                   :disabled="!items.clickedEmail || campaignDurationExpired()"
                   :value="2"
@@ -73,7 +73,7 @@
               <div v-on="on">
                 <v-checkbox
                   v-model="types"
-                  id="input--campaign-manager-report-email-failed-to-send"
+                  id="input--quishing-report-resend-submitted-data"
                   color="#2196f3"
                   :disabled="!items.submittedEmail || campaignDurationExpired()"
                   :value="3"
@@ -91,7 +91,7 @@
               <div v-on="on">
                 <v-checkbox
                   v-model="types"
-                  id="input--campaign-manager-report-email-failed-to-send"
+                  id="input--quishing-report-resend-mfa"
                   color="#2196f3"
                   :disabled="!items.mfa || campaignDurationExpired()"
                   :value="8"
@@ -109,7 +109,7 @@
               <div v-on="on">
                 <v-checkbox
                   v-model="types"
-                  id="input--campaign-manager-report-email-failed-to-send"
+                  id="input--quishing-report-resend-no-response"
                   color="#2196f3"
                   hide-details
                   :disabled="!items.noResponseEmail || campaignDurationExpired()"

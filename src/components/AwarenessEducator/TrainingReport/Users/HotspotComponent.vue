@@ -2,7 +2,7 @@
   <div class="hotspot-question-container">
     <div class="hotspot-response-container">
       <div class="hotspot-answer-field">
-        <label class="hotspot-answer-label">User's Answer:</label>
+        <span class="hotspot-answer-label">User's Answer:</span>
         <div class="hotspot-answer-list">
           <div v-for="(spot, index) in userHotspots" :key="index" class="hotspot-item">
             <div class="hotspot-text">{{ spot }}</div>

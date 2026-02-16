@@ -82,7 +82,7 @@ export default {
         // Safari may under-measure iframe height; add small bump
         const iframe = this.$refs.iframe
         if (iframe && typeof this.height === 'string' && this.height.endsWith('px')) {
-          const current = parseInt(this.height.replace('px', ''), 10) || 0
+          const current = Number.parseInt(this.height.replace('px', ''), 10) || 0
           this.height = current + 30 + 'px'
         }
       }

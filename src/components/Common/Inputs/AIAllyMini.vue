@@ -315,7 +315,7 @@ export default {
         languageTypeResourceId: this.languageTypeResourceId,
         prompt: this.aiTemplateText,
         phishingTypeId: 1,
-        methodTypeId: parseInt(this.methodTypeId),
+        methodTypeId: Number.parseInt(this.methodTypeId),
         isPlainText: isPlainText
       }
       this.$emit('on-assisted-by-ai-template', true)

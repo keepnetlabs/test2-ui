@@ -128,7 +128,7 @@
         v-if="isMicrosoftTeams"
         label="Microsoft Teams Notifications"
         name="teams-notifications"
-        id="teams-notifications-content"
+        id="teams-notifications-content-teams-only"
       >
         <CampaignManagerReportHeader
           class="mb-6"
@@ -157,7 +157,7 @@
           @on-selection-text-change="handleSelectionChange"
         />
       </ElTabPane>
-      <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content">
+      <ElTabPane label="Enrollment Emails" name="enrollment" id="enrollment-emails-content-teams-only">
         <CampaignManagerReportHeader
           class="mb-6"
           :title="isSurvey ? 'Survey Sending Report' : 'Training Sending Report'"

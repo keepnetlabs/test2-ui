@@ -326,7 +326,7 @@ export default {
     },
     userCountValidation(v) {
       const { sendRandomlyUsersCalculateTypeId } = this.formData
-      const val = parseInt(v)
+      const val = Number.parseInt(v)
       if (sendRandomlyUsersCalculateTypeId === SEND_RANDOMLY_USERS_CALCULATE_TYPES.PERCENTAGE) {
         return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
       } else {

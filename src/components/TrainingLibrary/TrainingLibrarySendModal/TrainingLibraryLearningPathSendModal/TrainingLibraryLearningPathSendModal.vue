@@ -685,7 +685,7 @@ export default {
         awardCertificate,
         certificateConfigSendType,
         languageIds: newLanguageIds,
-        distributionDays: isDistributionEnabled ? parseInt(distributionDays) : null,
+        distributionDays: isDistributionEnabled ? Number.parseInt(distributionDays) : null,
         sendTemplatesInPreferredLanguage:
           refSendTrainingSettings?.formData?.sendTemplatesInPreferredLanguage
       }

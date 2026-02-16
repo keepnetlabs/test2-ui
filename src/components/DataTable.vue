@@ -2994,7 +2994,7 @@ export default {
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
           const date = new Date(item[sortProps.prop]);
-          if (date instanceof Date && !isNaN(date)) {
+          if (date instanceof Date && !Number.isNaN(date.getTime())) {
             acc.push(date);
           }
           return acc;

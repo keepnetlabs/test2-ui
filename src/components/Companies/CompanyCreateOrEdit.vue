@@ -835,7 +835,7 @@ export default {
             (v) => this.validations.required(v, 'Required'),
             (v) => /^\d+$/gi.test(v) || 'Invalid number',
             (v) => {
-              return parseInt(v) > 200000
+              return Number.parseInt(v) > 200000
                 ? 'Number of users has exceeded 200,000. Please reduce the number of users to continue.'
                 : null
             }
@@ -923,13 +923,13 @@ export default {
           const [firstPart, secondPart, thirdPart] =
             this.formData?.LicenseStartDate?.split(' ')?.[0]?.split('/') || []
           if (this.dateFormat === 'YYYY/MM/DD') {
-            endDate = new Date(parseInt(firstPart), parseInt(secondPart) + 2, parseInt(thirdPart))
+            endDate = new Date(Number.parseInt(firstPart), Number.parseInt(secondPart) + 2, Number.parseInt(thirdPart))
           } else if (this.dateFormat === 'MM/DD/YYYY') {
-            endDate = new Date(parseInt(thirdPart), parseInt(firstPart) + 2, parseInt(secondPart))
+            endDate = new Date(Number.parseInt(thirdPart), Number.parseInt(firstPart) + 2, Number.parseInt(secondPart))
           } else if (this.dateFormat === 'DD/MM/YYYY') {
-            endDate = new Date(parseInt(thirdPart), parseInt(secondPart) + 2, parseInt(firstPart))
+            endDate = new Date(Number.parseInt(thirdPart), Number.parseInt(secondPart) + 2, Number.parseInt(firstPart))
           } else {
-            endDate = new Date(parseInt(thirdPart), parseInt(secondPart) + 2, parseInt(firstPart))
+            endDate = new Date(Number.parseInt(thirdPart), Number.parseInt(secondPart) + 2, Number.parseInt(firstPart))
           }
           this.formData.LicenseEndDate = this.$moment(endDate).format(getTimeZoneForMoment())
         }
@@ -1137,7 +1137,7 @@ export default {
           year = thirdPart
         }
         if (year && month && day) {
-          selectedStartDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+          selectedStartDate = new Date(Number.parseInt(year), Number.parseInt(month) - 1, Number.parseInt(day))
         }
       }
       const selectedStartDateInMs = selectedStartDate.getTime() + 1000 * 60 * 60 * 24

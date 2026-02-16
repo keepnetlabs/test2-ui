@@ -236,7 +236,7 @@ export default {
     },
     getPointsIcon(points, isMaxPoints) {
       if (isMaxPoints === true) return 'mdi-star'
-      const pointsValue = parseInt(points)
+      const pointsValue = Number.parseInt(points)
       if (isNaN(pointsValue)) return 'mdi-check-circle'
       if (pointsValue < 0) return 'mdi-close-circle'
       if (pointsValue === 0) return 'mdi-minus-circle'
@@ -245,7 +245,7 @@ export default {
     },
     getPointsIconColor(points, isMaxPoints) {
       if (isMaxPoints === true) return '#D1AD0C'
-      const pointsValue = parseInt(points)
+      const pointsValue = Number.parseInt(points)
       if (isNaN(pointsValue)) return '#217124'
       if (pointsValue < 0) return '#B83A3A'
       if (pointsValue === 0) return '#757575'

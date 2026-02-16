@@ -647,17 +647,17 @@ export default {
     },
     'formValues.sendCallsOverType'(val) {
       if (val === 'weeks') {
-        this.distributionDayCount = parseInt(this.formValues.distributionOverDays * 7)
+        this.distributionDayCount = Number.parseInt(this.formValues.distributionOverDays * 7)
       } else {
-        this.distributionDayCount = parseInt(this.formValues.distributionOverDays)
+        this.distributionDayCount = Number.parseInt(this.formValues.distributionOverDays)
       }
       this.callForCalculateSendingInfo()
     },
     'formValues.distributionOverDays'(val) {
       if (this.formValues.sendCallsOverType === 'weeks') {
-        this.distributionDayCount = parseInt(val * 7)
+        this.distributionDayCount = Number.parseInt(val * 7)
       } else {
-        this.distributionDayCount = parseInt(val)
+        this.distributionDayCount = Number.parseInt(val)
       }
       this.callForCalculateSendingInfo()
     },
@@ -930,7 +930,7 @@ export default {
       } = this.formValues
       const payload = {
         name,
-        scheduleType: parseInt(scheduleType),
+        scheduleType: Number.parseInt(scheduleType),
         scheduleDate,
         scheduledDateTimeZoneId,
         excludeFromReports,

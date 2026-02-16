@@ -219,7 +219,7 @@ export default {
     },
     canRenderAlertboxLanguage() {
       return (
-        parseInt(this.sendUserPreferredLanguage) === 1 &&
+        Number.parseInt(this.sendUserPreferredLanguage) === 1 &&
         this.totalUserCount > 0 &&
         !this.isVishing &&
         !this.isSmishing &&
@@ -496,7 +496,7 @@ export default {
           })
           .then(() => {
             const isCallingPreferred =
-              this.isPhishing && parseInt(this.sendUserPreferredLanguage) === 1
+              this.isPhishing && Number.parseInt(this.sendUserPreferredLanguage) === 1
             const method = isCallingPreferred
               ? getTargetGroupCountDetailExt
               : getTargetGroupCountDetail
@@ -504,7 +504,7 @@ export default {
               ? {
                   targetGroupResourceIds: [this.resourceId],
                   scenarioResourceIds: this.scenarioResourceIds || [],
-                  sendUserPreferredLanguage: parseInt(this.sendUserPreferredLanguage)
+                  sendUserPreferredLanguage: Number.parseInt(this.sendUserPreferredLanguage)
                 }
               : [this.resourceId]
             if (

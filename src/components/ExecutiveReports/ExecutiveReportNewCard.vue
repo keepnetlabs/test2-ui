@@ -146,7 +146,7 @@
                 <VTextField
                   v-model="formData.name"
                   ref="refFiltersInput"
-                  id="input--training-library-sorting"
+                  id="input--executive-report-name"
                   label="Executive Report Name"
                   style="max-width: 448px;"
                   outlined
@@ -160,7 +160,7 @@
                 <div class="position-relative" @click="handleExecutiveReportDateClick">
                   <VTextField
                     v-model="formData.dateCreated"
-                    id="input--training-library-sorting"
+                    id="input--executive-report-date-created"
                     label="Date Created"
                     class="pointer-none"
                     style="max-width: 124px;"
@@ -183,7 +183,7 @@
                 <VTextField
                   v-model="formData.companyName"
                   ref="refFiltersInput"
-                  id="input--training-library-sorting"
+                  id="input--executive-report-company-name"
                   label="Company Name"
                   style="max-width: 320px;"
                   outlined

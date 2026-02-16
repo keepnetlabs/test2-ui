@@ -1055,7 +1055,7 @@ export default {
     },
     getSelectedTemplateDetails() {
       if (!this.landingPageTemplates?.length) return ''
-      const template = this.landingPageTemplates?.[parseInt(this.selectedLandingPageTab) - 1]
+      const template = this.landingPageTemplates?.[Number.parseInt(this.selectedLandingPageTab) - 1]
       return this.getLandingPageContent(template)
     },
     getSingleTemplateDetails() {

@@ -78,11 +78,7 @@
       @sortChangedEvent="sortChanged"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span
-          v-if="
-            scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
-          "
-        >
+        <span v-if="hasNoMatchingPlaybooks(scope)">
           {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
         </span>
         <template v-else>
@@ -445,6 +441,13 @@ export default {
     togglePlaybookModalWithSelected(selectedPlaybookId) {
       this.selectedPlaybookId = selectedPlaybookId
       this.showPlaybookModal = !this.showPlaybookModal
+    },
+    hasNoMatchingPlaybooks(scope) {
+      return (
+        scope?.row &&
+        scope.row.matchingPlaybooks &&
+        scope.row.matchingPlaybooks.length === 0
+      )
     },
     refreshDatatable() {
       this.loading = true

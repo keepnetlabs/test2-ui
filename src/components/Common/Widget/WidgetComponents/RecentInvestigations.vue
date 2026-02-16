@@ -31,7 +31,7 @@
                 class="datatable-progress"
                 :id="`text--recent-investigations-progress--${rowIndex}`"
               >
-                <template v-if="parseInt(value) >= 0">
+                <template v-if="Number.parseInt(value) >= 0">
                   <span :class="[value !== 100 && 'ml-1']" class="datatable-progress__per">{{
                     value === 100 ? 'Completed' : value + '%'
                   }}</span>

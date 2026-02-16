@@ -19,7 +19,7 @@
           </v-stepper-step>
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
-            id="step--campaign-manager-add-or-edit-modal-campaign-summary"
+            id="step--common-simulator-fast-launch-campaign-summary"
             class="k-stepper__step"
             :complete="step > 2"
             :step="2"

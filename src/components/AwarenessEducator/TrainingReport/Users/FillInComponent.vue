@@ -2,7 +2,7 @@
   <div class="fill-in-question-container">
     <div class="fill-in-response-container">
       <div class="fill-in-answer-field">
-        <label class="fill-in-answer-label">User's Answer:</label>
+        <span class="fill-in-answer-label">User's Answer:</span>
         <div class="fill-in-answer-input">
           {{ getUserAnswer }}
         </div>

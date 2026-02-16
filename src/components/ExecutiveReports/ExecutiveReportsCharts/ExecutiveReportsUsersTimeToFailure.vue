@@ -168,7 +168,7 @@ export default {
         return
       }
       let yLabels = data[0].widgetDatas.reduce((acc, curr) => {
-        acc.push(parseInt(curr.dataObject.ActionRange))
+        acc.push(Number.parseInt(curr.dataObject.ActionRange))
         return acc
       }, [])
       const addedYLabelsIndex = []
@@ -230,7 +230,7 @@ export default {
       })
       const stepSize = maxX > 100 ? Math.ceil(maxX / 5 / 2) * 2 : 20
       data[0].widgetDatas.forEach((item) => {
-        const yLabelIndex = yLabels.findIndex((v) => v === parseInt(item.dataObject.ActionRange))
+        const yLabelIndex = yLabels.findIndex((v) => v === Number.parseInt(item.dataObject.ActionRange))
         item.values.forEach((inner) => {
           if (inner.name === 'Clicked') {
             clickedData[yLabelIndex] = {

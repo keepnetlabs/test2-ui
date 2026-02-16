@@ -235,7 +235,7 @@ export default {
     },
     getSelectedStepIndex() {
       if (this.selectedStep.includes('Step')) {
-        const stepIndex = parseInt(this.selectedStep.split('Step - ')[1])
+        const stepIndex = Number.parseInt(this.selectedStep.split('Step - ')[1])
         return stepIndex + 1
       }
       return 0
