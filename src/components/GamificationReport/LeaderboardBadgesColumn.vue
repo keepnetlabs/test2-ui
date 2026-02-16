@@ -60,7 +60,6 @@
         />
       </v-menu>
     </div>
-    <span v-else class="leaderboard-badges-column__empty">—</span>
   </div>
 </template>
 

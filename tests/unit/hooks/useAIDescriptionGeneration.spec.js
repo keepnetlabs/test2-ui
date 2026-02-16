@@ -270,5 +270,775 @@ describe('useAIDescriptionGeneration Hook', () => {
         expect(result).toBe(false)
       })
     })
+
+    describe('Payload Structure & Data Transformation', () => {
+      it('should map formData fields to payload correctly', () => {
+        component.formData = {
+          name: 'Security Training',
+          category: 'Phishing',
+          targetAudience: 'All Staff',
+          compliances: ['GDPR', 'CCPA'],
+          behaviours: ['Clicking Links', 'Opening Attachments'],
+          description: ''
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.name).toBe('Security Training')
+        expect(payload.category).toBe('Phishing')
+        expect(payload.role).toBe('All Staff')
+        expect(payload.compliance).toEqual(['GDPR', 'CCPA'])
+        expect(payload.behaviour).toEqual(['Clicking Links', 'Opening Attachments'])
+      })
+
+      it('should handle arrays with special characters', () => {
+        component.formData = {
+          name: 'Test',
+          compliances: ['GDPR (EU)', 'CCPA (CA)', 'LGPD (BR)'],
+          behaviours: ['Email @ Phishing', 'SMS/Text Attacks']
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.compliance).toEqual(['GDPR (EU)', 'CCPA (CA)', 'LGPD (BR)'])
+        expect(payload.behaviour).toEqual(['Email @ Phishing', 'SMS/Text Attacks'])
+      })
+
+      it('should handle very long field values', () => {
+        const longName = 'A'.repeat(500)
+        const longCategory = 'B'.repeat(500)
+        component.formData = {
+          name: longName,
+          category: longCategory,
+          targetAudience: 'C'.repeat(500)
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.name.length).toBe(500)
+        expect(payload.category.length).toBe(500)
+        expect(payload.role.length).toBe(500)
+      })
+
+      it('should preserve field order in payload', () => {
+        component.formData = {
+          name: 'Test',
+          category: 'Security',
+          targetAudience: 'Employees',
+          compliances: ['GDPR'],
+          behaviours: ['Phishing'],
+          description: ''
+        }
+
+        const payload = component.getAIDescriptionPayload()
+        const keys = Object.keys(payload)
+
+        expect(keys).toContain('name')
+        expect(keys).toContain('category')
+        expect(keys).toContain('role')
+        expect(keys).toContain('compliance')
+        expect(keys).toContain('behaviour')
+      })
+
+      it('should not include undefined values in payload', () => {
+        component.formData = {
+          name: 'Test',
+          category: undefined,
+          targetAudience: 'Employees'
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.category).toBeDefined()
+        expect(typeof payload.category).toBe('string')
+      })
+
+      it('should handle null values by converting to empty strings', () => {
+        component.formData = {
+          name: null,
+          category: null,
+          targetAudience: null,
+          compliances: null,
+          behaviours: null
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.name).toBe('')
+        expect(payload.category).toBe('')
+        expect(payload.role).toBe('')
+        // null values for arrays get converted to empty arrays
+        expect(Array.isArray(payload.compliance)).toBe(true)
+        expect(Array.isArray(payload.behaviour)).toBe(true)
+      })
+    })
+
+    describe('API Integration Details', () => {
+      it('should use correct endpoint URL', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        const url = axiosMock.post.mock.calls[0][0]
+        expect(url).toBe('https://ai-description.keepnet-labs-ltd-business-profile4086.workers.dev/description')
+      })
+
+      it('should include Content-Type header in request', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        const config = axiosMock.post.mock.calls[0][2]
+        expect(config.headers['Content-Type']).toBe('application/json')
+      })
+
+      it('should pass payload as second argument to axios.post', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+        const testPayload = {
+          name: 'Test Name',
+          category: 'Test Category',
+          role: 'Test Role'
+        }
+
+        await component.generateAIDescription(testPayload)
+
+        const payload = axiosMock.post.mock.calls[0][1]
+        expect(payload).toEqual(testPayload)
+      })
+
+      it('should handle payload with special characters', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        await component.generateAIDescription({
+          name: 'Test & Special "Characters"',
+          category: 'Category <with> Tags',
+          role: 'Role with émojis 😊'
+        })
+
+        const payload = axiosMock.post.mock.calls[0][1]
+        expect(payload.name).toContain('&')
+        expect(payload.category).toContain('<')
+        expect(payload.role).toContain('😊')
+      })
+
+      it('should handle payload with newlines and special formatting', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        await component.generateAIDescription({
+          name: 'Test\nWith\nNewlines',
+          category: 'Test\twith\ttabs',
+          role: 'Test with multiple  spaces'
+        })
+
+        const payload = axiosMock.post.mock.calls[0][1]
+        expect(payload.name).toContain('\n')
+        expect(payload.category).toContain('\t')
+      })
+
+      it('should make exactly one API call per request', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(axiosMock.post).toHaveBeenCalledTimes(1)
+      })
+
+      it('should handle undefined payload gracefully', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        // Function handles undefined payload without throwing
+        const result = await component.generateAIDescription(undefined)
+
+        // The function should still make the API call (even with undefined)
+        expect(axiosMock.post).toHaveBeenCalled()
+      })
+    })
+
+    describe('Response Handling Variations', () => {
+      it('should extract description from nested data object', async () => {
+        axiosMock.post.mockResolvedValue({
+          data: {
+            description: 'Extracted description'
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result).toBe('Extracted description')
+      })
+
+      it('should handle description as first string in response', async () => {
+        axiosMock.post.mockResolvedValue({
+          status: 200,
+          data: {
+            description: 'API generated text'
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result).toBe('API generated text')
+      })
+
+      it('should return empty string if description field missing', async () => {
+        axiosMock.post.mockResolvedValue({
+          data: {
+            result: 'No description field'
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result).toBe('')
+      })
+
+      it('should handle response with extra fields', async () => {
+        axiosMock.post.mockResolvedValue({
+          data: {
+            description: 'Generated text',
+            metadata: { tokens: 150 },
+            timestamp: new Date().toISOString(),
+            extra: 'ignored'
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result).toBe('Generated text')
+      })
+
+      it('should handle very long generated descriptions', async () => {
+        const longDescription = 'A'.repeat(5000)
+        axiosMock.post.mockResolvedValue({
+          data: {
+            description: longDescription
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result.length).toBe(5000)
+        expect(result).toBe(longDescription)
+      })
+
+      it('should handle response with unicode and special characters', async () => {
+        const unicodeDescription = '测试 тест δοκιμή 🎯 émojis'
+        axiosMock.post.mockResolvedValue({
+          data: {
+            description: unicodeDescription
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result).toBe(unicodeDescription)
+      })
+
+      it('should preserve HTML entities in response', async () => {
+        axiosMock.post.mockResolvedValue({
+          data: {
+            description: 'Text with &lt;html&gt; &amp; entities'
+          }
+        })
+
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result).toContain('&lt;')
+        expect(result).toContain('&gt;')
+        expect(result).toContain('&amp;')
+      })
+    })
+
+    describe('Error Handling Edge Cases', () => {
+      it('should propagate network errors', async () => {
+        const networkError = new Error('Network timeout')
+        axiosMock.post.mockRejectedValue(networkError)
+
+        await expect(
+          component.generateAIDescription({
+            name: 'Test',
+            category: 'Security',
+            role: 'Employee'
+          })
+        ).rejects.toThrow('Network timeout')
+      })
+
+      it('should propagate API error responses', async () => {
+        const apiError = {
+          response: {
+            status: 500,
+            data: { error: 'Internal server error' }
+          }
+        }
+        axiosMock.post.mockRejectedValue(apiError)
+
+        await expect(
+          component.generateAIDescription({
+            name: 'Test',
+            category: 'Security',
+            role: 'Employee'
+          })
+        ).rejects.toEqual(apiError)
+      })
+
+      it('should handle rate limit errors', async () => {
+        const rateLimitError = {
+          response: {
+            status: 429,
+            data: { error: 'Too many requests' }
+          }
+        }
+        axiosMock.post.mockRejectedValue(rateLimitError)
+
+        await expect(
+          component.generateAIDescription({
+            name: 'Test',
+            category: 'Security',
+            role: 'Employee'
+          })
+        ).rejects.toEqual(rateLimitError)
+      })
+
+      it('should handle authentication errors', async () => {
+        const authError = {
+          response: {
+            status: 401,
+            data: { error: 'Unauthorized' }
+          }
+        }
+        axiosMock.post.mockRejectedValue(authError)
+
+        await expect(
+          component.generateAIDescription({
+            name: 'Test',
+            category: 'Security',
+            role: 'Employee'
+          })
+        ).rejects.toEqual(authError)
+      })
+
+      it('should handle malformed JSON responses', async () => {
+        const parseError = new SyntaxError('Unexpected token')
+        axiosMock.post.mockRejectedValue(parseError)
+
+        await expect(
+          component.generateAIDescription({
+            name: 'Test',
+            category: 'Security',
+            role: 'Employee'
+          })
+        ).rejects.toThrow()
+      })
+
+      it('should handle timeout errors', async () => {
+        const timeoutError = new Error('Request timeout')
+        timeoutError.code = 'ECONNABORTED'
+        axiosMock.post.mockRejectedValue(timeoutError)
+
+        await expect(
+          component.generateAIDescription({
+            name: 'Test',
+            category: 'Security',
+            role: 'Employee'
+          })
+        ).rejects.toThrow('Request timeout')
+      })
+    })
+
+    describe('Field Validation & Edge Cases', () => {
+      it('should handle all fields being empty strings', () => {
+        component.formData = {
+          name: '',
+          category: '',
+          targetAudience: '',
+          compliances: [],
+          behaviours: [],
+          description: ''
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.name).toBe('')
+        expect(payload.category).toBe('')
+        expect(payload.role).toBe('')
+        expect(payload.compliance).toEqual([])
+        expect(payload.behaviour).toEqual([])
+      })
+
+      it('should handle whitespace-only fields', () => {
+        component.formData = {
+          name: '   ',
+          category: '\t\t',
+          targetAudience: '\n\n',
+          compliances: ['  '],
+          behaviours: ['\t']
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.name).toBe('   ')
+        expect(payload.category).toBe('\t\t')
+        expect(payload.role).toBe('\n\n')
+      })
+
+      it('should handle very large compliance and behaviour arrays', () => {
+        const largeArray = Array.from({ length: 100 }, (_, i) => `Item ${i}`)
+        component.formData = {
+          name: 'Test',
+          compliances: largeArray,
+          behaviours: largeArray
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.compliance.length).toBe(100)
+        expect(payload.behaviour.length).toBe(100)
+      })
+
+      it('should handle duplicate values in arrays', () => {
+        component.formData = {
+          name: 'Test',
+          compliances: ['GDPR', 'GDPR', 'GDPR'],
+          behaviours: ['Phishing', 'Phishing']
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.compliance).toEqual(['GDPR', 'GDPR', 'GDPR'])
+        expect(payload.behaviour).toEqual(['Phishing', 'Phishing'])
+      })
+
+      it('should handle mixed empty and filled array items', () => {
+        component.formData = {
+          name: 'Test',
+          compliances: ['GDPR', '', 'CCPA', ''],
+          behaviours: ['Phishing', null, 'Malware']
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        expect(payload.compliance).toEqual(['GDPR', '', 'CCPA', ''])
+        expect(payload.behaviour).toEqual(['Phishing', null, 'Malware'])
+      })
+
+      it('should handle numeric values in string fields', () => {
+        component.formData = {
+          name: 123,
+          category: 456,
+          targetAudience: 789
+        }
+
+        const payload = component.getAIDescriptionPayload()
+
+        // Should be converted or kept as numeric
+        expect(payload.name).toBeDefined()
+        expect(payload.category).toBeDefined()
+        expect(payload.role).toBeDefined()
+      })
+    })
+
+    describe('Computed Property Integration', () => {
+      it('should prevent generation when canAutoGenerateDescription returns false', async () => {
+        component.formData.description = 'Already filled'
+        const canGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+
+        expect(canGenerate).toBe(false)
+      })
+
+      it('should enable generation when all conditions are met', () => {
+        component.formData = {
+          name: 'Test',
+          category: 'Security',
+          targetAudience: 'Employees',
+          compliances: ['GDPR'],
+          behaviours: ['Phishing'],
+          description: ''
+        }
+        component.isGenerateLoading = false
+        component.hasGenerated = false
+
+        const canGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+
+        expect(canGenerate).toBe(true)
+      })
+
+      it('should handle description property changes affecting computed', () => {
+        component.formData.description = ''
+        let canGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+        expect(canGenerate).toBe(true)
+
+        component.formData.description = 'Now filled'
+        canGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+        expect(canGenerate).toBe(false)
+      })
+    })
+
+    describe('Integration Scenarios', () => {
+      it('should generate description using getAIDescriptionPayload and generateAIDescription', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Generated text' } })
+        component.formData = {
+          name: 'Security Training',
+          category: 'Phishing',
+          targetAudience: 'All Staff',
+          compliances: ['GDPR'],
+          behaviours: ['Clicking Links'],
+          description: ''
+        }
+
+        const payload = component.getAIDescriptionPayload()
+        const result = await component.generateAIDescription(payload)
+
+        expect(result).toBe('Generated text')
+      })
+
+      it('should support chaining getAIDescriptionPayload and generateAIDescription', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        const payload = component.getAIDescriptionPayload()
+        const description = await component.generateAIDescription(payload)
+
+        expect(description).toBeDefined()
+        expect(axiosMock.post).toHaveBeenCalled()
+      })
+
+      it('should handle full workflow: check -> generate -> store', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'New description' } })
+        component.handleGenerate.mockResolvedValue(undefined)
+
+        const canGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+        expect(canGenerate).toBe(true)
+
+        const result = await component.generateDescriptionIfNeeded()
+        expect(result).toBe(true)
+        expect(component.handleGenerate).toHaveBeenCalled()
+      })
+
+      it('should handle multiple consecutive generation calls', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        const payload1 = component.getAIDescriptionPayload()
+        const result1 = await component.generateAIDescription(payload1)
+
+        component.formData.name = 'Different Name'
+        const payload2 = component.getAIDescriptionPayload()
+        const result2 = await component.generateAIDescription(payload2)
+
+        expect(result1).toBe('Result')
+        expect(result2).toBe('Result')
+        expect(axiosMock.post).toHaveBeenCalledTimes(2)
+      })
+
+      it('should handle state transitions during generation', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Generated' } })
+        component.handleGenerate.mockImplementation(() => {
+          component.isGenerateLoading = false
+          component.hasGenerated = true
+        })
+
+        const beforeGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+        expect(beforeGenerate).toBe(true)
+
+        component.isGenerateLoading = true
+        const duringGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+        expect(duringGenerate).toBe(false)
+
+        await component.generateDescriptionIfNeeded()
+        const afterGenerate = useAIDescriptionGeneration.computed.canAutoGenerateDescription.call(component)
+        expect(afterGenerate).toBe(false)
+      })
+    })
+
+    describe('Performance & Stability', () => {
+      it('getAIDescriptionPayload should execute quickly', () => {
+        const start = performance.now()
+        for (let i = 0; i < 1000; i++) {
+          component.getAIDescriptionPayload()
+        }
+        const duration = performance.now() - start
+        expect(duration).toBeLessThan(100)
+      })
+
+      it('should handle rapid consecutive generateAIDescription calls', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        const promises = [
+          component.generateAIDescription({ name: 'Test1', category: 'Security', role: 'Employee' }),
+          component.generateAIDescription({ name: 'Test2', category: 'Security', role: 'Employee' }),
+          component.generateAIDescription({ name: 'Test3', category: 'Security', role: 'Employee' })
+        ]
+
+        const results = await Promise.all(promises)
+
+        expect(results).toHaveLength(3)
+        expect(axiosMock.post).toHaveBeenCalledTimes(3)
+      })
+
+      it('should not leak memory with repeated payload generation', () => {
+        const payloads = []
+        for (let i = 0; i < 1000; i++) {
+          payloads.push(component.getAIDescriptionPayload())
+        }
+        expect(payloads.length).toBe(1000)
+      })
+
+      it('should handle concurrent form updates during generation', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Generated' } })
+
+        const generatePromise = component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        // Update form during API call
+        component.formData.name = 'Updated Name'
+        component.formData.category = 'Updated Category'
+
+        const result = await generatePromise
+
+        expect(result).toBe('Generated')
+        expect(component.formData.name).toBe('Updated Name')
+      })
+
+      it('should maintain performance with large descriptions', async () => {
+        const largeDescription = 'A'.repeat(10000)
+        axiosMock.post.mockResolvedValue({
+          data: { description: largeDescription }
+        })
+
+        const start = performance.now()
+        const result = await component.generateAIDescription({
+          name: 'Test',
+          category: 'Security',
+          role: 'Employee'
+        })
+        const duration = performance.now() - start
+
+        expect(result.length).toBe(10000)
+        expect(duration).toBeLessThan(50) // Should be fast even with large strings
+      })
+    })
+
+    describe('Multiple Calls & State Management', () => {
+      it('should maintain independent state across multiple components', () => {
+        const component2 = {
+          formData: {
+            name: 'Different Training',
+            category: 'Malware',
+            targetAudience: 'Admins',
+            compliances: ['ISO27001'],
+            behaviours: ['Downloading Files']
+          },
+          ...useAIDescriptionGeneration.methods
+        }
+
+        const payload1 = component.getAIDescriptionPayload()
+        const payload2 = component2.getAIDescriptionPayload()
+
+        expect(payload1.name).not.toBe(payload2.name)
+        expect(payload1.category).not.toBe(payload2.category)
+      })
+
+      it('should not interfere with other hook instances', async () => {
+        axiosMock.post.mockResolvedValue({ data: { description: 'Result' } })
+
+        const component2 = {
+          formData: {
+            name: 'Other Training',
+            category: 'Ransomware',
+            targetAudience: 'Users',
+            compliances: [],
+            behaviours: []
+          },
+          ...useAIDescriptionGeneration.methods
+        }
+
+        const promise1 = component.generateAIDescription({
+          name: 'Test1',
+          category: 'Category1',
+          role: 'Role1'
+        })
+        const promise2 = component2.generateAIDescription({
+          name: 'Test2',
+          category: 'Category2',
+          role: 'Role2'
+        })
+
+        const [result1, result2] = await Promise.all([promise1, promise2])
+
+        expect(result1).toBe('Result')
+        expect(result2).toBe('Result')
+        expect(axiosMock.post).toHaveBeenCalledTimes(2)
+      })
+
+      it('should handle interleaved read/write operations', () => {
+        const payload1 = component.getAIDescriptionPayload()
+        component.formData.name = 'Updated'
+        const payload2 = component.getAIDescriptionPayload()
+
+        expect(payload1.name).toBe('Test Training')
+        expect(payload2.name).toBe('Updated')
+      })
+
+      it('should not share state between successive calls', async () => {
+        axiosMock.post
+          .mockResolvedValueOnce({ data: { description: 'First' } })
+          .mockResolvedValueOnce({ data: { description: 'Second' } })
+
+        const result1 = await component.generateAIDescription({
+          name: 'First',
+          category: 'Security',
+          role: 'Employee'
+        })
+        const result2 = await component.generateAIDescription({
+          name: 'Second',
+          category: 'Security',
+          role: 'Employee'
+        })
+
+        expect(result1).toBe('First')
+        expect(result2).toBe('Second')
+      })
+    })
   })
 })

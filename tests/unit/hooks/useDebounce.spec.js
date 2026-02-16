@@ -319,4 +319,309 @@ describe('useDebounce Hook', () => {
       expect(() => component.beforeDestroy()).not.toThrow()
     })
   })
+
+  describe('Debounce Cancellation', () => {
+    it('should cancel pending call on new debounce', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce,
+        beforeDestroy: useDebounce.beforeDestroy
+      }
+
+      component.debounce(mockFn, 500)
+      jest.advanceTimersByTime(250)
+      component.beforeDestroy()
+      jest.advanceTimersByTime(250)
+      expect(mockFn).not.toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should prevent execution of cancelled calls', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(mockFn, 300)
+      jest.advanceTimersByTime(100)
+      component.debounce(mockFn, 300)
+      jest.advanceTimersByTime(250)
+      expect(mockFn).not.toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should execute after final delay with proper cancellation', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      for (let i = 0; i < 5; i++) {
+        component.debounce(mockFn, 200)
+        jest.advanceTimersByTime(100)
+      }
+      jest.advanceTimersByTime(200)
+      expect(mockFn).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Multiple Debounce Instances', () => {
+    it('should maintain independent timeout states', () => {
+      jest.useFakeTimers()
+      const mockFn1 = jest.fn()
+      const mockFn2 = jest.fn()
+      const component1 = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+      const component2 = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component1.debounce(mockFn1, 300)
+      component2.debounce(mockFn2, 500)
+
+      jest.advanceTimersByTime(300)
+      expect(mockFn1).toHaveBeenCalledTimes(1)
+      expect(mockFn2).not.toHaveBeenCalled()
+
+      jest.advanceTimersByTime(200)
+      expect(mockFn2).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+
+    it('should not affect other instances on destroy', () => {
+      jest.useFakeTimers()
+      const mockFn1 = jest.fn()
+      const mockFn2 = jest.fn()
+      const component1 = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce,
+        beforeDestroy: useDebounce.beforeDestroy
+      }
+      const component2 = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component1.debounce(mockFn1, 300)
+      component2.debounce(mockFn2, 300)
+      component1.beforeDestroy()
+      jest.advanceTimersByTime(300)
+
+      expect(mockFn1).not.toHaveBeenCalled()
+      expect(mockFn2).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Different Function Types', () => {
+    it('should handle named functions', () => {
+      jest.useFakeTimers()
+      function namedFn() {}
+      const spy = jest.fn(namedFn)
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(spy, 250)
+      jest.advanceTimersByTime(250)
+      expect(spy).toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should handle method functions', () => {
+      jest.useFakeTimers()
+      const obj = {
+        method: jest.fn()
+      }
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(() => obj.method(), 200)
+      jest.advanceTimersByTime(200)
+      expect(obj.method).toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should handle async functions', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(async () => mockFn(), 150)
+      jest.advanceTimersByTime(150)
+      expect(mockFn).toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Debounce with Side Effects', () => {
+    it('should only trigger side effects once per debounce cycle', () => {
+      jest.useFakeTimers()
+      const sideEffect = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(sideEffect, 100)
+      component.debounce(sideEffect, 100)
+      component.debounce(sideEffect, 100)
+      jest.advanceTimersByTime(100)
+
+      expect(sideEffect).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+
+    it('should prevent rapid successive executions', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      for (let i = 0; i < 100; i++) {
+        component.debounce(mockFn, 50)
+        jest.advanceTimersByTime(1)
+      }
+      jest.advanceTimersByTime(50)
+
+      expect(mockFn).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Timeout Precision', () => {
+    it('should respect exact delay timing', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(mockFn, 1000)
+      jest.advanceTimersByTime(999)
+      expect(mockFn).not.toHaveBeenCalled()
+      jest.advanceTimersByTime(1)
+      expect(mockFn).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+
+    it('should handle sub-millisecond precision requests', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(mockFn, 1)
+      jest.advanceTimersByTime(1)
+      expect(mockFn).toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should handle very large delay values correctly', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(mockFn, 999999)
+      jest.advanceTimersByTime(999998)
+      expect(mockFn).not.toHaveBeenCalled()
+      jest.advanceTimersByTime(1)
+      expect(mockFn).toHaveBeenCalledTimes(1)
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Error Scenarios in Debounced Functions', () => {
+    it('should call debounced function and track execution', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(mockFn, 100)
+      jest.advanceTimersByTime(100)
+      expect(mockFn).toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should maintain timeout state through multiple debounce calls', () => {
+      jest.useFakeTimers()
+      const mockFn1 = jest.fn()
+      const mockFn2 = jest.fn()
+      const component = {
+        timeout: null,
+        debounce: useDebounce.methods.debounce
+      }
+
+      component.debounce(mockFn1, 50)
+      jest.advanceTimersByTime(50)
+
+      component.debounce(mockFn2, 50)
+      jest.advanceTimersByTime(50)
+
+      expect(mockFn2).toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should handle null timeout during cleanup', () => {
+      const component = {
+        timeout: null,
+        beforeDestroy: useDebounce.beforeDestroy
+      }
+
+      expect(() => component.beforeDestroy()).not.toThrow()
+    })
+  })
+
+  describe('Debounce Hook Composition', () => {
+    it('should work with component lifecycle', () => {
+      jest.useFakeTimers()
+      const mockFn = jest.fn()
+      const component = {
+        timeout: null,
+        ...useDebounce.data(),
+        ...useDebounce.methods,
+        ...{ beforeDestroy: useDebounce.beforeDestroy }
+      }
+
+      component.debounce(mockFn, 300)
+      expect(component.timeout).not.toBeNull()
+      component.beforeDestroy()
+      jest.advanceTimersByTime(300)
+      expect(mockFn).not.toHaveBeenCalled()
+      jest.useRealTimers()
+    })
+
+    it('should integrate seamlessly with other mixins', () => {
+      const debounceData = useDebounce.data()
+      expect(debounceData).toHaveProperty('timeout')
+      expect(debounceData.timeout).toBeNull()
+    })
+  })
 })

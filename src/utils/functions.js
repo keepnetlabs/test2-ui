@@ -92,7 +92,13 @@ export function getBtnStatusColor(type) {
     "no match": "#757575",
     "not in use": "#757575",
     "in use": "#1173C1",
-    passed: "#217124"
+    passed: "#217124",
+    "not started": "#E6A23C",
+    "notstarted": "#E6A23C",
+    "not completed": "#F56C6C",
+    "notcompleted": "#F56C6C",
+    "not responded": "#E6A23C",
+    "notresponded": "#E6A23C"
   };
 
   if (!_type) return "#00bcd4"; // Default for empty or null type after processing

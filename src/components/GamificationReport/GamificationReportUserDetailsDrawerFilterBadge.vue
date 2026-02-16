@@ -1,6 +1,6 @@
 <template>
   <Fragment v-if="isRenderComponent">
-    <div v-if="isFilterTypeSelect" class="training-library-filter-badge">
+    <div v-if="isFilterTypeSelect" key="filter-select" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
         <span class="training-library-filter-badge-value">{{ filter.activeValue }}</span>
@@ -18,7 +18,7 @@
     <div
       v-else-if="isFilterTypeSearch"
       v-for="(filterVal, fIndex) in filter.activeValue"
-      :key="fIndex"
+      :key="`search-${fIndex}`"
       class="training-library-filter-badge"
     >
       <div class="training-library-filter-badge__left-side">
@@ -40,7 +40,7 @@
     <div
       v-else-if="isFilterTypeLongTextSearch"
       v-for="(filterVal, fIndex) in filter.activeValue"
-      :key="fIndex"
+      :key="`longtext-${fIndex}`"
       class="training-library-filter-badge training-library-filter-badge-long-text-search"
     >
       <div class="training-library-filter-badge__left-side">
@@ -64,7 +64,7 @@
         >
       </div>
     </div>
-    <div v-else-if="isFilterTypeDateSelect" class="training-library-filter-badge">
+    <div v-else-if="isFilterTypeDateSelect" key="filter-date" class="training-library-filter-badge">
       <div class="training-library-filter-badge__left-side">
         <span class="training-library-filter-badge-type">{{ filter.text }}:</span>
         <span class="training-library-filter-badge-value">{{ getDateFilterValue(filter) }}</span>

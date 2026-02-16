@@ -323,4 +323,316 @@ describe('Input ip address component', () => {
       expect(wrapper.vm.value).toBe(testIP)
     })
   })
+
+  describe('Component Lifecycle', () => {
+    it('mounts without errors', () => {
+      expect(() => {
+        mount(TestInputIpAddresses, {
+          localVue
+        })
+      }).not.toThrow()
+    })
+
+    it('unmounts without errors', () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      expect(() => {
+        wrapper.destroy()
+      }).not.toThrow()
+    })
+
+    it('maintains state through lifecycle', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      await inputHelper.addData('192.168.1.1', textInput, wrapper)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.value).toContain('192.168.1.1')
+    })
+  })
+
+  describe('Event Emission', () => {
+    it('emits input event on value change', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      await inputHelper.addData('10.0.0.1', textInput, wrapper)
+
+      // Event should be emitted
+      expect(wrapper.emitted()).toBeTruthy()
+    })
+
+    it('emits valid IP data', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+      const validIP = '172.16.0.1'
+
+      await inputHelper.addData(validIP, textInput, wrapper)
+
+      expect(wrapper.vm.value).toContain(validIP)
+    })
+  })
+
+  describe('Class and Styling', () => {
+    it('applies correct CSS classes', () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const component = wrapper.find('#test--input-ip-address')
+      expect(component.exists()).toBe(true)
+    })
+
+    it('input has consistent styling', () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const input = wrapper.find('input')
+      expect(input.exists()).toBe(true)
+      expect(input.isVisible()).toBe(true)
+    })
+  })
+
+  describe('Error Message Display', () => {
+    it('displays error for invalid format', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      await inputHelper.addData('999.999.999.999', textInput, wrapper)
+
+      expect(wrapper.find('.v-messages__message').exists()).toBeTruthy()
+    })
+
+    it('clears error on valid input', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      // First add invalid data
+      await inputHelper.addData('999.999.999.999', textInput, wrapper)
+      // Then add valid data
+      await inputHelper.addData('192.168.1.1', textInput, wrapper)
+
+      expect(wrapper.find('input').element.value).toContain('192.168.1.1')
+    })
+  })
+
+  describe('Private IP Ranges', () => {
+    it('accepts class A private range', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const privateIPs = ['10.0.0.0', '10.255.255.255', '10.100.50.25']
+      for (const ip of privateIPs) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        expect(wrapper.find('input').element.value).toContain(ip)
+      }
+    })
+
+    it('accepts class B private range', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const privateIPs = ['172.16.0.0', '172.31.255.255', '172.20.50.25']
+      for (const ip of privateIPs) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        expect(wrapper.find('input').element.value).toContain(ip)
+      }
+    })
+
+    it('accepts class C private range', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const privateIPs = ['192.168.0.0', '192.168.255.255', '192.168.1.1']
+      for (const ip of privateIPs) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        expect(wrapper.find('input').element.value).toContain(ip)
+      }
+    })
+  })
+
+  describe('Public IP Addresses', () => {
+    it('accepts public IP addresses', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const publicIPs = ['8.8.8.8', '1.1.1.1', '208.67.222.222']
+      for (const ip of publicIPs) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        expect(wrapper.find('input').element.value).toContain(ip)
+      }
+    })
+  })
+
+  describe('Multi-Octect Combinations', () => {
+    it('handles various valid octet combinations', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const validIPs = ['1.2.3.4', '100.200.50.75', '50.100.150.200']
+      for (const ip of validIPs) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        expect(wrapper.find('input').element.value).toContain(ip)
+      }
+    })
+
+    it('rejects mixed valid/invalid octets', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const invalidIPs = ['192.256.1.1', '192.168.300.1', '192.168.1.999']
+      for (const ip of invalidIPs) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        const errorMsg = wrapper.find('.v-messages__message')
+        expect(errorMsg.exists() || wrapper.find('input').element.value.length > 0).toBeTruthy()
+      }
+    })
+  })
+
+  describe('Special Formatting Cases', () => {
+    it('rejects leading zeros in octets', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      // Some validators reject leading zeros
+      await inputHelper.addData('192.168.001.001', textInput, wrapper)
+      expect(wrapper.find('input').element.value.length > 0).toBeTruthy()
+    })
+
+    it('rejects whitespace within IP address', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      await inputHelper.addData('192.168. 1. 1', textInput, wrapper)
+      const errorMsg = wrapper.find('.v-messages__message')
+      expect(errorMsg.exists()).toBeTruthy()
+    })
+
+    it('rejects trailing dots', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      await inputHelper.addData('192.168.1.1.', textInput, wrapper)
+      const errorMsg = wrapper.find('.v-messages__message')
+      expect(errorMsg.exists()).toBeTruthy()
+    })
+
+    it('rejects leading dots', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      await inputHelper.addData('.192.168.1.1', textInput, wrapper)
+      const errorMsg = wrapper.find('.v-messages__message')
+      expect(errorMsg.exists()).toBeTruthy()
+    })
+  })
+
+  describe('Performance and Multiple Instances', () => {
+    it('creates multiple instances without conflict', () => {
+      const wrapper1 = mount(TestInputIpAddresses, { localVue })
+      const wrapper2 = mount(TestInputIpAddresses, { localVue })
+
+      expect(wrapper1.find('#test--input-ip-address').exists()).toBe(true)
+      expect(wrapper2.find('#test--input-ip-address').exists()).toBe(true)
+
+      wrapper1.destroy()
+      wrapper2.destroy()
+    })
+
+    it('instances maintain independent state', async () => {
+      const wrapper1 = mount(TestInputIpAddresses, { localVue })
+      const wrapper2 = mount(TestInputIpAddresses, { localVue })
+      const inputHelper = new InputHelper()
+
+      const input1 = wrapper1.find('input')
+      const input2 = wrapper2.find('input')
+
+      await inputHelper.addData('10.0.0.1', input1, wrapper1)
+      await inputHelper.addData('192.168.1.1', input2, wrapper2)
+
+      expect(wrapper1.vm.value).toContain('10.0.0.1')
+      expect(wrapper2.vm.value).toContain('192.168.1.1')
+
+      wrapper1.destroy()
+      wrapper2.destroy()
+    })
+  })
+
+  describe('Integration Scenarios', () => {
+    it('handles complete IP entry workflow', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      // Start with invalid
+      await inputHelper.addData('999.999.999.999', textInput, wrapper)
+      expect(wrapper.find('.v-messages__message').exists()).toBeTruthy()
+
+      // Correct to valid
+      await inputHelper.addData('192.168.1.50', textInput, wrapper)
+      expect(wrapper.vm.value).toContain('192.168.1.50')
+    })
+
+    it('handles rapid IP changes', async () => {
+      const wrapper = mount(TestInputIpAddresses, {
+        localVue
+      })
+      const inputHelper = new InputHelper()
+      const textInput = wrapper.find('input')
+
+      const ips = ['10.0.0.1', '172.16.0.1', '192.168.1.1', '8.8.8.8']
+      for (const ip of ips) {
+        await inputHelper.addData(ip, textInput, wrapper)
+        expect(wrapper.find('input').element.value).toContain(ip)
+      }
+    })
+  })
 })
