@@ -207,7 +207,332 @@ describe('DataTable.vue', () => {
           table: [],
           empty: { message: 'No records found' }
       })
-      
+
       expect(wrapper.vm.empty.message).toBe('No records found')
+  })
+
+  describe('Component Name and Type', () => {
+    it('should have component name or be valid without name', () => {
+      const wrapper = mountComponent()
+      // Component name is optional
+      expect(wrapper.vm.$options).toBeDefined()
+    })
+
+    it('should be a Vue component', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('should have component options', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.$options).toBeDefined()
+    })
+  })
+
+  describe('Column Configuration', () => {
+    it('should accept columns prop', () => {
+      const columns = [
+        { label: 'Name', property: 'name', show: true },
+        { label: 'Email', property: 'email', show: true }
+      ]
+      const wrapper = mountComponent({ columns })
+      expect(wrapper.vm.columns).toEqual(columns)
+    })
+
+    it('should handle multiple column types', () => {
+      const columns = [
+        { label: 'Name', property: 'name', show: true, type: 'text' },
+        { label: 'Status', property: 'status', show: true, type: 'badge' },
+        { label: 'Date', property: 'date', show: true, type: 'date' }
+      ]
+      const wrapper = mountComponent({ columns })
+      expect(wrapper.vm.columns.length).toBe(3)
+    })
+
+    it('should hide columns when show is false', () => {
+      const columns = [
+        { label: 'Name', property: 'name', show: true },
+        { label: 'Secret', property: 'secret', show: false }
+      ]
+      const wrapper = mountComponent({ columns })
+      expect(wrapper.vm.columns[0].show).toBe(true)
+      expect(wrapper.vm.columns[1].show).toBe(false)
+    })
+  })
+
+  describe('Table Data Handling', () => {
+    it('should accept table data as array', () => {
+      const tableData = [
+        { name: 'Item 1', email: 'test1@test.com' },
+        { name: 'Item 2', email: 'test2@test.com' }
+      ]
+      const wrapper = mountComponent({ table: tableData })
+      expect(wrapper.vm.table).toEqual(tableData)
+    })
+
+    it('should handle empty table array', () => {
+      const wrapper = mountComponent({ table: [] })
+      expect(wrapper.vm.table).toEqual([])
+    })
+
+    it('should handle large datasets', () => {
+      const largeData = Array.from({ length: 1000 }, (_, i) => ({
+        name: `Item ${i}`,
+        email: `test${i}@test.com`
+      }))
+      const wrapper = mountComponent({ table: largeData })
+      expect(wrapper.vm.table.length).toBe(1000)
+    })
+  })
+
+  describe('Search and Filter', () => {
+    it('should initialize search data property', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.search).toBeDefined()
+    })
+
+    it('should trigger search event', () => {
+      const wrapper = mountComponent({ filterable: true, options: true })
+      const spy = jest.spyOn(wrapper.vm, 'searchChangedEvent')
+      wrapper.vm.searchChangedEvent('test')
+      expect(spy).toHaveBeenCalledWith('test')
+    })
+
+    it('should handle search with multiple results', () => {
+      const wrapper = mountComponent({
+        table: [
+          { name: 'Test1', email: 'test1@test.com' },
+          { name: 'Test2', email: 'test2@test.com' }
+        ],
+        filterable: true,
+        options: true
+      })
+      expect(wrapper.vm.table.length).toBe(2)
+    })
+  })
+
+  describe('Selection Handling', () => {
+    it('should initialize multipleSelection as empty array', () => {
+      const wrapper = mountComponent({ selectable: true })
+      expect(Array.isArray(wrapper.vm.multipleSelection)).toBe(true)
+    })
+
+    it('should update selection on selection change', () => {
+      const wrapper = mountComponent({ selectable: true })
+      const selectedItems = [{ name: 'Item 1', email: 'test1@test.com' }]
+      wrapper.vm.handleSelectionChange(selectedItems)
+      expect(wrapper.vm.multipleSelection).toEqual(selectedItems)
+    })
+
+    it('should clear selection', () => {
+      const wrapper = mountComponent({ selectable: true })
+      wrapper.vm.multipleSelection = [{ name: 'Item 1' }]
+      wrapper.vm.handleSelectionChange([])
+      expect(wrapper.vm.multipleSelection).toEqual([])
+    })
+
+    it('should handle multiple selections', () => {
+      const wrapper = mountComponent({ selectable: true })
+      const selections = [
+        { name: 'Item 1', email: 'test1@test.com' },
+        { name: 'Item 2', email: 'test2@test.com' },
+        { name: 'Item 3', email: 'test3@test.com' }
+      ]
+      wrapper.vm.handleSelectionChange(selections)
+      expect(wrapper.vm.multipleSelection.length).toBe(3)
+    })
+  })
+
+  describe('Row Operations', () => {
+    it('should emit row-click event', () => {
+      const wrapper = mountComponent()
+      const row = { name: 'Item 1', email: 'test@test.com' }
+      wrapper.vm.handleRowClick(row)
+      expect(wrapper.emitted('row-click')).toBeTruthy()
+      expect(wrapper.emitted('row-click')[0][0]).toEqual(row)
+    })
+
+    it('should handle row click with complex objects', () => {
+      const wrapper = mountComponent()
+      const complexRow = {
+        id: 1,
+        name: 'Complex Item',
+        email: 'test@test.com',
+        metadata: { status: 'active', tags: ['important', 'urgent'] }
+      }
+      wrapper.vm.handleRowClick(complexRow)
+      expect(wrapper.emitted('row-click')[0][0]).toEqual(complexRow)
+    })
+  })
+
+  describe('Pagination', () => {
+    it('should render pagination when showPagination is true', () => {
+      const wrapper = mountComponent({ showPagination: true })
+      expect(wrapper.vm.showPagination).toBe(true)
+    })
+
+    it('should handle pagination with different page sizes', () => {
+      const wrapper = mountComponent({
+        showPagination: true,
+        table: Array.from({ length: 100 }, (_, i) => ({ id: i, name: `Item ${i}` }))
+      })
+      expect(wrapper.vm.table.length).toBe(100)
+    })
+  })
+
+  describe('Refresh Functionality', () => {
+    it('should have handleRefresh method', () => {
+      const wrapper = mountComponent({ showRefreshButton: true, options: true })
+      expect(typeof wrapper.vm.handleRefresh).toBe('function')
+    })
+
+    it('should call handleRefresh without errors', () => {
+      const wrapper = mountComponent({ showRefreshButton: true, options: true })
+      expect(() => {
+        wrapper.vm.handleRefresh()
+      }).not.toThrow()
+    })
+  })
+
+  describe('Loading State', () => {
+    it('should show loading state when loading prop is true', () => {
+      const wrapper = mountComponent({ loading: true })
+      expect(wrapper.vm.loading).toBe(true)
+    })
+
+    it('should hide loading when prop is false', () => {
+      const wrapper = mountComponent({ loading: false })
+      expect(wrapper.vm.loading).toBe(false)
+    })
+
+    it('should handle loading state changes', async () => {
+      const wrapper = mountComponent({ loading: false })
+      expect(wrapper.vm.loading).toBe(false)
+      await wrapper.setProps({ loading: true })
+      expect(wrapper.vm.loading).toBe(true)
+    })
+  })
+
+  describe('Download Functionality', () => {
+    it('should accept downloadButton prop', () => {
+      const wrapper = mountComponent({
+        options: true,
+        downloadButton: { show: true, disabled: false }
+      })
+      expect(wrapper.vm.downloadButton).toBeDefined()
+    })
+
+    it('should handle disabled download button', () => {
+      const wrapper = mountComponent({
+        options: true,
+        downloadButton: { show: true, disabled: true }
+      })
+      expect(wrapper.vm.downloadButton.disabled).toBe(true)
+    })
+  })
+
+  describe('Header and Table Structure', () => {
+    it('should render table header when options are provided', () => {
+      const wrapper = mountComponent({ options: true, filterable: true })
+      expect(wrapper.find('.table-header').exists()).toBe(true)
+    })
+
+    it('should render el-table element', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.find('.el-table-mock').exists()).toBe(true)
+    })
+  })
+
+  describe('Empty State', () => {
+    it('should have empty message property', () => {
+      const wrapper = mountComponent({ empty: { message: 'No data' } })
+      expect(wrapper.vm.empty.message).toBe('No data')
+    })
+
+    it('should display different empty messages', () => {
+      const wrapper1 = mountComponent({ empty: { message: 'No records' } })
+      const wrapper2 = mountComponent({ empty: { message: 'Empty table' } })
+      expect(wrapper1.vm.empty.message).not.toBe(wrapper2.vm.empty.message)
+    })
+
+    it('should show empty state with button', () => {
+      const wrapper = mountComponent({
+        table: [],
+        empty: { message: 'No data', btn: { text: 'Add Item' } }
+      })
+      expect(wrapper.vm.empty.btn).toBeDefined()
+    })
+  })
+
+  describe('Props Combination', () => {
+    it('should handle all major props together', () => {
+      const wrapper = mountComponent({
+        columns: [{ label: 'Name', property: 'name', show: true }],
+        table: [{ name: 'Item 1' }],
+        selectable: true,
+        showPagination: true,
+        filterable: true,
+        options: true,
+        loading: false,
+        empty: { message: 'No data' }
+      })
+      expect(wrapper.exists()).toBe(true)
+      expect(wrapper.vm.columns.length).toBe(1)
+      expect(wrapper.vm.table.length).toBe(1)
+    })
+  })
+
+  describe('Multiple Instances', () => {
+    it('should support multiple DataTable instances', () => {
+      const wrapper1 = mountComponent({ table: [{ name: 'Table1' }] })
+      const wrapper2 = mountComponent({ table: [{ name: 'Table2' }] })
+      expect(wrapper1.vm.table[0].name).toBe('Table1')
+      expect(wrapper2.vm.table[0].name).toBe('Table2')
+    })
+
+    it('should handle independent selections in multiple instances', () => {
+      const wrapper1 = mountComponent({ selectable: true })
+      const wrapper2 = mountComponent({ selectable: true })
+      wrapper1.vm.handleSelectionChange([{ name: 'Selected1' }])
+      wrapper2.vm.handleSelectionChange([{ name: 'Selected2' }])
+      expect(wrapper1.vm.multipleSelection[0].name).toBe('Selected1')
+      expect(wrapper2.vm.multipleSelection[0].name).toBe('Selected2')
+    })
+  })
+
+  describe('Performance Characteristics', () => {
+    it('should mount within reasonable time', () => {
+      const start = Date.now()
+      const wrapper = mountComponent({
+        table: Array.from({ length: 100 }, (_, i) => ({ id: i, name: `Item ${i}` }))
+      })
+      const end = Date.now()
+      expect(end - start).toBeLessThan(1000)
+    })
+
+    it('should handle rapid prop changes', async () => {
+      const wrapper = mountComponent()
+      for (let i = 0; i < 10; i++) {
+        await wrapper.setProps({
+          search: `query${i}`
+        })
+      }
+      expect(wrapper.exists()).toBe(true)
+    })
+  })
+
+  describe('Lifecycle', () => {
+    it('should initialize without errors', () => {
+      expect(() => {
+        mountComponent()
+      }).not.toThrow()
+    })
+
+    it('should mount and destroy cleanly', () => {
+      const wrapper = mountComponent()
+      expect(() => {
+        wrapper.destroy()
+      }).not.toThrow()
+    })
   })
 })

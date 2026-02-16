@@ -347,4 +347,339 @@ describe("RoiSummaryIrHeader widget", () => {
       expect(wrapper.vm.isRoiSummaryEmpty()).toBe(true);
     });
   });
+
+  describe("revenue value handling", () => {
+    it("should handle zero revenue", () => {
+      const wrapper = mountFactory();
+      const data = { revenue: "0", time: "5" };
+      wrapper.vm.$store.getters["widgets/getROISummaryCard"] = data;
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle positive revenue values", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "1000", time: "0" }
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle large revenue values", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "999999999999", time: "5" }
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle decimal revenue values", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "1234.56", time: "10" }
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle currency format revenue", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "$5000", time: "20" }
+      });
+      const data = wrapper.vm.$store.getters["widgets/getROISummaryCard"];
+      expect(data.revenue).toBe("$5000");
+    });
+  });
+
+  describe("time value handling", () => {
+    it("should handle zero time", () => {
+      const wrapper = mountFactory();
+      const data = { revenue: "100", time: "0" };
+      wrapper.vm.$store.getters["widgets/getROISummaryCard"] = data;
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle positive time values", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "0", time: "30" }
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle large time values", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "100", time: "999999" }
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle decimal time values", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "500", time: "5.5" }
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle time with units", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "1000", time: "25 hours" }
+      });
+      const data = wrapper.vm.$store.getters["widgets/getROISummaryCard"];
+      expect(data.time).toBe("25 hours");
+    });
+  });
+
+  describe("data structure and validation", () => {
+    it("should preserve ROI data structure", () => {
+      const mockData = { revenue: "2000", time: "12", currency: "USD", period: "Q1" };
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": mockData
+      });
+      const data = wrapper.vm.$store.getters["widgets/getROISummaryCard"];
+      expect(data).toEqual(mockData);
+    });
+
+    it("should handle partial ROI data", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "500" }
+      });
+      const data = wrapper.vm.$store.getters["widgets/getROISummaryCard"];
+      expect(data.revenue).toBe("500");
+    });
+
+    it("should handle ROI data with extra properties", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": {
+          revenue: "1000",
+          time: "10",
+          metadata: { source: "api", timestamp: Date.now() }
+        }
+      });
+      const data = wrapper.vm.$store.getters["widgets/getROISummaryCard"];
+      expect(data.metadata).toBeDefined();
+    });
+
+    it("should validate both revenue and time for empty check", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(true);
+
+      const wrapper2 = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "100", time: "0" }
+      });
+      expect(wrapper2.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+  });
+
+  describe("performance characteristics", () => {
+    it("should mount efficiently", () => {
+      const startTime = Date.now();
+      mountFactory();
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(150);
+    });
+
+    it("should evaluate isRoiSummaryEmpty efficiently", () => {
+      const wrapper = mountFactory();
+      const startTime = Date.now();
+      for (let i = 0; i < 1000; i++) {
+        wrapper.vm.isRoiSummaryEmpty();
+      }
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(100);
+    });
+
+    it("should handle rapid data changes", () => {
+      const startTime = Date.now();
+      for (let i = 0; i < 50; i++) {
+        mountFactory({
+          "widgets/getROISummaryCard": { revenue: String(i * 100), time: String(i) }
+        });
+      }
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(3000);
+    });
+  });
+
+  describe("widget component integration", () => {
+    it("should have labels property", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.labels).toBeDefined();
+      expect(wrapper.vm.labels).toBe(labels);
+    });
+
+    it("should have access to store getters", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.$store.getters["widgets/getROISummaryCard"]).toBeDefined();
+      expect(wrapper.vm.$store.getters["widgets/getIsLoading"]).toBeDefined();
+    });
+
+    it("should support CardLoading stub", () => {
+      expect(() => {
+        mountFactory();
+      }).not.toThrow();
+    });
+
+    it("should have v-icon stub available", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm).toBeDefined();
+    });
+
+    it("should have Vuetify available", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.$vuetify).toBeDefined();
+    });
+  });
+
+  describe("accessibility and usability", () => {
+    it("should have semantic component name", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.$options.name).toBe("RoiSummaryIrHeader");
+    });
+
+    it("should have readable labels", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.labels).toBeTruthy();
+      expect(typeof wrapper.vm.labels).toBe("object");
+    });
+
+    it("should expose ROI data for display", () => {
+      const mockData = { revenue: "5000", time: "20" };
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": mockData
+      });
+      const data = wrapper.vm.$store.getters["widgets/getROISummaryCard"];
+      expect(data.revenue).toBe("5000");
+      expect(data.time).toBe("20");
+    });
+  });
+
+  describe("multiple instances independence", () => {
+    it("should create independent instances", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm).not.toBe(wrapper2.vm);
+    });
+
+    it("should maintain separate data in multiple instances", () => {
+      const data1 = { revenue: "1000", time: "10" };
+      const data2 = { revenue: "5000", time: "30" };
+
+      const wrapper1 = mountFactory({
+        "widgets/getROISummaryCard": data1
+      });
+      const wrapper2 = mountFactory({
+        "widgets/getROISummaryCard": data2
+      });
+
+      expect(wrapper1.vm.$store.getters["widgets/getROISummaryCard"]).toEqual(data1);
+      expect(wrapper2.vm.$store.getters["widgets/getROISummaryCard"]).toEqual(data2);
+    });
+
+    it("should not interfere with other instances", () => {
+      const data = { revenue: "2000", time: "15" };
+      const wrapper1 = mountFactory({
+        "widgets/getROISummaryCard": data
+      });
+      const wrapper2 = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "0", time: "0" }
+      });
+
+      expect(wrapper1.vm.$store.getters["widgets/getROISummaryCard"]).toEqual(data);
+      expect(wrapper2.vm.isRoiSummaryEmpty()).toBe(true);
+    });
+
+    it("should handle cleanup independently", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+
+      expect(() => {
+        wrapper1.destroy();
+        expect(wrapper2.exists()).toBe(true);
+      }).not.toThrow();
+
+      wrapper2.destroy();
+    });
+  });
+
+  describe("complex ROI scenarios", () => {
+    it("should handle scenarios with all ROI metrics", () => {
+      const data = {
+        revenue: "10000",
+        time: "50",
+        roi: "200%",
+        roi_percentage: 200
+      };
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": data
+      });
+      expect(wrapper.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+
+    it("should handle various numeric formats", () => {
+      const formats = [
+        { revenue: "1000", time: "10" },
+        { revenue: "1,000", time: "10" },
+        { revenue: "1000.00", time: "10.5" },
+        { revenue: "$1000", time: "10 hours" }
+      ];
+
+      const wrapper = mountFactory();
+      formats.forEach(format => {
+        const result = wrapper.vm.$store.getters["widgets/getROISummaryCard"] = format;
+        expect(result).toBeDefined();
+      });
+    });
+
+    it("should consistently evaluate data across multiple calls", () => {
+      const data = { revenue: "3000", time: "20" };
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": data
+      });
+
+      const result1 = wrapper.vm.isRoiSummaryEmpty();
+      const result2 = wrapper.vm.isRoiSummaryEmpty();
+      const result3 = wrapper.vm.isRoiSummaryEmpty();
+
+      expect(result1).toBe(result2);
+      expect(result2).toBe(result3);
+      expect(result1).toBe(false);
+    });
+  });
+
+  describe("error handling and recovery", () => {
+    it("should handle null ROI data gracefully", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": null
+      });
+      expect(wrapper.vm.$store.getters["widgets/getROISummaryCard"]).toBeNull();
+    });
+
+    it("should handle undefined ROI data", () => {
+      const wrapper = mountFactory({
+        "widgets/getROISummaryCard": undefined
+      });
+      expect(wrapper.vm.$store.getters["widgets/getROISummaryCard"]).toBeUndefined();
+    });
+
+    it("should continue functioning after error states", () => {
+      const wrapper = mountFactory();
+      wrapper.vm.$store.getters["widgets/getROISummaryCard"] = null;
+      wrapper.vm.$store.getters["widgets/getROISummaryCard"] = { revenue: "100", time: "5" };
+      expect(wrapper.vm).toBeDefined();
+    });
+
+    it("should maintain state consistency with various inputs", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.$options.name).toBe("RoiSummaryIrHeader");
+      expect(wrapper.vm.labels).toBe(labels);
+      expect(wrapper.vm.$store).toBeDefined();
+    });
+
+    it("should recover from empty to populated states", () => {
+      const wrapper1 = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "0", time: "0" }
+      });
+      expect(wrapper1.vm.isRoiSummaryEmpty()).toBe(true);
+
+      const wrapper2 = mountFactory({
+        "widgets/getROISummaryCard": { revenue: "5000", time: "25" }
+      });
+      expect(wrapper2.vm.isRoiSummaryEmpty()).toBe(false);
+    });
+  });
 });

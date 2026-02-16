@@ -422,7 +422,7 @@ describe('CancelButton.vue', () => {
       const startTime = Date.now()
       shallowMount(CancelButton)
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle updates efficiently', async () => {

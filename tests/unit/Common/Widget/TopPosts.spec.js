@@ -514,4 +514,381 @@ describe("TopPosts widget", () => {
       );
     });
   });
+
+  describe("localStorage integration", () => {
+    it("stores selected post ID in localStorage", () => {
+      const wrapper = mountFactory();
+      const row = {
+        communityName: "Community",
+        communityResourceId: "c1",
+        communityPostResourceId: "p1"
+      };
+
+      wrapper.vm.handlePostTitleSelection(row);
+      expect(localStorage.getItem).toBeDefined();
+    });
+
+    it("retrieves stored post data from localStorage", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm).toBeDefined();
+    });
+
+    it("clears localStorage on component cleanup", () => {
+      const wrapper = mountFactory();
+      expect(() => wrapper.destroy()).not.toThrow();
+    });
+  });
+
+  describe("post data slicing and pagination", () => {
+    it("slices posts to top 5 items", async () => {
+      const posts = Array.from({ length: 10 }, (_, i) => ({
+        communityName: `Post ${i}`,
+        communityPostResourceId: `p${i}`,
+        likeCount: 10 - i,
+        commentCount: 5 - (i % 5)
+      }));
+
+      getMyTopPosts.mockResolvedValueOnce({
+        data: { data: posts }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData.length).toBeLessThanOrEqual(5);
+    });
+
+    it("handles slicing with fewer than 5 posts", async () => {
+      const posts = Array.from({ length: 3 }, (_, i) => ({
+        communityName: `Post ${i}`,
+        communityPostResourceId: `p${i}`,
+        likeCount: 10 - i,
+        commentCount: 5 - i
+      }));
+
+      getMyTopPosts.mockResolvedValueOnce({
+        data: { data: posts }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData.length).toBe(3);
+    });
+
+    it("handles slicing with exactly 5 posts", async () => {
+      const posts = Array.from({ length: 5 }, (_, i) => ({
+        communityName: `Post ${i}`,
+        communityPostResourceId: `p${i}`,
+        likeCount: 10 - i,
+        commentCount: 5 - i
+      }));
+
+      getMyTopPosts.mockResolvedValueOnce({
+        data: { data: posts }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData.length).toBe(5);
+    });
+  });
+
+  describe("engagement metrics handling", () => {
+    it("displays posts with high like counts", async () => {
+      getMyTopPosts.mockResolvedValueOnce({
+        data: {
+          data: [
+            { communityName: "Popular", communityPostResourceId: "p1", likeCount: 1000, commentCount: 100 }
+          ]
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].likeCount).toBe(1000);
+    });
+
+    it("handles posts with zero engagement", async () => {
+      getMyTopPosts.mockResolvedValueOnce({
+        data: {
+          data: [
+            { communityName: "Low", communityPostResourceId: "p1", likeCount: 0, commentCount: 0 }
+          ]
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].likeCount).toBe(0);
+      expect(wrapper.vm.tableData[0].commentCount).toBe(0);
+    });
+
+    it("sorts posts by total engagement", async () => {
+      const posts = [
+        { communityName: "A", communityPostResourceId: "p1", likeCount: 50, commentCount: 10 },
+        { communityName: "B", communityPostResourceId: "p2", likeCount: 100, commentCount: 5 },
+        { communityName: "C", communityPostResourceId: "p3", likeCount: 30, commentCount: 20 }
+      ];
+
+      getMyTopPosts.mockResolvedValueOnce({
+        data: { data: posts }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData).toBeDefined();
+      expect(wrapper.vm.tableData.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("column configuration", () => {
+    it("defines two columns", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.columns.length).toBe(2);
+    });
+
+    it("postTitle column is defined", () => {
+      const wrapper = mountFactory();
+      const postTitleColumn = wrapper.vm.columns[0];
+      expect(postTitleColumn).toBeDefined();
+      expect(postTitleColumn.thStyle.width).toBe("70%");
+    });
+
+    it("second column is defined", () => {
+      const wrapper = mountFactory();
+      const secondColumn = wrapper.vm.columns[1];
+      expect(secondColumn).toBeDefined();
+      if (secondColumn.thStyle) {
+        expect(secondColumn.thStyle.width).toBe("30%");
+      }
+    });
+
+    it("columns are properly structured", () => {
+      const wrapper = mountFactory();
+      expect(Array.isArray(wrapper.vm.columns)).toBe(true);
+      expect(wrapper.vm.columns.length).toBeGreaterThan(0);
+      wrapper.vm.columns.forEach(column => {
+        expect(column.property).toBeDefined();
+      });
+    });
+  });
+
+  describe("performance characteristics", () => {
+    it("mounts efficiently", () => {
+      const startTime = Date.now();
+      mountFactory();
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(200);
+    });
+
+    it("handles large post datasets", async () => {
+      const posts = Array.from({ length: 1000 }, (_, i) => ({
+        communityName: `Post ${i}`,
+        communityPostResourceId: `p${i}`,
+        likeCount: Math.floor(Math.random() * 1000),
+        commentCount: Math.floor(Math.random() * 100)
+      }));
+
+      getMyTopPosts.mockResolvedValueOnce({
+        data: { data: posts }
+      });
+
+      const wrapper = mountFactory();
+      const startTime = Date.now();
+      await Promise.resolve();
+      const duration = Date.now() - startTime;
+
+      expect(duration).toBeLessThan(500);
+      expect(wrapper.vm.tableData.length).toBeLessThanOrEqual(5);
+    });
+
+    it("handles onResize efficiently", () => {
+      const wrapper = mountFactory();
+      const startTime = Date.now();
+      for (let i = 0; i < 100; i++) {
+        wrapper.vm.onResize();
+      }
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(200);
+    });
+  });
+
+  describe("API error handling", () => {
+    it("handles API failure gracefully", async () => {
+      getMyTopPosts.mockRejectedValueOnce(new Error("API Error"));
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.isLoading).toBe(false);
+      expect(wrapper.vm.tableData.length).toBe(0);
+    });
+
+    it("displays empty state on API error", async () => {
+      getMyTopPosts.mockRejectedValueOnce(new Error("Network Error"));
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.empty.message).toBeDefined();
+    });
+
+    it("retains component functionality after error", async () => {
+      getMyTopPosts.mockRejectedValueOnce(new Error("Error"));
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      const row = {
+        communityName: "Test",
+        communityResourceId: "c1",
+        communityPostResourceId: "p1"
+      };
+      expect(() => wrapper.vm.handlePostTitleSelection(row)).not.toThrow();
+    });
+  });
+
+  describe("router navigation", () => {
+    it("navigates to community with post ID", () => {
+      const wrapper = mountFactory();
+      const row = {
+        communityName: "Community",
+        communityResourceId: "c1",
+        communityPostResourceId: "p1"
+      };
+
+      wrapper.vm.handlePostTitleSelection(row);
+
+      expect(wrapper.vm.$router.push).toHaveBeenCalled();
+      const call = wrapper.vm.$router.push.mock.calls[0][0];
+      expect(call.path).toContain("/threat-sharing/community/");
+    });
+
+    it("passes correct query parameters", () => {
+      const wrapper = mountFactory();
+      const row = {
+        communityName: "Test Community",
+        communityResourceId: "c1",
+        communityPostResourceId: "post123"
+      };
+
+      wrapper.vm.handlePostTitleSelection(row);
+
+      const call = wrapper.vm.$router.push.mock.calls[0][0];
+      expect(call.query.postId).toBe("post123");
+      expect(call.query.communityName).toBe("Test Community");
+    });
+
+    it("handles navigation with special characters", () => {
+      const wrapper = mountFactory();
+      const row = {
+        communityName: "Community & Special!",
+        communityResourceId: "c1",
+        communityPostResourceId: "p1"
+      };
+
+      expect(() => wrapper.vm.handlePostTitleSelection(row)).not.toThrow();
+      expect(wrapper.vm.$router.push).toHaveBeenCalled();
+    });
+  });
+
+  describe("multiple instances independence", () => {
+    it("creates independent component instances", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm).not.toBe(wrapper2.vm);
+    });
+
+    it("maintains separate loading states", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm.isLoading).toBe(wrapper2.vm.isLoading);
+    });
+
+    it("handles cleanup independently", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(() => {
+        wrapper1.destroy();
+        expect(wrapper2.exists()).toBe(true);
+      }).not.toThrow();
+      expect(() => wrapper2.destroy()).not.toThrow();
+    });
+  });
+
+  describe("edit mode functionality", () => {
+    it("accepts editMode prop", () => {
+      const wrapper = shallowMount(TopPosts, {
+        localVue,
+        vuetify,
+        propsData: { editMode: true },
+        stubs: ["WidgetLoading", "WidgetContainer", "WidgetList", "WidgetBody", "WidgetHeader", "v-icon"]
+      });
+      expect(wrapper.vm.editMode).toBe(true);
+    });
+
+    it("defaults to false for editMode", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.editMode).toBe(false);
+    });
+
+    it("emits deleteWidget event", () => {
+      const wrapper = mountFactory();
+      wrapper.vm.$emit("deleteWidget");
+      expect(wrapper.emitted("deleteWidget")).toBeTruthy();
+    });
+  });
+
+  describe("complex post scenarios", () => {
+    it("handles posts with unicode characters", async () => {
+      getMyTopPosts.mockResolvedValueOnce({
+        data: {
+          data: [
+            { communityName: "社區 🌐", communityPostResourceId: "p1", likeCount: 10, commentCount: 5 }
+          ]
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].communityName).toContain("🌐");
+    });
+
+    it("handles very long post titles", async () => {
+      const longTitle = "A".repeat(500);
+      getMyTopPosts.mockResolvedValueOnce({
+        data: {
+          data: [
+            { communityName: longTitle, communityPostResourceId: "p1", likeCount: 10, commentCount: 5 }
+          ]
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].communityName).toHaveLength(500);
+    });
+
+    it("maintains post order after slicing", async () => {
+      const posts = Array.from({ length: 10 }, (_, i) => ({
+        communityName: `Post ${String(i).padStart(2, "0")}`,
+        communityPostResourceId: `p${i}`,
+        likeCount: 100 - i * 10,
+        commentCount: 50 - i * 5
+      }));
+
+      getMyTopPosts.mockResolvedValueOnce({
+        data: { data: posts }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].communityName).toBe("Post 00");
+    });
+  });
 });

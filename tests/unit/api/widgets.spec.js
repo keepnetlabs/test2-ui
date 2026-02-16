@@ -266,4 +266,179 @@ describe('widgets API', () => {
       await expect(widgetsApi.postWidgets({})).rejects.toThrow('Error 2')
     })
   })
+
+  describe('API Endpoint URLs', () => {
+    it('should call correct endpoint for summary', async () => {
+      testRequest.get.mockClear()
+      await widgetsApi.getSummary()
+      const calls = testRequest.get.mock.calls
+      expect(calls[0][0]).toBe('/dashboard/summary')
+    })
+
+    it('should call correct endpoint for widget updates', async () => {
+      testRequest.post.mockClear()
+      await widgetsApi.postWidgets({ widgetIds: [] })
+      const calls = testRequest.post.mock.calls
+      expect(calls[0][0]).toBe('dashboard/widgets')
+    })
+
+    it('should use consistent endpoint format', async () => {
+      testRequest.get.mockClear()
+      testRequest.post.mockClear()
+
+      await widgetsApi.getSummary()
+      await widgetsApi.postWidgets({ widgetIds: [] })
+
+      expect(testRequest.get).toHaveBeenCalledWith('/dashboard/summary', expect.any(Object))
+      expect(testRequest.post).toHaveBeenCalledWith('dashboard/widgets', expect.any(Object), expect.any(Object))
+    })
+  })
+
+  describe('Request Configuration', () => {
+    it('should include snackbar config in POST requests', async () => {
+      testRequest.post.mockClear()
+      await widgetsApi.postWidgets({ widgetIds: ['w1'] })
+
+      const calls = testRequest.post.mock.calls
+      const config = calls[0][2]
+      expect(config).toHaveProperty('snackbar')
+      expect(config.snackbar).toBe(COMMON_SNACKBAR)
+    })
+
+    it('should configure loading state for GET requests', async () => {
+      testRequest.get.mockClear()
+      await widgetsApi.getSummary()
+
+      const calls = testRequest.get.mock.calls
+      const config = calls[0][1]
+      expect(config).toHaveProperty('loading')
+    })
+
+    it('should allow disabling loading indicator', async () => {
+      testRequest.get.mockClear()
+      await widgetsApi.getSummary({}, false)
+
+      const calls = testRequest.get.mock.calls
+      const config = calls[0][1]
+      expect(config.loading).toBeUndefined()
+    })
+  })
+
+  describe('Function Behavior', () => {
+    it('postWidgets should always include snackbar', async () => {
+      const payloads = [
+        { widgetIds: [] },
+        { widgetIds: ['w1'] },
+        { widgetIds: ['w1', 'w2', 'w3'] }
+      ]
+
+      for (const payload of payloads) {
+        testRequest.post.mockClear()
+        await widgetsApi.postWidgets(payload)
+        expect(testRequest.post).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.any(Object),
+          expect.objectContaining({ snackbar: COMMON_SNACKBAR })
+        )
+      }
+    })
+
+    it('getSummary should handle optional parameters', async () => {
+      testRequest.get.mockClear()
+      await widgetsApi.getSummary()
+      await widgetsApi.getSummary({})
+      await widgetsApi.getSummary({}, true)
+      await widgetsApi.getSummary({}, false)
+
+      expect(testRequest.get).toHaveBeenCalledTimes(4)
+    })
+
+    it('getSummary with no loading state should default to true', async () => {
+      testRequest.get.mockClear()
+      await widgetsApi.getSummary()
+
+      const config = testRequest.get.mock.calls[0][1]
+      expect(config.loading).toBe(true)
+    })
+  })
+
+  describe('Async Behavior', () => {
+    it('should return Promise-like from postWidgets', async () => {
+      const result = widgetsApi.postWidgets({})
+      expect(typeof result.then).toBe('function')
+      await result
+    })
+
+    it('should return Promise-like from getSummary', async () => {
+      const result = widgetsApi.getSummary()
+      expect(typeof result.then).toBe('function')
+      await result
+    })
+
+    it('should handle async/await syntax', async () => {
+      expect(async () => {
+        await widgetsApi.getSummary()
+        await widgetsApi.postWidgets({})
+      }).toBeDefined()
+    })
+
+    it('should support Promise.all for parallel operations', async () => {
+      const promises = [
+        widgetsApi.getSummary(),
+        widgetsApi.postWidgets({ widgetIds: ['w1'] })
+      ]
+
+      const results = await Promise.all(promises)
+      expect(results).toHaveLength(2)
+    })
+  })
+
+  describe('Mock Verification', () => {
+    it('should verify test utilities are mocked', () => {
+      expect(testRequest).toBeDefined()
+      expect(testRequest.get).toBeDefined()
+      expect(testRequest.post).toBeDefined()
+    })
+
+    it('should verify mocked functions are callable', () => {
+      expect(typeof testRequest.get).toBe('function')
+      expect(typeof testRequest.post).toBe('function')
+    })
+
+    it('should verify COMMON_SNACKBAR is available', () => {
+      expect(COMMON_SNACKBAR).toBeDefined()
+    })
+
+    it('should verify API functions are exported', () => {
+      expect(widgetsApi.getSummary).toBeDefined()
+      expect(widgetsApi.postWidgets).toBeDefined()
+    })
+  })
+
+  describe('State Isolation', () => {
+    it('should not affect other calls with different parameters', async () => {
+      testRequest.get.mockClear()
+
+      await widgetsApi.getSummary({}, true)
+      await widgetsApi.getSummary({}, false)
+
+      expect(testRequest.get).toHaveBeenCalledTimes(2)
+      const call1Config = testRequest.get.mock.calls[0][1]
+      const call2Config = testRequest.get.mock.calls[1][1]
+
+      expect(call1Config.loading).toBe(true)
+      expect(call2Config.loading).toBeUndefined()
+    })
+
+    it('should handle widget updates without affecting summary calls', async () => {
+      testRequest.get.mockClear()
+      testRequest.post.mockClear()
+
+      await widgetsApi.postWidgets({ widgetIds: ['w1'] })
+      await widgetsApi.getSummary()
+
+      expect(testRequest.post).toHaveBeenCalledTimes(1)
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+  })
 })
