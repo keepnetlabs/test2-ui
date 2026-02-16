@@ -41,7 +41,7 @@
         <KSelect
           v-model.trim="value.scheduledDateTimeZoneId"
           type="autocomplete"
-          id="input--campaign-manager-campaign-info-time-type"
+          id="input--campaign-manager-campaign-info-time-type-input-schedule"
           style="max-width: 233px;"
           outlined
           dense

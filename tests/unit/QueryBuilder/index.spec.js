@@ -44,8 +44,8 @@ describe('Query Builder test cases suite', () => {
 
     //checking components of matchTypeContainer
 
-    expect(matchTypeContainer.find('[value="OR"]'))
-    expect(matchTypeContainer.find('[value="AND"]'))
+    expect(matchTypeContainer.find('[value="OR"]').exists()).toBeTruthy()
+    expect(matchTypeContainer.find('[value="AND"]').exists()).toBeTruthy()
 
     //check classes
     expect(wrapper.find('.vue-query-builder').exists()).toBe(true)

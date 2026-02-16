@@ -67,7 +67,7 @@
             "
             class="people__no-data__buttons--button"
             style="height: 36px;"
-            id="btn-empty--target-users-people"
+            id="btn-empty--target-users-people-training-card-view"
             @click="handleEmptyButtonClick"
           >
             <VIcon color="#fff" class="mr-1">mdi-plus</VIcon>
@@ -87,7 +87,7 @@
                   class="people__no-data__buttons--button"
                   style="height: 36px;"
                   v-on="on"
-                  id="btn-empty--target-users-people"
+                  id="btn-empty--target-users-people-training-card-view-menu"
                 >
                   <VIcon color="#fff" class="mr-1">mdi-plus</VIcon>
                   <span class="fw-600">{{ labels.CreateNewMaterial.toUpperCase() }}</span>

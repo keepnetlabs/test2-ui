@@ -366,4 +366,220 @@ describe('Helper Functions Utility', () => {
       expect(typeof columnFilterChanged).toBe('function')
     })
   })
+
+  describe('Data transformation workflows', () => {
+    it('should handle complete transformation pipeline', () => {
+      const backendList = [
+        { typeName: 'MyCompanyOnly', targetName: 'Internal', targetResourceId: null },
+        { typeName: 'Company', targetName: 'External', targetResourceId: 'ext-1' },
+        { typeName: 'Company', targetName: 'Partner', targetResourceId: 'part-2' }
+      ]
+
+      const frontendList = getAvailableForListFromBackend(backendList)
+      expect(frontendList).toHaveLength(3)
+
+      const values = getAvailableForValues(frontendList)
+      expect(values.length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('should handle transformation with valid data', () => {
+      const original = [{ typeName: 'Company', targetName: 'Test', targetResourceId: '123' }]
+      const transformed = getAvailableForListFromBackend(original)
+      const values = getAvailableForValues(transformed)
+
+      expect(values).toBeDefined()
+      expect(Array.isArray(values)).toBe(true)
+    })
+  })
+
+  describe('Error resilience and robustness', () => {
+    it('should handle empty arrays without crashing', () => {
+      expect(() => {
+        getAvailableForListFromBackend([])
+        getAvailableForValues([])
+      }).not.toThrow()
+    })
+
+    it('should handle missing or undefined properties gracefully', () => {
+      const incompleteData = [
+        { typeName: 'Company' }, // Missing targetName and targetResourceId
+        { typeName: 'MyCompanyOnly', targetName: 'Test' } // Missing targetResourceId
+      ]
+
+      expect(() => {
+        const result = getAvailableForListFromBackend(incompleteData)
+        expect(Array.isArray(result)).toBe(true)
+      }).not.toThrow()
+    })
+
+    it('should handle normalizeRoleId with various inputs', () => {
+      expect(normalizeRoleId('123')).toBeDefined()
+      expect(normalizeRoleId('abc-def-ghi')).toBeDefined()
+      expect(normalizeRoleId('')).toBeDefined()
+    })
+  })
+
+  describe('Filter operations', () => {
+    it('should add new filter to empty filter array', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }]
+        }
+      }
+      const newFilter = { FieldName: 'Type', Value: 'Admin' }
+
+      const result = columnFilterChanged(newFilter, axiosPayload)
+      expect(result).toContain(newFilter)
+    })
+
+    it('should replace existing filter with same field name', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Value: 'inactive' }
+              ]
+            }
+          ]
+        }
+      }
+      const newFilter = { FieldName: 'Status', Value: 'active' }
+
+      const result = columnFilterChanged(newFilter, axiosPayload)
+      const statusFilters = result.filter(f => f.FieldName === 'Status')
+      expect(statusFilters).toHaveLength(1)
+      expect(statusFilters[0].Value).toBe('active')
+    })
+
+    it('should maintain filter order and structure', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Value: 'active' },
+                { FieldName: 'Type', Value: 'user' }
+              ]
+            }
+          ]
+        }
+      }
+      const newFilter = { FieldName: 'Name', Value: 'John' }
+
+      const result = columnFilterChanged(newFilter, axiosPayload)
+      expect(result).toHaveLength(3)
+      expect(result.every(f => f.hasOwnProperty('FieldName'))).toBe(true)
+      expect(result.every(f => f.hasOwnProperty('Value'))).toBe(true)
+    })
+  })
+
+  describe('Array and list operations', () => {
+    it('should handle large datasets efficiently', () => {
+      const largeDataset = Array.from({ length: 100 }, (_, i) => ({
+        typeName: i % 2 === 0 ? 'Company' : 'MyCompanyOnly',
+        targetName: `Item ${i}`,
+        targetResourceId: i % 2 === 0 ? `id-${i}` : null
+      }))
+
+      const result = getAvailableForListFromBackend(largeDataset)
+      expect(result).toHaveLength(100)
+    })
+
+    it('should process list items consistently', () => {
+      const orderedList = [
+        { typeName: 'MyCompanyOnly', targetName: 'First', targetResourceId: null },
+        { typeName: 'Company', targetName: 'Second', targetResourceId: '2' },
+        { typeName: 'Company', targetName: 'Third', targetResourceId: '3' }
+      ]
+
+      const result = getAvailableForValues(getAvailableForListFromBackend(orderedList))
+      expect(result.length).toBeGreaterThanOrEqual(1)
+      expect(Array.isArray(result)).toBe(true)
+    })
+
+    it('should handle duplicate entries', () => {
+      const listWithDuplicates = [
+        { typeName: 'Company', targetName: 'Same', targetResourceId: 'id-1' },
+        { typeName: 'Company', targetName: 'Same', targetResourceId: 'id-1' },
+        { typeName: 'Company', targetName: 'Different', targetResourceId: 'id-2' }
+      ]
+
+      const result = getAvailableForValues(getAvailableForListFromBackend(listWithDuplicates))
+      expect(result.length).toBeGreaterThanOrEqual(2)
+    })
+  })
+
+  describe('Performance characteristics', () => {
+    it('should transform data efficiently', () => {
+      const largeDataset = Array.from({ length: 500 }, (_, i) => ({
+        typeName: 'Company',
+        targetName: `Item ${i}`,
+        targetResourceId: `id-${i}`
+      }))
+
+      const start = Date.now()
+      const transformed = getAvailableForListFromBackend(largeDataset)
+      const values = getAvailableForValues(transformed)
+      const duration = Date.now() - start
+
+      expect(duration).toBeLessThan(500)
+      expect(values).toHaveLength(500)
+    })
+
+    it('should filter efficiently', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: Array.from({ length: 100 }, (_, i) => ({
+                FieldName: `Field${i}`,
+                Value: `Value${i}`
+              }))
+            }
+          ]
+        }
+      }
+
+      const start = Date.now()
+      columnFilterChanged({ FieldName: 'NewField', Value: 'NewValue' }, axiosPayload)
+      const duration = Date.now() - start
+
+      expect(duration).toBeLessThan(100)
+    })
+  })
+
+  describe('Value object properties', () => {
+    it('should create value objects', () => {
+      const list = [
+        { typeName: 'Company', targetName: 'Test', targetResourceId: '123' }
+      ]
+
+      const values = getAvailableForValues(getAvailableForListFromBackend(list))
+      expect(Array.isArray(values)).toBe(true)
+      expect(values.length).toBeGreaterThan(0)
+    })
+
+    it('should handle various resource ID types', () => {
+      const list = [
+        { typeName: 'MyCompanyOnly', targetName: 'Internal', targetResourceId: null },
+        { typeName: 'Company', targetName: 'External', targetResourceId: 'id-1' }
+      ]
+
+      expect(() => {
+        const values = getAvailableForValues(getAvailableForListFromBackend(list))
+        expect(Array.isArray(values)).toBe(true)
+      }).not.toThrow()
+    })
+
+    it('should transform multiple list items', () => {
+      const list = [
+        { typeName: 'Company', targetName: 'Test1', targetResourceId: 'id-1' },
+        { typeName: 'Company', targetName: 'Test2', targetResourceId: 'id-2' }
+      ]
+
+      const values = getAvailableForValues(getAvailableForListFromBackend(list))
+      expect(values.length).toBeGreaterThanOrEqual(1)
+    })
+  })
 })

@@ -201,7 +201,7 @@
             <template v-slot:extended-view-slot>
               <div class="row-edit-div">
                 <v-checkbox
-                  id="input--incident-responder-extended-view-is-notify"
+                  id="input--incident-responder-extended-view-is-notify-clustered"
                   color="#2196f3"
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
@@ -217,7 +217,7 @@
               <div class="row-edit-div">
                 <v-checkbox
                   v-model="extendedView.isMessage"
-                  id="input--incident-responder-extended-view-is-message"
+                  id="input--incident-responder-extended-view-is-message-clustered"
                   color="#2196f3"
                   label="Add Custom Message"
                   :disabled="!extendedView.isNotify"
@@ -229,7 +229,7 @@
                 v-if="extendedView.isMessage && extendedView.isNotify"
               >
                 <v-textarea
-                  id="input--incident-responder-custom-message"
+                  id="input--incident-responder-custom-message-clustered"
                   outlined
                   dense
                   v-model="extendedView.customMessage"
@@ -244,7 +244,7 @@
                 >
                   <template v-slot:append v-if="isCustomMessageMultiple">
                     <v-btn
-                      id="btn-edit--incident-responder-custom-message"
+                      id="btn-edit--incident-responder-custom-message-clustered"
                       text
                       @click.native="isCustomMessageMultiple = false"
                       class="edit-popup__edit-component"
@@ -385,7 +385,7 @@
             <template v-slot:extended-view-slot>
               <div class="row-edit-div">
                 <v-checkbox
-                  id="input--incident-responder-extended-view-is-notify"
+                  id="input--incident-responder-extended-view-is-notify-reported"
                   color="#2196f3"
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
@@ -401,7 +401,7 @@
               <div class="row-edit-div">
                 <v-checkbox
                   v-model="extendedView.isMessage"
-                  id="input--incident-responder-extended-view-is-message"
+                  id="input--incident-responder-extended-view-is-message-reported"
                   color="#2196f3"
                   label="Add Custom Message"
                   :disabled="!extendedView.isNotify"
@@ -416,7 +416,7 @@
                   outlined
                   dense
                   v-model="extendedView.customMessage"
-                  id="input--incident-responder-extended-view-custom-message"
+                  id="input--incident-responder-extended-view-custom-message-reported"
                   rows="3"
                   :placeholder="
                     isCustomMessageMultiple
@@ -428,7 +428,7 @@
                 >
                   <template v-slot:append v-if="isCustomMessageMultiple">
                     <v-btn
-                      id="btn-edit--incident-responder-custom-message"
+                      id="btn-edit--incident-responder-custom-message-reported"
                       text
                       @click.native="isCustomMessageMultiple = false"
                       class="edit-popup__edit-component"

@@ -51,7 +51,7 @@
       <ElTabPane
         :label="labels.Details"
         name="details"
-        id="campaign-manager-info--training-details-content"
+        id="campaign-manager-info--training-details-content-survey"
       >
         <template v-if="trainingParams">
           <div class="training-library-preview__details-item">

@@ -227,4 +227,327 @@ describe('settings API', () => {
       await expect(settingsApi.setSystemUserSettings({})).rejects.toThrow('Error 2')
     })
   })
+
+  describe('Endpoint URL Verification', () => {
+    it('getTimezone should use correct endpoint', async () => {
+      await settingsApi.getTimezone()
+      const calls = testRequest.get.mock.calls
+      expect(calls[calls.length - 1][0]).toBe('/timezone/timezones')
+    })
+
+    it('getSystemUserSettings should use correct endpoint', async () => {
+      await settingsApi.getSystemUserSettings()
+      const calls = testRequest.get.mock.calls
+      expect(calls[calls.length - 1][0]).toBe('/system-users/settings')
+    })
+
+    it('setSystemUserSettings should use correct endpoint', async () => {
+      await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+      const calls = testRequest.put.mock.calls
+      expect(calls[calls.length - 1][0]).toBe('/system-users/settings')
+    })
+
+    it('endpoints should be properly formatted', async () => {
+      await settingsApi.getTimezone()
+      const endpoint = testRequest.get.mock.calls[0][0]
+      expect(endpoint).toMatch(/^\//)
+    })
+
+    it('all endpoints should be strings', async () => {
+      await settingsApi.getTimezone()
+      await settingsApi.getSystemUserSettings()
+      await settingsApi.setSystemUserSettings({})
+
+      const getCall = testRequest.get.mock.calls[0]
+      const putCall = testRequest.put.mock.calls[0]
+
+      expect(typeof getCall[0]).toBe('string')
+      expect(typeof putCall[0]).toBe('string')
+    })
+  })
+
+  describe('Payload Structure Validation', () => {
+    it('setSystemUserSettings should pass complete config object', async () => {
+      const payload = { timezone: 'UTC' }
+      await settingsApi.setSystemUserSettings(payload)
+
+      const callArgs = testRequest.put.mock.calls[0]
+      expect(callArgs).toHaveLength(3)
+      expect(callArgs[1]).toEqual(payload)
+    })
+
+    it('config should include loading property', async () => {
+      await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+
+      const callArgs = testRequest.put.mock.calls[0]
+      expect(callArgs[2]).toHaveProperty('loading')
+      expect(callArgs[2].loading).toBe(true)
+    })
+
+    it('config should include snackbar property', async () => {
+      await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+
+      const callArgs = testRequest.put.mock.calls[0]
+      expect(callArgs[2]).toHaveProperty('snackbar')
+      expect(callArgs[2].snackbar).toEqual(COMMON_SNACKBAR)
+    })
+
+    it('getTimezone should not include payload', async () => {
+      await settingsApi.getTimezone()
+      const callArgs = testRequest.get.mock.calls[0]
+      expect(callArgs).toHaveLength(1)
+    })
+
+    it('getSystemUserSettings should not include payload', async () => {
+      await settingsApi.getSystemUserSettings()
+      const callArgs = testRequest.get.mock.calls[0]
+      expect(callArgs).toHaveLength(1)
+    })
+  })
+
+  describe('Return Value Consistency', () => {
+    it('all functions should return thenable objects', async () => {
+      const results = [
+        settingsApi.getTimezone(),
+        settingsApi.getSystemUserSettings(),
+        settingsApi.setSystemUserSettings({})
+      ]
+
+      results.forEach(result => {
+        expect(typeof result.then).toBe('function')
+        expect(typeof result.catch).toBe('function')
+      })
+    })
+
+    it('getTimezone should resolve with response object', async () => {
+      const mockResponse = { data: ['UTC', 'EST'] }
+      testRequest.get.mockResolvedValueOnce(mockResponse)
+
+      const result = await settingsApi.getTimezone()
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('getSystemUserSettings should resolve with response object', async () => {
+      const mockResponse = { data: { timezone: 'UTC' } }
+      testRequest.get.mockResolvedValueOnce(mockResponse)
+
+      const result = await settingsApi.getSystemUserSettings()
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('setSystemUserSettings should resolve with response object', async () => {
+      const mockResponse = { data: { success: true } }
+      testRequest.put.mockResolvedValueOnce(mockResponse)
+
+      const result = await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('should handle responses with different data structures', async () => {
+      testRequest.get.mockResolvedValueOnce({ data: [] })
+      const result1 = await settingsApi.getTimezone()
+      expect(Array.isArray(result1.data)).toBe(true)
+
+      testRequest.get.mockResolvedValueOnce({ timezone: 'UTC' })
+      const result2 = await settingsApi.getSystemUserSettings()
+      expect(result2).toHaveProperty('timezone')
+    })
+  })
+
+  describe('Sequential Operations', () => {
+    it('should handle get then update workflow', async () => {
+      testRequest.get.mockResolvedValueOnce({ data: { timezone: 'UTC' } })
+
+      await settingsApi.getSystemUserSettings()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      await settingsApi.setSystemUserSettings({ timezone: 'EST' })
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle multiple timezone operations', async () => {
+      testRequest.get.mockResolvedValueOnce({ data: ['UTC', 'EST', 'PST'] })
+
+      await settingsApi.getTimezone()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+
+      await settingsApi.setSystemUserSettings({ timezone: 'EST' })
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.get.mockClear()
+      await settingsApi.getSystemUserSettings()
+      expect(testRequest.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('should maintain state independence across operations', async () => {
+      testRequest.put.mockClear()
+
+      await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+
+      testRequest.put.mockClear()
+
+      await settingsApi.setSystemUserSettings({ timezone: 'EST' })
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle rapid successive update calls', async () => {
+      const promises = []
+      const timezones = ['UTC', 'EST', 'CST', 'PST']
+
+      for (const tz of timezones) {
+        promises.push(settingsApi.setSystemUserSettings({ timezone: tz }))
+      }
+
+      await Promise.all(promises)
+      expect(testRequest.put).toHaveBeenCalledTimes(4)
+    })
+  })
+
+  describe('Performance Characteristics', () => {
+    it('getTimezone should execute quickly', async () => {
+      const start = Date.now()
+      await settingsApi.getTimezone()
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(50)
+    })
+
+    it('getSystemUserSettings should execute quickly', async () => {
+      const start = Date.now()
+      await settingsApi.getSystemUserSettings()
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(50)
+    })
+
+    it('setSystemUserSettings should execute quickly', async () => {
+      const start = Date.now()
+      await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(50)
+    })
+
+    it('should handle 50 update operations efficiently', async () => {
+      const start = Date.now()
+      for (let i = 0; i < 50; i++) {
+        await settingsApi.setSystemUserSettings({ timezone: `TZ-${i}` })
+      }
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+
+    it('should handle concurrent requests efficiently', async () => {
+      const start = Date.now()
+      await Promise.all([
+        settingsApi.getTimezone(),
+        settingsApi.getSystemUserSettings(),
+        settingsApi.getTimezone(),
+        settingsApi.getSystemUserSettings(),
+        settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+      ])
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+    })
+  })
+
+  describe('Multiple Instance Isolation', () => {
+    it('should handle concurrent get requests independently', async () => {
+      const promises = [
+        settingsApi.getTimezone(),
+        settingsApi.getSystemUserSettings(),
+        settingsApi.getTimezone()
+      ]
+
+      await Promise.all(promises)
+
+      const getCalls = testRequest.get.mock.calls
+      expect(getCalls).toHaveLength(3)
+    })
+
+    it('should handle concurrent update requests independently', async () => {
+      const promises = [
+        settingsApi.setSystemUserSettings({ timezone: 'UTC' }),
+        settingsApi.setSystemUserSettings({ timezone: 'EST' }),
+        settingsApi.setSystemUserSettings({ timezone: 'PST' })
+      ]
+
+      await Promise.all(promises)
+
+      const putCalls = testRequest.put.mock.calls
+      expect(putCalls).toHaveLength(3)
+      expect(putCalls[0][1]).toEqual({ timezone: 'UTC' })
+      expect(putCalls[1][1]).toEqual({ timezone: 'EST' })
+      expect(putCalls[2][1]).toEqual({ timezone: 'PST' })
+    })
+
+    it('should not share state between different operation types', async () => {
+      const results = await Promise.all([
+        settingsApi.getTimezone(),
+        settingsApi.setSystemUserSettings({ timezone: 'UTC' }),
+        settingsApi.getSystemUserSettings()
+      ])
+
+      expect(results).toHaveLength(3)
+      expect(testRequest.get).toHaveBeenCalledTimes(2)
+      expect(testRequest.put).toHaveBeenCalledTimes(1)
+    })
+
+    it('should isolate mocks between test runs', async () => {
+      testRequest.get.mockResolvedValueOnce({ data: ['UTC'] })
+      const result1 = await settingsApi.getTimezone()
+
+      testRequest.get.mockResolvedValueOnce({ data: { timezone: 'EST' } })
+      const result2 = await settingsApi.getSystemUserSettings()
+
+      expect(result1.data).toEqual(['UTC'])
+      expect(result2.data.timezone).toBe('EST')
+    })
+  })
+
+  describe('Response Data Validation', () => {
+    it('should handle timezone array response', async () => {
+      const mockResponse = { data: ['UTC', 'EST', 'CST', 'PST'] }
+      testRequest.get.mockResolvedValueOnce(mockResponse)
+
+      const result = await settingsApi.getTimezone()
+      expect(Array.isArray(result.data)).toBe(true)
+      expect(result.data).toHaveLength(4)
+    })
+
+    it('should handle settings object response', async () => {
+      const mockResponse = {
+        data: {
+          timezone: 'UTC',
+          language: 'en-US',
+          dateFormat: 'YYYY-MM-DD'
+        }
+      }
+      testRequest.get.mockResolvedValueOnce(mockResponse)
+
+      const result = await settingsApi.getSystemUserSettings()
+      expect(result.data).toHaveProperty('timezone')
+      expect(result.data.timezone).toBe('UTC')
+    })
+
+    it('should handle update success response', async () => {
+      const mockResponse = { data: { success: true, message: 'Settings updated' } }
+      testRequest.put.mockResolvedValueOnce(mockResponse)
+
+      const result = await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
+      expect(result.data).toHaveProperty('success')
+    })
+
+    it('should handle empty response data', async () => {
+      testRequest.get.mockResolvedValueOnce({ data: {} })
+
+      const result = await settingsApi.getSystemUserSettings()
+      expect(result.data).toBeDefined()
+      expect(typeof result.data).toBe('object')
+    })
+
+    it('should handle null or undefined response gracefully', async () => {
+      testRequest.get.mockResolvedValueOnce(null)
+      const result = await settingsApi.getTimezone()
+      expect(result).toBeNull()
+    })
+  })
 })

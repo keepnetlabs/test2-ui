@@ -60,6 +60,7 @@
 <script>
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import labels from '@/model/constants/labels'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 import TrainingLibraryDrawerContent from './TrainingLibraryDrawerContent.vue'
 
 export default {
@@ -104,7 +105,7 @@ export default {
   data() {
     return {
       isVisible: false,
-      drawerId: `drawer-${Math.random().toString(36).substr(2, 9)}`,
+      drawerId: `drawer-${createRandomCryptStringNumber()}`,
       skipBodyScrollOnClose: false
     }
   },

@@ -12,7 +12,6 @@ import VueMask, { VueMaskDirective } from 'v-mask'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
 import useSentry from './plugins/sentry'
-import './plugins/swiper'
 //widget componentleri
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)

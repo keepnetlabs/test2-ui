@@ -213,7 +213,7 @@
                       <el-tabs
                         v-model="tab"
                         :key="getLandingPageKey"
-                        id="landing-page-tab-content"
+                        id="landing-page-tab-content-landing-page"
                         class="mt-2"
                         :class="{
                           'tabs-header-hidden': isDefault || isGenerateWithAi || isAIAllyGenerating
@@ -312,7 +312,7 @@
                               :nudge-bottom="menuNudgeBottom"
                               :offset-y="true"
                               id="add-page-menu"
-                              attach="#landing-page-tab-content"
+                              attach="#landing-page-tab-content-landing-page"
                               :z-index="10000"
                             >
                               <template #activator="{ on: menu }">

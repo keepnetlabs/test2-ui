@@ -31,7 +31,7 @@
           <InputEntityName
             v-model.trim="formValues.name"
             v-bind="commonRules"
-            id="input--notification-template-name"
+            id="input--notification-template-name-new"
             initialPlaceholder="Enter template name"
             entityName="Template Name"
             :initialRules="commonRules.rules"

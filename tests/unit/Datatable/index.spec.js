@@ -176,7 +176,7 @@ describe('Datatable test cases suite', () => {
     //clicking filter options
     await filterOptions.trigger(CONSTANTS.EVENT_TYPES.CLICK)
     //checking is menu open
-    expect(filterOptions.classes('filter-options--menu-active'))
+    expect(filterOptions.classes('filter-options--menu-active')).toBe(true)
     //getting menu items
     //getting menu items
     const filterOptionsItems = document.querySelectorAll(

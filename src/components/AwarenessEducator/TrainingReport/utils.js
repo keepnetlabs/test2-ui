@@ -7,6 +7,7 @@ export function getStatusBadgeProps(status) {
     Completed: { color: '#217124', text: 'Completed' },
     Passed: { color: '#217124', text: 'Passed' },
     ExamPassed: { color: '#43A047', text: 'Exam Passed' },
+    ExamFailed: { color: '#F56C6C', text: 'Exam Failed', outline: false },
     Success: { color: '#217124', text: 'Success' },
     InQueue: { color: '#1173C1', text: 'In Queue' },
     SendingError: { color: '#F56C6C', text: 'Sending Error', outline: false },

@@ -89,6 +89,7 @@
 import { mapGetters } from 'vuex'
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
+import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'UsersDashboardYourLearning',
@@ -126,12 +127,12 @@ export default {
         } else if (item.points !== undefined && item.points !== null) {
           // Handle string or other types
           const parsed = Number(item.points)
-          pointsValue = isNaN(parsed) ? 0 : parsed
+          pointsValue = Number.isNaN(parsed) ? 0 : parsed
         }
         const pointsString = String(pointsValue)
 
         return {
-          id: item.enrollmentId || Math.random(),
+          id: item.enrollmentId || createRandomCryptStringNumber(),
           name: item.trainingName || '',
           startDate: item.enrollmentStartDate || '',
           status: status,
@@ -252,7 +253,7 @@ export default {
         return 'mdi-star'
       }
       const pointsValue = Number.parseInt(points)
-      if (isNaN(pointsValue)) {
+      if (Number.isNaN(pointsValue)) {
         return 'mdi-check-circle'
       }
       if (pointsValue < 0) {
@@ -273,7 +274,7 @@ export default {
         return '#D1AD0C' // Gold color for max points
       }
       const pointsValue = Number.parseInt(points)
-      if (isNaN(pointsValue)) {
+      if (Number.isNaN(pointsValue)) {
         return '#217124'
       }
       if (pointsValue < 0) {
