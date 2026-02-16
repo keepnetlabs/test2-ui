@@ -27,7 +27,11 @@
               </span>
             </div>
             <div class="gamification-report-phishing-activity-results__metric-footer gamification-report-phishing-activity-results__metric-footer--green">
-              {{ earnedPointsText }}
+              {{ earnedPointsText.before }}
+              <span v-if="earnedPointsText.points" class="gamification-report-phishing-activity-results__metric-footer-points gamification-report-phishing-activity-results__metric-footer-points--green">
+                {{ earnedPointsText.points }}
+              </span>
+              {{ earnedPointsText.after }}
             </div>
           </div>
         </div>
@@ -47,7 +51,11 @@
               </span>
             </div>
             <div class="gamification-report-phishing-activity-results__metric-footer gamification-report-phishing-activity-results__metric-footer--red">
-              {{ lostPointsText }}
+              {{ lostPointsText.before }}
+              <span v-if="lostPointsText.points" class="gamification-report-phishing-activity-results__metric-footer-points gamification-report-phishing-activity-results__metric-footer-points--red">
+                {{ lostPointsText.points }}
+              </span>
+              {{ lostPointsText.after }}
             </div>
           </div>
         </div>
@@ -131,17 +139,25 @@ export default {
       const points = this.phishingData.earnedPoints
       const name = this.selectedRow?.firstName || 'The user'
       if (points === 0) {
-        return `${name} has not earned any points for reported emails yet.`
+        return { before: `${name} has not earned any points for reported emails yet.`, points: '', after: '' }
       }
-      return `${name} earned +${points} points for reported emails.`
+      return {
+        before: `${name} earned `,
+        points: `+${points} points`,
+        after: ' for reported emails.'
+      }
     },
     lostPointsText() {
       const points = this.phishingData.lostPoints
       const name = this.selectedRow?.firstName || 'The user'
       if (points === 0) {
-        return `No points lost for missed reported emails.`
+        return { before: 'No points lost for missed reported emails.', points: '', after: '' }
       }
-      return `${name} lost -${points} points for missed reported emails.`
+      return {
+        before: `${name} lost `,
+        points: `-${points} points`,
+        after: ' for missed reported emails.'
+      }
     },
     accuracyText() {
       const percentage = this.phishingData.accuracyIncrease

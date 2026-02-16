@@ -29,7 +29,7 @@
         <form-group :title="'Proxy Address or IP'" has-hint>
           <InputEntityName
             v-model.trim="formValues.address"
-            id="input--proxy-settings-name"
+            id="input--proxy-settings-address"
             initialPlaceholder="Enter proxy address or IP"
             entityName="Proxy address"
             :initialRules="proxyAddressRules"
@@ -39,7 +39,7 @@
         <form-group :title="'Port'" has-hint>
           <InputEntityName
             v-model.trim="formValues.port"
-            id="input--proxy-settings-name"
+            id="input--proxy-settings-port"
             initialPlaceholder="Enter port"
             entityName="port"
             :initialRules="portRules"

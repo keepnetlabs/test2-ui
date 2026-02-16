@@ -35,7 +35,7 @@ export const convertContentToFile = (attachment) => {
         const byteCharacters = atob(base64Data)
         const byteNumbers = new Array(byteCharacters.length)
         for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i)
+          byteNumbers[i] = byteCharacters.codePointAt(i)
         }
         const byteArray = new Uint8Array(byteNumbers)
         blob = new Blob([byteArray], { type: fileType })

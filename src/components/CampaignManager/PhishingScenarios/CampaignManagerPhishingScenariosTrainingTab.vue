@@ -117,7 +117,7 @@
         <div class="campaign-manager-advanced-settings__other-settings-last">
           <VCheckbox
             v-model="value.enrollmentReminder.sendReminderEvery"
-            id="input--campaign-manager-advanced-settings-randomly-selected"
+            id="input--phishing-scenarios-send-reminder"
             color="#2196f3"
             :disabled="!isInputsEditable || isInputLanguageDisabled || isEdit"
             hide-details
@@ -213,7 +213,7 @@
         <div class="d-flex align-center">
           <v-checkbox
             v-model="value.awardCertificate"
-            id="input--campaign-manager-advanced-settings-randomly-selected"
+            id="input--phishing-scenarios-award-certificate"
             hide-details
             color="#2196f3"
             label="Award certificate when a user completes the training"

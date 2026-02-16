@@ -106,7 +106,7 @@
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="sendReminderEvery"
-          id="input--campaign-manager-advanced-settings-randomly-selected"
+          id="input--send-poster-send-reminder"
           color="#2196f3"
           hide-details
         >
@@ -199,7 +199,7 @@
       <div class="d-flex align-center">
         <v-checkbox
           v-model="formData.awardCertificate"
-          id="input--campaign-manager-advanced-settings-randomly-selected"
+          id="input--send-poster-award-certificate"
           hide-details
           color="#2196f3"
           label="Award certificate when a user completes the training"
@@ -228,7 +228,7 @@
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="isAutoEnroll"
-          id="input--campaign-manager-advanced-settings-randomly-selected"
+          id="input--send-poster-auto-enroll"
           color="#2196f3"
           hide-details
         >
@@ -293,7 +293,7 @@
     <FormGroup :class="!formData.isProxy ? 'mt-6' : ''" title="Mark as Test">
       <v-checkbox
         v-model="formData.markedAsTest"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
+        id="input--send-poster-marked-as-test"
         hide-details
         color="#2196f3"
         label="Exclude this campaign’s statistics from all generic reports"

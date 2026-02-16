@@ -93,7 +93,7 @@
             <div class="campaign-manager-advanced-settings__other-settings-last">
               <v-checkbox
                 v-model="isDistributionEnabled"
-                id="input--campaign-manager-advanced-settings-randomly-selected"
+                id="input--edit-enrollments-distribution-enabled"
                 color="#2196f3"
                 hide-details
               >
@@ -132,7 +132,7 @@
             >
               <v-checkbox
                 v-model="sendReminderEvery"
-                id="input--campaign-manager-advanced-settings-randomly-selected"
+                id="input--edit-enrollments-send-reminder"
                 color="#2196f3"
                 hide-details
               >
@@ -238,7 +238,7 @@
             >
               <v-checkbox
                 v-model="isAutoEnroll"
-                id="input--campaign-manager-advanced-settings-randomly-selected"
+                id="input--edit-enrollments-auto-enroll"
                 color="#2196f3"
                 hide-details
               >
@@ -311,7 +311,7 @@
           <FormGroup class="mt-6" title="Mark as Test">
             <v-checkbox
               v-model="formData.markedAsTest"
-              id="input--campaign-manager-advanced-settings-randomly-selected"
+              id="input--edit-enrollments-marked-as-test"
               hide-details
               color="#2196f3"
               label="Exclude this enrollment's statistics from all generic reports"
