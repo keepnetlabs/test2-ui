@@ -8,8 +8,25 @@
       </p>
     </div>
 
-    <div v-if="isLoading" class="gamification-report-user-details-badges-tab__loading">
-      <DatatableLoading :loading="true" />
+    <div v-if="isLoading" class="gamification-report-user-details-badges-tab__skeleton">
+      <div class="gamification-report-user-details-badges-tab__skeleton-tabs">
+        <v-skeleton-loader type="chip" width="80" height="32" />
+        <v-skeleton-loader type="chip" width="80" height="32" />
+        <v-skeleton-loader type="chip" width="80" height="32" />
+      </div>
+      <div class="gamification-report-user-details-badges-tab__skeleton-grid">
+        <div
+          v-for="n in 6"
+          :key="`badge-skeleton-${n}`"
+          class="gamification-report-user-details-badges-tab__skeleton-card"
+        >
+          <div class="gamification-report-user-details-badges-tab__skeleton-card-icon">
+            <v-skeleton-loader type="avatar" size="80" />
+          </div>
+          <v-skeleton-loader type="text" width="100" height="16" class="gamification-report-user-details-badges-tab__skeleton-card-name" />
+          <v-skeleton-loader type="text" width="70" height="12" />
+        </div>
+      </div>
     </div>
     <div
       v-else-if="allBadges.length === 0"
@@ -106,11 +123,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import usersDashboardBadgeMixin from '@/mixins/usersDashboardBadgeMixin'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 
 export default {
   name: 'GamificationReportUserDetailsDrawerBadgesTab',
-  components: { DatatableLoading },
   mixins: [usersDashboardBadgeMixin],
   props: {
     selectedRow: { type: Object, required: true }

@@ -35,7 +35,19 @@
       >
         <template #datatable-custom-column="{ scope, col }">
           <div
-            v-if="col.property === 'points'"
+            v-if="col.property === 'status'"
+            class="gamification-report-user-details-training-overview-tab__status-column"
+          >
+            <Badge
+              v-if="getStatusBadgeProps(scope.row.status)"
+              v-bind="getStatusBadgeProps(scope.row.status)"
+              :col="col"
+              size="medium"
+            />
+            <span v-else>{{ scope.row.status || '—' }}</span>
+          </div>
+          <div
+            v-else-if="col.property === 'points'"
             class="gamification-report-user-details-training-overview-tab__points-column"
           >
             <VIcon
@@ -64,7 +76,9 @@
 <script>
 import { getLearningEnrollments } from '@/api/reports'
 import DataTable from '@/components/DataTable'
+import Badge from '@/components/Badge'
 import GamificationReportPhishingActivityResults from '@/components/GamificationReport/GamificationReportPhishingActivityResults.vue'
+import { getStatusBadgeProps } from '@/components/AwarenessEducator/TrainingReport/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -79,6 +93,7 @@ export default {
   name: 'GamificationReportUserDetailsDrawerPerformanceDetailsTab',
   components: {
     DataTable,
+    Badge,
     GamificationReportPhishingActivityResults
   },
   computed: {
@@ -160,7 +175,7 @@ export default {
           {
             property: 'status',
             label: 'Status',
-            type: 'badge',
+            type: 'slot',
             sortable: false,
             hideSort: true,
             show: true,
@@ -190,6 +205,7 @@ export default {
     }
   },
   methods: {
+    getStatusBadgeProps,
     async callForData() {
       if (!this.targetUserResourceId) return
       this.isLoading = true

@@ -539,4 +539,377 @@ describe("RecentlyReportedIncidents widget", () => {
       expect(wrapper.vm.isLoading).toBe(false);
     });
   });
+
+  describe("incident status handling", () => {
+    it("handles Phishing status correctly", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBtnStatusColor("Phishing")).toBe("color-Phishing");
+    });
+
+    it("handles Malicious status correctly", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBtnStatusColor("Malicious")).toBe("color-Malicious");
+    });
+
+    it("handles Undetected status correctly", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBtnStatusColor("Undetected")).toBe("color-Undetected");
+    });
+
+    it("handles Clean status correctly", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBtnStatusColor("Clean")).toBe("color-Clean");
+    });
+
+    it("handles custom status values", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBtnStatusColor("CustomStatus")).toBe("color-CustomStatus");
+    });
+  });
+
+  describe("incident count handling", () => {
+    it("handles zero incidents", async () => {
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: [] } }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData).toHaveLength(0);
+    });
+
+    it("handles single incident", async () => {
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [{ resourceId: "id1", subject: "Single" }]
+          }
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData).toHaveLength(1);
+    });
+
+    it("handles multiple incidents", async () => {
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [
+              { resourceId: "id1", subject: "First" },
+              { resourceId: "id2", subject: "Second" },
+              { resourceId: "id3", subject: "Third" }
+            ]
+          }
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData).toHaveLength(3);
+    });
+
+    it("handles large incident datasets", async () => {
+      const incidents = Array.from({ length: 100 }, (_, i) => ({
+        resourceId: `id${i}`,
+        subject: `Incident ${i}`,
+        status: ["Phishing", "Malicious", "Clean"][i % 3]
+      }));
+
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: incidents } }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData).toHaveLength(100);
+    });
+  });
+
+  describe("subject and resource ID handling", () => {
+    it("preserves subject line exactly", async () => {
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [{ resourceId: "id1", subject: "Important: Security Update" }]
+          }
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].subject).toBe("Important: Security Update");
+    });
+
+    it("handles very long subjects", async () => {
+      const longSubject = "A".repeat(1000);
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [{ resourceId: "id1", subject: longSubject }]
+          }
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].subject).toHaveLength(1000);
+    });
+
+    it("handles subjects with unicode characters", async () => {
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [{ resourceId: "id1", subject: "Incident 🚨 Alert 重要" }]
+          }
+        }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData[0].subject).toContain("🚨");
+    });
+
+    it("preserves resource IDs correctly", async () => {
+      const resourceIds = ["res-001", "res-002", "res-003"];
+      const incidents = resourceIds.map(id => ({
+        resourceId: id,
+        subject: `Incident for ${id}`
+      }));
+
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: incidents } }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      resourceIds.forEach((id, idx) => {
+        expect(wrapper.vm.tableData[idx].resourceId).toBe(id);
+      });
+    });
+  });
+
+  describe("column structure", () => {
+    it("has exactly two columns", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.columns).toHaveLength(2);
+    });
+
+    it("has subject column first", () => {
+      const wrapper = mountFactory();
+      const subjectColumn = wrapper.vm.columns[0];
+      expect(subjectColumn.property).toBe("subject");
+    });
+
+    it("has result/status column second", () => {
+      const wrapper = mountFactory();
+      const resultColumn = wrapper.vm.columns[1];
+      expect(resultColumn.property).toBe("result");
+    });
+
+    it("subject column has proper styling", () => {
+      const wrapper = mountFactory();
+      const subjectColumn = wrapper.vm.columns[0];
+      expect(subjectColumn.thStyle.width).toBe("60%");
+      expect(subjectColumn.tdStyle.width).toBe("60%");
+    });
+
+    it("status column has center alignment", () => {
+      const wrapper = mountFactory();
+      const statusColumn = wrapper.vm.columns[1];
+      expect(statusColumn.thStyle.textAlign).toBe("center");
+    });
+  });
+
+  describe("performance characteristics", () => {
+    it("mounts efficiently", () => {
+      const startTime = Date.now();
+      mountFactory();
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(200);
+    });
+
+    it("handles large incident loads efficiently", async () => {
+      const incidents = Array.from({ length: 500 }, (_, i) => ({
+        resourceId: `id${i}`,
+        subject: `Incident ${i}`,
+        status: ["Phishing", "Malicious"][i % 2]
+      }));
+
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: incidents } }
+      });
+
+      const wrapper = mountFactory();
+      const startTime = Date.now();
+      await Promise.resolve();
+      const duration = Date.now() - startTime;
+
+      expect(duration).toBeLessThan(500);
+      expect(wrapper.vm.tableData).toHaveLength(500);
+    });
+
+    it("processes status colors efficiently", () => {
+      const wrapper = mountFactory();
+      const startTime = Date.now();
+      for (let i = 0; i < 1000; i++) {
+        wrapper.vm.getBtnStatusColor("Phishing");
+      }
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(100);
+    });
+  });
+
+  describe("widget component integration", () => {
+    it("has all widget components stubbed", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.$options.components).toBeDefined();
+    });
+
+    it("supports editMode prop correctly", () => {
+      const wrapper = mountFactory({ editMode: true });
+      expect(wrapper.vm.editMode).toBe(true);
+    });
+
+    it("supports hasLink prop correctly", () => {
+      const wrapper = mountFactory({ hasLink: false });
+      expect(wrapper.vm.hasLink).toBe(false);
+    });
+
+    it("generates correct link when hasLink is true", () => {
+      const wrapper = mountFactory({ hasLink: true });
+      const link = wrapper.vm.getLink;
+      expect(link.href).toBe("/incident-responder");
+      expect(link.text).toBe("All");
+    });
+
+    it("returns null link when hasLink is false", () => {
+      const wrapper = mountFactory({ hasLink: false });
+      expect(wrapper.vm.getLink).toBeNull();
+    });
+  });
+
+  describe("API error handling", () => {
+    it("handles API failure gracefully", async () => {
+      searchNotifiedMail.mockRejectedValueOnce(new Error("API Error"));
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.isLoading).toBe(false);
+      expect(wrapper.vm.tableData).toBeDefined();
+    });
+
+    it("retains functionality after API error", async () => {
+      searchNotifiedMail.mockRejectedValueOnce(new Error("Error"));
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      const color = wrapper.vm.getBtnStatusColor("Phishing");
+      expect(color).toBe("color-Phishing");
+    });
+
+    it("handles network errors", async () => {
+      searchNotifiedMail.mockRejectedValueOnce(new Error("Network Error"));
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.isLoading).toBe(false);
+    });
+  });
+
+  describe("multiple instances independence", () => {
+    it("creates independent instances", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+      expect(wrapper1.vm).not.toBe(wrapper2.vm);
+    });
+
+    it("maintains separate loading states", async () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+
+      await Promise.resolve();
+
+      expect(wrapper1.vm.isLoading).toBe(wrapper2.vm.isLoading);
+    });
+
+    it("handles cleanup independently", () => {
+      const wrapper1 = mountFactory();
+      const wrapper2 = mountFactory();
+
+      expect(() => {
+        wrapper1.destroy();
+        expect(wrapper2.exists()).toBe(true);
+      }).not.toThrow();
+
+      wrapper2.destroy();
+    });
+  });
+
+  describe("complex incident scenarios", () => {
+    it("handles incidents with various statuses mixed", async () => {
+      const incidents = [
+        { resourceId: "id1", subject: "Phishing", status: "Phishing" },
+        { resourceId: "id2", subject: "Malicious", status: "Malicious" },
+        { resourceId: "id3", subject: "Clean", status: "Clean" },
+        { resourceId: "id4", subject: "Undetected", status: "Undetected" }
+      ];
+
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: incidents } }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+
+      expect(wrapper.vm.tableData).toHaveLength(4);
+      incidents.forEach((incident, idx) => {
+        expect(wrapper.vm.tableData[idx].status).toBe(incident.status);
+      });
+    });
+
+    it("handles rapid repeated calls", async () => {
+      const wrapper = mountFactory();
+
+      for (let i = 0; i < 5; i++) {
+        wrapper.vm.callForRecentlyReportedIncidents();
+      }
+
+      await Promise.resolve();
+      expect(wrapper.vm.isLoading).toBe(false);
+    });
+
+    it("maintains data consistency across multiple calls", async () => {
+      const incidents1 = [{ resourceId: "id1", subject: "First" }];
+      const incidents2 = [
+        { resourceId: "id2", subject: "Second" },
+        { resourceId: "id3", subject: "Third" }
+      ];
+
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: incidents1 } }
+      });
+
+      const wrapper = mountFactory();
+      await Promise.resolve();
+      expect(wrapper.vm.tableData).toHaveLength(1);
+
+      searchNotifiedMail.mockResolvedValueOnce({
+        data: { data: { results: incidents2 } }
+      });
+
+      wrapper.vm.callForRecentlyReportedIncidents();
+      await Promise.resolve();
+      expect(wrapper.vm.tableData).toHaveLength(2);
+    });
+  });
 });

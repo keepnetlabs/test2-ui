@@ -6,6 +6,7 @@ export function getStatusBadgeProps(status) {
     InProgress: { color: '#1173C1', text: 'In Progress' },
     Completed: { color: '#217124', text: 'Completed' },
     Passed: { color: '#217124', text: 'Passed' },
+    ExamPassed: { color: '#43A047', text: 'Exam Passed' },
     Success: { color: '#217124', text: 'Success' },
     InQueue: { color: '#1173C1', text: 'In Queue' },
     SendingError: { color: '#F56C6C', text: 'Sending Error', outline: false },
@@ -22,6 +23,7 @@ export function getStatusBadgeProps(status) {
     NotDelivered: { color: '#757575', text: 'Not Delivered', outline: true },
     Incomplete: { color: '#757575', text: 'Incomplete', outline: true },
     NotCompleted: { color: '#B83A3A', text: 'Not Completed' },
+    NotStarted: { color: '#757575', text: 'Not Started', outline: true },
     Downloaded: { color: '#217124', text: 'Downloaded' }
   }
   const trimmedStatus = status?.replace(/\s/g, '')

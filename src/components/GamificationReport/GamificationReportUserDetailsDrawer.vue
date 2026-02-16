@@ -256,7 +256,7 @@
           <div v-else class="gamification-report__user-details-drawer-timeline">
             <VTimeline v-if="!!timeline.length" dense clipped>
               <template v-for="(item, index) in timeline">
-                <VTimelineItem v-if="item.type !== 'header'" medium :key="index">
+                <VTimelineItem v-if="item.type !== 'header'" medium :key="`activity-${index}`">
                   <template #icon>
                     <img
                       style="width: 32px; height: 32px;"
@@ -566,7 +566,7 @@
                   class="gamification-report__timeline-item-date-header"
                   v-else
                   small
-                  :key="index"
+                  :key="`header-${index}`"
                 >
                   <template #icon>
                     <img src="@/assets/img/timeline-date-header-icon.svg" :alt="item.text" />
@@ -890,14 +890,17 @@ export default {
           }))
           this.productScores = newProductScores
           if (newProductScores?.length > 0) {
+            const firstProduct = res?.data?.data?.[0]
             this.overallScore = {
               points: newProductScores[0].totalPoints,
-              percentage: newProductScores[0].totalPerformance
+              percentage: newProductScores[0].totalPerformance,
+              rank: res?.data?.rank ?? firstProduct?.rank
             }
           } else {
             this.overallScore = {
               points: 0,
-              percentage: 0
+              percentage: 0,
+              rank: undefined
             }
             this.productScores = []
           }

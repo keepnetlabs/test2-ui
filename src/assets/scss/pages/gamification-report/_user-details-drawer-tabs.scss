@@ -35,7 +35,7 @@
   }
 
   &__card-title {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 20px;
     font-weight: 600;
     color: #383b41;
@@ -44,7 +44,7 @@
   }
 
   &__card-subtitle {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: #383b41;
@@ -53,10 +53,10 @@
   }
 
   &__link {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: #2196F3 !important;
+    color: #2196f3 !important;
     text-decoration: none;
     flex-shrink: 0;
     margin-left: 16px;
@@ -88,7 +88,7 @@
   }
 
   &__percentage {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 48px;
     font-weight: 600;
     color: #383b41;
@@ -111,7 +111,7 @@
     justify-content: space-between;
     align-items: center;
     flex: 1;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     color: #383b41;
   }
@@ -146,8 +146,8 @@
   &__badges-empty-text {
     color: var(--Black-Black, #383b41);
     text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: 'Open Sans', sans-serif;
+    font-feature-settings: "liga" off, "clig" off;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -201,6 +201,35 @@
     max-width: calc(33.333% - 11px);
   }
 
+  &__badge-item--skeleton {
+    pointer-events: none;
+  }
+
+  &__badge-skeleton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  &__badge-skeleton-icon {
+    flex-shrink: 0;
+
+    .v-skeleton-loader {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  }
+
+  &__badge-skeleton-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
   &__badge-icon {
     width: 80px;
     height: 80px;
@@ -229,7 +258,7 @@
   }
 
   &__badge-name {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: #383b41;
@@ -238,7 +267,7 @@
   }
 
   &__badge-earned-date {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 12px;
     font-weight: 400;
     color: #757575;
@@ -251,8 +280,8 @@
     padding: 40px 24px;
     text-align: center;
     color: var(--Black-Black, #383b41);
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: 'Open Sans', sans-serif;
+    font-feature-settings: "liga" off, "clig" off;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -388,7 +417,7 @@
   }
 
   &__title {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 20px;
     font-weight: 600;
     color: #383b41;
@@ -397,7 +426,7 @@
   }
 
   &__subtitle {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: #383b41;
@@ -425,6 +454,52 @@
     justify-content: center;
   }
 
+  &__skeleton {
+    padding-top: 20px;
+  }
+
+  &__skeleton-tabs {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .v-skeleton-loader {
+      border-radius: 4px;
+    }
+  }
+
+  &__skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  &__skeleton-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    gap: 12px;
+
+    .v-skeleton-loader__avatar {
+      border-radius: 50%;
+    }
+  }
+
+  &__skeleton-card-icon {
+    .v-skeleton-loader {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  }
+
+  &__skeleton-card-name {
+    margin-top: 4px;
+  }
+
   &__empty {
     padding: 48px 24px;
     text-align: center;
@@ -433,8 +508,8 @@
   &__empty-text {
     color: var(--Black-Black, #383b41);
     text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: 'Open Sans', sans-serif;
+    font-feature-settings: "liga" off, "clig" off;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -461,7 +536,7 @@
   }
 
   &__level-empty-text {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: #757575;
@@ -518,7 +593,7 @@
   }
 
   &__badge-name {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: #383b41;
@@ -528,7 +603,7 @@
   }
 
   &__badge-status {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 12px;
     font-weight: 400;
     color: #757575;
@@ -626,8 +701,8 @@
   &__empty-text {
     color: var(--Black-Black, #383b41);
     text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: 'Open Sans', sans-serif;
+    font-feature-settings: "liga" off, "clig" off;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -672,7 +747,7 @@
   }
 
   &__points-text {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 12px;
     color: #383b41;
     display: inline;
@@ -690,7 +765,7 @@
   }
 
   &__title {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 20px;
     font-weight: 600;
     color: #383b41;
@@ -699,7 +774,7 @@
   }
 
   &__subtitle {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: #383b41;
@@ -751,7 +826,7 @@
   }
 
   &__metric-label {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 400;
     color: #383b41;
@@ -759,7 +834,7 @@
   }
 
   &__metric-value {
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 16px;
     font-weight: 600;
     color: #383b41;
@@ -770,7 +845,7 @@
   &__metric-footer {
     padding: 8px;
     border-radius: 8px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 12px;
     font-weight: 400;
     line-height: 1.5;

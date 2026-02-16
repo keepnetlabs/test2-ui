@@ -52,7 +52,7 @@
               <div class="gamification-report-user-details-summary-tab__metric-item">
                 <span class="gamification-report-user-details-summary-tab__metric-label">Rank</span>
                 <span class="gamification-report-user-details-summary-tab__metric-value">
-                  {{ selectedRow.rank || '—' }}
+                  {{ overallScore.rank ?? selectedRow.rank ?? '—' }}
                 </span>
               </div>
             </div>
@@ -84,13 +84,19 @@
               :key="`badge-skeleton-${n}`"
               :class="[
                 'gamification-report-user-details-summary-tab__badge-item',
+                'gamification-report-user-details-summary-tab__badge-item--skeleton',
                 `gamification-report-user-details-summary-tab__badge-item--count-${badgeCount}`
               ]"
             >
-              <div class="gamification-report-user-details-summary-tab__badge-icon">
-                <v-skeleton-loader type="avatar" size="80" />
+              <div class="gamification-report-user-details-summary-tab__badge-skeleton">
+                <div class="gamification-report-user-details-summary-tab__badge-skeleton-icon">
+                  <v-skeleton-loader type="avatar" size="80" />
+                </div>
+                <div class="gamification-report-user-details-summary-tab__badge-skeleton-text">
+                  <v-skeleton-loader type="text" width="100" height="16" />
+                  <v-skeleton-loader type="text" width="70" height="12" />
+                </div>
               </div>
-              <v-skeleton-loader type="text, text" width="90" />
             </div>
           </template>
           <div

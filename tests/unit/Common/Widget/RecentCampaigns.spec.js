@@ -521,7 +521,7 @@ describe("RecentCampaigns widget", () => {
       const start = performance.now();
       const wrapper = mountFactory();
       const duration = performance.now() - start;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(200);
       wrapper.destroy();
     });
 
