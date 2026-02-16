@@ -19,7 +19,7 @@
       <KSelect
         v-model.trim="value.startDateTimezoneId"
         type="autocomplete"
-        id="input--campaign-manager-campaign-info-time-type"
+        id="input--campaign-manager-campaign-info-time-type-start-date"
         style="max-width: 233px;"
         outlined
         dense
@@ -50,7 +50,7 @@
       <KSelect
         v-model.trim="value.dueDateTimezoneId"
         type="autocomplete"
-        id="input--campaign-manager-campaign-info-time-type"
+        id="input--campaign-manager-campaign-info-time-type-due-date"
         style="max-width: 233px;"
         outlined
         dense

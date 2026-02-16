@@ -134,7 +134,7 @@
                         </div>
                         <div
                           v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
-                          id="preview-footer-container-att-preview"
+                          id="preview-footer-container-att-preview-step-1"
                           class="preview-footer"
                         >
                           <h2>Attachments</h2>
@@ -375,7 +375,7 @@
                         />
                       </div>
                       <div
-                        id="preview-footer-container-att-preview"
+                        id="preview-footer-container-att-preview-step-2"
                         class="preview-footer"
                         v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
                       >

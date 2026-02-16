@@ -195,7 +195,7 @@
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 1">
         <v-btn
           text
-          id="btn-close--security-dashboard-popup"
+          id="btn-close--security-dashboard-popup-step-1"
           color="#2196f3"
           class="k-dialog__button"
           @click="$emit('changePasswordChange')"
@@ -212,7 +212,7 @@
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
-          id="btn-confirm--security-dashboard-popup"
+          id="btn-confirm--security-dashboard-popup-step-2"
           text
           color="#2196f3"
           class="k-dialog__button"
@@ -230,7 +230,7 @@
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
-          id="btn-confirm--security-dashboard-popup"
+          id="btn-confirm--security-dashboard-popup-step-3"
           text
           color="#2196f3"
           class="k-dialog__button"
@@ -239,7 +239,7 @@
         >
       </div>
       <div
-        id="btn-close--security-dashboard-popup"
+        id="btn-close--security-dashboard-popup-step-4"
         class="d-flex download-buttons flex-row flex-wrap justify-end"
         v-if="step === 4"
       >
@@ -247,7 +247,7 @@
           labels.Close
         }}</v-btn>
         <v-btn
-          id="btn-confirm--security-dashboard-popup"
+          id="btn-confirm--security-dashboard-popup-step-4"
           text
           color="#2196f3"
           class="k-dialog__button"

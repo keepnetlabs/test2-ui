@@ -30,7 +30,7 @@
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
                 <v-btn
-                  id="btn-cancel--investigation-details-delete-emails-popup"
+                  id="btn-cancel--investigation-details-delete-emails-popup-delete"
                   class="k-dialog__button"
                   text
                   color="#f56c6c"
@@ -83,7 +83,7 @@
                 onSubmit="return false;"
               >
                 <v-text-field
-                  id="input--investigation-details-warning-message"
+                  id="input--investigation-details-warning-message-warn"
                   placeholder="Dangerous Email"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -129,7 +129,7 @@
                 @submit="isWantToDeleteAndNotifyConfirm"
               >
                 <v-text-field
-                  id="input--investigation-details-warning-message"
+                  id="input--investigation-details-warning-message-delete-and-notify"
                   placeholder="Dangerous Email"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -147,7 +147,7 @@
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
                 <v-btn
-                  id="btn-cancel--investigation-details-delete-emails-popup"
+                  id="btn-cancel--investigation-details-delete-emails-popup-delete-and-notify"
                   class="k-dialog__button"
                   text
                   color="#f56c6c"

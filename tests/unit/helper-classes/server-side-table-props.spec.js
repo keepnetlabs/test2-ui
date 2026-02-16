@@ -247,4 +247,276 @@ describe('ServerSideProps', () => {
       expect(props2.isClustered).toBe(true)
     })
   })
+
+  describe('Class Structure & Properties', () => {
+    it('should be a class/constructor function', () => {
+      expect(typeof ServerSideProps).toBe('function')
+    })
+
+    it('should create instances with new keyword', () => {
+      const props = new ServerSideProps()
+      expect(props).toBeInstanceOf(ServerSideProps)
+    })
+
+    it('should have all expected properties', () => {
+      const props = new ServerSideProps()
+      expect(props).toHaveProperty('orderBy')
+      expect(props).toHaveProperty('isClustered')
+      expect(props).toHaveProperty('pageSize')
+      expect(props).toHaveProperty('pageNumber')
+      expect(props).toHaveProperty('totalNumberOfPages')
+      expect(props).toHaveProperty('totalNumberOfRecords')
+    })
+
+    it('should have all expected methods', () => {
+      const props = new ServerSideProps()
+      expect(typeof props.getPageSize).toBe('function')
+      expect(typeof props.getPageNumber).toBe('function')
+      expect(typeof props.getTotalNumberOfPages).toBe('function')
+      expect(typeof props.getTotalNumberOfRecords).toBe('function')
+    })
+
+    it('methods should be accessible on instance', () => {
+      const props = new ServerSideProps('', false, 25, 3, 10, 100)
+      expect(props.getPageSize()).toBe(25)
+      expect(props.getPageNumber()).toBe(3)
+    })
+  })
+
+  describe('Constructor Validation', () => {
+    it('should accept all parameters', () => {
+      const props = new ServerSideProps('status', true, 50, 5, 20, 1000)
+      expect(props.orderBy).toBe('status')
+      expect(props.isClustered).toBe(true)
+      expect(props.pageSize).toBe(50)
+      expect(props.pageNumber).toBe(5)
+      expect(props.totalNumberOfPages).toBe(20)
+      expect(props.totalNumberOfRecords).toBe(1000)
+    })
+
+    it('should work with no parameters', () => {
+      const props = new ServerSideProps()
+      expect(props).toBeDefined()
+      expect(props.orderBy).toBe('')
+      expect(props.pageSize).toBe(10)
+    })
+
+    it('should work with mixed parameter counts', () => {
+      expect(() => new ServerSideProps('col')).not.toThrow()
+      expect(() => new ServerSideProps('col', true)).not.toThrow()
+      expect(() => new ServerSideProps('col', true, 20)).not.toThrow()
+    })
+
+    it('should preserve parameter order', () => {
+      const props = new ServerSideProps('id', false, 30, 2, 5, 150)
+      expect(props.orderBy).toBe('id')
+      expect(props.isClustered).toBe(false)
+      expect(props.pageSize).toBe(30)
+      expect(props.pageNumber).toBe(2)
+    })
+  })
+
+  describe('Getter Methods Consistency', () => {
+    it('getter results should match property values', () => {
+      const props = new ServerSideProps('name', false, 15, 4, 8, 120)
+      expect(props.getPageSize()).toBe(props.pageSize)
+      expect(props.getPageNumber()).toBe(props.pageNumber)
+      expect(props.getTotalNumberOfPages()).toBe(props.totalNumberOfPages)
+      expect(props.getTotalNumberOfRecords()).toBe(props.totalNumberOfRecords)
+    })
+
+    it('getters should return consistent values across multiple calls', () => {
+      const props = new ServerSideProps('email', true, 20, 3, 7, 140)
+      const size1 = props.getPageSize()
+      const size2 = props.getPageSize()
+      expect(size1).toBe(size2)
+
+      const number1 = props.getPageNumber()
+      const number2 = props.getPageNumber()
+      expect(number1).toBe(number2)
+    })
+
+    it('all getters should work without errors', () => {
+      const props = new ServerSideProps('status', false, 25, 5, 10, 250)
+      expect(() => {
+        props.getPageSize()
+        props.getPageNumber()
+        props.getTotalNumberOfPages()
+        props.getTotalNumberOfRecords()
+      }).not.toThrow()
+    })
+  })
+
+  describe('State Mutations', () => {
+    it('should allow changing orderBy', () => {
+      const props = new ServerSideProps('initial', false, 10, 1, 5, 50)
+      props.orderBy = 'updated'
+      expect(props.orderBy).toBe('updated')
+    })
+
+    it('should allow changing isClustered', () => {
+      const props = new ServerSideProps('', false, 10, 1, 5, 50)
+      props.isClustered = true
+      expect(props.isClustered).toBe(true)
+      props.isClustered = false
+      expect(props.isClustered).toBe(false)
+    })
+
+    it('should allow changing pageSize', () => {
+      const props = new ServerSideProps('', false, 10, 1, 5, 50)
+      props.pageSize = 100
+      expect(props.getPageSize()).toBe(100)
+    })
+
+    it('should allow changing pageNumber', () => {
+      const props = new ServerSideProps('', false, 10, 1, 5, 50)
+      props.pageNumber = 3
+      expect(props.getPageNumber()).toBe(3)
+    })
+
+    it('should allow multiple mutations in sequence', () => {
+      const props = new ServerSideProps('initial', false, 10, 1, 5, 50)
+      props.orderBy = 'updated1'
+      expect(props.orderBy).toBe('updated1')
+      props.orderBy = 'updated2'
+      expect(props.orderBy).toBe('updated2')
+      props.pageSize = 25
+      expect(props.getPageSize()).toBe(25)
+    })
+  })
+
+  describe('Pagination Calculations', () => {
+    it('should calculate pages correctly with even records', () => {
+      const props = new ServerSideProps('', false, 10, 1, 10, 100)
+      expect(props.getTotalNumberOfRecords()).toBe(100)
+      expect(props.getTotalNumberOfPages()).toBe(10)
+    })
+
+    it('should handle odd number of records', () => {
+      const props = new ServerSideProps('', false, 10, 1, 11, 105)
+      expect(props.getTotalNumberOfRecords()).toBe(105)
+      expect(props.getTotalNumberOfPages()).toBe(11)
+    })
+
+    it('should track pagination across multiple pages', () => {
+      const props = new ServerSideProps('', false, 20, 1, 5, 100)
+
+      for (let page = 1; page <= 5; page++) {
+        props.pageNumber = page
+        expect(props.getPageNumber()).toBe(page)
+      }
+    })
+
+    it('should maintain data integrity during pagination', () => {
+      const props = new ServerSideProps('id', true, 50, 2, 4, 200)
+      const initialRecords = props.getTotalNumberOfRecords()
+      const initialPages = props.getTotalNumberOfPages()
+
+      props.pageNumber = 1
+      expect(props.getTotalNumberOfRecords()).toBe(initialRecords)
+      expect(props.getTotalNumberOfPages()).toBe(initialPages)
+    })
+  })
+
+  describe('Performance Characteristics', () => {
+    it('should instantiate quickly', () => {
+      const start = Date.now()
+      for (let i = 0; i < 1000; i++) {
+        new ServerSideProps('name', false, 10, 1, 5, 50)
+      }
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+
+    it('getters should execute quickly', () => {
+      const props = new ServerSideProps('', false, 10, 1, 5, 50)
+      const start = Date.now()
+
+      for (let i = 0; i < 10000; i++) {
+        props.getPageSize()
+        props.getPageNumber()
+        props.getTotalNumberOfPages()
+        props.getTotalNumberOfRecords()
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+    })
+
+    it('property mutations should be fast', () => {
+      const props = new ServerSideProps('', false, 10, 1, 5, 50)
+      const start = Date.now()
+
+      for (let i = 0; i < 1000; i++) {
+        props.pageNumber = i
+        props.pageSize = i % 100
+        props.orderBy = `col${i}`
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+    })
+  })
+
+  describe('Type Flexibility', () => {
+    it('should accept boolean for isClustered', () => {
+      const props1 = new ServerSideProps('', true, 10, 1, 5, 50)
+      const props2 = new ServerSideProps('', false, 10, 1, 5, 50)
+      expect(props1.isClustered).toBe(true)
+      expect(props2.isClustered).toBe(false)
+    })
+
+    it('should accept various numeric types for pageSize', () => {
+      const props1 = new ServerSideProps('', false, 10, 1, 5, 50)
+      const props2 = new ServerSideProps('', false, 25.5, 1, 5, 50)
+      expect(props1.pageSize).toBe(10)
+      expect(props2.pageSize).toBe(25.5)
+    })
+
+    it('should accept string for orderBy', () => {
+      const props1 = new ServerSideProps('columnName', false, 10, 1, 5, 50)
+      const props2 = new ServerSideProps('another_column', false, 10, 1, 5, 50)
+      expect(props1.orderBy).toBe('columnName')
+      expect(props2.orderBy).toBe('another_column')
+    })
+
+    it('should handle unicode in orderBy', () => {
+      const props = new ServerSideProps('Ñombre_日本語', false, 10, 1, 5, 50)
+      expect(props.orderBy).toBe('Ñombre_日本語')
+    })
+  })
+
+  describe('Multiple Instance Isolation', () => {
+    it('instances should have independent state', () => {
+      const props1 = new ServerSideProps('name', false, 10, 1, 5, 50)
+      const props2 = new ServerSideProps('email', true, 25, 3, 10, 100)
+
+      props1.pageNumber = 5
+      expect(props2.getPageNumber()).toBe(3)
+    })
+
+    it('modifying one instance should not affect others', () => {
+      const instances = [
+        new ServerSideProps('col1', false, 10, 1, 5, 50),
+        new ServerSideProps('col2', false, 20, 2, 10, 100),
+        new ServerSideProps('col3', false, 30, 3, 15, 150)
+      ]
+
+      instances[0].pageNumber = 99
+      expect(instances[1].getPageNumber()).toBe(2)
+      expect(instances[2].getPageNumber()).toBe(3)
+    })
+
+    it('can create and manage many instances', () => {
+      const instances = []
+      for (let i = 0; i < 100; i++) {
+        instances.push(new ServerSideProps(`col${i}`, i % 2 === 0, 10 + i, 1, 5, 50))
+      }
+
+      instances.forEach((inst, i) => {
+        expect(inst.pageSize).toBe(10 + i)
+        expect(inst.orderBy).toBe(`col${i}`)
+      })
+    })
+  })
 })

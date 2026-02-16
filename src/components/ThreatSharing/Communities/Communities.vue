@@ -248,7 +248,7 @@
                   You haven’t joined any communities
                 </span>
                 <v-btn
-                  id="threat-sharing-communities-browse-community-button"
+                  id="threat-sharing-communities-browse-community-button-tab-0"
                   class="create-com-btn mb-11"
                   @click="subTabSelected('All')"
                   rounded
@@ -263,7 +263,7 @@
                   You don't have any invitations from communities
                 </span>
                 <v-btn
-                  id="threat-sharing-communities-browse-community-button"
+                  id="threat-sharing-communities-browse-community-button-tab-2"
                   class="create-com-btn mb-11"
                   @click="subTabSelected('All')"
                   rounded

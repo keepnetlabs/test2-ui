@@ -74,7 +74,6 @@ import DuplicateExecutiveReport from '@/views/DuplicateExecutiveReport.vue'
 import ScheduledExecutiveReport from '@/views/ScheduledExecutiveReport.vue'
 import ScheduledReports from '@/views/ScheduledReports.vue'
 import GamificationReport from '@/views/GamificationReport'
-import MicroLearning from '@/views/MicroLearning.vue'
 import TrainingsDownloadContent from '@/views/TrainingsDownloadContent.vue'
 Vue.use(Router)
 const router = new Router({
@@ -144,14 +143,6 @@ const router = new Router({
       path: '/reports/executive-reports/scheduled-executive-report/:id',
       name: 'Scheduled Executive Report',
       component: ScheduledExecutiveReport,
-      meta: {
-        isAuthenticated: false
-      }
-    },
-    {
-      path: '/micro-learning',
-      name: 'Micro Learning',
-      component: MicroLearning,
       meta: {
         isAuthenticated: false
       }

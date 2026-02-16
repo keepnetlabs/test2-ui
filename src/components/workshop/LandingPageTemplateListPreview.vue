@@ -331,7 +331,7 @@
                           <ElTabs
                             v-model="selectedEditLandingPageTab"
                             class="landing-page-tab-content k-sub-tab py-0 px-0"
-                            id="landing-page-tab-content"
+                            id="landing-page-tab-content-edit-1"
                           >
                             <ElTabPane
                               v-for="(page, index) in editData.landingPages"
@@ -395,8 +395,8 @@
                                   :min-width="128"
                                   :nudge-right="83"
                                   :nudge-bottom="240"
-                                  id="add-page-menu"
-                                  attach="#landing-page-tab-content"
+                                  id="add-page-menu-edit-1"
+                                  attach="#landing-page-tab-content-edit-1"
                                   :z-index="10000"
                                 >
                                   <template v-slot:activator="{ on: menu }">
@@ -707,7 +707,7 @@
                         <ElTabs
                           v-model="selectedEditLandingPageTab"
                           class="landing-page-tab-content k-sub-tab py-0 px-0"
-                          id="landing-page-tab-content"
+                          id="landing-page-tab-content-edit-2"
                         >
                           <ElTabPane
                             v-for="(page, index) in editData.landingPages"
@@ -771,8 +771,8 @@
                                 :min-width="128"
                                 :nudge-right="83"
                                 :nudge-bottom="240"
-                                id="add-page-menu"
-                                attach="#landing-page-tab-content"
+                                id="add-page-menu-edit-2"
+                                attach="#landing-page-tab-content-edit-2"
                                 :z-index="10000"
                               >
                                 <template v-slot:activator="{ on: menu }">
