@@ -153,8 +153,22 @@ export default {
         },
         columns: [
           COLUMNS.SCHEDULE,
-          COLUMNS.TARGET_USERS_ITEM_TABLE,
-          COLUMNS.STATUS,
+          {
+            ...COLUMNS.TARGET_USERS_ITEM_TABLE,
+            width: 240,
+            showHeaderTooltip: true,
+            headerTooltip: 'Number of users in the most recent recurrence of this instance.',
+            headerTooltipIcon: 'mdi-information-outline',
+            headerTooltipIconColor: '#757575'
+          },
+          {
+            ...COLUMNS.STATUS,
+            width: 240,
+            showHeaderTooltip: true,
+            headerTooltip: 'Current status of the most recent recurrence of this instance.',
+            headerTooltipIcon: 'mdi-information-outline',
+            headerTooltipIconColor: '#757575'
+          },
           COLUMNS.CREATE_TIME_ITEM_TABLE
         ],
         iEmpty: {

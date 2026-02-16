@@ -824,7 +824,7 @@
                         }}</v-icon
                       >
                     </template>
-                    <span style="max-width: 284px; display: inline-block;">
+                    <span style="max-width: 400px; display: inline-block;">
                       {{ col["headerTooltip"] }}
                     </span>
                   </v-tooltip>

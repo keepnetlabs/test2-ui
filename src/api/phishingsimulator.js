@@ -582,6 +582,24 @@ export function getCampaignJobSummaryTargetGroups(id = '', instanceGroup = '') {
   )
 }
 
+/**
+ * Get campaign target groups and user count per group.
+ * Supports all simulator types (Phishing, Smishing, Quishing, Callback, Vishing).
+ * @param {string} resourceId - Campaign resource ID
+ * @param {Object} params - { campaignType, instanceGroup? }
+ * @returns {Promise}
+ */
+export function getCampaignTargetGroups(resourceId, params = {}) {
+  const { campaignType, instanceGroup } = params
+  const queryParams = new URLSearchParams()
+  if (campaignType != null) queryParams.append('campaignType', campaignType)
+  if (instanceGroup != null) queryParams.append('instanceGroup', instanceGroup)
+  const query = queryParams.toString()
+  return testRequest.get(
+    `/phishing-simulator/${resourceId}/target-groups${query ? `?${query}` : ''}`
+  )
+}
+
 export function callForCampaignReports(payload) {
   return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/search`, payload)
 }

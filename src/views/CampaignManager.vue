@@ -63,6 +63,13 @@
       @on-close="closeNewInstanceModal"
       @on-submit="handleOnSubmitNewInstance"
     />
+    <CampaignManagerTargetGroupsDialog
+      v-if="isShowTargetGroupsDialog"
+      :status="isShowTargetGroupsDialog"
+      :campaign-resource-id="targetGroupsDialogCampaignResourceId"
+      :campaign-type="targetGroupsDialogCampaignType"
+      @on-close="toggleTargetGroupsDialog"
+    />
     <CampaignManagerParentTable
       v-show="!isItemTableShowing && !isFrequencyTableShowing"
       ref="campaignManagerParentTable"
@@ -76,6 +83,7 @@
       @on-duplicate="handleItemOnDuplicate"
       @on-launch="handleLaunch"
       @on-multiple-delete="handleMultipleDelete"
+      @on-target-users-groups-click="handleTargetUsersGroupsClick"
     />
     <CampaignManagerItemTable
       v-if="selectedParentItem"
@@ -123,6 +131,8 @@ import { mapGetters } from 'vuex'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
+import CampaignManagerTargetGroupsDialog from '@/components/CampaignManager/CampaignManagerTargetGroupsDialog.vue'
+import { CAMPAIGN_TYPE } from '@/components/CampaignManager/utils'
 import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue'
 import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue'
 import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
@@ -142,7 +152,8 @@ export default {
     CampaignManagerParentTable,
     CampaignManagerAddOrEditModal,
     CampaignManagerNewInstanceModal,
-    CampaignManagerFrequencyTable
+    CampaignManagerFrequencyTable,
+    CampaignManagerTargetGroupsDialog
   },
   mixins: [useScenarioDetailsLookup],
   data() {
@@ -168,6 +179,8 @@ export default {
       isShowStopDialog: false,
       isShowStartDialog: false,
       isFrequencyTableShowing: false,
+      isShowTargetGroupsDialog: false,
+      targetGroupsDialogCampaign: null,
       formDetails: {},
       multipleSystemUserPayload: {},
       startStopCampaignPayload: {},
@@ -183,6 +196,18 @@ export default {
     }),
     getStatusItems() {
       return this.formDetails.status
+    },
+    targetGroupsDialogCampaignResourceId() {
+      return this.targetGroupsDialogCampaign && this.targetGroupsDialogCampaign.resourceId
+        ? this.targetGroupsDialogCampaign.resourceId
+        : ''
+    },
+    targetGroupsDialogCampaignType() {
+      const campaign = this.targetGroupsDialogCampaign
+      if (campaign && campaign.campaignType != null) {
+        return campaign.campaignType
+      }
+      return CAMPAIGN_TYPE.Phishing
     }
   },
   created() {
@@ -389,6 +414,16 @@ export default {
         this.isMultipleDelete = false
       }
       this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    toggleTargetGroupsDialog() {
+      if (this.isShowTargetGroupsDialog) {
+        this.targetGroupsDialogCampaign = null
+      }
+      this.isShowTargetGroupsDialog = !this.isShowTargetGroupsDialog
+    },
+    handleTargetUsersGroupsClick(row) {
+      this.targetGroupsDialogCampaign = row
+      this.toggleTargetGroupsDialog()
     },
     setDeleteDialogActionButtonDisabled(flag = false) {
       this.isDeleteDialogActionButtonDisabled = flag

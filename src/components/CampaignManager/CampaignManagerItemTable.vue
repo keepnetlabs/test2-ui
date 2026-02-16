@@ -17,7 +17,7 @@
       is-server-side
       :loading="isLoading"
       :table="tableData"
-      :columns="tableOptions.columns"
+      :columns="tableColumnsWithTooltips"
       :empty="tableOptions.iEmpty"
       :server-side-props="serverSideProps"
       :server-side-events="tableOptions.serverSideEvents"
@@ -218,6 +218,37 @@ export default {
   computed: {
     getTableAllRecordsText() {
       return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
+    },
+    tableColumnsWithTooltips() {
+      const isRecurrence = this.item?.frequency !== 0 && this.item?.frequency !== undefined
+
+      return this.tableOptions.columns.map((col) => {
+        if (col.property === 'totalTargetUserCount') {
+          return {
+            ...col,
+            width: 240,
+            showHeaderTooltip: isRecurrence,
+            headerTooltip: isRecurrence
+              ? 'Number of users in the most recent recurrence of this instance.'
+              : undefined,
+            headerTooltipIcon: 'mdi-information-outline',
+            headerTooltipIconColor: '#757575'
+          }
+        }
+        if (col.property === COLUMNS.STATUS.property) {
+          return {
+            ...col,
+            width: 240,
+            showHeaderTooltip: isRecurrence,
+            headerTooltip: isRecurrence
+              ? 'Current status of the most recent recurrence of this instance.'
+              : undefined,
+            headerTooltipIcon: 'mdi-information-outline',
+            headerTooltipIconColor: '#757575'
+          }
+        }
+        return col
+      })
     }
   },
   watch: {
