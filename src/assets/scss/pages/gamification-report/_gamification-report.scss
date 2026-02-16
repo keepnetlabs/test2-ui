@@ -321,7 +321,79 @@
   &__user-details-drawer-load-more-button-container {
     padding: 16px;
   }
+
+  &__user-details-drawer-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__user-info-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  &__user-info-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
 }
+
+.gamification-report__user-info-popover {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.gamification-report__user-info-content {
+  padding: 16px;
+  min-width: 220px;
+  max-width: 320px;
+}
+
+.gamification-report__user-info-name {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #383b41;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.gamification-report__user-info-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.gamification-report__user-info-label {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  color: #757575;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+.gamification-report__user-info-value {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  color: #383b41;
+  font-weight: 400;
+  word-break: break-word;
+}
+
 .v-timeline {
   margin-top: -8px !important;
   &-item {

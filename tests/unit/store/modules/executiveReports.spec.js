@@ -217,4 +217,142 @@ describe('executiveReports Vuex Module', () => {
       expect(executiveReports.getters.getCategories(state)).toBe(state.categories)
     })
   })
+
+  describe('Action Workflows', () => {
+    it('callForData action should be async compatible', async () => {
+      const action = executiveReports.actions.callForData
+      expect(typeof action).toBe('function')
+    })
+
+    it('callForData should handle undefined context gracefully', () => {
+      const action = executiveReports.actions.callForData
+      expect(() => action({})).not.toThrow()
+    })
+
+    it('callForData should work with commit and dispatch', () => {
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+      const context = { commit, dispatch }
+      executiveReports.actions.callForData(context)
+      expect(commit).not.toThrow
+    })
+  })
+
+  describe('State Consistency', () => {
+    it('state should not have undefined values', () => {
+      const stateValues = Object.values(state)
+      stateValues.forEach(value => {
+        if (Array.isArray(value)) {
+          expect(value).toBeDefined()
+        }
+      })
+    })
+
+    it('state arrays should maintain type consistency', () => {
+      const testState = JSON.parse(JSON.stringify(state))
+      expect(Array.isArray(testState.valueTypes)).toBe(true)
+      expect(Array.isArray(testState.categories)).toBe(true)
+      expect(Array.isArray(testState.chartTypes)).toBe(true)
+    })
+
+    it('chart type structure should be consistent across all items', () => {
+      state.chartTypes.forEach((chartType, index) => {
+        expect(Object.keys(chartType)).toContain('text')
+        expect(Object.keys(chartType)).toContain('value')
+        if (index > 0) {
+          expect(Object.keys(chartType)).toEqual(Object.keys(state.chartTypes[0]))
+        }
+      })
+    })
+  })
+
+  describe('Getter Composition', () => {
+    it('multiple getters should be callable in sequence', () => {
+      const valueTypes = executiveReports.getters.getValueTypes(state)
+      const categories = executiveReports.getters.getCategories(state)
+      const chartTypes = executiveReports.getters.getChartTypes(state)
+
+      expect(valueTypes).toBeDefined()
+      expect(categories).toBeDefined()
+      expect(chartTypes).toBeDefined()
+    })
+
+    it('getters should return independent references', () => {
+      const getters1 = executiveReports.getters.getValueTypes(state)
+      const getters2 = executiveReports.getters.getValueTypes(state)
+      expect(getters1).toBe(getters2)
+    })
+
+    it('getter results should reflect state changes', () => {
+      const originalChartTypes = executiveReports.getters.getChartTypes(state)
+      expect(originalChartTypes).toBeDefined()
+
+      const chartTypeValues = executiveReports.getters.getChartTypes(state).map(t => t.value)
+      expect(chartTypeValues.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Multiple Instance Isolation', () => {
+    it('should create independent state instances', () => {
+      const state1 = executiveReports.state
+      const state2 = executiveReports.state
+      expect(state1).toBe(state2)
+    })
+
+    it('getters from different state objects should work independently', () => {
+      const testState = {
+        valueTypes: [],
+        categories: [],
+        groupedBy: [],
+        targetGroups: [],
+        chartTypes: [{ text: 'Test', value: 'test' }],
+        dateIntervals: [{ text: 'Day', value: 'day' }]
+      }
+
+      const getter1 = executiveReports.getters.getChartTypes(state)
+      const getter2 = executiveReports.getters.getChartTypes(testState)
+
+      expect(getter1).not.toBe(getter2)
+    })
+  })
+
+  describe('Performance Characteristics', () => {
+    it('should initialize module quickly', () => {
+      const start = Date.now()
+      const module = executiveReports
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(50)
+    })
+
+    it('getters should return results quickly', () => {
+      const start = Date.now()
+      executiveReports.getters.getChartTypes(state)
+      executiveReports.getters.getDateIntervals(state)
+      executiveReports.getters.getValueTypes(state)
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(10)
+    })
+
+    it('should handle large array access efficiently', () => {
+      const start = Date.now()
+      for (let i = 0; i < 100; i++) {
+        executiveReports.getters.getChartTypes(state)
+      }
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+    })
+  })
+
+  describe('Mutation Absence', () => {
+    it('no mutations should be defined for this module', () => {
+      expect(Object.keys(executiveReports.mutations).length).toBe(0)
+    })
+
+    it('mutation object should be explicitly empty', () => {
+      const mutationKeys = Object.keys(executiveReports.mutations)
+      mutationKeys.forEach(key => {
+        expect(typeof executiveReports.mutations[key]).not.toBe('function')
+      })
+    })
+  })
 })

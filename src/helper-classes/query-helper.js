@@ -23,8 +23,8 @@ export default class QueryHelperForTable {
       if (!['5', '10', '25'].some((defaultNum) => defaultNum === size)) {
         this.setRouterQuery('size', 10)
       }
-      const parsedPage = parseInt(page)
-      if (isNaN(parsedPage) || parsedPage <= 0) {
+      const parsedPage = Number.parseInt(page)
+      if (Number.isNaN(parsedPage) || parsedPage <= 0) {
         this.setRouterQuery('page', 1)
       }
     }

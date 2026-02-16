@@ -619,7 +619,7 @@
                           <template #activator="{ on }">
                             <v-btn
                               v-on="on"
-                              id="landingPagePreview__save-changes-button"
+                              id="landingPagePreview__save-changes-button-secondary"
                               class="landingPagePreview__save-changes-button mr-4"
                               color="#2196F3"
                               rounded

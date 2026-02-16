@@ -14,7 +14,7 @@
         <div>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--vishing-resend-answered"
             color="#2196f3"
             :disabled="!items.answered"
             :value="1"
@@ -23,7 +23,7 @@
           </v-checkbox>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--vishing-resend-no-response"
             color="#2196f3"
             :disabled="!items.noResponse"
             :value="2"
@@ -32,7 +32,7 @@
           </v-checkbox>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--vishing-resend-calling-error"
             color="#2196f3"
             :disabled="!items.callingError"
             :value="3"

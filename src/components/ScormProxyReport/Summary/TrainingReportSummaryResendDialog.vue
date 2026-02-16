@@ -14,7 +14,7 @@
         <div>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--scorm-resend-email-failed"
             color="#2196f3"
             :disabled="!items.emailErrorUserCount"
             :value="1"
@@ -26,7 +26,7 @@
           </v-checkbox>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--scorm-resend-only-opened"
             color="#2196f3"
             :disabled="!items.onlyOpenedCount"
             :value="2"
@@ -35,7 +35,7 @@
           </v-checkbox>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--scorm-resend-clicked"
             color="#2196f3"
             :disabled="!items.totalUserClickedCount"
             :value="3"
@@ -46,7 +46,7 @@
           </v-checkbox>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--scorm-resend-did-not-complete"
             color="#2196f3"
             :disabled="!items.didNotCompleteTrainingCount"
             :value="4"
@@ -57,7 +57,7 @@
             > </v-checkbox
           ><v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--scorm-resend-failed-exam"
             color="#2196f3"
             :disabled="!items.failedExamCount"
             :value="6"
@@ -66,7 +66,7 @@
           </v-checkbox>
           <v-checkbox
             v-model="types"
-            id="input--training-report-email-failed-to-send"
+            id="input--scorm-resend-no-response"
             color="#2196f3"
             :disabled="!items.noResponseCount"
             :value="7"

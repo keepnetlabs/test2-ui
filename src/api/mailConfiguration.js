@@ -156,8 +156,9 @@ export function checkEmailMailFilterEWS(payload) {
   return testRequest.post(`mail-configurations/ews/check-mail-filter`, payload)
 }
 
-export function getExchangeVersions(payload = { typeName: 'Exchange Versions', typeidlist: [] }) {
-  return testRequest.post(`lookups`, payload)
+export function getExchangeVersions(payload) {
+  const requestPayload = payload ?? { typeName: 'Exchange Versions', typeidlist: [] }
+  return testRequest.post(`lookups`, requestPayload)
 }
 
 export function getDomainList(payload) {

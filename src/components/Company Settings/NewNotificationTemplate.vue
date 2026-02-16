@@ -627,9 +627,6 @@ export default {
       }
     );
   },
-  beforeDestroy() {
-    clearTimeout(this.timeoutId);
-  },
   methods: {
     callForSMTPSettings() {
       searchSmtpSettings(this.smtpAxiosPayload).then((response) => {

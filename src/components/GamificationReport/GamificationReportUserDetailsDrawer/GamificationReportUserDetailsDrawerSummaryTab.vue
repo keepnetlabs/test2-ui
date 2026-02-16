@@ -142,10 +142,10 @@
                       {{ badge.badgeName || badge.name }}
                     </span>
                     <span
-                      v-if="badge.earnedDate || badge.earnedOn"
+                      v-if="getBadgeEarnedDateFormatted(badge)"
                       class="gamification-report-user-details-summary-tab__badge-earned-date"
                     >
-                      Earned on {{ formatBadgeEarnedDate(badge.earnedDate || badge.earnedOn) }}
+                      Earned on {{ getBadgeEarnedDateFormatted(badge) }}
                     </span>
                   </div>
                 </template>
@@ -569,10 +569,26 @@ export default {
     getBadgeKey(badge, index) {
       return `${badge?.badgeType ?? badge?.type ?? ''}-${badge?.level ?? 0}-${index}`
     },
+    getBadgeEarnedDateFormatted(badge) {
+      const date = badge?.earnedDate || badge?.earnedOn || badge?.earnedAt || badge?.createdAt || badge?.earned_at || badge?.dateEarned
+      return this.formatBadgeEarnedDate(date)
+    },
     formatBadgeEarnedDate(dateString) {
       if (!dateString) return ''
       try {
-        const date = new Date(dateString)
+        let date = new Date(dateString)
+        if (isNaN(date.getTime())) {
+          const match = String(dateString).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/)
+          if (match) {
+            const day = parseInt(match[1], 10)
+            const month = parseInt(match[2], 10) - 1
+            const year = parseInt(match[3], 10)
+            const hour = parseInt(match[4], 10) || 0
+            const min = parseInt(match[5], 10) || 0
+            date = new Date(year, month, day, hour, min)
+          }
+        }
+        if (isNaN(date.getTime())) return ''
         const day = String(date.getDate()).padStart(2, '0')
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const year = date.getFullYear()

@@ -60,9 +60,9 @@ export default class LookupLocalStorage {
   }
 
   static checkCache(lastValidTime) {
-    const now = parseInt(Date.now().toString().slice(0, -3))
+    const now = Number.parseInt(Date.now().toString().slice(0, -3))
     if (lastValidTime) {
-      lastValidTime = parseInt(lastValidTime)
+      lastValidTime = Number.parseInt(lastValidTime)
       if (lastValidTime > now) {
         return true
       }

@@ -140,7 +140,7 @@
             outlined
             persistent-hint
             hint="*Required"
-            autocomplete="disabled"
+            autocomplete="off"
             :rules="getRules()"
           />
         </v-col>
@@ -171,7 +171,7 @@
             persistent-hint
             hint="*Required"
             :rules="getSubjectRules()"
-            autocomplete="disabled"
+            autocomplete="off"
             md=""
             sm="10"
           />
@@ -185,7 +185,7 @@
             persistent-hint
             hint="*Required"
             :rules="getKeywordRules()"
-            autocomplete="disabled"
+            autocomplete="off"
             md=""
             sm="10"
           />
@@ -199,7 +199,7 @@
             persistent-hint
             hint="*Required"
             :rules="getAttachmentNameRules()"
-            autocomplete="disabled"
+            autocomplete="off"
             md=""
             sm="10"
           />
@@ -213,7 +213,7 @@
             persistent-hint
             hint="*Required"
             :rules="getAttachmentExtensionRules()"
-            autocomplete="disabled"
+            autocomplete="off"
           />
         </v-col>
         <v-col v-if="query.operand === 'AttachmentHash'">
@@ -223,7 +223,7 @@
             placeholder="Enter SHA512 or MD5 hash"
             outlined
             :rules="getAttachmentHashRules()"
-            autocomplete="disabled"
+            autocomplete="off"
             persistent-hint
             hint="*Required"
           />

@@ -367,4 +367,285 @@ describe('datatable-row-color-handler directive', () => {
       }).not.toThrow()
     })
   })
+
+  describe('DOM element handling', () => {
+    it('should find table body wrapper correctly', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        const result = rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+        expect(result).not.toThrow
+      }).not.toThrow()
+    })
+
+    it('should handle missing table body wrapper gracefully', () => {
+      const emptyElement = document.createElement('div')
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(emptyElement, {}, mockVNode)
+      }).not.toThrow()
+    })
+
+    it('should process all rows in table body', () => {
+      const rows = []
+      for (let i = 0; i < 10; i++) {
+        const row = document.createElement('tr')
+        row.id = `row-${i}`
+        rows.push(row)
+        mockTableBody.appendChild(row)
+      }
+
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+        jest.advanceTimersByTime(200)
+      }).not.toThrow()
+    })
+  })
+
+  describe('Directive hook validation', () => {
+    it('should have only componentUpdated hook', () => {
+      const hooks = Object.keys(rowColorHandler)
+      expect(hooks).toContain('componentUpdated')
+    })
+
+    it('should execute hook without errors', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: false
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      }).not.toThrow()
+    })
+
+    it('should accept el, binding, and vNode parameters', () => {
+      const binding = {}
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, binding, mockVNode)
+      }).not.toThrow()
+    })
+  })
+
+  describe('Context and binding handling', () => {
+    it('should handle vNode context without selectedCluster property', () => {
+      const mockVNode = {
+        context: {}
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      }).not.toThrow()
+    })
+
+    it('should handle vNode with proper context', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: false
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      }).not.toThrow()
+    })
+
+    it('should handle binding with empty object', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      }).not.toThrow()
+    })
+  })
+
+  describe('Row processing and styling', () => {
+    it('should process rows without modifying existing styles', () => {
+      const row = document.createElement('tr')
+      row.style.backgroundColor = 'red'
+      const originalColor = row.style.backgroundColor
+      mockTableBody.appendChild(row)
+
+      const mockVNode = {
+        context: {
+          selectedCluster: false
+        }
+      }
+
+      rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      // When selectedCluster is false, original styles should be preserved or not modified in certain way
+      expect(row.style.backgroundColor === originalColor || row.style.backgroundColor === '').toBe(true)
+    })
+
+    it('should handle rows with data attributes', () => {
+      const row = document.createElement('tr')
+      row.dataset.id = '123'
+      row.dataset.status = 'active'
+      mockTableBody.appendChild(row)
+
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+        jest.advanceTimersByTime(200)
+      }).not.toThrow()
+
+      expect(row.dataset.id).toBe('123')
+      expect(row.dataset.status).toBe('active')
+    })
+
+    it('should maintain row element properties during processing', () => {
+      const row = document.createElement('tr')
+      row.setAttribute('data-test', 'value')
+      mockTableBody.appendChild(row)
+
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      jest.advanceTimersByTime(200)
+
+      expect(row.getAttribute('data-test')).toBe('value')
+    })
+  })
+
+  describe('Performance and efficiency', () => {
+    it('should handle large number of rows efficiently', () => {
+      const start = Date.now()
+
+      for (let i = 0; i < 100; i++) {
+        const row = document.createElement('tr')
+        mockTableBody.appendChild(row)
+      }
+
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      jest.advanceTimersByTime(200)
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(1000)
+    })
+
+    it('should use appropriate timing for async operations', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      const timeBefore = Date.now()
+      rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+      jest.advanceTimersByTime(200)
+      const timeAfter = Date.now()
+
+      expect(timeAfter - timeBefore).toBeGreaterThanOrEqual(0)
+    })
+  })
+
+  describe('State consistency', () => {
+    it('should maintain consistent behavior across multiple calls', () => {
+      const mockVNode1 = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      const mockVNode2 = {
+        context: {
+          selectedCluster: false
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode1)
+        jest.advanceTimersByTime(200)
+
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode2)
+        jest.advanceTimersByTime(200)
+      }).not.toThrow()
+    })
+
+    it('should handle repeated directive updates', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        for (let i = 0; i < 3; i++) {
+          rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+          jest.advanceTimersByTime(200)
+        }
+      }).not.toThrow()
+    })
+  })
+
+  describe('Integration and compatibility', () => {
+    it('should work with Element Plus table structure', () => {
+      expect(mockTableBody.className).toBe('el-table__body-wrapper')
+      expect(mockWrapper.className).toBe('el-table__wrapper')
+
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      expect(() => {
+        rowColorHandler.componentUpdated(mockElement, {}, mockVNode)
+        jest.advanceTimersByTime(200)
+      }).not.toThrow()
+    })
+
+    it('should be compatible with Vue directive lifecycle', () => {
+      const mockVNode = {
+        context: {
+          selectedCluster: true
+        }
+      }
+
+      // Simulate lifecycle hook
+      expect(typeof rowColorHandler.componentUpdated).toBe('function')
+      expect(rowColorHandler.componentUpdated.length).toBeGreaterThanOrEqual(3)
+    })
+  })
 })

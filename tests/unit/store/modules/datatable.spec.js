@@ -300,4 +300,214 @@ describe('datatable Vuex Module', () => {
       expect(testState.tables.largeTable.rows.length).toBe(10000)
     })
   })
+
+  describe('Table State Consistency', () => {
+    it('should maintain consistent table structure', () => {
+      const testState = { tables: {} }
+      const payload1 = { key: 'table1', columns: ['id', 'name'], data: [] }
+      const payload2 = { key: 'table2', columns: ['id', 'name'], data: [] }
+
+      tableStore.mutations.setTable(testState, payload1)
+      tableStore.mutations.setTable(testState, payload2)
+
+      expect(testState.tables.table1).toHaveProperty('columns')
+      expect(testState.tables.table1).toHaveProperty('data')
+      expect(testState.tables.table2).toHaveProperty('columns')
+      expect(testState.tables.table2).toHaveProperty('data')
+    })
+
+    it('should preserve all existing tables when adding new ones', () => {
+      const testState = { tables: {} }
+
+      for (let i = 1; i <= 5; i++) {
+        tableStore.mutations.setTable(testState, { key: `table${i}`, index: i })
+      }
+
+      expect(Object.keys(testState.tables).length).toBe(5)
+      for (let i = 1; i <= 5; i++) {
+        expect(testState.tables[`table${i}`]).toBeDefined()
+        expect(testState.tables[`table${i}`].index).toBe(i)
+      }
+    })
+
+    it('should handle table overwriting correctly', () => {
+      const testState = { tables: { existingTable: { old: 'data' } } }
+      const payload = { key: 'existingTable', new: 'data' }
+
+      tableStore.mutations.setTable(testState, payload)
+
+      expect(testState.tables.existingTable).toEqual({ new: 'data' })
+      expect(testState.tables.existingTable.old).toBeUndefined()
+    })
+  })
+
+  describe('Multiple Table Management', () => {
+    it('should handle independent table operations', () => {
+      const testState = { tables: {} }
+
+      tableStore.mutations.setTable(testState, { key: 'users', count: 100 })
+      tableStore.mutations.setTable(testState, { key: 'posts', count: 250 })
+      tableStore.mutations.setTable(testState, { key: 'comments', count: 1000 })
+
+      expect(testState.tables.users.count).toBe(100)
+      expect(testState.tables.posts.count).toBe(250)
+      expect(testState.tables.comments.count).toBe(1000)
+    })
+
+    it('should update individual tables without affecting others', () => {
+      const testState = {
+        tables: {
+          table1: { version: 1 },
+          table2: { version: 1 },
+          table3: { version: 1 }
+        }
+      }
+
+      tableStore.mutations.setTable(testState, { key: 'table2', version: 2 })
+
+      expect(testState.tables.table1.version).toBe(1)
+      expect(testState.tables.table2.version).toBe(2)
+      expect(testState.tables.table3.version).toBe(1)
+    })
+  })
+
+  describe('Performance Characteristics', () => {
+    it('should handle mutations quickly', () => {
+      const testState = { tables: {} }
+      const start = Date.now()
+
+      for (let i = 0; i < 100; i++) {
+        tableStore.mutations.setTable(testState, { key: `table${i}`, index: i })
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(200)
+      expect(Object.keys(testState.tables).length).toBe(100)
+    })
+
+    it('should handle rapid action dispatches', () => {
+      const commit = jest.fn()
+      const start = Date.now()
+
+      for (let i = 0; i < 50; i++) {
+        tableStore.actions.setTable({ commit }, { key: `table${i}`, data: i })
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(150)
+      expect(commit).toHaveBeenCalledTimes(50)
+    })
+
+    it('should efficiently retrieve table data', () => {
+      const testState = { tables: {} }
+      for (let i = 0; i < 100; i++) {
+        tableStore.mutations.setTable(testState, { key: `table${i}`, data: { index: i } })
+      }
+
+      const start = Date.now()
+      for (let i = 0; i < 100; i++) {
+        const _ = testState.tables[`table${i}`]
+      }
+      const duration = Date.now() - start
+
+      expect(duration).toBeLessThan(50)
+    })
+  })
+
+  describe('Mutation Payload Handling', () => {
+    it('should properly remove key property from payload', () => {
+      const testState = { tables: {} }
+      const payload = { key: 'test', prop1: 'value1', prop2: 'value2' }
+
+      tableStore.mutations.setTable(testState, payload)
+
+      expect(testState.tables.test).not.toHaveProperty('key')
+      expect(testState.tables.test).toHaveProperty('prop1')
+      expect(testState.tables.test).toHaveProperty('prop2')
+    })
+
+    it('should handle payloads with only key property', () => {
+      const testState = { tables: {} }
+      const payload = { key: 'onlyKeyTable' }
+
+      tableStore.mutations.setTable(testState, payload)
+
+      expect(testState.tables.onlyKeyTable).toEqual({})
+      expect(Object.keys(testState.tables.onlyKeyTable).length).toBe(0)
+    })
+
+    it('should preserve complex data structures in payload', () => {
+      const testState = { tables: {} }
+      const complexPayload = {
+        key: 'complex',
+        config: {
+          nested: {
+            deep: {
+              value: 'test'
+            }
+          }
+        },
+        array: [1, 2, 3, 4, 5]
+      }
+
+      tableStore.mutations.setTable(testState, complexPayload)
+
+      expect(testState.tables.complex.config.nested.deep.value).toBe('test')
+      expect(testState.tables.complex.array).toEqual([1, 2, 3, 4, 5])
+    })
+  })
+
+  describe('Action Integration', () => {
+    it('should dispatch action that properly commits mutation', () => {
+      const commit = jest.fn((mutationName, payload) => {
+        tableStore.mutations[mutationName](state, payload)
+      })
+
+      const testPayload = { key: 'integrationTest', value: 'success' }
+      tableStore.actions.setTable({ commit }, testPayload)
+
+      expect(state.tables.integrationTest).toBeDefined()
+      expect(state.tables.integrationTest.value).toBe('success')
+    })
+
+    it('should handle concurrent action dispatches', () => {
+      const commit = jest.fn((mutationName, payload) => {
+        tableStore.mutations[mutationName](state, payload)
+      })
+
+      const payloads = [
+        { key: 'table1', data: 1 },
+        { key: 'table2', data: 2 },
+        { key: 'table3', data: 3 }
+      ]
+
+      payloads.forEach(payload => {
+        tableStore.actions.setTable({ commit }, payload)
+      })
+
+      expect(state.tables.table1.data).toBe(1)
+      expect(state.tables.table2.data).toBe(2)
+      expect(state.tables.table3.data).toBe(3)
+    })
+  })
+
+  describe('Module Validation', () => {
+    it('should have correct module structure', () => {
+      expect(tableStore).toHaveProperty('namespaced')
+      expect(tableStore).toHaveProperty('state')
+      expect(tableStore).toHaveProperty('mutations')
+      expect(tableStore).toHaveProperty('actions')
+      expect(tableStore).toHaveProperty('getters')
+    })
+
+    it('should have exactly one mutation and action', () => {
+      expect(Object.keys(tableStore.mutations).length).toBe(1)
+      expect(Object.keys(tableStore.actions).length).toBe(1)
+      expect(Object.keys(tableStore.getters).length).toBe(0)
+    })
+
+    it('should be properly namespaced', () => {
+      expect(tableStore.namespaced).toBe(true)
+    })
+  })
 })

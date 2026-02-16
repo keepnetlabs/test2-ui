@@ -50,7 +50,7 @@
         <div class="send-training-settings__lms-switch">
           <VSwitch
             v-model="formData.isSendSMSNotification"
-            id="input--send-training-settings-lms"
+            id="input--send-training-settings-sms-notification"
             hide-details
             label="SMS notification for your training"
             color="#2196f3"
@@ -132,7 +132,7 @@
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="sendReminderEvery"
-          id="input--campaign-manager-advanced-settings-randomly-selected"
+          id="input--send-training-settings-send-reminder"
           color="#2196f3"
           hide-details
         >
@@ -219,7 +219,7 @@
     <FormGroup v-if="!formData.isProxy" class="mt-6" :title="labels.Certificate">
       <v-checkbox
         v-model="formData.awardCertificate"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
+        id="input--send-training-settings-award-certificate"
         hide-details
         color="#2196f3"
         label="Award certificate when a user completes the training"
@@ -235,7 +235,7 @@
       <div class="campaign-manager-advanced-settings__other-settings-last">
         <v-checkbox
           v-model="isAutoEnroll"
-          id="input--campaign-manager-advanced-settings-randomly-selected"
+          id="input--send-training-settings-auto-enroll"
           color="#2196f3"
           hide-details
         >
@@ -300,7 +300,7 @@
     <FormGroup :class="!formData.isProxy ? 'mt-6' : ''" title="Mark as Test">
       <v-checkbox
         v-model="formData.markedAsTest"
-        id="input--campaign-manager-advanced-settings-randomly-selected"
+        id="input--send-training-settings-marked-as-test"
         hide-details
         color="#2196f3"
         label="Exclude this campaign's statistics from all generic reports"

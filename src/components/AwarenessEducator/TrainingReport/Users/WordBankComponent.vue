@@ -2,7 +2,7 @@
   <div class="word-bank-question-container">
     <div class="word-bank-response-container">
       <div class="word-bank-answer-field">
-        <label class="word-bank-answer-label">User's Answer:</label>
+        <span class="word-bank-answer-label">User's Answer:</span>
         <div class="word-bank-answer-list">
           <div v-for="(word, index) in userWords" :key="index" class="word-bank-item">
             <div class="word-bank-word">{{ word }}</div>
