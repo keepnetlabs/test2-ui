@@ -103,7 +103,7 @@
         <div class="add-in-settings__dialog-box-settings-header">
           <div class="add-in-settings__dialog-box-settings-header__label-container">
             <label
-              for="input--phishing-reporter-settings-default-language"
+              :for="showForm ? 'input--phishing-reporter-settings-default-language' : 'input--phishing-reporter-settings-default-language-readonly'"
               class="add-in-settings__label"
               >{{ labels.DialogBox }} {{ labels.Settings }}</label
             >
@@ -128,7 +128,7 @@
             v-else
             v-model.trim="defaultLanguage"
             class="mt-3"
-            id="input--phishing-reporter-settings-default-language"
+            id="input--phishing-reporter-settings-default-language-readonly"
             style="max-width: 200px;"
             :items="getDefaultLanguageOptions"
             outlined

@@ -1,8 +1,10 @@
+import { createRandomCryptStringNumber } from '@/utils/functions'
+
 export default {
   data() {
     return {
       isVisible: false,
-      drawerId: `drawer-${Math.random().toString(36).substr(2, 9)}`
+      drawerId: `drawer-${createRandomCryptStringNumber()}`
     }
   },
   computed: {

@@ -45,7 +45,7 @@
                 class="people__no-data__buttons--button"
                 style="height: 36px;"
                 v-on="on"
-                id="btn-empty--target-users-people"
+                id="btn-empty--target-users-people-training-all-types"
               >
                 <VIcon color="#fff" class="mr-1">mdi-plus</VIcon>
                 <span class="fw-600">{{ labels.CreateNewMaterial.toUpperCase() }}</span>

@@ -33,6 +33,26 @@
         @refreshAction="callForData"
         @on-open-training="handleOpenTraining"
       >
+        <template #datatable-row-actions="{ scope }">
+          <VTooltip
+            bottom
+            content-class="gamification-report-training-overview-row-action-tooltip"
+          >
+            <template #activator="{ on }">
+              <VBtn
+                v-on="on"
+                icon
+                class="btn-hover"
+                :disabled="tableOptions.rowActions[0].disabled"
+                :id="`${tableOptions.rowActions[0].id}-${scope.$index}`"
+                @click="handleOpenTraining(scope.row)"
+              >
+                <VIcon>{{ tableOptions.rowActions[0].icon }}</VIcon>
+              </VBtn>
+            </template>
+            <span>{{ tableOptions.rowActions[0].name }}</span>
+          </VTooltip>
+        </template>
         <template #datatable-custom-column="{ scope, col }">
           <div
             v-if="col.property === 'status'"

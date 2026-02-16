@@ -65,7 +65,7 @@
           <template #buttons>
             <div class="d-flex justify-end align-self-center mt-8 flex-column gap-6">
               <VBtn
-                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal-delegated"
                 class="btn-util btn-download-add-in"
                 :class="{ 'white--text': !isAccountConnected }"
                 style="
@@ -125,7 +125,7 @@
                 <template #activator="{ on }">
                   <div v-on="on">
                     <VBtn
-                      id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                      id="btn-download-g-suite--phishing-reporter-settings-add-in-modal-app-level-disabled"
                       class="btn-util btn-download-add-in"
                       style="
                         margin-left: 5px !important;
@@ -148,7 +148,7 @@
               </VTooltip>
               <VBtn
                 v-else
-                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal-app-level"
                 class="btn-util btn-download-add-in"
                 style="
                   margin-left: 5px !important;
@@ -310,12 +310,14 @@
           :src="require('../../assets/img/google-workspace.svg')"
           :is-loading="googleWorkSpaceSpinnerStatus"
           description="JSON add-in for web-based Google Workspace emails"
+          button-id="btn-download-google-workspace--phishing-reporter-settings-add-in-modal"
           @button-click="callForGenerateGoogleWorkSpaceAddIn"
         />
         <DownloadAddInListItem
           :src="require('../../assets/img/outlook.svg')"
           :is-loading="outlookSpinnerStatus"
           description="MSI add-in for Windows Outlook Desktop"
+          button-id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
           @button-click="callForGenerateOutlookAddIn"
         />
         <DownloadAddInListItem
@@ -323,6 +325,7 @@
           hide-border
           title="Diagnostic Tool"
           description="Only for Outlook Desktop (Windows OS only)"
+          button-id="btn-download-diagnostic-tool--phishing-reporter-settings-add-in-modal"
           @button-click="callForGenerateDiagnosticTool"
         />
       </div>

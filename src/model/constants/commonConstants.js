@@ -316,7 +316,6 @@ export const PROPERTY_STORE = {
   ACCOUNTSID: 'accountSID',
   ROLE: 'role',
   PHONENUMBER: 'phoneNumber',
-  ROLES: 'roles',
   STATUSNAME: 'statusName',
   CREATETIME: 'createTime',
   CREATE_TIME: 'createTime',

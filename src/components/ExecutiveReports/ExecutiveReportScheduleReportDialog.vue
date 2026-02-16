@@ -91,7 +91,7 @@
           />
           <VAutocomplete
             v-model.trim="formData.scheduledDateTimeZoneId"
-            id="input--campaign-manager-campaign-info-time-type"
+            id="input--campaign-manager-campaign-info-time-type-executive-report"
             style="text-overflow: ellipsis;"
             outlined
             dense

@@ -42,9 +42,9 @@ export default class QueryHelperForTable {
   returnQueryValues() {
     let { page, size } = this.query
     const parsedPage = Number.parseInt(page)
-    page = isNaN(parsedPage) ? 1 : parsedPage
+    page = Number.isNaN(parsedPage) ? 1 : parsedPage
     const parsedSize = Number.parseInt(size)
-    size = isNaN(parsedSize) ? 10 : parsedSize
+    size = Number.isNaN(parsedSize) ? 10 : parsedSize
     return { page, size }
   }
 }

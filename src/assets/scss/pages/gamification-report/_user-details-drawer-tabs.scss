@@ -876,3 +876,8 @@
     }
   }
 }
+
+/* Training Overview row action - Vuetify tooltip drawer üzerinde görünsün */
+.gamification-report-training-overview-row-action-tooltip {
+  z-index: 9999 !important;
+}

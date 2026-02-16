@@ -20,7 +20,7 @@
     </div>
     <slot name="buttons">
       <v-btn
-        id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+        :id="buttonId"
         class="white--text btn-util btn-download-add-in"
         :style="getButtonStyle"
         color="#2196f3"
@@ -79,6 +79,10 @@ export default {
     isOptional: {
       type: Boolean,
       default: false
+    },
+    buttonId: {
+      type: String,
+      default: 'btn-download-add-in-list-item'
     }
   },
   computed: {

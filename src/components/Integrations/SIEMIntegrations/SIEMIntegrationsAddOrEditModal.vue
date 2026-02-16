@@ -58,7 +58,7 @@
         >
           <InputUrl
             v-model.trim="formData.apiUrl"
-            id="input--siem-integrations-url"
+            id="input--siem-integrations-url-splunk"
             placeholder="Enter SIEM URL/IP address"
             :rules="apiUrlRules"
           />
@@ -79,7 +79,7 @@
           <div class="siem-integration-modal__server-address">
             <InputUrl
               v-model.trim="formData.serverAddress"
-              id="input--siem-integrations-url"
+              id="input--siem-integrations-url-syslog"
               placeholder="Enter server address"
               :rules="serverAddressRules"
             />

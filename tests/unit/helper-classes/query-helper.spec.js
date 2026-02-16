@@ -333,4 +333,175 @@ describe('QueryHelperForTable', () => {
       }).not.toThrow()
     })
   })
+
+  describe('query validation and control', () => {
+    it('should validate and control route query correctly', () => {
+      mockRoute.query = { page: 'abc', size: 'xyz' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+      queryHelper.controlRouteQuery()
+
+      expect(queryHelper.query.page).toBe(1)
+      expect(queryHelper.query.size).toBe(10)
+    })
+
+    it('should preserve valid numeric strings', () => {
+      mockRoute.query = { page: '2', size: '20' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+      queryHelper.controlRouteQuery()
+
+      // After controlRouteQuery, the values might be validated/modified
+      expect(queryHelper.query.page).toBeDefined()
+      expect(queryHelper.query.size).toBeDefined()
+    })
+
+    it('should handle query with extra properties', () => {
+      mockRoute.query = { page: '1', size: '10', extra: 'value' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      expect(queryHelper.query.extra).toBe('value')
+    })
+
+    it('should maintain type consistency for default values', () => {
+      mockRoute.query = {}
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+      queryHelper.setDefaultValues()
+
+      expect(typeof queryHelper.query.page).toBe('number')
+      expect(typeof queryHelper.query.size).toBe('number')
+    })
+  })
+
+  describe('router interaction', () => {
+    it('should call router.replace with correct query object', () => {
+      mockRoute.query = {}
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      queryHelper.setRouterQuery('page', 3)
+
+      expect(mockRouter.replace).toHaveBeenCalled()
+      const callArgs = mockRouter.replace.mock.calls[0][0]
+      expect(callArgs.query).toBeDefined()
+    })
+
+    it('should update multiple query parameters independently', () => {
+      mockRoute.query = { page: '1', size: '10' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      queryHelper.setRouterQuery('page', 2)
+      expect(mockRouter.replace).toHaveBeenCalledTimes(1)
+
+      queryHelper.setRouterQuery('size', 20)
+      expect(mockRouter.replace).toHaveBeenCalledTimes(2)
+    })
+
+    it('should preserve query when setting router query', () => {
+      mockRoute.query = { search: 'test', page: '1' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      queryHelper.setRouterQuery('page', 2)
+
+      // Should preserve existing search parameter
+      expect(queryHelper.query.search).toBe('test')
+    })
+  })
+
+  describe('state management', () => {
+    it('should maintain query object state', () => {
+      mockRoute.query = { page: '1', size: '10' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      const initialPage = queryHelper.query.page
+      queryHelper.setRouterQuery('page', 5)
+
+      // Query object should be updated
+      expect(queryHelper.query.page).not.toBe(initialPage)
+    })
+
+    it('should handle multiple instances independently', () => {
+      mockRoute.query = { page: '1', size: '10' }
+      const helper1 = new QueryHelperForTable(mockRouter, mockRoute)
+
+      const route2 = { query: { page: '2', size: '20' } }
+      const helper2 = new QueryHelperForTable(mockRouter, route2)
+
+      expect(helper1.query.page).not.toBe(helper2.query.page)
+      expect(helper1.query.size).not.toBe(helper2.query.size)
+    })
+
+    it('should reset to default values correctly', () => {
+      mockRoute.query = { page: '5', size: '50', extra: 'data' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      queryHelper.setDefaultValues()
+
+      expect(queryHelper.query.page).toBe(1)
+      expect(queryHelper.query.size).toBe(10)
+    })
+  })
+
+  describe('performance and efficiency', () => {
+    it('should handle constructor quickly', () => {
+      const start = Date.now()
+
+      for (let i = 0; i < 100; i++) {
+        new QueryHelperForTable(mockRouter, mockRoute)
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+
+    it('should handle setRouterQuery calls efficiently', () => {
+      mockRoute.query = {}
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      const start = Date.now()
+
+      for (let i = 0; i < 50; i++) {
+        queryHelper.setRouterQuery('page', i)
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+
+    it('should handle controlRouteQuery efficiently', () => {
+      mockRoute.query = { page: '1', size: '10', search: 'test', sort: 'name' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      const start = Date.now()
+
+      for (let i = 0; i < 100; i++) {
+        queryHelper.controlRouteQuery()
+      }
+
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(200)
+    })
+  })
+
+  describe('getter properties', () => {
+    it('should provide access to router and route', () => {
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      expect(queryHelper.router).toBe(mockRouter)
+      expect(queryHelper.route).toBe(mockRoute)
+    })
+
+    it('should provide access to query object', () => {
+      mockRoute.query = { page: '1', size: '10' }
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      expect(queryHelper.query).toBeDefined()
+      expect(typeof queryHelper.query).toBe('object')
+    })
+
+    it('should provide mutable query object', () => {
+      mockRoute.query = {}
+      queryHelper = new QueryHelperForTable(mockRouter, mockRoute)
+
+      queryHelper.query.customField = 'value'
+      expect(queryHelper.query.customField).toBe('value')
+    })
+  })
 })

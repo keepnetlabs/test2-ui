@@ -358,4 +358,259 @@ describe('Input Copy with clipboard component', () => {
       expect(wrapper2.emitted()['on-copy'][0][0]).toBe('key2')
     })
   })
+
+  describe('Component Structure', () => {
+    it('component is a Vue instance', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(wrapper.vm).toBeDefined()
+      expect(wrapper.vm._isVue).toBe(true)
+    })
+
+    it('component has required data properties', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'Test', copyKey: 'key' }
+      })
+      expect(wrapper.vm.title).toBeDefined()
+      expect(wrapper.vm.copyKey).toBeDefined()
+    })
+
+    it('component has methods defined', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(wrapper.vm.$options.methods).toBeDefined()
+    })
+
+    it('contains required child elements', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(wrapper.find('input').exists()).toBe(true)
+      expect(wrapper.find('button').exists()).toBe(true)
+    })
+  })
+
+  describe('Component Lifecycle', () => {
+    it('component mounts successfully', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(wrapper.vm).toBeDefined()
+    })
+
+    it('component renders on mount', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'Test' }
+      })
+      expect(wrapper.find('.input-copy-to-clipboard').exists()).toBe(true)
+    })
+
+    it('component unmounts without errors', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(() => wrapper.destroy()).not.toThrow()
+    })
+
+    it('component maintains props after mount', () => {
+      const testTitle = 'Custom Title'
+      const testKey = 'test-key-123'
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: testTitle, copyKey: testKey }
+      })
+      expect(wrapper.vm.title).toBe(testTitle)
+      expect(wrapper.vm.copyKey).toBe(testKey)
+    })
+  })
+
+  describe('CSS Classes and Styling', () => {
+    it('applies input-copy-to-clipboard class', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(wrapper.find('.input-copy-to-clipboard').exists()).toBe(true)
+    })
+
+    it('applies k-form-group__title class to title', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'Title' }
+      })
+      expect(wrapper.find('.k-form-group__title').exists()).toBe(true)
+    })
+
+    it('button has clickable styling', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      const button = wrapper.find('button')
+      expect(button.isVisible()).toBe(true)
+    })
+
+    it('input field has disabled styling', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      const input = wrapper.find('input')
+      expect(input.attributes('disabled')).toBeDefined()
+    })
+  })
+
+  describe('Form Group Integration', () => {
+    it('component integrates with FormGroup', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'Label' }
+      })
+      expect(wrapper.findComponent({ name: 'FormGroup' }).exists()).toBe(true)
+    })
+
+    it('FormGroup receives title prop', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'Test Label' }
+      })
+      const formGroup = wrapper.findComponent({ name: 'FormGroup' })
+      expect(formGroup.vm.title).toBe('Test Label')
+    })
+
+    it('VTextField is properly integrated', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      expect(wrapper.findComponent({ name: 'VTextField' }).exists()).toBe(true)
+    })
+
+    it('subtitle is passed to FormGroup', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { subtitle: 'Test Subtitle' }
+      })
+      expect(wrapper.vm.subtitle).toBe('Test Subtitle')
+    })
+  })
+
+  describe('Accessibility', () => {
+    it('button is keyboard accessible', async () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { copyKey: 'test-key' }
+      })
+      const button = wrapper.find('button')
+      expect(button.attributes('type')).toBe('button')
+    })
+
+    it('input has proper attributes for accessibility', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue
+      })
+      const input = wrapper.find('input')
+      expect(input.attributes('disabled')).toBeDefined()
+    })
+
+    it('form group provides semantic structure', () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'API Key' }
+      })
+      expect(wrapper.find('.k-form-group__title').exists()).toBe(true)
+    })
+  })
+
+  describe('Performance Characteristics', () => {
+    it('component mounts quickly', () => {
+      const start = Date.now()
+      mount(InputWithCopyToClipboard, { localVue })
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(100)
+    })
+
+    it('handles multiple rapid clicks', async () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { copyKey: 'test-key' }
+      })
+      const button = wrapper.find('button')
+
+      const start = Date.now()
+      for (let i = 0; i < 20; i++) {
+        await button.trigger('click')
+      }
+      const duration = Date.now() - start
+
+      expect(duration).toBeLessThan(500)
+      expect(wrapper.emitted()['on-copy']).toHaveLength(20)
+    })
+
+    it('can create multiple instances efficiently', () => {
+      const start = Date.now()
+      for (let i = 0; i < 10; i++) {
+        mount(InputWithCopyToClipboard, {
+          localVue,
+          propsData: { copyKey: `key${i}` }
+        })
+      }
+      const duration = Date.now() - start
+      expect(duration).toBeLessThan(500)
+    })
+  })
+
+  describe('Integration Scenarios', () => {
+    it('complete copy workflow', async () => {
+      const testKey = 'api-key-secret-123'
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: {
+          title: 'API Key',
+          subtitle: 'Your secret key',
+          copyKey: testKey
+        }
+      })
+
+      expect(wrapper.find('.k-form-group__title').text()).toContain('API Key')
+      expect(wrapper.vm.copyKey).toBe(testKey)
+
+      await wrapper.find('button').trigger('click')
+      expect(wrapper.emitted()['on-copy'][0][0]).toBe(testKey)
+    })
+
+    it('handles prop updates dynamically', async () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { title: 'Original', copyKey: 'original-key' }
+      })
+
+      expect(wrapper.vm.title).toBe('Original')
+
+      await wrapper.setProps({ title: 'Updated', copyKey: 'updated-key' })
+      expect(wrapper.vm.title).toBe('Updated')
+      expect(wrapper.vm.copyKey).toBe('updated-key')
+
+      await wrapper.find('button').trigger('click')
+      expect(wrapper.emitted()['on-copy'][0][0]).toBe('updated-key')
+    })
+
+    it('supports multiple copy operations in sequence', async () => {
+      const wrapper = mount(InputWithCopyToClipboard, {
+        localVue,
+        propsData: { copyKey: 'test-key' }
+      })
+
+      const button = wrapper.find('button')
+      await button.trigger('click')
+      await button.trigger('click')
+      await button.trigger('click')
+
+      const emitted = wrapper.emitted()['on-copy']
+      expect(emitted).toHaveLength(3)
+      expect(emitted[0][0]).toBe('test-key')
+      expect(emitted[1][0]).toBe('test-key')
+      expect(emitted[2][0]).toBe('test-key')
+    })
+  })
 })

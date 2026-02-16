@@ -373,7 +373,7 @@
           :labelClassName="isHorizontalFormGroups ? 'k-form-group__title--horizontal' : ''"
         >
           <InputEntityName
-            id="input--notification-template-name"
+            id="input--notification-template-name-email"
             initialPlaceholder="Enter template name"
             entityName="template name"
             :value="name"

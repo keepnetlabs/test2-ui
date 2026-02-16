@@ -216,7 +216,7 @@
                     <el-tabs
                       v-model="tab"
                       class="landing-page-tab-content"
-                      id="landing-page-tab-content"
+                      id="landing-page-tab-content-smishing"
                     >
                       <el-tab-pane
                         v-for="(page, index) in formValues.landingPages"
@@ -282,7 +282,7 @@
                             :nudge-right="83"
                             :nudge-bottom="240"
                             id="add-page-menu"
-                            attach="#landing-page-tab-content"
+                            attach="#landing-page-tab-content-smishing"
                             :z-index="10000"
                           >
                             <template v-slot:activator="{ on: menu }">

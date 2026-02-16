@@ -306,7 +306,7 @@
                 <div
                   class="people__no-data__buttons--button"
                   v-on="on"
-                  id="btn-empty--target-users-people"
+                  id="btn-empty--target-users-people-page"
                 >
                   <v-icon color="#fff" style="margin-top: 1px;" class="mr-1"
                     >mdi-plus</v-icon
@@ -768,7 +768,7 @@ export default {
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_USER_ADDED,
           btn: "ADD A USER",
-          id: "btn-empty--target-users-people",
+          id: "btn-empty--target-users-people-datatable",
           icon: "mdi-account-plus"
         },
         addButton: {

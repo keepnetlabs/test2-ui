@@ -89,11 +89,11 @@
 
                 <!-- Step 2: Sign-In Methods -->
                 <template v-else-if="showSignInMethods">
-                  <div id="text--users-dashboard-login-title" class="login-title">
+                  <div id="text--users-dashboard-login-title-step-2" class="login-title">
                     Choose Your Sign-In Method
                   </div>
                   <div
-                    id="text--users-dashboard-login-description"
+                    id="text--users-dashboard-login-description-step-2"
                     class="login-desc users-dashboard-login-desc"
                   >
                     Your organization doesn't have a linked sign-in yet.
@@ -187,11 +187,11 @@
 
                 <!-- Step 1: Email Input -->
                 <template v-else>
-                  <div id="text--users-dashboard-login-title" class="login-title">
+                  <div id="text--users-dashboard-login-title-step-1" class="login-title">
                     Access Your Security Growth Dashboard
                   </div>
                   <div
-                    id="text--users-dashboard-login-description"
+                    id="text--users-dashboard-login-description-step-1"
                     class="login-desc users-dashboard-login-desc"
                   >
                     We'll identify your organization's sign-in method securely.

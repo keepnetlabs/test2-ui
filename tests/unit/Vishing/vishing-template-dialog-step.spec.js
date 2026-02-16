@@ -156,7 +156,7 @@ describe('Vishing template dialog step', () => {
           .find('.vishing-template-dialog-step__input-digit .v-messages__message')
           .text()
           .includes('Required')
-      )
+      ).toBeTruthy()
     })
 
     it('should apply UploadAudio rules successfully', async () => {
@@ -195,7 +195,7 @@ describe('Vishing template dialog step', () => {
           .find('.vishing-template-dialog-step__input-digit .v-messages__message')
           .text()
           .includes('Required')
-      )
+      ).toBeTruthy()
     })
 
     it('should apply Pause rules successfully', async () => {
@@ -234,7 +234,7 @@ describe('Vishing template dialog step', () => {
           .find('.vishing-template-dialog-step__duration-input .v-messages__message')
           .text()
           .includes('Required')
-      )
+      ).toBeTruthy()
     })
   })
 
