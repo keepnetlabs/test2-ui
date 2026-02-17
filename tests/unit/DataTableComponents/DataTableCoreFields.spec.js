@@ -1,10 +1,19 @@
-import { shallowMount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import DataTableArray from '@/components/DataTableComponents/DataTableArray'
 import DataTableTextArray from '@/components/DataTableComponents/DataTableTextArray'
 import DataTableDefaultTemplate from '@/components/DataTableComponents/DataTableDefaultTemplate'
 import DataTableLink from '@/components/DataTableComponents/DataTableLink'
 
 describe('DataTable core field components', () => {
+  const mountDataTableTextArray = (scope, col) =>
+    mount({
+      components: { DataTableTextArray },
+      data() {
+        return { scope, col }
+      },
+      template: '<DataTableTextArray :scope="scope" :col="col" />'
+    })
+
   it('DataTableArray renders first item and extra count tooltip trigger', () => {
     const wrapper = shallowMount(DataTableArray, {
       propsData: {
@@ -33,12 +42,7 @@ describe('DataTable core field components', () => {
   })
 
   it('DataTableTextArray renders nothing when row is missing', () => {
-    const wrapper = shallowMount(DataTableTextArray, {
-      propsData: {
-        scope: {},
-        col: { property: 'value' }
-      }
-    })
+    const wrapper = mountDataTableTextArray({}, { property: 'value' })
 
     expect(wrapper.text().trim()).toBe('')
   })
