@@ -209,7 +209,8 @@ console.error = (...args) => {
     firstArg.includes('[vue-test-utils]: Using a string for stubs is deprecated') ||
     firstArg.includes('[vue-test-utils]: isVueInstance is deprecated') ||
     firstArg.includes('[vue-test-utils]: finding components with `find` or `get` is deprecated') ||
-    firstArg.includes('[vue-test-utils]: overwriting methods via the `methods` property is deprecated')
+    firstArg.includes('[vue-test-utils]: overwriting methods via the `methods` property is deprecated') ||
+    firstArg.includes('[vue-test-utils]: Operations on destroyed component are discouraged')
   const isKnownVuexNoise =
     firstArg.includes('[vuex] unknown getter: permissions/getDomainSearchPermissions') ||
     firstArg.includes('[vuex] unknown getter: permissions/getDnsSearchPermissions') ||
@@ -220,4 +221,19 @@ console.error = (...args) => {
   }
 
   originalConsoleError(...args)
+}
+
+// Filter known Vue development info logs that create noise in Jest output.
+const originalConsoleInfo = console.info
+console.info = (...args) => {
+  const firstArg = typeof args[0] === 'string' ? args[0] : ''
+  const isVueDevtoolsInfo =
+    firstArg.includes('Download the Vue Devtools extension for a better development experience') ||
+    firstArg.includes('You are running Vue in development mode.')
+
+  if (isVueDevtoolsInfo) {
+    return
+  }
+
+  originalConsoleInfo(...args)
 }

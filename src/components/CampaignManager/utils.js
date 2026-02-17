@@ -336,6 +336,11 @@ export const ACTION_STATUSES = {
   SCHEDULED: 'Scheduled'
 }
 
+export const STATUS_FILTER_ITEMS = Object.values(ACTION_STATUSES).map((text) => ({
+  text,
+  value: text
+}))
+
 export function getStatusBadgeProps(status) {
   if (status === 'Completed') {
     return {

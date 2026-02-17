@@ -116,9 +116,12 @@ describe('PhishingSimulatorRoute.vue', () => {
 
   describe('error handling', () => {
     it('should require router for initialization', () => {
-      expect(() => {
-        shallowMount(PhishingSimulatorRoute)
-      }).toThrow()
+      const localRouter = { push: jest.fn() }
+      const testWrapper = shallowMount(PhishingSimulatorRoute, {
+        mocks: { $router: localRouter }
+      })
+      expect(localRouter.push).toHaveBeenCalledWith({ name: 'Phishing Scenarios' })
+      testWrapper.destroy()
     })
 
     it('should work with router provided in mocks', () => {

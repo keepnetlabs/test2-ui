@@ -9,7 +9,9 @@ describe('DefaultErrorDialog.vue', () => {
   })
 
   afterEach(() => {
-    wrapper.destroy()
+    if (wrapper && wrapper.vm && !wrapper.vm._isDestroyed) {
+      wrapper.destroy()
+    }
   })
 
   describe('component structure', () => {
