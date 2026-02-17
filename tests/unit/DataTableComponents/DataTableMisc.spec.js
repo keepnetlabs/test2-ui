@@ -65,18 +65,26 @@ describe('DataTable misc components', () => {
   })
 
   it('DataTableColorfulText renders fallback and value branches', () => {
-    const withValue = shallowMount(DataTableColorfulText, {
-      propsData: {
-        scope: { row: { status: 'warn' } },
-        col: { property: 'status' },
-        text: 'Warning'
+    const withValue = mount({
+      components: { DataTableColorfulText },
+      template:
+        '<DataTableColorfulText :scope="scope" :col="col" text="Warning" />',
+      data() {
+        return {
+          scope: { row: { status: 'warn' } },
+          col: { property: 'status' }
+        }
       }
     })
-    const emptyValue = shallowMount(DataTableColorfulText, {
-      propsData: {
-        scope: { row: {} },
-        col: { property: 'status', emptyText: '-' },
-        text: 'Warning'
+    const emptyValue = mount({
+      components: { DataTableColorfulText },
+      template:
+        '<DataTableColorfulText :scope="scope" :col="col" text="Warning" />',
+      data() {
+        return {
+          scope: { row: {} },
+          col: { property: 'status', emptyText: '-' }
+        }
       }
     })
 

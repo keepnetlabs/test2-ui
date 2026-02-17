@@ -4,7 +4,7 @@ import { COLUMNS, SCENARIO_DISTRIBUTION_TEXTS, ACTION_STATUSES, getStatusBadgePr
 
 jest.mock('@/api/phishingsimulator', () => ({
   deletePhishingCampaignJob: jest.fn(() => Promise.resolve()),
-  exportCampaignManagerItem: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
+  exportCampaignManagerItem: jest.fn(() => Promise.resolve({ data: Buffer.from('x') })),
   searchCampaignPhishingJob: jest.fn(() =>
     Promise.resolve({
       data: {
