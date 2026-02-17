@@ -267,6 +267,25 @@ describe('LeaderboardBadgesColumn.vue', () => {
     })
   })
 
+  describe('Computed Properties - overflowTooltipText', () => {
+    it('should return empty string when there is no overflow', () => {
+      const wrapper = mountComponent({ badges: defaultProps.badges, maxVisible: 3 })
+      expect(wrapper.vm.overflowTooltipText).toBe('')
+    })
+
+    it('should join tooltip text values for overflow badges', () => {
+      const badges = [
+        { badgeName: 'Top', level: 5, description: 'Top desc' },
+        { badgeName: 'Mid', level: 4, description: 'Mid desc' },
+        { badgeName: 'Low', level: 3 },
+        { name: 'FallbackName', level: 2 }
+      ]
+      const wrapper = mountComponent({ badges, maxVisible: 2 })
+
+      expect(wrapper.vm.overflowTooltipText).toBe('Low, FallbackName')
+    })
+  })
+
   describe('Methods - normalizeBadgeForMixin', () => {
     it('should normalize badge with badgeName and badgeType', () => {
       const wrapper = mountComponent()
@@ -473,7 +492,7 @@ describe('LeaderboardBadgesColumn.vue', () => {
       const badges = Array.from({ length: 20 }, (_, i) => ({
         badgeName: `Badge ${i}`,
         badgeType: i % 3 === 0 ? 'gold' : i % 3 === 1 ? 'silver' : 'bronze',
-        level: Math.floor(Math.random() * 10)
+        level: i % 10
       }))
       const wrapper = mountComponent({ badges, maxVisible: 5 })
 

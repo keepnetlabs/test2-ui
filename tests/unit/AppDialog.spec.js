@@ -59,4 +59,44 @@ describe('AppDialog.vue', () => {
     wrapper.vm.changeStatus(false)
     expect(wrapper.emitted('changeStatus')).toEqual([[false]])
   })
+
+  it('keeps default styles and colors for non-delete dialogs', () => {
+    const wrapper = createWrapper({
+      type: 'info',
+      iconColor: '#123456',
+      className: 'plain-dialog'
+    })
+
+    expect(wrapper.vm.isDelete).toBe(false)
+    expect(wrapper.vm.getIconColor).toBe('#123456')
+    expect(wrapper.vm.getTitleClass).toEqual(['k-dialog__title'])
+    expect(wrapper.vm.getIconWrapperClass).toEqual(['v-btn v-cart-icon-wrapper'])
+    expect(wrapper.vm.getClassName).toBe('plain-dialog')
+  })
+
+  it('falls back to default width for unknown size and detects delete type case-insensitively', () => {
+    const wrapper = createWrapper({
+      size: 'unknown-size',
+      type: 'DELETE'
+    })
+
+    expect(wrapper.vm.dialogWidth).toBe('480')
+    expect(wrapper.vm.isDelete).toBe(true)
+    expect(wrapper.vm.getIconColor).toBe('#B83A3A')
+  })
+
+  it('does not append max-height class when maxHeightSize is missing', () => {
+    const wrapper = createWrapper({
+      className: 'dialog-base',
+      maxHeight: true,
+      maxHeightSize: ''
+    })
+
+    expect(wrapper.vm.getClassName).toBe('dialog-base')
+  })
+
+  it('returns base icon class when iconClassName is not provided', () => {
+    const wrapper = createWrapper({ iconClassName: undefined })
+    expect(wrapper.vm.getIconClass).toEqual(['ml-2'])
+  })
 })

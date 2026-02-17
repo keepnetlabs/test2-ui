@@ -67,6 +67,26 @@ describe('Common campaign manager dialogs', () => {
     expect(multipleWrapper.emitted('on-multiple-delete')).toBeTruthy()
   })
 
+  it('CommonCampaignManagerDeleteDialog emits on-close and handles missing item safely', () => {
+    const wrapper = shallowMount(CommonCampaignManagerDeleteDialog, {
+      propsData: {
+        status: true,
+        item: null,
+        isMultiple: false
+      },
+      stubs: {
+        AppDialog: true,
+        AppDialogFooter: true
+      }
+    })
+
+    expect(wrapper.vm.getContent).toBe('null will be deleted.')
+    expect(wrapper.vm.CONSTANTS.title).toBe('Delete Campaign(s)?')
+
+    wrapper.vm.closeModal()
+    expect(wrapper.emitted('on-close')).toBeTruthy()
+  })
+
   it('CommonCampaignManagerLaunchCampaignDialog emits close and confirm with item', () => {
     const item = { name: 'Launch me', id: 'cmp-1' }
     const wrapper = shallowMount(CommonCampaignManagerLaunchCampaignDialog, {
@@ -86,5 +106,6 @@ describe('Common campaign manager dialogs', () => {
 
     expect(wrapper.emitted('on-close')).toBeTruthy()
     expect(wrapper.emitted('on-confirm')).toEqual([[item]])
+    expect(wrapper.vm.CONSTANTS.content).toBe('Do you want to launch this campaign?')
   })
 })
