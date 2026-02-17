@@ -20,7 +20,7 @@ jest.mock('@/api/company', () => ({
   ),
   getCompanyByID: jest.fn(() => Promise.resolve({ data: { data: { id: 'c-1', name: 'Acme' } } })),
   deleteCompany: jest.fn(() => Promise.resolve({ data: { message: 'ok' } })),
-  exportCompanies: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
+  exportCompanies: jest.fn(() => Promise.resolve({ data: Buffer.from('x') })),
   bulkDeleteCompanies: jest.fn(() => Promise.resolve())
 }))
 

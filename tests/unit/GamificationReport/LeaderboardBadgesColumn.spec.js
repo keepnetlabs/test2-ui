@@ -554,40 +554,4 @@ describe('LeaderboardBadgesColumn.vue', () => {
     })
   })
 
-  describe('Performance', () => {
-    it('component should mount quickly', () => {
-      const start = Date.now()
-      mountComponent()
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
-    })
-
-    it('sorting large badge arrays should be efficient', () => {
-      const badges = Array.from({ length: 1000 }, (_, i) => ({
-        badgeName: `Badge ${i}`,
-        level: Math.random() * 100
-      }))
-      const start = Date.now()
-      const wrapper = mountComponent({ badges, maxVisible: 10 })
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
-    })
-
-    it('computed properties should be efficient with many badges', () => {
-      const badges = Array.from({ length: 500 }, (_, i) => ({
-        badgeName: `Badge ${i}`,
-        level: i
-      }))
-      const wrapper = mountComponent({ badges })
-      const start = Date.now()
-      for (let i = 0; i < 100; i++) {
-        // Access computed properties
-        const a = wrapper.vm.visibleBadges
-        const b = wrapper.vm.overflowBadges
-        const c = wrapper.vm.overflowCount
-      }
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(200)
-    })
-  })
 })

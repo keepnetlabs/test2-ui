@@ -222,6 +222,15 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
   })
 
   describe('Filter And Utility Methods', () => {
+    it('formats points safely for null and negative values', () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.vm.formatPoints({ points: -15 })).toBe('15')
+      expect(wrapper.vm.formatPoints({ points: 0 })).toBe('0')
+      expect(wrapper.vm.formatPoints({ points: null })).toBe('')
+      expect(wrapper.vm.formatPoints({})).toBe('')
+    })
+
     it('adds date headers without duplicating existing day headers', () => {
       const wrapper = mountComponent()
       wrapper.vm.timeline = [{ type: 'header', ActionTimeWithDay: '2025-02-16' }]
@@ -296,6 +305,60 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       expect(selectFilter.isFilterActive).toBe(true)
       expect(selectFilter.activeValue).toBe('SMISHING')
       expect(wrapper.vm.callForTimeline).toHaveBeenCalledTimes(2)
+    })
+
+    it('handleSetActiveFilter does not update when same filter is selected', () => {
+      const wrapper = mountComponent()
+      const existing = wrapper.vm.activeFilter
+      const checkSpy = jest.spyOn(wrapper.vm, 'checkFilter')
+
+      wrapper.vm.handleSetActiveFilter(existing)
+
+      expect(checkSpy).not.toHaveBeenCalled()
+      expect(wrapper.vm.activeFilter).toBe(existing)
+    })
+
+    it('checkFilter restores empty value for inactive longTextSearch filter', () => {
+      const wrapper = mountComponent()
+      const filter = {
+        key: 'name',
+        filterType: 'longTextSearch',
+        isFilterActive: false,
+        value: 'x',
+        activeValue: ['abc'],
+        operator: '=',
+        activeOperator: '='
+      }
+
+      wrapper.vm.checkFilter(filter)
+      expect(filter.value).toEqual([])
+    })
+
+    it('removeFilterFromPayload handles search filter value update and empty reset', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems = [
+        { FieldName: 'product', Value: 'A,B', Operator: 'Include' }
+      ]
+      wrapper.vm.axiosPayload.pageNumber = 3
+      wrapper.vm.serverSideProps.pageNumber = 3
+
+      wrapper.vm.removeFilterFromPayload({
+        key: 'product',
+        filterType: 'search',
+        activeValue: ['A'],
+        activeOperator: 'Include'
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value).toBe('A')
+
+      wrapper.vm.removeFilterFromPayload({
+        key: 'product',
+        filterType: 'search',
+        activeValue: [],
+        activeOperator: 'Include'
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+      expect(wrapper.vm.axiosPayload.pageNumber).toBe(1)
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
     })
 
     it('drawer click outside emits close only when allowed', () => {
