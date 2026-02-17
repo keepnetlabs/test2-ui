@@ -68,12 +68,14 @@ export default {
     generate() {
       const type = this.$store?.state?.common?.activeTrainingType;
       const safeType = typeof type === "string" ? type : "";
+      const currentRouteName =
+        typeof this.$route?.name === "string" ? this.$route.name : "";
       const routeName =
-        this.$route.name === "Training Report"
+        currentRouteName === "Training Report"
           ? !safeType || safeType.startsWith("SCORM")
             ? "Training Report"
             : `${safeType} Report`
-          : this.$route.name;
+          : currentRouteName;
       this.breadcrumb = [routeName];
       let parent = this.$route.meta.parentName;
       while (parent) {
@@ -83,7 +85,8 @@ export default {
       }
     },
     getItemId(item = "") {
-      return `breadcrumb-link--${item.replace(/\s/, "")}`;
+      const safeItem = typeof item === "string" ? item : String(item || "");
+      return `breadcrumb-link--${safeItem.replace(/\s/g, "")}`;
     }
   }
 };

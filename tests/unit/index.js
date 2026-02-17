@@ -6,6 +6,7 @@ import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 import Vuex from 'vuex'
 import VueMoment from 'vue-moment'
+import { config as testUtilsConfig } from '@vue/test-utils'
 import promisePool from './promise-pool'
 
 // Start Promise Pool tracking globally
@@ -196,3 +197,27 @@ Vue.use(ElementUI, { locale })
 Vue.use(VueMoment)
 Vue.use(Vuetify)
 Vue.use(Vuex)
+
+// Suppress VTU deprecation warnings from legacy tests (string stubs, isVueInstance, find/findComponent migration).
+testUtilsConfig.showDeprecationWarnings = false
+
+// VTU still logs some deprecations via console.error in this version. Filter only those known messages.
+const originalConsoleError = console.error
+console.error = (...args) => {
+  const firstArg = typeof args[0] === 'string' ? args[0] : ''
+  const isVtuDeprecation =
+    firstArg.includes('[vue-test-utils]: Using a string for stubs is deprecated') ||
+    firstArg.includes('[vue-test-utils]: isVueInstance is deprecated') ||
+    firstArg.includes('[vue-test-utils]: finding components with `find` or `get` is deprecated') ||
+    firstArg.includes('[vue-test-utils]: overwriting methods via the `methods` property is deprecated')
+  const isKnownVuexNoise =
+    firstArg.includes('[vuex] unknown getter: permissions/getDomainSearchPermissions') ||
+    firstArg.includes('[vuex] unknown getter: permissions/getDnsSearchPermissions') ||
+    firstArg.includes('[vuex] unknown getter: permissions/getExcludedIpAddressGetPermissions')
+
+  if (isVtuDeprecation || isKnownVuexNoise) {
+    return
+  }
+
+  originalConsoleError(...args)
+}

@@ -68,6 +68,7 @@
       :status="isShowTargetGroupsDialog"
       :campaign-resource-id="targetGroupsDialogCampaignResourceId"
       :campaign-type="targetGroupsDialogCampaignType"
+      :instance-group="targetGroupsDialogInstanceGroup"
       @on-close="toggleTargetGroupsDialog"
     />
     <CampaignManagerParentTable
@@ -98,6 +99,7 @@
       @on-preview="handleItemOnPreview"
       @on-back-click="handleOnBackClick"
       @on-record-button-click="handleItemTableRecordButtonClick"
+      @on-target-users-groups-click="handleTargetUsersGroupsClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
     />
     <CampaignManagerFrequencyTable
@@ -107,40 +109,42 @@
       :item="selectedInstanceItem"
       :status-items="getStatusItems"
       :parent-resource-id="selectedParentItem.resourceId"
+      :parent-campaign-type="selectedParentItem?.campaignType"
       @on-stop="handleStop"
       @on-start="handleStart"
       @on-launch="handleLaunch"
       @on-back-click="handleOnFrequencyBackClick"
+      @on-target-users-groups-click="handleTargetUsersGroupsClick"
       @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
     />
   </KContainer>
 </template>
 
 <script>
-import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable'
-import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
-import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
+import CampaignManagerParentTable from "@/components/CampaignManager/CampaignManagerParentTable";
+import CampaignManagerItemTable from "@/components/CampaignManager/CampaignManagerItemTable";
+import CampaignManagerAddOrEditModal from "@/components/CampaignManager/CampaignManagerAddOrEditModal";
 import {
   bulkDeleteCampaignReports,
   deleteCampaignManager,
   getCampaignManagerFormDetails,
   launchPhishingCampaignInstanceGroup,
   stopPhishingCampaignJob
-} from '@/api/phishingsimulator'
-import { mapGetters } from 'vuex'
-import KContainer from '@/components/KContainer/KContainer'
-import CampaignManagerNewInstanceModal from '@/components/CampaignManager/CampaignManagerNewInstanceModal'
-import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable'
-import CampaignManagerTargetGroupsDialog from '@/components/CampaignManager/CampaignManagerTargetGroupsDialog.vue'
-import { CAMPAIGN_TYPE } from '@/components/CampaignManager/utils'
-import CommonCampaignManagerDeleteDialog from '@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue'
-import CommonCampaignManagerCreateNewInstanceDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue'
-import CommonCampaignManagerPreviewDialog from '@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue'
-import CommonCampaignManagerLaunchCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue'
-import CommonCampaignManagerCancelCampaignDialog from '@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue'
-import useScenarioDetailsLookup from '@/hooks/useScenarioDetailsLookup'
+} from "@/api/phishingsimulator";
+import { mapGetters } from "vuex";
+import KContainer from "@/components/KContainer/KContainer";
+import CampaignManagerNewInstanceModal from "@/components/CampaignManager/CampaignManagerNewInstanceModal";
+import CampaignManagerFrequencyTable from "@/components/CampaignManager/CampaignManagerFrequencyTable";
+import CampaignManagerTargetGroupsDialog from "@/components/CampaignManager/CampaignManagerTargetGroupsDialog.vue";
+import { CAMPAIGN_TYPE } from "@/components/CampaignManager/utils";
+import CommonCampaignManagerDeleteDialog from "@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue";
+import CommonCampaignManagerCreateNewInstanceDialog from "@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue";
+import CommonCampaignManagerPreviewDialog from "@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue";
+import CommonCampaignManagerLaunchCampaignDialog from "@/components/Common/CampaignManager/CommonCampaignManagerLaunchCampaignDialog.vue";
+import CommonCampaignManagerCancelCampaignDialog from "@/components/Common/CampaignManager/CommonCampaignManagerCancelCampaignDialog.vue";
+import useScenarioDetailsLookup from "@/hooks/useScenarioDetailsLookup";
 export default {
-  name: 'CampaignManager',
+  name: "CampaignManager",
   components: {
     CommonCampaignManagerCancelCampaignDialog,
     CommonCampaignManagerLaunchCampaignDialog,
@@ -158,8 +162,8 @@ export default {
   mixins: [useScenarioDetailsLookup],
   data() {
     return {
-      instanceResourceId: '',
-      launchResourceId: '',
+      instanceResourceId: "",
+      launchResourceId: "",
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       selectedParentItem: null,
@@ -186,51 +190,56 @@ export default {
       startStopCampaignPayload: {},
       isStartDialogActionButtonDisabled: false,
       isStopDialogActionButtonDisabled: false
-    }
+    };
   },
   computed: {
     ...mapGetters({
-      getUser: 'auth/userGetter',
+      getUser: "auth/userGetter",
       getCampaignManagerParentDeletePermissions:
-        'permissions/getCampaignManagerParentDeletePermissions'
+        "permissions/getCampaignManagerParentDeletePermissions"
     }),
     getStatusItems() {
-      return this.formDetails.status
+      return this.formDetails.status;
     },
     targetGroupsDialogCampaignResourceId() {
-      return this.targetGroupsDialogCampaign && this.targetGroupsDialogCampaign.resourceId
+      return this.targetGroupsDialogCampaign &&
+        this.targetGroupsDialogCampaign.resourceId
         ? this.targetGroupsDialogCampaign.resourceId
-        : ''
+        : "";
     },
     targetGroupsDialogCampaignType() {
-      const campaign = this.targetGroupsDialogCampaign
+      const campaign = this.targetGroupsDialogCampaign;
       if (campaign && campaign.campaignType != null) {
-        return campaign.campaignType
+        return campaign.campaignType;
       }
-      return CAMPAIGN_TYPE.Phishing
+      return CAMPAIGN_TYPE.Phishing;
+    },
+    targetGroupsDialogInstanceGroup() {
+      const val = this.targetGroupsDialogCampaign?.instanceGroup;
+      return val != null ? String(val) : "";
     }
   },
   created() {
-    this.callForFormDetails()
+    this.callForFormDetails();
   },
   beforeRouteLeave(to, from, next) {
-    const { refCampaignModal } = this.$refs
+    const { refCampaignModal } = this.$refs;
     if (refCampaignModal && refCampaignModal.status) {
-      refCampaignModal.closeOverlay()
-      next(false)
+      refCampaignModal.closeOverlay();
+      next(false);
     } else {
-      next()
+      next();
     }
   },
   watch: {
-    '$route.query': {
+    "$route.query": {
       handler: function (val) {
-        if (val?.status === 'parent') {
-          this.selectedParentItem = null
-          this.selectedInstanceItem = null
-          this.isItemTableShowing = false
-          this.isFrequencyTableShowing = false
-          this.$router.replace('/phishing-simulator/campaign-manager')
+        if (val?.status === "parent") {
+          this.selectedParentItem = null;
+          this.selectedInstanceItem = null;
+          this.isItemTableShowing = false;
+          this.isFrequencyTableShowing = false;
+          this.$router.replace("/phishing-simulator/campaign-manager");
         }
       },
       deep: true,
@@ -239,212 +248,215 @@ export default {
   },
   methods: {
     toggleShowLaunchDialog() {
-      if (this.isShowLaunchDialog) this.launchResourceId = ''
-      this.isShowLaunchDialog = !this.isShowLaunchDialog
+      if (this.isShowLaunchDialog) this.launchResourceId = "";
+      this.isShowLaunchDialog = !this.isShowLaunchDialog;
     },
     handleConfirmLaunchDialog(resourceId) {
-      this.instanceResourceId = resourceId
-      this.toggleShowLaunchDialog()
-      this.showNewInstanceModal()
+      this.instanceResourceId = resourceId;
+      this.toggleShowLaunchDialog();
+      this.showNewInstanceModal();
     },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
         const {
           data: { data }
-        } = response
-        this.formDetails = data
-      })
+        } = response;
+        this.formDetails = data;
+      });
     },
     handleMultipleDelete(payload = {}, totalUserCount = 0) {
-      this.multipleSystemUserPayload = payload
-      this.multipleDeletedUserCount = totalUserCount
-      this.isMultipleDelete = true
-      this.toggleShowDeleteDialog()
+      this.multipleSystemUserPayload = payload;
+      this.multipleDeletedUserCount = totalUserCount;
+      this.isMultipleDelete = true;
+      this.toggleShowDeleteDialog();
     },
     handleOnMultipleDelete() {
-      this.setDeleteDialogActionButtonDisabled(true)
+      this.setDeleteDialogActionButtonDisabled(true);
       bulkDeleteCampaignReports(this.multipleSystemUserPayload)
         .then(() => {
-          this.$refs.campaignManagerParentTable.$refs.refTable.resetSelectableParams()
-          this.$refs.campaignManagerParentTable.callForData()
-          this.toggleShowDeleteDialog()
+          this.$refs.campaignManagerParentTable.$refs.refTable.resetSelectableParams();
+          this.$refs.campaignManagerParentTable.callForData();
+          this.toggleShowDeleteDialog();
         })
         .finally(() => {
-          this.setDeleteDialogActionButtonDisabled(false)
-        })
+          this.setDeleteDialogActionButtonDisabled(false);
+        });
     },
     handleOnRecordButtonClick(row) {
-      this.selectedParentItem = row
+      this.selectedParentItem = row;
       if (this.$refs.campaignManagerItemTable) {
-        this.$refs.campaignManagerItemTable.resetTable()
-        this.$refs.campaignManagerItemTable.callForData()
+        this.$refs.campaignManagerItemTable.resetTable();
+        this.$refs.campaignManagerItemTable.callForData();
       }
-      this.toggleItemTableShowing()
+      this.toggleItemTableShowing();
     },
     handleItemTableRecordButtonClick(row) {
-      this.selectedInstanceItem = row
-      this.toggleFrequencyTableShowing()
+      this.selectedInstanceItem = row;
+      this.toggleFrequencyTableShowing();
     },
     handleOnBackClick() {
       if (this.$refs.campaignManagerParentTable) {
-        this.$refs.campaignManagerParentTable.callForData()
+        this.$refs.campaignManagerParentTable.callForData();
       }
-      this.toggleItemTableShowing()
+      this.toggleItemTableShowing();
     },
     handleOnFrequencyBackClick() {
       if (this.$refs.campaignManagerItemTable) {
-        this.$refs.campaignManagerItemTable.callForData()
+        this.$refs.campaignManagerItemTable.callForData();
       }
-      this.toggleFrequencyTableShowing()
+      this.toggleFrequencyTableShowing();
     },
     toggleItemTableShowing() {
-      this.isItemTableShowing = !this.isItemTableShowing
+      this.isItemTableShowing = !this.isItemTableShowing;
     },
     toggleFrequencyTableShowing() {
-      this.isFrequencyTableShowing = !this.isFrequencyTableShowing
+      this.isFrequencyTableShowing = !this.isFrequencyTableShowing;
     },
     toggleAddCampaignManagerModal() {
       if (this.isShowAddOrEditCampaignManagerModal) {
-        this.selectedRow = null
-        this.isEdit = false
-        this.isDuplicate = false
+        this.selectedRow = null;
+        this.isEdit = false;
+        this.isDuplicate = false;
       }
-      this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
+      this.isShowAddOrEditCampaignManagerModal = !this
+        .isShowAddOrEditCampaignManagerModal;
     },
     showNewInstanceModal() {
-      this.isShowNewInstanceModal = true
+      this.isShowNewInstanceModal = true;
     },
     closeNewInstanceModal() {
-      this.instanceResourceId = ''
-      this.isShowNewInstanceModal = false
+      this.instanceResourceId = "";
+      this.isShowNewInstanceModal = false;
     },
     handleOnSubmitNewInstance() {
       if (this.isItemTableShowing) {
-        this.$refs.campaignManagerItemTable.callForData()
+        this.$refs.campaignManagerItemTable.callForData();
       }
-      this.$refs.campaignManagerParentTable.callForData()
-      this.closeNewInstanceModal()
+      this.$refs.campaignManagerParentTable.callForData();
+      this.closeNewInstanceModal();
     },
     handleOnSubmit() {
-      this.$refs.campaignManagerParentTable.callForData()
-      this.toggleAddCampaignManagerModal()
+      this.$refs.campaignManagerParentTable.callForData();
+      this.toggleAddCampaignManagerModal();
     },
     handleItemOnEdit(row) {
-      this.selectedRow = row
-      this.isEdit = true
-      this.toggleAddCampaignManagerModal()
+      this.selectedRow = row;
+      this.isEdit = true;
+      this.toggleAddCampaignManagerModal();
     },
     handleEditCampaignFromPreview(row) {
-      this.toggleShowPreviewDialog()
-      this.selectedRow = row
-      this.isEdit = true
-      this.isDuplicate = false
-      this.toggleAddCampaignManagerModal()
+      this.toggleShowPreviewDialog();
+      this.selectedRow = row;
+      this.isEdit = true;
+      this.isDuplicate = false;
+      this.toggleAddCampaignManagerModal();
     },
     handleItemOnPreview(row) {
-      this.selectedRow = this.selectedParentItem || row
-      this.toggleShowPreviewDialog()
+      this.selectedRow = this.selectedParentItem || row;
+      this.toggleShowPreviewDialog();
     },
     handleItemOnDelete(row) {
-      this.selectedRow = row
-      this.toggleShowDeleteDialog()
+      this.selectedRow = row;
+      this.toggleShowDeleteDialog();
     },
     handleItemOnDuplicate(row) {
-      this.selectedRow = row
-      this.isDuplicate = true
-      this.toggleAddCampaignManagerModal()
+      this.selectedRow = row;
+      this.isDuplicate = true;
+      this.toggleAddCampaignManagerModal();
     },
     handleStop(obj = {}) {
-      this.startStopCampaignPayload = obj
-      this.toggleStopCampaignDialog()
+      this.startStopCampaignPayload = obj;
+      this.toggleStopCampaignDialog();
     },
     handleStart(obj = {}) {
-      this.startStopCampaignPayload = obj
-      this.toggleStartCampaignDialog()
+      this.startStopCampaignPayload = obj;
+      this.toggleStartCampaignDialog();
     },
     handleStartCampaign(row) {
-      this.isStartDialogActionButtonDisabled = true
+      this.isStartDialogActionButtonDisabled = true;
       launchPhishingCampaignInstanceGroup(row.resourceId, row.instanceGroup)
         .then(() => {
           if (this.isFrequencyTableShowing) {
-            this.$refs.campaignManagerFrequencyTable.callForData()
+            this.$refs.campaignManagerFrequencyTable.callForData();
           } else {
-            this.$refs.campaignManagerItemTable.callForData()
+            this.$refs.campaignManagerItemTable.callForData();
           }
-          this.toggleStartCampaignDialog()
+          this.toggleStartCampaignDialog();
         })
         .finally(() => {
-          this.isStartDialogActionButtonDisabled = false
-        })
+          this.isStartDialogActionButtonDisabled = false;
+        });
     },
     handleStopCampaign(row) {
-      this.isStopDialogActionButtonDisabled = true
+      this.isStopDialogActionButtonDisabled = true;
       stopPhishingCampaignJob(row.resourceId, row.instanceGroup)
         .then(() => {
           if (this.isFrequencyTableShowing) {
-            this.$refs.campaignManagerFrequencyTable.callForData()
+            this.$refs.campaignManagerFrequencyTable.callForData();
           } else {
-            this.$refs.campaignManagerItemTable.callForData()
+            this.$refs.campaignManagerItemTable.callForData();
           }
-          this.toggleStopCampaignDialog()
+          this.toggleStopCampaignDialog();
         })
         .finally(() => {
-          this.isStopDialogActionButtonDisabled = false
-        })
+          this.isStopDialogActionButtonDisabled = false;
+        });
     },
     handleLaunch(row = {}) {
-      this.launchResourceId = row.resourceId
-      this.selectedRow = row
-      this.toggleShowLaunchDialog()
+      this.launchResourceId = row.resourceId;
+      this.selectedRow = row;
+      this.toggleShowLaunchDialog();
     },
     toggleStartCampaignDialog() {
-      this.isShowStartDialog = !this.isShowStartDialog
+      this.isShowStartDialog = !this.isShowStartDialog;
     },
     toggleStopCampaignDialog() {
-      this.isShowStopDialog = !this.isShowStopDialog
+      this.isShowStopDialog = !this.isShowStopDialog;
     },
     toggleShowPreviewDialog() {
-      if (this.isShowPreviewDialog) this.selectedRow = null
-      this.isShowPreviewDialog = !this.isShowPreviewDialog
+      if (this.isShowPreviewDialog) this.selectedRow = null;
+      this.isShowPreviewDialog = !this.isShowPreviewDialog;
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
-        this.selectedRow = null
-        this.multipleSystemUserPayload = {}
-        this.isMultipleDelete = false
+        this.selectedRow = null;
+        this.multipleSystemUserPayload = {};
+        this.isMultipleDelete = false;
       }
-      this.isShowDeleteDialog = !this.isShowDeleteDialog
+      this.isShowDeleteDialog = !this.isShowDeleteDialog;
     },
     toggleTargetGroupsDialog() {
       if (this.isShowTargetGroupsDialog) {
-        this.targetGroupsDialogCampaign = null
+        this.targetGroupsDialogCampaign = null;
       }
-      this.isShowTargetGroupsDialog = !this.isShowTargetGroupsDialog
+      this.isShowTargetGroupsDialog = !this.isShowTargetGroupsDialog;
     },
     handleTargetUsersGroupsClick(row) {
-      this.targetGroupsDialogCampaign = row
-      this.toggleTargetGroupsDialog()
+      this.targetGroupsDialogCampaign = row;
+      this.toggleTargetGroupsDialog();
     },
     setDeleteDialogActionButtonDisabled(flag = false) {
-      this.isDeleteDialogActionButtonDisabled = flag
+      this.isDeleteDialogActionButtonDisabled = flag;
     },
     handleOnDelete(item = {}) {
       if (this.getCampaignManagerParentDeletePermissions) {
-        this.setDeleteDialogActionButtonDisabled(true)
+        this.setDeleteDialogActionButtonDisabled(true);
         deleteCampaignManager(item.resourceId)
           .then(() => {
-            this.$refs?.campaignManagerParentTable?.$refs?.refTable?.unSelectRow(item)
+            this.$refs?.campaignManagerParentTable?.$refs?.refTable?.unSelectRow(
+              item
+            );
             this.$refs?.campaignManagerParentTable?.$refs?.refTable?.changeServerSideSelectionCount(
               -1
-            )
-            this.$refs.campaignManagerParentTable.callForData()
+            );
+            this.$refs.campaignManagerParentTable.callForData();
           })
           .finally(() => {
-            this.toggleShowDeleteDialog()
-            this.setDeleteDialogActionButtonDisabled()
-          })
+            this.toggleShowDeleteDialog();
+            this.setDeleteDialogActionButtonDisabled();
+          });
       }
     }
   }
-}
+};
 </script>

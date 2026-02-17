@@ -38,7 +38,21 @@
       @downloadEvent="exportCampaignManagerItemList"
     >
       <template #datatable-custom-column="{ scope, col }">
-        <div class="campaign-manager-item-table__status-column">
+        <template v-if="scope.column.property === 'totalTargetUserCount'">
+          <span
+            v-if="isTargetUsersShowGroups(scope.row)"
+            class="campaign-manager-frequency-table__target-users-groups"
+            @click.stop="handleTargetUsersGroupsClick(scope.row)"
+          >
+            {{ labels.Groups }}
+            <VIcon color="#2196f3" small>mdi-account-multiple</VIcon>
+          </span>
+          <span v-else>{{ scope.row[col.property] }}</span>
+        </template>
+        <div
+          v-else-if="scope.column.property === 'status'"
+          class="campaign-manager-item-table__status-column"
+        >
           <v-tooltip bottom :disabled="getTooltipDisabilityStatus(scope.row)">
             <template #activator="{ on }">
               <v-btn style="display: none;" />
@@ -85,7 +99,11 @@
 
 <script>
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { COLUMNS, getStatusBadgeProps } from '@/components/CampaignManager/utils'
+import {
+  ACTION_STATUSES,
+  COLUMNS,
+  getStatusBadgeProps
+} from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -106,10 +124,11 @@ import Badge from '@/components/Badge'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_BACK_CLICK: 'on-back-click'
+  ON_BACK_CLICK: 'on-back-click',
+  ON_TARGET_USERS_GROUPS_CLICK: 'on-target-users-groups-click'
 }
 export default {
-  name: 'CampaignManagerItemTable',
+  name: 'CampaignManagerFrequencyTable',
   components: {
     Badge,
     CampaignManagerItemDeleteDialog,
@@ -125,6 +144,10 @@ export default {
     },
     parentResourceId: {
       type: String
+    },
+    parentCampaignType: {
+      type: Number,
+      default: null
     }
   },
   emits: EMITS,
@@ -155,19 +178,11 @@ export default {
           COLUMNS.SCHEDULE,
           {
             ...COLUMNS.TARGET_USERS_ITEM_TABLE,
-            width: 240,
-            showHeaderTooltip: true,
-            headerTooltip: 'Number of users in the most recent recurrence of this instance.',
-            headerTooltipIcon: 'mdi-information-outline',
-            headerTooltipIconColor: '#757575'
+            width: 240
           },
           {
             ...COLUMNS.STATUS,
-            width: 240,
-            showHeaderTooltip: true,
-            headerTooltip: 'Current status of the most recent recurrence of this instance.',
-            headerTooltipIcon: 'mdi-information-outline',
-            headerTooltipIconColor: '#757575'
+            width: 240
           },
           COLUMNS.CREATE_TIME_ITEM_TABLE
         ],
@@ -317,6 +332,16 @@ export default {
     },
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
+    },
+    isTargetUsersShowGroups(row = {}) {
+      return [ACTION_STATUSES.IDLE, ACTION_STATUSES.SCHEDULED].includes(row?.status)
+    },
+    handleTargetUsersGroupsClick(row) {
+      this.$emit(EMITS.ON_TARGET_USERS_GROUPS_CLICK, {
+        resourceId: this.parentResourceId,
+        campaignType: this.parentCampaignType,
+        instanceGroup: this.item?.instanceGroup
+      })
     }
   }
 }

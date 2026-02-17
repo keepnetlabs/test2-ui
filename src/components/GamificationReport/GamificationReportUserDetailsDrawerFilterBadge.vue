@@ -136,6 +136,9 @@ export default {
       else if (filter.key === 'difficulty') return this.getDifficultyFilterValue(filterVal)
       return filterVal
     },
+    removeSelectFilter() {
+      this.$emit('remove', { filter: this.filter.activeValue, index: 0 })
+    },
     removeSearchFilter(value, index) {
       this.$emit('remove', { filter: value, index })
     },

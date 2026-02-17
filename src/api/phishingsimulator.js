@@ -14,7 +14,7 @@ export const convertContentToFile = (attachment) => {
   }
 
   // If not a File object, convert content to File
-  if (attachment && attachment.content) {
+  if (attachment?.content) {
     let blob
     // Backend format: name, contentType fields
     const fileName = attachment.fileName || attachment.name || 'attachment'
