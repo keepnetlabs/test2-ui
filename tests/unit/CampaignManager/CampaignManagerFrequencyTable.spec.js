@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils'
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable.vue'
-import { COLUMNS, ACTION_STATUSES } from '@/components/CampaignManager/utils'
+import { COLUMNS, ACTION_STATUSES, getStatusBadgeProps } from '@/components/CampaignManager/utils'
 
 jest.mock('@/api/phishingsimulator', () => ({
   deletePhishingCampaignJob: jest.fn(() => Promise.resolve()),
@@ -152,6 +152,37 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(click).toHaveBeenCalled()
   })
 
+  it('maps XLS export type to Excel payload and xlsx extension', async () => {
+    const wrapper = createWrapper()
+    const click = jest.fn()
+    const originalCreateElement = document.createElement.bind(document)
+    jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = originalCreateElement(tagName)
+      if (tagName === 'a') {
+        element.click = click
+      }
+      return element
+    })
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = jest.fn()
+    }
+    jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:test-xls')
+
+    wrapper.vm.exportCampaignManagerItemList({
+      exportTypes: ['XLS'],
+      pageNumber: 2,
+      pageSize: 20,
+      reportAllPages: true
+    })
+    await flushPromises()
+
+    expect(exportCampaignManagerItem).toHaveBeenCalledWith(
+      expect.objectContaining({ exportType: 'Excel', reportAllPages: true }),
+      'parent-1'
+    )
+    expect(click).toHaveBeenCalled()
+  })
+
   it('returns status helpers and group visibility logic', () => {
     const wrapper = createWrapper()
 
@@ -183,5 +214,22 @@ describe('CampaignManagerFrequencyTable.vue', () => {
       campaignType: 1,
       instanceGroup: 'ig-parent'
     })
+  })
+
+  it('toggles delete dialog state and resets selected row on close', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.handleDelete({ instanceGroup: 'to-delete' })
+    expect(wrapper.vm.isShowDeleteDialog).toBe(true)
+    expect(wrapper.vm.selectedRow).toEqual({ instanceGroup: 'to-delete' })
+
+    wrapper.vm.toggleShowDeleteDialog()
+    expect(wrapper.vm.isShowDeleteDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toEqual({})
+  })
+
+  it('passes status badge props through utility helper', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getStatusBadgeProps('Scheduled')).toEqual(getStatusBadgeProps('Scheduled'))
   })
 })

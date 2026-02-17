@@ -632,5 +632,81 @@ describe('DataTable.vue', () => {
         reportAllPages: false
       })
     })
+
+    it('should return server-side selection params only when enabled', () => {
+      const disabledWrapper = mountComponent({ isServerSideSelection: false })
+      const enabledWrapper = mountComponent({ isServerSideSelection: true })
+      enabledWrapper.setData({
+        excludedResourceIdList: ['id-1', 'id-2'],
+        isSelectedAllEver: true
+      })
+
+      expect(disabledWrapper.vm.getServerSideSelectionParams()).toEqual({})
+      expect(enabledWrapper.vm.getServerSideSelectionParams()).toEqual({
+        excludedResourceIdList: ['id-1', 'id-2'],
+        isSelectedAllEver: true
+      })
+    })
+
+    it('should remove row key from excluded list when present', () => {
+      const wrapper = mountComponent()
+      wrapper.setData({ excludedResourceIdList: ['id-1', 'id-2'] })
+
+      wrapper.vm.findAndDeleteFromExcludedResourceIdList('id-1')
+      wrapper.vm.findAndDeleteFromExcludedResourceIdList('id-3')
+
+      expect(wrapper.vm.excludedResourceIdList).toEqual(['id-2'])
+    })
+
+    it('should emit custom empty action or default empty click event', () => {
+      const customWrapper = mountComponent({ empty: { action: 'create-record' } })
+      customWrapper.vm.onEmptyBtnClicked({ type: 'click' })
+      expect(customWrapper.emitted('create-record')).toBeTruthy()
+
+      const defaultWrapper = mountComponent({ empty: { message: 'empty' } })
+      defaultWrapper.vm.onEmptyBtnClicked({ type: 'click' })
+      expect(defaultWrapper.emitted('onEmptyBtnClicked')).toBeTruthy()
+    })
+
+    it('should emit server-side page and size change events', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.handleServerSideCurrentChange(5)
+      wrapper.vm.handleServerSideSizeChange(100)
+
+      expect(wrapper.emitted('server-side-page-number-changed')[0]).toEqual([5])
+      expect(wrapper.emitted('server-side-size-changed')[0]).toEqual([100])
+    })
+
+    it('should route, emit and fallback correctly in rowAct', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.$router = { push: jest.fn() }
+      wrapper.setData({ multipleSelection: [{ id: 1 }] })
+
+      wrapper.vm.rowAct('details', { id: 10 })
+      wrapper.vm.rowAct('syncUser', { id: 11 }, { row: { id: 11 } })
+      wrapper.vm.rowAct('deleteAndNotifyInvestigationDetails', { id: 12 })
+      const result = wrapper.vm.rowAct('custom-action', { id: 13 })
+
+      expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/analysis-details')
+      expect(wrapper.emitted('syncUser')).toBeTruthy()
+      expect(wrapper.emitted('deleteAndNotifyInvestigationDetailsFunction')[0][0]).toEqual([
+        { id: 1 }
+      ])
+      expect(wrapper.emitted('custom-action')[0][0]).toEqual({ id: 13 })
+      expect(result).toBe(false)
+    })
+
+    it('should select cluster, clear current selections and emit clusterChanged', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.$refs.elTableRef = { clearSelection: jest.fn() }
+      wrapper.setData({ multipleSelection: [{ id: 1 }, { id: 2 }] })
+
+      wrapper.vm.clusterSelected('Department')
+
+      expect(wrapper.vm.selectedCluster).toBe('Department')
+      expect(wrapper.vm.multipleSelection).toEqual([])
+      expect(wrapper.vm.$refs.elTableRef.clearSelection).toHaveBeenCalled()
+      expect(wrapper.emitted('clusterChanged')[0]).toEqual(['Department'])
+    })
   })
 })
