@@ -9,6 +9,7 @@
       @changeDownloadModalStatus="changeDownloadModalStatus"
     />
     <VNavigationDrawer
+      id="gamification-user-details-drawer"
       v-click-outside="handleDrawerClickOutside"
       :value="status"
       class="k-navigation-drawer"

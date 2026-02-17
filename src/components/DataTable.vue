@@ -2849,10 +2849,16 @@ export default {
      */
     cellEnter(row, column, cell) {
       if (this.getCellTooltipText) {
-        const customTooltipText = this.getCellTooltipText({ row, column, cell });
+        const customTooltipText = this.getCellTooltipText({
+          row,
+          column,
+          cell
+        });
         if (customTooltipText) {
           const parentRect = cell.getBoundingClientRect();
-          const padding = Number(getComputedStyle(cell).paddingLeft.slice(0, -2) || 0);
+          const padding = Number(
+            getComputedStyle(cell).paddingLeft.slice(0, -2) || 0
+          );
           this.showOverFlowTooltip = true;
           this.overFlowTooltipContent = customTooltipText;
           this.overFlowTooltipStyle = {
