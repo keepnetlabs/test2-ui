@@ -1006,7 +1006,7 @@ export default {
           ? Number.parseInt(this.editedLandingPages[1].name.split(' ')[1]) + 1
           : defaultIndex
       const firstPageIndex = Number.parseInt(this?.formValues?.landingPages[0].name.split(' ')[1])
-      if (isNaN(firstPageIndex)) return newPageIndex
+      if (Number.isNaN(firstPageIndex)) return newPageIndex
       if (firstPageIndex === newPageIndex) newPageIndex += 1
       if (firstPageIndex > newPageIndex) newPageIndex = firstPageIndex + 1
       return newPageIndex
