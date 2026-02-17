@@ -40,7 +40,7 @@
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
-                  id="btn-move-to-trash--investigation-details-delete-emails-popup"
+                  id="btn-move-to-trash--investigation-details-delete-emails-popup-delete"
                   class="k-dialog__button"
                   text
                   :disabled="isMoveToTrashDisabled"
@@ -49,7 +49,7 @@
                   >Move to trash
                 </v-btn>
                 <v-btn
-                  id="btn-delete--investigation-delete-emails-details-popup"
+                  id="btn-delete--investigation-delete-emails-details-popup-delete"
                   class="k-dialog__button"
                   text
                   color="#2196f3"
@@ -157,7 +157,7 @@
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
-                  id="btn-move-to-trash--investigation-details-delete-emails-popup"
+                  id="btn-move-to-trash--investigation-details-delete-emails-popup-delete-and-notify"
                   class="k-dialog__button"
                   text
                   :disabled="warnAndDeleteButtonDisabled"
@@ -166,7 +166,7 @@
                   >Move to trash
                 </v-btn>
                 <v-btn
-                  id="btn-delete--investigation-delete-emails-details-popup"
+                  id="btn-delete--investigation-delete-emails-details-popup-delete-and-notify"
                   class="k-dialog__button"
                   text
                   color="#2196f3"

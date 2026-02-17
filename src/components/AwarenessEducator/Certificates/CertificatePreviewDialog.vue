@@ -65,7 +65,7 @@ export default {
       AwarenessEducatorService.getCertificate(this.selectedRow.id)
         .then((response) => {
           this.template =
-            response?.data?.data?.template?.replace(
+            response?.data?.data?.template?.replaceAll(
               /{COMPANYLOGO}/g,
               this?.$store?.state?.whitelabel.mainLogoUrl || ''
             ) || ''

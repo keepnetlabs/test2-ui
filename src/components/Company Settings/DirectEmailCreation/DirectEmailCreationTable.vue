@@ -298,11 +298,12 @@ export default {
         })
       })
     },
-    handleAddConfiguration(item = { text: '' }) {
-      if (item.text === this.addConfigurationItems[0].text) {
+    handleAddConfiguration(item) {
+      const config = item ?? { text: '' }
+      if (config.text === this.addConfigurationItems[0].text) {
         this.$emit(EMITS.ON_ADD_GOOGLE_WORKSPACE)
       }
-      if (item.text === this.addConfigurationItems[1].text) {
+      if (config.text === this.addConfigurationItems[1].text) {
         this.$emit(EMITS.ON_ADD_MICROSOFT_365)
       }
     }

@@ -37,7 +37,7 @@ export default {
       const lastShownTimeMs = Number.parseInt(lastShownTime, 10)
 
       // Guard against corrupted data in localStorage
-      if (isNaN(lastShownTimeMs)) {
+      if (Number.isNaN(lastShownTimeMs)) {
         return true
       }
 

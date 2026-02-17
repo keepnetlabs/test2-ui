@@ -94,11 +94,11 @@ export function getBtnStatusColor(type) {
     "in use": "#1173C1",
     passed: "#217124",
     "not started": "#E6A23C",
-    "notstarted": "#E6A23C",
+    notstarted: "#E6A23C",
     "not completed": "#F56C6C",
-    "notcompleted": "#F56C6C",
+    notcompleted: "#F56C6C",
     "not responded": "#E6A23C",
-    "notresponded": "#E6A23C"
+    notresponded: "#E6A23C"
   };
 
   if (!_type) return "#00bcd4"; // Default for empty or null type after processing
@@ -451,7 +451,8 @@ export function passwordComplexity(pwd) {
     ];
     const arrCharsLen = arrChars.length;
     for (let c = 0; c < arrCharsLen; c++) {
-      let minVal = arrCharsIds[c] === "nLength" ? Number.parseInt(nMinPwdLen - 1) : 0;
+      let minVal =
+        arrCharsIds[c] === "nLength" ? Number.parseInt(nMinPwdLen - 1) : 0;
       if (
         arrChars[c] === Number.parseInt(minVal + 1) ||
         arrChars[c] > Number.parseInt(minVal + 1)
@@ -804,7 +805,9 @@ export function copyToClipboard(textToCopy) {
           return true;
         })
         .catch(() => {
-          const isFallbackCopied = copyToClipboardWithExecCommand(normalizedText);
+          const isFallbackCopied = copyToClipboardWithExecCommand(
+            normalizedText
+          );
           if (isFallbackCopied) {
             createCopyToClipboardSnackbar();
             return true;
