@@ -56,6 +56,15 @@ describe('UsersDashboardYourLearning.vue', () => {
     const wrapper = createWrapper()
     expect(wrapper.vm.tableData).toEqual([])
     expect(wrapper.vm.emptyOptions).toEqual({ message: labels.yourLearningNoTrainingMaterials })
+    expect(wrapper.vm.tableId).toBe('users-dashboard-your-learning-table')
+    expect(wrapper.vm.rowActions).toEqual([
+      {
+        name: 'Action',
+        id: 'btn-action--your-learning',
+        icon: 'mdi-play',
+        action: 'handle-action'
+      }
+    ])
   })
 
   it('builds expected table columns from labels', () => {
@@ -184,8 +193,12 @@ describe('UsersDashboardYourLearning.vue', () => {
   it('returns status labels and colors with fallback', () => {
     const wrapper = createWrapper()
     expect(wrapper.vm.getStatusLabel('Exam Failed')).toBe(labels.actionTypeExamFailed)
+    expect(wrapper.vm.getStatusLabel('Exam Passed')).toBe(labels.actionTypeExamPassed)
+    expect(wrapper.vm.getStatusLabel('In Queue')).toBe(labels.yourCertificatesInQueue)
     expect(wrapper.vm.getStatusLabel('Unknown')).toBe('Unknown')
     expect(wrapper.vm.getStatusColor('Completed')).toBe('#217124')
+    expect(wrapper.vm.getStatusColor('Exam Passed')).toBe('#43A047')
+    expect(wrapper.vm.getStatusColor('In Queue')).toBe('#1173C1')
     expect(wrapper.vm.getStatusColor('Unknown')).toBe('#757575')
   })
 
@@ -233,5 +246,20 @@ describe('UsersDashboardYourLearning.vue', () => {
 
     expect(logSpy).toHaveBeenCalledTimes(2)
     logSpy.mockRestore()
+  })
+
+  it('generates row id when enrollmentId is missing', () => {
+    const wrapper = createWrapper({
+      'usersDashboard/getMyLearning': [
+        {
+          trainingName: 'No Id Training',
+          status: 'In Progress',
+          points: 1
+        }
+      ]
+    })
+
+    expect(wrapper.vm.tableData).toHaveLength(1)
+    expect(wrapper.vm.tableData[0].id).toBeTruthy()
   })
 })
