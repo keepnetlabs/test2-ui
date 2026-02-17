@@ -194,7 +194,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'slot',
     width: 160,
     emptyText: 0,
     filterableType: 'number'
@@ -335,6 +335,11 @@ export const ACTION_STATUSES = {
   INDIVIDUAL: 'Individual Printout',
   SCHEDULED: 'Scheduled'
 }
+
+export const STATUS_FILTER_ITEMS = Object.values(ACTION_STATUSES).map((text) => ({
+  text,
+  value: text
+}))
 
 export function getStatusBadgeProps(status) {
   if (status === 'Completed') {

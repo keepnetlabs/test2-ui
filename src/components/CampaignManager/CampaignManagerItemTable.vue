@@ -25,8 +25,12 @@
       :row-actions="tableOptions.rowActions"
       :add-button="tableOptions.addButton"
       :axios-payload.sync="axiosPayload"
-      :saved-filters-local-storage-key="tableOptions.savedFiltersLocalStorageKey"
-      :saved-table-settings-local-storage-key="tableOptions.savedTableSettingsLocalStorageKey"
+      :saved-filters-local-storage-key="
+        tableOptions.savedFiltersLocalStorageKey
+      "
+      :saved-table-settings-local-storage-key="
+        tableOptions.savedTableSettingsLocalStorageKey
+      "
       @on-add-button-click="handleOnAddButtonClick"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -38,7 +42,18 @@
       @downloadEvent="exportCampaignManagerItemList"
     >
       <template #datatable-custom-column="{ scope, col }">
-        <template v-if="scope.column.property === 'frequencyDescription'">
+        <template v-if="scope.column.property === 'totalTargetUserCount'">
+          <span
+            v-if="isTargetUsersShowGroups(scope.row)"
+            class="campaign-manager-item-table__target-users-groups"
+            @click.stop="handleTargetUsersGroupsClick(scope.row)"
+          >
+            {{ labels.Groups }}
+            <VIcon color="#2196f3" small>mdi-account-multiple</VIcon>
+          </span>
+          <span v-else>{{ scope.row[col.property] }}</span>
+        </template>
+        <template v-else-if="scope.column.property === 'frequencyDescription'">
           <div class="reported-email-subject__container">
             <div class="reported-email-subject">
               <span> {{ scope.row[col.property] }}</span>
@@ -104,39 +119,40 @@
 </template>
 
 <script>
-import ServerSideProps from '@/helper-classes/server-side-table-props'
+import ServerSideProps from "@/helper-classes/server-side-table-props";
 import {
+  ACTION_STATUSES,
   COLUMNS,
   getStatusBadgeProps,
   SCENARIO_DISTRIBUTION_TEXTS
-} from '@/components/CampaignManager/utils'
-import labels from '@/model/constants/labels'
+} from "@/components/CampaignManager/utils";
+import labels from "@/model/constants/labels";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import DataTable from '@/components/DataTable'
-import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
+} from "@/model/constants/commonConstants";
+import DataTable from "@/components/DataTable";
+import CampaignManagerItemRowActions from "@/components/CampaignManager/CampaignManagerItemRowActions";
 import {
   deletePhishingCampaignJob,
   exportCampaignManagerItem,
   searchCampaignPhishingJob
-} from '@/api/phishingsimulator'
-import { useLoading } from '@/hooks/useLoading'
-import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
-import { getDefaultAxiosPayload } from '@/utils/functions'
-import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import Badge from '@/components/Badge'
-import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton.vue'
+} from "@/api/phishingsimulator";
+import { useLoading } from "@/hooks/useLoading";
+import CampaignManagerItemDeleteDialog from "@/components/CampaignManager/CampaignManagerItemDeleteDialog";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import Badge from "@/components/Badge";
+import TheRecordsButton from "@/components/IncidentResponder/TheRecordsButton.vue";
 
 const EMITS = {
-  UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
-  RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_BACK_CLICK: 'on-back-click',
-  ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
-}
+  UPDATE_AXIOS_PAYLOAD: "update:axiosPayload",
+  RESET_AXIOS_PAYLOAD: "reset-axios-payload",
+  ON_BACK_CLICK: "on-back-click",
+  ON_RECORD_BUTTON_CLICK: "on-record-button-click"
+};
 export default {
-  name: 'CampaignManagerItemTable',
+  name: "CampaignManagerItemTable",
   components: {
     TheRecordsButton,
     Badge,
@@ -159,17 +175,19 @@ export default {
       labels,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: "CreatedDate" }),
       CONSTANTS: {
-        id: 'campaign-manager-item-data-table',
-        ascending: 'ascending'
+        id: "campaign-manager-item-data-table",
+        ascending: "ascending"
       },
       tableData: [],
       selectedRow: {},
       serverSideProps: new ServerSideProps(),
       tableOptions: {
-        savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
-        savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
+        savedFiltersLocalStorageKey:
+          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
+        savedTableSettingsLocalStorageKey:
+          TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -185,55 +203,62 @@ export default {
         ],
         iEmpty: {
           message: labels.EmptyCampaignManagerReport,
-          id: 'btn-empty--campaign-manager-report'
+          id: "btn-empty--campaign-manager-report"
         },
         addButton: {
           show: true,
-          action: 'on-add-button-click',
-          tooltip: 'Add a Campaign',
-          id: 'btn-add--item-campaign-manager',
-          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
+          action: "on-add-button-click",
+          tooltip: "Add a Campaign",
+          id: "btn-add--item-campaign-manager",
+          disabled: !this.$store.getters[
+            "permissions/getCampaignManagerParentCreatePermissions"
+          ]
         },
         rowActions: [
           {
             name: labels.Stop,
             isNotShow: true,
-            id: 'btn-stop--row-actions-campaign-item-manager',
-            icon: 'mdi-stop',
-            action: 'on-stop',
-            disabled: !this.$store.getters['permissions/getCampaignReportsPausePermissions']
+            id: "btn-stop--row-actions-campaign-item-manager",
+            icon: "mdi-stop",
+            action: "on-stop",
+            disabled: !this.$store.getters[
+              "permissions/getCampaignReportsPausePermissions"
+            ]
           },
           {
             name: labels.Delete,
-            id: 'btn-delete--row-actions-campaign-manager',
-            icon: 'mdi-delete',
-            action: 'on-delete',
-            disabled: !this.$store.getters['permissions/getCampaignReportsDeletePermissions']
+            id: "btn-delete--row-actions-campaign-manager",
+            icon: "mdi-delete",
+            action: "on-delete",
+            disabled: !this.$store.getters[
+              "permissions/getCampaignReportsDeletePermissions"
+            ]
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
-    }
+    };
   },
   computed: {
     getTableAllRecordsText() {
-      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
+      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`;
     },
     tableColumnsWithTooltips() {
-      const isRecurrence = this.item?.frequency !== 0 && this.item?.frequency !== undefined
+      const isRecurrence =
+        this.item?.frequency !== 0 && this.item?.frequency !== undefined;
 
       return this.tableOptions.columns.map((col) => {
-        if (col.property === 'totalTargetUserCount') {
+        if (col.property === "totalTargetUserCount") {
           return {
             ...col,
             width: 240,
             showHeaderTooltip: isRecurrence,
             headerTooltip: isRecurrence
-              ? 'Number of users in the most recent recurrence of this instance.'
+              ? "Number of users in the most recent recurrence of this instance."
               : undefined,
-            headerTooltipIcon: 'mdi-information-outline',
-            headerTooltipIconColor: '#757575'
-          }
+            headerTooltipIcon: "mdi-information-outline",
+            headerTooltipIconColor: "#757575"
+          };
         }
         if (col.property === COLUMNS.STATUS.property) {
           return {
@@ -241,14 +266,14 @@ export default {
             width: 240,
             showHeaderTooltip: isRecurrence,
             headerTooltip: isRecurrence
-              ? 'Current status of the most recent recurrence of this instance.'
+              ? "Current status of the most recent recurrence of this instance."
               : undefined,
-            headerTooltipIcon: 'mdi-information-outline',
-            headerTooltipIconColor: '#757575'
-          }
+            headerTooltipIcon: "mdi-information-outline",
+            headerTooltipIconColor: "#757575"
+          };
         }
-        return col
-      })
+        return col;
+      });
     }
   },
   watch: {
@@ -256,7 +281,7 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        if (!val) return
+        if (!val) return;
         if (
           val.categoryDistributionType !== SCENARIO_DISTRIBUTION_TEXTS[0] &&
           val.frequency !== 0
@@ -264,58 +289,67 @@ export default {
           this.tableOptions.addButton = {
             ...this.tableOptions.addButton,
             disabled: true,
-            tooltip: 'A new instance with frequency and random scenarios can’t be created.'
-          }
+            tooltip:
+              "A new instance with frequency and random scenarios can’t be created."
+          };
         } else {
           this.tableOptions.addButton = {
             ...this.tableOptions.addButton,
             disabled: false,
-            tooltip: 'Add a Campaign'
-          }
+            tooltip: "Add a Campaign"
+          };
         }
       }
     },
-    statusItems(val) {
-      if (val.length) {
-        const col = this.tableOptions.columns.find(
-          (col) => col.property === COLUMNS.STATUS.property
-        )
-        this.$set(
-          col,
-          'filterableItems',
-          val.map((item) => {
-            return { ...item, value: item.text }
-          })
-        )
-        this.reRenderFilters()
-      }
+    statusItems: {
+      handler(val) {
+        if (val && val.length) {
+          const col = this.tableOptions.columns.find(
+            (col) => col.property === COLUMNS.STATUS.property
+          );
+          if (col) {
+            this.$set(
+              col,
+              "filterableItems",
+              val.map((item) => ({ ...item, value: item.text ?? item.value }))
+            );
+            this.reRenderFilters();
+          }
+        }
+      },
+      immediate: true
     }
   },
   created() {
-    this.callForData()
+    this.callForData();
   },
   methods: {
     callForData() {
-      this.setLoading(true)
+      this.setLoading(true);
       this.$nextTick(() => {
         searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
           .then((response) => {
             const {
               data: { data = [] }
-            } = response
-            const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
+            } = response;
+            const {
+              results = [],
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber
+            } = data;
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
             this.tableData = results.map((item) => {
-              const newItem = JSON.parse(JSON.stringify(item))
-              delete newItem['frequencyCount']
-              newItem.total = Number(item['frequencyCount']) || 0
-              return newItem
-            })
+              const newItem = JSON.parse(JSON.stringify(item));
+              delete newItem["frequencyCount"];
+              newItem.total = Number(item["frequencyCount"]) || 0;
+              return newItem;
+            });
           })
-          .finally(this.setLoading)
-      })
+          .finally(this.setLoading);
+      });
     },
     exportCampaignManagerItemList(downloadTypes = []) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -325,91 +359,107 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
+          exportType: item === "XLS" ? "Excel" : item,
           filter: this.axiosPayload.filter
-        }
-        exportCampaignManagerItem(payload, this.item.resourceId).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Manager-Instance.${
-            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+        };
+        exportCampaignManagerItem(payload, this.item.resourceId).then(
+          (response) => {
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
+            link.download = `Campaign-Manager-Instance.${
+              item.toLocaleLowerCase() === "xls"
+                ? "xlsx"
+                : item.toLocaleLowerCase()
+            }`;
+            link.click();
+          }
+        );
+      });
     },
     handleBackClick() {
-      this.$emit(EMITS.ON_BACK_CLICK)
+      this.$emit(EMITS.ON_BACK_CLICK);
     },
     handleOnAddButtonClick() {
-      this.$emit('on-launch', { resourceId: this.item.resourceId })
+      this.$emit("on-launch", { resourceId: this.item.resourceId });
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
-        this.selectedRow = {}
+        this.selectedRow = {};
       }
-      this.isShowDeleteDialog = !this.isShowDeleteDialog
+      this.isShowDeleteDialog = !this.isShowDeleteDialog;
     },
     handleDelete(row = {}) {
-      this.selectedRow = row
-      this.toggleShowDeleteDialog()
+      this.selectedRow = row;
+      this.toggleShowDeleteDialog();
     },
     handleOnDelete(item = {}) {
-      this.isDeleteDialogActionButtonDisabled = true
+      this.isDeleteDialogActionButtonDisabled = true;
       deletePhishingCampaignJob(this.item.resourceId, item.instanceGroup)
         .then(() => {
-          this.$refs.refTable.unSelectRow(item)
-          this.callForData()
+          this.$refs.refTable.unSelectRow(item);
+          this.callForData();
         })
         .finally(() => {
-          this.isDeleteDialogActionButtonDisabled = false
-          this.toggleShowDeleteDialog()
-        })
+          this.isDeleteDialogActionButtonDisabled = false;
+          this.toggleShowDeleteDialog();
+        });
     },
     handleStop(row = {}) {
-      this.$emit('on-stop', {
+      this.$emit("on-stop", {
         resourceId: this.item.resourceId,
         instanceGroup: row.instanceGroup
-      })
+      });
     },
     handleLaunch(row = {}) {
-      this.$emit('on-start', {
+      this.$emit("on-start", {
         resourceId: this.item.resourceId,
         instanceGroup: row.instanceGroup
-      })
+      });
     },
     handlePreview(row) {
-      this.$emit('on-preview', row)
+      this.$emit("on-preview", row);
     },
     getErrorMessage(row = {}) {
-      if (row.status === 'Error') {
-        return row?.jobResultMessage || ''
+      if (row.status === "Error") {
+        return row?.jobResultMessage || "";
       }
-      return ''
+      return "";
     },
-    getStatusBadgeProps(status = '') {
-      return getStatusBadgeProps(status)
+    getStatusBadgeProps(status = "") {
+      return getStatusBadgeProps(status);
     },
     getTooltipDisabilityStatus(row = {}) {
-      return row?.status !== 'Error' || !row?.jobResultMessage
+      return row?.status !== "Error" || !row?.jobResultMessage;
+    },
+    isTargetUsersShowGroups(row = {}) {
+      return [ACTION_STATUSES.IDLE, ACTION_STATUSES.SCHEDULED].includes(
+        row?.status
+      );
+    },
+    handleTargetUsersGroupsClick(row) {
+      this.$emit("on-target-users-groups-click", {
+        resourceId: this.item.resourceId,
+        campaignType: this.item.campaignType,
+        instanceGroup: row?.instanceGroup
+      });
     },
     handleRecordButtonClick(row) {
-      this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
+      this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row);
     },
     reRenderFilters(filterValues = undefined) {
-      this?.$refs?.refTable?.reRenderFilters(filterValues)
+      this?.$refs?.refTable?.reRenderFilters(filterValues);
     },
     resetSearchText() {
-      this.$refs.refTable.resetSearchText()
+      this.$refs.refTable.resetSearchText();
     },
     resetTable() {
-      this.resetSearchText()
-      this.reRenderFilters({})
+      this.resetSearchText();
+      this.reRenderFilters({});
       this.axiosPayload = getDefaultAxiosPayload({
-        orderBy: 'CreatedDate'
-      })
+        orderBy: "CreatedDate"
+      });
     }
   }
-}
+};
 </script>

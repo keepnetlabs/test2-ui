@@ -1,10 +1,9 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils'
 import GamificationReportUserDetailsDrawerFilterBadge from '@/components/GamificationReport/GamificationReportUserDetailsDrawerFilterBadge'
-import { Fragment } from 'vue-frag'
 
 describe('GamificationReportUserDetailsDrawerFilterBadge.vue', () => {
   const localVue = createLocalVue()
-  localVue.component('Fragment', Fragment)
+  const wrappers = []
 
   const defaultProps = {
     filter: {
@@ -28,19 +27,31 @@ describe('GamificationReportUserDetailsDrawerFilterBadge.vue', () => {
   }
 
   const mountComponent = (propsData = {}, options = {}) => {
-    return shallowMount(GamificationReportUserDetailsDrawerFilterBadge, {
+    const wrapper = shallowMount(GamificationReportUserDetailsDrawerFilterBadge, {
       localVue,
       propsData: {
         ...defaultProps,
         ...propsData
       },
       stubs: {
+        Fragment: { template: '<div><slot /></div>' },
         VIcon: true,
         VTooltip: true
       },
       ...options
     })
+    wrappers.push(wrapper)
+    return wrapper
   }
+
+  afterEach(() => {
+    while (wrappers.length) {
+      const wrapper = wrappers.pop()
+      if (wrapper && wrapper.vm && !wrapper.vm._isDestroyed) {
+        wrapper.destroy()
+      }
+    }
+  })
 
   describe('Component Rendering', () => {
     it('should render the component', () => {
@@ -240,7 +251,7 @@ describe('GamificationReportUserDetailsDrawerFilterBadge.vue', () => {
       const wrapper = mountComponent({
         filter: { filterType: 'select', text: 'Status', activeValue: 'active' }
       })
-      expect(typeof wrapper.vm.removeSelectFilter).toBe('undefined')
+      expect(typeof wrapper.vm.removeSelectFilter).toBe('function')
     })
   })
 

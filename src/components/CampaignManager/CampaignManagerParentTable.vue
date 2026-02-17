@@ -446,19 +446,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.campaign-manager-parent-table__target-users-groups {
-  color: var(--Primary-Primary, #2196f3);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-feature-settings: 'liga' off, 'clig' off;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-}
-</style>

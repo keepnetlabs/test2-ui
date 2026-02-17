@@ -221,6 +221,131 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
     })
   })
 
+  describe('Filter And Utility Methods', () => {
+    it('adds date headers without duplicating existing day headers', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.timeline = [{ type: 'header', ActionTimeWithDay: '2025-02-16' }]
+
+      const result = wrapper.vm.addDateHeaders([
+        { ActionTimeWithDay: '2025-02-16', ActionType: 'A' },
+        { ActionTimeWithDay: '2025-02-17', ActionType: 'B' }
+      ])
+
+      const headerRows = result.filter((item) => item.type === 'header')
+      expect(headerRows).toHaveLength(1)
+      expect(headerRows[0].text).toBe('2025-02-17')
+    })
+
+    it('sets and removes filter payload items for string and between operators', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems = []
+
+      wrapper.vm.setFilterToPayload({
+        key: 'product',
+        activeValue: 'PHISHING',
+        activeOperator: '='
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'product', Value: 'PHISHING', Operator: '=' }
+      ])
+
+      wrapper.vm.setFilterToPayload({
+        key: 'createdDate',
+        activeValue: ['2025-01-01', '2025-01-31'],
+        activeOperator: 'between'
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'product', Value: 'PHISHING', Operator: '=' },
+        { FieldName: 'createdDate', Value: '2025-01-01', Operator: '>=' },
+        { FieldName: 'createdDate', Value: '2025-01-31', Operator: '<=' }
+      ])
+
+      wrapper.vm.removeFilterFromPayload({
+        key: 'createdDate',
+        filterType: 'date',
+        activeOperator: 'between'
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'product', Value: 'PHISHING', Operator: '=' }
+      ])
+    })
+
+    it('clearFilter and handleFilter trigger timeline refresh', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.callForTimeline = jest.fn()
+      wrapper.vm.removeFilterFromPayload = jest.fn()
+      wrapper.vm.setFilterToPayload = jest.fn()
+
+      const selectFilter = {
+        key: 'product',
+        filterType: 'select',
+        isFilterActive: true,
+        value: 'PHISHING',
+        activeValue: 'PHISHING',
+        operator: 'Contains',
+        activeOperator: 'Contains'
+      }
+
+      wrapper.vm.handleClearFilter(selectFilter)
+      expect(selectFilter.activeValue).toBe('')
+      expect(wrapper.vm.callForTimeline).toHaveBeenCalledTimes(1)
+
+      selectFilter.value = 'SMISHING'
+      selectFilter.operator = '='
+      wrapper.vm.handleFilter(selectFilter)
+      expect(selectFilter.isFilterActive).toBe(true)
+      expect(selectFilter.activeValue).toBe('SMISHING')
+      expect(wrapper.vm.callForTimeline).toHaveBeenCalledTimes(2)
+    })
+
+    it('drawer click outside emits close only when allowed', () => {
+      const wrapper = mountComponent()
+
+      wrapper.vm.isShowDownloadModal = false
+      wrapper.vm.menu = false
+      wrapper.vm.handleDrawerClickOutside({
+        target: { closest: jest.fn(() => null) }
+      })
+      expect(wrapper.emitted('on-close')).toBeTruthy()
+
+      wrapper.vm.handleDrawerClickOutside({
+        target: { closest: jest.fn((sel) => (sel === '.el-select-dropdown' ? {} : null)) }
+      })
+      expect(wrapper.emitted('on-close')).toHaveLength(1)
+    })
+
+    it('calls timezone action only when timezone list is empty', () => {
+      const dispatch = jest.fn()
+      const wrapper = mountComponent({}, {
+        mocks: { $store: { dispatch, getters: { 'common/getTimezones': { timeZoneList: [] } } } }
+      })
+
+      wrapper.vm.callForGetTimeZones()
+      expect(dispatch).toHaveBeenCalledWith('common/getTimezone')
+
+      dispatch.mockClear()
+      wrapper.vm.$store.getters['common/getTimezones'] = { timeZoneList: ['UTC'] }
+      wrapper.vm.callForGetTimeZones()
+      expect(dispatch).not.toHaveBeenCalled()
+    })
+
+    it('returns product type labels and load-more button styles', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getProductType({ productType: 'PHISHING SIMULATOR - X' })).toBe('phishing campaign')
+      expect(wrapper.vm.getProductType({ productType: 'SMISHING SIMULATOR - X' })).toBe('smishing campaign')
+      expect(wrapper.vm.getProductType({ productType: 'UNKNOWN - X' })).toBe('')
+
+      expect(wrapper.vm.getLoadMoreButtonStyle(true)).toEqual({
+        'background-color': '#F2F2F2',
+        marginBottom: '16px'
+      })
+      expect(wrapper.vm.getLoadMoreButtonStyle(false)).toEqual({
+        'background-color': '#FFFFFF',
+        marginBottom: '16px'
+      })
+    })
+  })
+
   describe('Lifecycle', () => {
     it('component should mount successfully', () => {
       const wrapper = mountComponent()

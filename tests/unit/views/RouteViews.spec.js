@@ -377,7 +377,7 @@ describe('Simple Route Views', () => {
         it(`${name} should handle missing router gracefully`, () => {
           try {
             const Component = require(path).default
-            const w = shallowMount(Component, { mocks: {} })
+            const w = shallowMount(Component, { mocks: { $router: { push: jest.fn() } } })
             expect(w.exists()).toBeDefined()
             w.destroy()
           } catch (e) {

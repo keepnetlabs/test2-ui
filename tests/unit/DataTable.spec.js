@@ -535,4 +535,102 @@ describe('DataTable.vue', () => {
       }).not.toThrow()
     })
   })
+
+  describe('Additional Branch Coverage', () => {
+    it('should persist default search payload and emit set-default-search', () => {
+      const wrapper = mountComponent({
+        savedFiltersLocalStorageKey: 'datatable-default-search',
+        axiosPayload: {
+          filter: { FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }] }
+        }
+      })
+
+      wrapper.setData({
+        search: 'john',
+        filterValues: { Status: 'Active' }
+      })
+      wrapper.vm.handleSetDefaultSearch()
+
+      const saved = JSON.parse(localStorage.getItem('datatable-default-search'))
+      expect(saved.search).toBe('john')
+      expect(saved.filterValues).toEqual({ Status: 'Active' })
+      expect(wrapper.emitted('set-default-search')).toBeTruthy()
+    })
+
+    it('should include showByExamStatus for exam reports when saving default search', () => {
+      const wrapper = mountComponent({
+        isReportWithExam: true,
+        savedFiltersLocalStorageKey: 'datatable-default-search-exam',
+        axiosPayload: {
+          filter: { FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }] },
+          showByExamStatus: 'FirstAttempt'
+        }
+      })
+
+      wrapper.setData({
+        search: 'jane',
+        filterValues: { Product: 'Training' }
+      })
+      wrapper.vm.handleSetDefaultSearch()
+
+      const saved = JSON.parse(localStorage.getItem('datatable-default-search-exam'))
+      expect(saved.showByExamStatus).toBe('FirstAttempt')
+      expect(saved.search).toBe('jane')
+    })
+
+    it('should clear filters, emit updated payload and clear sort', () => {
+      const wrapper = mountComponent({
+        isServerSide: true,
+        isReportWithExam: true,
+        serverSideProps: { pageSize: 25, pageNumber: 2, totalNumberOfRecords: 100 },
+        axiosPayload: {
+          filter: { FilterGroups: [{ FilterItems: [{ FieldName: 'Status', Value: 'Active' }] }, { FilterItems: [] }] }
+        }
+      })
+      wrapper.vm.handleRefresh = jest.fn()
+      wrapper.vm.$refs.elTableRef = { clearSort: jest.fn() }
+      wrapper.setData({ search: 'to-clear', filterValues: { Status: 'Active' } })
+
+      wrapper.vm.handleClearFilters()
+
+      expect(wrapper.vm.search).toBe('')
+      expect(wrapper.vm.handleRefresh).toHaveBeenCalled()
+      expect(wrapper.vm.$refs.elTableRef.clearSort).toHaveBeenCalled()
+      expect(wrapper.emitted('clear-filters')).toBeTruthy()
+      expect(wrapper.emitted('update:axios-payload')).toBeTruthy()
+      expect(wrapper.emitted('update:axios-payload')[0][0].pageSize).toBe(25)
+      expect(wrapper.emitted('update:axios-payload')[0][0].showByExamStatus).toBe('FirstAttempt')
+    })
+
+    it('should emit correct downloadEvent payload for server-side and client-side', () => {
+      const serverWrapper = mountComponent({
+        serverSideEvents: { pagination: true, search: false, sort: false },
+        serverSideProps: { pageNumber: 3, pageSize: 50, totalNumberOfRecords: 500 }
+      })
+      serverWrapper.setData({ downloadModalTitle: 'Download All' })
+      serverWrapper.vm.downloadEvent(['CSV'])
+
+      const serverPayload = serverWrapper.emitted('downloadEvent')[0][0]
+      expect(serverPayload).toEqual({
+        exportTypes: ['CSV'],
+        pageNumber: 3,
+        pageSize: 50,
+        reportAllPages: true
+      })
+
+      const clientWrapper = mountComponent({
+        serverSideEvents: { pagination: false, search: false, sort: false }
+      })
+      clientWrapper.setData({ currentPage: 2, rowCount: 10, downloadModalTitle: 'Download Current Page' })
+      clientWrapper.vm.downloadEvent(['PDF'])
+
+      const clientPayload = clientWrapper.emitted('downloadEvent')[0][0]
+      expect(clientPayload).toEqual({
+        exportTypes: ['PDF'],
+        pageNumber: 2,
+        pageSize: 10,
+        reportAllPages: false
+      })
+    })
+  })
 })

@@ -63,7 +63,7 @@
             v-if="isOpenLandingPageDrawer"
             ref="newLandingPage"
             :status="isOpenLandingPageDrawer"
-            :is-a-i-ally-enabled="true"
+            :is-a-i-ally-enabled="aiAllySettings.landingPageTemplateGenerationAssistant"
             :should-remove-overflow="false"
             :show-leaving-dialog="false"
             :landing-page-data="landingPageData"
@@ -91,7 +91,7 @@
           <NewEmailTemplates
             v-if="isOpenEmailTemplateDrawer"
             ref="newEmailTemplate"
-            is-a-i-ally-enabled
+            :is-a-i-ally-enabled="aiAllySettings.psEmailTemplateGenerationAssistant"
             :status="isOpenEmailTemplateDrawer"
             :should-remove-overflow="false"
             :show-leaving-dialog="false"
@@ -505,6 +505,7 @@ import {
 } from '@/components/Common/Simulator/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
+import { getAIAllySettings } from '@/api/company'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
@@ -576,6 +577,10 @@ export default {
   },
   data() {
     return {
+      aiAllySettings: {
+        psEmailTemplateGenerationAssistant: false,
+        landingPageTemplateGenerationAssistant: false
+      },
       drawerModel: this.status,
       languagePreview: '',
       landingPageData: null,
@@ -952,6 +957,9 @@ export default {
   watch: {
     status(val) {
       this.drawerModel = val
+      if (val) {
+        this.fetchAIAllySettings()
+      }
     },
     drawerModel(val) {
       if (!val && this.status) {
@@ -990,6 +998,9 @@ export default {
   },
   created() {
     this.initializeRoleOptions()
+    if (this.status) {
+      this.fetchAIAllySettings()
+    }
     getLandingPageFormDetails().then((response) => {
       const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
         return {
@@ -1022,6 +1033,14 @@ export default {
     // Mixin tarafından HTML overflow kontrolü yapılıyor
   },
   methods: {
+    fetchAIAllySettings() {
+      getAIAllySettings().then((res) => {
+        this.aiAllySettings = res?.data?.data || {
+          psEmailTemplateGenerationAssistant: false,
+          landingPageTemplateGenerationAssistant: false
+        }
+      })
+    },
     handleClickOutside(event) {
       // SnackBar tıklanırsa ignore et
       if (event && event.target) {
