@@ -215,9 +215,6 @@ describe('useCachableDialog mixin', () => {
       saveCachableDialogTimestamp.call({}, key1)
       const saved1 = mockLocalStorage.getItem(key1)
 
-      // Wait a bit to ensure time passes
-      jest.advanceTimersByTime(10)
-
       saveCachableDialogTimestamp.call({}, key2)
       const saved2 = mockLocalStorage.getItem(key2)
 

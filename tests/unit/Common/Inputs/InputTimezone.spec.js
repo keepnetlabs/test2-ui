@@ -8,21 +8,34 @@ localVue.use(Vuex)
 describe('InputTimezone.vue', () => {
   let wrapper
   let store
+  let getTimezoneAction
 
   beforeEach(() => {
-    const getters = {
-      'common/getTimezones': () => ({
-        timeZoneList: [
-          { id: 'UTC', displayName: 'UTC' },
-          { id: 'EST', displayName: 'Eastern Standard Time' },
-          { id: 'CST', displayName: 'Central Standard Time' },
-          { id: 'PST', displayName: 'Pacific Standard Time' },
-          { id: 'GMT', displayName: 'Greenwich Mean Time' }
-        ]
-      })
+    getTimezoneAction = jest.fn()
+
+    const commonModule = {
+      namespaced: true,
+      getters: {
+        getTimezones: () => ({
+          timeZoneList: [
+            { id: 'UTC', displayName: 'UTC' },
+            { id: 'EST', displayName: 'Eastern Standard Time' },
+            { id: 'CST', displayName: 'Central Standard Time' },
+            { id: 'PST', displayName: 'Pacific Standard Time' },
+            { id: 'GMT', displayName: 'Greenwich Mean Time' }
+          ]
+        })
+      },
+      actions: {
+        getTimezone: getTimezoneAction
+      }
     }
 
-    store = new Vuex.Store({ getters })
+    store = new Vuex.Store({
+      modules: {
+        common: commonModule
+      }
+    })
 
     wrapper = shallowMount(InputTimezone, {
       store,
@@ -676,8 +689,16 @@ describe('InputTimezone.vue', () => {
 
     it('should handle empty timezone list', () => {
       const storeNoTimezones = new Vuex.Store({
-        getters: {
-          'common/getTimezones': () => ({ timeZoneList: [] })
+        modules: {
+          common: {
+            namespaced: true,
+            getters: {
+              getTimezones: () => ({ timeZoneList: [] })
+            },
+            actions: {
+              getTimezone: jest.fn()
+            }
+          }
         }
       })
       wrapper = shallowMount(InputTimezone, {
@@ -909,15 +930,24 @@ describe('InputTimezone.vue', () => {
 
   describe('store integration edge cases', () => {
     it('should handle store with many timezones', () => {
-      const manyGetters = {
-        'common/getTimezones': () => ({
-          timeZoneList: Array.from({ length: 100 }, (_, i) => ({
-            id: `TZ${i}`,
-            displayName: `Timezone ${i}`
-          }))
-        })
-      }
-      const newStore = new Vuex.Store({ getters: manyGetters })
+      const newStore = new Vuex.Store({
+        modules: {
+          common: {
+            namespaced: true,
+            getters: {
+              getTimezones: () => ({
+                timeZoneList: Array.from({ length: 100 }, (_, i) => ({
+                  id: `TZ${i}`,
+                  displayName: `Timezone ${i}`
+                }))
+              })
+            },
+            actions: {
+              getTimezone: jest.fn()
+            }
+          }
+        }
+      })
       wrapper = shallowMount(InputTimezone, {
         store: newStore,
         localVue,

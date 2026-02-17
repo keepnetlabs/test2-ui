@@ -12,6 +12,17 @@ try {
   var hasSettings = false
 }
 
+const createStoreMock = (overrides = {}) => ({
+  getters: {
+    'permissions/getDomainSearchPermissions': true,
+    'permissions/getDnsSearchPermissions': true,
+    'permissions/getExcludedIpAddressGetPermissions': true,
+    ...(overrides.getters || {})
+  },
+  dispatch: jest.fn(),
+  ...overrides
+})
+
 describe('Settings.vue', () => {
   let wrapper
   let mockRoute
@@ -19,7 +30,7 @@ describe('Settings.vue', () => {
 
   beforeEach(() => {
     mockRoute = { params: { id: '123' } }
-    mockStore = { getters: {} }
+    mockStore = createStoreMock()
 
     if (hasSettings) {
       wrapper = shallowMount(Settings, {
@@ -71,9 +82,9 @@ describe('Settings.vue', () => {
       }
     })
 
-    it('should render as Vue instance', () => {
+    it('should render wrapper vm', () => {
       if (hasSettings && wrapper) {
-        expect(wrapper.isVueInstance()).toBe(true)
+        expect(wrapper.vm).toBeDefined()
       } else {
         expect(true).toBe(true)
       }
@@ -85,7 +96,7 @@ describe('Settings.vue', () => {
           shallowMount(Settings, {
             mocks: {
               $route: { params: { id: '123' } },
-              $store: { getters: {} }
+              $store: createStoreMock()
             },
             stubs: { KContainer: true }
           })
@@ -154,7 +165,7 @@ describe('Settings.vue', () => {
         const testWrapper = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: 'custom-id-456' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -170,7 +181,7 @@ describe('Settings.vue', () => {
         const testWrapper = shallowMount(Settings, {
           mocks: {
             $route: { params: {} },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -209,11 +220,11 @@ describe('Settings.vue', () => {
 
     it('should work with different store getters', () => {
       if (hasSettings) {
-        const customStore = {
+        const customStore = createStoreMock({
           getters: {
             currentUser: () => ({ id: 1, name: 'Test' })
           }
-        }
+        })
         const testWrapper = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '123' } },
@@ -319,7 +330,7 @@ describe('Settings.vue', () => {
         const testWrapper = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '456' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -334,7 +345,7 @@ describe('Settings.vue', () => {
         const testWrapper = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '789' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -351,7 +362,7 @@ describe('Settings.vue', () => {
           const testWrapper = shallowMount(Settings, {
             mocks: {
               $route: { params: { id: `test-${i}` } },
-              $store: { getters: {} }
+              $store: createStoreMock()
             },
             stubs: { KContainer: true }
           })
@@ -370,14 +381,14 @@ describe('Settings.vue', () => {
         const wrapper1 = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '1' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
         const wrapper2 = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '2' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -395,14 +406,14 @@ describe('Settings.vue', () => {
         const wrapper1 = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '1' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
         const wrapper2 = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '2' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -423,7 +434,7 @@ describe('Settings.vue', () => {
           shallowMount(Settings, {
             mocks: {
               $route: {},
-              $store: { getters: {} }
+              $store: createStoreMock()
             },
             stubs: { KContainer: true }
           })
@@ -435,15 +446,7 @@ describe('Settings.vue', () => {
 
     it('should work with proper store structure', () => {
       if (hasSettings) {
-        const properStore = {
-          getters: {
-            getDomainSearchPermissions: () => [],
-            getDomainAdminPermissions: () => [],
-            getRouteViewsPermissions: () => [],
-            getOtherPermissions: () => [],
-            getStandardComplianceExports: () => []
-          }
-        }
+        const properStore = createStoreMock()
         expect(() => {
           shallowMount(Settings, {
             mocks: {
@@ -464,7 +467,7 @@ describe('Settings.vue', () => {
           shallowMount(Settings, {
             mocks: {
               $route: { params: { id: '123' } },
-              $store: { getters: {} }
+              $store: createStoreMock()
             },
             stubs: {}
           })
@@ -482,7 +485,7 @@ describe('Settings.vue', () => {
         const testWrapper = shallowMount(Settings, {
           mocks: {
             $route: { params: { id: '123' } },
-            $store: { getters: {} }
+            $store: createStoreMock()
           },
           stubs: { KContainer: true }
         })
@@ -495,3 +498,4 @@ describe('Settings.vue', () => {
     })
   })
 })
+
