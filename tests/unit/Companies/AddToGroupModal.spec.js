@@ -5,7 +5,7 @@ import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunction
 
 jest.mock('@/api/company', () => ({
   addCompanyToCompanyGroup: jest.fn(() => Promise.resolve()),
-  exportCompanyGroup: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
+  exportCompanyGroup: jest.fn(() => Promise.resolve({ data: Buffer.from('x') })),
   searchCompanyGroups: jest.fn(() =>
     Promise.resolve({
       data: {
@@ -184,6 +184,49 @@ describe('AddToGroupModal.vue', () => {
     objectUrlSpy.mockRestore()
   })
 
+  it('adds search filters to export payload except companyCount', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.refGroupDataList = {
+      search: 'query',
+      getSearchFilterItems: jest.fn(() => [
+        { FieldName: 'name', Operator: 'Contains', Value: 'group' },
+        { FieldName: 'companyCount', Operator: '=', Value: 2 }
+      ])
+    }
+
+    const click = jest.fn()
+    const originalCreateElement = document.createElement.bind(document)
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = originalCreateElement(tagName)
+      if (tagName === 'a') {
+        element.click = click
+      }
+      return element
+    })
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = jest.fn()
+    }
+    const objectUrlSpy = jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:test')
+
+    wrapper.vm.handleTableDownload({
+      exportTypes: ['CSV'],
+      pageNumber: 1,
+      pageSize: 5,
+      reportAllPages: false
+    })
+    await flushPromises()
+
+    expect(exportCompanyGroup).toHaveBeenCalledTimes(1)
+    const payload = exportCompanyGroup.mock.calls[0][0]
+    const pushedSearchGroup = payload.filter.FilterGroups[payload.filter.FilterGroups.length - 1]
+    expect(pushedSearchGroup.FilterItems).toEqual([
+      { FieldName: 'name', Operator: 'Contains', Value: 'group' }
+    ])
+
+    createElementSpy.mockRestore()
+    objectUrlSpy.mockRestore()
+  })
+
   it('does not confirm when no group is selected', async () => {
     const wrapper = createWrapper({ companyIdArray: ['c-1'] })
     wrapper.vm.selectedArray = []
@@ -192,6 +235,23 @@ describe('AddToGroupModal.vue', () => {
     await flushPromises()
 
     expect(addCompanyToCompanyGroup).not.toHaveBeenCalled()
+  })
+
+  it('confirm keeps saveDisable false after close flow and request completion', async () => {
+    const wrapper = createWrapper({ companyIdArray: ['c-1'] })
+    wrapper.vm.selectedArray = [{ resourceId: 'g-10' }]
+    let resolveRequest
+    const pendingRequest = new Promise((resolve) => {
+      resolveRequest = resolve
+    })
+    addCompanyToCompanyGroup.mockReturnValueOnce(pendingRequest)
+
+    wrapper.vm.confirm()
+    expect(wrapper.vm.saveDisable).toBe(false)
+
+    resolveRequest()
+    await flushPromises()
+    expect(wrapper.vm.saveDisable).toBe(false)
   })
 
   it('updates selectedArray on selection change', () => {

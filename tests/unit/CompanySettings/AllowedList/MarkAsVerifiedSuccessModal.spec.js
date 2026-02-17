@@ -16,5 +16,15 @@ describe('MarkAsVerifiedSuccessModal.vue', () => {
     wrapper.vm.closeModal()
     expect(wrapper.emitted('handleCloseModal')).toBeTruthy()
   })
+
+  it('has expected component name', () => {
+    const wrapper = shallowMount(MarkAsVerifiedSuccessModal, {
+      propsData: {
+        status: true,
+        selectedDomain: { domain: 'example.com' }
+      }
+    })
+    expect(wrapper.vm.$options.name).toBe('MarkAsVerifiedModal')
+  })
 })
 

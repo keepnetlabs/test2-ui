@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import DataTableAttachment from '@/components/DataTableComponents/DataTableAttachment'
 import DataTableProgress from '@/components/DataTableComponents/DataTableProgress'
 import DataTableService from '@/components/DataTableComponents/DataTableService'
@@ -7,12 +7,28 @@ import DataTableChart from '@/components/DataTableComponents/DataTableChart'
 
 describe('DataTable visual components', () => {
   it('DataTableAttachment renders check/cancel icons by numeric value', () => {
-    const checkWrapper = shallowMount(DataTableAttachment, {
-      propsData: { scope: { row: { count: 2 } }, col: { property: 'count' } },
+    const checkWrapper = mount({
+      components: { DataTableAttachment },
+      template: '<DataTableAttachment :scope="scope" :col="col" />',
+      data() {
+        return {
+          scope: { row: { count: 2 } },
+          col: { property: 'count' }
+        }
+      }
+    }, {
       stubs: { 'v-icon': true }
     })
-    const cancelWrapper = shallowMount(DataTableAttachment, {
-      propsData: { scope: { row: { count: 0 } }, col: { property: 'count' } },
+    const cancelWrapper = mount({
+      components: { DataTableAttachment },
+      template: '<DataTableAttachment :scope="scope" :col="col" />',
+      data() {
+        return {
+          scope: { row: { count: 0 } },
+          col: { property: 'count' }
+        }
+      }
+    }, {
       stubs: { 'v-icon': true }
     })
 
