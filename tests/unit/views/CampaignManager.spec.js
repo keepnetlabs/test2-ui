@@ -205,4 +205,140 @@ describe('CampaignManager.vue', () => {
     wrapper.vm.$options.beforeRouteLeave.call(wrapper.vm, {}, {}, next)
     expect(next).toHaveBeenCalledWith()
   })
+
+  it('resets table state via route query watcher when status is parent', async () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      selectedParentItem: { resourceId: 'p1' },
+      selectedInstanceItem: { instanceGroup: 'i1' },
+      isItemTableShowing: true,
+      isFrequencyTableShowing: false
+    })
+
+    wrapper.vm.$options.watch['$route.query'].handler.call(wrapper.vm, { status: 'parent' })
+
+    expect(wrapper.vm.selectedParentItem).toBe(null)
+    expect(wrapper.vm.selectedInstanceItem).toBe(null)
+    expect(wrapper.vm.isItemTableShowing).toBe(false)
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(false)
+    expect(wrapper.vm.$router.replace).toHaveBeenCalledWith('/phishing-simulator/campaign-manager')
+  })
+
+  it('uses fallback status items when form details are empty', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ formDetails: {} })
+
+    expect(Array.isArray(wrapper.vm.getStatusItems)).toBe(true)
+    expect(wrapper.vm.getStatusItems.length).toBeGreaterThan(0)
+  })
+
+  it('runs start and stop in frequency mode by calling frequency table ref', async () => {
+    const wrapper = createWrapper()
+    const frequencyCallForData = jest.fn()
+    wrapper.setData({
+      selectedParentItem: { resourceId: 'parent-1', campaignType: 1 },
+      selectedInstanceItem: { instanceGroup: 'ig-1' },
+      isFrequencyTableShowing: true
+    })
+    await wrapper.vm.$nextTick()
+    wrapper.vm.$refs.campaignManagerFrequencyTable.callForData = frequencyCallForData
+
+    await wrapper.vm.handleStartCampaign({ resourceId: 'r10', instanceGroup: 'ig10' })
+    await flushPromises()
+    expect(launchPhishingCampaignInstanceGroup).toHaveBeenCalledWith('r10', 'ig10')
+    expect(frequencyCallForData).toHaveBeenCalled()
+
+    await wrapper.vm.handleStopCampaign({ resourceId: 'r11', instanceGroup: 'ig11' })
+    await flushPromises()
+    expect(stopPhishingCampaignJob).toHaveBeenCalledWith('r11', 'ig11')
+  })
+
+  it('handles new instance submit flow and refreshes visible tables', () => {
+    const wrapper = createWrapper()
+    const parentCall = jest.fn()
+    const itemCall = jest.fn()
+    wrapper.vm.$refs.campaignManagerParentTable = { callForData: parentCall }
+    wrapper.vm.$refs.campaignManagerItemTable = { callForData: itemCall }
+    wrapper.setData({ isItemTableShowing: true, isShowNewInstanceModal: true, instanceResourceId: 'new-1' })
+
+    wrapper.vm.handleOnSubmitNewInstance()
+
+    expect(itemCall).toHaveBeenCalled()
+    expect(parentCall).toHaveBeenCalled()
+    expect(wrapper.vm.isShowNewInstanceModal).toBe(false)
+    expect(wrapper.vm.instanceResourceId).toBe('')
+  })
+
+  it('edits campaign from preview by toggling dialogs and flags', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ isShowPreviewDialog: true, selectedRow: { id: 'old' } })
+
+    wrapper.vm.handleEditCampaignFromPreview({ id: 'new' })
+
+    expect(wrapper.vm.isShowPreviewDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toEqual({ id: 'new' })
+    expect(wrapper.vm.isEdit).toBe(true)
+    expect(wrapper.vm.isDuplicate).toBe(false)
+    expect(wrapper.vm.isShowAddOrEditCampaignManagerModal).toBe(true)
+  })
+
+  it('toggles target groups dialog and resets state on close', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.toggleTargetGroupsDialog()
+    expect(wrapper.vm.isShowTargetGroupsDialog).toBe(true)
+
+    wrapper.setData({ targetGroupsDialogCampaign: { resourceId: 'x' } })
+    wrapper.vm.toggleTargetGroupsDialog()
+    expect(wrapper.vm.isShowTargetGroupsDialog).toBe(false)
+    expect(wrapper.vm.targetGroupsDialogCampaign).toBe(null)
+  })
+
+  it('skips delete API call when delete permission is false', async () => {
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': false
+          }
+        },
+        $route: { query: {} },
+        $router: { replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: {
+          template: '<div />',
+          methods: {
+            callForData: jest.fn()
+          }
+        },
+        CampaignManagerItemTable: {
+          template: '<div />',
+          methods: {
+            callForData: jest.fn(),
+            resetTable: jest.fn()
+          }
+        },
+        CampaignManagerFrequencyTable: {
+          template: '<div />',
+          methods: {
+            callForData: jest.fn()
+          }
+        },
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    await wrapper.vm.handleOnDelete({ resourceId: 'not-called' })
+    expect(deleteCampaignManager).not.toHaveBeenCalled()
+  })
 })

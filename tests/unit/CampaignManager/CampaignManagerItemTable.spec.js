@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable.vue'
-import { COLUMNS, SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
+import { COLUMNS, SCENARIO_DISTRIBUTION_TEXTS, ACTION_STATUSES, getStatusBadgeProps } from '@/components/CampaignManager/utils'
 
 jest.mock('@/api/phishingsimulator', () => ({
   deletePhishingCampaignJob: jest.fn(() => Promise.resolve()),
@@ -215,6 +215,77 @@ describe('CampaignManagerItemTable.vue', () => {
     expect(wrapper.emitted('on-start')[0][0]).toEqual({ resourceId: 'campaign-1', instanceGroup: 'ig-3' })
     expect(wrapper.emitted('on-preview')[0][0]).toEqual({ id: 'p-1' })
     expect(wrapper.emitted('on-record-button-click')[0][0]).toEqual({ id: 'r-1' })
+    expect(wrapper.vm.axiosPayload.orderBy).toBe('CreatedDate')
+  })
+
+  it('computes header tooltips for recurrence scenarios', async () => {
+    const recurringWrapper = createWrapper({
+      item: {
+        resourceId: 'campaign-1',
+        name: 'Campaign A',
+        frequency: 2,
+        categoryDistributionType: SCENARIO_DISTRIBUTION_TEXTS[0]
+      }
+    })
+    const nonRecurringWrapper = createWrapper({
+      item: {
+        resourceId: 'campaign-1',
+        name: 'Campaign A',
+        frequency: 0,
+        categoryDistributionType: SCENARIO_DISTRIBUTION_TEXTS[0]
+      }
+    })
+    await flushPromises()
+
+    const recurringStatusCol = recurringWrapper.vm.tableColumnsWithTooltips.find(
+      (col) => col.property === COLUMNS.STATUS.property
+    )
+    const nonRecurringStatusCol = nonRecurringWrapper.vm.tableColumnsWithTooltips.find(
+      (col) => col.property === COLUMNS.STATUS.property
+    )
+
+    expect(recurringStatusCol.showHeaderTooltip).toBe(true)
+    expect(nonRecurringStatusCol.showHeaderTooltip).toBe(false)
+  })
+
+  it('emits target users groups payload and resets selected row when closing delete dialog', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.handleTargetUsersGroupsClick({ instanceGroup: 'ig-x' })
+
+    expect(wrapper.emitted('on-target-users-groups-click')[0][0]).toEqual({
+      resourceId: 'campaign-1',
+      campaignType: undefined,
+      instanceGroup: 'ig-x'
+    })
+
+    wrapper.setData({ isShowDeleteDialog: true, selectedRow: { instanceGroup: 'ig-del' } })
+    wrapper.vm.toggleShowDeleteDialog()
+
+    expect(wrapper.vm.isShowDeleteDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toEqual({})
+  })
+
+  it('returns status helper pass-through and target users visibility by status', () => {
+    const wrapper = createWrapper()
+
+    expect(wrapper.vm.getStatusBadgeProps('Running')).toEqual(getStatusBadgeProps('Running'))
+    expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.IDLE })).toBe(true)
+    expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.SCHEDULED })).toBe(true)
+    expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.RUNNING })).toBe(false)
+  })
+
+  it('resets search and filters through resetTable and emits preview from handlePreview', () => {
+    const wrapper = createWrapper()
+    const resetSearchText = jest.fn()
+    const reRenderFilters = jest.fn()
+    wrapper.vm.$refs.refTable = { resetSearchText, reRenderFilters }
+
+    wrapper.vm.handlePreview({ id: 'pv-1' })
+    wrapper.vm.resetTable()
+
+    expect(wrapper.emitted('on-preview')[0][0]).toEqual({ id: 'pv-1' })
+    expect(resetSearchText).toHaveBeenCalled()
+    expect(reRenderFilters).toHaveBeenCalledWith({})
     expect(wrapper.vm.axiosPayload.orderBy).toBe('CreatedDate')
   })
 })

@@ -468,7 +468,10 @@ export default {
             headerTooltipIconColor: "#9e9e9e",
             type: "number",
             width: 160,
-            emptyText: 0
+            emptyText: 0,
+            filterableType: "select",
+            filterableCustomFieldName: "MonthlyActiveUser",
+            filterableItems: []
           },
           {
             property: PROPERTY_STORE.NUMBEROFUSERS,
@@ -611,6 +614,7 @@ export default {
   },
   created() {
     this.getLookUpDatas();
+    this.setMonthlyActiveUserFilterItems();
     if (handleIsSafari()) {
       this.bindPropsIsSafari["handleSetCellClass"] = (obj) => {
         return setSafariClusterFix(obj, "companyName");
@@ -719,6 +723,37 @@ export default {
     handleCellClick({ column, event }) {
       if (column.property === "companyName") {
         this.extendTop = event.offsetTop;
+      }
+    },
+    setMonthlyActiveUserFilterItems() {
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const startYear = 2025;
+      const startMonth = 12;
+      const now = new Date();
+      const endYear = now.getFullYear();
+      const endMonth = now.getMonth() + 1;
+      const items = [];
+      for (let year = startYear; year <= endYear; year++) {
+        const monthStart = year === startYear ? startMonth : 1;
+        const monthEnd = year === endYear ? endMonth : 12;
+        for (let month = monthStart; month <= monthEnd; month++) {
+          const value = `${year}-${String(month).padStart(2, "0")}`;
+          const isCurrentMonth = year === endYear && month === endMonth;
+          const text = isCurrentMonth
+            ? `${monthNames[month - 1]} ${year} (Current)`
+            : `${monthNames[month - 1]} ${year}`;
+          items.push({ text, value });
+        }
+      }
+      const col = this.tableOptions.columns.find(
+        (c) => c.property === "monthlyActiveUserCount"
+      );
+      if (col) {
+        this.$set(col, "filterableItems", items);
+        this.$nextTick(() => this?.$refs?.refDataList?.reRenderFilters());
       }
     },
     getLookUpDatas() {
@@ -960,11 +995,21 @@ export default {
       this.showCreateNewGroupWithCompany = status;
     },
     columnFilterChanged(filter) {
+      const transformedFilter = this.normalizeFilterForBackend(filter);
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
+        transformedFilter,
         this.payload
       );
       this.getTableData();
+    },
+    normalizeFilterForBackend(filter) {
+      const setOperator = (item) =>
+        item?.FieldName === "MonthlyActiveUser"
+          ? { ...item, Operator: "=" }
+          : item;
+      return Array.isArray(filter)
+        ? filter.map(setOperator)
+        : setOperator(filter);
     },
     columnFilterCleared(fieldName) {
       this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
