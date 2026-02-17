@@ -109,7 +109,7 @@
       :item="selectedInstanceItem"
       :status-items="getStatusItems"
       :parent-resource-id="selectedParentItem.resourceId"
-      :parent-campaign-type="selectedParentItem?.campaignType"
+      :parent-campaign-type="selectedParentItem && selectedParentItem.campaignType"
       @on-stop="handleStop"
       @on-start="handleStart"
       @on-launch="handleLaunch"
@@ -136,7 +136,7 @@ import KContainer from "@/components/KContainer/KContainer";
 import CampaignManagerNewInstanceModal from "@/components/CampaignManager/CampaignManagerNewInstanceModal";
 import CampaignManagerFrequencyTable from "@/components/CampaignManager/CampaignManagerFrequencyTable";
 import CampaignManagerTargetGroupsDialog from "@/components/CampaignManager/CampaignManagerTargetGroupsDialog.vue";
-import { CAMPAIGN_TYPE } from "@/components/CampaignManager/utils";
+import { CAMPAIGN_TYPE, STATUS_FILTER_ITEMS } from "@/components/CampaignManager/utils";
 import CommonCampaignManagerDeleteDialog from "@/components/Common/CampaignManager/CommonCampaignManagerDeleteDialog.vue";
 import CommonCampaignManagerCreateNewInstanceDialog from "@/components/Common/CampaignManager/CommonCampaignManagerCreateNewInstanceDialog.vue";
 import CommonCampaignManagerPreviewDialog from "@/components/Common/CampaignManager/CommonCampaignManagerPreviewDialog.vue";
@@ -199,7 +199,8 @@ export default {
         "permissions/getCampaignManagerParentDeletePermissions"
     }),
     getStatusItems() {
-      return this.formDetails.status;
+      const status = this.formDetails?.status;
+      return Array.isArray(status) && status.length > 0 ? status : STATUS_FILTER_ITEMS;
     },
     targetGroupsDialogCampaignResourceId() {
       return this.targetGroupsDialogCampaign &&

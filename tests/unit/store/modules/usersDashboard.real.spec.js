@@ -289,11 +289,12 @@ describe('usersDashboard store module (real)', () => {
     it('fetchTopPerformance should handle API response', async () => {
       const state = createState()
       const commit = jest.fn()
+      const getters = { getUserInfo: {} }
       getTopPerformance.mockResolvedValue({
         data: { data: [{ name: 'John' }] }
       })
 
-      await usersDashboard.actions.fetchTopPerformance({ commit, state })
+      await usersDashboard.actions.fetchTopPerformance({ commit, getters, state })
       expect(commit).toHaveBeenCalled()
     })
 
@@ -385,11 +386,12 @@ describe('usersDashboard store module (real)', () => {
     it('should call getTopPerformance API', async () => {
       const state = createState()
       const commit = jest.fn()
+      const getters = { getUserInfo: {} }
       getTopPerformance.mockResolvedValue({
         data: { data: [] }
       })
 
-      await usersDashboard.actions.fetchTopPerformance({ commit, state })
+      await usersDashboard.actions.fetchTopPerformance({ commit, getters, state })
       expect(getTopPerformance).toHaveBeenCalled()
     })
 
@@ -468,6 +470,7 @@ describe('usersDashboard store module (real)', () => {
     it('should combine firstName and lastName to name', async () => {
       const state = createState()
       const commit = jest.fn()
+      const getters = { getUserInfo: {} }
       getTopPerformance.mockResolvedValue({
         data: {
           data: [
@@ -476,7 +479,7 @@ describe('usersDashboard store module (real)', () => {
         }
       })
 
-      await usersDashboard.actions.fetchTopPerformance({ commit, state })
+      await usersDashboard.actions.fetchTopPerformance({ commit, getters, state })
       expect(commit).toHaveBeenCalled()
     })
   })

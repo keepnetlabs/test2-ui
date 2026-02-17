@@ -301,20 +301,23 @@ export default {
         }
       }
     },
-    statusItems(val) {
-      if (val.length) {
-        const col = this.tableOptions.columns.find(
-          (col) => col.property === COLUMNS.STATUS.property
-        );
-        this.$set(
-          col,
-          "filterableItems",
-          val.map((item) => {
-            return { ...item, value: item.text };
-          })
-        );
-        this.reRenderFilters();
-      }
+    statusItems: {
+      handler(val) {
+        if (val && val.length) {
+          const col = this.tableOptions.columns.find(
+            (col) => col.property === COLUMNS.STATUS.property
+          );
+          if (col) {
+            this.$set(
+              col,
+              "filterableItems",
+              val.map((item) => ({ ...item, value: item.text ?? item.value }))
+            );
+            this.reRenderFilters();
+          }
+        }
+      },
+      immediate: true
     }
   },
   created() {
