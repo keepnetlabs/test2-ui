@@ -1,10 +1,19 @@
-import { shallowMount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import DataTableDefaultTemplate from '@/components/DataTableComponents/DataTableDefaultTemplate'
 import DataTableTextArray from '@/components/DataTableComponents/DataTableTextArray'
 import DataTableArray from '@/components/DataTableComponents/DataTableArray'
 import DataTableLink from '@/components/DataTableComponents/DataTableLink'
 
 describe('DataTable mini components', () => {
+  const mountDataTableTextArray = (scope, col) =>
+    mount({
+      components: { DataTableTextArray },
+      data() {
+        return { scope, col }
+      },
+      template: '<DataTableTextArray :scope="scope" :col="col" />'
+    })
+
   it('DataTableDefaultTemplate tooltip text with type name', () => {
     const wrapper = shallowMount(DataTableDefaultTemplate, {
       propsData: {
@@ -31,12 +40,10 @@ describe('DataTable mini components', () => {
   })
 
   it('DataTableTextArray renders stringified value', () => {
-    const wrapper = shallowMount(DataTableTextArray, {
-      propsData: {
-        scope: { row: { count: 12 } },
-        col: { property: 'count' }
-      }
-    })
+    const wrapper = mountDataTableTextArray(
+      { row: { count: 12 } },
+      { property: 'count' }
+    )
 
     expect(wrapper.text()).toContain('12')
   })

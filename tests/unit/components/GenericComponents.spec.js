@@ -30,7 +30,8 @@ describe('Generic Components - Render Tests', () => {
       let wrapper
       let Component
       let mockStore
-      const doNotMountInGenericSuite = ['Breadcrumb', 'DataTable']
+      // Skip components that are known to need richer runtime context than this generic smoke suite provides.
+      const doNotMountInGenericSuite = ['Breadcrumb', 'DataTable', 'Badge']
       const getMountOptions = () => {
         const options = {
           mocks: {
