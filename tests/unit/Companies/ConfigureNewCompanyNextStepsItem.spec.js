@@ -32,5 +32,13 @@ describe('ConfigureNewCompanyNextStepsItem.vue', () => {
     expect(wrapper.find('#custom-slot').exists()).toBe(true)
     expect(wrapper.text()).toContain('Custom content')
   })
+
+  it('accepts string and object routeLink values via prop validator', () => {
+    const validator = ConfigureNewCompanyNextStepsItem.props.routeLink.validator
+
+    expect(validator('/settings')).toBe(true)
+    expect(validator({ name: 'Settings' })).toBe(true)
+    expect(validator(123)).toBe(false)
+  })
 })
 

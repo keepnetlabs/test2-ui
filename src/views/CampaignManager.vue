@@ -108,7 +108,7 @@
       :is-loading="isFrequencyTableShowing"
       :item="selectedInstanceItem"
       :status-items="getStatusItems"
-      :parent-resource-id="selectedParentItem.resourceId"
+      :parent-resource-id="selectedParentItem && selectedParentItem.resourceId"
       :parent-campaign-type="selectedParentItem && selectedParentItem.campaignType"
       @on-stop="handleStop"
       @on-start="handleStart"

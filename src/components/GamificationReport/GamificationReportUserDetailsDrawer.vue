@@ -436,7 +436,7 @@
                             >
                               earned
                               {{
-                                item?.points?.toString().replace("-", "")
+                                formatPoints(item)
                               }}
                               points
                             </span>
@@ -669,7 +669,7 @@
                           <span
                             class="gamification-report__timeline-item-bold-text"
                             >{{
-                              item?.points?.toString().replace("-", "")
+                              formatPoints(item)
                             }}
                             points</span
                           >
@@ -779,7 +779,7 @@
                           <span
                             class="gamification-report__timeline-item-bold-text"
                             >{{
-                              item?.points?.toString().replace("-", "")
+                              formatPoints(item)
                             }}
                             points</span
                           >
@@ -1101,6 +1101,11 @@ export default {
       document.querySelector("html").style.overflowY = "auto";
   },
   methods: {
+    formatPoints(item = {}) {
+      const points = item && item.points;
+      if (points === undefined || points === null) return "";
+      return points.toString().replace("-", "");
+    },
     callForTimeline(isAppend = false) {
       const actionTypes =
         this.filters.find((filter) => filter.key === "activityType")
@@ -1590,3 +1595,4 @@ export default {
   }
 };
 </script>
+

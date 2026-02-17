@@ -67,9 +67,9 @@ describe('Simple Route Views', () => {
           }
         })
 
-        it(`${name} should be a Vue instance`, () => {
+        it(`${name} should be a mounted Vue wrapper`, () => {
           if (wrapper) {
-            expect(wrapper.isVueInstance()).toBe(true)
+            expect(wrapper.vm).toBeDefined()
           } else {
             expect(true).toBe(true)
           }
