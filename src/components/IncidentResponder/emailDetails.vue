@@ -13,7 +13,7 @@
               <download-modal
                 v-if="downloadModalStatus"
                 :status="downloadModalStatus"
-                :id="$attrs.id"
+                :id="id"
                 @changeDownloadModalStatus="downloadModalStatus = $event"
               />
               <email-details-content-details
