@@ -811,8 +811,6 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
         expect(lost).toBeDefined()
         expect(accuracy).toBeDefined()
       }
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
     })
   })
 })

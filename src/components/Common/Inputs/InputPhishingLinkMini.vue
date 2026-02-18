@@ -131,6 +131,27 @@
           class="input-phishing-link-mini__simulation-link-input"
         />
       </div>
+
+      <div v-if="showCaptchaOption" class="input-phishing-link-mini__captcha">
+        <VCheckbox
+          :input-value="captchaEnabled"
+          color="#2196f3"
+          hide-details
+          dense
+          class="mt-2"
+          @change="$emit('captcha-change', $event)"
+        >
+          <template #label>
+            <span class="body-2">Stop bots to prevent false clicks.</span>
+            <VTooltip bottom max-width="260">
+              <template #activator="{ on, attrs }">
+                <VIcon size="20" class="ml-1" v-bind="attrs" v-on="on" @click.stop>mdi-information</VIcon>
+              </template>
+              <span>When enabled, bot activity is detected and blocked, preventing false clicks.</span>
+            </VTooltip>
+          </template>
+        </VCheckbox>
+      </div>
     </div>
   </div>
 </template>
@@ -186,6 +207,14 @@ export default {
       default: () => []
     },
     isEdit: {
+      type: Boolean,
+      default: false
+    },
+    showCaptchaOption: {
+      type: Boolean,
+      default: false
+    },
+    captchaEnabled: {
       type: Boolean,
       default: false
     }
@@ -346,3 +375,4 @@ export default {
   }
 }
 </script>
+

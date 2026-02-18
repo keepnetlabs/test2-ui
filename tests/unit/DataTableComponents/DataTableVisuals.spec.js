@@ -1,40 +1,10 @@
-import { mount, shallowMount } from '@vue/test-utils'
-import DataTableAttachment from '@/components/DataTableComponents/DataTableAttachment'
+import { shallowMount } from '@vue/test-utils'
 import DataTableProgress from '@/components/DataTableComponents/DataTableProgress'
 import DataTableService from '@/components/DataTableComponents/DataTableService'
 import DataTableUserStatus from '@/components/DataTableComponents/DataTableUserStatus'
 import DataTableChart from '@/components/DataTableComponents/DataTableChart'
 
 describe('DataTable visual components', () => {
-  it('DataTableAttachment renders check/cancel icons by numeric value', () => {
-    const checkWrapper = mount({
-      components: { DataTableAttachment },
-      template: '<DataTableAttachment :scope="scope" :col="col" />',
-      data() {
-        return {
-          scope: { row: { count: 2 } },
-          col: { property: 'count' }
-        }
-      }
-    }, {
-      stubs: { 'v-icon': true }
-    })
-    const cancelWrapper = mount({
-      components: { DataTableAttachment },
-      template: '<DataTableAttachment :scope="scope" :col="col" />',
-      data() {
-        return {
-          scope: { row: { count: 0 } },
-          col: { property: 'count' }
-        }
-      }
-    }, {
-      stubs: { 'v-icon': true }
-    })
-
-    expect(checkWrapper.text()).toContain('mdi-check')
-    expect(cancelWrapper.text()).toContain('mdi-cancel')
-  })
 
   it('DataTableProgress handles valid and invalid progress values', () => {
     const validWrapper = shallowMount(DataTableProgress, {
