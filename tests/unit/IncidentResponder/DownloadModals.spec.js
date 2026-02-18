@@ -84,4 +84,21 @@ describe('IncidentResponder download modals', () => {
     expect(link.click).not.toHaveBeenCalled()
     expect(emit).not.toHaveBeenCalled()
   })
+
+  it('DownloadAttachmentModal does not emit close when response data is not Blob', async () => {
+    downloadAttachment.mockResolvedValueOnce({ data: 'invalid' })
+    const emit = jest.fn()
+    const ctx = {
+      id: 'att-2',
+      zipPassword: 'infected',
+      attachment: { name: 'file.txt' },
+      $emit: emit
+    }
+
+    DownloadAttachmentModal.methods.handleDownload.call(ctx)
+    await flushPromises()
+
+    expect(link.click).not.toHaveBeenCalled()
+    expect(emit).not.toHaveBeenCalled()
+  })
 })

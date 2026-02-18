@@ -184,6 +184,141 @@ describe('NewLandingPage.vue', () => {
     })
   })
 
+  it('computed method and visibility helpers return expected values', () => {
+    expect(
+      computed.getSelectedMethod.call({
+        landingPageData: {
+          methodTypes: [
+            { value: '1', text: 'Click Only' },
+            { value: '2', text: 'Data Submission' }
+          ]
+        },
+        formValues: { methodTypeId: '2' }
+      })
+    ).toBe('Data Submission')
+    expect(
+      computed.isDataSubmission.call({
+        formValues: { methodTypeId: '2' }
+      })
+    ).toBe(true)
+    expect(
+      computed.clickOnlyMethodText.call({
+        landingPageData: {
+          methodTypes: [{ value: '1', text: 'Click Only' }]
+        }
+      })
+    ).toBe('Click Only')
+    expect(
+      computed.showMakeAvailableFor.call({
+        $store: { state: { auth: { userRoleName: 'User' } } }
+      })
+    ).toBe(true)
+  })
+
+  it('isRenderMakeAvailableFor follows disabled flag, role and selected item', () => {
+    expect(
+      computed.isRenderMakeAvailableFor.call({
+        editItemsDisabled: true,
+        $store: { state: { auth: { userRoleName: 'User' } } },
+        selectedItem: null
+      })
+    ).toBe(false)
+    expect(
+      computed.isRenderMakeAvailableFor.call({
+        editItemsDisabled: false,
+        $store: { state: { auth: { userRoleName: 'CompanyAdmin' } } },
+        selectedItem: null
+      })
+    ).toBe(false)
+    expect(
+      computed.isRenderMakeAvailableFor.call({
+        editItemsDisabled: false,
+        $store: { state: { auth: { userRoleName: 'CompanyAdmin' } } },
+        selectedItem: { id: 1 }
+      })
+    ).toBe(true)
+  })
+
+  it('created sets methodType based on selectedMethodText and triggers helper calls', () => {
+    const ctx = {
+      isDuplicate: false,
+      isEdit: false,
+      selectedMethodText: 'Click Only',
+      landingPageData: { methodTypes: [{ value: '1' }, { value: '2' }] },
+      formValues: {},
+      footerButtonsIds: {},
+      callForMergedTags: jest.fn(),
+      callForLanguages: jest.fn(),
+      callForGetCurrentLandingPage: jest.fn(),
+      callForGetCurrentLandingPageForEdit: jest.fn()
+    }
+
+    NewLandingPage.created.call(ctx)
+
+    expect(ctx.formValues.methodTypeId).toBe('1')
+    expect(ctx.formValues.difficultyTypeId).toBe('1')
+    expect(ctx.callForMergedTags).toHaveBeenCalledTimes(1)
+    expect(ctx.callForLanguages).toHaveBeenCalledTimes(1)
+  })
+
+  it('getTitle returns expected modal title variants', () => {
+    expect(
+      computed.getTitle.call({
+        isEditingSystemTemplate: true,
+        isEdit: false,
+        isDuplicate: false
+      })
+    ).toBe('Duplicate Landing Page Template')
+    expect(
+      computed.getTitle.call({
+        isEditingSystemTemplate: false,
+        isEdit: false,
+        isDuplicate: false
+      })
+    ).toBe('New Landing Page Template')
+    expect(
+      computed.getTitle.call({
+        isEditingSystemTemplate: false,
+        isEdit: true,
+        isDuplicate: true
+      })
+    ).toBe('Duplicate Landing Page Template')
+    expect(
+      computed.getTitle.call({
+        isEditingSystemTemplate: false,
+        isEdit: true,
+        isDuplicate: false
+      })
+    ).toBe('Edit Landing Page Template')
+  })
+
+  it('translatedLanguageResourceIds and getSelectedLanguagePayload work with fallback', () => {
+    expect(
+      computed.translatedLanguageResourceIds.call({
+        languagesPayload: [
+          { languageTypeResourceId: 'en', isTranslated: true },
+          { languageTypeResourceId: 'tr', isTranslated: false }
+        ]
+      })
+    ).toEqual(['en'])
+
+    expect(
+      computed.getSelectedLanguagePayload.call({
+        languagesPayload: [{ languageTypeResourceId: 'tr', landingPages: [{ name: 'TR' }] }],
+        activeLanguage: 'tr',
+        formValues: { landingPages: [{ name: 'Main' }] }
+      })
+    ).toEqual({ languageTypeResourceId: 'tr', landingPages: [{ name: 'TR' }] })
+
+    expect(
+      computed.getSelectedLanguagePayload.call({
+        languagesPayload: [],
+        activeLanguage: 'en',
+        formValues: { landingPages: [{ name: 'Main' }] }
+      })
+    ).toEqual({ landingPages: [{ name: 'Main' }] })
+  })
+
   it('showLocalizationSuccessMessage dispatches singular success message', () => {
     const dispatch = jest.fn()
     const ctx = {

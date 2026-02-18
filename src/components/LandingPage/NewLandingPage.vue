@@ -309,16 +309,15 @@
                         </el-tab-pane>
                         <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
                           <template #label>
-                            <div style="display: flex; align-items: center;">
-                              <v-btn
-                                text
-                                color="#2196f3"
-                                class="pa-0 pr-1"
+                            <div style="display: flex;">
+                              <span
+                                class="landing-page-tab__label"
+                                style="cursor: pointer; margin-right: 4px;"
                                 @click.stop="isSelectClickOnlyPageOpen = true"
                               >
                                 <v-icon class="mr-1" size="18" color="#2196f3">mdi-plus-circle-outline</v-icon>
-                                <span class="landing-page-tab__label">Add Template</span>
-                              </v-btn>
+                                Add Template
+                              </span>
                               <v-menu
                                 :min-width="128"
                                 :nudge-right="83"
@@ -334,6 +333,7 @@
                                     @click.stop
                                     color="#757575"
                                     size="20"
+                                    class="landing-page-tab__dots"
                                   >mdi-dots-vertical</v-icon>
                                 </template>
                                 <v-list>
@@ -376,7 +376,7 @@
         :status="isSelectClickOnlyPageOpen"
         :method="clickOnlyMethodText"
         :scenario-details-lookup="scenarioDetailsLookup"
-        :languages="landingPageData && landingPageData.languageTypes || []"
+        :languages="scenarioDetailsLookup && scenarioDetailsLookup.languageTypes || landingPageData && landingPageData.languageTypes || []"
         type="phishing"
         @close="isSelectClickOnlyPageOpen = false"
         @add="handleClickOnlyPageAdded"
