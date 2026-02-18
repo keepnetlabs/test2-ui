@@ -312,7 +312,7 @@
               </div>
             </template>
           </el-tab-pane>
-          <el-tab-pane name="sixth" id="email-details-ai-analyze-content">
+          <el-tab-pane v-if="showAIAnalyze" name="sixth" id="email-details-ai-analyze-content">
             <template #label>
               <v-icon class="mr-2" style="font-size: 18px; color: #1e88e5;"
                 >mdi-brain</v-icon
@@ -733,6 +733,12 @@ export default {
   computed: {
     isMailDetailsHaveAttachments() {
       return this.mailDetails?.attachments?.length
+    },
+    showAIAnalyze() {
+      return (
+        window.location.hostname.includes('localhost') ||
+        window.location.hostname.includes('test-ui.devkeepnet.com')
+      )
     }
   },
   watch: {
