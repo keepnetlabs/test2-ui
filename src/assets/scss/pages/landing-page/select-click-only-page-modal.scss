@@ -1,0 +1,117 @@
+.select-click-only-drawer {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1) !important;
+  transition: right 0.25s ease-in-out !important;
+  z-index: 10012 !important;
+
+  .v-navigation-drawer__content {
+    background: #fff !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  // LandingPageTemplateListPreview — fill drawer body
+  .landingPagePreview {
+    min-height: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 48px;
+    margin-bottom: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .landingPagePreview__container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: 8px;
+  }
+
+  .landingPagePreview__container-main,
+  .landingPagePreview-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .landingPagePreview-content--search {
+    flex-shrink: 0;
+  }
+
+  // Override fixed 600px — flex:1 controls actual height
+  .vertical-panes {
+    flex: 1 !important;
+    height: 0 !important;
+    min-height: 0;
+  }
+
+  // Remove rounded card look from panes
+  .vertical-panes > .pane:first-child {
+    border-bottom-left-radius: 0 !important;
+  }
+
+  .vertical-panes > .pane:last-child {
+    border-bottom-right-radius: 0 !important;
+  }
+
+  &__content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px;
+    background-color: #fafafa;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  &__header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2196f3;
+    line-height: 24px;
+  }
+
+  &__section-header {
+    padding: 16px 48px 0;
+    margin-left: 0;
+    flex-shrink: 0;
+
+    .v-list-item__subtitle.add-in-configuration__subtitle {
+      margin-left: 0 !important;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    min-height: 0;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px;
+    background-color: #f5f7fa;
+    border-top: 1px solid #e0e0e0;
+    flex-shrink: 0;
+  }
+}

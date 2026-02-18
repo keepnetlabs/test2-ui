@@ -14,13 +14,8 @@
     >
       <div class="select-click-only-drawer__content-wrapper">
         <div class="select-click-only-drawer__header">
-          <VListItem>
-            <VListItemContent>
-              <VListItemTitle class="k-overlay__title">Add Landing Page Template</VListItemTitle>
-            </VListItemContent>
-          </VListItem>
+          <span class="select-click-only-drawer__header-title">Add Landing Page Template</span>
           <VIcon
-            class="cursor-pointer"
             color="#757575"
             style="font-size: 32px;"
             @click="handleClose"
@@ -29,7 +24,12 @@
           </VIcon>
         </div>
 
-        <VDivider />
+        <div class="select-click-only-drawer__section-header">
+          <ConfigureCompanyStepHeader
+            title="Landing Page Template"
+            :subtitle="stepSubtitle"
+          />
+        </div>
 
         <div class="select-click-only-drawer__body">
           <LandingPageTemplateListPreview
@@ -41,16 +41,21 @@
           />
         </div>
 
-        <VDivider />
-
         <div class="select-click-only-drawer__footer">
-          <VBtn text color="#f56c6c" @click="handleClose">CANCEL</VBtn>
-          <VSpacer />
           <VBtn
+            class="k-overlay__btn-cancel"
+            rounded
+            outlined
+            @click="handleClose"
+          >
+            CANCEL
+          </VBtn>
+          <VBtn
+            rounded
             color="#2196f3"
             dark
-            depressed
             :disabled="!selectedResourceId"
+            style="box-shadow: 0 0 3px 0 rgba(0,0,0,0.1), 0 2px 5px 0 rgba(33,150,243,0.3) !important; font-weight: 600;"
             @click="handleAddTemplate"
           >
             ADD TEMPLATE
@@ -63,11 +68,12 @@
 
 <script>
 import LandingPageTemplateListPreview from '@/components/workshop/LandingPageTemplateListPreview.vue'
+import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 
 export default {
   name: 'SelectClickOnlyPageModal',
-  components: { LandingPageTemplateListPreview },
+  components: { LandingPageTemplateListPreview, ConfigureCompanyStepHeader },
   props: {
     status: {
       type: Boolean,
@@ -96,6 +102,14 @@ export default {
       drawerId: `drawer-${createRandomCryptStringNumber()}`,
       selectedResourceId: null,
       isJustOpened: false
+    }
+  },
+  computed: {
+    stepSubtitle() {
+      const m = (this.method || '').toLowerCase()
+      if (m.includes('click')) return 'Choose your click only type landing page'
+      if (m.includes('data')) return 'Choose your data submission type landing page'
+      return 'Select a Click Only or Data Submission type landing page'
     }
   },
   watch: {
@@ -157,46 +171,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.select-click-only-drawer {
-  border-top-left-radius: 8px !important;
-  border-bottom-left-radius: 8px !important;
-  background: #fff !important;
-  box-shadow: -25px 0 75px 20px rgba(0, 0, 0, 0.1) !important;
-  animation: drawerRight 0.25s ease-in-out;
-  transition: right 0.25s ease-in-out !important;
-  z-index: 10012 !important;
-}
-</style>
-
-<style scoped>
-.select-click-only-drawer__content-wrapper {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.select-click-only-drawer__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 24px 4px 48px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #e0e0e0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  flex-shrink: 0;
-}
-.select-click-only-drawer__body {
-  flex: 1;
-  overflow: hidden;
-  min-height: 0;
-}
-.select-click-only-drawer__footer {
-  display: flex;
-  align-items: center;
-  padding: 12px 24px;
-  flex-shrink: 0;
-}
-</style>
