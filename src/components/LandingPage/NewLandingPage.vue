@@ -309,48 +309,57 @@
                         </el-tab-pane>
                         <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
                           <template #label>
-                            <v-menu
-                              :min-width="128"
-                              :nudge-right="83"
-                              :nudge-bottom="menuNudgeBottom"
-                              :offset-y="true"
-                              id="add-page-menu"
-                              attach="#landing-page-tab-content-landing-page"
-                              :z-index="10000"
-                            >
-                              <template #activator="{ on: menu }">
-                                <v-btn v-on="menu" text color="#2196f3">
-                                  <v-icon class="mr-2" size="18" color="#2196f3"
-                                    >mdi-plus-circle-outline</v-icon
+                            <div style="display: flex; align-items: center;">
+                              <v-btn
+                                text
+                                color="#2196f3"
+                                class="pa-0 pr-1"
+                                @click.stop="isSelectClickOnlyPageOpen = true"
+                              >
+                                <v-icon class="mr-1" size="18" color="#2196f3">mdi-plus-circle-outline</v-icon>
+                                <span class="landing-page-tab__label">Add Template</span>
+                              </v-btn>
+                              <v-menu
+                                :min-width="128"
+                                :nudge-right="83"
+                                :nudge-bottom="menuNudgeBottom"
+                                :offset-y="true"
+                                id="add-page-menu"
+                                attach="#landing-page-tab-content-landing-page"
+                                :z-index="10000"
+                              >
+                                <template #activator="{ on: menu }">
+                                  <v-icon
+                                    v-on="menu"
+                                    @click.stop
+                                    color="#757575"
+                                    size="20"
+                                  >mdi-dots-vertical</v-icon>
+                                </template>
+                                <v-list>
+                                  <v-list-item
+                                    class="px-4"
+                                    style="cursor: pointer;"
+                                    @click="handleAddBlankPage"
                                   >
-                                  <span class="landing-page-tab__label">
-                                    Add page
-                                  </span>
-                                </v-btn>
-                              </template>
-                              <v-list>
-                                <v-list-item
-                                  class="px-4"
-                                  style="cursor: pointer;"
-                                  @click="handleAddBlankPage"
-                                >
-                                  <v-list-item-title>Blank page</v-list-item-title>
-                                </v-list-item>
-                                <v-list-item
-                                  class="px-4"
-                                  style="cursor: pointer;"
-                                  @click="handleUploadHTML"
-                                >
-                                  <v-list-item-title>Upload HTML</v-list-item-title>
-                                </v-list-item>
-                                <input
-                                  v-show="false"
-                                  ref="refHtmlFile"
-                                  type="file"
-                                  @change="handleHTMLUploadChange"
-                                />
-                              </v-list>
-                            </v-menu>
+                                    <v-list-item-title>Blank page</v-list-item-title>
+                                  </v-list-item>
+                                  <v-list-item
+                                    class="px-4"
+                                    style="cursor: pointer;"
+                                    @click="handleUploadHTML"
+                                  >
+                                    <v-list-item-title>Upload HTML</v-list-item-title>
+                                  </v-list-item>
+                                  <input
+                                    v-show="false"
+                                    ref="refHtmlFile"
+                                    type="file"
+                                    @change="handleHTMLUploadChange"
+                                  />
+                                </v-list>
+                              </v-menu>
+                            </div>
                           </template>
                         </el-tab-pane>
                       </el-tabs>
@@ -362,6 +371,16 @@
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
+
+      <SelectClickOnlyPageModal
+        :status="isSelectClickOnlyPageOpen"
+        :method="clickOnlyMethodText"
+        :scenario-details-lookup="scenarioDetailsLookup"
+        :languages="landingPageData && landingPageData.languageTypes || []"
+        type="phishing"
+        @close="isSelectClickOnlyPageOpen = false"
+        @add="handleClickOnlyPageAdded"
+      />
     </template>
     <template #overlay-footer>
       <StepperFooter
@@ -411,6 +430,7 @@
         </template>
       </StepperFooter>
     </template>
+
   </app-modal>
 </template>
 
@@ -427,10 +447,12 @@ import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import {
   createLandingPage,
   getLandingPageTemplate,
+  getLandingPageTemplatePreviewContent,
   updateLandingPage,
   generateLandingPageTranslation,
   getLandingPageTranslation
 } from '@/api/landingPage'
+import SelectClickOnlyPageModal from '@/components/LandingPage/SelectClickOnlyPageModal.vue'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { mapGetters } from 'vuex'
 import StepperFooter from '@/components/Stepper/StepperFooter'
@@ -462,7 +484,8 @@ export default {
     BackButton,
     SaveButton,
     InputPhishingLinkMini,
-    AIAllyMini
+    AIAllyMini,
+    SelectClickOnlyPageModal
   },
   props: {
     status: {
@@ -525,6 +548,7 @@ export default {
       languageOptions: [],
       languageItems: [],
       isPageAddMenuOpen: [],
+      isSelectClickOnlyPageOpen: false,
       disabledLabel: null,
       tab: 'page1',
       isSubmitDisabled: false,
@@ -983,6 +1007,29 @@ export default {
       this.tab = this.formValues.landingPages.length === 1 ? 'page1' : 'page2'
 
       // Tüm dillerin sayfa listelerine de aynı sayfayı ekle
+      const lastPageIndex = this.formValues.landingPages.length - 1
+      const newPageData = this.formValues.landingPages[lastPageIndex]
+      this.languagesPayload.forEach((language) => {
+        if (language && language.landingPages) {
+          language.landingPages.push(JSON.parse(JSON.stringify(newPageData)))
+        }
+      })
+    },
+    async handleClickOnlyPageAdded(resourceId) {
+      this.isSelectClickOnlyPageOpen = false
+      const response = await getLandingPageTemplatePreviewContent(resourceId)
+      const templateContent = response?.data?.data?.landingPages?.[0]?.content || ''
+      let newPageText
+      if (this.isEdit) newPageText = this.getNewIndexForPageText()
+      else newPageText = this.getAndUpdateFirstIndexForPageText()
+      const maxOrder = Math.max(...this.formValues.landingPages.map((p) => p.order || 0), 0)
+      this.formValues.landingPages.push({
+        name: `Page ${newPageText}`,
+        order: maxOrder + 1,
+        prompt: '',
+        content: templateContent
+      })
+      this.tab = this.formValues.landingPages.length === 1 ? 'page1' : 'page2'
       const lastPageIndex = this.formValues.landingPages.length - 1
       const newPageData = this.formValues.landingPages[lastPageIndex]
       this.languagesPayload.forEach((language) => {
@@ -1505,6 +1552,12 @@ export default {
       return this.landingPageData.methodTypes?.find(
         (item) => item.value === this.formValues.methodTypeId
       )?.text
+    },
+    isDataSubmission() {
+      return this.formValues.methodTypeId === '2'
+    },
+    clickOnlyMethodText() {
+      return this.landingPageData?.methodTypes?.find((item) => item.value === '1')?.text || ''
     },
     getDisabledStatuses() {
       return {
