@@ -204,8 +204,11 @@
                           :domain-records="getDomainRecordTypes"
                           :url-schema-types="getUrlSchemaTypes"
                           :is-edit="isEdit"
+                          :show-captcha-option="!isInvisibleCaptchaDisabled"
+                          :captcha-enabled="formValues.isInvisibleCaptchaEnabled"
                           @invisible-captcha="isInvisibleCaptchaDisabled = $event"
                           @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
+                          @captcha-change="formValues.isInvisibleCaptchaEnabled = $event"
                         />
                       </div>
 
