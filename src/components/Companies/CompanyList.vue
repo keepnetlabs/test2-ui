@@ -469,9 +469,11 @@ export default {
             type: "number",
             width: 160,
             emptyText: 0,
+            /*
             filterableType: "select",
             filterableCustomFieldName: "MonthlyActiveUser",
             filterableItems: []
+            */
           },
           {
             property: PROPERTY_STORE.NUMBEROFUSERS,
