@@ -190,8 +190,8 @@ export default {
                 let topPosition = rect.top + iconY + 25
 
                 // Ensure tooltip stays within viewport
-                const viewportWidth = window.innerWidth
-                const viewportHeight = window.innerHeight
+                const viewportWidth = globalThis.innerWidth
+                const viewportHeight = globalThis.innerHeight
 
                 // Adjust horizontal position if tooltip goes off screen
                 if (leftPosition + tooltipWidth > viewportWidth) {
@@ -208,9 +208,6 @@ export default {
 
                 tooltipEl.style.left = leftPosition + 'px'
                 tooltipEl.style.top = topPosition + 'px'
-
-                // Debug check if tooltip is visible in DOM
-                const computedStyle = window.getComputedStyle(tooltipEl)
               }
 
               let hideTimeout = null
@@ -292,8 +289,8 @@ export default {
                   let topPosition = rect.top + iconY + 25
 
                   // Viewport bounds check
-                  const viewportWidth = window.innerWidth
-                  const viewportHeight = window.innerHeight
+                  const viewportWidth = globalThis.innerWidth
+                  const viewportHeight = globalThis.innerHeight
 
                   if (leftPosition + tooltipWidth > viewportWidth) {
                     leftPosition = viewportWidth - tooltipWidth - 10
@@ -310,12 +307,12 @@ export default {
                 }
               }
 
-              window.addEventListener('scroll', updateTooltipOnScroll, true)
+              globalThis.addEventListener('scroll', updateTooltipOnScroll, true)
               document.addEventListener('scroll', updateTooltipOnScroll, true)
 
               // Store scroll listeners for cleanup
               chart.canvas._scrollListeners = [
-                () => window.removeEventListener('scroll', updateTooltipOnScroll, true),
+                () => globalThis.removeEventListener('scroll', updateTooltipOnScroll, true),
                 () => document.removeEventListener('scroll', updateTooltipOnScroll, true)
               ]
 
@@ -544,7 +541,7 @@ export default {
               },
               ticks: {
                 min: 0,
-                max: maxY > 100 ? maxY : 100,
+                max: Math.max(maxY, 100),
                 stepSize: maxY > 100 ? Math.ceil(maxY / 5 / 2) * 2 : 20,
                 labelOffset: 0,
                 beginAtZero: true,
@@ -686,12 +683,12 @@ export default {
             tooltipEl.style.display = 'block'
             tooltipEl.style.position = 'absolute'
             let leftPosition =
-              position.left + window.pageXOffset + tooltipModel.caretX - tooltipWidth / 2
-            if (leftPosition + tooltipWidth > window.innerWidth) {
-              leftPosition = window.innerWidth - tooltipWidth - 10
+              position.left + globalThis.pageXOffset + tooltipModel.caretX - tooltipWidth / 2
+            if (leftPosition + tooltipWidth > globalThis.innerWidth) {
+              leftPosition = globalThis.innerWidth - tooltipWidth - 10
             }
             tooltipEl.style.left = leftPosition + 'px'
-            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+            tooltipEl.style.top = position.top + globalThis.pageYOffset + tooltipModel.caretY + 'px'
             tooltipEl.style.pointerEvents = 'none'
 
             let tooltipContent = tooltipEl.querySelector('.tooltip-content')

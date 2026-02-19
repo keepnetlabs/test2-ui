@@ -444,7 +444,7 @@ export default {
           if (this.communityDetails.privacyStatusId === 1) {
             if (this.$store.state['communities'].communities.communitiesData) {
               if (
-                this.$store.state['communities'].communities.communitiesData.tableData.find(
+                this.$store.state['communities'].communities.communitiesData.tableData.some(
                   (item) => item.communityResourceId === this.communityDetails.resourceId
                 )
               ) {

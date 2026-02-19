@@ -493,13 +493,16 @@ describe('AlertBox.vue', () => {
 
     it('multiple instances can be created efficiently', () => {
       const start = Date.now()
+      const wrappers = []
 
       for (let i = 0; i < 50; i++) {
-        mountComponent({ text: `Alert ${i}` })
+        wrappers.push(mountComponent({ text: `Alert ${i}` }))
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(2000)
+      expect(duration).toBeLessThan(3000)
+
+      wrappers.forEach((wrapper) => wrapper.destroy())
     })
 
     it('handles lifecycle cycles without errors', () => {

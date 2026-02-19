@@ -190,10 +190,6 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
-import {
-  columnFilterChanged as columnFilterChangedHelper,
-  columnFilterCleared as columnFilterClearedHelper
-} from '@/utils/helperFunctions'
 import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog'
 import {
   getPhishingScenarioLandingPageAndEmailTemplate,

@@ -711,6 +711,7 @@ export default {
           }, 20);
         }
       } catch (e) {
+        console.error('Failed to load widget layout:', e);
         this.layout = this.getDefaultLayoutObject();
         setTimeout(() => {
           this.handleDeleteShadows();
@@ -718,7 +719,7 @@ export default {
         }, 20);
       } finally {
         if (
-          !this.layout.find(
+          !this.layout.some(
             (widget) => widget.key === "RepeatOffendersUsersRateWidget"
           )
         ) {

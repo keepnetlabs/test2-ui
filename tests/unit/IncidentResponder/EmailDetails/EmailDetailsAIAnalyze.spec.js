@@ -18,9 +18,17 @@ import { getBtnPriorityColor, getBtnStatusColor } from '@/utils/functions'
 
 describe('EmailDetailsAIAnalyze.vue', () => {
   const { computed, methods, watch } = EmailDetailsAIAnalyze
+  let consoleErrorSpy
 
   beforeEach(() => {
     jest.clearAllMocks()
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    if (consoleErrorSpy) {
+      consoleErrorSpy.mockRestore()
+    }
   })
 
   it('confidenceLevel resolves from evidence strength, confidence level and confidence value', () => {

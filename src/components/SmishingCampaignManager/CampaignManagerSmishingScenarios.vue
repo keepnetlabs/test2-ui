@@ -588,7 +588,7 @@ export default {
         const {
           data: { data }
         } = response
-        if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
+        if (!this.phishingScenarioItems.some((item) => item.resourceId === data.resourceId)) {
           this.phishingScenarioItems.push(data)
         }
         this.selectedTemplateResourceId = resourceId

@@ -2291,13 +2291,13 @@ export default {
           this.columns[0].fixed = false;
         if (!lastColFixed) this.actionFixed = false;
         //setting rendered columns
-        if (!renderedColumns.length) {
-          this.setRenderedColumns();
-        } else {
+        if (renderedColumns.length) {
           this.columns.forEach((col) => {
-            if (!renderedColumns.find((property) => property === col.property))
+            if (!renderedColumns.some((property) => property === col.property))
               col.show = false;
           });
+        } else {
+          this.setRenderedColumns();
         }
       }
 
@@ -3119,7 +3119,7 @@ export default {
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
         if (
-          this.renderedColumns.find(
+          this.renderedColumns.some(
             (property) => filterItem && property === filterItem.property
           )
         ) {

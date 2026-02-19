@@ -249,7 +249,7 @@ export default {
       getTimezones: 'common/getTimezones'
     }),
     getValidityButtonText() {
-      return !this.isShowInvalid ? `ONLY SHOW INVALID (${this.getInvalidUserCount})` : `SHOW ALL`
+      return this.isShowInvalid ? `SHOW ALL` : `ONLY SHOW INVALID (${this.getInvalidUserCount})`
     },
     getInvalidUserCount() {
       return this.getMappingObject()?.invalidUserCount
@@ -370,7 +370,7 @@ export default {
         }
       })
       this.tableOptions.columns.push(...this.customFields)
-      if (!this.tableOptions.columns.find((col) => col.property === PROPERTY_STORE.STATUS)) {
+      if (!this.tableOptions.columns.some((col) => col.property === PROPERTY_STORE.STATUS)) {
         this.tableOptions.columns.push(this.tableOptions.statusColumn)
       }
     },

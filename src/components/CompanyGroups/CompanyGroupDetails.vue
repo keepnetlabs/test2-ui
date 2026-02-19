@@ -438,7 +438,7 @@ export default {
     handleCreateNewGroupWithCompany(row) {
       this.editCreateGroup = false
       this.forCompany = true
-      this.selectedRow = { ...row, ...{ name: null }, ...{ resourceId: row.companyResourceId } }
+      this.selectedRow = { ...row, name: null, resourceId: row.companyResourceId }
       this.showCreateNewGroupWithCompany = true
     },
     handleCreateItemModal(status) {

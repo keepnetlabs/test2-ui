@@ -226,12 +226,14 @@ import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from "@/utils/validations";
 import labels from "@/model/constants/labels";
 import { scrollToComponent, isDifferent } from "@/utils/functions";
-import { scrollToEmailTemplateContent } from "@/components/Company Settings/utils";
 import { getAvailableForValueFromList } from "@/utils/helperFunctions";
 import InputEntityName from "@/components/Common/Inputs/InputEntityName";
 import InputTag from "@/components/Common/Inputs/InputTag";
 import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading";
-import { MERGED_TEXTS_MAP } from "@/components/Company Settings/utils";
+import {
+  scrollToEmailTemplateContent,
+  MERGED_TEXTS_MAP
+} from "@/components/Company Settings/utils";
 import { getDefaultEmailDeliverySetting } from "@/api/phishingsimulator";
 import { EMAIL_DELIVERY_TYPES } from "@/components/CampaignManager/AdvancedSettings/utils";
 import { EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from "@/components/PhishingScenarios/utils";
@@ -842,7 +844,7 @@ export default {
 
       // Eğer selectedLanguages'da yoksa ekle ve handleSelectedLanguagesChange çağır
       if (
-        !this.selectedLanguages.find(
+        !this.selectedLanguages.some(
           (lang) => lang.value === companyLanguageTypeResourceId
         )
       ) {
@@ -967,7 +969,7 @@ export default {
             this.isGenerateWithAIDisabled = true;
             this.isEmailGenerating = true;
             this.languagesPayload.forEach((payload) => {
-              const isSelected = this.selectedLanguages.find(
+              const isSelected = this.selectedLanguages.some(
                 (lang) => lang.value === payload.languageTypeResourceId
               );
               if (isSelected) {

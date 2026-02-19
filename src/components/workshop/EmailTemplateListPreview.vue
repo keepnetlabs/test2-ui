@@ -512,7 +512,6 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { SCENARIO_TYPES, getItemDifficultyClass } from '@/components/Common/Simulator/utils'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
-import { isDifferent } from '@/utils/functions'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -520,7 +519,7 @@ import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePrevie
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
-import { handleIsSafari } from '@/utils/functions'
+import { handleIsSafari, isDifferent } from '@/utils/functions'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -937,7 +936,7 @@ export default {
           }
         })
         if (
-          !payload.languages.find(
+          !payload.languages.some(
             (item) => item.languageTypeResourceId === payload.languageTypeResourceId
           )
         ) {

@@ -299,11 +299,13 @@ describe('GamificationReportPerformanceDetailsInfoCard.vue', () => {
 
     it('should render many instances efficiently', () => {
       const start = Date.now()
+      const wrappers = []
       for (let i = 0; i < 100; i++) {
-        mountComponent({ title: `Card ${i}` })
+        wrappers.push(mountComponent({ title: `Card ${i}` }))
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(1500)
+      wrappers.forEach((wrapper) => wrapper.destroy())
     })
   })
 

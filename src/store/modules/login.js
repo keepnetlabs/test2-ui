@@ -2,7 +2,7 @@ import { resetPassword, twoStepLogin } from "@/api/auth";
 import AuthenticationService from "../../services/authentication";
 import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 import { getWhiteLabelByUrl } from "@/api/whitelabel";
-import { getCompanyByID, getAgenticAISettings, getAgenticAIStatus } from "@/api/company";
+import { getCompanyByID, getAgenticAIStatus } from "@/api/company";
 import { updateFavicon } from "@/utils/favicon";
 const login = {
   namespaced: true,
