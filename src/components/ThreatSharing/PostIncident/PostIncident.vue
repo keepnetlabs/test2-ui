@@ -1693,7 +1693,7 @@ export default {
       })
     },
     checkUrlChangeForAllLinksSwitch() {
-      this.allLinks = !this.uploadRespond.urls.find((item) => !item.isHidden)
+      this.allLinks = !this.uploadRespond.urls.some((item) => !item.isHidden)
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {

@@ -92,7 +92,7 @@ export default {
   computed: {
     getDisabledStatusOfDelete: {
       get() {
-        return !this.downloadType.some((i) => i)
+        return !this.downloadType.some(Boolean)
       }
     }
   },

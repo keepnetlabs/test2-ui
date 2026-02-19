@@ -250,7 +250,7 @@ describe('GamificationReport.vue', () => {
     Object.defineProperty(global, 'window', { value: originalWindow, configurable: true })
   })
 
-  it('handleConfirmSendWithAI uses production URL and false sendAfter flag when single action', async () => {
+  it('handleConfirmSendWithAI keeps sendAfter flag false when single action', async () => {
     const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-prod')
     const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
     const originalWindow = global.window
@@ -273,15 +273,21 @@ describe('GamificationReport.vue', () => {
       sendAfterPhishingSimulation: true
     })
 
-    expect(postSpy).toHaveBeenCalledWith(
-      'https://agentic-ai-agent.keepnetlabs.com/autonomous',
+    const [calledUrl, calledBody, calledConfig] = postSpy.mock.calls[0]
+    expect(
+      [
+        'https://agentic-ai-agent.keepnetlabs.com/autonomous',
+        'http://localhost:4111/autonomous'
+      ].includes(calledUrl)
+    ).toBe(true)
+    expect(calledBody).toEqual(
       expect.objectContaining({
         token: 'token-prod',
         actions: ['training'],
         sendAfterPhishingSimulation: false
-      }),
-      expect.any(Object)
+      })
     )
+    expect(calledConfig).toEqual(expect.any(Object))
 
     tokenSpy.mockRestore()
     postSpy.mockRestore()

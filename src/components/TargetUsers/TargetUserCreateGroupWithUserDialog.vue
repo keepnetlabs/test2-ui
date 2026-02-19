@@ -52,10 +52,10 @@ export default {
   },
   watch: {
     groupName(val) {
-      if (!val) {
-        this.confirmButtonDisabled = true
-      } else {
+      if (val) {
         this.confirmButtonDisabled = false
+      } else {
+        this.confirmButtonDisabled = true
       }
     }
   },

@@ -827,7 +827,7 @@ export default {
     selectTableItems(items) {
       this.$nextTick(() => {
         const selectedTableItems = items
-          .filter((item) => item)
+          .filter(Boolean)
           .map((item) => ({ ...item, resourceId: item.value }))
         if (this.$refs?.refTargetAudience?.$refs?.refGroupTable?.$refs?.refTable)
           this.$refs.refTargetAudience.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
@@ -838,7 +838,7 @@ export default {
     handleTableSelectionChange(items) {
       this.selectedTargetGroups = items
       this.formValues.targetGroupResourceIds = items
-        .filter((item) => item)
+        .filter(Boolean)
         .map((item) => ({
           text: item.text || item.name,
           value: item.value || item.resourceId,

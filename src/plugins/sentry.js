@@ -175,9 +175,9 @@ export default (router) => {
       'timed out while waiting for outgoing message to echo back'
     ],
     trackComponents: true,
-    tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 1.0,
-    replaysOnErrorSampleRate: 1.0
+    tracesSampleRate: 1,
+    replaysSessionSampleRate: 1,
+    replaysOnErrorSampleRate: 1
   })
   Sentry.addEventProcessor(function (event) {
     if (event.type === 'replay_event') {

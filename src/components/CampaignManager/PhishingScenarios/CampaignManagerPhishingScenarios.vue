@@ -1131,10 +1131,10 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          if (!val?.length) {
-            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
-          } else {
+          if (val?.length) {
             this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
           }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
@@ -1153,10 +1153,10 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          if (!val?.length) {
-            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
-          } else {
+          if (val?.length) {
             this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
           }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
@@ -1175,10 +1175,10 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          if (!val) {
-            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
-          } else {
+          if (val) {
             this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
           }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
@@ -1200,10 +1200,10 @@ export default {
           Operator: 'Include'
         }
         if (index > -1) {
-          if (!val?.length) {
-            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
-          } else {
+          if (val?.length) {
             this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+          } else {
+            this.axiosPayload.filter.FilterGroups[0].FilterItems.splice(index, 1)
           }
         } else {
           this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
@@ -1304,7 +1304,7 @@ export default {
         const {
           data: { data }
         } = response
-        if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId))
+        if (!this.phishingScenarioItems.some((item) => item.resourceId === data.resourceId))
           this.phishingScenarioItems.push(data)
         this.isAttachmentBasedScenario =
           data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT

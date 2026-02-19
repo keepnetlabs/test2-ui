@@ -428,9 +428,9 @@ export default {
         : 'You do not have any Campaigns yet.'
     },
     getTableEmptySubMessage() {
-      return !this.isFilterOrSearchActive
-        ? 'Go to Phishing Simulator>Campaign Manager to create a new campaign'
-        : 'Please try adjusting your search or filter'
+      return this.isFilterOrSearchActive
+        ? 'Please try adjusting your search or filter'
+        : 'Go to Phishing Simulator>Campaign Manager to create a new campaign'
     },
     getSingleTemplateDetails() {
       return this?.landingPageTemplates?.[0]?.content || ''
@@ -752,14 +752,15 @@ export default {
             submittedEmail,
             mfa
           } = data?.scenarioStats || {}
-          let pieData = []
-          pieData.push(noResponseEmail)
-          pieData.push(openedEmail)
-          pieData.push(reportedEmail)
-          if (this.methodTypeId !== 3) pieData.push(clickedEmail)
-          if (this.campaignMethod === 'Data Submission') pieData.push(submittedEmail)
-          if (this.methodTypeId === 3) pieData.push(attachmentOpenedEmail)
-          pieData.push(failedToSend)
+          let pieData = [
+            noResponseEmail,
+            openedEmail,
+            reportedEmail,
+            ...(this.methodTypeId !== 3 ? [clickedEmail] : []),
+            ...(this.campaignMethod === 'Data Submission' ? [submittedEmail] : []),
+            ...(this.methodTypeId === 3 ? [attachmentOpenedEmail] : []),
+            failedToSend
+          ]
           if (this.campaignMethod === 'Multiple Method') {
             pieData = [
               noResponseEmail,
