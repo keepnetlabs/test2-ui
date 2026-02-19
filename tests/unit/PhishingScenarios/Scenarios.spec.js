@@ -4,7 +4,7 @@ import { getPhishingScenarioRoles } from '@/api/phishingsimulator'
 
 jest.mock('@/api/scenarios', () => ({
   deleteScenario: jest.fn(),
-  exportScenarios: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
+  exportScenarios: jest.fn(() => Promise.resolve({ data: 'mock-blob-data' })),
   getScenariosList: jest.fn(() =>
     Promise.resolve({
       data: {

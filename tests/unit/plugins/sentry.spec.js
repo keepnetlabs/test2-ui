@@ -135,4 +135,51 @@ describe('plugins/sentry', () => {
 
     expect(processor(event)).toBeNull()
   })
+
+  it('keeps replay events outside scorm pages', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = { type: 'replay_event' }
+    expect(processor(event)).toBe(event)
+  })
+
+  it('sets fallback username when user has no company name', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ email: 'user@acme.com' })
+    })
+    plugin({})
+
+    expect(sentryMock.setUser).toHaveBeenCalledWith({
+      username: 'Company',
+      email: 'user@acme.com'
+    })
+  })
+
+  it('initializes sentry integrations with router tracing config', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    const router = { currentRoute: { path: '/' } }
+    plugin(router)
+
+    expect(sentryMock.browserTracingIntegration).toHaveBeenCalledWith({ router })
+    expect(sentryMock.captureConsoleIntegration).toHaveBeenCalledWith({ levels: ['error'] })
+    expect(sentryMock.replayIntegration).toHaveBeenCalledWith({
+      maskAllText: false,
+      blockAllMedia: false
+    })
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dsn: 'dsn-test',
+        trackComponents: true
+      })
+    )
+  })
 })

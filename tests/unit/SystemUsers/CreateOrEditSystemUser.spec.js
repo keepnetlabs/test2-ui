@@ -126,6 +126,15 @@ describe('CreateOrEditSystemUser.vue', () => {
     expect(ctx.formValues.statusName).toBe('Inactive')
   })
 
+  it('handleChangeStatus sets empty string when no matching status exists', () => {
+    const ctx = {
+      formValues: { statusName: 'Active' },
+      statusItems: [{ name: 'Active', val: 1 }]
+    }
+    CreateOrEditSystemUser.methods.handleChangeStatus.call(ctx, 99)
+    expect(ctx.formValues.statusName).toBe('')
+  })
+
   it('submit calls update flow for edit mode with cleaned phone and role array', () => {
     const callForUpdateSystemUser = jest.fn()
     const ctx = {
@@ -223,6 +232,20 @@ describe('CreateOrEditSystemUser.vue', () => {
     expect(emit).toHaveBeenCalledWith('closeOverlayWithUpdate')
   })
 
+  it('callForCreateSystemUser clears saveDisable when request fails', async () => {
+    createSystemUser.mockRejectedValueOnce(new Error('create failed'))
+    const ctx = {
+      saveDisable: true,
+      $emit: jest.fn()
+    }
+
+    CreateOrEditSystemUser.methods.callForCreateSystemUser.call(ctx, { firstName: 'A' })
+    await flushPromises()
+
+    expect(ctx.saveDisable).toBe(false)
+    expect(ctx.$emit).not.toHaveBeenCalled()
+  })
+
   it('callForUpdateSystemUser emits closeOverlayWithUpdate and clears saveDisable', async () => {
     const emit = jest.fn()
     const ctx = { saveDisable: true, $emit: emit }
@@ -231,5 +254,35 @@ describe('CreateOrEditSystemUser.vue', () => {
     expect(updateSystemUser).toHaveBeenCalledWith({ resourceId: 'u-1' })
     expect(ctx.saveDisable).toBe(false)
     expect(emit).toHaveBeenCalledWith('closeOverlayWithUpdate')
+  })
+
+  it('callForUpdateSystemUser clears saveDisable when request fails', async () => {
+    updateSystemUser.mockRejectedValueOnce(new Error('update failed'))
+    const ctx = { saveDisable: true, $emit: jest.fn() }
+    CreateOrEditSystemUser.methods.callForUpdateSystemUser.call(ctx, { resourceId: 'u-1' })
+    await flushPromises()
+
+    expect(ctx.saveDisable).toBe(false)
+    expect(ctx.$emit).not.toHaveBeenCalled()
+  })
+
+  it('toggleWelcomeEmailModal toggles modal status', () => {
+    const ctx = { showWelcomeEmailModal: false }
+    CreateOrEditSystemUser.methods.toggleWelcomeEmailModal.call(ctx)
+    expect(ctx.showWelcomeEmailModal).toBe(true)
+    CreateOrEditSystemUser.methods.toggleWelcomeEmailModal.call(ctx)
+    expect(ctx.showWelcomeEmailModal).toBe(false)
+  })
+
+  it('handleSendEmail closes modal via toggle method', () => {
+    const ctx = { toggleWelcomeEmailModal: jest.fn() }
+    CreateOrEditSystemUser.methods.handleSendEmail.call(ctx)
+    expect(ctx.toggleWelcomeEmailModal).toHaveBeenCalledTimes(1)
+  })
+
+  it('setDefaultRole leaves role unchanged when company admin is missing', () => {
+    const ctx = { formValues: { roleResourceIdList: 'existing-role' } }
+    CreateOrEditSystemUser.methods.setDefaultRole.call(ctx, [{ name: 'Analyst', resourceId: 'r-1' }])
+    expect(ctx.formValues.roleResourceIdList).toBe('existing-role')
   })
 })
