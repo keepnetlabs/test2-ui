@@ -1,7 +1,11 @@
-jest.mock('@/utils/functions', () => ({
-  getBtnStatusColor: jest.fn(() => '#2196f3'),
-  copyToClipboard: jest.fn()
-}))
+jest.mock('@/utils/functions', () => {
+  const actual = jest.requireActual('@/utils/functions')
+  return {
+    ...actual,
+    getBtnStatusColor: jest.fn(() => '#2196f3'),
+    copyToClipboard: jest.fn()
+  }
+})
 
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl.vue'
 import { getBtnStatusColor, copyToClipboard } from '@/utils/functions'

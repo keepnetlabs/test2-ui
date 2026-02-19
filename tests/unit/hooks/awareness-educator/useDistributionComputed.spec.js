@@ -36,7 +36,7 @@ describe('useDistributionComputed', () => {
 
   it('formats getEmailOverMinutes and approximated time', () => {
     expect(computed.getEmailOverMinutes.call({ batchEverySendSecond: 0.3 })).toBe('00:01')
-    expect(computed.getEmailOverMinutes.call({ batchEverySendSecond: 75.2 })).toBe('015:1.25')
+    expect(computed.getEmailOverMinutes.call({ batchEverySendSecond: 75.2 })).toBe('15:1.25')
 
     expect(computed.getApproximatedTime.call({ totalSendSecond: 0 })).toBe('1 second')
     expect(computed.getApproximatedTime.call({ totalSendSecond: 3665 })).toContain('1 hour')

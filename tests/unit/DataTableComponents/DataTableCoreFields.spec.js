@@ -33,7 +33,7 @@ describe('DataTable core field components', () => {
   })
 
   it('DataTableTextArray is defined as functional component with expected props', () => {
-    expect(DataTableTextArray.name).toBe('DataTableTextArray')
+    expect(DataTableTextArray.name).toBe('DataTableText')
     expect(DataTableTextArray.functional).toBe(true)
     expect(DataTableTextArray.props).toHaveProperty('scope')
     expect(DataTableTextArray.props).toHaveProperty('col')

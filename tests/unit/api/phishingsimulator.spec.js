@@ -120,6 +120,27 @@ describe('phishingsimulator API', () => {
       const result = phishingApi.convertContentToFile(attachment)
       expect(result).toEqual(attachment)
     })
+
+    it('should fallback when base64 decode fails', () => {
+      const originalAtob = global.atob
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+      global.atob = jest.fn(() => {
+        throw new Error('decode failed')
+      })
+
+      const attachment = {
+        name: 'fallback.txt',
+        content: '!!!invalid-base64!!!',
+        contentType: 'text/plain'
+      }
+      const result = phishingApi.convertContentToFile(attachment)
+
+      expect(result).toBeInstanceOf(File)
+      expect(result.name).toBe('fallback.txt')
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      global.atob = originalAtob
+      consoleErrorSpy.mockRestore()
+    })
   })
 
   describe('email template operations', () => {
@@ -152,6 +173,44 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should create attachment based template and set file fields', async () => {
+      const payload = {
+        name: 'Attachment Template',
+        description: 'Attachment',
+        categoryResourceId: 'cat-1',
+        tags: [],
+        difficultyResourceId: 'diff-1',
+        availableForRequests: [],
+        languages: [
+          {
+            fromAddress: 'test@example.com',
+            fromName: 'Test',
+            subject: 'Attachment Subject',
+            template: '<html>Attachment</html>',
+            languageTypeResourceId: 'lang-1'
+          }
+        ],
+        isAttachmentBasedTemplate: true,
+        isAddedNewPhishingFile: true,
+        isPhishingFileModified: true,
+        phishingFileName: 'sample.pdf',
+        attachmentFiles: [
+          {
+            fileName: 'sample.pdf',
+            content: btoa('pdf-content'),
+            contentType: 'application/pdf'
+          }
+        ]
+      }
+
+      await phishingApi.createPhishingEmailTemplate(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+
+      expect(formData.get('phishingFileType')).toBe('pdf')
+      expect(formData.get('isPhishingFileModified')).toBe('true')
+      expect(formData.get('phishingFileName')).toBe('sample.pdf')
+    })
+
     it('should call updatePhishingEmailTemplate with id and formData', async () => {
       const payload = {
         name: 'Updated Template',
@@ -179,6 +238,32 @@ describe('phishingsimulator API', () => {
           snackbar: COMMON_SNACKBAR
         })
       )
+    })
+
+    it('should append detailActionType in edit mode when provided', async () => {
+      const payload = {
+        name: 'Updated Template',
+        description: 'Updated',
+        categoryResourceId: 'cat-1',
+        tags: [],
+        difficultyResourceId: 'diff-1',
+        availableForRequests: [],
+        languages: [
+          {
+            fromAddress: 'test@example.com',
+            fromName: 'Test',
+            subject: 'Subject',
+            template: '<html></html>',
+            languageTypeResourceId: 'lang-1',
+            detailActionType: 2
+          }
+        ],
+        isAttachmentBasedTemplate: false
+      }
+
+      await phishingApi.updatePhishingEmailTemplate(payload, 'template-abc')
+      const formData = testRequest.put.mock.calls[0][1]
+      expect(formData.get('detailActionType')).toBe('2')
     })
 
     it('should call getEmailTemplatesList', async () => {
@@ -807,6 +892,23 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call getCampaignTargetGroups without query when params are empty', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-1/target-groups'
+      )
+    })
+
+    it('should call getCampaignTargetGroups with campaignType and instanceGroup', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-2', {
+        campaignType: 3,
+        instanceGroup: 'group-a'
+      })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-2/target-groups?campaignType=3&instanceGroup=group-a'
+      )
+    })
+
     it('should call getMergedTextForPhishing with default payload', async () => {
       await phishingApi.getMergedTextForPhishing()
       expect(testRequest.get).toHaveBeenCalledWith(
@@ -862,6 +964,30 @@ describe('phishingsimulator API', () => {
       await phishingApiLocal.checkRedFlags(payload)
       expect(axiosLocal.post).toHaveBeenCalledWith(
         expect.stringContaining('https://r-flg.keepnetlabs.com?method=flag'),
+        payload,
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+
+      window.location = originalLocation
+    })
+
+    it('should use test worker url for localhost origin', async () => {
+      const originalLocation = window.location
+      delete window.location
+      window.location = { origin: 'http://localhost:8080' }
+
+      jest.resetModules()
+      const axiosLocal = require('axios')
+      const phishingApiLocal = require('@/api/phishingsimulator')
+
+      const payload = { text: 'check-localhost' }
+      await phishingApiLocal.checkRedFlags(payload)
+      expect(axiosLocal.post).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev?method=flag'
+        ),
         payload,
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' }

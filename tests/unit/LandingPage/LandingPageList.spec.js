@@ -204,6 +204,9 @@ describe('LandingPageList.vue', () => {
     exportLandingPage.mockResolvedValue({ data: new Blob(['file']) })
     const link = { click: jest.fn(), href: '', download: '' }
     const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = jest.fn()
+    }
     const createObjectURLSpy = jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:url')
     const ctx = {
       axiosPayload: { filter: { FilterGroups: [{}, {}] } }
@@ -221,7 +224,7 @@ describe('LandingPageList.vue', () => {
     expect(link.click).toHaveBeenCalledTimes(2)
     expect(link.download).toBe('LandingPageTemplate.csv')
 
-    createElementSpy.mockRestore()
-    createObjectURLSpy.mockRestore()
+    if (createElementSpy) createElementSpy.mockRestore()
+    if (createObjectURLSpy) createObjectURLSpy.mockRestore()
   })
 })

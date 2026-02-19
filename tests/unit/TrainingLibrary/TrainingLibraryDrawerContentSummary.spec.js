@@ -39,7 +39,12 @@ describe('TrainingLibraryDrawerContentSummary.vue', () => {
             SET_NESTED_DRAWER: jest.fn(),
             SET_DEEP_NESTED_DRAWER: jest.fn(),
             SET_LIGHTBOX: jest.fn(),
-            SET_DELETE_DIALOG: jest.fn()
+            SET_DELETE_DIALOG: jest.fn(),
+            SET_TRAINING_SEND_MODAL: jest.fn(),
+            SET_LEARNING_PATH_SEND_MODAL: jest.fn(),
+            SET_POSTER_SEND_MODAL: jest.fn(),
+            SET_INFOGRAPHIC_SEND_MODAL: jest.fn(),
+            SET_SURVEY_SEND_MODAL: jest.fn()
           },
           actions: {
             setNewTrainingModal: jest.fn(),
@@ -503,6 +508,278 @@ describe('TrainingLibraryDrawerContentSummary.vue', () => {
     it('handles null type prop', () => {
       wrapper = mountComponent({ type: null })
       expect(wrapper.vm).toBeDefined()
+    })
+  })
+
+  describe('Learning Path Helpers', () => {
+    it('parseDurationToMinutes parses display and fallback duration formats', () => {
+      wrapper = mountComponent()
+      expect(wrapper.vm.parseDurationToMinutes(null, '2 hours')).toBe(120)
+      expect(wrapper.vm.parseDurationToMinutes(null, '15 minutes')).toBe(15)
+      expect(wrapper.vm.parseDurationToMinutes('Hour3', null)).toBe(180)
+      expect(wrapper.vm.parseDurationToMinutes('Minute45', null)).toBe(45)
+      expect(wrapper.vm.parseDurationToMinutes('30', null)).toBe(30)
+      expect(wrapper.vm.parseDurationToMinutes('invalid', null)).toBe(0)
+    })
+
+    it('getLearningPathDurationText returns total formatted duration', () => {
+      wrapper = mountComponent({
+        type: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+        trainingData: {
+          trainingId: 'lp-1',
+          trainingGroups: [
+            { durationDisplayName: '1 hour' },
+            { durationDisplayName: '30 minutes' }
+          ]
+        }
+      })
+      expect(wrapper.vm.getLearningPathDurationText()).toBe('1 hour 30 minutes')
+    })
+
+    it('processLearningPathSteps sorts by order and maps fields', () => {
+      wrapper = mountComponent({
+        type: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+        trainingData: {
+          trainingId: 'lp-2',
+          trainingGroups: [
+            { trainingOrder: 2, name: 'Second', hasQuiz: false, type: 'SCORM', detailTrainingId: '2' },
+            { trainingOrder: 1, name: 'First', hasQuiz: true, type: 'Poster', detailTrainingId: '1' }
+          ]
+        }
+      })
+
+      wrapper.vm.processLearningPathSteps()
+      expect(wrapper.vm.learningPathSteps.map((x) => x.title)).toEqual(['First', 'Second'])
+      expect(wrapper.vm.learningPathSteps[0].type).toBe('Survey')
+      expect(wrapper.vm.learningPathSteps[1].type).toBe('Training')
+    })
+  })
+
+  describe('Action Methods', () => {
+    it('handlePreviewStep commits deep nested drawer when already nested', () => {
+      wrapper = mountComponent({ isNested: true })
+      const commitSpy = jest.spyOn(wrapper.vm.$store, 'commit')
+
+      wrapper.vm.handlePreviewStep({
+        detailTrainingId: 'step-1',
+        title: 'Step 1',
+        type: 'Training',
+        languages: ['EN'],
+        coverImage: 'img'
+      })
+
+      expect(commitSpy).toHaveBeenCalledWith(
+        'trainingLibrary/SET_DEEP_NESTED_DRAWER',
+        expect.objectContaining({ status: true })
+      )
+    })
+
+    it('handlePreviewStep commits nested drawer when not nested', () => {
+      wrapper = mountComponent({ isNested: false })
+      const commitSpy = jest.spyOn(wrapper.vm.$store, 'commit')
+
+      wrapper.vm.handlePreviewStep({
+        detailTrainingId: 'step-2',
+        title: 'Step 2',
+        type: 'Training',
+        languages: ['EN'],
+        coverImage: 'img'
+      })
+
+      expect(commitSpy).toHaveBeenCalledWith(
+        'trainingLibrary/SET_NESTED_DRAWER',
+        expect.objectContaining({ status: true })
+      )
+    })
+
+    it('handleSend for training commits send modal and emits send-clicked', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.TRAINING })
+      const commitSpy = jest.spyOn(wrapper.vm.$store, 'commit')
+
+      wrapper.vm.handleSend()
+
+      expect(commitSpy).toHaveBeenCalledWith(
+        'trainingLibrary/SET_TRAINING_SEND_MODAL',
+        expect.objectContaining({ status: true })
+      )
+      expect(wrapper.emitted('send-clicked')).toBeTruthy()
+    })
+
+    it('handleSend for screensaver triggers language-based download and does not emit', () => {
+      wrapper = mountComponent({ type: TRAINING_LIBRARY_TYPES.SCREENSAVER })
+      wrapper.vm.availableLanguages = [{ value: 'lang-1', text: 'English' }]
+      const downloadSpy = jest.spyOn(wrapper.vm, 'handleDownloadByLanguage').mockImplementation(() => {})
+
+      wrapper.vm.handleSend()
+
+      expect(downloadSpy).toHaveBeenCalledWith({ value: 'lang-1', text: 'English' })
+      expect(wrapper.emitted('send-clicked')).toBeFalsy()
+    })
+
+    it('handleFavoriteToggle adds and removes favorite based on current state', async () => {
+      AwarenessEducatorService.addToFavorite = jest.fn(() => Promise.resolve())
+      AwarenessEducatorService.removeFromFavorite = jest.fn(() => Promise.resolve())
+
+      const ctx = {
+        trainingData: { trainingId: 'fav-1', resourceId: 'fav-1' },
+        isFavorite: false
+      }
+      TrainingLibraryDrawerContentSummary.methods.handleFavoriteToggle.call(ctx)
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(AwarenessEducatorService.addToFavorite).toHaveBeenCalled()
+      expect(ctx.isFavorite).toBe(true)
+
+      TrainingLibraryDrawerContentSummary.methods.handleFavoriteToggle.call(ctx)
+      await new Promise(resolve => setTimeout(resolve, 0))
+      expect(AwarenessEducatorService.removeFromFavorite).toHaveBeenCalled()
+      expect(ctx.isFavorite).toBe(false)
+    })
+  })
+
+  describe('Preview And Download Flows', () => {
+    it('handlePreviewClick delegates to handleSend for learning path', () => {
+      const ctx = {
+        isLearningPath: true,
+        handleSend: jest.fn()
+      }
+
+      TrainingLibraryDrawerContentSummary.methods.handlePreviewClick.call(ctx, { value: 'lang-1' })
+
+      expect(ctx.handleSend).toHaveBeenCalled()
+      expect(AwarenessEducatorService.getTrainingUrlForPreview).not.toHaveBeenCalled()
+    })
+
+    it('handlePreviewClick commits lightbox with preview url for non-pdf content', async () => {
+      AwarenessEducatorService.getTrainingUrlForPreview.mockResolvedValue({
+        data: {
+          data: {
+            scormPlayerUrl: 'https://player.example.com/course?x=1',
+            trainingUrl: 'https://cdn.example.com/content/index.html'
+          }
+        }
+      })
+
+      const commit = jest.fn()
+      const ctx = {
+        isLearningPath: false,
+        trainingData: { trainingId: 'tr-1' },
+        type: TRAINING_LIBRARY_TYPES.TRAINING,
+        $store: { commit }
+      }
+
+      TrainingLibraryDrawerContentSummary.methods.handlePreviewClick.call(ctx, { value: 'lang-1' })
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(commit).toHaveBeenCalledWith(
+        'trainingLibrary/SET_LIGHTBOX',
+        expect.objectContaining({
+          status: true,
+          isLoading: false,
+          type: TRAINING_LIBRARY_TYPES.TRAINING
+        })
+      )
+      const payload = commit.mock.calls[0][1]
+      expect(payload.previewData).toContain('isPreview=true')
+      expect(payload.previewData).toContain('scoAddress=')
+    })
+
+    it('handlePreviewClick handles pdf by downloading blob and committing blob url', async () => {
+      const originalCreateObjectURL = window.URL.createObjectURL
+      window.URL.createObjectURL = jest.fn(() => 'blob:mock-pdf-url')
+
+      AwarenessEducatorService.getTrainingUrlForPreview.mockResolvedValue({
+        data: {
+          data: {
+            scormPlayerUrl: 'https://cdn.example.com/preview.pdf',
+            trainingUrl: 'https://cdn.example.com/preview.pdf'
+          }
+        }
+      })
+      AwarenessEducatorService.downloadPoster.mockResolvedValue({
+        data: new Blob(['pdf'], { type: 'application/pdf' })
+      })
+
+      const commit = jest.fn()
+      const ctx = {
+        isLearningPath: false,
+        trainingData: { trainingId: 'tr-2' },
+        type: TRAINING_LIBRARY_TYPES.TRAINING,
+        $store: { commit }
+      }
+
+      TrainingLibraryDrawerContentSummary.methods.handlePreviewClick.call(ctx, { value: 'lang-1' })
+      await new Promise(resolve => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(commit).toHaveBeenCalledWith(
+        'trainingLibrary/SET_LIGHTBOX',
+        expect.objectContaining({ status: true, isLoading: true })
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'trainingLibrary/SET_LIGHTBOX',
+        expect.objectContaining({
+          status: true,
+          previewData: 'blob:mock-pdf-url',
+          isLoading: false
+        })
+      )
+
+      window.URL.createObjectURL = originalCreateObjectURL
+    })
+
+    it('handlePreviewClick commits closed lightbox on preview error', async () => {
+      AwarenessEducatorService.getTrainingUrlForPreview.mockRejectedValue(new Error('preview failed'))
+
+      const commit = jest.fn()
+      const ctx = {
+        isLearningPath: false,
+        trainingData: { trainingId: 'tr-3' },
+        type: TRAINING_LIBRARY_TYPES.TRAINING,
+        $store: { commit }
+      }
+
+      TrainingLibraryDrawerContentSummary.methods.handlePreviewClick.call(ctx, { value: 'lang-1' })
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(commit).toHaveBeenCalledWith('trainingLibrary/SET_LIGHTBOX', {
+        status: false,
+        previewData: null,
+        isLoading: false,
+        type: null
+      })
+    })
+
+    it('handleDownloadByLanguage returns early when training or language is missing', () => {
+      const ctx = {
+        trainingData: {},
+        downloadBlob: jest.fn()
+      }
+
+      TrainingLibraryDrawerContentSummary.methods.handleDownloadByLanguage.call(ctx, null)
+      expect(AwarenessEducatorService.downloadPoster).not.toHaveBeenCalled()
+      expect(ctx.downloadBlob).not.toHaveBeenCalled()
+    })
+
+    it('handleDownloadByLanguage normalizes jfif filename based on content type', async () => {
+      AwarenessEducatorService.downloadPoster.mockResolvedValue({
+        data: new Blob(['img'], { type: 'image/png' }),
+        headers: {
+          'content-disposition': 'attachment; filename="sample.jfif"',
+          'content-type': 'image/png'
+        }
+      })
+
+      const downloadBlob = jest.fn()
+      const ctx = {
+        trainingData: { trainingId: 'tr-4', name: 'Sample File' },
+        downloadBlob
+      }
+
+      TrainingLibraryDrawerContentSummary.methods.handleDownloadByLanguage.call(ctx, { value: 'lang-2' })
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(downloadBlob).toHaveBeenCalled()
+      expect(downloadBlob.mock.calls[0][1]).toBe('sample.png')
     })
   })
 

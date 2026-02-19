@@ -18,12 +18,15 @@ describe('IncidentResponder download modals', () => {
     jest.clearAllMocks()
     link = { click: jest.fn(), href: '', download: '' }
     createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = jest.fn()
+    }
     createObjectURLSpy = jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:mock-url')
   })
 
   afterEach(() => {
-    createElementSpy.mockRestore()
-    createObjectURLSpy.mockRestore()
+    if (createElementSpy) createElementSpy.mockRestore()
+    if (createObjectURLSpy) createObjectURLSpy.mockRestore()
   })
 
   it('DownloadAttachmentModal.handleDownload downloads zip and closes modal', async () => {
@@ -81,6 +84,10 @@ describe('IncidentResponder download modals', () => {
     DownloadModal.methods.handleDownload.call(ctx)
     await flushPromises()
 
+    expect(downloadMsgFiles).toHaveBeenCalledWith({
+      resourceId: 'mail-2',
+      zipPassword: 'infected'
+    })
     expect(link.click).not.toHaveBeenCalled()
     expect(emit).not.toHaveBeenCalled()
   })
@@ -98,6 +105,10 @@ describe('IncidentResponder download modals', () => {
     DownloadAttachmentModal.methods.handleDownload.call(ctx)
     await flushPromises()
 
+    expect(downloadAttachment).toHaveBeenCalledWith({
+      resourceId: 'att-2',
+      zipPassword: 'infected'
+    })
     expect(link.click).not.toHaveBeenCalled()
     expect(emit).not.toHaveBeenCalled()
   })

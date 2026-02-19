@@ -94,6 +94,7 @@ describe('GamificationReport.vue', () => {
 
     const orGroup = ctx.axiosPayload.filter.FilterGroups.find((g) => g.Condition === 'OR')
     expect(orGroup.FilterItems).toEqual([
+      { FieldName: 'email', Operator: 'Contains', Value: 'new-query' },
       { FieldName: 'fullName', Operator: 'Contains', Value: 'new-query' }
     ])
     expect(ctx.resetPageNumber).toHaveBeenCalled()

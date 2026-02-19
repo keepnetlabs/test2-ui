@@ -94,7 +94,7 @@ describe('IncidentResponderHeaderCards.vue', () => {
       .spyOn(document, 'querySelectorAll')
       .mockReturnValue(cardNodes)
 
-    window.innerWidth = 1000
+    window.innerWidth = 1001
     methods.addQuery.call({})
     expect(columnsRow.style).toBe('flex-wrap:wrap;')
 

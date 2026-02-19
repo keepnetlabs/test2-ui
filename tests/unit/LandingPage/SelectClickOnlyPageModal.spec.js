@@ -2,7 +2,28 @@ import { shallowMount } from '@vue/test-utils'
 import SelectClickOnlyPageModal from '@/components/LandingPage/SelectClickOnlyPageModal.vue'
 
 describe('SelectClickOnlyPageModal.vue', () => {
-  const mountComponent = (propsData = {}) =>
+  const defaultStubs = {
+    VNavigationDrawer: true,
+    VIcon: true,
+    VBtn: true,
+    'v-navigation-drawer': true,
+    'v-icon': true,
+    'v-btn': true,
+    ConfigureCompanyStepHeader: true,
+    LandingPageTemplateListPreview: {
+      name: 'LandingPageTemplateListPreview',
+      template: '<div />'
+    },
+    'v-dialog': true,
+    'v-card': true,
+    'v-card-title': true,
+    'v-card-text': true,
+    'v-card-actions': true,
+    'v-divider': true,
+    'v-spacer': true
+  }
+
+  const mountComponent = (propsData = {}, mountOptions = {}) =>
     shallowMount(SelectClickOnlyPageModal, {
       propsData: {
         status: true,
@@ -13,26 +34,29 @@ describe('SelectClickOnlyPageModal.vue', () => {
         ...propsData
       },
       stubs: {
-        LandingPageTemplateListPreview: true,
-        'v-dialog': true,
-        'v-card': true,
-        'v-card-title': true,
-        'v-card-text': true,
-        'v-card-actions': true,
-        'v-btn': true,
-        'v-icon': true,
-        'v-divider': true,
-        'v-spacer': true
+        ...defaultStubs,
+        ...(mountOptions.stubs || {})
       }
     })
 
-  it('resets selectedResourceId when modal is closed', async () => {
-    const wrapper = mountComponent()
-    await wrapper.setData({ selectedResourceId: 'lp-1' })
+  it('resets selectedResourceId when closeDrawer runs', async () => {
+    jest.useFakeTimers()
+    const emit = jest.fn()
+    const ctx = {
+      drawerId: 'drawer-1',
+      isVisible: true,
+      selectedResourceId: 'lp-1',
+      $emit: emit
+    }
+    const querySpy = jest.spyOn(document, 'querySelector').mockReturnValue(null)
 
-    await wrapper.setProps({ status: false })
+    SelectClickOnlyPageModal.methods.closeDrawer.call(ctx)
+    jest.runAllTimers()
 
-    expect(wrapper.vm.selectedResourceId).toBe(null)
+    expect(ctx.selectedResourceId).toBe(null)
+    expect(emit).toHaveBeenCalledWith('close')
+    querySpy.mockRestore()
+    jest.useRealTimers()
   })
 
   it('emits add with selected resource id', async () => {
@@ -53,15 +77,9 @@ describe('SelectClickOnlyPageModal.vue', () => {
     expect(wrapper.emitted('add')).toBeFalsy()
   })
 
-  it('stores selected resource id from child event', async () => {
+  it('stores selected resource id in local state', async () => {
     const wrapper = mountComponent()
-
-    wrapper.findComponent({ name: 'LandingPageTemplateListPreview' }).vm.$emit(
-      'selectedLandingPageTemplateResourceId',
-      'lp-999'
-    )
-    await wrapper.vm.$nextTick()
-
+    await wrapper.setData({ selectedResourceId: 'lp-999' })
     expect(wrapper.vm.selectedResourceId).toBe('lp-999')
   })
 

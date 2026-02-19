@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     hasAction() {
-      return Object.values(this.slots).some((slot) => slot)
+      return Object.values(this.slots).some(Boolean)
     }
   }
 }

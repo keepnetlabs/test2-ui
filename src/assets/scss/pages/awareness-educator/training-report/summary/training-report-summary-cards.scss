@@ -144,6 +144,9 @@
   grid-column-gap: 16px;
 }
 .scorm-proxy-report-summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 16px;
   .training-report-summary-info-card:last-child {
     .training-report-summary-info-card-body__icon {
       bottom: -12px;
@@ -184,8 +187,3 @@
   }
 }
 
-.scorm-proxy-report-summary-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-column-gap: 16px;
-}
