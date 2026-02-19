@@ -23,6 +23,6 @@ export function getStatusBadgeProps(status) {
     Incomplete: { color: '#757575', text: 'Incomplete', outline: true },
     NotCompleted: { color: '#B83A3A', text: 'Not Completed' }
   }
-  const trimmedStatus = status?.replace(/\s/g, '')
+  const trimmedStatus = status?.replaceAll(/\s/g, '')
   return statusMap[trimmedStatus] || null
 }

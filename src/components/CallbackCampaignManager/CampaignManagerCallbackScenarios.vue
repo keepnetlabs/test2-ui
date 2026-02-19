@@ -663,7 +663,7 @@ export default {
             }
           }) || []
         this.phishingScenarioItems.forEach((item) => {
-          if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
+          if (!item.isSelected || this.value.some((pItem) => pItem.resourceId === item.resourceId))
             return
           this.value.push(item)
         })

@@ -21,7 +21,7 @@
           multiple
           dense
           deletable-chips
-          autocomplete="disabled"
+          autocomplete="off"
           small-chips
           outlined
           :no-data-text="'Enter emails (max. 10)'"

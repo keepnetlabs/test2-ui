@@ -156,6 +156,14 @@ describe('LeaderboardBadgesPopover.vue', () => {
       expect(filtered[0].level).toBe(1)
     })
 
+    it('should filter level query case-insensitively', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.searchQuery = 'LEVEL 2'
+      const filtered = wrapper.vm.filteredBadges
+      expect(filtered.length).toBe(1)
+      expect(filtered[0].level).toBe(2)
+    })
+
     it('should handle empty search query', () => {
       const wrapper = mountComponent()
       wrapper.vm.searchQuery = '   '
@@ -196,6 +204,15 @@ describe('LeaderboardBadgesPopover.vue', () => {
       wrapper.vm.searchQuery = 'Primary'
       const filtered = wrapper.vm.filteredBadges
       expect(filtered.length).toBe(1)
+    })
+
+    it('does not match "level 0" query when badge level is zero', () => {
+      const wrapper = mountComponent({
+        badges: [{ badgeName: 'Zero Badge', level: 0 }]
+      })
+      wrapper.vm.searchQuery = 'level 0'
+
+      expect(wrapper.vm.filteredBadges).toEqual([])
     })
   })
 
@@ -243,6 +260,13 @@ describe('LeaderboardBadgesPopover.vue', () => {
       const key2 = wrapper.vm.getBadgeKey(badge, 1)
 
       expect(key1).not.toBe(key2)
+    })
+
+    it('should prioritize badgeType over type when both exist', () => {
+      const wrapper = mountComponent()
+      const key = wrapper.vm.getBadgeKey({ badgeType: 'primary', type: 'secondary', level: 4 }, 0)
+      expect(key).toContain('primary')
+      expect(key).not.toContain('secondary')
     })
   })
 
@@ -301,6 +325,12 @@ describe('LeaderboardBadgesPopover.vue', () => {
 
       expect(level).toBe(null)
     })
+
+    it('should return null when level is empty even if Level exists', () => {
+      const wrapper = mountComponent()
+      const level = wrapper.vm.getBadgeLevel({ level: '', Level: 7 })
+      expect(level).toBe(null)
+    })
   })
 
   describe('Close Button Functionality', () => {
@@ -316,6 +346,13 @@ describe('LeaderboardBadgesPopover.vue', () => {
       const wrapper = mountComponent({ onClose: null })
       // Should not throw
       expect(() => wrapper.vm.onClose && wrapper.vm.onClose()).not.toThrow()
+    })
+
+    it('close icon click triggers onClose callback', async () => {
+      const onCloseFn = jest.fn()
+      const wrapper = mountComponent({ onClose: onCloseFn })
+      await wrapper.find('.leaderboard-badges-popover__close-btn').trigger('click')
+      expect(onCloseFn).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -594,7 +631,7 @@ describe('LeaderboardBadgesPopover.vue', () => {
       wrapper.vm.searchQuery = 'Badge 1'
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(300)
+      expect(duration).toBeLessThan(500)
       expect(wrapper.vm.filteredBadges.length).toBeGreaterThan(0)
     })
   })

@@ -245,7 +245,7 @@ export function isDomainUrl(value, message = 'Invalid URL') {
 }
 export function numberRangeRule(value, min = 0, max = 999, message = '') {
   if (value == '' && value == null) return false
-  if (!isNaN(Number.parseInt(value)) && value >= min && value <= max) return true
+  if (!Number.isNaN(Number.parseInt(value)) && value >= min && value <= max) return true
   return message || `Enter a number between ${min} and ${max}`
 }
 

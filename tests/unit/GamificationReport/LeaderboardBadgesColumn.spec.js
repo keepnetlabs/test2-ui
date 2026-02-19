@@ -202,6 +202,17 @@ describe('LeaderboardBadgesColumn.vue', () => {
       wrapper.vm.visibleBadges
       expect(badges[0].badgeName).toBe('Badge1')
     })
+
+    it('should return empty visibleBadges when maxVisible is 0', () => {
+      const wrapper = mountComponent({
+        badges: [
+          { badgeName: 'Badge1', level: 3 },
+          { badgeName: 'Badge2', level: 2 }
+        ],
+        maxVisible: 0
+      })
+      expect(wrapper.vm.visibleBadges).toEqual([])
+    })
   })
 
   describe('Computed Properties - overflowBadges', () => {
@@ -265,6 +276,18 @@ describe('LeaderboardBadgesColumn.vue', () => {
       const wrapper = mountComponent({ badges, maxVisible: 5 })
       expect(wrapper.vm.overflowCount).toBe(wrapper.vm.overflowBadges.length)
     })
+
+    it('should include all badges in overflow when maxVisible is 0', () => {
+      const wrapper = mountComponent({
+        badges: [
+          { badgeName: 'A', level: 1 },
+          { badgeName: 'B', level: 2 },
+          { badgeName: 'C', level: 3 }
+        ],
+        maxVisible: 0
+      })
+      expect(wrapper.vm.overflowCount).toBe(3)
+    })
   })
 
   describe('Computed Properties - overflowTooltipText', () => {
@@ -316,6 +339,19 @@ describe('LeaderboardBadgesColumn.vue', () => {
       const normalized = wrapper.vm.normalizeBadgeForMixin(badge)
       expect(normalized.level).toBe(5)
     })
+
+    it('should prioritize badgeName and badgeType over name/type', () => {
+      const wrapper = mountComponent()
+      const normalized = wrapper.vm.normalizeBadgeForMixin({
+        badgeName: 'Primary',
+        name: 'Secondary',
+        badgeType: 'gold',
+        type: 'silver',
+        level: 2
+      })
+      expect(normalized.name).toBe('Primary')
+      expect(normalized.type).toBe('gold')
+    })
   })
 
   describe('Methods - getBadgeKey', () => {
@@ -348,6 +384,13 @@ describe('LeaderboardBadgesColumn.vue', () => {
       const key = wrapper.vm.getBadgeKey(null, 0)
       expect(key).toBeDefined()
     })
+
+    it('should prioritize badgeType over type for key generation', () => {
+      const wrapper = mountComponent()
+      const key = wrapper.vm.getBadgeKey({ badgeType: 'primary', type: 'secondary', level: 2 }, 0)
+      expect(key).toContain('primary')
+      expect(key).not.toContain('secondary')
+    })
   })
 
   describe('Methods - getBadgeFallbackText', () => {
@@ -379,6 +422,11 @@ describe('LeaderboardBadgesColumn.vue', () => {
       const wrapper = mountComponent()
       expect(wrapper.vm.getBadgeFallbackText(null)).toBe('?')
     })
+
+    it('should return badgeName even when name also exists', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getBadgeFallbackText({ badgeName: 'Main', name: 'Alt' })).toBe('Main')
+    })
   })
 
   describe('Methods - getBadgeTooltipText', () => {
@@ -408,6 +456,49 @@ describe('LeaderboardBadgesColumn.vue', () => {
     it('should return empty string for null badge', () => {
       const wrapper = mountComponent()
       expect(wrapper.vm.getBadgeTooltipText(null)).toBe('')
+    })
+
+    it('should prioritize description over badgeName and name', () => {
+      const wrapper = mountComponent()
+      const text = wrapper.vm.getBadgeTooltipText({
+        description: 'desc',
+        badgeName: 'name1',
+        name: 'name2'
+      })
+      expect(text).toBe('desc')
+    })
+  })
+
+  describe('Popover Wiring', () => {
+    it('passes overflow badges and on-close handler to popover component', () => {
+      const badges = Array.from({ length: 5 }, (_, i) => ({
+        badgeName: `Badge ${i}`,
+        level: i + 1
+      }))
+      const PopoverStub = {
+        name: 'LeaderboardBadgesPopover',
+        props: ['badges', 'onClose'],
+        template: '<div class="popover-stub" />'
+      }
+      const wrapper = shallowMount(LeaderboardBadgesColumn, {
+        localVue,
+        propsData: {
+          badges,
+          maxVisible: 3,
+          isLoading: false
+        },
+        mixins: [usersDashboardBadgeMixin],
+        stubs: {
+          VTooltip: true,
+          VMenu: true,
+          LeaderboardBadgesPopover: PopoverStub
+        }
+      })
+
+      const popover = wrapper.findComponent(PopoverStub)
+      expect(popover.exists()).toBe(true)
+      expect(popover.props('badges')).toEqual(wrapper.vm.overflowBadges)
+      expect(typeof popover.props('onClose')).toBe('function')
     })
   })
 

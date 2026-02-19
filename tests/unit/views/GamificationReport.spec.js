@@ -1,4 +1,6 @@
 import GamificationReport from '@/views/GamificationReport.vue'
+import axios from 'axios'
+import AuthenticationService from '@/services/authentication'
 
 describe('GamificationReport.vue', () => {
   const { methods, computed } = GamificationReport
@@ -118,5 +120,171 @@ describe('GamificationReport.vue', () => {
     expect(ctx.isSendWithAIDialogOpen).toBe(false)
     expect(ctx.selectedRowForAI).toBe(null)
     expect(ctx.sendWithAIOptions).toEqual({ training: true, phishing: true })
+  })
+
+  it('handleDateRangeChange updates payload and refreshes when range is valid', () => {
+    const ctx = {
+      axiosPayload: {
+        startDate: null,
+        endDate: null
+      },
+      callForData: jest.fn(),
+      callForTopPerformers: jest.fn()
+    }
+    const range = ['2026-02-01 00:00', '2026-02-19 23:59']
+
+    methods.handleDateRangeChange.call(ctx, range)
+
+    expect(ctx.axiosPayload.startDate).toBe(range[0])
+    expect(ctx.axiosPayload.endDate).toBe(range[1])
+    expect(ctx.callForData).toHaveBeenCalled()
+    expect(ctx.callForTopPerformers).toHaveBeenCalled()
+  })
+
+  it('handleDateRangeChange ignores invalid ranges', () => {
+    const ctx = {
+      axiosPayload: { startDate: 'old-start', endDate: 'old-end' },
+      callForData: jest.fn(),
+      callForTopPerformers: jest.fn()
+    }
+
+    methods.handleDateRangeChange.call(ctx, null)
+    methods.handleDateRangeChange.call(ctx, ['only-one'])
+
+    expect(ctx.axiosPayload.startDate).toBe('old-start')
+    expect(ctx.axiosPayload.endDate).toBe('old-end')
+    expect(ctx.callForData).not.toHaveBeenCalled()
+    expect(ctx.callForTopPerformers).not.toHaveBeenCalled()
+  })
+
+  it('handleDateRangeClick opens InputDate picker', () => {
+    const showPicker = jest.fn()
+    const ctx = {
+      $refs: {
+        refInputDate: { showPicker }
+      }
+    }
+
+    methods.handleDateRangeClick.call(ctx)
+    expect(showPicker).toHaveBeenCalled()
+  })
+
+  it('handleDetails sets selected row and opens drawer', () => {
+    const row = { targetUserResourceId: 'u-22' }
+    const ctx = {
+      selectedRow: null,
+      isUserDetailsDrawerOpen: false
+    }
+
+    methods.handleDetails.call(ctx, row)
+    expect(ctx.selectedRow).toBe(row)
+    expect(ctx.isUserDetailsDrawerOpen).toBe(true)
+  })
+
+  it('handleCloseDrawer hides drawer and resets state after timeout', () => {
+    jest.useFakeTimers()
+    const rightStyle = { right: '0px' }
+    const originalQuerySelector = document.querySelector
+    document.querySelector = jest.fn(() => ({ style: rightStyle }))
+    const ctx = {
+      selectedRow: { targetUserResourceId: 'u-77' },
+      isUserDetailsDrawerOpen: true
+    }
+
+    methods.handleCloseDrawer.call(ctx)
+    expect(rightStyle.right).toBe('-100%')
+    expect(ctx.selectedRow).not.toBe(null)
+    expect(ctx.isUserDetailsDrawerOpen).toBe(true)
+
+    jest.advanceTimersByTime(250)
+    expect(ctx.selectedRow).toBe(null)
+    expect(ctx.isUserDetailsDrawerOpen).toBe(false)
+
+    document.querySelector = originalQuerySelector
+    jest.useRealTimers()
+  })
+
+  it('handleConfirmSendWithAI posts expected payload for localhost', async () => {
+    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-abc')
+    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
+    const originalWindow = global.window
+    Object.defineProperty(global, 'window', {
+      value: { location: { hostname: 'localhost' } },
+      configurable: true
+    })
+    const ctx = {
+      selectedRowForAI: {
+        preferredLanguage: 'en',
+        targetUserResourceId: 'user-1',
+        department: 'SOC'
+      },
+      handleCloseSendWithAIDialog: jest.fn()
+    }
+
+    await methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: true,
+      sendAfterPhishingSimulation: true
+    })
+
+    expect(postSpy).toHaveBeenCalledWith(
+      'http://localhost:4111/autonomous',
+      {
+        token: 'token-abc',
+        preferredLanguage: 'en',
+        targetUserResourceId: 'user-1',
+        departmentName: 'SOC',
+        actions: ['training', 'phishing'],
+        sendAfterPhishingSimulation: true
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+
+    tokenSpy.mockRestore()
+    postSpy.mockRestore()
+    Object.defineProperty(global, 'window', { value: originalWindow, configurable: true })
+  })
+
+  it('handleConfirmSendWithAI uses production URL and false sendAfter flag when single action', async () => {
+    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-prod')
+    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
+    const originalWindow = global.window
+    Object.defineProperty(global, 'window', {
+      value: { location: { hostname: 'app.keepnetlabs.com' } },
+      configurable: true
+    })
+    const ctx = {
+      selectedRowForAI: {
+        preferredLanguage: 'tr',
+        targetUserResourceId: 'user-2',
+        department: 'IT'
+      },
+      handleCloseSendWithAIDialog: jest.fn()
+    }
+
+    await methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: false,
+      sendAfterPhishingSimulation: true
+    })
+
+    expect(postSpy).toHaveBeenCalledWith(
+      'https://agentic-ai-agent.keepnetlabs.com/autonomous',
+      expect.objectContaining({
+        token: 'token-prod',
+        actions: ['training'],
+        sendAfterPhishingSimulation: false
+      }),
+      expect.any(Object)
+    )
+
+    tokenSpy.mockRestore()
+    postSpy.mockRestore()
+    Object.defineProperty(global, 'window', { value: originalWindow, configurable: true })
   })
 })

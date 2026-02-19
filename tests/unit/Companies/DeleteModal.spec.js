@@ -23,6 +23,11 @@ describe('DeleteModal.vue', () => {
     expect(wrapper.vm.getContent).toBe('Acme will be deleted and all data will be lost.')
   })
 
+  it('renders single delete content when selectedRow is missing', () => {
+    const wrapper = createWrapper({ selectedRow: null })
+    expect(wrapper.vm.getContent).toBe('null will be deleted and all data will be lost.')
+  })
+
   it('renders multiple delete content with plural and singular forms', () => {
     const plural = createWrapper({ isMultiple: true, companyCount: 3 })
     const singular = createWrapper({ isMultiple: true, companyCount: 1 })
@@ -43,6 +48,16 @@ describe('DeleteModal.vue', () => {
     wrapper.vm.confirmDelete()
 
     expect(wrapper.emitted('confirmDelete')).toEqual([[undefined]])
+    expect(wrapper.emitted('changeModalStatus')).toEqual([[false]])
+  })
+
+  it('emits selected item in single confirm flow when item exists on vm', () => {
+    const wrapper = createWrapper({ isMultiple: false })
+    wrapper.vm.item = { resourceId: 'company-1' }
+
+    wrapper.vm.confirmDelete()
+
+    expect(wrapper.emitted('confirmDelete')).toEqual([[{ resourceId: 'company-1' }]])
     expect(wrapper.emitted('changeModalStatus')).toEqual([[false]])
   })
 

@@ -81,7 +81,7 @@
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show1 ? '' : 'password'"
-                      autocomplete="new"
+                      autocomplete="current-password"
                       id="input--security-popup-current-password"
                       persistent-hint
                       @click:append="show1 = !show1"

@@ -1,8 +1,20 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils'
 import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
+import {
+  getUserPerformanceRates,
+  getUserTimeline,
+  exportUserActivityDetails
+} from '@/api/reports'
+
+jest.mock('@/api/reports', () => ({
+  getUserPerformanceRates: jest.fn(),
+  getUserTimeline: jest.fn(),
+  exportUserActivityDetails: jest.fn()
+}))
 
 describe('GamificationReportUserDetailsDrawer.vue', () => {
   const localVue = createLocalVue()
+  const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
   const defaultProps = {
     status: true,
@@ -46,6 +58,29 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       ...options
     })
   }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    getUserPerformanceRates.mockResolvedValue({
+      data: {
+        data: [],
+        rank: 0
+      }
+    })
+    getUserTimeline.mockResolvedValue({
+      data: {
+        data: {
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          results: []
+        }
+      }
+    })
+    exportUserActivityDetails.mockResolvedValue({
+      data: new Blob(['x'], { type: 'application/octet-stream' })
+    })
+  })
 
   describe('Component Rendering', () => {
     it('should render the component', () => {
@@ -505,6 +540,19 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       expect(wrapper.emitted('on-close')).toHaveLength(1)
     })
 
+    it('drawer click outside does nothing when menu or download modal is open', () => {
+      const wrapper = mountComponent()
+
+      wrapper.vm.isShowDownloadModal = true
+      wrapper.vm.handleDrawerClickOutside({ target: { closest: jest.fn(() => null) } })
+      expect(wrapper.emitted('on-close')).toBeFalsy()
+
+      wrapper.vm.isShowDownloadModal = false
+      wrapper.vm.menu = true
+      wrapper.vm.handleDrawerClickOutside({ target: { closest: jest.fn(() => null) } })
+      expect(wrapper.emitted('on-close')).toBeFalsy()
+    })
+
     it('calls timezone action only when timezone list is empty', () => {
       const dispatch = jest.fn()
       const wrapper = mountComponent({}, {
@@ -534,6 +582,31 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
         'background-color': '#FFFFFF',
         marginBottom: '16px'
       })
+    })
+
+    it('returns icon paths for card products and timeline product types', () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.vm.getCardProductIcon('Phishing Simulator')).toBeDefined()
+      expect(wrapper.vm.getCardProductIcon('Callback Simulator')).toBeDefined()
+      expect(wrapper.vm.getCardProductIcon('Vishing Simulator')).toBeDefined()
+      expect(wrapper.vm.getCardProductIcon('Security Awareness')).toBeDefined()
+      expect(wrapper.vm.getCardProductIcon('Smishing Simulator')).toBeDefined()
+      expect(wrapper.vm.getCardProductIcon('Quishing Simulator')).toBeDefined()
+      expect(wrapper.vm.getCardProductIcon('Unknown Product')).toBeDefined()
+
+      expect(
+        wrapper.vm.getProductIconPath({
+          productType: 'INCIDENT RESPONDER - TEST',
+          ActionType: 'Reported Email'
+        })
+      ).toBeDefined()
+      expect(
+        wrapper.vm.getProductIconPath({
+          productType: 'UNKNOWN PRODUCT - TEST',
+          ActionType: 'Email Sent'
+        })
+      ).toBeDefined()
     })
 
     it('handles download modal toggle and dispatch flow', () => {
@@ -606,6 +679,58 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       expect(checkSpy).toHaveBeenCalledWith(activeFilter)
     })
 
+    it('keeps date filter menu open while date picker is visible', () => {
+      const wrapper = mountComponent()
+      const checkSpy = jest.spyOn(wrapper.vm, 'checkFilter')
+      wrapper.vm.activeFilter = { key: 'date', filterType: 'date' }
+      wrapper.vm.$refs = {
+        refDateFilter: {
+          $refs: {
+            refPicker: { pickerVisible: true },
+            refPicker2: { pickerVisible: false }
+          }
+        },
+        refMenu: { isActive: false }
+      }
+
+      wrapper.vm.handleMenuVisibilityChange(false)
+
+      expect(wrapper.vm.isCloseOnClick).toBe(false)
+      expect(wrapper.vm.menu).toBe(true)
+      expect(wrapper.vm.$refs.refMenu.isActive).toBe(true)
+      expect(checkSpy).not.toHaveBeenCalled()
+    })
+
+    it('applies normal close flow for date filter when pickers are hidden', () => {
+      const wrapper = mountComponent()
+      const checkSpy = jest.spyOn(wrapper.vm, 'checkFilter')
+      const activeFilter = {
+        key: 'date',
+        filterType: 'date',
+        isFilterActive: false,
+        value: '',
+        activeValue: '',
+        operator: '=',
+        activeOperator: '='
+      }
+      wrapper.vm.activeFilter = activeFilter
+      wrapper.vm.$refs = {
+        refDateFilter: {
+          $refs: {
+            refPicker: { pickerVisible: false },
+            refPicker2: { pickerVisible: false }
+          }
+        },
+        refMenu: { isActive: false }
+      }
+
+      wrapper.vm.handleMenuVisibilityChange(false)
+
+      expect(wrapper.vm.isCloseOnClick).toBe(true)
+      expect(wrapper.vm.menu).toBe(false)
+      expect(checkSpy).toHaveBeenCalledWith(activeFilter)
+    })
+
     it('clearAllFilters resets payload and filter values, then refreshes timeline', () => {
       const wrapper = mountComponent()
       wrapper.vm.callForTimeline = jest.fn()
@@ -652,6 +777,197 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       expect(wrapper.vm.isProductAwareness({ productType: 'SECURITY AWARENESS' })).toBe(true)
       expect(wrapper.vm.isProductAwareness({ productType: 'SECURITY AWARENESS - BASIC' })).toBe(true)
       expect(wrapper.vm.isProductAwareness({ productType: 'PHISHING SIMULATOR - BASIC' })).toBe(false)
+    })
+
+    it('callForPerformanceRates maps product scores and uses api rank when available', async () => {
+      getUserPerformanceRates.mockResolvedValue({
+        data: {
+          data: [
+            {
+              performance: 86,
+              phishingType: 'PHISHING',
+              totalPerformance: 86,
+              totalPoints: 1240,
+              rank: 3
+            }
+          ],
+          rank: 2
+        }
+      })
+      const wrapper = mountComponent()
+
+      await flushPromises()
+
+      expect(wrapper.vm.productScores).toEqual([
+        {
+          percentage: '86%',
+          product: 'PHISHING',
+          totalPerformance: 86,
+          totalPoints: 1240
+        }
+      ])
+      expect(wrapper.vm.overallScore).toEqual({
+        points: 1240,
+        percentage: 86,
+        rank: 2
+      })
+      expect(wrapper.vm.isPerformanceRatesLoading).toBe(false)
+    })
+
+    it('callForPerformanceRates falls back to zero state when api has no rows', async () => {
+      getUserPerformanceRates.mockResolvedValueOnce({
+        data: {
+          data: []
+        }
+      })
+      const wrapper = mountComponent()
+      wrapper.vm.overallScore = { points: 10, percentage: 10, rank: 1 }
+      wrapper.vm.productScores = [{ product: 'OLD' }]
+
+      await wrapper.vm.callForPerformanceRates()
+      await flushPromises()
+
+      expect(wrapper.vm.overallScore).toEqual({
+        points: 0,
+        percentage: 0,
+        rank: undefined
+      })
+      expect(wrapper.vm.productScores).toEqual([])
+    })
+
+    it('callForTimeline sends selected filters and updates timeline on non-append', async () => {
+      getUserTimeline.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 2,
+            totalNumberOfPages: 2,
+            pageNumber: 1,
+            results: [{ ActionTimeWithDay: '2025-02-20', ActionType: 'Email Sent' }]
+          }
+        }
+      })
+      const wrapper = mountComponent()
+      wrapper.vm.filters = [
+        { key: 'activityType', activeValue: ['Email Sent'] },
+        { key: 'difficulty', activeValue: ['EASY'] },
+        { key: 'product', activeValue: ['PHISHING SIMULATOR'] }
+      ]
+      const addHeadersSpy = jest
+        .spyOn(wrapper.vm, 'addDateHeaders')
+        .mockReturnValue([{ type: 'header', text: '2025-02-20' }])
+
+      wrapper.vm.callForTimeline()
+      await flushPromises()
+
+      expect(getUserTimeline).toHaveBeenCalledWith(
+        expect.objectContaining({
+          actionTypes: ['Email Sent'],
+          difficultyTypes: ['EASY'],
+          products: ['PHISHING SIMULATOR']
+        })
+      )
+      expect(addHeadersSpy).toHaveBeenCalled()
+      expect(wrapper.vm.timeline).toEqual([{ type: 'header', text: '2025-02-20' }])
+      expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(2)
+      expect(wrapper.vm.isTimelineLoading).toBe(false)
+    })
+
+    it('callForTimeline appends timeline rows in append mode', async () => {
+      getUserTimeline.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 3,
+            totalNumberOfPages: 2,
+            pageNumber: 2,
+            results: [{ ActionTimeWithDay: '2025-02-21', ActionType: 'Reported' }]
+          }
+        }
+      })
+      const wrapper = mountComponent()
+      wrapper.vm.timeline = [{ type: 'header', text: '2025-02-20' }]
+      jest.spyOn(wrapper.vm, 'addDateHeaders').mockReturnValue([
+        { ActionType: 'Reported', productType: 'PHISHING SIMULATOR - TEST' }
+      ])
+
+      wrapper.vm.callForTimeline(true)
+      await flushPromises()
+
+      expect(wrapper.vm.timeline).toEqual([
+        { type: 'header', text: '2025-02-20' },
+        { ActionType: 'Reported', productType: 'PHISHING SIMULATOR - TEST' }
+      ])
+      expect(wrapper.vm.isTimelineLoading).toBe(false)
+    })
+
+    it('exportUserDetails downloads files with correct name prefix and xls mapping', async () => {
+      const wrapper = mountComponent({ isTargetUser: true })
+      wrapper.vm.downloadModalTitle = 'Download All'
+      wrapper.vm.filters = [
+        { key: 'activityType', activeValue: ['Email Sent'] },
+        { key: 'difficulty', activeValue: [] },
+        { key: 'product', activeValue: [] }
+      ]
+      const link = { click: jest.fn(), href: '', download: '' }
+      const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+      if (!window.URL) {
+        Object.defineProperty(window, 'URL', { value: {}, configurable: true, writable: true })
+      }
+      const originalCreateObjectURL = window.URL.createObjectURL
+      window.URL.createObjectURL = jest.fn(() => 'blob:mock')
+
+      wrapper.vm.exportUserDetails(['XLS'])
+      await flushPromises()
+
+      expect(exportUserActivityDetails).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exportType: 'Excel',
+          reportAllPages: true,
+          actionTypes: ['Email Sent']
+        })
+      )
+      expect(link.download).toBe('Target-User-Timeline.xlsx')
+      expect(link.click).toHaveBeenCalled()
+
+      createElementSpy.mockRestore()
+      window.URL.createObjectURL = originalCreateObjectURL
+    })
+
+    it('exportUserDetails uses leaderboard filename and current-page setting', async () => {
+      const wrapper = mountComponent({
+        isTargetUser: false,
+        selectedRow: { firstName: 'John', lastName: 'Doe', resourceId: '123', targetUserResourceId: 'tu-1' }
+      })
+      wrapper.vm.downloadModalTitle = wrapper.vm.downloadButtonOptions[0]
+      wrapper.vm.filters = [
+        { key: 'activityType', activeValue: [] },
+        { key: 'difficulty', activeValue: ['EASY'] },
+        { key: 'product', activeValue: ['PHISHING SIMULATOR'] }
+      ]
+      const link = { click: jest.fn(), href: '', download: '' }
+      const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+      if (!window.URL) {
+        Object.defineProperty(window, 'URL', { value: {}, configurable: true, writable: true })
+      }
+      const originalCreateObjectURL = window.URL.createObjectURL
+      window.URL.createObjectURL = jest.fn(() => 'blob:leaderboard')
+
+      wrapper.vm.exportUserDetails(['CSV'])
+      await flushPromises()
+
+      expect(exportUserActivityDetails).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exportType: 'CSV',
+          reportAllPages: false,
+          targetUserResourceId: 'tu-1',
+          difficultyTypes: ['EASY'],
+          products: ['PHISHING SIMULATOR']
+        })
+      )
+      expect(link.download).toBe('Leaderboard-User-Timeline.csv')
+      expect(link.click).toHaveBeenCalled()
+
+      createElementSpy.mockRestore()
+      window.URL.createObjectURL = originalCreateObjectURL
     })
   })
 

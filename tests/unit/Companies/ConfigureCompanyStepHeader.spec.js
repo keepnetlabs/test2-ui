@@ -13,5 +13,10 @@ describe('ConfigureCompanyStepHeader.vue', () => {
     expect(wrapper.text()).toContain('Step 1')
     expect(wrapper.text()).toContain('Configure company info')
   })
+
+  it('has expected component name', () => {
+    const wrapper = shallowMount(ConfigureCompanyStepHeader)
+    expect(wrapper.vm.$options.name).toBe('ConfigureCompanyStepHeader')
+  })
 })
 
