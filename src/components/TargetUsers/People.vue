@@ -1142,7 +1142,7 @@ export default {
     },
     getSummaryKeysFromStatusValue(rawValue) {
       const values = Array.isArray(rawValue)
-        ? rawValue.map((val) => String(val))
+        ? rawValue.map(String)
         : String(rawValue || "")
             .split(",")
             .map((val) => val.trim())
@@ -1557,7 +1557,7 @@ export default {
     },
     normalizeStatusValues(rawValue) {
       if (Array.isArray(rawValue)) {
-        return rawValue.map((val) => String(val));
+        return rawValue.map(String);
       }
       return String(rawValue || "")
         .split(",")
@@ -1584,7 +1584,7 @@ export default {
       const operator = statusFilter.Operator || "Include";
       const rawValue = statusFilter.Value;
       const values = Array.isArray(rawValue)
-        ? rawValue.map((val) => String(val))
+        ? rawValue.map(String)
         : String(rawValue || "")
             .split(",")
             .map((val) => val.trim())
@@ -1788,7 +1788,7 @@ export default {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
           if (
-            this.$refs.refPeopleTable.multipleSelection.find(
+            this.$refs.refPeopleTable.multipleSelection.some(
               (item) => item.resourceId === selectedUser.resourceId
             )
           ) {

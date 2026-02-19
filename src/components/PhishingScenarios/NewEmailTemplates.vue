@@ -306,6 +306,8 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import {
+  checkRedFlags,
+  convertContentToFile,
   createPhishingEmailTemplate,
   getEmailTemplatePreviewContent,
   getMergedTextForPhishing,
@@ -322,7 +324,6 @@ import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
-import { convertContentToFile } from '@/api/phishingsimulator'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import BackButton from '@/components/Common/Buttons/BackButton'
 import NextButton from '@/components/Common/Buttons/NextButton'
@@ -341,7 +342,6 @@ import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
 import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { checkRedFlags } from '@/api/phishingsimulator'
 export default {
   name: 'NewEmailTemplates',
   components: {

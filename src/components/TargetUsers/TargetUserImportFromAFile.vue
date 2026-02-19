@@ -186,7 +186,7 @@
                             item-text="name"
                             item-value="resourceId"
                             item-disabled="disabled"
-                            autocomplete="disabled"
+                            autocomplete="off"
                             placeholder="- All Users -"
                             no-data-text="No user group available"
                             position="bottom"

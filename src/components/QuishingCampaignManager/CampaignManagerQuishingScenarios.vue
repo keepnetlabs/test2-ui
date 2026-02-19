@@ -699,7 +699,7 @@ export default {
         const {
           data: { data }
         } = response
-        if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId))
+        if (!this.phishingScenarioItems.some((item) => item.resourceId === data.resourceId))
           this.phishingScenarioItems.push(data)
         this.isAttachmentBasedScenario =
           data.methodTypeId === PHISHING_SCENARIOS_METHOD_TYPE_BY_ID.ATTACHMENT

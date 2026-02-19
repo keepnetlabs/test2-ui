@@ -316,7 +316,7 @@ export default {
       this.$emit(
         'update:selectedTargetGroupsMapped',
         items
-          .filter((item) => item)
+          .filter(Boolean)
           .map((item) => ({
             text: item.text || item.name,
             value: item.value || item.resourceId,

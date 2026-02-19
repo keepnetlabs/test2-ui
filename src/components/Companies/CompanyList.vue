@@ -987,8 +987,8 @@ export default {
       this.changeGroupModalStatus(true);
       this.selectedRow = {
         ...row,
-        ...{ name: null },
-        ...{ resourceId: row.companyResourceId }
+        name: null,
+        resourceId: row.companyResourceId
       };
     },
     changeGroupModalStatus(status) {

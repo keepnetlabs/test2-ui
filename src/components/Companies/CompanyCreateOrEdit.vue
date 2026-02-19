@@ -623,7 +623,6 @@ import {
   isDifferent,
   getDefaultAxiosPayload
 } from '@/utils/functions'
-import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
@@ -644,7 +643,7 @@ import CallbackNumberWarningModal from '@/components/Companies/CallbackNumberWar
 import moment from 'moment'
 import { getTimeZoneForMoment } from '../../utils/functions'
 import InputTag from '@/components/Common/Inputs/InputTag.vue'
-import { getCountryTimezones } from '@/api/common'
+import { getLicences, getCountryTimezones } from '@/api/common'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {

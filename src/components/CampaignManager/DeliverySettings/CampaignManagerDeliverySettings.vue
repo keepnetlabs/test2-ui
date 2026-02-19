@@ -546,9 +546,7 @@ export default {
       }, 500)
     },
     handleTestConnectionChange() {
-      try {
-        this.callForTestConnection()
-      } catch (e) {}
+      this.callForTestConnection()
     },
     callForGetSmtpSetting() {
       return getSmtpSettings(this.formData.smtpSettingResourceId).then((response) => {
@@ -605,6 +603,12 @@ export default {
           this.isTestingConnection = false
         }
       } catch (e) {
+        this.isTestingConnection = false
+        const { response } = e || {}
+        const { data: { message = '', Message = '' } = {} } = response || {}
+        this.testEmailErrorMessage =
+          message || Message || 'Failed to retrieve SMTP settings. Please try again.'
+        this.isShowSmtpInputError = true
       } finally {
         this.$emit('set-action-button-disability', false)
       }

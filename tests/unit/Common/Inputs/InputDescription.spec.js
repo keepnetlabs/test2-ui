@@ -522,7 +522,7 @@ describe('InputDescription.vue', () => {
 
     it('should have autocomplete disabled', () => {
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('autocomplete')).toBe('disabled')
+      expect(textarea.attributes('autocomplete')).toBe('off')
     })
   })
 

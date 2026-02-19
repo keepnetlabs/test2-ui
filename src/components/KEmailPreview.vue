@@ -16,8 +16,7 @@
 </template>
 
 <script>
-import { createRandomCryptStringNumber } from '@/utils/functions'
-import { handleIsSafari } from '@/utils/functions'
+import { createRandomCryptStringNumber, handleIsSafari } from '@/utils/functions'
 export default {
   name: 'KEmailPreview',
   props: {
@@ -56,11 +55,11 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('message', this.handleWindowMessage)
+    globalThis.addEventListener('message', this.handleWindowMessage)
   },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)
-    window.removeEventListener('message', this.handleWindowMessage)
+    globalThis.removeEventListener('message', this.handleWindowMessage)
   },
   methods: {
     handleLoad() {
@@ -114,9 +113,9 @@ export default {
         }
         if (height > this.numberHeight && height > 300) {
           if (
-            window.navigator &&
-            window.navigator.userAgent &&
-            window.navigator.userAgent.toLowerCase().includes('windows')
+            globalThis.navigator &&
+            globalThis.navigator.userAgent &&
+            globalThis.navigator.userAgent.toLowerCase().includes('windows')
           ) {
             height += 20
           }
@@ -134,7 +133,7 @@ export default {
             height = height + 30
           }
           this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
-          this.animationFrame = window.requestAnimationFrame(() => this.resizeIframe())
+          this.animationFrame = globalThis.requestAnimationFrame(() => this.resizeIframe())
         }
       }
     },
