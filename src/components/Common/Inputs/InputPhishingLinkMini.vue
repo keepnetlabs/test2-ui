@@ -367,7 +367,6 @@ export default {
             'urlSchemaTypeId'
           )
         }
-        if (this.isEdit) return
         this.$emit('invisible-captcha', !domainRecord?.extraDatas[1]?.value)
         this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)
       })

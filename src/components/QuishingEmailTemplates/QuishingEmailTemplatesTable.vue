@@ -322,11 +322,12 @@ export default {
         serverSideProps: this.serverSideProps
       })
     },
-    handleAddQuishingTemplate(item = { text: '' }) {
-      if (item.text === this.addQuishingItems[0].text) {
+    handleAddQuishingTemplate(item) {
+      const safeItem = item ?? { text: '' }
+      if (safeItem.text === this.addQuishingItems[0].text) {
         this.handleEmitEmailTemplateModal(null, false)
       }
-      if (item.text === this.addQuishingItems[1].text) {
+      if (safeItem.text === this.addQuishingItems[1].text) {
         this.$emit('on-add-individual-printout-template', null, false)
       }
     },

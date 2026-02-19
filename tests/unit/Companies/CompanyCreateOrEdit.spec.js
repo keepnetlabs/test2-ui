@@ -282,6 +282,64 @@ describe('CompanyCreateOrEdit.vue', () => {
     expect(wrapper.vm.formData.File).toEqual(['a.png'])
   })
 
+  it('computes noCompanyGroupText based on loading flag', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({ isCompanyGroupsLoading: true })
+    expect(wrapper.vm.noCompanyGroupText).toBe('Loading...')
+
+    await wrapper.setData({ isCompanyGroupsLoading: false })
+    expect(wrapper.vm.noCompanyGroupText).toBe('No company group available')
+  })
+
+  it('returns simple numberOfUsersRules when user limit is disabled', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({
+      formData: {
+        ...wrapper.vm.formData,
+        IsNumberOfUsersLimited: false
+      }
+    })
+
+    expect(wrapper.vm.numberOfUsersRules).toEqual([true])
+  })
+
+  it('computes end date disabled for fixed periods and expiry-limited state', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({
+      formData: {
+        ...wrapper.vm.formData,
+        LicensePeriodTypeResourceId: 'HTHpWWXGJshG'
+      },
+      isExpiryDateLimited: false
+    })
+    expect(wrapper.vm.isEndDateDisabled).toBe(true)
+
+    await wrapper.setData({
+      formData: {
+        ...wrapper.vm.formData,
+        LicensePeriodTypeResourceId: 'MaR9NJslgSGW'
+      },
+      isExpiryDateLimited: true
+    })
+    expect(wrapper.vm.isEndDateDisabled).toBe(true)
+  })
+
+  it('validates expiry period as required when value is missing', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.expiryPeriodValidation('')).toBe('Required')
+    expect(wrapper.vm.expiryPeriodValidation('some-id')).toBe(true)
+  })
+
+  it('computed navigation flags react to activeStep boundaries', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({ activeStep: 1, totalStep: 4 })
+    expect(wrapper.vm.canPrev).toBe(false)
+    expect(wrapper.vm.canNext).toBe(true)
+
+    await wrapper.setData({ activeStep: 4 })
+    expect(wrapper.vm.canNext).toBe(false)
+  })
+
   it('closes warning modal and configure dialog helpers', async () => {
     const wrapper = createWrapper()
     wrapper.vm.cancelForm = jest.fn()

@@ -146,24 +146,26 @@ export default {
         this.checkSingularity({ operand: query.operand, value: query.value }, index)
       )
     },
-    handleInputSingularityChange(item = { operand: '', value: '' }, index = 0) {
-      this.checkSingularity(item, index)
+    handleInputSingularityChange(item, index = 0) {
+      const safeItem = item ?? { operand: '', value: '' }
+      this.checkSingularity(safeItem, index)
       this.checkAllSingularity()
     },
-    checkSingularity(item = { operand: '', value: '' }, index = 0) {
-      if (!item.operand && !item.value) return
+    checkSingularity(item, index = 0) {
+      const safeItem = item ?? { operand: '', value: '' }
+      if (!safeItem.operand && !safeItem.value) return
       let message = ''
       if (
         this.query.children.find(
           ({ query }, itemIndex) =>
             query.value &&
-            query.value === item.value &&
-            query.operand === item.operand &&
+            query.value === safeItem.value &&
+            query.operand === safeItem.operand &&
             index !== itemIndex &&
             itemIndex < index
         )
       )
-        message = `There is already ${item.operand} with same value`
+        message = `There is already ${safeItem.operand} with same value`
       this.$set(this.rules[0].errorMessages, index, message)
     },
     removeErrorMessage(index) {

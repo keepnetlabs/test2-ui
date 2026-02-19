@@ -107,6 +107,12 @@ describe('LeaderboardTopPerformerCard.vue', () => {
       const medalImg = wrapper.findAll('img').at(1)
       expect(medalImg.attributes('src')).toBe(wrapper.vm.goldMedalImg)
     })
+
+    it('should fallback to bronze medal when rank is undefined', () => {
+      const performer = { ...defaultPerformer, rank: undefined }
+      const wrapper = mountComponent({ performer })
+      expect(wrapper.vm.getMedalImgSrc).toBe(wrapper.vm.bronzeMedalImg)
+    })
   })
 
   describe('Rank-Based Ribbon Selection', () => {
@@ -139,6 +145,12 @@ describe('LeaderboardTopPerformerCard.vue', () => {
       const wrapper = mountComponent({ performer })
       const ribbonImg = wrapper.find('.gamification-report__top-performer-card-ribbon img')
       expect(ribbonImg.attributes('src')).toBe(wrapper.vm.silverRibbonImg)
+    })
+
+    it('should fallback to bronze ribbon when rank is null', () => {
+      const performer = { ...defaultPerformer, rank: null }
+      const wrapper = mountComponent({ performer })
+      expect(wrapper.vm.getRibbonImgSrc).toBe(wrapper.vm.bronzeRibbonImg)
     })
   })
 

@@ -257,7 +257,7 @@ export default {
     getPointsIcon(points, isMaxPoints) {
       if (isMaxPoints === true) return 'mdi-star'
       const pointsValue = Number.parseInt(points)
-      if (isNaN(pointsValue)) return 'mdi-check-circle'
+      if (Number.isNaN(pointsValue)) return 'mdi-check-circle'
       if (pointsValue < 0) return 'mdi-close-circle'
       if (pointsValue === 0) return 'mdi-minus-circle'
       if (points && String(points).includes('(max)')) return 'mdi-star'

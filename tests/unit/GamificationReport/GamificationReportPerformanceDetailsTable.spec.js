@@ -1,6 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils'
 import GamificationReportPerformanceDetailsTable from '@/components/GamificationReport/GamificationReportPerformanceDetails/GamificationReportPerformanceDetailsTable'
 import Badge from '@/components/Badge.vue'
+import { getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 
 describe('GamificationReportPerformanceDetailsTable.vue', () => {
   const localVue = createLocalVue()
@@ -361,6 +362,16 @@ describe('GamificationReportPerformanceDetailsTable.vue', () => {
       expect(style.maxWidth).toBe('auto')
       expect(style.minWidth).toBe('auto')
     })
+
+    it('getBtnStatusColor proxies helper function output', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getBtnStatusColor('Critical')).toBe(getBtnStatusColor('Critical'))
+    })
+
+    it('getDataTableFieldLabel proxies helper function output', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getDataTableFieldLabel('Critical')).toBe(getDataTableFieldLabel('Critical'))
+    })
   })
 
   describe('Multiple Instances', () => {
@@ -473,6 +484,17 @@ describe('GamificationReportPerformanceDetailsTable.vue', () => {
         data: [{ value: null }]
       })
       expect(wrapper.vm.data[0].value).toBeNull()
+    })
+
+    it('renders empty cell content for unknown column type', () => {
+      const wrapper = mountComponent({
+        columns: [{ label: 'Unknown', key: 'unknown', type: 'custom' }],
+        data: [{ unknown: 'value' }]
+      })
+      const cell = wrapper.find('tbody').find('td')
+      expect(cell.find('span').exists()).toBe(false)
+      expect(cell.findComponent(Badge).exists()).toBe(false)
+      expect(cell.find('a').exists()).toBe(false)
     })
   })
 

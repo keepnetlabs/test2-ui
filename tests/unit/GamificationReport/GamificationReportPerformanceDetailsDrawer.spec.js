@@ -297,6 +297,15 @@ describe('GamificationReportPerformanceDetailsDrawer.vue', () => {
       wrapper.vm.handleDrawerClickOutside()
       expect(wrapper.emitted('on-close')[0]).toEqual([])
     })
+
+    it('emits navigation-drawer-change false when close icon is clicked', async () => {
+      const wrapper = mountComponent()
+      const closeIcon = wrapper.findComponent({ name: 'VIcon' })
+      closeIcon.vm.$emit('click')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.emitted('navigation-drawer-change')).toEqual([[false]])
+    })
   })
 
   describe('Columns Configuration', () => {
@@ -543,6 +552,36 @@ describe('GamificationReportPerformanceDetailsDrawer.vue', () => {
     it('drawer should have default status value', () => {
       const wrapper = mountComponent({ status: undefined })
       expect(wrapper.vm.status).toBe(false)
+    })
+
+    it('passes status value to navigation drawer prop', () => {
+      const DrawerStub = {
+        name: 'VNavigationDrawer',
+        props: ['value'],
+        template: '<div class="drawer-prop-stub"><slot /></div>'
+      }
+      const wrapper = shallowMount(GamificationReportPerformanceDetailsDrawer, {
+        localVue,
+        propsData: {
+          selectedRow: { firstName: 'John', lastName: 'Doe', points: 1000 },
+          status: false
+        },
+        stubs: {
+          VNavigationDrawer: DrawerStub,
+          VListItem: { template: '<div><slot /></div>' },
+          VListItemContent: { template: '<div><slot /></div>' },
+          VListItemTitle: { template: '<div><slot /></div>' },
+          VListItemSubtitle: { template: '<div><slot /></div>' },
+          VIcon: { template: '<div><slot /></div>' },
+          GamificationReportPerformanceDetailsTable: { template: '<div />' },
+          GamificationReportPerformanceDetailsInfoCard: { template: '<div />' }
+        },
+        directives: {
+          'click-outside': {}
+        }
+      })
+
+      expect(wrapper.findComponent(DrawerStub).props('value')).toBe(false)
     })
   })
 })

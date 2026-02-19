@@ -149,6 +149,35 @@ describe('InitializeCompanyModal.vue', () => {
     expect(wrapper.vm.isActionButtonDisabled).toBe(false)
   })
 
+  it('emits on-close from handleClose method', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.handleClose()
+
+    expect(wrapper.emitted('on-close')).toEqual([[]])
+  })
+
+  it('appends array values and scalar fields to FormData on submit', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.refForm = { validate: jest.fn(() => true) }
+    wrapper.vm.formData = {
+      ...wrapper.vm.formData,
+      name: 'Acme',
+      industryResourceId: 'industry-1',
+      file: ['logo-a.png', 'logo-b.png']
+    }
+    const appendSpy = jest.spyOn(FormData.prototype, 'append')
+
+    wrapper.vm.submit()
+    await flushPromises()
+
+    expect(appendSpy).toHaveBeenCalledWith('name', 'Acme')
+    expect(appendSpy).toHaveBeenCalledWith('industryResourceId', 'industry-1')
+    expect(appendSpy).toHaveBeenCalledWith('file', 'logo-a.png')
+    expect(appendSpy).toHaveBeenCalledWith('file', 'logo-b.png')
+
+    appendSpy.mockRestore()
+  })
+
   it('scrolls to first error when form is invalid', async () => {
     const wrapper = createWrapper()
     const querySelector = jest.fn(() => '.error--text')

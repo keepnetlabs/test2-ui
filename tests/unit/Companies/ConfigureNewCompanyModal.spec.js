@@ -111,6 +111,23 @@ describe('ConfigureNewCompanyModal.vue', () => {
     expect(wrapper.vm.isSaveDisabled).toBe(false)
   })
 
+  it('resets loading state when create system user request does not advance step', async () => {
+    createSystemUser.mockImplementationOnce(() => ({
+      then: () => ({
+        finally: (cb) => cb()
+      })
+    }))
+    const wrapper = createWrapper()
+    const stepSpy = jest.spyOn(wrapper.vm, 'changeStep')
+    wrapper.setData({ isSaveDisabled: true })
+
+    wrapper.vm.callForCreateSystemUser({ name: 'User C' })
+    await wrapper.vm.$nextTick()
+
+    expect(stepSpy).not.toHaveBeenCalled()
+    expect(wrapper.vm.isSaveDisabled).toBe(false)
+  })
+
   it('saves white labeling and updates child state on success', async () => {
     const wrapper = createWrapper()
     const stepSpy = jest.spyOn(wrapper.vm, 'changeStep')

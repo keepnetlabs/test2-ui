@@ -287,6 +287,35 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
       const data = wrapper.vm.phishingData
       expect(data.accuracyIncrease).toBe(10)
     })
+
+    it('should use root phishingResult object when last30Days is missing', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.phishingResult = {
+        totalCount: 12,
+        reportedCount: 7,
+        earnedPoints: 30,
+        missedPoints: 3,
+        successRate: 58
+      }
+
+      const data = wrapper.vm.phishingData
+      expect(data.totalPhishingEmails).toBe(12)
+      expect(data.reportedPhishingEmails).toBe(7)
+      expect(data.phishingSimulations).toBe(5)
+      expect(data.earnedPoints).toBe(30)
+      expect(data.lostPoints).toBe(3)
+      expect(data.detectionAccuracy).toBe(58)
+    })
+
+    it('should prefer successRate over detectionAccuracy when both exist', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.phishingResult = {
+        successRate: 66,
+        detectionAccuracy: 22
+      }
+
+      expect(wrapper.vm.phishingData.detectionAccuracy).toBe(66)
+    })
   })
 
   describe('Computed Properties - earnedPointsText', () => {
@@ -376,6 +405,20 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
       expect(text.points).toBe('-250 points')
       expect(text.after).toContain('for missed reported emails')
     })
+
+    it('should use generic user label in lost points text when firstName is missing', () => {
+      const wrapper = mountComponent({
+        selectedRow: { targetUserResourceId: 'user-id' }
+      })
+      wrapper.vm.phishingResult = {
+        last30Days: {
+          missedPoints: 20
+        }
+      }
+
+      const text = wrapper.vm.lostPointsText
+      expect(text.before).toContain('The user lost')
+    })
   })
 
   describe('Computed Properties - accuracyText', () => {
@@ -419,6 +462,18 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
 
       const text = wrapper.vm.accuracyText
       expect(text).toContain('20%')
+    })
+
+    it('should use generic user label in accuracy text when firstName is missing', () => {
+      const wrapper = mountComponent({
+        selectedRow: { targetUserResourceId: 'user-id' }
+      })
+      wrapper.vm.phishingResult = {
+        accuracyChangePercentage: 5
+      }
+
+      const text = wrapper.vm.accuracyText
+      expect(text).toContain("The user's detection accuracy increased by 5%")
     })
   })
 
@@ -496,11 +551,30 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
       expect(reportsAPI.getGamificationPhishingResult).not.toHaveBeenCalled()
     })
 
+    it('should keep loading false when no targetUserResourceId', async () => {
+      const wrapper = mountComponent({
+        selectedRow: { firstName: 'NoId User' }
+      })
+      wrapper.vm.isLoading = false
+
+      await wrapper.vm.fetchPhishingResult()
+      expect(wrapper.vm.isLoading).toBe(false)
+    })
+
     it('should call API with correct targetUserResourceId', async () => {
       const wrapper = mountComponent()
       await wrapper.vm.fetchPhishingResult()
 
       expect(reportsAPI.getGamificationPhishingResult).toHaveBeenCalledWith('user-123')
+    })
+
+    it('should keep phishingResult null when API response data is null', async () => {
+      reportsAPI.getGamificationPhishingResult.mockResolvedValueOnce({ data: null })
+      const wrapper = mountComponent()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.phishingResult).toBe(null)
+      expect(wrapper.vm.isLoading).toBe(false)
     })
   })
 
@@ -535,6 +609,20 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
       })
 
       expect(reportsAPI.getGamificationPhishingResult).toHaveBeenCalledWith('id-2')
+    })
+
+    it('should not fetch when selectedRow changes to a row without id', async () => {
+      const wrapper = mountComponent({
+        selectedRow: { firstName: 'John', targetUserResourceId: 'id-1' }
+      })
+      await wrapper.vm.$nextTick()
+      jest.clearAllMocks()
+
+      await wrapper.setProps({
+        selectedRow: { firstName: 'No Id User' }
+      })
+
+      expect(reportsAPI.getGamificationPhishingResult).not.toHaveBeenCalled()
     })
   })
 

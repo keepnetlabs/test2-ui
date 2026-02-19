@@ -33,4 +33,26 @@ describe('ConfigureNewCompanyDialog.vue', () => {
 
     expect(wrapper.emitted('on-confirm')).toEqual([[]])
   })
+
+  it('passes companyName and status props to AppDialog', () => {
+    const AppDialogStub = {
+      name: 'AppDialog',
+      props: ['title', 'status', 'subtitle'],
+      template: '<div><slot name="app-dialog-body" /><slot name="app-dialog-footer" /></div>'
+    }
+    const wrapper = shallowMount(ConfigureNewCompanyDialog, {
+      propsData: {
+        companyName: 'Tenant A',
+        status: false
+      },
+      stubs: {
+        AppDialog: AppDialogStub,
+        AppDialogFooter: true
+      }
+    })
+
+    const dialog = wrapper.findComponent(AppDialogStub)
+    expect(dialog.props('subtitle')).toBe('Tenant A')
+    expect(dialog.props('status')).toBe(false)
+  })
 })
