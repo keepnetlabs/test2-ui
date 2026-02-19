@@ -52,7 +52,7 @@
               <div class="gamification-report-user-details-summary-tab__metric-item">
                 <span class="gamification-report-user-details-summary-tab__metric-label">Rank</span>
                 <span class="gamification-report-user-details-summary-tab__metric-value">
-                  {{ overallScore.rank ?? selectedRow.rank ?? '—' }}
+                  {{ getRankText() }}
                 </span>
               </div>
             </div>
@@ -141,12 +141,6 @@
                     <span class="gamification-report-user-details-summary-tab__badge-name">
                       {{ badge.badgeName || badge.name }}
                     </span>
-                    <span
-                      v-if="getBadgeEarnedDateFormatted(badge)"
-                      class="gamification-report-user-details-summary-tab__badge-earned-date"
-                    >
-                      Earned on {{ getBadgeEarnedDateFormatted(badge) }}
-                    </span>
                   </div>
                 </template>
                 <span>{{ getTooltipContent(badge) }}</span>
@@ -218,7 +212,7 @@
                     >{{ selectedRow.firstName }} {{ selectedRow.lastName }}</span
                   >
                   <span class="gamification-report__timeline-item-bold-text">
-                    earned {{ item?.points?.toString().replace('-', '') }} points </span
+                    earned {{ getPointText(item) }} points </span
                   >
                   after reporting the email
                   <span class="gamification-report__timeline-item-bold-text">{{ item.name }}</span
@@ -352,7 +346,7 @@
                   {{ item.points > 0 ? 'earned' : 'lost' }}
                 </span>
                 <span class="gamification-report__timeline-item-bold-text"
-                  >{{ item?.points?.toString().replace('-', '') }} points</span
+                  >{{ getPointText(item) }} points</span
                 >
                 in the
                 <span class="gamification-report__timeline-item-bold-text">{{ item.name }}</span>
@@ -379,7 +373,7 @@
                     ><span class="gamification-report__timeline-item-bold-text">{{
                       item.pointRule.ruleName === 'Joined After 3 Days'
                         ? ''
-                        : item.pointRule.ruleName === 'Joined 1–3 Days'
+                        : item.pointRule.ruleName === 'Joined 1-3 Days'
                         ? ''
                         : '+'
                     }}</span
@@ -393,8 +387,8 @@
                   <span>{{
                     item.pointRule.ruleName === 'Joined After 3 Days'
                       ? 'more than 3 days after invitation.'
-                      : item.pointRule.ruleName === 'Joined 1–3 Days'
-                      ? '1–3 days after invitation.'
+                      : item.pointRule.ruleName === 'Joined 1-3 Days'
+                      ? '1-3 days after invitation.'
                       : 'within 24 hours.'
                   }}</span>
                 </span>
@@ -418,7 +412,7 @@
                   {{ item.points > 0 ? 'earned' : 'lost' }}
                 </span>
                 <span class="gamification-report__timeline-item-bold-text"
-                  >{{ item?.points?.toString().replace('-', '') }} points</span
+                  >{{ getPointText(item) }} points</span
                 >
                 in the
                 <span class="gamification-report__timeline-item-bold-text">{{ item.name }}</span>
@@ -524,6 +518,19 @@ export default {
     this.callForTimelinePreview()
   },
   methods: {
+    getRankText() {
+      if (this.overallScore && this.overallScore.rank !== null && this.overallScore.rank !== undefined) {
+        return this.overallScore.rank
+      }
+      if (this.selectedRow && this.selectedRow.rank !== null && this.selectedRow.rank !== undefined) {
+        return this.selectedRow.rank
+      }
+      return '-'
+    },
+    getPointText(item) {
+      const points = item && item.points !== null && item.points !== undefined ? String(item.points) : ''
+      return points.replace('-', '')
+    },
     callForTimelinePreview() {
       if (!this.targetUserResourceId) return
       this.isTimelineLoading = true
@@ -689,3 +696,4 @@ export default {
   }
 }
 </script>
+

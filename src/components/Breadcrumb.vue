@@ -41,7 +41,6 @@
 
 <script>
 import { mdiChevronRight } from "@mdi/js";
-import { mapGetters } from "vuex";
 export default {
   name: "Breadcrumb",
   props: {
@@ -70,12 +69,10 @@ export default {
       const safeType = typeof type === "string" ? type : "";
       const currentRouteName =
         typeof this.$route?.name === "string" ? this.$route.name : "";
+      const trainingReportName =
+        !safeType || safeType.startsWith("SCORM") ? "Training Report" : `${safeType} Report`;
       const routeName =
-        currentRouteName === "Training Report"
-          ? !safeType || safeType.startsWith("SCORM")
-            ? "Training Report"
-            : `${safeType} Report`
-          : currentRouteName;
+        currentRouteName === "Training Report" ? trainingReportName : currentRouteName;
       this.breadcrumb = [routeName];
       let parent = this.$route.meta.parentName;
       while (parent) {

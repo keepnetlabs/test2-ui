@@ -35,6 +35,7 @@
 import labels from '@/model/constants/labels'
 import TrainingReportSummaryResendDialog from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummaryResendDialog'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export default {
   name: 'TrainingReportSummaryHeader',

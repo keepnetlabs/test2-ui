@@ -127,7 +127,7 @@ export default {
         (v) => Validations.required(v, labels.Required),
         (v) => {
           if (!v) return true
-          const matches = v.match(/{(.*?)}/gi)
+          const matches = v.match(/\{([^}]*)\}/gi)
           const mergeTagsCharacterLength =
             matches?.reduce((acc, match) => acc + match.length, 0) || 0
           if (v.length - mergeTagsCharacterLength > 160)

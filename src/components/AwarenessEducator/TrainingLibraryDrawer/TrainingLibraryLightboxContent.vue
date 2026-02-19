@@ -45,7 +45,6 @@
         <iframe
           v-else
           :src="previewUrl"
-          frameborder="0"
           allowfullscreen
           allow="microphone; downloads"
           title="Training Preview"
@@ -70,15 +69,9 @@ export default {
   },
   errorCaptured(err) {
     // Suppress vue-pdf resize sensor errors
-    if (
-      err.message &&
-      err.message.includes(
-        "Cannot read properties of undefined (reading 'catch')"
-      )
-    ) {
-      return false;
-    }
-    return true;
+    return !err.message?.includes(
+      "Cannot read properties of undefined (reading 'catch')"
+    );
   },
   props: {
     previewData: {

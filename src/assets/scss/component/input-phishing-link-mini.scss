@@ -17,6 +17,11 @@
   gap: 12px;
   align-items: flex-start;
   position: relative;
+
+  .v-select,
+  .v-text-field {
+    width: 100%;
+  }
 }
 
 .input-phishing-link-mini__input-group {
@@ -28,12 +33,8 @@
 .input-phishing-link-mini__input-group--narrow {
   max-width: 120px;
 }
-
-.input-phishing-link-mini__inputs {
-  .v-select,
-  .v-text-field {
-    width: 100%;
-  }
+.input-phishing-link-mini__captcha {
+  width: fit-content;
 }
 .input-phishing-link-mini__simulation-link {
   margin-top: 8px;

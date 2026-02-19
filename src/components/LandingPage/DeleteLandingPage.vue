@@ -59,6 +59,7 @@ export default {
           this.$emit('handleSuccessDeleteAction', this.selectedEmailTemplate)
           this.closeModal()
         })
+        .catch(() => {})
         .finally(() => {
           this.isActionButtonDisabled = false
         })

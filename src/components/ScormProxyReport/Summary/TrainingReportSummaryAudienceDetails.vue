@@ -325,7 +325,7 @@ export default {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
         )
-        return column.filterableType
+        return column && column.filterableType
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()

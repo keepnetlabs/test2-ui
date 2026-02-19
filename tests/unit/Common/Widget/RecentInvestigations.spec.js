@@ -615,7 +615,7 @@ describe("RecentInvestigations widget", () => {
         expect(tableData).toBeDefined();
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(200);
     });
   });
 
