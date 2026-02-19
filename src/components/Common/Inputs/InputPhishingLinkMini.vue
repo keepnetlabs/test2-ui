@@ -292,7 +292,7 @@ export default {
   mounted() {
     if (!this.isEdit) this.setDefaultValue()
     if (this.isEdit && this.value?.domainRecordId) {
-      this.checkSchemaTypes(this.value.domainRecordId)
+      this.checkSchemaTypes(this.value.domainRecordId, false)
     }
   },
   methods: {
@@ -341,10 +341,10 @@ export default {
     },
     handleChangeDomainRecord(value) {
       this.handleInputChange(value, 'domainRecordId')
-      this.checkSchemaTypes(value)
+      this.checkSchemaTypes(value, true)
       this.changeDisabledLabel()
     },
-    checkSchemaTypes(value) {
+    checkSchemaTypes(value, isDomainChange = false) {
       this.$nextTick(() => {
         const domainRecord = this.domainRecords.find((item) => item.value === value)
         this.urlSchemaTypesModified = this.getUrlSchemaTypesModified.map((schema) => {
@@ -368,7 +368,11 @@ export default {
           )
         }
         this.$emit('invisible-captcha', !domainRecord?.extraDatas[1]?.value)
-        this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)
+        if (!this.isEdit || isDomainChange) {
+          this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)
+        } else if (!domainRecord?.extraDatas[1]?.value) {
+          this.$emit('captcha-default-value', false)
+        }
       })
     }
   }
