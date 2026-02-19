@@ -147,25 +147,12 @@
                 v-if="
                   !loadingTemplates &&
                   !loadingTemplatePreview &&
-                  search &&
-                  !!search.length &&
+                  search !== null &&
                   !listData.length
                 "
                 class="pl-5 pt-5"
               >
-                Search criteria has no results
-              </div>
-              <div
-                v-if="
-                  !loadingTemplates &&
-                  search &&
-                  !search.length &&
-                  !loadingTemplatePreview &&
-                  !listData.length
-                "
-                class="pl-5 pt-5"
-              >
-                You do not have Landing Page Template
+                {{ (search.length || bodyData.filter.FilterGroups[0].FilterItems[2].value) ? 'Search criteria has no results' : 'You do not have Landing Page Template' }}
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
@@ -994,7 +981,7 @@ export default {
       landingPageTemplates: [],
       selectedTemplateLanguages: [],
       languagePreview: '',
-      search: null,
+      search: '',
       listData: [],
       totalNumberOfPages: 1,
       defaultListData: [],
@@ -1003,7 +990,7 @@ export default {
       bodyData: getDefaultLandingPageTemplatePayload(this.method),
       loadingTemplatePreview: false,
       isTemplateDetails: null,
-      loadingTemplates: false,
+      loadingTemplates: true,
       templateURL: null,
       isInvisibleCaptchaEnabled: false,
       selectedPreviousIndex: 0,

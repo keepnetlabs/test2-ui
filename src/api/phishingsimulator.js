@@ -119,7 +119,7 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
 
     // Convert attachmentFiles[0] to File if needed
     let attachmentFile = null
-    if (payload.attachmentFiles && payload.attachmentFiles[0]) {
+    if (payload.attachmentFiles?.[0]) {
       attachmentFile =
         payload.attachmentFiles[0] instanceof File
           ? payload.attachmentFiles[0]
@@ -595,8 +595,9 @@ export function getCampaignTargetGroups(resourceId, params = {}) {
   if (campaignType != null) queryParams.append('campaignType', campaignType)
   if (instanceGroup != null) queryParams.append('instanceGroup', instanceGroup)
   const query = queryParams.toString()
+  const queryString = query ? '?' + query : ''
   return testRequest.get(
-    `/phishing-simulator/${resourceId}/target-groups${query ? `?${query}` : ''}`
+    `/phishing-simulator/${resourceId}/target-groups${queryString}`
   )
 }
 

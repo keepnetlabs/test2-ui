@@ -447,7 +447,7 @@ export default {
     },
     parseDurationToMinutes(duration, durationDisplayName) {
       const normalizedDisplay = (durationDisplayName || '').toString().toLowerCase()
-      const displayMatch = normalizedDisplay.match(/(\d+)\s*(hour|minute)/)
+      const displayMatch = normalizedDisplay.match(/(\d+)\s?(hour|minute)/)
       if (displayMatch) {
         const value = Number(displayMatch[1])
         const unit = displayMatch[2]

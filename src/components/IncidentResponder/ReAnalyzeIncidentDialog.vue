@@ -56,6 +56,7 @@ export default {
         .then(() => {
           this.$emit('on-confirm')
         })
+        .catch(() => {})
         .finally(() => {
           this.closeDialog()
           this.saveDisable = false

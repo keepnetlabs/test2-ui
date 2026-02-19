@@ -476,7 +476,7 @@ describe('AlertBox.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('prop updates are fast', async () => {

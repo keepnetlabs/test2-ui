@@ -1,11 +1,16 @@
 <template>
   <div class="gamification-report-user-details-badges-tab">
     <div class="gamification-report-user-details-badges-tab__header">
-      <h2 class="gamification-report-user-details-badges-tab__title">Badges</h2>
-      <p class="gamification-report-user-details-badges-tab__subtitle">
-        View {{ selectedRow.firstName }} {{ selectedRow.lastName }}'s earned and unearned badges
-        based on their actions and behaviors.
-      </p>
+      <div>
+        <h2 class="gamification-report-user-details-badges-tab__title">Badges</h2>
+        <p class="gamification-report-user-details-badges-tab__subtitle">
+          View {{ selectedRow.firstName }} {{ selectedRow.lastName }}'s earned and unearned badges
+          based on their actions and behaviors.
+        </p>
+      </div>
+      <span class="gamification-report-user-details-badges-tab__auto-update">
+        Auto-updated every 15 minutes
+      </span>
     </div>
 
     <div v-if="isLoading" class="gamification-report-user-details-badges-tab__skeleton">
@@ -90,7 +95,7 @@
                           :size="48"
                           :color="badge.earned ? '#2196F3' : '#757575'"
                         >
-                          {{ getBadgeIcon(badge.badgeType ?? badge.type) }}
+                          {{ getBadgeIcon(getBadgeType(badge)) }}
                         </VIcon>
                       </div>
                       <h3 class="gamification-report-user-details-badges-tab__badge-name">
@@ -194,6 +199,10 @@ export default {
         return badge.badgeName || badge.name || ''
       }
     },
+    getBadgeType(badge) {
+      if (badge && badge.badgeType !== null && badge.badgeType !== undefined) return badge.badgeType
+      return badge && badge.type !== null && badge.type !== undefined ? badge.type : ''
+    },
     getBadgeStatus(badge) {
       if (badge.earned) {
         const date = badge.earnedDate || badge.earnedOn || badge.earnedAt || badge.createdAt || badge.earned_at || badge.dateEarned
@@ -238,5 +247,19 @@ export default {
 
 ::v-deep .v-tooltip__content {
   max-width: 300px;
+}
+
+.gamification-report-user-details-badges-tab__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.gamification-report-user-details-badges-tab__auto-update {
+  font-size: 12px;
+  color: #9e9e9e;
+  white-space: nowrap;
+  margin-top: 4px;
+  align-self: flex-end;
 }
 </style>

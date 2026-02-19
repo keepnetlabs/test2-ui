@@ -161,11 +161,12 @@ export default {
       this.callForMatchingIncident()
     },
     handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+      const searchItems = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || []
+      const filterItems = searchItems.filter((filterItem) => {
         const column = this.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
         )
-        return column.filterableType
+        return column && column.filterableType
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
