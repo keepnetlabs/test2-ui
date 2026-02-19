@@ -173,10 +173,6 @@ export default {
           show: false,
           value: targetGroupCount
         },
-        'Non-Target Users': {
-          show: true,
-          value: totalNonTargetUser
-        },
         [proxyPackageDownloadDateKey]: {
           show: true,
           value: startDate

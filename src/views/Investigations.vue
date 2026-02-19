@@ -413,7 +413,7 @@ export default {
         (item) => item[0].toString().length + item[1].toString().length
       )
       const maxLength = Math.max(...lengthMap)
-      if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
+      if (Number.isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
         return 250
       }
       return 175 + maxLength * 10

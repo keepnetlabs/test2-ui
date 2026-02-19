@@ -1,5 +1,10 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils'
 import GamificationReportUserDetailsDrawerPerformanceDetailsTab from '@/components/GamificationReport/GamificationReportUserDetailsDrawer/GamificationReportUserDetailsDrawerPerformanceDetailsTab'
+import { getLearningEnrollments } from '@/api/reports'
+
+jest.mock('@/api/reports', () => ({
+  getLearningEnrollments: jest.fn()
+}))
 
 describe('GamificationReportUserDetailsDrawerPerformanceDetailsTab.vue', () => {
   const localVue = createLocalVue()
@@ -134,6 +139,79 @@ describe('GamificationReportUserDetailsDrawerPerformanceDetailsTab.vue', () => {
     it('should have getStatusBadgeProps method', () => {
       const wrapper = mountComponent()
       expect(typeof wrapper.vm.getStatusBadgeProps).toBe('function')
+    })
+
+    it('callForData maps API results array to tableData', async () => {
+      getLearningEnrollments.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [{ enrollmentId: 'enr-1', enrollmentName: 'Security 101' }]
+          }
+        }
+      })
+
+      const wrapper = mountComponent()
+      await wrapper.vm.callForData()
+
+      expect(wrapper.vm.tableData).toEqual([{ enrollmentId: 'enr-1', enrollmentName: 'Security 101' }])
+      expect(wrapper.vm.isLoading).toBe(false)
+    })
+
+    it('callForData falls back to items when results is absent', async () => {
+      getLearningEnrollments.mockResolvedValueOnce({
+        data: {
+          data: {
+            items: [{ enrollmentId: 'enr-2', enrollmentName: 'Awareness Basics' }]
+          }
+        }
+      })
+
+      const wrapper = mountComponent()
+      await wrapper.vm.callForData()
+
+      expect(wrapper.vm.tableData).toEqual([{ enrollmentId: 'enr-2', enrollmentName: 'Awareness Basics' }])
+    })
+
+    it('callForData resets tableData to empty on API error', async () => {
+      getLearningEnrollments.mockRejectedValueOnce(new Error('api failed'))
+
+      const wrapper = mountComponent()
+      wrapper.vm.tableData = [{ enrollmentId: 'existing' }]
+      await wrapper.vm.callForData()
+
+      expect(wrapper.vm.tableData).toEqual([])
+      expect(wrapper.vm.isLoading).toBe(false)
+    })
+
+    it('handleOpenTraining opens new tab only when enrollmentId exists', () => {
+      const wrapper = mountComponent()
+      const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+
+      wrapper.vm.handleOpenTraining({ enrollmentId: 'enr-99' })
+      expect(openSpy).toHaveBeenCalledWith(
+        '/awareness-educator/enrollments/training-report/enr-99',
+        '_blank',
+        'noopener,noreferrer'
+      )
+
+      openSpy.mockClear()
+      wrapper.vm.handleOpenTraining({})
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
+
+    it('getPointsIcon and getPointsIconColor handle key branches', () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.vm.getPointsIcon(-1, false)).toBe('mdi-close-circle')
+      expect(wrapper.vm.getPointsIcon(0, false)).toBe('mdi-minus-circle')
+      expect(wrapper.vm.getPointsIcon('10(max)', false)).toBe('mdi-star')
+      expect(wrapper.vm.getPointsIcon(5, true)).toBe('mdi-star')
+
+      expect(wrapper.vm.getPointsIconColor(-1, false)).toBe('#B83A3A')
+      expect(wrapper.vm.getPointsIconColor(0, false)).toBe('#757575')
+      expect(wrapper.vm.getPointsIconColor('10(max)', false)).toBe('#D1AD0C')
+      expect(wrapper.vm.getPointsIconColor(5, true)).toBe('#D1AD0C')
     })
   })
 

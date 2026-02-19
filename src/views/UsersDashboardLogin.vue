@@ -227,7 +227,7 @@
                             placeholder="Enter Company Email"
                             outlined
                             validate-on-blur
-                            autocomplete="disabled"
+                            autocomplete="off"
                             :rules="[rules.required, rules.email]"
                             @keyup.enter="handleContinue"
                           ></v-text-field>

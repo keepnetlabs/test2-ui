@@ -27,6 +27,16 @@ describe('plugins/sentry', () => {
       writable: true,
       configurable: true
     })
+    Object.defineProperty(global, 'window', {
+      value: global.window || { location: { pathname: '/' }, navigator: { userAgent: 'node.js' } },
+      writable: true,
+      configurable: true
+    })
+    Object.defineProperty(global, 'navigator', {
+      value: global.navigator || { userAgent: 'node.js' },
+      writable: true,
+      configurable: true
+    })
 
     let plugin
     jest.isolateModules(() => {

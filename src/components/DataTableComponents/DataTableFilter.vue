@@ -209,6 +209,21 @@
         >
         </v-checkbox>
       </template>
+      <template v-if="filterableType === 'singleSelect'">
+        <v-select
+          v-model="filteredSingleValue"
+          :items="convertedFilterableItems"
+          item-text="text"
+          item-value="value"
+          dense
+          height="40"
+          outlined
+          placeholder="Select an option"
+          :menu-props="{ offsetY: true, contentClass: 'single-select-filter__menu' }"
+          hide-details
+          style="margin-bottom: 12px;"
+        />
+      </template>
       <template v-if="filterableType === 'number' || filterableType === 'negativeNumber'">
         <v-select
           v-model="filteredSelectValueNumber"
@@ -342,6 +357,8 @@ export default {
     if (this.filterableType === 'select') {
       filterChecked = this.value.selectValue === '' ? [] : this.value.selectValue.split(',')
     }
+    const filteredSingleValue =
+      this.filterableType === 'singleSelect' ? this.value.selectValue || null : null
     return {
       isCloseOnClick: true,
       status: false,
@@ -349,7 +366,10 @@ export default {
       menu: null,
       btnKeySafariFix: `btn-key-${createRandomCryptStringNumber()}`,
       isFilterActive:
-        this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue,
+        ['select', 'singleSelect'].includes(this.filterableType)
+          ? !!this.value.selectValue
+          : !!this.value.textValue,
+      filteredSingleValue,
       filteredSelectValue: this.filterProps
         ? this.filterProps.items && this.filterProps.items[0]
         : this.value.selectValue || 'Contains',
@@ -428,7 +448,7 @@ export default {
     }
   },
   created() {
-    if (this.filterableType === 'select') {
+    if (['select', 'singleSelect'].includes(this.filterableType)) {
       this.filterableItems.forEach((x) => {
         this.convertedFilterableItems.push(
           typeof x == 'string' ? { text: x, value: x } : { text: x.text, value: x.value }
@@ -535,6 +555,7 @@ export default {
       // Reset number filter selects to default value '=' instead of empty string
       this.filteredSelectValueNum = '='
       this.filteredSelectValueNumber = '='
+      this.filteredSingleValue = null
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })
@@ -625,6 +646,14 @@ export default {
         })
         this.emitValue(this.filterValue, Value, this.fieldName)
       }
+      if (this.filterableType === 'singleSelect') {
+        this.$emit('handleFilterColumn', {
+          Value: this.filteredSingleValue,
+          FieldName: this.fieldName,
+          Operator: '='
+        })
+        this.emitValue(this.filteredSingleValue, this.filteredSingleValue, this.fieldName)
+      }
     }
   },
   computed: {
@@ -662,6 +691,9 @@ export default {
       }
       if (this.filterableType === 'select') {
         return !this?.filterChecked?.length
+      }
+      if (this.filterableType === 'singleSelect') {
+        return !this.filteredSingleValue
       }
       if (this.filterableType === 'numeric') {
         return !this.filterValue

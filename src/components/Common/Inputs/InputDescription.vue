@@ -6,7 +6,7 @@
     outlined
     dense
     no-resize
-    autocomplete="disabled"
+    autocomplete="off"
     :height="height"
     :rows="rows"
     :disabled="disabled"

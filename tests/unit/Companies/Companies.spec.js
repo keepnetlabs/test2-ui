@@ -62,6 +62,16 @@ describe('Companies.vue', () => {
     expect(wrapper.vm.tab).toBe('company-company-groups')
   })
 
+  it('does not override tab from route params when force is true', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.tab = 'company-companies'
+    wrapper.vm.$route.params = { tab: 'company-company-groups', force: true }
+
+    wrapper.vm.$options.updated[0].call(wrapper.vm)
+
+    expect(wrapper.vm.tab).toBe('company-companies')
+  })
+
   it('forces company-groups tab in updated hook when company permission is missing', () => {
     const wrapper = mountComponent({
       'permissions/getCompaniesSearchPermissions': false,
@@ -119,6 +129,14 @@ describe('Companies.vue', () => {
 
     expect(dispatch).toHaveBeenCalled()
     expect(next).toHaveBeenCalledWith(false)
+
+    const dispatchedPayload = dispatch.mock.calls[0][1]
+    expect(dispatchedPayload.show).toBe(true)
+    expect(typeof dispatchedPayload.callback).toBe('function')
+
+    dispatchedPayload.callback()
+    expect(refCompanyList.isShowCreateOrEditModal).toBe(false)
+    expect(cancelCreateOrEditForm).toHaveBeenCalled()
   })
 
   it('beforeRouteLeave closes modal when form is unchanged', () => {
@@ -149,5 +167,16 @@ describe('Companies.vue', () => {
     Companies.beforeRouteLeave.call(wrapper.vm, {}, {}, next)
 
     expect(next).toHaveBeenCalled()
+  })
+
+  it('beforeRouteEnter leaves defaults unchanged when no special route transition', () => {
+    const next = jest.fn()
+    Companies.beforeRouteEnter({ name: 'Companies' }, { name: 'AnyPage' }, next)
+    const vm = { tab: 'company-companies', isLoadState: false }
+
+    next.mock.calls[0][0](vm)
+
+    expect(vm.tab).toBe('company-companies')
+    expect(vm.isLoadState).toBe(false)
   })
 })

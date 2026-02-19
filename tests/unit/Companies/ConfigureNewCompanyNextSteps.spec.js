@@ -36,4 +36,23 @@ describe('ConfigureNewCompanyNextSteps.vue', () => {
     expect(items.at(0).props('title')).toBe('Customize notification templates')
     expect(items.at(1).props('routeLink')).toBe('/target-users')
   })
+
+  it('passes expected route config to phishing reporter item', () => {
+    const ItemStub = {
+      name: 'ConfigureNewCompanyNextStepsItem',
+      props: ['title', 'text', 'routeText', 'routeLink'],
+      template: '<div class="step-item">{{ title }}</div>'
+    }
+    const wrapper = shallowMount(ConfigureNewCompanyNextSteps, {
+      stubs: { ConfigureNewCompanyNextStepsItem: ItemStub }
+    })
+
+    const items = wrapper.findAllComponents(ItemStub)
+    const lastItem = items.at(4)
+    expect(lastItem.props('title')).toBe('Configure Phishing Reporter')
+    expect(lastItem.props('routeLink')).toEqual({
+      name: 'Phishing Reporter',
+      query: { tab: 'phishing-reporter-settings' }
+    })
+  })
 })

@@ -45,8 +45,18 @@ describe('CompanyListExtend.vue', () => {
     expect(wrapper.vm.getStatusId).toBe('1')
     expect(wrapper.vm.shouldRenderStatusBadge).toBe(true)
 
+    await wrapper.setProps({ selectedExtend: { statusId: 0, companyGroups: [] } })
+    expect(wrapper.vm.getStatusId).toBe('0')
+    expect(wrapper.vm.shouldRenderStatusBadge).toBe(true)
+
     await wrapper.setProps({ selectedExtend: { statusId: 3, companyGroups: [] } })
     expect(wrapper.vm.getStatusId).toBe('3')
+    expect(wrapper.vm.shouldRenderStatusBadge).toBe(false)
+  })
+
+  it('returns undefined status id and hides badge when status is missing', async () => {
+    const wrapper = createWrapper({ selectedExtend: {} })
+    expect(wrapper.vm.getStatusId).toBeUndefined()
     expect(wrapper.vm.shouldRenderStatusBadge).toBe(false)
   })
 
@@ -91,6 +101,16 @@ describe('CompanyListExtend.vue', () => {
     expect(wrapper.vm.setPosition()).toBe(100)
   })
 
+  it('returns top value when element is not available', () => {
+    const wrapper = createWrapper({ top: 42, tableHeight: 300 })
+    Object.defineProperty(wrapper.vm, '$el', {
+      value: undefined,
+      writable: true
+    })
+
+    expect(wrapper.vm.setPosition()).toBe(42)
+  })
+
   it('close action resets loading and emits close event', () => {
     const wrapper = createWrapper()
     wrapper.setData({ isLoading: false })
@@ -133,5 +153,13 @@ describe('CompanyListExtend.vue', () => {
 
     expect(wrapper.vm.isLoading).toBe(true)
     expect(wrapper.vm.groupCount).toBe(0)
+  })
+
+  it('calls setPosition in updated lifecycle hook', () => {
+    const wrapper = createWrapper()
+    const spy = jest.spyOn(wrapper.vm, 'setPosition').mockReturnValue(0)
+
+    wrapper.vm.$options.updated[0].call(wrapper.vm)
+    expect(spy).toHaveBeenCalled()
   })
 })

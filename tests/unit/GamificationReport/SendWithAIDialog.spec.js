@@ -101,6 +101,25 @@ describe('SendWithAIDialog.vue', () => {
       expect(wrapper.vm.$options.watch).toBeDefined()
     })
 
+    it('syncs localOptions when options prop changes', async () => {
+      const wrapper = mountComponent({ options: { training: true, phishing: true } })
+      await wrapper.setProps({ options: { training: false, phishing: false } })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.localOptions).toEqual({ training: false, phishing: false })
+    })
+
+    it('deep watcher handler syncs localOptions when option values mutate', () => {
+      const wrapper = mountComponent({ options: { training: true, phishing: true } })
+      const watcherHandler = wrapper.vm.$options.watch.options.handler
+      const mutated = { training: false, phishing: true }
+
+      watcherHandler.call(wrapper.vm, mutated)
+
+      expect(wrapper.vm.localOptions.training).toBe(false)
+      expect(wrapper.vm.localOptions.phishing).toBe(true)
+    })
+
     it('should allow updating individual options properties', () => {
       const wrapper = mountComponent()
       wrapper.vm.localOptions.training = false
@@ -232,6 +251,20 @@ describe('SendWithAIDialog.vue', () => {
       expect(emitted.phishing).toBe(false)
     })
 
+    it('handleConfirm uses current localOptions state even if props differ', async () => {
+      const wrapper = mountComponent({
+        options: { training: true, phishing: true }
+      })
+      wrapper.vm.localOptions = { training: false, phishing: true }
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.handleConfirm()
+      const emitted = wrapper.emitted('confirm')[0][0]
+
+      expect(emitted.training).toBe(false)
+      expect(emitted.phishing).toBe(true)
+    })
+
     it('handleConfirm should include sendAfterPhishingSimulation in confirm data', () => {
       const wrapper = mountComponent()
       wrapper.vm.sendAfterPhishingSimulation = true
@@ -267,6 +300,19 @@ describe('SendWithAIDialog.vue', () => {
       const callArgs = wrapper.vm.$store.dispatch.mock.calls[0][1]
       expect(callArgs.message).toContain('Autonomous AI process started')
     })
+
+    it('handleConfirm dispatches snackbar with expected icon and color', async () => {
+      const wrapper = mountComponent()
+      wrapper.vm.handleConfirm()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith('common/createSnackBar', {
+        message:
+          'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
+        icon: 'mdi-check-circle',
+        color: '#4caf50'
+      })
+    })
   })
 
   describe('Event Emission', () => {
@@ -276,6 +322,15 @@ describe('SendWithAIDialog.vue', () => {
       await appDialog.vm.$emit('changeStatus', false)
       await wrapper.vm.$nextTick()
       expect(wrapper.emitted('closeOverlay')).toBeTruthy()
+    })
+
+    it('changeStatus payload is forwarded as-is from AppDialog', async () => {
+      const wrapper = mountComponent({ status: true })
+      const appDialog = wrapper.findComponent({ name: 'AppDialog' })
+      await appDialog.vm.$emit('changeStatus', true)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.emitted('closeOverlay')[0]).toEqual([true])
     })
 
     it('handleClose from footer should emit closeOverlay with false', async () => {
@@ -293,6 +348,17 @@ describe('SendWithAIDialog.vue', () => {
       expect(footer.exists()).toBe(true)
       // The component template shows @handleConfirm="handleConfirm" binding
       expect(wrapper.vm.handleConfirm).toBeDefined()
+    })
+
+    it('footer handleConfirm event triggers confirm flow', async () => {
+      const wrapper = mountComponent()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+
+      await footer.vm.$emit('handleConfirm')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.emitted('confirm')).toBeTruthy()
+      expect(wrapper.emitted('closeOverlay')).toBeTruthy()
     })
   })
 

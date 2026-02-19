@@ -118,6 +118,11 @@ describe('CompanyList.vue', () => {
     await wrapper.setData({ isTargetUserCountExceedLimit: true })
     expect(wrapper.vm.getExceedingLimitFilterLabel).toBe('REMOVE FILTER')
     expect(wrapper.vm.getExceedingLimitFilterTooltip).toBe('Remove Filter')
+
+    await wrapper.setData({ isExceedingLimitFilterDisabled: true, isTargetUserCountExceedLimit: false })
+    expect(wrapper.vm.getExceedingLimitFilterTooltip).toBe(
+      'No companies exceeding their user limits, so the filter is disabled.'
+    )
   })
 
   it('toggles exceeding-limit filter and refreshes data', async () => {
@@ -129,6 +134,18 @@ describe('CompanyList.vue', () => {
 
     expect(wrapper.vm.isTargetUserCountExceedLimit).toBe(true)
     expect(wrapper.vm.canRenderAlertbox).toBe(false)
+    expect(wrapper.vm.getTableData).toHaveBeenCalled()
+  })
+
+  it('toggles exceeding-limit filter off and keeps alertbox state unchanged', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.getTableData = jest.fn()
+    await wrapper.setData({ canRenderAlertbox: true, isTargetUserCountExceedLimit: true })
+
+    wrapper.vm.handleExceedingFilterClick()
+
+    expect(wrapper.vm.isTargetUserCountExceedLimit).toBe(false)
+    expect(wrapper.vm.canRenderAlertbox).toBe(true)
     expect(wrapper.vm.getTableData).toHaveBeenCalled()
   })
 
@@ -149,6 +166,23 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.changeDeleteModalStatus).toHaveBeenCalledWith(true)
   })
 
+  it('builds multiple delete payload for selectAll flow', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.changeDeleteModalStatus = jest.fn()
+    wrapper.vm.serverSideProps.totalNumberOfRecords = 77
+
+    wrapper.vm.handleMultipleDeleteOfCompanies([{ companyResourceId: 'c-1' }], ['c-3'], true)
+
+    expect(wrapper.vm.multipleDeletePayload).toEqual({
+      items: [],
+      excludedItems: ['c-3'],
+      selectAll: true,
+      filter: wrapper.vm.payload.filter
+    })
+    expect(wrapper.vm.multipleDeleteCompanyCount).toBe(77)
+    expect(wrapper.vm.changeDeleteModalStatus).toHaveBeenCalledWith(true)
+  })
+
   it('handles pagination and sorting mutations before fetching', () => {
     const wrapper = createWrapper()
     wrapper.vm.getTableData = jest.fn()
@@ -166,6 +200,33 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.payload.pageNumber).toBe(1)
   })
 
+  it('number-of-users helper methods return expected numeric values', () => {
+    const wrapper = createWrapper()
+
+    expect(
+      wrapper.vm.isNumberOfUsersExceed({
+        numberOfUsers: 10,
+        targetUserCount: 12,
+        isNumberOfUsersLimited: true
+      })
+    ).toBe(true)
+    expect(
+      wrapper.vm.isNumberOfUsersExceed({
+        numberOfUsers: 10,
+        targetUserCount: 8,
+        isNumberOfUsersLimited: true
+      })
+    ).toBe(false)
+    expect(
+      wrapper.vm.isNumberOfUsersExceed({
+        numberOfUsers: 10,
+        targetUserCount: 12,
+        isNumberOfUsersLimited: false
+      })
+    ).toBe(false)
+    expect(wrapper.vm.exceedNumberOfUsersCount({ numberOfUsers: 10, targetUserCount: 14 })).toBe(4)
+  })
+
   it('sets monthly active user filter items and requests datatable rerender', async () => {
     const wrapper = createWrapper()
     const reRenderFilters = jest.fn()
@@ -177,6 +238,37 @@ describe('CompanyList.vue', () => {
     const col = wrapper.vm.tableOptions.columns.find((x) => x.property === 'monthlyActiveUserCount')
     expect(col.filterableItems.length).toBeGreaterThan(0)
     expect(reRenderFilters).toHaveBeenCalled()
+    expect(col.filterableItems.some((x) => x.text.includes('(Current)'))).toBe(true)
+  })
+
+  it('setMonthlyActiveUserFilterItems is safe when monthly column is missing', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+    wrapper.vm.tableOptions.columns = wrapper.vm.tableOptions.columns.filter(
+      (x) => x.property !== 'monthlyActiveUserCount'
+    )
+
+    expect(() => wrapper.vm.setMonthlyActiveUserFilterItems()).not.toThrow()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.tableOptions.columns.some((x) => x.property === 'monthlyActiveUserCount')).toBe(false)
+  })
+
+  it('normalizes MonthlyActiveUser filter operator to equals for single and array payloads', () => {
+    const wrapper = createWrapper()
+
+    const single = wrapper.vm.normalizeFilterForBackend({
+      FieldName: 'MonthlyActiveUser',
+      Operator: 'Contains',
+      Value: '2026-02'
+    })
+    expect(single.Operator).toBe('=')
+
+    const arr = wrapper.vm.normalizeFilterForBackend([
+      { FieldName: 'CompanyName', Operator: 'Contains', Value: 'Acme' },
+      { FieldName: 'MonthlyActiveUser', Operator: 'Contains', Value: '2026-02' }
+    ])
+    expect(arr[0].Operator).toBe('Contains')
+    expect(arr[1].Operator).toBe('=')
   })
 
   it('applies and clears column filters', () => {
@@ -190,6 +282,37 @@ describe('CompanyList.vue', () => {
     wrapper.vm.columnFilterCleared('CompanyName')
     expect(columnFilterCleared).toHaveBeenCalled()
     expect(wrapper.vm.payload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
+  it('columnFilterChanged passes normalized MonthlyActiveUser operator to helper', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.getTableData = jest.fn()
+
+    wrapper.vm.columnFilterChanged({
+      FieldName: 'MonthlyActiveUser',
+      Operator: 'Contains',
+      Value: '2026-02'
+    })
+
+    expect(columnFilterChanged).toHaveBeenCalledWith(
+      expect.objectContaining({
+        FieldName: 'MonthlyActiveUser',
+        Operator: '='
+      }),
+      wrapper.vm.payload
+    )
+    expect(wrapper.vm.getTableData).toHaveBeenCalled()
+  })
+
+  it('computes exceeding-limit filter button style with disabled pointer events', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.isExceedingLimitFilterDisabled = true
+
+    expect(wrapper.vm.getExceedingLimitFilterButtonStyle).toEqual({
+      order: 1,
+      marginRight: '4px',
+      pointerEvents: 'none'
+    })
   })
 
   it('handles add-to-group payload for single and multiple rows', () => {
@@ -227,6 +350,19 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.$router.go).toHaveBeenCalledWith(0)
     expect(localStorage.getItem('companyId')).toBe('c-777')
     expect(localStorage.getItem('selectedCompanyName')).toBe('Switch Co')
+  })
+
+  it('setter methods update modal visibility states', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.changeDeleteModalStatus(true)
+    expect(wrapper.vm.isShowDeleteModal).toBe(true)
+
+    wrapper.vm.changeCreateOrEditModalStatus(true)
+    expect(wrapper.vm.isShowCreateOrEditModal).toBe(true)
+
+    wrapper.vm.changeGroupModalStatus(true)
+    expect(wrapper.vm.showCreateNewGroupWithCompany).toBe(true)
   })
 
   it('fetches company detail for extend panel and handles failure', async () => {
@@ -276,6 +412,21 @@ describe('CompanyList.vue', () => {
 
     createElementSpy.mockRestore()
     objectUrlSpy.mockRestore()
+  })
+
+  it('handles export error path without throwing', async () => {
+    const wrapper = createWrapper()
+    exportCompanies.mockRejectedValueOnce(new Error('export failed'))
+
+    expect(() =>
+      wrapper.vm.handleTableDownload({
+        exportTypes: ['CSV'],
+        pageNumber: 1,
+        pageSize: 10,
+        reportAllPages: false
+      })
+    ).not.toThrow()
+    await flushPromises()
   })
 
   it('runs bulk delete flow and resets deleting state', async () => {
@@ -345,6 +496,15 @@ describe('CompanyList.vue', () => {
 
     wrapper.vm.handleCellClick({ column: { property: 'companyName' }, event: { offsetTop: 120 } })
     expect(wrapper.vm.extendTop).toBe(120)
+  })
+
+  it('ignores non-companyName cell clicks and keeps extendTop unchanged', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.extendTop = 42
+
+    wrapper.vm.handleCellClick({ column: { property: 'targetUserCount' }, event: { offsetTop: 120 } })
+
+    expect(wrapper.vm.extendTop).toBe(42)
   })
 
   it('toggles configure modal and clears created company resource id when closing', async () => {
@@ -425,6 +585,50 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.toggleConfigureNewCompanyModal).toHaveBeenCalled()
   })
 
+  it('addButton opens create/edit modal', () => {
+    const wrapper = createWrapper()
+    const spy = jest.spyOn(wrapper.vm, 'changeCreateOrEditModalStatus')
+
+    wrapper.vm.addButton()
+    expect(spy).toHaveBeenCalledWith(true)
+  })
+
+  it('closeExtend clears selected data and hides extended panel', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({
+      selectedExtend: { id: 'x' },
+      isShowExtended: true,
+      selectedRow: { companyResourceId: 'c-1' }
+    })
+
+    wrapper.vm.closeExtend()
+    expect(wrapper.vm.selectedExtend).toEqual({})
+    expect(wrapper.vm.isShowExtended).toBe(false)
+    expect(wrapper.vm.selectedRow).toEqual({})
+  })
+
+  it('handleChangeIsSettingsOpen closes extended panel only when value is truthy', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({ isShowExtended: true })
+
+    wrapper.vm.handleChangeIsSettingsOpen(false)
+    expect(wrapper.vm.isShowExtended).toBe(true)
+
+    wrapper.vm.handleChangeIsSettingsOpen(true)
+    expect(wrapper.vm.isShowExtended).toBe(false)
+  })
+
+  it('watcher toggles html overflow class when create/edit modal state changes', async () => {
+    const wrapper = createWrapper()
+    const toggleSpy = jest.spyOn(document.querySelector('html').classList, 'toggle')
+
+    await wrapper.setData({ isShowCreateOrEditModal: true })
+    await wrapper.setData({ isShowCreateOrEditModal: false })
+
+    expect(toggleSpy).toHaveBeenCalledWith('overflow-y-hidden')
+    toggleSpy.mockRestore()
+  })
+
   it('updates add-group modal status and fetches data when closing', () => {
     const wrapper = createWrapper()
     wrapper.vm.getTableData = jest.fn()
@@ -436,5 +640,118 @@ describe('CompanyList.vue', () => {
     wrapper.vm.handleStatusAddGroupToModal(false)
     expect(wrapper.vm.showAddGroupToModal).toBe(false)
     expect(wrapper.vm.getTableData).toHaveBeenCalled()
+  })
+
+  it('getTableData handles empty result list and disables exceeding-limit filter when needed', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    searchCompanies.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          limitExceededCompanyCount: 0,
+          results: []
+        }
+      }
+    })
+    wrapper.vm.isTargetUserCountExceedLimit = false
+
+    wrapper.vm.getTableData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.limitExceededCompanyCount).toBe(0)
+    expect(wrapper.vm.canRenderAlertbox).toBe(false)
+    expect(wrapper.vm.isExceedingLimitFilterDisabled).toBe(true)
+  })
+
+  it('getTableData sets empty table on api failure', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    searchCompanies.mockRejectedValueOnce(new Error('search failed'))
+    wrapper.vm.tableData = [{ companyName: 'Will be cleared' }]
+
+    wrapper.vm.getTableData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.loading).toBe(false)
+  })
+
+  it('getLookUpDatas calls getTableData in finally', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    const getTableDataSpy = jest.spyOn(wrapper.vm, 'getTableData').mockImplementation(() => {})
+    LookupLocalStorage.getMultiple.mockResolvedValueOnce([
+      { genericCodeTypeId: 2, name: 'Industry B', resourceId: 'i-2' }
+    ])
+
+    wrapper.vm.getLookUpDatas()
+    await flushPromises()
+
+    expect(getTableDataSpy).toHaveBeenCalled()
+  })
+
+  it('getLookUpDatas maps industry and license filter items', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    LookupLocalStorage.getMultiple.mockResolvedValueOnce([
+      { genericCodeTypeId: 2, name: 'Industry C', resourceId: 'i-3' },
+      { genericCodeTypeId: 3, name: 'License C', resourceId: 'l-3' }
+    ])
+    wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+
+    wrapper.vm.getLookUpDatas()
+    await flushPromises()
+
+    expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([
+      { text: 'Industry C', value: 'i-3' }
+    ])
+    expect(wrapper.vm.tableOptions.columns[3].filterableItems).toEqual([
+      { text: 'License C', value: 'l-3' }
+    ])
+    expect(wrapper.vm.$refs.refDataList.reRenderFilters).toHaveBeenCalled()
+  })
+
+  it('includes target-user-limit flag in export payload', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.isTargetUserCountExceedLimit = true
+    exportCompanies.mockResolvedValueOnce({ data: Buffer.from('x') })
+    const click = jest.fn()
+    const originalCreateElement = document.createElement.bind(document)
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = originalCreateElement(tagName)
+      if (tagName === 'a') {
+        element.click = click
+      }
+      return element
+    })
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = jest.fn()
+    }
+    const objectUrlSpy = jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:test')
+
+    wrapper.vm.handleTableDownload({
+      exportTypes: ['CSV'],
+      pageNumber: 2,
+      pageSize: 20,
+      reportAllPages: false
+    })
+    await flushPromises()
+
+    expect(exportCompanies).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isTargetUserCountExceededLimit: true,
+        pageNumber: 2,
+        pageSize: 20,
+        exportType: 'CSV'
+      })
+    )
+    expect(click).toHaveBeenCalled()
+
+    createElementSpy.mockRestore()
+    objectUrlSpy.mockRestore()
   })
 })

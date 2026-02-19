@@ -36,4 +36,30 @@ describe('CallbackNumberWarningModal.vue', () => {
     expect(wrapper.vm.labels).toBeTruthy()
     expect(wrapper.vm.labels.Okay).toBeDefined()
   })
+
+  it('forwards status prop to AppDialog and handles changeStatus event', async () => {
+    const AppDialogStub = {
+      name: 'AppDialog',
+      props: ['status', 'title'],
+      template: '<div><slot name="app-dialog-body" /><slot name="app-dialog-footer" /></div>'
+    }
+    const wrapper = shallowMount(CallbackNumberWarningModal, {
+      propsData: {
+        status: false,
+        availableNumberCount: 2
+      },
+      stubs: {
+        AppDialog: AppDialogStub,
+        VBtn: true
+      }
+    })
+
+    const dialog = wrapper.findComponent(AppDialogStub)
+    expect(dialog.props('status')).toBe(false)
+    expect(dialog.props('title')).toBe('Insufficient Callback Phone Numbers')
+
+    dialog.vm.$emit('changeStatus')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('closeOverlay')).toEqual([[]])
+  })
 })

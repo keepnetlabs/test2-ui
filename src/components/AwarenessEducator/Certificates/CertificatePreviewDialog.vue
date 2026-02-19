@@ -66,7 +66,7 @@ export default {
         .then((response) => {
           this.template =
             response?.data?.data?.template?.replaceAll(
-              /{COMPANYLOGO}/g,
+              '{COMPANYLOGO}',
               this?.$store?.state?.whitelabel.mainLogoUrl || ''
             ) || ''
         })
