@@ -119,7 +119,7 @@ export const getMyLearning = () => {
       pageNumber: defaultPayload.pageNumber || 1,
       pageSize: 1000,
       orderBy: 'StartDate',
-      ascending: defaultPayload.ascending !== undefined ? defaultPayload.ascending : false
+      ascending: defaultPayload.ascending ?? false
     }
   }
   return usersDashboardRequest.post(`/securitygrowthdashboard/my-learning`, payload, {

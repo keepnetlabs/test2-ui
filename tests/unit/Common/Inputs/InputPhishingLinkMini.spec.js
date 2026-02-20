@@ -48,6 +48,14 @@ describe('InputPhishingLinkMini.vue', () => {
     expect(computed.getUrlSchemaTypesModified.call(ctx)).toEqual([{ text: 'custom', value: '9' }])
   })
 
+  it('falls back to urlSchemaTypes when modified list is empty', () => {
+    const ctx = buildContext({
+      urlSchemaTypesModified: [],
+      urlSchemaTypes: [{ text: 'https://', value: '2' }]
+    })
+    expect(computed.getUrlSchemaTypesModified.call(ctx)).toEqual([{ text: 'https://', value: '2' }])
+  })
+
   it('handleInputChange trims value and emits updated object', () => {
     const ctx = buildContext()
     ctx.changeDisabledLabel = jest.fn()
@@ -135,5 +143,25 @@ describe('InputPhishingLinkMini.vue', () => {
     expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
     expect(ctx.$emit).toHaveBeenCalledWith('invisible-captcha', false)
     expect(ctx.$emit).toHaveBeenCalledWith('captcha-default-value', true)
+  })
+
+  it('checkSchemaTypes enables all schemas for HTTPS-capable domains', () => {
+    const ctx = buildContext({
+      isEdit: false,
+      domainRecords: [
+        {
+          text: 'https-capable.test',
+          value: 'domain-https',
+          extraDatas: [{ value: '2', text: 'HTTPS' }, { value: true }]
+        }
+      ]
+    })
+    ctx.getUrlSchemaTypesModified = computed.getUrlSchemaTypesModified.call(ctx)
+    ctx.handleInputChange = jest.fn()
+
+    methods.checkSchemaTypes.call(ctx, 'domain-https')
+
+    expect(ctx.urlSchemaTypesModified.every((item) => item.disabled === false)).toBe(true)
+    expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
   })
 })

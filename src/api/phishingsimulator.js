@@ -695,8 +695,8 @@ export const getEmailTemplateTranslation = (payload) => {
   return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)
 }
 const workerUrl =
-  window.location.origin.includes('test-ui.devkeepnet.com') ||
-  window.location.origin.includes('localhost')
+  globalThis.location.origin.includes('test-ui.devkeepnet.com') ||
+  globalThis.location.origin.includes('localhost')
     ? 'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev'
     : 'https://r-flg.keepnetlabs.com'
 export const checkRedFlags = (payload) => {
