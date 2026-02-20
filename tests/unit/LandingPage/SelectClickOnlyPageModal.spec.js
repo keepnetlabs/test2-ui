@@ -120,6 +120,27 @@ describe('SelectClickOnlyPageModal.vue', () => {
     jest.useRealTimers()
   })
 
+  it('status watcher marks drawer as just opened before timeout window ends', () => {
+    jest.useFakeTimers()
+    const openDrawer = jest.fn()
+    const ctx = {
+      isVisible: false,
+      isJustOpened: false,
+      openDrawer,
+      $nextTick: (cb) => cb()
+    }
+
+    SelectClickOnlyPageModal.watch.status.call(ctx, true)
+
+    expect(ctx.isVisible).toBe(true)
+    expect(ctx.isJustOpened).toBe(true)
+    expect(openDrawer).toHaveBeenCalledTimes(1)
+
+    jest.advanceTimersByTime(300)
+    expect(ctx.isJustOpened).toBe(false)
+    jest.useRealTimers()
+  })
+
   it('status watcher closes drawer when status becomes false', () => {
     const closeDrawer = jest.fn()
     const ctx = {
@@ -211,6 +232,18 @@ describe('SelectClickOnlyPageModal.vue', () => {
     expect(handleClose).toHaveBeenCalledTimes(1)
   })
 
+  it('handleClickOutside closes when event target is missing', () => {
+    const handleClose = jest.fn()
+    const ctx = {
+      isJustOpened: false,
+      handleClose
+    }
+
+    SelectClickOnlyPageModal.methods.handleClickOutside.call(ctx, {})
+
+    expect(handleClose).toHaveBeenCalledTimes(1)
+  })
+
   it('closeDrawer resets state and emits close after timeout', () => {
     jest.useFakeTimers()
     const emit = jest.fn()
@@ -268,4 +301,5 @@ describe('SelectClickOnlyPageModal.vue', () => {
 
     expect(closeDrawer).toHaveBeenCalledTimes(1)
   })
+
 })

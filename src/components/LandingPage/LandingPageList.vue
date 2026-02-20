@@ -80,6 +80,11 @@
             <span>This template was generated with AI</span>
           </VTooltip>
         </span>
+        <LanguagesColumn
+          v-else-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="preferredLanguageTypes"
+        />
         <span v-else-if="scope.column.property === 'isAssistedByAI'">
           {{ scope.row.isAssistedByAI ? 'AI Ally' : 'Manual' }}
         </span>
@@ -158,10 +163,12 @@ import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowAct
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    LanguagesColumn,
     CommonSimulatorLandingPageTemplatesPreviewDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
     ScenariosRowActionsDeleteButton,
@@ -233,12 +240,12 @@ export default {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,
-            label: labels.LANGUAGE,
+            label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'multiText',
+            type: 'slot',
             fixed: false,
-            width: 175,
+            width: 248,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'languageTypeResourceId'
@@ -383,6 +390,11 @@ export default {
       getLandingPageTemplatesSearchPermissions:
         'permissions/getLandingPageTemplatesSearchPermissions'
     }),
+    preferredLanguageTypes() {
+      return this.scenarioDetailsLookup && this.scenarioDetailsLookup.preferredLanguageTypes
+        ? this.scenarioDetailsLookup.preferredLanguageTypes
+        : []
+    },
     getCurrentLandingPageTemplate() {
       return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
     }
@@ -422,12 +434,24 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             const enrichedResults = results?.map((item) => {
+              const languageTypeName = item.languageTypeName
+              if (Array.isArray(languageTypeName)) {
+                return {
+                  ...item,
+                  languageTypeName: languageTypeName.map((code) => {
+                    const language = this.languageFilterOptions.find(
+                      (lang) => lang.languageName === code
+                    )
+                    return language?.text || code
+                  })
+                }
+              }
               const language = this.languageFilterOptions.find(
-                (lang) => lang.languageName === item.languageTypeName
+                (lang) => lang.languageName === languageTypeName
               )
               return {
                 ...item,
-                languageTypeName: language?.text || item.languageTypeName
+                languageTypeName: language?.text || languageTypeName
               }
             })
             this.tableData = enrichedResults

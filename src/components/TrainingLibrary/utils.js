@@ -130,8 +130,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.Languages,
     sortable: true,
     show: true,
-    width: 175,
-    type: 'multiText',
+    width: 248,
+    type: 'slot',
     filterableType: 'select',
     filterableItems: [],
     hasTooltip: true

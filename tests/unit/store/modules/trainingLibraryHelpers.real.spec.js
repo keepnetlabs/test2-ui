@@ -6,6 +6,17 @@ jest.mock('@/api/awarenessEducator', () => ({
   getTrainingLevels: jest.fn()
 }))
 
+jest.mock('@/api/scenarios', () => ({
+  getScenarioDataDetails: jest.fn()
+}))
+
+jest.mock('@/helper-classes/lookup-local-storage', () => ({
+  __esModule: true,
+  default: {
+    getSingle: jest.fn()
+  }
+}))
+
 import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'

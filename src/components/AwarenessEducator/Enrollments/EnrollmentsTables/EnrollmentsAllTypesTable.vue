@@ -48,6 +48,13 @@
         @on-route-to-report="$emit('on-view-report', $event)"
       />
     </template>
+    <template #datatable-custom-column="{ scope }">
+      <LanguagesColumn
+        v-if="scope.column.property === 'languages'"
+        :value="scope.row.languages"
+        :preferred-language-types="getPreferredLanguageTypes"
+      />
+    </template>
   </DataTable>
 </template>
 
@@ -60,6 +67,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { COLUMNS, ENROLLMENT_AUDIENCE } from '../../utils'
 import EnrollmentsTableRowActions from '@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -74,6 +82,7 @@ export default {
   name: 'EnrollmentsAllTypesTable',
   components: {
     EnrollmentsTableRowActions,
+    LanguagesColumn,
     DataTable
   },
   props: {
@@ -193,7 +202,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      types: 'trainingLibraryHelpers/getTrainingTypes'
+      types: 'trainingLibraryHelpers/getTrainingTypes',
+      getPreferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes'
     }),
     savedFiltersKey() {
       return this.isTrash

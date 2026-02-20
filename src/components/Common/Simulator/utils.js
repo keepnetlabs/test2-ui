@@ -130,7 +130,7 @@ export const COMMON_SIMULATOR_COLUMNS = {
     show: true,
     type: 'multiText',
     fixed: false,
-    width: 175,
+    width: 248,
     filterableType: 'select',
     filterableItems: [],
     filterableCustomFieldName: 'languageTypeResourceId'

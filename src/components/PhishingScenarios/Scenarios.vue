@@ -89,6 +89,13 @@
       @on-fast-launch="handleFastLaunch"
       @on-show-scenario-statistics="isShowScenarioStatistics = true"
     >
+      <template #datatable-custom-column="{ scope }">
+        <LanguagesColumn
+          v-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="scenarioDetailsLookup?.preferredLanguageTypes || []"
+        />
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
@@ -199,9 +206,11 @@ import CommonSimulatorNewScenario from '@/components/Common/Simulator/CommonSimu
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import CommonSimulatorFastLaunch from '@/components/Common/Simulator/CommonSimulatorFastLaunch'
 import CampaignManagerScenarioStatisticsModal from '@/components/CampaignManager/CampaignManagerScenarioStatisticsModal.vue'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    LanguagesColumn,
     CampaignManagerScenarioStatisticsModal,
     CommonSimulatorFastLaunch,
     CommonSimulatorNewScenario,
@@ -249,7 +258,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.NAME,
           COMMON_SIMULATOR_COLUMNS.CATEGORY,
           COMMON_SIMULATOR_COLUMNS.PHISHING_METHOD,
-          COMMON_SIMULATOR_COLUMNS.LANGUAGES,
+          { ...COMMON_SIMULATOR_COLUMNS.LANGUAGES, type: 'slot' },
           COMMON_SIMULATOR_COLUMNS.ROLES,
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,

@@ -72,6 +72,13 @@
         @searchChangedEvent="handleSearchChange"
         @handlePreview="handlePreview"
       >
+        <template #datatable-custom-column="{ scope }">
+          <LanguagesColumn
+            v-if="scope.column.property === 'languageTypeName'"
+            :value="scope.row.languageTypeName"
+            :preferred-language-types="preferredLanguageTypes"
+          />
+        </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :id="tableOptions.rowActions[0].id"
@@ -153,9 +160,11 @@ import DefaultTemplateDeleteWarningModal from '@/components/Company Settings/Def
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import NotificationTemplatesPreviewDialog from '@/components/Company Settings/NotificationTemplatesPreviewDialog'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 export default {
   name: 'NotificationTemplates',
   components: {
+    LanguagesColumn,
     NotificationTemplatesPreviewDialog,
     RowActionsMenu,
     DefaultMenuRowAction,
@@ -234,9 +243,9 @@ export default {
             label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'multiText',
+            type: 'slot',
             fixed: false,
-            width: 175,
+            width: 248,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'languageTypeResourceId'
