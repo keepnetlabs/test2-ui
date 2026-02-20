@@ -34,10 +34,10 @@
                     prepend-inner-icon="mdi-magnify"
                   />
                 </div>
-                <div style="max-width: 140px;">
+                <div style="max-width: 160px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
-                    :items="scenarioDetailsLookup.difficultyTypes"
+                    :items="scenarioDetailsLookup.difficultyTypes || difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
@@ -50,7 +50,7 @@
                     @change="getTemplatesForSearch"
                   />
                 </div>
-                <div style="max-width: 140px;">
+                <div style="max-width: 180px;">
                   <v-select
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
                     :items="languages"

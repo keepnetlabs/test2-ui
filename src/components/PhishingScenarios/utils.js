@@ -226,7 +226,7 @@ export const getDefaultLandingPageTemplatePayload = (method = '') => {
             {
               value: method,
               FieldName: 'Method',
-              Operator: '='
+              Operator: method ? '=' : 'Contains'
             },
             { Value: '', FieldName: 'difficulty', Operator: 'Include' },
             {

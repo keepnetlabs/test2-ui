@@ -83,6 +83,11 @@ describe('SelectClickOnlyPageModal.vue', () => {
     expect(wrapper.vm.selectedResourceId).toBe('lp-999')
   })
 
+  it('builds drawer id with expected prefix', () => {
+    const wrapper = mountComponent({ method: 'data submission' })
+    expect(wrapper.vm.drawerId.startsWith('drawer-')).toBe(true)
+  })
+
   it('stepSubtitle returns method based subtitles', () => {
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'click only' })
@@ -126,6 +131,32 @@ describe('SelectClickOnlyPageModal.vue', () => {
     expect(closeDrawer).toHaveBeenCalledTimes(1)
   })
 
+  it('status watcher does nothing when status is false and drawer is already hidden', () => {
+    const closeDrawer = jest.fn()
+    const ctx = {
+      isVisible: false,
+      closeDrawer
+    }
+
+    SelectClickOnlyPageModal.watch.status.call(ctx, false)
+    expect(closeDrawer).not.toHaveBeenCalled()
+  })
+
+  it('status watcher does nothing when status is true and drawer already visible', () => {
+    const openDrawer = jest.fn()
+    const closeDrawer = jest.fn()
+    const ctx = {
+      isVisible: true,
+      openDrawer,
+      closeDrawer
+    }
+
+    SelectClickOnlyPageModal.watch.status.call(ctx, true)
+
+    expect(openDrawer).not.toHaveBeenCalled()
+    expect(closeDrawer).not.toHaveBeenCalled()
+  })
+
   it('handleClickOutside ignores select/picker/popover targets', () => {
     const handleClose = jest.fn()
     const makeTarget = (cls) => ({
@@ -147,6 +178,20 @@ describe('SelectClickOnlyPageModal.vue', () => {
     })
     SelectClickOnlyPageModal.methods.handleClickOutside.call(ctx, {
       target: makeTarget('.v-menu__content')
+    })
+
+    expect(handleClose).not.toHaveBeenCalled()
+  })
+
+  it('handleClickOutside ignores outside click while drawer is just opened', () => {
+    const handleClose = jest.fn()
+    const ctx = {
+      isJustOpened: true,
+      handleClose
+    }
+
+    SelectClickOnlyPageModal.methods.handleClickOutside.call(ctx, {
+      target: { closest: () => null }
     })
 
     expect(handleClose).not.toHaveBeenCalled()
@@ -188,5 +233,39 @@ describe('SelectClickOnlyPageModal.vue', () => {
 
     querySpy.mockRestore()
     jest.useRealTimers()
+  })
+
+  it('openDrawer animates right position when drawer element exists', () => {
+    jest.useFakeTimers()
+    const element = { style: { right: '' } }
+    const querySpy = jest.spyOn(document, 'querySelector').mockReturnValue(element)
+    const ctx = { drawerId: 'drawer-2' }
+
+    SelectClickOnlyPageModal.methods.openDrawer.call(ctx)
+    expect(element.style.right).toBe('-100%')
+
+    jest.advanceTimersByTime(10)
+    expect(element.style.right).toBe('0')
+
+    querySpy.mockRestore()
+    jest.useRealTimers()
+  })
+
+  it('openDrawer skips when drawer element is missing', () => {
+    const querySpy = jest.spyOn(document, 'querySelector').mockReturnValue(null)
+    const ctx = { drawerId: 'drawer-3' }
+
+    expect(() => SelectClickOnlyPageModal.methods.openDrawer.call(ctx)).not.toThrow()
+
+    querySpy.mockRestore()
+  })
+
+  it('handleClose delegates to closeDrawer', () => {
+    const closeDrawer = jest.fn()
+    const ctx = { closeDrawer }
+
+    SelectClickOnlyPageModal.methods.handleClose.call(ctx)
+
+    expect(closeDrawer).toHaveBeenCalledTimes(1)
   })
 })

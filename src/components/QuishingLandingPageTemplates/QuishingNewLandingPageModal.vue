@@ -249,47 +249,57 @@
                       </el-tab-pane>
                       <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
                         <template #label>
-                          <v-menu
-                            :min-width="128"
-                            :nudge-right="83"
-                            :nudge-bottom="240"
-                            id="add-page-menu"
-                            attach="#landing-page-tab-content-quishing"
-                            :z-index="10000"
-                          >
-                            <template #activator="{ on: menu }">
-                              <v-btn v-on="menu" text color="#2196f3">
-                                <v-icon class="mr-2" size="18" color="#2196f3"
-                                  >mdi-plus-circle-outline</v-icon
+                          <div style="display: flex;">
+                            <span
+                              class="landing-page-tab__label"
+                              style="cursor: pointer; margin-right: 4px; display: block;"
+                              @click.stop="isSelectClickOnlyPageOpen = true"
+                            >
+                              <v-icon class="mr-1" size="18" color="#2196f3">mdi-plus-circle-outline</v-icon>
+                              Add Template
+                            </span>
+                            <v-menu
+                              :min-width="128"
+                              :nudge-right="83"
+                              :nudge-bottom="92"
+                              :offset-y="true"
+                              id="add-page-menu"
+                              attach="#landing-page-tab-content-quishing"
+                              :z-index="10000"
+                            >
+                              <template #activator="{ on: menu }">
+                                <v-icon
+                                  v-on="menu"
+                                  @click.stop
+                                  color="#757575"
+                                  size="20"
+                                  class="landing-page-tab__dots"
+                                >mdi-dots-vertical</v-icon>
+                              </template>
+                              <v-list>
+                                <v-list-item
+                                  class="px-4"
+                                  style="cursor: pointer;"
+                                  @click="handleAddBlankPage"
                                 >
-                                <span class="landing-page-tab__label">
-                                  Add page
-                                </span>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                class="px-4"
-                                style="cursor: pointer;"
-                                @click="handleAddBlankPage"
-                              >
-                                <v-list-item-title>Blank page</v-list-item-title>
-                              </v-list-item>
-                              <v-list-item
-                                class="px-4"
-                                style="cursor: pointer;"
-                                @click="handleUploadHTML"
-                              >
-                                <v-list-item-title>Upload HTML</v-list-item-title>
-                              </v-list-item>
-                              <input
-                                v-show="false"
-                                ref="refHtmlFile"
-                                type="file"
-                                @change="handleHTMLUploadChange"
-                              />
-                            </v-list>
-                          </v-menu>
+                                  <v-list-item-title>Blank page</v-list-item-title>
+                                </v-list-item>
+                                <v-list-item
+                                  class="px-4"
+                                  style="cursor: pointer;"
+                                  @click="handleUploadHTML"
+                                >
+                                  <v-list-item-title>Upload HTML</v-list-item-title>
+                                </v-list-item>
+                                <input
+                                  v-show="false"
+                                  ref="refHtmlFile"
+                                  type="file"
+                                  @change="handleHTMLUploadChange"
+                                />
+                              </v-list>
+                            </v-menu>
+                          </div>
                         </template>
                       </el-tab-pane>
                     </el-tabs>
@@ -300,6 +310,17 @@
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
+
+      <SelectClickOnlyPageModal
+        :status="isSelectClickOnlyPageOpen"
+        :method="clickOnlyMethodText"
+        :scenario-details-lookup="{ difficultyTypes: landingPageData && landingPageData.difficultyTypes || [] }"
+        :languages="languageOptions"
+        :api-funcs="quishingApiFuncs"
+        type="Quishing"
+        @close="isSelectClickOnlyPageOpen = false"
+        @add="handleClickOnlyPageAdded"
+      />
     </template>
     <template #overlay-footer>
       <StepperFooter
@@ -338,6 +359,8 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import QuishingService from '@/api/quishing'
+import SelectClickOnlyPageModal from '@/components/LandingPage/SelectClickOnlyPageModal.vue'
+import '@/styles/landing-page-tabs.css'
 export default {
   name: 'QuishingNewLandingPageModal',
   components: {
@@ -349,7 +372,8 @@ export default {
     MakeAvailableFor,
     EmailTemplate,
     InputSelectLanguage,
-    InputTag
+    InputTag,
+    SelectClickOnlyPageModal
   },
   props: {
     status: {
@@ -384,6 +408,11 @@ export default {
       languageOptions: [],
       isInvisibleCaptchaDisabled: false,
       disabledLabel: null,
+      isSelectClickOnlyPageOpen: false,
+      quishingApiFuncs: {
+        list: QuishingService.getLandingPageList,
+        content: QuishingService.getLandingPageTemplatePreviewContent
+      },
       tab: 'page1',
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
@@ -480,6 +509,17 @@ export default {
     }
   },
   methods: {
+    async handleClickOnlyPageAdded(resourceId) {
+      this.isSelectClickOnlyPageOpen = false
+      const response = await QuishingService.getLandingPageTemplatePreviewContent(resourceId)
+      const templateContent = response?.data?.data?.landingPages?.[0]?.content || ''
+      this.formValues.landingPages.push({
+        name: `Page ${this.formValues.landingPages.length + 1}`,
+        order: 2,
+        content: templateContent
+      })
+      this.tab = 'page2'
+    },
     handleAddBlankPage() {
       this.formValues.landingPages.push({
         name: `Page ${this.formValues.landingPages.length + 1}`,
@@ -643,6 +683,12 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    clickOnlyMethodText() {
+      if (this.formValues.methodTypeId === '2') {
+        return this.landingPageData?.methodTypes?.find((item) => item.value === '2')?.text || ''
+      }
+      return ''
+    },
     getUrlSchemaTypes() {
       return this.landingPageData?.urlSchemaTypes || []
     },

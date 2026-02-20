@@ -203,11 +203,12 @@ describe('NewLandingPage.vue', () => {
     ).toBe(true)
     expect(
       computed.clickOnlyMethodText.call({
+        formValues: { methodTypeId: '2' },
         landingPageData: {
-          methodTypes: [{ value: '1', text: 'Click Only' }]
+          methodTypes: [{ value: '2', text: 'Data Submission' }]
         }
       })
-    ).toBe('Click Only')
+    ).toBe('Data Submission')
     expect(
       computed.showMakeAvailableFor.call({
         $store: { state: { auth: { userRoleName: 'User' } } }
@@ -533,5 +534,275 @@ describe('NewLandingPage.vue', () => {
     expect(ctx.formValues.landingPages[1].name).toBe('Page 5')
     expect(ctx.getNewIndexForPageText).toHaveBeenCalled()
     expect(ctx.getAndUpdateFirstIndexForPageText).not.toHaveBeenCalled()
+  })
+
+  it('computed schema helpers return safe defaults and http protocol status', () => {
+    expect(
+      computed.isProtocolHttp.call({
+        formValues: { phishingLink: { urlSchemaTypeId: '1' } }
+      })
+    ).toBe(true)
+    expect(
+      computed.isProtocolHttp.call({
+        formValues: { phishingLink: { urlSchemaTypeId: '2' } }
+      })
+    ).toBe(false)
+    expect(computed.getUrlSchemaTypes.call({ landingPageData: null })).toEqual([])
+    expect(computed.getDomainRecordTypes.call({ landingPageData: null })).toEqual([])
+    expect(computed.getExtensionTypes.call({ landingPageData: null })).toEqual([])
+    expect(computed.getParameterTypes.call({ landingPageData: null })).toEqual([])
+    expect(computed.getPathTypes.call({ landingPageData: null })).toEqual([])
+  })
+
+  it('clickOnlyMethodText returns empty string when method is not data submission', () => {
+    expect(
+      computed.clickOnlyMethodText.call({
+        formValues: { methodTypeId: '1' },
+        landingPageData: {
+          methodTypes: [{ value: '2', text: 'Data Submission' }]
+        }
+      })
+    ).toBe('')
+  })
+
+  it('getLanguageObject falls back to resourceId when no sources match', () => {
+    expect(
+      methods.getLanguageObject.call(
+        { languageItems: [], languageOptions: [] },
+        'xx-1'
+      )
+    ).toEqual({
+      text: 'xx-1',
+      value: 'xx-1'
+    })
+  })
+
+  it('created configures duplicate footer button ids', () => {
+    const ctx = {
+      isDuplicate: true,
+      isEdit: false,
+      selectedMethodText: '',
+      landingPageData: { methodTypes: [{ value: '1' }] },
+      formValues: {},
+      footerButtonsIds: {},
+      callForMergedTags: jest.fn(),
+      callForLanguages: jest.fn()
+    }
+
+    NewLandingPage.created.call(ctx)
+
+    expect(ctx.footerButtonsIds).toEqual({
+      cancelButton: 'btn-duplicate-cancel--landing-page-templates-modal',
+      backButton: 'btn-duplicate-back--landing-page-templates-modal',
+      nextButton: 'btn-duplicate-next--landing-page-templates-modal',
+      saveButton: 'btn-duplicate-save--landing-page-templates-modal'
+    })
+  })
+
+  it('setLanguageItems does not auto-select language in edit mode', () => {
+    const ctx = {
+      isEdit: true,
+      scenarioDetailsLookup: {
+        languageTypes: [{ text: 'English', value: 'en' }],
+        preferredLanguageTypes: [{ text: 'English', value: 'en' }],
+        companyLanguageTypeResourceId: 'en'
+      },
+      landingPageData: null,
+      languageOptions: [],
+      getCurrentCompany: {},
+      selectedLanguages: [],
+      activeLanguage: '',
+      formValues: {},
+      languageItems: [],
+      $nextTick: jest.fn()
+    }
+
+    methods.setLanguageItems.call(ctx)
+
+    expect(ctx.languageItems).toHaveLength(2)
+    expect(ctx.selectedLanguages).toEqual([])
+    expect(ctx.$nextTick).not.toHaveBeenCalled()
+  })
+
+  it('setLanguageItems auto-selects company language in create mode', () => {
+    const handleSelectedLanguagesChange = jest.fn()
+    const resetValidation = jest.fn()
+    const ctx = {
+      isEdit: false,
+      scenarioDetailsLookup: {
+        languageTypes: [{ text: 'English', value: 'en' }, { text: 'Turkish', value: 'tr' }],
+        preferredLanguageTypes: [{ text: 'English', value: 'en' }],
+        companyLanguageTypeResourceId: 'en'
+      },
+      landingPageData: null,
+      languageOptions: [],
+      getCurrentCompany: {},
+      selectedLanguages: [],
+      activeLanguage: '',
+      formValues: { canRemoveLanguages: true, methodTypeId: '1' },
+      languagesPayload: [{ languageTypeResourceId: 'en', isTranslated: false }],
+      languageItems: [],
+      selectedLanguagePayloadItemBeforeSave: null,
+      getSelectedLanguagePayload: { languageTypeResourceId: 'en', landingPages: [] },
+      isDefault: false,
+      handleGenerateWithAI: jest.fn(),
+      handleSelectedLanguagesChange,
+      $refs: { refEmailTemplateContent: { resetValidation } },
+      $nextTick: (cb) => cb()
+    }
+
+    methods.setLanguageItems.call(ctx)
+
+    expect(ctx.selectedLanguages).toEqual([{ text: 'English', value: 'en' }])
+    expect(ctx.activeLanguage).toBe('en')
+    expect(ctx.formValues.languageTypeResourceId).toBe('en')
+    expect(handleSelectedLanguagesChange).toHaveBeenCalled()
+    expect(resetValidation).toHaveBeenCalled()
+  })
+
+  it('selectedLanguages watcher resets activeLanguage when list becomes empty', () => {
+    const ctx = {
+      activeLanguage: 'en',
+      languagesPayload: [],
+      formValues: { landingPages: [] }
+    }
+
+    NewLandingPage.watch.selectedLanguages.call(ctx, [])
+    expect(ctx.activeLanguage).toBe('')
+  })
+
+  it('selectedLanguages watcher switches to first selected language and creates payload if missing', () => {
+    const ctx = {
+      activeLanguage: 'tr',
+      languagesPayload: [],
+      formValues: { landingPages: [{ name: 'landing-page', order: 1, content: 'x', prompt: '' }] }
+    }
+
+    NewLandingPage.watch.selectedLanguages.call(ctx, [{ text: 'English', value: 'en' }])
+
+    expect(ctx.activeLanguage).toBe('en')
+    expect(ctx.languagesPayload).toHaveLength(1)
+    expect(ctx.languagesPayload[0].languageTypeResourceId).toBe('en')
+    expect(ctx.languagesPayload[0].landingPages).toEqual(ctx.formValues.landingPages)
+  })
+
+  it('selectedLanguages watcher picks first language when there is no active language', () => {
+    const ctx = {
+      activeLanguage: '',
+      languagesPayload: [],
+      formValues: { landingPages: [] }
+    }
+
+    NewLandingPage.watch.selectedLanguages.call(ctx, [{ text: 'Turkish', value: 'tr' }])
+
+    expect(ctx.activeLanguage).toBe('tr')
+  })
+
+  it('step watcher enables email generating flags when entering step 2 during submit', () => {
+    const refs = [{ isEmailGenerating: false }, null, { isEmailGenerating: false }]
+    const ctx = {
+      isSubmitDisabled: true,
+      $refs: { refEmailTemplate: refs },
+      $nextTick: (cb) => cb()
+    }
+
+    NewLandingPage.watch.step.call(ctx, 2)
+
+    expect(refs[0].isEmailGenerating).toBe(true)
+    expect(refs[2].isEmailGenerating).toBe(true)
+  })
+
+  it('handleActiveLanguageChange updates pages from language payload and resets tab', () => {
+    const ctx = {
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          landingPages: [{ name: 'Page 1', order: 1, content: 'english', prompt: '' }]
+        }
+      ],
+      formValues: {
+        landingPages: [{ name: 'Page 1', order: 1, content: 'old', prompt: '' }]
+      },
+      tab: 'page2',
+      activeLanguage: 'tr'
+    }
+
+    methods.handleActiveLanguageChange.call(ctx, 'en')
+
+    expect(ctx.formValues.landingPages[0].content).toBe('english')
+    expect(ctx.tab).toBe('page1')
+    expect(ctx.activeLanguage).toBe('en')
+  })
+
+  it('handleUploadHTML clicks hidden file input', () => {
+    const click = jest.fn()
+    const ctx = { $refs: { refHtmlFile: { click } } }
+
+    methods.handleUploadHTML.call(ctx)
+    expect(click).toHaveBeenCalledTimes(1)
+  })
+
+  it('handleHTMLUploadChange dispatches snackbar for invalid html upload inputs', () => {
+    const dispatch = jest.fn()
+    const ctx = {
+      $store: { dispatch },
+      formValues: { landingPages: [{ name: 'landing-page', order: 1 }] },
+      languagesPayload: [],
+      tab: 'page1'
+    }
+
+    methods.handleHTMLUploadChange.call(ctx, {
+      target: { files: [{ type: 'application/pdf', size: 1000 }] }
+    })
+    methods.handleHTMLUploadChange.call(ctx, {
+      target: { files: [{ type: 'text/html', size: 5242881 }] }
+    })
+
+    expect(dispatch).toHaveBeenNthCalledWith(
+      1,
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'Invalid file type' })
+    )
+    expect(dispatch).toHaveBeenNthCalledWith(
+      2,
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'File size should be less than 5MB' })
+    )
+  })
+
+  it('changeNewEmailTemplateModalStatus emits close directly when leave dialog is disabled', () => {
+    const emit = jest.fn()
+    const dispatch = jest.fn()
+    const ctx = {
+      formValues: { name: 'changed' },
+      initialFormValues: { name: 'old' },
+      showLeavingDialog: false,
+      $emit: emit,
+      $store: { dispatch }
+    }
+
+    methods.changeNewEmailTemplateModalStatus.call(ctx)
+
+    expect(emit).toHaveBeenCalledWith('changeNewEmailTemplateModalStatus', false)
+    expect(dispatch).not.toHaveBeenCalled()
+  })
+
+  it('handleSaveAsNew marks duplicate and appends copy suffix only when needed', () => {
+    const submit = jest.fn()
+    const ctx = {
+      isDuplicate: false,
+      formValues: { name: 'Landing Name' },
+      initialFormValues: { name: 'Landing Name' },
+      submit
+    }
+
+    methods.handleSaveAsNew.call(ctx)
+    expect(ctx.isDuplicate).toBe(true)
+    expect(ctx.formValues.name).toBe('Landing Name - Copy')
+    expect(submit).toHaveBeenCalledTimes(1)
+
+    ctx.formValues.name = 'Already Edited'
+    methods.handleSaveAsNew.call(ctx)
+    expect(ctx.formValues.name).toBe('Already Edited')
   })
 })

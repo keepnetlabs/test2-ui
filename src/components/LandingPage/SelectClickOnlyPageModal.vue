@@ -37,6 +37,7 @@
             :method="method"
             :languages="languages"
             :type="type"
+            v-bind="apiFuncs ? { apiFuncs } : {}"
             @selectedLandingPageTemplateResourceId="selectedResourceId = $event"
           />
         </div>
@@ -94,6 +95,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    apiFuncs: {
+      type: Object,
+      default: null
     }
   },
   data() {

@@ -227,4 +227,105 @@ describe('LandingPageList.vue', () => {
     if (createElementSpy) createElementSpy.mockRestore()
     if (createObjectURLSpy) createObjectURLSpy.mockRestore()
   })
+
+  it('handlePreviousTemplate and handleNextTemplate update selected index', () => {
+    const ctx = { selectedLandingPageIndex: 1 }
+
+    methods.handlePreviousTemplate.call(ctx)
+    expect(ctx.selectedLandingPageIndex).toBe(0)
+
+    methods.handleNextTemplate.call(ctx)
+    expect(ctx.selectedLandingPageIndex).toBe(1)
+  })
+
+  it('handleSuccessDeleteAction resets table selection, closes modal and refreshes data', () => {
+    const resetSelectableParams = jest.fn()
+    const callForData = jest.fn()
+    const ctx = {
+      showDeleteModal: true,
+      callForData,
+      $refs: { refLandingPageList: { resetSelectableParams } }
+    }
+
+    methods.handleSuccessDeleteAction.call(ctx, { resourceId: 'lp-1' })
+
+    expect(resetSelectableParams).toHaveBeenCalledTimes(1)
+    expect(ctx.showDeleteModal).toBe(false)
+    expect(callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('handleSuccessMultipleDeleteAction safely closes modal and refreshes data', () => {
+    const resetSelectableParams = jest.fn()
+    const callForData = jest.fn()
+    const ctx = {
+      showDeleteModal: true,
+      callForData,
+      $refs: { refLandingPageList: { resetSelectableParams } }
+    }
+
+    methods.handleSuccessMultipleDeleteAction.call(ctx)
+
+    expect(resetSelectableParams).toHaveBeenCalledTimes(1)
+    expect(ctx.showDeleteModal).toBe(false)
+    expect(callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('handlePreview selects template row and opens details dialog', () => {
+    const row = { resourceId: 'lp-22', name: 'Template 22' }
+    const ctx = {
+      selectedLandingPageTemplate: null,
+      isTemplateDetails: false
+    }
+
+    methods.handlePreview.call(ctx, row)
+
+    expect(ctx.selectedLandingPageTemplate).toEqual(row)
+    expect(ctx.isTemplateDetails).toBe(true)
+  })
+
+  it('handleEditFromPreview closes preview and opens edit mode in nextTick', () => {
+    const handleEdit = jest.fn()
+    const nextTick = (cb) => cb()
+    const row = { resourceId: 'lp-77' }
+    const ctx = {
+      isTemplateDetails: true,
+      handleEdit,
+      $nextTick: nextTick
+    }
+
+    methods.handleEditFromPreview.call(ctx, row)
+
+    expect(ctx.isTemplateDetails).toBe(false)
+    expect(handleEdit).toHaveBeenCalledWith(row, false)
+  })
+
+  it('checkIfCanCloseGrapesJSModal delegates to inner ref when available', () => {
+    const toggleShowGrapesModal = jest.fn()
+    const ctx = {
+      $refs: {
+        newLandingPage: {
+          $refs: {
+            refEmailTemplate: { toggleShowGrapesModal }
+          }
+        }
+      }
+    }
+
+    methods.checkIfCanCloseGrapesJSModal.call(ctx)
+    expect(toggleShowGrapesModal).toHaveBeenCalledTimes(1)
+  })
+
+  it('checkIfCanCloseNewLandingPage delegates to child modal closer', () => {
+    const changeNewEmailTemplateModalStatus = jest.fn()
+    const ctx = {
+      $refs: {
+        newLandingPage: {
+          changeNewEmailTemplateModalStatus
+        }
+      }
+    }
+
+    methods.checkIfCanCloseNewLandingPage.call(ctx)
+    expect(changeNewEmailTemplateModalStatus).toHaveBeenCalledTimes(1)
+  })
 })

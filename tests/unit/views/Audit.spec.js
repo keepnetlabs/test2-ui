@@ -655,6 +655,10 @@ describe('Audit.vue', () => {
 
   describe('Performance Characteristics', () => {
     it('should mount efficiently', () => {
+      const nowSpy = jest
+        .spyOn(performance, 'now')
+        .mockReturnValueOnce(100)
+        .mockReturnValueOnce(150)
       const start = performance.now()
       const w = shallowMount(Audit, {
         mocks: { $store: { state: {}, getters: {} } },
@@ -663,6 +667,7 @@ describe('Audit.vue', () => {
       const duration = performance.now() - start
       expect(duration).toBeLessThan(100)
       w.destroy()
+      nowSpy.mockRestore()
     })
 
     it('should update efficiently', () => {
