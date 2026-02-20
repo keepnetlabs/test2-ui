@@ -86,6 +86,11 @@
             <span>This template was generated with AI</span>
           </VTooltip>
         </span>
+        <LanguagesColumn
+          v-else-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="scenarioDetailsLookup?.preferredLanguageTypes || []"
+        />
         <span v-else-if="scope.column.property === 'isAssistedByAI'">
           {{ scope.row.isAssistedByAI ? 'AI Ally' : 'Manual' }}
         </span>
@@ -162,9 +167,11 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 import EmailTemplateMultipleLanguagePreviewDialog from '../Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 export default {
   name: 'EmailTemplates',
   components: {
+    LanguagesColumn,
     EmailTemplateMultipleLanguagePreviewDialog,
     CommonSimulatorAttachmentRenameDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
@@ -255,9 +262,9 @@ export default {
             label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'multiText',
+            type: 'slot',
             fixed: false,
-            width: 175,
+            width: 248,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'languageTypeResourceId'

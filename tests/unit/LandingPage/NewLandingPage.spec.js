@@ -169,6 +169,12 @@ describe('NewLandingPage.vue', () => {
     ).toBe(92)
   })
 
+  it('menuNudgeBottom returns middle offset when only AI Ally panel is open', () => {
+    expect(
+      computed.menuNudgeBottom.call({ isPhishingLinkOpen: false, isAIAllyOpen: true })
+    ).toBe(220)
+  })
+
   it('getDisabledStatuses respects isDefault and isSubmitDisabled', () => {
     expect(
       computed.getDisabledStatuses.call({ isDefault: false, isSubmitDisabled: true })
@@ -768,6 +774,180 @@ describe('NewLandingPage.vue', () => {
       'common/createSnackBar',
       expect.objectContaining({ message: 'File size should be less than 5MB' })
     )
+  })
+
+  it('handleAddBlankPage adds page, updates language payloads and sets tab for create flow', () => {
+    const ctx = {
+      isEdit: false,
+      emailTemplateLogo: 'https://logo.test/logo.png',
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+      },
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+        }
+      ],
+      tab: 'page1',
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 99)
+    }
+
+    methods.handleAddBlankPage.call(ctx)
+
+    expect(ctx.getAndUpdateFirstIndexForPageText).toHaveBeenCalled()
+    expect(ctx.getNewIndexForPageText).not.toHaveBeenCalled()
+    expect(ctx.formValues.landingPages).toHaveLength(2)
+    expect(ctx.formValues.landingPages[1].name).toBe('Page 2')
+    expect(ctx.formValues.landingPages[1].order).toBe(2)
+    expect(ctx.formValues.landingPages[1].content).toContain('landing page template')
+    expect(ctx.languagesPayload[0].landingPages).toHaveLength(2)
+    expect(ctx.languagesPayload[0].landingPages[1].name).toBe('Page 2')
+    expect(ctx.tab).toBe('page2')
+  })
+
+  it('handleAddBlankPage uses edit index helper in edit flow', () => {
+    const ctx = {
+      isEdit: true,
+      emailTemplateLogo: 'https://logo.test/logo.png',
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+      },
+      languagesPayload: [],
+      tab: 'page1',
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 7)
+    }
+
+    methods.handleAddBlankPage.call(ctx)
+
+    expect(ctx.getNewIndexForPageText).toHaveBeenCalled()
+    expect(ctx.getAndUpdateFirstIndexForPageText).not.toHaveBeenCalled()
+    expect(ctx.formValues.landingPages[1].name).toBe('Page 7')
+  })
+
+  it('handleHTMLUploadChange adds a new page for valid html and syncs languages payload', () => {
+    const originalFileReader = global.FileReader
+    class MockFileReader {
+      readAsText() {
+        this.onload({ target: { result: '<html>valid-content</html>' } })
+      }
+    }
+    global.FileReader = MockFileReader
+
+    const dispatch = jest.fn()
+    const ctx = {
+      isEdit: false,
+      $store: { dispatch },
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+      },
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+        }
+      ],
+      tab: 'page1',
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 9)
+    }
+
+    methods.handleHTMLUploadChange.call(ctx, {
+      target: { files: [{ type: 'text/html', size: 1024 }] }
+    })
+
+    expect(dispatch).not.toHaveBeenCalled()
+    expect(ctx.getAndUpdateFirstIndexForPageText).toHaveBeenCalled()
+    expect(ctx.formValues.landingPages).toHaveLength(2)
+    expect(ctx.formValues.landingPages[1]).toEqual({
+      name: 'Page 2',
+      order: 2,
+      prompt: '',
+      content: '<html>valid-content</html>'
+    })
+    expect(ctx.languagesPayload[0].landingPages).toHaveLength(2)
+    expect(ctx.languagesPayload[0].landingPages[1].content).toBe('<html>valid-content</html>')
+    expect(ctx.tab).toBe('page2')
+
+    global.FileReader = originalFileReader
+  })
+
+  it('handleHTMLUploadChange dispatches Empty file snackbar when html file content is empty', () => {
+    const originalFileReader = global.FileReader
+    class MockFileReader {
+      readAsText() {
+        this.onload({ target: { result: '' } })
+      }
+    }
+    global.FileReader = MockFileReader
+
+    const dispatch = jest.fn()
+    const ctx = {
+      isEdit: false,
+      $store: { dispatch },
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+      },
+      languagesPayload: [],
+      tab: 'page1',
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 9)
+    }
+
+    methods.handleHTMLUploadChange.call(ctx, {
+      target: { files: [{ type: 'text/html', size: 1024 }] }
+    })
+
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'Empty file' })
+    )
+    expect(ctx.formValues.landingPages).toHaveLength(1)
+    expect(ctx.tab).toBe('page1')
+
+    global.FileReader = originalFileReader
+  })
+
+  it('handleHTMLUploadChange uses edit index helper for valid html in edit mode', () => {
+    const originalFileReader = global.FileReader
+    class MockFileReader {
+      readAsText() {
+        this.onload({ target: { result: '<html>edit-flow</html>' } })
+      }
+    }
+    global.FileReader = MockFileReader
+
+    const dispatch = jest.fn()
+    const ctx = {
+      isEdit: true,
+      $store: { dispatch },
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, content: 'old', prompt: '' }]
+      },
+      languagesPayload: [],
+      tab: 'page1',
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 6)
+    }
+
+    methods.handleHTMLUploadChange.call(ctx, {
+      target: { files: [{ type: 'text/html', size: 2048 }] }
+    })
+
+    expect(dispatch).not.toHaveBeenCalled()
+    expect(ctx.getNewIndexForPageText).toHaveBeenCalled()
+    expect(ctx.getAndUpdateFirstIndexForPageText).not.toHaveBeenCalled()
+    expect(ctx.formValues.landingPages[1]).toEqual({
+      name: 'Page 6',
+      order: 2,
+      prompt: '',
+      content: '<html>edit-flow</html>'
+    })
+    expect(ctx.tab).toBe('page2')
+
+    global.FileReader = originalFileReader
   })
 
   it('changeNewEmailTemplateModalStatus emits close directly when leave dialog is disabled', () => {

@@ -1,501 +1,231 @@
 import { shallowMount } from '@vue/test-utils'
-
-jest.mock('@/components/KContainer/KContainer', () => ({
-  name: 'KContainer',
-  template: '<div></div>'
-}))
-
-try {
-  var Settings = require('@/views/Settings').default
-  var hasSettings = true
-} catch (e) {
-  var hasSettings = false
-}
-
-const createStoreMock = (overrides = {}) => ({
-  getters: {
-    'permissions/getDomainSearchPermissions': true,
-    'permissions/getDnsSearchPermissions': true,
-    'permissions/getExcludedIpAddressGetPermissions': true,
-    ...(overrides.getters || {})
-  },
-  dispatch: jest.fn(),
-  ...overrides
-})
+import Settings from '@/views/Settings.vue'
 
 describe('Settings.vue', () => {
-  let wrapper
-  let mockRoute
-  let mockStore
-
-  beforeEach(() => {
-    mockRoute = { params: { id: '123' } }
-    mockStore = createStoreMock()
-
-    if (hasSettings) {
-      wrapper = shallowMount(Settings, {
-        mocks: {
-          $route: mockRoute,
-          $store: mockStore
-        },
-        stubs: {
-          KContainer: true
-        }
-      })
-    }
-  })
-
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy()
-    }
-  })
-
-  describe('component availability', () => {
-    it('should have Settings component available', () => {
-      expect(hasSettings).toBe(true)
-    })
-
-    it('should be able to import Settings', () => {
-      if (hasSettings) {
-        expect(Settings).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have correct component name', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$options.name).toBe('Settings')
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('rendering', () => {
-    it('should render if Settings exists', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.exists()).toBe(true)
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should render wrapper vm', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should mount without errors', () => {
-      if (hasSettings) {
-        expect(() => {
-          shallowMount(Settings, {
-            mocks: {
-              $route: { params: { id: '123' } },
-              $store: createStoreMock()
-            },
-            stubs: { KContainer: true }
-          })
-        }).not.toThrow()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('mocking setup', () => {
-    it('should have route mocked', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$route).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have store mocked', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$store).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should support KContainer component', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$options.components).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have proper mocks in vm', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$route).not.toBeNull()
-        expect(wrapper.vm.$store).not.toBeNull()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('route parameters', () => {
-    it('should access route params', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$route.params.id).toBe('123')
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have settings id from route', () => {
-      if (hasSettings && wrapper) {
-        const id = wrapper.vm.$route.params.id
-        expect(id).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should handle different route ids', () => {
-      if (hasSettings) {
-        const testWrapper = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: 'custom-id-456' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        expect(testWrapper.vm.$route.params.id).toBe('custom-id-456')
-        testWrapper.destroy()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should handle empty route params', () => {
-      if (hasSettings) {
-        const testWrapper = shallowMount(Settings, {
-          mocks: {
-            $route: { params: {} },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        expect(testWrapper.vm.$route.params).toBeDefined()
-        testWrapper.destroy()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('store integration', () => {
-    it('should have access to store', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$store).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have store getters available', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$store.getters).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should handle store getters as object', () => {
-      if (hasSettings && wrapper) {
-        expect(typeof wrapper.vm.$store.getters).toBe('object')
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should work with different store getters', () => {
-      if (hasSettings) {
-        const customStore = createStoreMock({
+  const mountComponent = (permissionGetters = {}) =>
+    shallowMount(Settings, {
+      mocks: {
+        $store: {
           getters: {
-            currentUser: () => ({ id: 1, name: 'Test' })
-          }
-        })
-        const testWrapper = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '123' } },
-            $store: customStore
+            'permissions/getDomainSearchPermissions': true,
+            'permissions/getDnsSearchPermissions': true,
+            'permissions/getExcludedIpAddressGetPermissions': true,
+            ...permissionGetters
           },
-          stubs: { KContainer: true }
-        })
-        expect(testWrapper.vm.$store.getters.currentUser()).toEqual({ id: 1, name: 'Test' })
-        testWrapper.destroy()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('component structure', () => {
-    it('should be a valid Vue component', () => {
-      if (hasSettings) {
-        expect(typeof Settings).toBe('object')
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have component options', () => {
-      if (hasSettings) {
-        expect(Settings).not.toBeNull()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should support component mounting', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.exists()).toBe(true)
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have component name defined', () => {
-      if (hasSettings) {
-        expect(Settings.name).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should be instance of Vue component', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$options).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('lifecycle', () => {
-    it('should initialize without errors', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should support mounting', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.exists()).toBe(true)
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have $data defined after mounting', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$data).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should have $el defined after mounting', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$el).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should initialize data properties', () => {
-      if (hasSettings && wrapper) {
-        expect(wrapper.vm.$options.data).toBeDefined()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-  })
-
-  describe('cleanup', () => {
-    it('should destroy cleanly', () => {
-      if (hasSettings) {
-        const testWrapper = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '456' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        expect(() => testWrapper.destroy()).not.toThrow()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should clear wrapper state on destroy', () => {
-      if (hasSettings) {
-        const testWrapper = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '789' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        testWrapper.destroy()
-        expect(testWrapper.vm._isDestroyed).toBe(true)
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should allow multiple mount and destroy cycles', () => {
-      if (hasSettings) {
-        for (let i = 0; i < 3; i++) {
-          const testWrapper = shallowMount(Settings, {
-            mocks: {
-              $route: { params: { id: `test-${i}` } },
-              $store: createStoreMock()
-            },
-            stubs: { KContainer: true }
-          })
-          expect(testWrapper.exists()).toBe(true)
-          testWrapper.destroy()
+          dispatch: jest.fn()
         }
-      } else {
-        expect(true).toBe(true)
+      },
+      stubs: {
+        KContainer: true,
+        DnsServiceList: true,
+        DomainsList: true,
+        ExcludeIPAddress: true,
+        'el-tabs': true,
+        'el-tab-pane': true
       }
     })
+
+  it('renders and keeps default tab as Domains when all permissions are enabled', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.exists()).toBe(true)
+    expect(wrapper.vm.$options.name).toBe('Settings')
+    expect(wrapper.vm.tab).toBe('Domains')
+    wrapper.destroy()
   })
 
-  describe('multiple instances', () => {
-    it('should support multiple instances', () => {
-      if (hasSettings) {
-        const wrapper1 = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '1' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        const wrapper2 = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '2' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        expect(wrapper1.vm.$route.params.id).toBe('1')
-        expect(wrapper2.vm.$route.params.id).toBe('2')
-        wrapper1.destroy()
-        wrapper2.destroy()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
+  it('created hook switches default tab to DNSServices when domains are not permitted', () => {
+    const ctx = {
+      tab: 'Domains',
+      getDomainSearchPermissions: false,
+      getDnsSearchPermissions: true,
+      getExcludedIpAddressGetPermissions: true
+    }
 
-    it('should not affect other instances on destruction', () => {
-      if (hasSettings) {
-        const wrapper1 = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '1' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        const wrapper2 = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '2' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        wrapper1.destroy()
-        expect(wrapper2.exists()).toBe(true)
-        expect(wrapper2.vm.$route.params.id).toBe('2')
-        wrapper2.destroy()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
+    Settings.created.call(ctx)
+    expect(ctx.tab).toBe('DNSServices')
   })
 
-  describe('error handling', () => {
-    it('should handle missing route params gracefully', () => {
-      if (hasSettings) {
-        expect(() => {
-          shallowMount(Settings, {
-            mocks: {
-              $route: {},
-              $store: createStoreMock()
-            },
-            stubs: { KContainer: true }
-          })
-        }).not.toThrow()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
+  it('created hook switches default tab to ExcludeIpAddress when only excluded-ip is permitted', () => {
+    const ctx = {
+      tab: 'Domains',
+      getDomainSearchPermissions: false,
+      getDnsSearchPermissions: false,
+      getExcludedIpAddressGetPermissions: true
+    }
 
-    it('should work with proper store structure', () => {
-      if (hasSettings) {
-        const properStore = createStoreMock()
-        expect(() => {
-          shallowMount(Settings, {
-            mocks: {
-              $route: { params: { id: '123' } },
-              $store: properStore
-            },
-            stubs: { KContainer: true }
-          })
-        }).not.toThrow()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
-
-    it('should be resilient to component stub issues', () => {
-      if (hasSettings) {
-        expect(() => {
-          shallowMount(Settings, {
-            mocks: {
-              $route: { params: { id: '123' } },
-              $store: createStoreMock()
-            },
-            stubs: {}
-          })
-        }).not.toThrow()
-      } else {
-        expect(true).toBe(true)
-      }
-    })
+    Settings.created.call(ctx)
+    expect(ctx.tab).toBe('ExcludeIpAddress')
   })
 
-  describe('performance', () => {
-    it('should mount within reasonable time', () => {
-      if (hasSettings) {
-        const start = Date.now()
-        const testWrapper = shallowMount(Settings, {
-          mocks: {
-            $route: { params: { id: '123' } },
-            $store: createStoreMock()
-          },
-          stubs: { KContainer: true }
-        })
-        const end = Date.now()
-        expect(end - start).toBeLessThan(500)
-        testWrapper.destroy()
-      } else {
-        expect(true).toBe(true)
+  it('created hook keeps Domains as default when domain permission is enabled', () => {
+    const ctx = {
+      tab: 'Domains',
+      getDomainSearchPermissions: true,
+      getDnsSearchPermissions: false,
+      getExcludedIpAddressGetPermissions: false
+    }
+
+    Settings.created.call(ctx)
+    expect(ctx.tab).toBe('Domains')
+  })
+
+  it('beforeRouteLeave blocks navigation and asks domain modal to close', () => {
+    const next = jest.fn()
+    const checkIfCanCloseDomainModal = jest.fn()
+    const ctx = {
+      $refs: {
+        refDomains: {
+          modalStatus: true,
+          checkIfCanCloseDomainModal
+        }
       }
-    })
+    }
+
+    Settings.beforeRouteLeave.call(ctx, {}, {}, next)
+
+    expect(checkIfCanCloseDomainModal).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenCalledWith(false)
+  })
+
+  it('beforeRouteLeave blocks navigation and asks dns modal to close', () => {
+    const next = jest.fn()
+    const checkIfCanCloseDnsServiceModal = jest.fn()
+    const ctx = {
+      $refs: {
+        refDomains: { modalStatus: false },
+        refDnsServiceList: {
+          modalStatus: true,
+          checkIfCanCloseDnsServiceModal
+        }
+      }
+    }
+
+    Settings.beforeRouteLeave.call(ctx, {}, {}, next)
+
+    expect(checkIfCanCloseDnsServiceModal).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenCalledWith(false)
+  })
+
+  it('beforeRouteLeave opens leaving dialog for unsaved excluded-ip changes', () => {
+    const next = jest.fn()
+    const dispatch = jest.fn((_, payload) => payload.callback())
+    const ctx = {
+      $store: { dispatch },
+      $refs: {
+        refDomains: { modalStatus: false },
+        refDnsServiceList: { modalStatus: false },
+        refExcludeIPAddress: {
+          isInitialDataAndModelEqual: false
+        }
+      }
+    }
+
+    Settings.beforeRouteLeave.call(ctx, {}, {}, next)
+
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/setIsShowLeavingDialog',
+      expect.objectContaining({ show: true })
+    )
+    expect(next).toHaveBeenCalledWith(false)
+    expect(next).toHaveBeenCalledWith(true)
+  })
+
+  it('beforeRouteLeave allows navigation when there is no blocking state', () => {
+    const next = jest.fn()
+    const ctx = {
+      $refs: {
+        refDomains: { modalStatus: false },
+        refDnsServiceList: { modalStatus: false },
+        refExcludeIPAddress: {
+          isInitialDataAndModelEqual: true
+        }
+      }
+    }
+
+    Settings.beforeRouteLeave.call(ctx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('beforeRouteLeave allows navigation when exclude-ip ref is missing', () => {
+    const next = jest.fn()
+    const ctx = {
+      $refs: {
+        refDomains: { modalStatus: false },
+        refDnsServiceList: { modalStatus: false }
+      }
+    }
+
+    Settings.beforeRouteLeave.call(ctx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('changeTabStatus prevents tab change when excluded-ip has unsaved changes', () => {
+    const dispatch = jest.fn((_, payload) => payload.callback())
+    const ctx = {
+      tab: 'ExcludeIpAddress',
+      $store: { dispatch },
+      $refs: {
+        refExcludeIPAddress: { isInitialDataAndModelEqual: false },
+        refTabs: { value: 'Domains', currentName: 'Domains' }
+      }
+    }
+
+    Settings.methods.changeTabStatus.call(ctx, 'Domains')
+
+    expect(ctx.$refs.refTabs.value).toBe('ExcludeIpAddress')
+    expect(ctx.$refs.refTabs.currentName).toBe('ExcludeIpAddress')
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/setIsShowLeavingDialog',
+      expect.objectContaining({ show: true })
+    )
+    expect(ctx.tab).toBe('Domains')
+  })
+
+  it('changeTabStatus updates current tab directly when no unsaved changes exist', () => {
+    const ctx = {
+      tab: 'Domains',
+      $store: { dispatch: jest.fn() },
+      $refs: {
+        refExcludeIPAddress: { isInitialDataAndModelEqual: true },
+        refTabs: { value: 'Domains', currentName: 'Domains' }
+      }
+    }
+
+    Settings.methods.changeTabStatus.call(ctx, 'DNSServices')
+    expect(ctx.tab).toBe('DNSServices')
+  })
+
+  it('changeTabStatus updates tab directly when leaving exclude-ip with clean state', () => {
+    const dispatch = jest.fn()
+    const ctx = {
+      tab: 'ExcludeIpAddress',
+      $store: { dispatch },
+      $refs: {
+        refExcludeIPAddress: { isInitialDataAndModelEqual: true },
+        refTabs: { value: 'ExcludeIpAddress', currentName: 'ExcludeIpAddress' }
+      }
+    }
+
+    Settings.methods.changeTabStatus.call(ctx, 'Domains')
+
+    expect(ctx.tab).toBe('Domains')
+    expect(dispatch).not.toHaveBeenCalled()
+  })
+
+  it('changeTabStatus keeps current tab when switching to same ExcludeIpAddress tab', () => {
+    const dispatch = jest.fn()
+    const ctx = {
+      tab: 'ExcludeIpAddress',
+      $store: { dispatch },
+      $refs: {
+        refExcludeIPAddress: { isInitialDataAndModelEqual: false },
+        refTabs: { value: 'ExcludeIpAddress', currentName: 'ExcludeIpAddress' }
+      }
+    }
+
+    Settings.methods.changeTabStatus.call(ctx, 'ExcludeIpAddress')
+
+    expect(ctx.tab).toBe('ExcludeIpAddress')
+    expect(dispatch).not.toHaveBeenCalled()
   })
 })
-
