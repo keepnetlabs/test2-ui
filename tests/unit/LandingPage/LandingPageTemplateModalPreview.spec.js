@@ -62,6 +62,22 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     expect(computed.getCurrentLandingPageTemplate.call(ctx)).toBe('<p>Turkish</p>')
   })
 
+  it('falls back to page content when selected language translation is missing', () => {
+    const ctx = {
+      landingPageTemplates: [
+        {
+          content: '<p>fallback</p>',
+          languages: { en: '<p>English</p>' }
+        }
+      ],
+      selectedLandingPageIndex: 0,
+      selectedLanguageId: 'tr',
+      isPhishing: true
+    }
+
+    expect(computed.getCurrentLandingPageTemplate.call(ctx)).toBe('<p>fallback</p>')
+  })
+
   it('builds preview html by replacing company logo for red flagged template', () => {
     localStorage.setItem('isSelectCompany', 'true')
     const ctx = {
@@ -80,6 +96,40 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     expect(computed.isRedFlaggedTemplate.call(ctx)).toBe(true)
   })
 
+  it('previewHtml uses auth logo then whitelabel logo as fallback', () => {
+    localStorage.setItem('isSelectCompany', 'false')
+    const authLogoCtx = {
+      getCurrentLandingPageTemplate: '<img src="{COMPANYLOGO}" data-redflag />',
+      isRedFlaggedTemplate: true,
+      $store: {
+        state: {
+          dashboard: { selectedCompanyObject: { logoUrl: '' } },
+          auth: { logoUrl: 'https://logo.auth/logo.png' },
+          whitelabel: { mainLogoUrl: 'https://logo.main/main.png' }
+        }
+      }
+    }
+    expect(computed.previewHtml.call(authLogoCtx)).toContain('https://logo.auth/logo.png')
+
+    const whiteLabelCtx = {
+      ...authLogoCtx,
+      $store: {
+        state: {
+          dashboard: { selectedCompanyObject: { logoUrl: '' } },
+          auth: { logoUrl: '' },
+          whitelabel: { mainLogoUrl: 'https://logo.main/main.png' }
+        }
+      }
+    }
+    expect(computed.previewHtml.call(whiteLabelCtx)).toContain('https://logo.main/main.png')
+  })
+
+  it('isRedFlaggedTemplate returns false for non-red-flag html', () => {
+    expect(computed.isRedFlaggedTemplate.call({ getCurrentLandingPageTemplate: '<div>x</div>' })).toBe(
+      false
+    )
+  })
+
   it('watch and mounted set selected language id when empty', () => {
     const watchCtx = { selectedLanguageId: null }
     watch.languages.call(watchCtx, [{ value: 'en', languageTypeResourceId: 'en' }])
@@ -91,6 +141,12 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     }
     mounted.call(mountedCtx)
     expect(mountedCtx.selectedLanguageId).toBe('tr')
+  })
+
+  it('watch does not override selected language when already set', () => {
+    const ctx = { selectedLanguageId: 'en' }
+    watch.languages.call(ctx, [{ value: 'tr', languageTypeResourceId: 'tr' }])
+    expect(ctx.selectedLanguageId).toBe('en')
   })
 
   it('emits language and edit actions, and opens preview in new tab', () => {

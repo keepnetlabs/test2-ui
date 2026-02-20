@@ -1,6 +1,29 @@
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview.vue'
 
 describe('workshop/EmailTemplateListPreview.vue', () => {
+  it('handleCreateEmailTemplateClick emits create event', () => {
+    const emit = jest.fn()
+    const ctx = { $emit: emit }
+
+    EmailTemplateListPreview.methods.handleCreateEmailTemplateClick.call(ctx)
+
+    expect(emit).toHaveBeenCalledWith('on-create-email-template')
+  })
+
+  it('rename attachment modal open/close handlers update state and attachment name', () => {
+    const ctx = {
+      isRenameAttachmentModalVisible: false,
+      attachmentName: 'old-name'
+    }
+
+    EmailTemplateListPreview.methods.handleShowRenameAttachmentModal.call(ctx)
+    expect(ctx.isRenameAttachmentModalVisible).toBe(true)
+
+    EmailTemplateListPreview.methods.handleCloseRenameAttachmentModal.call(ctx)
+    expect(ctx.isRenameAttachmentModalVisible).toBe(false)
+    expect(ctx.attachmentName).toBe('')
+  })
+
   it('getItemDescription returns non-breaking space for invalid values', () => {
     expect(EmailTemplateListPreview.methods.getItemDescription()).toBe('\xa0')
     expect(EmailTemplateListPreview.methods.getItemDescription({ description: 'null' })).toBe('\xa0')
@@ -132,6 +155,26 @@ describe('workshop/EmailTemplateListPreview.vue', () => {
     expect(ctx.handleSaveOldEditLanguage).toHaveBeenCalledWith('en')
   })
 
+  it('handleEmailTemplatePreviewLanguageChange is no-op when language template is missing', () => {
+    const ctx = {
+      phishingEmailTemplates: [{ languageType: 'tr', template: '<p>TR</p>' }],
+      isEditMode: false,
+      templateHTML: 'before',
+      templateFromName: 'before-name',
+      templateSubject: 'before-subject',
+      templateFromEmail: 'before-mail',
+      templateCCAddresses: ['before']
+    }
+
+    EmailTemplateListPreview.methods.handleEmailTemplatePreviewLanguageChange.call(ctx, 'en')
+
+    expect(ctx.templateHTML).toBe('before')
+    expect(ctx.templateFromName).toBe('before-name')
+    expect(ctx.templateSubject).toBe('before-subject')
+    expect(ctx.templateFromEmail).toBe('before-mail')
+    expect(ctx.templateCCAddresses).toEqual(['before'])
+  })
+
   it('handleSaveOldEditLanguage updates emailTemplateData for primary language', () => {
     const ctx = {
       phishingEmailTemplates: [{ languageType: 'tr' }],
@@ -160,5 +203,62 @@ describe('workshop/EmailTemplateListPreview.vue', () => {
       template: '<p>New</p>',
       ccAddresses: ['cc@acme.com']
     })
+  })
+
+  it('handleSaveOldEditLanguage updates non-primary language template in-place', () => {
+    const ctx = {
+      phishingEmailTemplates: [{ languageType: 'tr' }, { languageType: 'en' }],
+      editData: {
+        fromAddress: 'en@acme.com',
+        fromName: 'EN Name',
+        subject: 'EN Subject',
+        template: '<p>EN</p>',
+        ccAddresses: ['encc@acme.com']
+      },
+      emailTemplateData: {
+        fromAddress: 'main@acme.com',
+        fromName: 'Main',
+        subject: 'Main Subject',
+        template: '<p>Main</p>',
+        ccAddresses: []
+      }
+    }
+
+    EmailTemplateListPreview.methods.handleSaveOldEditLanguage.call(ctx, 'en')
+
+    expect(ctx.phishingEmailTemplates[1]).toEqual({
+      languageType: 'en',
+      fromAddress: 'en@acme.com',
+      fromName: 'EN Name',
+      subject: 'EN Subject',
+      template: '<p>EN</p>',
+      ccAddresses: ['encc@acme.com']
+    })
+    expect(ctx.emailTemplateData.fromAddress).toBe('main@acme.com')
+  })
+
+  it('handleDeleteAttachment clears attachment and resets added-new flag', () => {
+    const ctx = {
+      editData: { phishingFile: [{ fileName: 'x.doc' }] },
+      isAddedNewPhishingFile: true
+    }
+
+    EmailTemplateListPreview.methods.handleDeleteAttachment.call(ctx)
+
+    expect(ctx.editData.phishingFile).toBe(null)
+    expect(ctx.isAddedNewPhishingFile).toBe(false)
+  })
+
+  it('handleTemplateEdit toggles grapes modal and emits template-edit', () => {
+    const emit = jest.fn()
+    const ctx = {
+      showGrapesModal: false,
+      $emit: emit
+    }
+
+    EmailTemplateListPreview.methods.handleTemplateEdit.call(ctx, true)
+
+    expect(ctx.showGrapesModal).toBe(true)
+    expect(emit).toHaveBeenCalledWith('template-edit', true)
   })
 })

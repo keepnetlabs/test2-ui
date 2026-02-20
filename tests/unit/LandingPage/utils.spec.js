@@ -58,4 +58,36 @@ describe('LandingPage utils', () => {
     expect(result.cleanTemplate).toContain('window.keepThisScript = true')
     expect(result.scriptsContent).toContain('src="https://cdn.example.com/a.js"')
   })
+
+  it('returns empty scriptsContent when custom script has no src and no content', () => {
+    const template = `
+      <div>
+        <script data-custom-landing-page-script="true"></script>
+      </div>
+    `
+
+    const result = processTemplateWithCustomScripts(template)
+
+    expect(result.customScripts).toHaveLength(1)
+    expect(result.customScripts[0].src).toBe(null)
+    expect(result.customScripts[0].content).toBe('')
+    expect(result.scriptsContent).toBe('')
+  })
+
+  it('extracts multiple custom scripts and joins generated script tags', () => {
+    const template = `
+      <div>
+        <script data-custom-landing-page-script="true">window.a = 1</script>
+        <script data-custom-landing-page-script="true" src="https://cdn.example.com/b.js"></script>
+      </div>
+    `
+
+    const result = processTemplateWithCustomScripts(template)
+
+    expect(result.customScripts).toHaveLength(2)
+    expect(result.cleanTemplate).not.toContain('data-custom-landing-page-script="true"')
+    expect(result.scriptsContent).toContain('<script>window.a = 1</script>')
+    expect(result.scriptsContent).toContain('src="https://cdn.example.com/b.js"')
+    expect(result.scriptsContent).toContain('\n')
+  })
 })

@@ -312,7 +312,7 @@
                             <div style="display: flex;">
                               <span
                                 class="landing-page-tab__label"
-                                style="cursor: pointer; margin-right: 4px;"
+                                style="cursor: pointer; margin-right: 4px; display: block;"
                                 @click.stop="isSelectClickOnlyPageOpen = true"
                               >
                                 <v-icon class="mr-1" size="18" color="#2196f3">mdi-plus-circle-outline</v-icon>
@@ -1557,7 +1557,10 @@ export default {
       return this.formValues.methodTypeId === '2'
     },
     clickOnlyMethodText() {
-      return this.landingPageData?.methodTypes?.find((item) => item.value === '1')?.text || ''
+      if (this.formValues.methodTypeId === '2') {
+        return this.landingPageData?.methodTypes?.find((item) => item.value === '2')?.text || ''
+      }
+      return ''
     },
     getDisabledStatuses() {
       return {

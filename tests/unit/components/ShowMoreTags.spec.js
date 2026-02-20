@@ -55,4 +55,18 @@ describe('ShowMoreTags.vue', () => {
     expect(ctx.maximumRenderedBadgeCount).toBe(1)
     expect(ctx.unRenderedBadgeCount).toBe(0)
   })
+
+  it('getBadges normalizes negative max badge count safely', () => {
+    const ctx = {
+      badges: ['alpha', 'beta'],
+      unRenderedBadgeCount: 0,
+      maximumRenderedBadgeCount: 0,
+      showMaximumBadgeCount: -5
+    }
+
+    ShowMoreTags.methods.getBadges.call(ctx)
+
+    expect(ctx.maximumRenderedBadgeCount).toBe(1)
+    expect(ctx.unRenderedBadgeCount).toBe(1)
+  })
 })

@@ -172,7 +172,7 @@ export default {
         method: 'GET',
         responseType: 'blob'
       }).then((res) => {
-        if (res?.data) this.url = window.URL.createObjectURL(new Blob([res.data]))
+        if (res?.data) this.url = globalThis.URL.createObjectURL(new Blob([res.data]))
       })
     } else {
       this.url = this.src

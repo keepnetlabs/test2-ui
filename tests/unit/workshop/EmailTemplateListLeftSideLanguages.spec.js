@@ -54,4 +54,24 @@ describe('EmailTemplateListLeftSideLanguages.vue', () => {
     expect(wrapper.find('vtooltip-stub').exists()).toBe(true)
     expect(wrapper.text()).toContain('Turkish, German')
   })
+
+  it('renders tooltip container when there are multiple languages', () => {
+    const wrapper = shallowMount(EmailTemplateListLeftSideLanguages, {
+      propsData: {
+        item: {
+          languageTypeName: ['English', 'Turkish', 'German']
+        }
+      }
+    })
+
+    expect(wrapper.find('vtooltip-stub').exists()).toBe(true)
+  })
+
+  it('computed firstLanguage safely returns empty for missing languageTypeName', () => {
+    expect(
+      EmailTemplateListLeftSideLanguages.computed.firstLanguage.call({
+        item: {}
+      })
+    ).toBe('')
+  })
 })
