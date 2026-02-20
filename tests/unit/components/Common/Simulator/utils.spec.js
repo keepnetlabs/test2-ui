@@ -31,5 +31,39 @@ describe('Common Simulator utils', () => {
     expect(getItemDifficultyClass('Medium')).toBe('difficulty-medium')
     expect(getItemDifficultyClass('Hard')).toBe('difficulty-hard')
     expect(getItemDifficultyClass('Other')).toBe('')
+    expect(getItemDifficultyClass()).toBe('')
+  })
+
+  it('keeps method and quishing method filters in expected shape', () => {
+    expect(COMMON_SIMULATOR_COLUMNS.METHOD.filterableItems).toHaveLength(4)
+    expect(COMMON_SIMULATOR_COLUMNS.QUISHING_METHOD.filterableItems).toHaveLength(3)
+    expect(COMMON_SIMULATOR_COLUMNS.METHOD.filterableItems).toEqual(
+      expect.arrayContaining([
+        { text: 'Click Only', value: 'Click-Only' },
+        { text: 'Data Submission', value: 'Data Submission' },
+        { text: 'Attachment', value: 'Attachment' },
+        { text: 'MFA', value: 'MFA' }
+      ])
+    )
+  })
+
+  it('keeps category filter variants for phishing and quishing consistent', () => {
+    expect(COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME.filterableItems).toHaveLength(3)
+    expect(COMMON_SIMULATOR_COLUMNS.QUISHING_CATEGORY_NAME.filterableItems).toHaveLength(2)
+    expect(COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME.filterableCustomFieldName).toBe(
+      'CategoryResourceId'
+    )
+    expect(COMMON_SIMULATOR_COLUMNS.QUISHING_CATEGORY_NAME.filterableCustomFieldName).toBe(
+      'CategoryResourceId'
+    )
+  })
+
+  it('keeps language and tags columns as filterable with custom fields', () => {
+    expect(COMMON_SIMULATOR_COLUMNS.LANGUAGES.filterableType).toBe('select')
+    expect(COMMON_SIMULATOR_COLUMNS.LANGUAGES.filterableCustomFieldName).toBe(
+      'languageTypeResourceId'
+    )
+    expect(COMMON_SIMULATOR_COLUMNS.TAGS.filterableType).toBe('text')
+    expect(COMMON_SIMULATOR_COLUMNS.TAGS.filterableCustomFieldName).toBe('tags')
   })
 })
