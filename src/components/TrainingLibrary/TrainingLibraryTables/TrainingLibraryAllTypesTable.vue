@@ -68,6 +68,13 @@
         </div>
       </div>
     </template>
+    <template #datatable-custom-column="{ scope }">
+      <LanguagesColumn
+        v-if="scope.column.property === 'languages'"
+        :value="scope.row.languages"
+        :preferred-language-types="getPreferredLanguageTypes"
+      />
+    </template>
     <template #datatable-row-actions="{ scope }">
       <TrainingLibrarySurveyRowActions
         v-if="scope.row.hasQuiz && !isLoading"
@@ -118,6 +125,7 @@ import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/T
 import TrainingLibraryInfographicRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryInfographicRowActions.vue'
 import TrainingLibraryPosterRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryPosterRowActions.vue'
 import TrainingLibrarySurveyRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibrarySurveyRowActions.vue'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 import { mapActions, mapGetters } from 'vuex'
 import {
   TRAINING_LIBRARY_MAIN_TABS,
@@ -130,6 +138,7 @@ import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMix
 export default {
   name: 'TrainingLibraryAllTypesTable',
   components: {
+    LanguagesColumn,
     TrainingLibraryPosterRowActions,
     TrainingLibraryInfographicRowActions,
     TrainingLibraryScreensaverRowActions,
@@ -201,7 +210,8 @@ export default {
       getTargetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
       getLanguages: 'trainingLibraryHelpers/getLanguages',
       getCompliances: 'trainingLibraryHelpers/getCompliances',
-      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors'
+      getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors',
+      getPreferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes'
     }),
     getEmptyTableText() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)

@@ -11,6 +11,10 @@ describe('LanguagesColumn.vue', () => {
     expect(LanguagesColumn.computed.languages.call({ value: null })).toEqual([])
   })
 
+  it('languages returns empty array for empty string value', () => {
+    expect(LanguagesColumn.computed.languages.call({ value: '' })).toEqual([])
+  })
+
   it('firstLanguage and overflowCount derive from normalized language list', () => {
     const ctx = { languages: ['English', 'Turkish', 'German'] }
     expect(LanguagesColumn.computed.firstLanguage.call(ctx)).toBe('English')
@@ -23,6 +27,18 @@ describe('LanguagesColumn.vue', () => {
     }
 
     expect(LanguagesColumn.computed.preferredTexts.call(ctx)).toEqual(['english', 'turkish'])
+  })
+
+  it('preferredTexts safely handles null items in preferred language types', () => {
+    const ctx = {
+      preferredLanguageTypes: [null, { text: ' German ' }, undefined, { text: '' }]
+    }
+
+    expect(LanguagesColumn.computed.preferredTexts.call(ctx)).toEqual(['german'])
+  })
+
+  it('preferredTexts returns empty array when preferredLanguageTypes is null', () => {
+    expect(LanguagesColumn.computed.preferredTexts.call({ preferredLanguageTypes: null })).toEqual([])
   })
 
   it('overflowLanguages returns tail items only', () => {
@@ -43,6 +59,19 @@ describe('LanguagesColumn.vue', () => {
       'English UK'
     ])
     expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual(['German'])
+  })
+
+  it('overflow split puts all items into non-preferred when preferred list is empty', () => {
+    const ctx = {
+      preferredTexts: [],
+      overflowLanguages: ['Turkish', 'German']
+    }
+
+    expect(LanguagesColumn.computed.overflowPreferredLanguages.call(ctx)).toEqual([])
+    expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual([
+      'Turkish',
+      'German'
+    ])
   })
 
   it('handleClosePopover closes popover state', () => {
@@ -123,5 +152,20 @@ describe('LanguagesColumn.vue', () => {
 
     popover.props('onClose')()
     expect(wrapper.vm.isPopoverOpen).toBe(false)
+  })
+
+  it('renders only first language when there is no overflow', () => {
+    const wrapper = shallowMount(LanguagesColumn, {
+      propsData: {
+        value: ['English']
+      },
+      stubs: {
+        VMenu: true,
+        LanguagesPopover: true
+      }
+    })
+
+    expect(wrapper.find('.languages-column__first').text()).toBe('English')
+    expect(wrapper.find('.languages-column__overflow').exists()).toBe(false)
   })
 })

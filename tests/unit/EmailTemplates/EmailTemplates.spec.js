@@ -35,6 +35,17 @@ describe('EmailTemplates.vue methods', () => {
     jest.clearAllMocks()
   })
 
+  it('mounted calls language loader and data fetch', () => {
+    const ctx = {
+      callForLanguages: jest.fn(),
+      callForData: jest.fn()
+    }
+
+    EmailTemplates.mounted.call(ctx)
+    expect(ctx.callForLanguages).toHaveBeenCalledWith('refEmailTemplatesList')
+    expect(ctx.callForData).toHaveBeenCalled()
+  })
+
   it('beforeDestroy clears pending timeout id', () => {
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
     const ctx = { timeoutId: 12345 }
@@ -217,6 +228,17 @@ describe('EmailTemplates.vue methods', () => {
 
     EmailTemplates.methods.togglePreviewDialog.call(ctx)
     expect(ctx.isShowPreviewDialog).toBe(true)
+    expect(ctx.selectedEmailTemplate).toBeNull()
+  })
+
+  it('togglePreviewDialog can close already opened preview state', () => {
+    const ctx = {
+      isShowPreviewDialog: true,
+      selectedEmailTemplate: { resourceId: 'e-open' }
+    }
+
+    EmailTemplates.methods.togglePreviewDialog.call(ctx)
+    expect(ctx.isShowPreviewDialog).toBe(false)
     expect(ctx.selectedEmailTemplate).toBeNull()
   })
 
@@ -408,6 +430,36 @@ describe('EmailTemplates.vue methods', () => {
     EmailTemplates.methods.callForData.call(ctx)
     await flushPromises()
     expect(ctx.tableData[0].languageTypeName).toBeUndefined()
+  })
+
+  it('callForData falls back to empty table when languageTypeName is not an array', async () => {
+    getEmailTemplatesList.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          results: [{ resourceId: 'e-5', languageTypeName: 'English' }]
+        }
+      }
+    })
+
+    const ctx = {
+      getEmailTemplatesSearchPermissions: true,
+      loading: false,
+      axiosPayload: { pageNumber: 1 },
+      languageFilterOptions: [{ languageName: 'English', text: 'EN' }],
+      serverSideProps: {
+        totalNumberOfRecords: 0,
+        totalNumberOfPages: 0,
+        pageNumber: 0
+      },
+      tableData: []
+    }
+
+    EmailTemplates.methods.callForData.call(ctx)
+    await flushPromises()
+    expect(ctx.tableData).toEqual([])
   })
 
   it('callForData sets empty table on failure and does nothing without permission', async () => {

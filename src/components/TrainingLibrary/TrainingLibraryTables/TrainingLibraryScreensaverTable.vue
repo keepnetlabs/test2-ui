@@ -29,6 +29,13 @@
     @columnFilterCleared="columnFilterCleared"
     @sortChangedEvent="sortChanged"
   >
+    <template #datatable-custom-column="{ scope }">
+      <LanguagesColumn
+        v-if="scope.column.property === 'languages'"
+        :value="scope.row.languages"
+        :preferred-language-types="getPreferredLanguageTypes"
+      />
+    </template>
     <template #datatable-row-actions="{ scope }">
       <TrainingLibraryScreensaverRowActions
         v-if="!isLoading"
@@ -49,12 +56,14 @@ import {
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_COLUMNS } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryScreensaverRowActions from '@/components/TrainingLibrary/TrainingLibraryRowActions/TrainingLibraryScreensaverRowActions.vue'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMixin'
 export default {
   name: 'TrainingLibraryScreensaverTable',
   components: {
+    LanguagesColumn,
     TrainingLibraryScreensaverRowActions,
     DataTable
   },
@@ -104,6 +113,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      getPreferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes',
       tableData: 'trainingLibrary/getTableData',
       serverSideProps: 'trainingLibrary/getServerSideProps',
       axiosPayload: 'trainingLibrary/getAxiosPayload',

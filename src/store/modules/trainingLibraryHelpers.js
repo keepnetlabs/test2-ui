@@ -1,10 +1,13 @@
 import AwarenessEducatorService from "@/api/awarenessEducator";
+import { getScenarioDataDetails } from "@/api/scenarios";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
 import { distributionDelayTimeTypes } from "@/components/TrainingLibrary/utils";
 import { PROPERTY_STORE } from "@/model/constants/commonConstants";
 
 const trainingLibraryHelpers = {
   namespaced: true,
   state: {
+    preferredLanguageTypes: [],
     categories: [],
     scormTypes: [],
     languages: [],
@@ -38,6 +41,9 @@ const trainingLibraryHelpers = {
     },
     getLanguages(state) {
       return state.languages;
+    },
+    getPreferredLanguageTypes(state) {
+      return state.preferredLanguageTypes;
     },
     getTargetAudiences(state) {
       return state.targetAudiences;
@@ -109,6 +115,9 @@ const trainingLibraryHelpers = {
     },
     SET_LANGUAGES(state, payload) {
       state.languages = payload;
+    },
+    SET_PREFERRED_LANGUAGE_TYPES(state, payload) {
+      state.preferredLanguageTypes = payload;
     },
     SET_TARGET_AUDIENCES(state, payload) {
       state.targetAudiences = payload;
@@ -186,6 +195,7 @@ const trainingLibraryHelpers = {
   actions: {
     callForTrainingHelpers({ dispatch }) {
       dispatch("callForFormDetails");
+      dispatch("callForScenarioFormDetails");
       dispatch("callForCategories");
       dispatch("callForScormTypes");
       dispatch("callForLanguages");
@@ -458,6 +468,27 @@ const trainingLibraryHelpers = {
           { root: true }
         );
       });
+    },
+    callForScenarioFormDetails({ commit }) {
+      LookupLocalStorage.getSingle(21)
+        .then((languageOptions) => {
+          const languageItems =
+            languageOptions?.map((l) => ({
+              text: l.isoFriendlyName || l.name,
+              value: l.resourceId
+            })) || [];
+          return getScenarioDataDetails().then((response) => {
+            const formDetailsData = response?.data?.data || {};
+            const preferredRaw = formDetailsData.preferredLanguageTypes || [];
+            const preferredLanguageTypes = preferredRaw
+              .map(({ value }) => languageItems.find((lang) => lang.value === value))
+              .filter(Boolean);
+            commit("SET_PREFERRED_LANGUAGE_TYPES", preferredLanguageTypes);
+          });
+        })
+        .catch(() => {
+          commit("SET_PREFERRED_LANGUAGE_TYPES", []);
+        });
     },
     callForFormDetails({ commit }) {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {

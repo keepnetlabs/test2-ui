@@ -74,7 +74,7 @@ export default {
     },
     preferredTexts() {
       const types = this.preferredLanguageTypes || []
-      return types.map((t) => (t.text || '').trim().toLowerCase()).filter(Boolean)
+      return types.map((t) => ((t && t.text) || '').trim().toLowerCase()).filter(Boolean)
     },
     overflowLanguages() {
       return this.languages.length > 1 ? this.languages.slice(1) : []
