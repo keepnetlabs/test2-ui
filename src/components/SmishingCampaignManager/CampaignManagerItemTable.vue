@@ -225,7 +225,7 @@ export default {
   },
   computed: {
     getTableAllRecordsText() {
-      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
+      return `${labels.CampaignName}: ${this?.item?.name}`
     }
   },
   watch: {
