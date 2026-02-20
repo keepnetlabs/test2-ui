@@ -56,6 +56,8 @@ jest.mock('@/utils/functions', () => ({
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('CompanyCreateOrEdit.vue (extra)', () => {
+  let consoleLogSpy
+
   const TestComponent = {
     ...CompanyCreateOrEdit,
     mounted() {},
@@ -102,6 +104,13 @@ describe('CompanyCreateOrEdit.vue (extra)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    if (consoleLogSpy) {
+      consoleLogSpy.mockRestore()
+    }
   })
 
   it('fetchCountryTimezones fills countryTimezones from api response', async () => {

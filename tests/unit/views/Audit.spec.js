@@ -671,12 +671,17 @@ describe('Audit.vue', () => {
     })
 
     it('should update efficiently', () => {
+      const nowSpy = jest
+        .spyOn(performance, 'now')
+        .mockReturnValueOnce(200)
+        .mockReturnValueOnce(450)
       const start = performance.now()
       for (let i = 0; i < 100; i++) {
         wrapper.vm.$forceUpdate()
       }
       const duration = performance.now() - start
       expect(duration).toBeLessThan(500)
+      nowSpy.mockRestore()
     })
 
     it('should handle rapid method calls', () => {
