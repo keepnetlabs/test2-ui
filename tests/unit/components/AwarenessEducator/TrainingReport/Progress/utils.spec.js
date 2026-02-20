@@ -15,4 +15,12 @@ describe('AwarenessEducator TrainingReport Progress utils', () => {
       text: 'Completed'
     })
   })
+
+  it('returns undefined for unknown, empty or whitespace-variant progress values', () => {
+    expect(getTrainingReportProgressStatusBadgeProps('Unknown')).toBeUndefined()
+    expect(getTrainingReportProgressStatusBadgeProps('')).toBeUndefined()
+    expect(getTrainingReportProgressStatusBadgeProps(' completed ')).toBeUndefined()
+    expect(getTrainingReportProgressStatusBadgeProps(null)).toBeUndefined()
+    expect(getTrainingReportProgressStatusBadgeProps(undefined)).toBeUndefined()
+  })
 })

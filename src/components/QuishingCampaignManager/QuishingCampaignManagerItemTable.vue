@@ -53,7 +53,11 @@
             </div>
             <TheRecordsButton
               label="recurrence"
+              plural-label="recurrences"
+              single-label="View Report"
+              zero-label="No Recurrence"
               width="150px"
+              variant="primary"
               :index="scope.$index"
               :row="scope.row"
               :disabled-count="0"
@@ -268,7 +272,7 @@ export default {
   },
   computed: {
     getTableAllRecordsText() {
-      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`
+      return `${labels.CampaignName}: ${this?.item?.name}`
     }
   },
   watch: {

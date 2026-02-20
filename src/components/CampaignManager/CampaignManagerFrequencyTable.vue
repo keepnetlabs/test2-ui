@@ -178,6 +178,7 @@ export default {
           COLUMNS.SCHEDULE,
           {
             ...COLUMNS.TARGET_USERS_ITEM_TABLE,
+            label: 'Users',
             width: 240
           },
           {

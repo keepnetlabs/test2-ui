@@ -60,7 +60,11 @@
             </div>
             <TheRecordsButton
               label="recurrence"
+              plural-label="recurrences"
+              single-label="View Report"
+              zero-label="No Recurrence"
               width="150px"
+              variant="primary"
               :index="scope.$index"
               :row="scope.row"
               :disabled-count="0"
@@ -241,35 +245,21 @@ export default {
   },
   computed: {
     getTableAllRecordsText() {
-      return `${labels.InstancesOfCampaign}: ${this?.item?.name}`;
+      return `${labels.CampaignName}: ${this?.item?.name}`;
     },
     tableColumnsWithTooltips() {
-      const isRecurrence =
-        this.item?.frequency !== 0 && this.item?.frequency !== undefined;
-
       return this.tableOptions.columns.map((col) => {
         if (col.property === "totalTargetUserCount") {
           return {
             ...col,
-            width: 240,
-            showHeaderTooltip: isRecurrence,
-            headerTooltip: isRecurrence
-              ? "Number of users in the most recent recurrence of this instance."
-              : undefined,
-            headerTooltipIcon: "mdi-information-outline",
-            headerTooltipIconColor: "#757575"
+            label: "Users",
+            width: 240
           };
         }
         if (col.property === COLUMNS.STATUS.property) {
           return {
             ...col,
-            width: 240,
-            showHeaderTooltip: isRecurrence,
-            headerTooltip: isRecurrence
-              ? "Current status of the most recent recurrence of this instance."
-              : undefined,
-            headerTooltipIcon: "mdi-information-outline",
-            headerTooltipIconColor: "#757575"
+            width: 240
           };
         }
         return col;

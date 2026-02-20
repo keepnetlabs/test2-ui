@@ -946,7 +946,7 @@ export const labels = {
   InAnalysis: 'In Analysis',
   Edit: 'Edit',
   PreviewEmail: 'Preview Email',
-  TargetUsers: 'Target Users',
+  TargetUsers: 'Users',
   DefineTags: 'Define tags for the rule',
   PhishingReporterSettings: 'PHISHING REPORTER SETTINGS',
   PhishingReporters: 'Phishing Reporters',

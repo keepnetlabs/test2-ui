@@ -279,5 +279,65 @@ describe('CommonSimulatorNewScenario.vue', () => {
     ])
     expect(wrapper.vm.languagePreview).toBe('lang-en')
   })
+
+  it('computes step 2 subtitle by method type and quishing type', async () => {
+    const wrapper = mountComponent()
+    await flushPromises()
+
+    await wrapper.setData({
+      formValues: {
+        ...wrapper.vm.formValues,
+        methodTypeId: '99'
+      }
+    })
+    expect(wrapper.vm.getStep2Subtitle).toContain('click only or data submission type email template')
+
+    await wrapper.setData({
+      formValues: {
+        ...wrapper.vm.formValues,
+        methodTypeId: '3'
+      }
+    })
+    expect(wrapper.vm.getStep2Subtitle).toContain('attachment type email template')
+
+    await wrapper.setProps({ type: SCENARIO_TYPES.QUISHING })
+    await wrapper.setData({
+      quishingType: 'Individual',
+      formValues: {
+        ...wrapper.vm.formValues,
+        methodTypeId: '2'
+      }
+    })
+    expect(wrapper.vm.getStep2Subtitle).toContain('data submission type individual printout template')
+  })
+
+  it('uses isAttachmentBased override in edit mode before fetched, then falls back to method type', async () => {
+    const overrideCtx = {
+      isAttachmentBased: true,
+      isEdit: true,
+      isDuplicate: false,
+      isFetched: false,
+      formValues: {}
+    }
+    expect(CommonSimulatorNewScenario.computed.isAttachmentBasedScenario.call(overrideCtx)).toBe(true)
+
+    const methodCtx = {
+      isAttachmentBased: false,
+      isEdit: true,
+      isDuplicate: false,
+      isFetched: true,
+      formValues: { methodTypeId: '3' }
+    }
+    expect(CommonSimulatorNewScenario.computed.isAttachmentBasedScenario.call(methodCtx)).toBe(true)
+  })
+
+  it('returns role count fallback text when role details are unavailable', async () => {
+    const ctx = {
+      isPhishing: true,
+      selectedRoleNames: [],
+      formValues: { roleResourceIds: ['r1', 'r2'] }
+    }
+    expect(CommonSimulatorNewScenario.computed.getSelectedRolesText.call(ctx)).toBe('2 roles')
+  })
 })
 

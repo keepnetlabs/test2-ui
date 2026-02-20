@@ -284,6 +284,16 @@ export default {
         });
     },
     handleOnRecordButtonClick(row) {
+      if (row.total === 1) {
+        this.$router.push({
+          name: 'Campaign Report',
+          params: {
+            id: row.resourceId,
+            instanceGroup: row.mostRecentInstanceGroup ?? 1
+          }
+        });
+        return;
+      }
       this.selectedParentItem = row;
       if (this.$refs.campaignManagerItemTable) {
         this.$refs.campaignManagerItemTable.resetTable();
@@ -292,6 +302,16 @@ export default {
       this.toggleItemTableShowing();
     },
     handleItemTableRecordButtonClick(row) {
+      if (row.total === 1) {
+        this.$router.push({
+          name: 'Campaign Report',
+          params: {
+            id: this.selectedParentItem.resourceId,
+            instanceGroup: row.instanceGroup
+          }
+        });
+        return;
+      }
       this.selectedInstanceItem = row;
       this.toggleFrequencyTableShowing();
     },
