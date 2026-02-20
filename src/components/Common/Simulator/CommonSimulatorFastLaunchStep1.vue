@@ -115,7 +115,7 @@ export default {
       return !this.formData.sendRandomlyUsers
     },
     getRandomlySelectedItems() {
-      return this.formDetails['sendRandomlyUsersCalculateTypes']
+      return (this.formDetails && this.formDetails['sendRandomlyUsersCalculateTypes']) || []
     }
   },
   methods: {

@@ -422,6 +422,17 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(ctx.selectedPhishingScenario).toEqual({})
   })
 
+  it('handlePreview accepts null row and still toggles preview dialog', () => {
+    const ctx = {
+      selectedPhishingScenario: { resourceId: 's-old' },
+      toggleShowPreviewDialog: jest.fn()
+    }
+
+    Scenarios.methods.handlePreview.call(ctx, null)
+    expect(ctx.selectedPhishingScenario).toBeNull()
+    expect(ctx.toggleShowPreviewDialog).toHaveBeenCalled()
+  })
+
   it('callForData does not call api when search permission is missing', async () => {
     const ctx = {
       loading: false,
@@ -513,6 +524,27 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(ctx.isEdit).toBe(false)
     expect(ctx.isDuplicate).toBe(false)
     expect(ctx.editableFormValues).toEqual({ a: 1 })
+    expect(callForData).not.toHaveBeenCalled()
+  })
+
+  it('changeNewScenarioModalStatus with status=true opens modal without clearing selected row', () => {
+    const callForData = jest.fn()
+    const ctx = {
+      modalStatus: false,
+      scenarioId: 's-open',
+      isEdit: true,
+      isDuplicate: false,
+      selectedRow: { id: 7 },
+      editableFormValues: { a: 1 },
+      callForData
+    }
+
+    Scenarios.methods.changeNewScenarioModalStatus.call(ctx, true, false)
+    expect(ctx.modalStatus).toBe(true)
+    expect(ctx.selectedRow).toEqual({ id: 7 })
+    expect(ctx.scenarioId).toBeNull()
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
     expect(callForData).not.toHaveBeenCalled()
   })
 
