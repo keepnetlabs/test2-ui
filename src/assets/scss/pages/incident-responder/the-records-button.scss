@@ -5,12 +5,22 @@
         line-height: 1.71;
         color: #2196f3;
         letter-spacing: normal;
-        text-transform: lowercase;
+        text-transform: none;
     }
 
     &--disabled {
         .v-btn__content {
             color: #757575 !important;
+        }
+    }
+
+    &--primary:not(&--disabled) {
+        background-color: #2196f3 !important;
+        .v-btn__content {
+            color: #fff !important;
+        }
+        .v-icon {
+            color: #fff !important;
         }
     }
 }

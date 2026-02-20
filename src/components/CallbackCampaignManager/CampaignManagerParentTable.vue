@@ -49,7 +49,12 @@
               <span> {{ scope.row[col.property] }}</span>
             </div>
             <TheRecordsButton
-              label="instance"
+              label="Run"
+              plural-label="Runs"
+              single-label="View Report"
+              zero-label="No Run"
+              width="140px"
+              variant="primary"
               :index="scope.$index"
               :row="scope.row"
               :disabled-count="0"

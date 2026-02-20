@@ -39,7 +39,12 @@
             <span> {{ scope.row[col.property] }}</span>
           </div>
           <TheRecordsButton
-            label="instance"
+            label="Run"
+            plural-label="Runs"
+            single-label="View Report"
+            zero-label="No Run"
+            width="140px"
+            variant="primary"
             :index="scope.$index"
             :row="scope.row"
             :disabled-count="0"
@@ -213,20 +218,13 @@ export default {
           COLUMNS.CAMPAIGN_NAME,
           {
             ...COLUMNS.TARGET_USERS,
+            label: 'Users',
             type: 'slot',
-            width: 240,
-            showHeaderTooltip: true,
-            headerTooltip: 'Number of users in the most recent campaign instance.',
-            headerTooltipIcon: 'mdi-information-outline',
-            headerTooltipIconColor: '#757575'
+            width: 240
           },
           {
             ...COLUMNS.STATUS,
-            width: 240,
-            showHeaderTooltip: true,
-            headerTooltip: 'Current status of the most recent campaign instance.',
-            headerTooltipIcon: 'mdi-information-outline',
-            headerTooltipIconColor: '#757575'
+            width: 240
           },
           COLUMNS.SCENARIO_COUNT,
           COLUMNS.SCENARIO_DISTRIBUTION,

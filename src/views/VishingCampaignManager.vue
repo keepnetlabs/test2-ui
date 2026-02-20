@@ -250,7 +250,7 @@ export default {
             property: 'targetUsers',
             align: 'right',
             editable: false,
-            label: 'Target Users',
+            label: 'Users',
             sortable: true,
             show: true,
             type: 'text',
