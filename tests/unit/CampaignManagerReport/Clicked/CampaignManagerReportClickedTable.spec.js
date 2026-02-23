@@ -72,6 +72,29 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     ])
   })
 
+  it('customFields watcher falls back to department index or skips when missing', () => {
+    const byDepartmentCtx = {
+      tableOptions: {
+        columns: [{ property: 'department' }, { property: 'email' }]
+      }
+    }
+    CampaignManagerReportClickedTable.watch.customFields.handler.call(byDepartmentCtx, [{ name: 'X' }])
+    expect(byDepartmentCtx.tableOptions.columns.map((c) => c.property)).toEqual([
+      'department',
+      'cf_1',
+      'cf_2',
+      'email'
+    ])
+
+    const noInsertCtx = {
+      tableOptions: {
+        columns: [{ property: 'email' }]
+      }
+    }
+    CampaignManagerReportClickedTable.watch.customFields.handler.call(noInsertCtx, [{ name: 'Y' }])
+    expect(noInsertCtx.tableOptions.columns.map((c) => c.property)).toEqual(['email'])
+  })
+
   it('isShowSandbox watcher emits sync event', () => {
     const emit = jest.fn()
     CampaignManagerReportClickedTable.watch.isShowSandbox.call({ $emit: emit }, true)
@@ -171,6 +194,41 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     expect(ctx.botActivityCount).toBe(5)
   })
 
+  it('callForData keeps existing activityType and defaults bot count to zero', async () => {
+    searchCampaignJobUserEmailClicked.mockResolvedValue({
+      data: {
+        data: {
+          results: [
+            {
+              resourceId: 'r3',
+              preferredLanguage: 'English',
+              customFieldValues: []
+            }
+          ],
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1
+        }
+      }
+    })
+    const ctx = {
+      id: 'campaign-3',
+      instanceGroup: null,
+      axiosPayload: { filter: {}, activityType: 2 },
+      languageOptions: [{ text: 'EN', languageTypeName: 'English', value: 'lang-en' }],
+      serverSideProps: { totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 0 },
+      tableData: [],
+      botActivityCount: 99,
+      setLoading: jest.fn()
+    }
+
+    CampaignManagerReportClickedTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.axiosPayload.activityType).toBe(2)
+    expect(ctx.botActivityCount).toBe(0)
+  })
+
   it('exportCampaignManagerReportClickedTable exports files with extension mapping', async () => {
     exportCampaignJobUserEmailClicked.mockResolvedValue({ data: Buffer.from('x') })
     const originalCreateObjectURL = globalThis.URL.createObjectURL
@@ -243,5 +301,18 @@ describe('CampaignManagerReportClickedTable.vue', () => {
 
     CampaignManagerReportClickedTable.methods.handleOnDetail.call(ctx, { resourceId: 'row-1' })
     expect(emit).toHaveBeenCalledWith('on-detail', { resourceId: 'row-1' })
+  })
+
+  it('created calls callForLanguages and mounted triggers callForData on nextTick', () => {
+    const createdCtx = { callForLanguages: jest.fn() }
+    CampaignManagerReportClickedTable.created.call(createdCtx)
+    expect(createdCtx.callForLanguages).toHaveBeenCalled()
+
+    const mountedCtx = {
+      callForData: jest.fn(),
+      $nextTick: (cb) => cb()
+    }
+    CampaignManagerReportClickedTable.mounted.call(mountedCtx)
+    expect(mountedCtx.callForData).toHaveBeenCalled()
   })
 })

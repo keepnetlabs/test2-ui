@@ -29,7 +29,7 @@
         outlined
         dense
         auto-grow
-        autocomplete="disabled"
+        autocomplete="off"
         :rows="rows"
         :min-height="minHeightNumber"
         :disabled="disabled"

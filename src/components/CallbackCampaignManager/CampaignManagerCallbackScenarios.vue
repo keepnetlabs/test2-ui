@@ -413,7 +413,7 @@ export default {
       return ''
     },
     getContainerStyle() {
-      return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
+      return this.isValid ? {} : { border: '1px solid #ff5252 !important', borderRadius: '20px' }
     },
     getSelectedScenarioSwitchLabel() {
       return `Only show selected scenarios (${this.value.length})`

@@ -318,9 +318,9 @@ export default {
         const payload = {
           excludeFromReports: this.formValues.excludeFromReports,
           scheduledDate:
-            this.inputScheduleFormData.scheduleTypeId !== SCHEDULE_TYPES.SCHEDULE_TO
-              ? null
-              : this.inputScheduleFormData.scheduledDate,
+            this.inputScheduleFormData.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO
+              ? this.inputScheduleFormData.scheduledDate
+              : null,
           scheduledDateTimeZoneId: this.inputScheduleFormData.scheduledDateTimeZoneId,
           scheduleTypeId: this.inputScheduleFormData.scheduleTypeId,
           targetGroupResourceIds: this.formValues.targetGroupResourceIds.map(

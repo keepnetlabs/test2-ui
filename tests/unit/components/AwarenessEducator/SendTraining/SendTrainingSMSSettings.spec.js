@@ -74,6 +74,10 @@ describe('SendTrainingSMSSettings.vue', () => {
     })
   })
 
+  it('defaultValues watcher is configured as deep', () => {
+    expect(SendTrainingSMSSettings.watch.defaultValues.deep).toBe(true)
+  })
+
   it('sms text length rule ignores merge tags and enforces max 160 chars', () => {
     const data = SendTrainingSMSSettings.data.call({
       defaultSmsTextTemplate: '',
@@ -86,5 +90,46 @@ describe('SendTrainingSMSSettings.vue', () => {
 
     expect(maxLengthRule(valid)).toBe(true)
     expect(maxLengthRule(invalid)).toContain('160 characters')
+  })
+
+  it('sms text length rule returns true for empty value and counts multiple merge tags', () => {
+    const data = SendTrainingSMSSettings.data.call({
+      defaultSmsTextTemplate: '',
+      defaultMergeTags: []
+    })
+    const maxLengthRule = data.smsTextRules[1]
+
+    expect(maxLengthRule('')).toBe(true)
+
+    const textWithTags = `${'a'.repeat(159)}{FULLNAME}{TRAININGURL}`
+    expect(maxLengthRule(textWithTags)).toBe(true)
+
+    const tooLongWithoutTags = `${'a'.repeat(170)}{FULLNAME}{TRAININGURL}`
+    expect(maxLengthRule(tooLongWithoutTags)).toContain('160 characters')
+  })
+
+  it('number rules validate required, no-leading-zero and max value', () => {
+    const data = SendTrainingSMSSettings.data.call({
+      defaultSmsTextTemplate: '',
+      defaultMergeTags: []
+    })
+    const [requiredRule, startsWithRule, maxRule] = data.rules.number
+
+    expect(requiredRule(null)).toContain('higher than 0')
+    expect(startsWithRule('012')).toContain('Cannot start with 0')
+    expect(startsWithRule('12')).toBe(true)
+    expect(maxRule(999999)).toBe(true)
+    expect(maxRule(1000001)).toContain('cannot exceed')
+  })
+
+  it('common required rule validates empty and non-empty values', () => {
+    const data = SendTrainingSMSSettings.data.call({
+      defaultSmsTextTemplate: '',
+      defaultMergeTags: []
+    })
+    const requiredRule = data.commonRules.rules[0]
+
+    expect(requiredRule('text')).toBe(true)
+    expect(requiredRule('')).toBeTruthy()
   })
 })

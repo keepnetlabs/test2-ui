@@ -157,7 +157,7 @@ export default {
           if (response.status === 200) {
             const blob = new Blob([data])
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(blob)
+            link.href = globalThis.URL.createObjectURL(blob)
             link.download = `Campaign-Manager-Report.xlsx`
             link.click()
           } else if (response.status === 201) {

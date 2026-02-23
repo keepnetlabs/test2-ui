@@ -393,7 +393,7 @@ export default {
           const { data } = response
           if (data && data instanceof Blob) {
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `CallbackTemplates.${
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`

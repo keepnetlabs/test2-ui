@@ -903,10 +903,10 @@ export default {
       }
     },
     isCallbackSelected(val) {
-      if (!val) {
-        this.formData.CallBackNumberBookingCount = null
-      } else {
+      if (val) {
         this.getAvailableCallbackNumbers()
+      } else {
+        this.formData.CallBackNumberBookingCount = null
       }
     },
     'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {

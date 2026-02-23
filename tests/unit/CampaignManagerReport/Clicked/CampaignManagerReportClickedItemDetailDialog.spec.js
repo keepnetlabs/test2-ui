@@ -27,6 +27,22 @@ describe('CampaignManagerReportClickedItemDetailDialog.vue', () => {
     jest.clearAllMocks()
   })
 
+  it('data initializes sandbox label and base table options', () => {
+    const dataForDefault = CampaignManagerReportClickedItemDetailDialog.data.call({
+      isShowSandboxFromParent: false
+    })
+    expect(dataForDefault.isShowSandbox).toBe(false)
+    expect(dataForDefault.tableActionLabel).toBe('SHOW BOT ACTIVITY')
+    expect(dataForDefault.tableOptions.addButton.label).toBe('SHOW BOT ACTIVITY')
+
+    const dataForSandbox = CampaignManagerReportClickedItemDetailDialog.data.call({
+      isShowSandboxFromParent: true
+    })
+    expect(dataForSandbox.isShowSandbox).toBe(true)
+    expect(dataForSandbox.tableActionLabel).toBe('HIDE BOT ACTIVITY')
+    expect(dataForSandbox.tableOptions.addButton.label).toBe('HIDE BOT ACTIVITY')
+  })
+
   it('computed title/subtitle handle defaults', () => {
     expect(
       CampaignManagerReportClickedItemDetailDialog.computed.getTitle.call({
@@ -43,6 +59,11 @@ describe('CampaignManagerReportClickedItemDetailDialog.vue', () => {
         item: { firstName: 'Jane', lastName: 'Doe' }
       })
     ).toBe('Jane Doe')
+    expect(
+      CampaignManagerReportClickedItemDetailDialog.computed.getSubtitle.call({
+        item: {}
+      })
+    ).toBe(' ')
   })
 
   it('created hook sets pageSize and calls callForData', () => {
@@ -108,6 +129,30 @@ describe('CampaignManagerReportClickedItemDetailDialog.vue', () => {
     expect(ctx.axiosPayload.activityType).toBe(2)
   })
 
+  it('callForData preserves existing activityType value', async () => {
+    searchCampaignJobUserEmailClickedDetails.mockResolvedValue({
+      data: {
+        data: {
+          results: [],
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+    const ctx = {
+      isShowSandboxFromParent: false,
+      item: { resourceId: 'user-3' },
+      axiosPayload: { activityType: 9 },
+      serverSideProps: { totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 0 },
+      tableData: [],
+      setLoading: jest.fn()
+    }
+    CampaignManagerReportClickedItemDetailDialog.methods.callForData.call(ctx)
+    await flushPromises()
+    expect(ctx.axiosPayload.activityType).toBe(9)
+  })
+
   it('dialog toggles and close emit work', () => {
     const emit = jest.fn()
     const ctx = {
@@ -136,6 +181,22 @@ describe('CampaignManagerReportClickedItemDetailDialog.vue', () => {
     expect(ctx.callForData).toHaveBeenCalled()
     expect(ctx.selectedRow).toEqual({ resourceId: 'y' })
     expect(ctx.isShowMarkAsHumanActivityDialog).toBe(true)
+  })
+
+  it('toggleShowSandboxActivityDialog triggers refresh when forceUpdate is true', () => {
+    const ctx = {
+      selectedRow: null,
+      isShowMarkAsSandboxActivityDialog: false,
+      callForData: jest.fn()
+    }
+    CampaignManagerReportClickedItemDetailDialog.methods.toggleShowSandboxActivityDialog.call(
+      ctx,
+      { resourceId: 'z' },
+      true
+    )
+    expect(ctx.callForData).toHaveBeenCalled()
+    expect(ctx.selectedRow).toEqual({ resourceId: 'z' })
+    expect(ctx.isShowMarkAsSandboxActivityDialog).toBe(true)
   })
 
   it('toggleShowMarkAsDialog routes to correct dialog by row status', () => {

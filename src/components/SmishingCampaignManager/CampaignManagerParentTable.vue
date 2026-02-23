@@ -41,7 +41,7 @@
           <TheRecordsButton
             label="Run"
             plural-label="Runs"
-            single-label="View Report"
+            :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
             zero-label="No Run"
             width="140px"
             variant="primary"
@@ -310,7 +310,7 @@ export default {
           SmishingService.exportSmishingCampaigns(payload).then((response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `smishing-campaign-manager.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`

@@ -592,7 +592,7 @@ export default {
             const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
             const languages = emailTemplateData.languages || []
             const mainTemplate =
-              emailTemplateData.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+              emailTemplateData.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
             if (emailTemplateData.languageTypeResourceId && emailTemplateData.languageTypeName) {
               languages.unshift({
@@ -604,7 +604,7 @@ export default {
 
             languages.forEach((lang) => {
               if (lang.template) {
-                lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+                lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
               }
             })
 
@@ -637,7 +637,7 @@ export default {
           } = response
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const languages = data.languages || []
-          const mainTemplate = data.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate = data.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.languageTypeResourceId && data.languageTypeName) {
             languages.unshift({
@@ -649,7 +649,7 @@ export default {
 
           languages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 

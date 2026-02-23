@@ -417,7 +417,7 @@ export default {
         playbookAction,
         playbookActionAnalyzers,
         playbookActionNotifications,
-        playbookActionInvestigations: playbookActionInvestigations.filter((item) => item),
+        playbookActionInvestigations: playbookActionInvestigations.filter(Boolean),
         playbookActionStatus,
         condition: this.condition
       }
@@ -513,7 +513,7 @@ export default {
         playbookActionStatus,
         playbookActionNotifications,
         playbookActionAnalyzers,
-        playbookActionInvestigations: playbookActionInvestigations.filter((item) => item),
+        playbookActionInvestigations: playbookActionInvestigations.filter(Boolean),
         condition: this.condition
       }
 

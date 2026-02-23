@@ -206,7 +206,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
+      if (this.axiosPayload.activityType === undefined) this.axiosPayload.activityType = 0
       CallbackService.getCampaignTabUsers(
         REPORT_TABS.OPENED,
         this.id,
@@ -259,7 +259,7 @@ export default {
         ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Callback-Report-Opened.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`

@@ -340,7 +340,6 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import TeamsIntegrationModal from './TeamsIntegrationModal.vue'
 import DisableMicrosoftTeamsModal from './DisableMicrosoftTeamsModal.vue'
 import MicrosoftTeamsSettingsService from '@/api/microsoftTeamsSettings'
-import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import * as Validations from '@/utils/validations'
@@ -467,7 +466,6 @@ export default {
     if (query?.code && query?.state) {
       //step 2
       this.callMicrosoftTeamsOboCallback(query.code, query.state)
-      return
     } else if (query?.admin_consent && query?.tenant && query?.scope) {
       this.callMicrosoftTeamsAppCallback(query.admin_consent, query.tenant, query.scope)
       return
@@ -569,11 +567,11 @@ export default {
       this.isButtonsDisabled = true
       if (this.isStep2) {
         this.getMicrosoftTeamsAppAuthorizeLink().then((link) => {
-          if (link) window.location = link
+          if (link) globalThis.location = link
         })
       } else {
         this.getMicrosoftTeamsOboIntegrationLink().then((link) => {
-          if (link) window.location = link
+          if (link) globalThis.location = link
         })
       }
     },

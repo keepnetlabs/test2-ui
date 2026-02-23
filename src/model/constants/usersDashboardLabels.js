@@ -767,7 +767,7 @@ const usersDashboardLabels = {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'kazandı' : 'kaybetti'
 
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
 
       const campaignTypeMap = {
         phishing: 'oltalama',
@@ -787,7 +787,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'oltalama',
         smishing: 'smishing',
@@ -801,7 +801,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'oltalama',
         smishing: 'smishing',
@@ -1158,7 +1158,7 @@ const usersDashboardLabels = {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'verdient' : 'verloren'
 
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
 
       const campaignTypeMap = {
         phishing: 'Phishing',
@@ -1178,7 +1178,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'Phishing',
         smishing: 'Smishing',
@@ -1192,7 +1192,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'Phishing',
         smishing: 'Smishing',
@@ -1546,7 +1546,7 @@ const usersDashboardLabels = {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'gagné' : 'perdu'
 
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'hameçonnage',
         smishing: 'smishing',
@@ -1565,7 +1565,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'hameçonnage',
         smishing: 'smishing',
@@ -1579,7 +1579,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'hameçonnage',
         smishing: 'smishing',
@@ -1919,7 +1919,7 @@ const usersDashboardLabels = {
       const pointsAbs = Math.abs(points)
       const action = points > 0 ? 'ganó' : 'perdió'
 
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
 
       const campaignTypeMap = {
         phishing: 'phishing',
@@ -1938,7 +1938,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignOpened: (userName, campaignName, campaignType, difficulty) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'phishing',
         smishing: 'smishing',
@@ -1952,7 +1952,7 @@ const usersDashboardLabels = {
     },
 
     activityTimelineCampaignSentTo: (campaignName, campaignType, difficulty, userName) => {
-      const campaignTypeClean = campaignType.replace(/\s*campaign\s*/gi, '').trim()
+      const campaignTypeClean = campaignType.replace(/\s{0,20}campaign\s{0,20}/gi, '').trim()
       const campaignTypeMap = {
         phishing: 'phishing',
         smishing: 'smishing',

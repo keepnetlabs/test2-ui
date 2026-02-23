@@ -61,7 +61,7 @@
             <TheRecordsButton
               label="recurrence"
               plural-label="recurrences"
-              single-label="View Report"
+              :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
               zero-label="No Recurrence"
               width="150px"
               variant="primary"

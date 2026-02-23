@@ -116,7 +116,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewTrainingContent : labels.EditTrainingContent
+      return this.isEdit ? labels.EditTrainingContent : labels.CreateNewTrainingContent
     }
   },
   created() {

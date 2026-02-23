@@ -77,7 +77,7 @@
           <TheRecordsButton
             label="Run"
             plural-label="Runs"
-            single-label="View Report"
+            :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
             zero-label="No Run"
             width="140px"
             variant="primary"
@@ -361,7 +361,7 @@ export default {
           QuishingService.exportCampaignManager(payload).then((response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `Campaign-Manager.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
@@ -413,7 +413,8 @@ export default {
     getTooltipDisabilityStatus(row = {}) {
       return row?.status !== 'Error' || !row?.jobResultMessage
     },
-    handleAddQuishingCampaign(item = { text: '' }) {
+    handleAddQuishingCampaign(item) {
+      item = item ?? { text: '' }
       if (item.text === this.addQuishingItems[0].text) {
         this.toggleAddCampaignManagerModal()
       }

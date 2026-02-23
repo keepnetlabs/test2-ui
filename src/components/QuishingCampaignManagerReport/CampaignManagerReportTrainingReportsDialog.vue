@@ -127,8 +127,9 @@ export default {
     handleClose() {
       this.$emit('on-close')
     },
-    handleViewReport(row = { enrollmentId: '' }) {
-      window.open(`/awareness-educator/enrollments/training-report/${row.enrollmentId}`)
+    handleViewReport(row) {
+      row = row ?? { enrollmentId: '' }
+      globalThis.open(`/awareness-educator/enrollments/training-report/${row.enrollmentId}`)
     }
   }
 }

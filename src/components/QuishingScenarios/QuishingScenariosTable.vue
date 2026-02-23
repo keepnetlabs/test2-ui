@@ -252,7 +252,7 @@ export default {
         if (selectValue) {
           // selectValue is a string of comma-separated values
           const values = typeof selectValue === 'string' ? selectValue.split(',') : selectValue
-          this.activeTemplateTypes = values.filter(v => v) // Remove empty strings
+          this.activeTemplateTypes = values.filter(Boolean) // Remove empty strings
         }
       }
     },

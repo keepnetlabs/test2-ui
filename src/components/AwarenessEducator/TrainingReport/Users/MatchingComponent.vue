@@ -45,7 +45,7 @@ export default {
         const text = option.text || option.option || option.answer || ''
 
         // "Item 1 → Match 1" formatını parse et
-        const arrowMatch = text.match(/^([^→]+?)\s*→\s*(.+)$/)
+        const arrowMatch = text.match(/^([^→]+)\s*→\s*(.+)$/)
         if (arrowMatch) {
           return {
             left: arrowMatch[1].trim(),

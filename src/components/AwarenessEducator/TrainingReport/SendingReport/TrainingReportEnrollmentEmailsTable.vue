@@ -413,10 +413,7 @@ export default {
       return row.tooltipText
     },
     getTooltipDisabilityStatus(row) {
-      if (row.hasTooltip || row.errorMessage) {
-        return false
-      }
-      return true
+      return !(row.hasTooltip || row.errorMessage)
     },
     handleSelectionChange(selectionCount) {
       this.$emit('on-selection-text-change', selectionCount)
@@ -507,7 +504,7 @@ export default {
         AwarenessEducatorService.exportSendingReport(payload, this.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `${
             this.isSurvey ? 'Survey' : 'Training'
           }-Sending-Report-Enrollment-Emails.${

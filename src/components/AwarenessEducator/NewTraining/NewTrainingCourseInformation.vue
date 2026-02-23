@@ -188,7 +188,9 @@ export default {
         const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
           availableForList
         )
-        if (!availableForListFromBackend.length) {
+        if (availableForListFromBackend.length) {
+          this.formData.availableForRequests = availableForListFromBackend
+        } else {
           this.formData.availableForRequests = [
             {
               id: 'MyCompanyOnly',
@@ -197,8 +199,6 @@ export default {
               resourceId: null
             }
           ]
-        } else {
-          this.formData.availableForRequests = availableForListFromBackend
         }
       } else {
         this.formData.availableForRequests = [

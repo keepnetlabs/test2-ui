@@ -59,7 +59,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `${!this.isDiagnostic ? 'Phishing Reporter Version ' : 'Diagnostic Tool Version'} ${
+      return `${this.isDiagnostic ? 'Diagnostic Tool Version' : 'Phishing Reporter Version '} ${
         this.selectedVersionRow.version
       }`
     },

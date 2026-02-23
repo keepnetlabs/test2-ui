@@ -158,6 +158,7 @@ export default {
     }
   },
   data() {
+    const contentType = this.isSurvey ? 'survey' : 'training'
     return {
       selectedRow: null,
       isShowInteractionsModal: false,
@@ -256,9 +257,7 @@ export default {
         iEmpty: {
           message: this.isLearningPath
             ? 'You do not have any certificate delivery for this learning path'
-            : `You do not have any certificate delivery for this ${
-                this.isSurvey ? 'survey' : 'training'
-              }`
+            : `You do not have any certificate delivery for this ${contentType}`
         },
         rowActions: [
           {
@@ -451,7 +450,7 @@ export default {
         ).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `${
             this.isSurvey ? 'Survey' : 'Training'
           }-Sending-Report-Certificate-Emails.${

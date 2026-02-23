@@ -39,6 +39,12 @@ describe('CallbackTemplates.vue methods', () => {
     expect(next).toHaveBeenCalledWith(false)
   })
 
+  it('beforeRouteLeave allows navigation when modal is closed or missing', () => {
+    const next = jest.fn()
+    CallbackTemplates.beforeRouteLeave.call({ $refs: {} }, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
+  })
+
   it('onToggleShowPreviewModal toggles visibility and clears selected template on close', () => {
     const ctx = {
       isPreviewVisible: false,
@@ -91,6 +97,23 @@ describe('CallbackTemplates.vue methods', () => {
     expect(callForData).toHaveBeenCalled()
   })
 
+  it('changeNewCallbackTemplateModalStatus closes modal without restart refresh', () => {
+    const ctx = {
+      modalStatus: true,
+      selectedTemplate: { resourceId: 'x' },
+      isEdit: true,
+      isDuplicate: true,
+      callForData: jest.fn()
+    }
+
+    CallbackTemplates.methods.changeNewCallbackTemplateModalStatus.call(ctx, false, false)
+    expect(ctx.modalStatus).toBe(false)
+    expect(ctx.selectedTemplate).toEqual({ resourceId: 'x' })
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.callForData).not.toHaveBeenCalled()
+  })
+
   it('callForData redirects when search permission is missing', () => {
     const push = jest.fn()
     const ctx = {
@@ -128,6 +151,23 @@ describe('CallbackTemplates.vue methods', () => {
     expect(ctx.serverSideProps.totalNumberOfPages).toBe(2)
     expect(ctx.serverSideProps.pageNumber).toBe(1)
     expect(ctx.tableData).toEqual([{ resourceId: '1' }])
+    expect(ctx.isLoading).toBe(false)
+  })
+
+  it('callForData clears table on api failure', async () => {
+    CallbackService.searchCallbackTemplates.mockRejectedValueOnce(new Error('search fail'))
+    const ctx = {
+      getCallbackTemplatesSearchPermissions: true,
+      isLoading: false,
+      axiosPayload: { filter: {} },
+      tableData: [{ resourceId: 'old' }],
+      serverSideProps: {}
+    }
+
+    CallbackTemplates.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([])
     expect(ctx.isLoading).toBe(false)
   })
 
@@ -187,6 +227,49 @@ describe('CallbackTemplates.vue methods', () => {
     expect(ctx.isDeleteModalVisible).toBe(true)
   })
 
+  it('delete success handlers reset selection and refresh data', () => {
+    const resetSelectableParams = jest.fn()
+    const callForData = jest.fn()
+    const ctx = {
+      isDeleteModalVisible: true,
+      callForData,
+      $refs: { refCallbackTemplatesTable: { resetSelectableParams } }
+    }
+
+    CallbackTemplates.methods.handleSuccessDeleteAction.call(ctx, {})
+    expect(resetSelectableParams).toHaveBeenCalledTimes(1)
+    expect(ctx.isDeleteModalVisible).toBe(false)
+    expect(callForData).toHaveBeenCalledTimes(1)
+
+    CallbackTemplates.methods.handleSuccessMultipleDeleteAction.call(ctx)
+    expect(resetSelectableParams).toHaveBeenCalledTimes(2)
+    expect(callForData).toHaveBeenCalledTimes(2)
+  })
+
+  it('onCloseDeleteModal and handleFastLaunch update selected template state', () => {
+    const ctx = {
+      selectedTemplate: { resourceId: 'x' },
+      isDeleteModalVisible: true
+    }
+    CallbackTemplates.methods.onCloseDeleteModal.call(ctx)
+    expect(ctx.selectedTemplate).toBe(null)
+    expect(ctx.isDeleteModalVisible).toBe(false)
+
+    CallbackTemplates.methods.handleFastLaunch.call(ctx, { resourceId: 'y' })
+    expect(ctx.selectedTemplate).toEqual({ resourceId: 'y' })
+  })
+
+  it('checkIfCanCloseCallbackTemplateModal calls guard only when modal ref exists', () => {
+    const guard = jest.fn()
+    const ctx = { $refs: { refCallbackTemplateModal: { changeCallbackTemplateModalStatus: guard } } }
+    CallbackTemplates.methods.checkIfCanCloseCallbackTemplateModal.call(ctx)
+    expect(guard).toHaveBeenCalled()
+
+    expect(() =>
+      CallbackTemplates.methods.checkIfCanCloseCallbackTemplateModal.call({ $refs: {} })
+    ).not.toThrow()
+  })
+
   it('exportCallbackTemplates triggers download for blob response', async () => {
     const blob = new Blob(['x'], { type: 'text/plain' })
     CallbackService.exportCallbackTemplates.mockResolvedValueOnce({ data: blob })
@@ -217,5 +300,22 @@ describe('CallbackTemplates.vue methods', () => {
 
     createElementSpy.mockRestore()
     window.URL.createObjectURL = originalCreateObjectURL
+  })
+
+  it('exportCallbackTemplates skips download when response is not blob', async () => {
+    CallbackService.exportCallbackTemplates.mockResolvedValueOnce({ data: { ok: true } })
+    const createElementSpy = jest.spyOn(document, 'createElement')
+    const ctx = { axiosPayload: { filter: {} } }
+
+    CallbackTemplates.methods.exportCallbackTemplates.call(ctx, {
+      exportTypes: ['PDF'],
+      reportAllPages: false,
+      pageNumber: 1,
+      pageSize: 10
+    })
+    await flushPromises()
+
+    expect(createElementSpy).not.toHaveBeenCalled()
+    createElementSpy.mockRestore()
   })
 })

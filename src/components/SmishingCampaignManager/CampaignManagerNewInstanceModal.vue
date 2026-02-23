@@ -352,7 +352,7 @@ export default {
     },
     handleTargetGroupsResourceIdsChange(items) {
       const selectedTableItems = items
-        .filter((item) => item)
+        .filter(Boolean)
         .map((item) => ({ ...item, resourceId: item.value }))
       if (
         this.$refs?.refCampaignManagerTargetGroup?.$refs?.refGroupTable?.$refs?.refTable?.$refs
@@ -365,7 +365,7 @@ export default {
     },
     handleTableSelectionChange(items) {
       this.formValues.targetGroupResourceIds = items
-        .filter((item) => item)
+        .filter(Boolean)
         .map((item) => ({
           text: item.text || item.name,
           value: item.value || item.resourceId,
@@ -397,9 +397,9 @@ export default {
           distributionEndTime: this.inputDistributionFormData.distributionEndTime,
           distributionDays: this.inputDistributionFormData.distributionDays,
           scheduledDate:
-            this.inputScheduleFormData.scheduleTypeId !== SCHEDULE_TYPES.SCHEDULE_TO
-              ? null
-              : this.inputScheduleFormData.scheduledDate,
+            this.inputScheduleFormData.scheduleTypeId === SCHEDULE_TYPES.SCHEDULE_TO
+              ? this.inputScheduleFormData.scheduledDate
+              : null,
           targetGroupResourceIds: this.formValues.targetGroupResourceIds.map(
             (target) => target.value
           )
