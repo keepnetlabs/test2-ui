@@ -136,6 +136,19 @@ describe('CampaignManagerItemTable.vue', () => {
     expect(wrapper.vm.reRenderFilters).toHaveBeenCalled()
   })
 
+  it('uses value fallback for status filters when text is missing', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.reRenderFilters = jest.fn()
+
+    await wrapper.setProps({ statusItems: [{ value: 'Paused' }] })
+
+    const statusCol = wrapper.vm.tableOptions.columns.find(
+      (col) => col.property === COLUMNS.STATUS.property
+    )
+    expect(statusCol.filterableItems).toEqual([{ value: 'Paused' }])
+    expect(wrapper.vm.reRenderFilters).toHaveBeenCalled()
+  })
+
   it('returns table all records text and error tooltip helpers', () => {
     const wrapper = createWrapper()
 
@@ -188,6 +201,16 @@ describe('CampaignManagerItemTable.vue', () => {
     await flushPromises()
 
     expect(exportCampaignManagerItem).toHaveBeenCalledTimes(2)
+    expect(exportCampaignManagerItem).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ exportType: 'Excel', reportAllPages: true }),
+      'campaign-1'
+    )
+    expect(exportCampaignManagerItem).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ exportType: 'CSV', reportAllPages: true }),
+      'campaign-1'
+    )
     expect(click).toHaveBeenCalledTimes(2)
 
     createElementSpy.mockRestore()
@@ -218,7 +241,7 @@ describe('CampaignManagerItemTable.vue', () => {
     expect(wrapper.vm.axiosPayload.orderBy).toBe('CreatedDate')
   })
 
-  it('computes header tooltips for recurrence scenarios', async () => {
+  it('keeps status column shape stable for recurrence and non-recurrence scenarios', async () => {
     const recurringWrapper = createWrapper({
       item: {
         resourceId: 'campaign-1',
@@ -244,8 +267,12 @@ describe('CampaignManagerItemTable.vue', () => {
       (col) => col.property === COLUMNS.STATUS.property
     )
 
-    expect(recurringStatusCol.showHeaderTooltip).toBe(true)
+    expect(recurringStatusCol.width).toBe(240)
+    expect(nonRecurringStatusCol.width).toBe(240)
+    expect(recurringStatusCol.showHeaderTooltip).toBe(false)
     expect(nonRecurringStatusCol.showHeaderTooltip).toBe(false)
+    expect(recurringStatusCol.property).toBe(COLUMNS.STATUS.property)
+    expect(nonRecurringStatusCol.property).toBe(COLUMNS.STATUS.property)
   })
 
   it('emits target users groups payload and resets selected row when closing delete dialog', () => {
@@ -287,5 +314,50 @@ describe('CampaignManagerItemTable.vue', () => {
     expect(resetSearchText).toHaveBeenCalled()
     expect(reRenderFilters).toHaveBeenCalledWith({})
     expect(wrapper.vm.axiosPayload.orderBy).toBe('CreatedDate')
+  })
+
+  it('maps total to zero when frequencyCount is missing', async () => {
+    searchCampaignPhishingJob.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [{ instanceGroup: 'ig-zero', status: 'Running' }],
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1
+        }
+      }
+    })
+    const wrapper = createWrapper()
+    await flushPromises()
+
+    searchCampaignPhishingJob.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [{ instanceGroup: 'ig-zero-2', status: 'Running' }],
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1
+        }
+      }
+    })
+    wrapper.vm.callForData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData[0].total).toBe(0)
+  })
+
+  it('adds width and label overrides for target users and status columns', () => {
+    const wrapper = createWrapper()
+
+    const usersCol = wrapper.vm.tableColumnsWithTooltips.find(
+      (col) => col.property === 'totalTargetUserCount'
+    )
+    const statusCol = wrapper.vm.tableColumnsWithTooltips.find(
+      (col) => col.property === COLUMNS.STATUS.property
+    )
+
+    expect(usersCol.label).toBe('Users')
+    expect(usersCol.width).toBe(240)
+    expect(statusCol.width).toBe(240)
   })
 })
