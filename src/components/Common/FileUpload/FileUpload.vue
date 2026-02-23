@@ -256,7 +256,7 @@ export default {
       }
       if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
         newFile.url = ''
-        let URL = window.URL || window.webkitURL
+        let URL = globalThis.URL || globalThis.webkitURL
         if (URL && URL.createObjectURL) {
           newFile.url = URL.createObjectURL(newFile.file)
         }

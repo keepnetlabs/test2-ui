@@ -37,10 +37,12 @@ describe('CallbackCampaignManager/CampaignManagerItemRowActions.vue', () => {
   it('shows menu only for running-like statuses and prepends view-report action', () => {
     const running = createWrapper(ACTION_STATUSES.RUNNING)
     const idle = createWrapper(ACTION_STATUSES.IDLE)
+    const error = createWrapper(ACTION_STATUSES.ERROR)
 
     expect(running.vm.isMenuRender).toBe(true)
     expect(idle.vm.isMenuRender).toBe(false)
     expect(running.vm.getRowActions[0].action).toBe('on-view-report')
+    expect(error.vm.isMenuRender).toBe(false)
   })
 
   it('routes to callback report when status is non-menu or action is on-view-report', () => {
@@ -67,6 +69,22 @@ describe('CallbackCampaignManager/CampaignManagerItemRowActions.vue', () => {
     const running = createWrapper(ACTION_STATUSES.RUNNING)
     running.vm.handleItemClick({ action: ACTION_STATUSES.RUNNING })
     expect(running.emitted('on-stop')[0][0]).toEqual({ status: ACTION_STATUSES.RUNNING, instanceGroup: 'ig-1' })
+  })
+
+  it('routes for non-menu DELETE status and emits raw custom action when menu is open', () => {
+    const del = createWrapper(ACTION_STATUSES.DELETE)
+    del.vm.handleItemClick({ action: 'on-anything' })
+    expect(del.vm.$router.push).toHaveBeenCalledWith({
+      name: 'Callback Report',
+      params: { id: 'cb-1', instanceGroup: 'ig-1' }
+    })
+
+    const running = createWrapper(ACTION_STATUSES.RUNNING)
+    running.vm.handleItemClick({ action: 'on-custom-action' })
+    expect(running.emitted('on-custom-action')[0][0]).toEqual({
+      status: ACTION_STATUSES.RUNNING,
+      instanceGroup: 'ig-1'
+    })
   })
 })
 

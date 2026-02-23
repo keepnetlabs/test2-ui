@@ -42,6 +42,9 @@ describe('CallbackCampaignManager/CampaignManagerRowActions.vue', () => {
     const complete = createWrapper({ status: ACTION_STATUSES.COMPLETE })
     expect(complete.vm.getItems.map((x) => x.action)).toEqual(['on-launch', 'on-delete'])
 
+    const cancel = createWrapper({ status: ACTION_STATUSES.CANCEL })
+    expect(cancel.vm.getItems.map((x) => x.action)).toEqual(['on-launch', 'on-delete'])
+
     const error = createWrapper({ status: ACTION_STATUSES.ERROR })
     expect(error.vm.getItems.map((x) => x.action)).toEqual(['on-delete'])
   })
@@ -74,6 +77,14 @@ describe('CallbackCampaignManager/CampaignManagerRowActions.vue', () => {
       frequency: 0,
       resourceId: 'cb-1'
     })
+  })
+
+  it('maps COMPLETE and CANCEL status-like actions to on-launch event', () => {
+    const wrapper = createWrapper({ status: ACTION_STATUSES.COMPLETE })
+    wrapper.vm.handleItemClick({ action: ACTION_STATUSES.COMPLETE })
+    wrapper.vm.handleItemClick({ action: ACTION_STATUSES.CANCEL })
+
+    expect(wrapper.emitted('on-launch')).toHaveLength(2)
   })
 })
 

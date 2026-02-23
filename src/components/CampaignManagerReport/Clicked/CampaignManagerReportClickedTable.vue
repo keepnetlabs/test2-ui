@@ -242,7 +242,7 @@ export default {
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )
-        const insertIndex = groupIndex !== -1 ? groupIndex : departmentIndex
+        const insertIndex = groupIndex === -1 ? departmentIndex : groupIndex
         if (insertIndex !== -1) {
           this.tableOptions.columns.splice(insertIndex + 1, 0, ...fields)
         }
@@ -287,7 +287,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
+      if (this.axiosPayload.activityType === undefined) this.axiosPayload.activityType = 0
       searchCampaignJobUserEmailClicked(this.axiosPayload, this.id, this.instanceGroup)
         .then((response) => {
           const {
@@ -337,7 +337,7 @@ export default {
         exportCampaignJobUserEmailClicked(payload, this.id, this.instanceGroup).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Campaign-Report-Clicked.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`

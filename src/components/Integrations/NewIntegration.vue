@@ -1807,7 +1807,7 @@ export default {
               if (
                 isSave &&
                 !this.loadingState.length &&
-                !this.formValues.apiKeys.find((item) => item.status === 'failed')
+                !this.formValues.apiKeys.some((item) => item.status === 'failed')
               )
                 this.saveIntegration()
             })

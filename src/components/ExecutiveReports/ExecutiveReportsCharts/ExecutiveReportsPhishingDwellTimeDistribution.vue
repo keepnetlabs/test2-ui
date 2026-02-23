@@ -263,7 +263,7 @@ export default {
           },
           {
             type: 'bar',
-            barThickness: averageDwellTimeIndex !== -1 ? 2 : 0,
+            barThickness: averageDwellTimeIndex === -1 ? 0 : 2,
             categoryPercentage: 0.5,
             barPercentage: 0.5,
             label: 'Median Dwell Time',

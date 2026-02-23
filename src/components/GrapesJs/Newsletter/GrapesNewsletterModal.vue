@@ -293,7 +293,7 @@ export default {
           try {
             originalFct(components);
           } catch (ex) {
-            window.alert("Parse error: " + ex);
+            globalThis.alert("Parse error: " + ex);
           }
         };
       })(this.editor.setComponents);

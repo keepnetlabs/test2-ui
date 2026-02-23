@@ -331,7 +331,7 @@ export default {
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `Company Group Details.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
@@ -449,8 +449,8 @@ export default {
       this.forCompany = false
       this.editCreateGroup = true
       this.selectedRow = {
-        ...{ name: localStorage.getItem('companyGroupName') },
-        ...{ resourceId: this.groupId }
+        name: localStorage.getItem('companyGroupName'),
+        resourceId: this.groupId
       }
       this.showAddCompanyModal = true
     },

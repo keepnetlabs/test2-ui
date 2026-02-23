@@ -308,4 +308,34 @@ describe('CallbackCampaignManager/CampaignManagerItemTable.vue', () => {
       })
     ).toBe(true)
   })
+
+  it('getTableAllRecordsText formats campaign name and falls back safely', () => {
+    expect(
+      CampaignManagerItemTable.computed.getTableAllRecordsText.call({
+        item: { name: 'Callback Campaign 1' }
+      })
+    ).toBe('Campaign Name: Callback Campaign 1')
+    expect(
+      CampaignManagerItemTable.computed.getTableAllRecordsText.call({
+        item: null
+      })
+    ).toBe('Campaign Name: undefined')
+  })
+
+  it('status watcher does nothing when refTable is missing', () => {
+    const col = { property: COLUMNS.STATUS.property, filterableItems: [] }
+    const set = jest.fn((obj, key, value) => {
+      obj[key] = value
+    })
+    const ctx = {
+      tableOptions: { columns: [col] },
+      $set: set,
+      $refs: {}
+    }
+
+    expect(() =>
+      CampaignManagerItemTable.watch.statusItems.handler.call(ctx, [{ text: 'Running' }])
+    ).not.toThrow()
+    expect(col.filterableItems).toEqual([{ text: 'Running', value: 'Running' }])
+  })
 })
