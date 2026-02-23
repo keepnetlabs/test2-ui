@@ -5,18 +5,67 @@ import {
 } from '@/components/CampaignManagerReport/Opened/utils'
 
 describe('CampaignManagerReport Opened utils', () => {
-  it('maps status badge props', () => {
-    expect(getStatusBadgeProps('Not Delivered')).toEqual({
-      color: '#757575',
-      text: 'Not Delivered'
+  describe('getStatusBadgeProps', () => {
+    it('returns Not Delivered badge', () => {
+      expect(getStatusBadgeProps('Not Delivered')).toEqual({
+        color: '#757575',
+        text: 'Not Delivered'
+      })
     })
-    expect(getStatusBadgeProps('In Queue')).toEqual({
-      color: '#1173C1',
-      text: 'In Queue'
+
+    it('returns In Queue badge for "In Queue" and "InQueue"', () => {
+      expect(getStatusBadgeProps('In Queue')).toEqual({
+        color: '#1173C1',
+        text: 'In Queue'
+      })
+      expect(getStatusBadgeProps('InQueue')).toEqual({
+        color: '#1173C1',
+        text: 'In Queue'
+      })
     })
-    expect(getStatusBadgeProps('Successful')).toEqual({
-      color: '#217124',
-      text: 'Successful'
+
+    it('returns Error badge', () => {
+      expect(getStatusBadgeProps('Error')).toEqual({
+        color: '#B83A3A',
+        text: 'Error'
+      })
+    })
+
+    it('returns Cancelled badge for "Cancelled" and "Canceled"', () => {
+      expect(getStatusBadgeProps('Cancelled')).toEqual({
+        color: '#B6791D',
+        text: 'Cancelled'
+      })
+      expect(getStatusBadgeProps('Canceled')).toEqual({
+        color: '#B6791D',
+        text: 'Cancelled'
+      })
+    })
+
+    it('returns Successful badge', () => {
+      expect(getStatusBadgeProps('Successful')).toEqual({
+        color: '#217124',
+        text: 'Successful'
+      })
+    })
+
+    it('returns Delivered badge', () => {
+      expect(getStatusBadgeProps('Delivered')).toEqual({
+        color: '#217124',
+        text: 'Delivered'
+      })
+    })
+
+    it('returns Processing badge', () => {
+      expect(getStatusBadgeProps('Processing')).toEqual({
+        color: '#1173C1',
+        text: 'Processing'
+      })
+    })
+
+    it('returns undefined for unknown status', () => {
+      expect(getStatusBadgeProps('Unknown')).toBeUndefined()
+      expect(getStatusBadgeProps('')).toBeUndefined()
     })
   })
 

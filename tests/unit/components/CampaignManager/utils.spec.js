@@ -25,16 +25,28 @@ describe('CampaignManager utils', () => {
     expect(STATUS_FILTER_ITEMS.some((i) => i.value === 'Scheduled')).toBe(true)
   })
 
-  it('maps badge props including individual printout', () => {
-    expect(getStatusBadgeProps('Scheduled')).toEqual({ color: '#757575', text: 'Scheduled' })
-    expect(getStatusBadgeProps('Error')).toEqual({
-      color: '#F56C6C',
-      text: 'Error',
-      outline: false
+  describe('getStatusBadgeProps', () => {
+    it('maps all status badge variants', () => {
+      expect(getStatusBadgeProps('Completed')).toEqual({ color: '#217124', text: 'Completed' })
+      expect(getStatusBadgeProps('Running')).toEqual({ color: '#1173C1', text: 'Running' })
+      expect(getStatusBadgeProps('Idle')).toEqual({ color: '#0198AC', text: 'Idle' })
+      expect(getStatusBadgeProps('Paused')).toEqual({ color: '#B6791D', text: 'Paused' })
+      expect(getStatusBadgeProps('Cancelled')).toEqual({ color: '#B6791D', text: 'Cancelled' })
+      expect(getStatusBadgeProps('Canceled')).toEqual({ color: '#B6791D', text: 'Cancelled' })
+      expect(getStatusBadgeProps('Scheduled')).toEqual({ color: '#757575', text: 'Scheduled' })
+      expect(getStatusBadgeProps('Error')).toEqual({
+        color: '#F56C6C',
+        text: 'Error',
+        outline: false
+      })
+      expect(getStatusBadgeProps('Individual Printout')).toEqual({
+        color: '#757575',
+        text: 'Individual Printout'
+      })
     })
-    expect(getStatusBadgeProps('Individual Printout')).toEqual({
-      color: '#757575',
-      text: 'Individual Printout'
+
+    it('returns undefined for unknown status', () => {
+      expect(getStatusBadgeProps('Unknown')).toBeUndefined()
     })
   })
 })

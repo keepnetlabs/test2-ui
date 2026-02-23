@@ -13,24 +13,50 @@ describe('QuishingCampaignManagerReport Opened utils', () => {
     expect(COLUMNS.DATE_SCANNED.label).toBe('Date Scanned')
   })
 
-  it('returns expected delivery badge values', () => {
-    expect(getStatusBadgeProps('Not Delivered')).toEqual({
-      color: '#757575',
-      text: 'Not Delivered'
+  describe('getStatusBadgeProps', () => {
+    it('returns all delivery status badge variants', () => {
+      expect(getStatusBadgeProps('Not Delivered')).toEqual({
+        color: '#757575',
+        text: 'Not Delivered'
+      })
+      expect(getStatusBadgeProps('In Queue')).toEqual({
+        color: '#1173C1',
+        text: 'In Queue'
+      })
+      expect(getStatusBadgeProps('InQueue')).toEqual({
+        color: '#1173C1',
+        text: 'In Queue'
+      })
+      expect(getStatusBadgeProps('Error')).toEqual({
+        color: '#B83A3A',
+        text: 'Error'
+      })
+      expect(getStatusBadgeProps('Cancelled')).toEqual({
+        color: '#B6791D',
+        text: 'Cancelled'
+      })
+      expect(getStatusBadgeProps('Canceled')).toEqual({
+        color: '#B6791D',
+        text: 'Cancelled'
+      })
+      expect(getStatusBadgeProps('Successful')).toEqual({
+        color: '#217124',
+        text: 'Successful'
+      })
+      expect(getStatusBadgeProps('Delivered')).toEqual({
+        color: '#217124',
+        text: 'Delivered'
+      })
+      expect(getStatusBadgeProps('Processing')).toEqual({
+        color: '#1173C1',
+        text: 'Processing'
+      })
     })
-    expect(getStatusBadgeProps('InQueue')).toEqual({
-      color: '#1173C1',
-      text: 'In Queue'
+
+    it('returns undefined for unknown status', () => {
+      expect(getStatusBadgeProps('Unknown')).toBeUndefined()
+      expect(getStatusBadgeProps('')).toBeUndefined()
     })
-    expect(getStatusBadgeProps('Cancelled')).toEqual({
-      color: '#B6791D',
-      text: 'Cancelled'
-    })
-    expect(getStatusBadgeProps('Delivered')).toEqual({
-      color: '#217124',
-      text: 'Delivered'
-    })
-    expect(getStatusBadgeProps('Unknown')).toBeUndefined()
   })
 
   it('exports unusual and activity type maps', () => {
