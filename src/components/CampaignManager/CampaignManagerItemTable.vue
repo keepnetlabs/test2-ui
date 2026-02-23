@@ -259,7 +259,8 @@ export default {
         if (col.property === COLUMNS.STATUS.property) {
           return {
             ...col,
-            width: 240
+            width: 240,
+            showHeaderTooltip: false
           };
         }
         return col;

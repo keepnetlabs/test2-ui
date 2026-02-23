@@ -297,7 +297,7 @@ export default {
           col,
           'filterableItems',
           val.map((item) => {
-            return { ...item, value: item.text }
+            return { ...item, value: item.text ?? item.value }
           })
         )
         this?.$refs?.refTable?.reRenderFilters()
@@ -328,8 +328,8 @@ export default {
             this.tableData = results.map((item) => {
               const newItem = JSON.parse(JSON.stringify(item))
               delete newItem['instanceCount']
-              newItem.targetUsers = Number(newItem.targetUsers)
-              newItem.total = Number(item['instanceCount'])
+              newItem.targetUsers = Number(newItem.targetUsers) || 0
+              newItem.total = Number(item['instanceCount']) || 0
               return newItem
             })
           })

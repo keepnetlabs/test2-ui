@@ -128,10 +128,14 @@ describe('CampaignManagerParentTable.vue', () => {
     exportCampaignManager.mockResolvedValue({ data: new Blob(['x']) })
     const originalCreateObjectURL = window.URL.createObjectURL
     window.URL.createObjectURL = jest.fn(() => 'blob:mock-url')
-    const click = jest.fn()
+    const createdLinks = []
     const createElementSpy = jest
       .spyOn(document, 'createElement')
-      .mockReturnValue({ click, href: '', download: '' })
+      .mockImplementation(() => {
+        const link = { click: jest.fn(), href: '', download: '' }
+        createdLinks.push(link)
+        return link
+      })
 
     const ctx = {
       getCampaignManagerParentExportPermissions: true,
@@ -166,7 +170,10 @@ describe('CampaignManagerParentTable.vue', () => {
     )
     expect(window.URL.createObjectURL).toHaveBeenCalled()
     expect(createElementSpy).toHaveBeenCalledWith('a')
-    expect(click).toHaveBeenCalled()
+    expect(createdLinks[0].click).toHaveBeenCalled()
+    expect(createdLinks[1].click).toHaveBeenCalled()
+    expect(createdLinks[0].download).toBe('Campaign-Manager.xlsx')
+    expect(createdLinks[1].download).toBe('Campaign-Manager.pdf')
 
     window.URL.createObjectURL = originalCreateObjectURL
     createElementSpy.mockRestore()
@@ -305,6 +312,21 @@ describe('CampaignManagerParentTable.vue', () => {
     expect(col.filterableItems).toEqual([{ text: 'Paused', value: 'Paused' }])
   })
 
+  it('statusItems watcher uses value fallback when text is missing', () => {
+    const col = { property: COLUMNS.STATUS.property, filterableItems: [] }
+    const set = jest.fn((obj, key, val) => {
+      obj[key] = val
+    })
+    const ctx = {
+      tableOptions: { columns: [col] },
+      $set: set,
+      $refs: {}
+    }
+
+    CampaignManagerParentTable.watch.statusItems.call(ctx, [{ value: 'Scheduled' }])
+    expect(col.filterableItems).toEqual([{ value: 'Scheduled' }])
+  })
+
   it('statusItems watcher does nothing for empty input list', () => {
     const col = { property: COLUMNS.STATUS.property, filterableItems: [] }
     const set = jest.fn()
@@ -396,5 +418,101 @@ describe('CampaignManagerParentTable.vue', () => {
     expect(ctx.serverSideProps.totalNumberOfPages).toBe(0)
     expect(ctx.serverSideProps.pageNumber).toBe(1)
     expect(ctx.tableData).toEqual([])
+  })
+
+  it('callForData sets loading true and then false via finally callback', async () => {
+    searchCampaignManager.mockResolvedValue({
+      data: {
+        data: {
+          results: []
+        }
+      }
+    })
+
+    const loadingFlags = []
+    const ctx = {
+      getCampaignManagerParentSearchPermissions: true,
+      axiosPayload: { filter: {}, orderBy: '', ascending: true },
+      serverSideProps: {
+        totalNumberOfRecords: 0,
+        totalNumberOfPages: 0,
+        pageNumber: 1
+      },
+      tableData: [],
+      setLoading: jest.fn((flag = false) => loadingFlags.push(flag))
+    }
+
+    CampaignManagerParentTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.setLoading).toHaveBeenCalled()
+    expect(loadingFlags).toEqual([true, false])
+  })
+
+  it('callForData maps invalid numeric values to zero', async () => {
+    searchCampaignManager.mockResolvedValue({
+      data: {
+        data: {
+          results: [
+            {
+              resourceId: 'c-zero',
+              targetUsers: undefined,
+              instanceCount: 'not-a-number'
+            }
+          ]
+        }
+      }
+    })
+
+    const ctx = {
+      getCampaignManagerParentSearchPermissions: true,
+      axiosPayload: { filter: {}, orderBy: '', ascending: true },
+      serverSideProps: {
+        totalNumberOfRecords: 0,
+        totalNumberOfPages: 0,
+        pageNumber: 1
+      },
+      tableData: [],
+      setLoading: jest.fn()
+    }
+
+    CampaignManagerParentTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([{ resourceId: 'c-zero', targetUsers: 0, total: 0 }])
+  })
+
+  it('handleSearchChange keeps fields untouched when distribution column is absent', () => {
+    const ctx = {
+      axiosPayload: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      resetPageNumber: jest.fn(),
+      callForData: jest.fn()
+    }
+
+    CampaignManagerParentTable.methods.handleSearchChange.call(ctx, {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [{ FieldName: 'Status', Value: 'Active' }]
+          }
+        ]
+      }
+    })
+
+    expect(ctx.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'Status', Value: 'Active' }
+    ])
+    expect(ctx.resetPageNumber).toHaveBeenCalled()
+    expect(ctx.callForData).toHaveBeenCalled()
+  })
+
+  it('calls callForData on mounted hook', () => {
+    const callForData = jest.fn()
+    CampaignManagerParentTable.mounted.call({ callForData })
+    expect(callForData).toHaveBeenCalled()
   })
 })
