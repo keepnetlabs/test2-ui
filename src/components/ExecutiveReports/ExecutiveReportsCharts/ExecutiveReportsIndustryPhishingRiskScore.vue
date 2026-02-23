@@ -173,7 +173,6 @@ export default {
                   tooltipEl.style.maxWidth = '300px'
                   tooltipEl.style.lineHeight = '1.4'
                   document.body.appendChild(tooltipEl)
-                } else {
                 }
 
                 tooltipEl.textContent = text
@@ -239,7 +238,6 @@ export default {
                   const hitBox = chart.legend.legendHitBoxes[index]
                   if (legendItem.hasInfoIcon) {
                     const iconSize = 14
-                    const iconPadding = 25
                     const iconX = hitBox.left + hitBox.width - iconSize - 2
                     const iconY = hitBox.top + (hitBox.height - iconSize) / 2
 
@@ -405,10 +403,10 @@ export default {
         maxTotalUserActions = 100
       } else {
         const remainder = Math.floor(maxTotalUserActions / 50)
-        if (!remainder) {
-          maxTotalUserActions = 100
-        } else {
+        if (remainder) {
           maxTotalUserActions = remainder * 50 + 50
+        } else {
+          maxTotalUserActions = 100
         }
       }
       data[0].widgetDatas.map((obj) => {

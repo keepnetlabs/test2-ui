@@ -272,7 +272,7 @@ export default {
         this.options = []
       }
       for (const row of this.value) {
-        if (!this.options.find((item) => item.val === row)) this.addItemToOptions(row, funcName)
+        if (!this.options.some((item) => item.val === row)) this.addItemToOptions(row, funcName)
       }
     },
     resetOptions() {

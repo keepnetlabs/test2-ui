@@ -231,7 +231,10 @@ import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
-import { createRandomCryptStringNumber } from '@/utils/functions'
+import {
+  createRandomCryptStringNumber,
+  openHtmlInNewWindow
+} from '@/utils/functions'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
@@ -241,7 +244,6 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
-import { openHtmlInNewWindow } from '@/utils/functions'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',

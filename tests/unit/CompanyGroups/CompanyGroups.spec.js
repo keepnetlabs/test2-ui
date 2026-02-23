@@ -36,3 +36,4 @@ describe('CompanyGroups.vue', () => {
     expect(mountComponent().vm.$options.name).toBe('CompanyGroupList')
   })
 })
+

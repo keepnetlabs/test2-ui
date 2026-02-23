@@ -389,7 +389,7 @@ export default {
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
     }),
     getContainerStyle() {
-      return !this.isValid ? { border: '1px solid #ff5252 !important', borderRadius: '20px' } : {}
+      return this.isValid ? {} : { border: '1px solid #ff5252 !important', borderRadius: '20px' }
     },
     getSelectedScenarioSwitchLabel() {
       return `Only show selected scenarios (${this.value.length})`
@@ -694,10 +694,10 @@ export default {
     callForPhishingScenarios(isSelectFirstItem = true) {
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
-        this.axiosPayload.pageSize =
-          this.defaultPhishingScenariosValuesMapped.length < 10
-            ? 10
-            : this.defaultPhishingScenariosValuesMapped.length
+        this.axiosPayload.pageSize = Math.max(
+          10,
+          this.defaultPhishingScenariosValuesMapped.length
+        )
       } else if (this.value.length && this.isEdit) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
       }
@@ -728,7 +728,7 @@ export default {
         })
         this.phishingScenarioItems = enrichedResults
         this.phishingScenarioItems.forEach((item) => {
-          if (!item.isSelected || this.value.find((pItem) => pItem.resourceId === item.resourceId))
+          if (!item.isSelected || this.value.some((pItem) => pItem.resourceId === item.resourceId))
             return
           this.value.push(item)
         })

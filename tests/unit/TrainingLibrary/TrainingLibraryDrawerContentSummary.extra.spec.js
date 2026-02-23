@@ -2,7 +2,7 @@ jest.mock('@/api/awarenessEducator', () => ({
   getLanguages: jest.fn(() => Promise.resolve({ data: { data: [] } })),
   getTraining: jest.fn(() => Promise.resolve({ data: { data: {} } })),
   getTrainingUrlForPreview: jest.fn(() => Promise.resolve({ data: { data: {} } })),
-  downloadPoster: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
+  downloadPoster: jest.fn(() => Promise.resolve({ data: Buffer.from('x') })),
   duplicateTraining: jest.fn(() => Promise.resolve()),
   deleteTraining: jest.fn(() => Promise.resolve()),
   addToFavorite: jest.fn(() => Promise.resolve()),
@@ -112,6 +112,18 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
     ).toBe('')
   })
 
+  it('parseDurationToMinutes parses display, token and numeric formats', () => {
+    const m = TrainingLibraryDrawerContentSummary.methods.parseDurationToMinutes
+
+    expect(m('ignored', '2 hours')).toBe(120)
+    expect(m('ignored', '15 minute')).toBe(15)
+    expect(m(25, '')).toBe(25)
+    expect(m('Hour3', '')).toBe(180)
+    expect(m('Minute40', '')).toBe(40)
+    expect(m('55', '')).toBe(55)
+    expect(m('unknown', '')).toBe(0)
+  })
+
   it('processLearningPathSteps clears list for non-array values', () => {
     const ctx = {
       trainingDetails: null,
@@ -134,6 +146,26 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
 
     expect(AwarenessEducatorService.addToFavorite).not.toHaveBeenCalled()
     expect(AwarenessEducatorService.removeFromFavorite).not.toHaveBeenCalled()
+  })
+
+  it('handleFavoriteToggle switches between add/remove favorite calls', async () => {
+    const addCtx = {
+      trainingData: { trainingId: 'fav-1' },
+      isFavorite: false
+    }
+    TrainingLibraryDrawerContentSummary.methods.handleFavoriteToggle.call(addCtx)
+    await flushPromises()
+    expect(AwarenessEducatorService.addToFavorite).toHaveBeenCalledWith('fav-1')
+    expect(addCtx.isFavorite).toBe(true)
+
+    const removeCtx = {
+      trainingData: { resourceId: 'fav-2' },
+      isFavorite: true
+    }
+    TrainingLibraryDrawerContentSummary.methods.handleFavoriteToggle.call(removeCtx)
+    await flushPromises()
+    expect(AwarenessEducatorService.removeFromFavorite).toHaveBeenCalledWith('fav-2')
+    expect(removeCtx.isFavorite).toBe(false)
   })
 
   it('handleDownloadByLanguage handles api reject without throwing', async () => {
@@ -231,6 +263,60 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
     })
   })
 
+  it('handleSend for screensaver returns early when language does not exist', () => {
+    const ctx = {
+      type: TRAINING_LIBRARY_TYPES.SCREENSAVER,
+      availableLanguages: [],
+      handleDownloadByLanguage: jest.fn(),
+      $emit: jest.fn()
+    }
+
+    TrainingLibraryDrawerContentSummary.methods.handleSend.call(ctx)
+
+    expect(ctx.handleDownloadByLanguage).not.toHaveBeenCalled()
+    expect(ctx.$emit).not.toHaveBeenCalled()
+  })
+
+  it('handlePreviewStep commits nested/deep-nested drawer payloads based on nesting state', () => {
+    const step = {
+      detailTrainingId: 'd-1',
+      title: 'Step 1',
+      type: 'Training',
+      languages: ['EN'],
+      coverImage: 'img'
+    }
+
+    const deepCtx = {
+      isNested: true,
+      onlyPreview: true,
+      $store: { commit: jest.fn() }
+    }
+    TrainingLibraryDrawerContentSummary.methods.handlePreviewStep.call(deepCtx, step)
+    expect(deepCtx.$store.commit).toHaveBeenCalledWith(
+      'trainingLibrary/SET_DEEP_NESTED_DRAWER',
+      expect.objectContaining({
+        status: true,
+        type: 'Training',
+        onlyPreview: true
+      })
+    )
+
+    const nestedCtx = {
+      isNested: false,
+      onlyPreview: false,
+      $store: { commit: jest.fn() }
+    }
+    TrainingLibraryDrawerContentSummary.methods.handlePreviewStep.call(nestedCtx, step)
+    expect(nestedCtx.$store.commit).toHaveBeenCalledWith(
+      'trainingLibrary/SET_NESTED_DRAWER',
+      expect.objectContaining({
+        status: true,
+        type: 'Training',
+        onlyPreview: false
+      })
+    )
+  })
+
   it('handleDuplicate returns early without id and emits duplicate-success on success', async () => {
     const noIdCtx = {
       trainingData: {},
@@ -321,6 +407,25 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
     expect(callForTrainingDetail).toHaveBeenCalled()
   })
 
+  it('callForLanguages handles api error and still calls detail in finally', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const callForTrainingDetail = jest.fn()
+    const ctx = {
+      isLoadingLanguages: true,
+      trainingData: { languageCodes: ['EN'] },
+      availableLanguages: [{ text: 'old' }],
+      callForTrainingDetail
+    }
+    AwarenessEducatorService.getLanguages.mockRejectedValueOnce(new Error('lang-fail'))
+
+    TrainingLibraryDrawerContentSummary.methods.callForLanguages.call(ctx)
+    await flushPromises()
+
+    expect(ctx.availableLanguages).toEqual([{ text: 'old' }])
+    expect(callForTrainingDetail).toHaveBeenCalled()
+    errorSpy.mockRestore()
+  })
+
   it('callForTrainingDetail exits without trainingId and clears loading', async () => {
     const ctx = {
       trainingData: {},
@@ -330,5 +435,59 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
     await flushPromises()
     expect(ctx.isLoadingLanguages).toBe(false)
     expect(AwarenessEducatorService.getTraining).not.toHaveBeenCalled()
+  })
+
+  it('callForTrainingDetail handles api reject and always clears loading', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    AwarenessEducatorService.getTraining.mockRejectedValueOnce(new Error('detail-fail'))
+    const ctx = {
+      trainingData: { trainingId: 't-fail' },
+      isLoadingLanguages: true,
+      availableLanguages: [],
+      $emit: jest.fn(),
+      isLearningPath: false
+    }
+
+    TrainingLibraryDrawerContentSummary.methods.callForTrainingDetail.call(ctx)
+    await flushPromises()
+
+    expect(ctx.$emit).not.toHaveBeenCalled()
+    expect(ctx.isLoadingLanguages).toBe(false)
+    errorSpy.mockRestore()
+  })
+
+  it('handlePreviewClick closes lightbox when pdf blob download fails', async () => {
+    AwarenessEducatorService.getTrainingUrlForPreview.mockResolvedValueOnce({
+      data: {
+        data: {
+          scormPlayerUrl: 'https://cdn.example.com/preview.pdf',
+          trainingUrl: 'https://cdn.example.com/preview.pdf'
+        }
+      }
+    })
+    AwarenessEducatorService.downloadPoster.mockRejectedValueOnce(new Error('blob-fail'))
+
+    const commit = jest.fn()
+    const ctx = {
+      isLearningPath: false,
+      trainingData: { trainingId: 't-pdf' },
+      type: TRAINING_LIBRARY_TYPES.TRAINING,
+      $store: { commit }
+    }
+
+    TrainingLibraryDrawerContentSummary.methods.handlePreviewClick.call(ctx, { value: 'lang-1' })
+    await flushPromises()
+    await flushPromises()
+
+    expect(commit).toHaveBeenCalledWith(
+      'trainingLibrary/SET_LIGHTBOX',
+      expect.objectContaining({ status: true, isLoading: true })
+    )
+    expect(commit).toHaveBeenCalledWith('trainingLibrary/SET_LIGHTBOX', {
+      status: false,
+      previewData: null,
+      isLoading: false,
+      type: null
+    })
   })
 })

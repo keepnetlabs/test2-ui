@@ -133,10 +133,10 @@ export default {
         }
         if (maxTrendCount) {
           const remainder = Math.floor(maxTrendCount / 50)
-          if (!remainder) {
-            maxTrendCount = 50
-          } else {
+          if (remainder) {
             maxTrendCount = remainder * 50 + 50
+          } else {
+            maxTrendCount = 50
           }
         } else {
           maxTrendCount += 10 - (maxTrendCount % 10)

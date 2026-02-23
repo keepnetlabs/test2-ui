@@ -674,7 +674,7 @@ export default {
           accessToken,
           apiBaseUrl
         };
-        const isLocalhost = window.location.hostname.includes("localhost");
+        const isLocalhost = globalThis.location.hostname.includes("localhost");
         const url = isLocalhost
           ? "http://localhost:4111/email-ir/analyze"
           : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";
@@ -713,7 +713,7 @@ export default {
           accessToken,
           apiBaseUrl
         };
-        const isLocalhost = window.location.hostname.includes("localhost");
+        const isLocalhost = globalThis.location.hostname.includes("localhost");
         const url = isLocalhost
           ? "http://localhost:4111/email-ir/analyze"
           : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";

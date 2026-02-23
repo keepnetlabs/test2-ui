@@ -1473,10 +1473,10 @@ export default {
     }
   },
   created() {
-    if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
-      this.$router.push('/incident-responder')
-    } else {
+    if (this?.PERMISSIONS?.SEARCH?.hasPermission) {
       this.getTableData()
+    } else {
+      this.$router.push('/incident-responder')
     }
     getExchangeVersions().then((response) => {
       this.exchangeVersions = response.data.data

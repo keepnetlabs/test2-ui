@@ -496,7 +496,7 @@ export default {
       }
     },
     handleChatWithAgenticAI() {
-      window.dispatchEvent(new CustomEvent("open-agentic-ai-chat"));
+      globalThis.dispatchEvent(new CustomEvent("open-agentic-ai-chat"));
     }
   }
 };

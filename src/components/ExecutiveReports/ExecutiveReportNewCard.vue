@@ -1284,7 +1284,7 @@ export default {
             await html2PDF(page, {
             html2canvas: {
               useCORS: true,
-              scale: window.devicePixelRatio * 2 > 4 ? 4 : window.devicePixelRatio * 2,
+              scale: Math.min(window.devicePixelRatio * 2, 4),
               logging: false
             },
             jsPDF: {
@@ -1436,7 +1436,7 @@ export default {
       return newBreakpoint === 'xxs' ? 2 : 12
     },
     addWidget(widget) {
-      if (this.layout.find((item) => item.resourceId === widget.resourceId)) return false
+      if (this.layout.some((item) => item.resourceId === widget.resourceId)) return false
       let newItem
       const widgetObj = {
         ...this.allWidgets[widget.widgetType],
