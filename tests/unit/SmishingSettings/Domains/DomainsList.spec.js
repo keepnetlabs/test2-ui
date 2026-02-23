@@ -17,7 +17,9 @@ jest.mock('@/api/smishing', () => ({
     })
   ),
   deleteDomainRecord: jest.fn(() => Promise.resolve()),
-  exportDomains: jest.fn(() => Promise.resolve({ data: new Blob(['x']) }))
+  exportDomains: jest.fn(() =>
+    Promise.resolve({ data: new (globalThis.Blob || global.Blob)(['x']) })
+  )
 }))
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
