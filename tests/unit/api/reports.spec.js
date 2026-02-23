@@ -38,6 +38,55 @@ describe('reports API', () => {
     mockStorage.clear()
   })
 
+  describe('getReports and getReportDetail (localStorage branches)', () => {
+    it('should use companyRequestId when available', async () => {
+      mockStorage.setItem('companyRequestId', 'req-123')
+      mockStorage.removeItem('companyResourceId')
+      await reportsApi.getReports()
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/req-123')
+    })
+
+    it('should use companyResourceId when companyRequestId is not set', async () => {
+      mockStorage.removeItem('companyRequestId')
+      mockStorage.setItem('companyResourceId', 'res-456')
+      await reportsApi.getReports()
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/res-456')
+    })
+
+    it('should prefer companyRequestId over companyResourceId', async () => {
+      mockStorage.setItem('companyRequestId', 'req-first')
+      mockStorage.setItem('companyResourceId', 'res-second')
+      await reportsApi.getReports()
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/req-first')
+    })
+
+    it('should call getReportDetail with resourceId and companyRequestId', async () => {
+      mockStorage.setItem('companyRequestId', 'req-789')
+      mockStorage.removeItem('companyResourceId')
+      await reportsApi.getReportDetail('detail-1')
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/req-789/detail-1')
+    })
+
+    it('should call getReportDetail with resourceId and companyResourceId fallback', async () => {
+      mockStorage.removeItem('companyRequestId')
+      mockStorage.setItem('companyResourceId', 'res-999')
+      await reportsApi.getReportDetail('detail-2')
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/res-999/detail-2')
+    })
+
+    it('should call getReportDetail with empty resourceId default', async () => {
+      mockStorage.setItem('companyRequestId', 'req-1')
+      await reportsApi.getReportDetail()
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/req-1/')
+    })
+
+    it('should use null when both companyRequestId and companyResourceId are missing', async () => {
+      mockStorage.clear()
+      await reportsApi.getReports()
+      expect(testRequest.get).toHaveBeenCalledWith('/pbi/reports/null')
+    })
+  })
+
   describe('executive report operations', () => {
     it('should call getExecutiveReports', async () => {
       const name = 'Report 1'

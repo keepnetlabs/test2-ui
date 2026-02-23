@@ -185,7 +185,6 @@ describe('VishingCampaignManager.vue', () => {
   })
 
   it('exports campaigns and maps XLS to Excel/xlsx', async () => {
-    const wrapper = createWrapper()
     const click = jest.fn()
     if (!window.URL) {
       window.URL = {}
@@ -203,6 +202,9 @@ describe('VishingCampaignManager.vue', () => {
       }
       return originalCreateElement(tagName)
     })
+
+    const wrapper = createWrapper()
+    const createObjectURLCallCountBefore = createObjectURLSpy.mock.calls.length
 
     try {
       await wrapper.vm.exportVishingCampaigns({
@@ -222,7 +224,7 @@ describe('VishingCampaignManager.vue', () => {
         expect.objectContaining({ exportType: 'CSV' })
       )
       expect(click).toHaveBeenCalledTimes(2)
-      expect(createObjectURLSpy).toHaveBeenCalledTimes(2)
+      expect(createObjectURLSpy.mock.calls.length - createObjectURLCallCountBefore).toBe(2)
     } finally {
       createObjectURLSpy.mockRestore()
       createElementSpy.mockRestore()

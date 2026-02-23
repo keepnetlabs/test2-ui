@@ -223,6 +223,52 @@ describe('Company API', () => {
       const result = CompanyAPI.createCompany({})
       expect(typeof result.then).toBe('function')
     })
+
+    it('should append array values as multiple form entries', async () => {
+      const payload = {
+        CompanyName: 'Test',
+        LicenseStartDate: '01/01/2024',
+        tags: ['tag1', 'tag2']
+      }
+      await CompanyAPI.createCompany(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+      expect(formData.getAll('tags')).toEqual(['tag1', 'tag2'])
+    })
+
+    it('should append PreferredLanguageTypeResourceId with empty string when falsy', async () => {
+      const payload = {
+        CompanyName: 'Test',
+        LicenseStartDate: '01/01/2024',
+        PreferredLanguageTypeResourceId: ''
+      }
+      await CompanyAPI.createCompany(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+      expect(formData.get('PreferredLanguageTypeResourceId')).toBe('')
+    })
+
+    it('should append PreferredLanguageTypeResourceId when provided', async () => {
+      const payload = {
+        CompanyName: 'Test',
+        LicenseStartDate: '01/01/2024',
+        PreferredLanguageTypeResourceId: 'lang-123'
+      }
+      await CompanyAPI.createCompany(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+      expect(formData.get('PreferredLanguageTypeResourceId')).toBe('lang-123')
+    })
+
+    it('should skip falsy values for non-PreferredLanguage keys', async () => {
+      const payload = {
+        CompanyName: 'Test',
+        LicenseStartDate: '01/01/2024',
+        optionalField: null,
+        emptyString: ''
+      }
+      await CompanyAPI.createCompany(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+      expect(formData.has('optionalField')).toBe(false)
+      expect(formData.has('emptyString')).toBe(false)
+    })
   })
 
   describe('updateCompany', () => {
