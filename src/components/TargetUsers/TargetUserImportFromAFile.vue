@@ -1098,11 +1098,11 @@ export default {
       ) {
         const companyId = this.getCurrentCompany?.resourceId
         const storageKey = `licenseExceededDialog_${companyId}`
-        if (!this.canShowCachableDialog(storageKey)) {
-          this.save(actionName)
-        } else {
+        if (this.canShowCachableDialog(storageKey)) {
           this.showLicenseExceededDialog = true
           this.saveCachableDialogTimestamp(storageKey)
+        } else {
+          this.save(actionName)
         }
       } else {
         this.save(actionName)
@@ -1428,7 +1428,7 @@ export default {
         exportTargetUserBulk(this.excelInfo.transactionId, payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `target-users-import.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
@@ -1441,7 +1441,7 @@ export default {
       this.excelLoading = true
       downloadExampleTargetUserFile(payload)
         .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data]))
+          const url = globalThis.URL.createObjectURL(new Blob([response.data]))
           const link = document.createElement('a')
           link.href = url
           link.setAttribute('download', 'target_user_sample_file.xlsx') //or any other extension

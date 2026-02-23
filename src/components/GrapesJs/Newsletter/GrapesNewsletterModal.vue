@@ -332,8 +332,8 @@ export default {
           .addEventListener("click", () => {
             const win = window.open("", "_blank");
             win.document.title = "Mail Preview";
-            win.document.body.innerHTML = this.getGrapesEditorContent().replace(
-              /{COMPANYLOGO}/g,
+            win.document.body.innerHTML = this.getGrapesEditorContent().replaceAll(
+              '{COMPANYLOGO}',
               this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ""
             );
           });

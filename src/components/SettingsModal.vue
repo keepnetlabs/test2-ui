@@ -161,7 +161,7 @@ export default {
         localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
         localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
         setTimeout(() => {
-          window.location.reload()
+          globalThis.location.reload()
         }, 250)
         this.$emit('changeSettings')
       })

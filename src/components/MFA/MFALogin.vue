@@ -21,7 +21,7 @@
                 persistent-hint
                 outlined
                 dense
-                autocomplete="disabled"
+                autocomplete="off"
                 required
                 :rules="[rules.required]"
                 type="number"

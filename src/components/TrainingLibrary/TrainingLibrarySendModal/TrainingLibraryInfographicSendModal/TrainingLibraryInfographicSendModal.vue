@@ -254,10 +254,10 @@ export default {
       const isProxy = refSendTrainingSettings?.formData?.isProxy
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
-      const preferredLanguageLabel = !refSendTrainingSettings?.formData
+      const preferredLanguageLabel = refSendTrainingSettings?.formData
         ?.sendTemplatesInPreferredLanguage
-        ? 'Company Language'
-        : 'Target Users Language'
+        ? 'Target Users Language'
+        : 'Company Language'
       if (
         deliveryMethod === DELIVERY_METHODS.EMAIL ||
         deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
@@ -756,7 +756,7 @@ export default {
               (item) => item.value === languageIds[index]
             ).text
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `${row.trainingId}-${languageText}_Scorm.zip`
             link.click()
           })

@@ -81,7 +81,7 @@
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show1 ? '' : 'password'"
-                      autocomplete="current-password"
+                      autocomplete="off"
                       id="input--security-popup-current-password"
                       persistent-hint
                       @click:append="show1 = !show1"
@@ -104,7 +104,7 @@
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show2 ? '' : 'password'"
-                      autocomplete="password"
+                      autocomplete="new-password"
                       id="input--security-popup-new-password"
                       persistent-hint
                       @click:append="show2 = !show2"
@@ -130,7 +130,7 @@
                       :type="showNewPassword ? '' : 'password'"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
-                      autocomplete="new-password"
+                      autocomplete="off"
                       id="input--security-popup-re-new-password"
                       persistent-hint
                       @click:append="showNewPassword = !showNewPassword"
@@ -162,7 +162,7 @@
                       outlined
                       hint="*Required"
                       persistent-hint
-                      autocomplete="nope"
+                      autocomplete="off"
                       :rules="[rules.required]"
                     ></v-text-field>
                   </div>

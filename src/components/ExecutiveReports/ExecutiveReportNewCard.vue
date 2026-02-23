@@ -1464,7 +1464,7 @@ export default {
           this.layout.length > 0
             ? Math.max(...this.layout.map((item) => (item.y || 0) + (item.h || 0)))
             : 0
-        newItem['y'] = maxY > 0 ? maxY : 0
+        newItem['y'] = Math.max(maxY, 0)
       } else {
         // Normal widget'ler için y=0 bırak (grid collision detection çözer)
         newItem['y'] = 0

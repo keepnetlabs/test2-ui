@@ -41,7 +41,7 @@
           <TheRecordsButton
             label="Run"
             plural-label="Runs"
-            :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
+            :single-label="getRecordsButtonSingleLabel(scope.row)"
             zero-label="No Run"
             width="140px"
             variant="primary"
@@ -285,6 +285,11 @@ export default {
       } catch (e) {
         return {}
       }
+    },
+    getRecordsButtonSingleLabel(row = {}) {
+      const isIdle = row.status === 'Idle'
+      const isRecurring = row.frequency != null && row.frequency !== 0
+      return isIdle || isRecurring ? '' : 'View Report'
     },
     setLoading(flag = false) {
       this.$emit('update:is-loading', flag)

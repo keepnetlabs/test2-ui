@@ -107,16 +107,28 @@ describe('plugins/sentry', () => {
       sentryStatus: true,
       userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
     })
+    const originalLocation = global.location
     const originalWindow = global.window
+    Object.defineProperty(global, 'location', {
+      value: { pathname: '/training/scorm/watch' },
+      configurable: true,
+      writable: true
+    })
     Object.defineProperty(global, 'window', {
-      value: { location: { pathname: '/training/scorm/watch' } },
-      configurable: true
+      value: { ...global.window, location: { pathname: '/training/scorm/watch' } },
+      configurable: true,
+      writable: true
     })
 
     plugin({})
     const processor = sentryMock.addEventProcessor.mock.calls[0][0]
     expect(processor({ type: 'replay_event' })).toBeNull()
 
+    Object.defineProperty(global, 'location', {
+      value: originalLocation,
+      configurable: true,
+      writable: true
+    })
     Object.defineProperty(global, 'window', { value: originalWindow, configurable: true })
   })
 

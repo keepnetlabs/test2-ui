@@ -1,6 +1,20 @@
 import MatchingComponent from '@/components/AwarenessEducator/TrainingReport/Users/MatchingComponent.vue'
 
 describe('MatchingComponent', () => {
+  it('returns empty array when answerOptions is null/undefined', () => {
+    expect(
+      MatchingComponent.computed.userMatches.call({
+        answerOptions: null
+      })
+    ).toEqual([])
+
+    expect(
+      MatchingComponent.computed.userMatches.call({
+        answerOptions: undefined
+      })
+    ).toEqual([])
+  })
+
   it('returns empty array when answerOptions is empty', () => {
     const result = MatchingComponent.computed.userMatches.call({
       answerOptions: []
@@ -30,5 +44,19 @@ describe('MatchingComponent', () => {
     })
 
     expect(result).toEqual([{ left: 'Left', right: 'Right' }])
+  })
+
+  it('supports answer fallback field and split branch when regex does not match', () => {
+    const result = MatchingComponent.computed.userMatches.call({
+      answerOptions: [
+        { isUserAnswer: true, answer: '→ Right only' },
+        { isUserAnswer: true, answer: 'L → R' }
+      ]
+    })
+
+    expect(result).toEqual([
+      { left: '', right: 'Right only' },
+      { left: 'L', right: 'R' }
+    ])
   })
 })

@@ -23,12 +23,7 @@ module.exports = {
       VUE_APP_AUTH_API_TEST: 'https://dev-api.devkeepnet.com',
       VUE_APP_APP_API_TEST: 'https://dev-api.devkeepnet.com/api'
     },
-    axios,
-    'vue-jest': {
-      templateCompiler: {
-        compiler: require('vue-template-babel-compiler')
-      }
-    }
+    axios
   },
   setupFiles: ['<rootDir>/tests/unit/index.js'],
   moduleDirectories: ['node_modules', 'src'],

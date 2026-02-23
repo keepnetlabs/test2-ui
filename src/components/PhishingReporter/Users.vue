@@ -428,7 +428,7 @@ export default {
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
-        const filter = JSON.parse(JSON.stringify(this.axiosPayload.filter))
+        const filter = structuredClone(this.axiosPayload.filter)
         const payload = {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,

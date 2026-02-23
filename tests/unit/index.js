@@ -1,5 +1,10 @@
 require('regenerator-runtime')
 require('jest-canvas-mock')
+
+// Polyfill structuredClone for Node < 17 (Jest)
+if (typeof global.structuredClone === 'undefined') {
+  global.structuredClone = (obj) => JSON.parse(JSON.stringify(obj))
+}
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import ElementUI from 'element-ui'
@@ -71,12 +76,18 @@ const historyMock = {
   createHref: jest.fn((location) => location.pathname + location.search + location.hash)
 }
 
+// Polyfill navigator for Vue and other libs that expect it
+if (typeof global.navigator === 'undefined') {
+  global.navigator = { userAgent: 'node.js', platform: 'node' }
+}
+
 // Global browser environment setup
 if (typeof window === 'undefined') {
   // Node.js environment (CI/CD builds)
   global.window = {
     localStorage: localStorageMock,
     history: historyMock,
+    navigator: global.navigator,
     location: {
       origin: 'http://localhost',
       href: 'http://localhost',

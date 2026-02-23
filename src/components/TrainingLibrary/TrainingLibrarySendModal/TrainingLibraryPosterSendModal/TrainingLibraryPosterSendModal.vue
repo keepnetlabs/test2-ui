@@ -254,10 +254,10 @@ export default {
       const isProxy = refSendTrainingSettings?.formData?.isProxy
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
-      const preferredLanguageLabel = !refSendTrainingSettings?.formData
+      const preferredLanguageLabel = refSendTrainingSettings?.formData
         ?.sendTemplatesInPreferredLanguage
-        ? 'Company Language'
-        : 'Target Users Language'
+        ? 'Target Users Language'
+        : 'Company Language'
       if (
         deliveryMethod === DELIVERY_METHODS.EMAIL ||
         deliveryMethod === DELIVERY_METHODS.MICROSOFT_TEAMS
@@ -365,7 +365,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const languages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             languages.unshift({
@@ -377,7 +377,7 @@ export default {
 
           languages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 
@@ -404,7 +404,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const certificateLanguages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             certificateLanguages.unshift({
@@ -416,7 +416,7 @@ export default {
 
           certificateLanguages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 
@@ -443,7 +443,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const enrollmentLanguages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             enrollmentLanguages.unshift({
@@ -455,7 +455,7 @@ export default {
 
           enrollmentLanguages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 
@@ -745,7 +745,7 @@ export default {
               (item) => item.value === languageIds[index]
             ).text
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `${row.trainingId}-${languageText}_Scorm.zip`
             link.click()
           })

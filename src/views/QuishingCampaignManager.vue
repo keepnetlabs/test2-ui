@@ -257,7 +257,8 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnRecordButtonClick(row) {
-      if (row.total === 1 && row.status !== 'Idle') {
+      const isOneTime = row.frequency == null || row.frequency === 0
+      if (row.total === 1 && row.status !== 'Idle' && isOneTime) {
         this.$router.push({
           name: 'Quishing Report',
           params: {
@@ -350,7 +351,9 @@ export default {
       this.isItemTableShowing = !this.isItemTableShowing
     },
     handleItemTableRecordButtonClick(row) {
-      if (row.total === 1 && row.status !== 'Idle') {
+      const parentFrequency = this.selectedParentItem?.frequency
+      const isParentOneTime = parentFrequency == null || parentFrequency === 0
+      if (row.total === 1 && row.status !== 'Idle' && isParentOneTime) {
         this.$router.push({
           name: 'Quishing Report',
           params: {

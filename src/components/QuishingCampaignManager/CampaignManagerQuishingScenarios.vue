@@ -12,10 +12,7 @@
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isShowEmailTemplateDrawer && type === SCENARIO_TYPES.QUISHING"
       :status="isShowEmailTemplateDrawer"
-      :selected-row="{
-        resourceId: emailTemplateParams?.resourceId,
-        name: emailTemplateParams?.name
-      }"
+      :selected-row="emailTemplateSelectedRow"
       :api-func="QuishingService.getEmailTemplatePreviewContent"
       :type="type"
       :languages="languageOptions"
@@ -26,7 +23,7 @@
     <CommonSimulatorLandingPageTemplatesPreviewDialog
       v-if="isShowLandingPageTemplateDrawer && type === SCENARIO_TYPES.QUISHING"
       :status="isShowLandingPageTemplateDrawer"
-      :selected-row="{ resourceId: landingPageParams?.resourceId, name: landingPageParams?.name }"
+      :selected-row="landingPageSelectedRow"
       :api-func="QuishingService.getLandingPageTemplate"
       :type="type"
       :languages="languageOptions"
@@ -464,6 +461,18 @@ export default {
       getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getTrainingPreviewDialog: 'trainingLibrary/getTrainingPreviewDialog'
     }),
+    landingPageSelectedRow() {
+      return {
+        resourceId: (this.landingPageParams && this.landingPageParams.resourceId) || undefined,
+        name: (this.landingPageParams && this.landingPageParams.name) || undefined
+      }
+    },
+    emailTemplateSelectedRow() {
+      return {
+        resourceId: (this.emailTemplateParams && this.emailTemplateParams.resourceId) || undefined,
+        name: (this.emailTemplateParams && this.emailTemplateParams.name) || undefined
+      }
+    },
     getMethodItems() {
       if (this.type === SCENARIO_TYPES.QUISHING) {
         return quishingMethods

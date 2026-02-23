@@ -44,7 +44,7 @@ describe('Input company component', () => {
       const wrapper = mountComponent()
       const inputAttr = wrapper.find('input[placeholder]').attributes()
       expect(inputAttr.placeholder).toEqual('Enter a name for the company')
-      expect(inputAttr.autocomplete).toEqual('disabled')
+      expect(inputAttr.autocomplete).toEqual('off')
       expect(wrapper.find('.v-messages__message').text().includes('*Required')).toBeTruthy()
     })
 
@@ -52,7 +52,7 @@ describe('Input company component', () => {
       const wrapper = mountComponent()
       const input = wrapper.find('input')
       expect(input.attributes('placeholder')).toEqual('Enter a name for the company')
-      expect(input.attributes('autocomplete')).toEqual('disabled')
+      expect(input.attributes('autocomplete')).toEqual('off')
     })
 
     it('should have correct placeholder text', () => {
@@ -64,7 +64,7 @@ describe('Input company component', () => {
     it('should disable autocomplete', () => {
       const wrapper = mountComponent()
       const input = wrapper.find('input')
-      expect(input.attributes('autocomplete')).toBe('disabled')
+      expect(input.attributes('autocomplete')).toBe('off')
     })
 
   })

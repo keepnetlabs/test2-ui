@@ -496,6 +496,14 @@ export default {
         })
     },
     handlePreviewStep(step) {
+      let stepType
+      if (step.hasQuiz) {
+        stepType = 'Survey'
+      } else if (step.type === 'Training') {
+        stepType = 'Training'
+      } else {
+        stepType = step.type
+      }
       // Eğer zaten nested içindeysek, deep nested drawer açmalıyız
       if (this.isNested) {
         this.$store.commit('trainingLibrary/SET_DEEP_NESTED_DRAWER', {
@@ -508,7 +516,7 @@ export default {
             languages: step.languages,
             coverImage: step.coverImage
           },
-          type: step.hasQuiz ? 'Survey' : step.type === 'Training' ? 'Training' : step.type,
+          type: stepType,
           onlyPreview: this.onlyPreview
         })
       } else {
@@ -523,7 +531,7 @@ export default {
             languages: step.languages,
             coverImage: step.coverImage
           },
-          type: step.hasQuiz ? 'Survey' : step.type === 'Training' ? 'Training' : step.type,
+          type: stepType,
           onlyPreview: this.onlyPreview
         })
       }

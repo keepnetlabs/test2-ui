@@ -1703,7 +1703,7 @@ export default {
       })
     },
     checkAttachmentsChangeForAllLinksSwitch(att) {
-      this.allAttachments = !this.uploadRespond.attachments.find((item) => !item.isHidden)
+      this.allAttachments = !this.uploadRespond.attachments.some((item) => !item.isHidden)
       att.isFlagged = false
     },
     headerValChange(val) {

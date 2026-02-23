@@ -696,12 +696,10 @@ export default {
     },
     resendItem() {
       this.isResendActionButtonDisabled = true
-      const payload = [
-        ...this.resendPayload.selectedItems.map((item) => ({
-          targetUserResourceId: item,
-          enrollmentId: this.awardCertificateEnrollmentId
-        }))
-      ]
+      const payload = this.resendPayload.selectedItems.map((item) => ({
+        targetUserResourceId: item,
+        enrollmentId: this.awardCertificateEnrollmentId
+      }))
       AwarenessEducatorService.resendCertificateToUserList(payload)
         .then(() => {
           this.toggleIsShowResendDialog()

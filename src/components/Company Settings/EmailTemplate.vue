@@ -1192,16 +1192,16 @@ export default {
     template: {
       handler(val) {
         let url = ''
-        if (this.templateType !== 'landing') {
-          url = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
-        } else {
+        if (this.templateType === 'landing') {
           url =
             localStorage.getItem('isSelectCompany') === 'true'
               ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
               : this.$store.state.auth.logoUrl || ''
           if (!url) url = this?.$store?.state?.whitelabel.mainLogoUrl || ''
+        } else {
+          url = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
         }
-        this.previewTemplate = val?.replace(/{COMPANYLOGO}/g, url) || ''
+        this.previewTemplate = val?.replaceAll('{COMPANYLOGO}', url) || ''
       },
       immediate: true
     },
@@ -1468,13 +1468,13 @@ export default {
           return this.$emit('showErrorDialog')
         }
       }
-      if (this.templateType !== 'landing') {
-        this.$emit('on-save-template', template)
-        this.$emit('update:template', template)
-      } else {
+      if (this.templateType === 'landing') {
         const htmlToSave = this.restoreLogo(template)
         this.$emit('on-save-template', htmlToSave)
         this.$emit('update:template', htmlToSave)
+      } else {
+        this.$emit('on-save-template', template)
+        this.$emit('update:template', template)
       }
       //this code has to be added otherwise grapesjs throws error
       setTimeout(() => {

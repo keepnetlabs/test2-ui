@@ -131,8 +131,7 @@ export default {
         this.actionStatus === ACTION_STATUSES.RUNNING ||
         this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
-        copyOfRowActions.push(editItem)
-        copyOfRowActions.push(newInstanceItem)
+        copyOfRowActions.push(editItem, newInstanceItem)
         if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
         if (!this.isQuishingPrintPreview) copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
@@ -141,8 +140,7 @@ export default {
         this.actionStatus === ACTION_STATUSES.CANCEL ||
         this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
-        copyOfRowActions.push(editItem)
-        copyOfRowActions.push(newInstanceItem)
+        copyOfRowActions.push(editItem, newInstanceItem)
         if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
         copyOfRowActions.push(deleteItem)
       } else {

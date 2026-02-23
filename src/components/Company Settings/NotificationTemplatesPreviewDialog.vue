@@ -38,7 +38,7 @@
         <DatatableLoading v-if="isLoading" :loading="isLoading" />
         <div v-if="!isLoading" class="email-template-preview">
           <div class="email-template-preview__title mb-4">
-            {{ selectedRow?.name }}
+            {{ selectedRowName }}
           </div>
           <div class="email-template-preview__container">
             <div
@@ -156,6 +156,9 @@ export default {
     }
   },
   computed: {
+    selectedRowName() {
+      return (this.selectedRow && this.selectedRow.name) || ''
+    },
     getNavigationDrawerClass() {
       return {
         'k-navigation-drawer k-navigation-drawer--email-template-preview': true,
@@ -205,7 +208,7 @@ export default {
       const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
 
       // Ana dil template'ini set et
-      const mainTemplate = data.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+      const mainTemplate = data.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
       // Metadata alanlarını set et
       this.subject = data.subject || ''
@@ -222,7 +225,7 @@ export default {
           this.languagesData.push({
             languageTypeResourceId: lang.languageTypeResourceId,
             languageTypeName: lang.languageTypeName || '',
-            template: lang.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            template: lang.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
           })
         })
       }
@@ -245,7 +248,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
 
           // Ana dil template'ini set et
-          const mainTemplate = data.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+          const mainTemplate = data.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           // Metadata alanlarını set et
           this.subject = data.subject || ''
@@ -268,7 +271,7 @@ export default {
               this.languagesData.push({
                 languageTypeResourceId: lang.languageTypeResourceId,
                 languageTypeName: lang.languageTypeName || '',
-                template: lang.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+                template: lang.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
               })
             })
           }

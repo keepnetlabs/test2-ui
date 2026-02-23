@@ -163,12 +163,12 @@ export default {
   },
   created() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       QuishingService.getDnsService(this.resourceId).then((res) => {
-        this.formValues = JSON.parse(JSON.stringify(res.data.data))
+        this.formValues = structuredClone(res.data.data)
         delete this.formValues.availableForList
         this.formValues.dnsServiceProviderTypeId.toString()
         const availableForList = res?.data?.data?.availableForList
@@ -176,7 +176,9 @@ export default {
           const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             availableForList
           )
-          if (!availableForListFromBackend.length) {
+          if (availableForListFromBackend.length) {
+            this.availableForRequests = availableForListFromBackend
+          } else {
             this.availableForRequests = [
               {
                 id: 'MyCompanyOnly',
@@ -185,8 +187,6 @@ export default {
                 resourceId: null
               }
             ]
-          } else {
-            this.availableForRequests = availableForListFromBackend
           }
         } else {
           this.availableForRequests = [
@@ -199,7 +199,7 @@ export default {
           ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
   },
@@ -280,7 +280,7 @@ export default {
         }
         if (this.$refs.dnsForm.validate() && isValid) {
           if (this.$refs?.testConnection) {
-            this.testedFormValues = JSON.parse(JSON.stringify(this.formValues))
+            this.testedFormValues = structuredClone(this.formValues)
             this.$refs.testConnection.testConnection(isSave, false)
           }
         } else {
