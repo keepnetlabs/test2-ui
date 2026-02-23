@@ -107,6 +107,30 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(wrapper.vm.$refs.refTable.reRenderFilters).toHaveBeenCalled()
   })
 
+  it('uses value fallback in status watcher and does not throw without refTable', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs = {}
+
+    await wrapper.setProps({ statusItems: [{ value: 'Paused' }] })
+
+    const statusCol = wrapper.vm.tableOptions.columns.find((col) => col.property === COLUMNS.STATUS.property)
+    expect(statusCol.filterableItems).toEqual([{ value: 'Paused' }])
+  })
+
+  it('does nothing in status watcher when status column is missing or list is empty', async () => {
+    const wrapper = createWrapper()
+    const statusCol = wrapper.vm.tableOptions.columns.find((col) => col.property === COLUMNS.STATUS.property)
+    wrapper.vm.tableOptions.columns = wrapper.vm.tableOptions.columns.filter(
+      (col) => col.property !== COLUMNS.STATUS.property
+    )
+
+    await wrapper.setProps({ statusItems: [{ text: 'Scheduled' }] })
+    expect(statusCol.filterableItems).toBeUndefined()
+
+    await wrapper.setProps({ statusItems: [] })
+    expect(wrapper.vm.tableOptions.columns.find((col) => col.property === COLUMNS.STATUS.property)).toBeUndefined()
+  })
+
   it('supports delete flow and refresh', async () => {
     const wrapper = createWrapper()
     wrapper.vm.$refs.refTable = { unSelectRow: jest.fn() }
@@ -119,6 +143,19 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(wrapper.vm.$refs.refTable.unSelectRow).toHaveBeenCalled()
     expect(wrapper.vm.callForData).toHaveBeenCalled()
     expect(wrapper.vm.isDeleteDialogActionButtonDisabled).toBe(false)
+  })
+
+  it('handles empty API data with defaults in callForData', async () => {
+    searchCampaignPhishingJob.mockResolvedValueOnce({ data: { data: {} } })
+    const wrapper = createWrapper()
+    await flushPromises()
+
+    searchCampaignPhishingJob.mockResolvedValueOnce({ data: { data: {} } })
+    wrapper.vm.callForData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.serverSideProps.pageNumber).toBeUndefined()
   })
 
   it('exports rows with frequency group', async () => {
@@ -231,5 +268,69 @@ describe('CampaignManagerFrequencyTable.vue', () => {
   it('passes status badge props through utility helper', () => {
     const wrapper = createWrapper()
     expect(wrapper.vm.getStatusBadgeProps('Scheduled')).toEqual(getStatusBadgeProps('Scheduled'))
+  })
+
+  it('returns helper defaults for empty rows and emits add-button launch', () => {
+    const wrapper = createWrapper({ parentResourceId: 'parent-add-1' })
+
+    expect(wrapper.vm.getErrorMessage({})).toBe('')
+    expect(wrapper.vm.getTooltipDisabilityStatus({})).toBe(true)
+    expect(wrapper.vm.isTargetUsersShowGroups({})).toBe(false)
+
+    wrapper.vm.handleOnAddButtonClick()
+    expect(wrapper.emitted('on-launch')[0][0]).toEqual({ resourceId: 'parent-add-1' })
+  })
+
+  it('statusItems watcher does nothing for null value', async () => {
+    const wrapper = createWrapper({ statusItems: [{ text: 'Scheduled' }] })
+    const statusCol = wrapper.vm.tableOptions.columns.find((col) => col.property === COLUMNS.STATUS.property)
+    const previous = statusCol.filterableItems
+
+    await wrapper.setProps({ statusItems: null })
+
+    expect(statusCol.filterableItems).toBe(previous)
+  })
+
+  it('callForData toggles loading true then false through finally callback', async () => {
+    const loadingFlags = []
+    const ctx = {
+      axiosPayload: { filter: {}, orderBy: 'CreatedDate' },
+      item: { frequencyGroup: 'fg-x' },
+      parentResourceId: 'parent-x',
+      serverSideProps: {},
+      tableData: [],
+      setLoading: jest.fn((flag = false) => loadingFlags.push(flag)),
+      $nextTick: (cb) => cb()
+    }
+
+    CampaignManagerFrequencyTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(loadingFlags).toEqual([true, false])
+  })
+
+  it('handleTargetUsersGroupsClick emits undefined instanceGroup when item is missing', () => {
+    const emit = jest.fn()
+    const ctx = {
+      parentResourceId: 'parent-z',
+      parentCampaignType: 9,
+      item: null,
+      $emit: emit
+    }
+
+    CampaignManagerFrequencyTable.methods.handleTargetUsersGroupsClick.call(ctx, {
+      instanceGroup: 'ignored'
+    })
+
+    expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+      resourceId: 'parent-z',
+      campaignType: 9,
+      instanceGroup: undefined
+    })
+  })
+
+  it('getErrorMessage returns empty string for Error status without message', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getErrorMessage({ status: 'Error' })).toBe('')
   })
 })

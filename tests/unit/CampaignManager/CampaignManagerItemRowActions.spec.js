@@ -439,6 +439,82 @@ describe('CampaignManagerItemRowActions.vue', () => {
       const emitted = wrapper.emitted('on-launch')[0][0]
       expect(emitted.data).toBe('test')
     })
+
+    it('should navigate for non-menu COMPLETE status even without on-view-report action', () => {
+      const mockRouter = { push: jest.fn() }
+      const wrapper = mountComponent(
+        {
+          scope: {
+            row: { status: ACTION_STATUSES.COMPLETE, instanceGroup: 'grp-complete' }
+          }
+        },
+        { $router: mockRouter }
+      )
+
+      wrapper.vm.handleItemClick({ action: 'on-anything' })
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Campaign Report',
+          params: expect.objectContaining({ instanceGroup: 'grp-complete' })
+        })
+      )
+    })
+
+    it('should navigate for non-menu DELETE status', () => {
+      const mockRouter = { push: jest.fn() }
+      const wrapper = mountComponent(
+        {
+          scope: {
+            row: { status: ACTION_STATUSES.DELETE, instanceGroup: 'grp-delete' }
+          }
+        },
+        { $router: mockRouter }
+      )
+
+      wrapper.vm.handleItemClick({ action: 'on-anything' })
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Campaign Report',
+          params: expect.objectContaining({ instanceGroup: 'grp-delete' })
+        })
+      )
+    })
+
+    it('should navigate for non-menu CANCEL status', () => {
+      const mockRouter = { push: jest.fn() }
+      const wrapper = mountComponent(
+        {
+          scope: {
+            row: { status: ACTION_STATUSES.CANCEL, instanceGroup: 'grp-cancel' }
+          }
+        },
+        { $router: mockRouter }
+      )
+
+      wrapper.vm.handleItemClick({ action: 'on-anything' })
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Campaign Report',
+          params: expect.objectContaining({ instanceGroup: 'grp-cancel' })
+        })
+      )
+    })
+
+    it('should emit raw action when not mapped and not routed', () => {
+      const mockRouter = { push: jest.fn() }
+      const wrapper = mountComponent(
+        {
+          scope: {
+            row: { status: ACTION_STATUSES.IDLE, instanceGroup: 'grp-idle' }
+          }
+        },
+        { $router: mockRouter }
+      )
+
+      wrapper.vm.handleItemClick({ action: 'on-custom-action' })
+      expect(mockRouter.push).not.toHaveBeenCalled()
+      expect(wrapper.emitted('on-custom-action')).toBeTruthy()
+    })
   })
 
   describe('Event Emission', () => {

@@ -510,9 +510,109 @@ describe('CampaignManagerParentTable.vue', () => {
     expect(ctx.callForData).toHaveBeenCalled()
   })
 
+  it('handleSearchChange only renames the first scenario distribution field', () => {
+    const ctx = {
+      axiosPayload: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      resetPageNumber: jest.fn(),
+      callForData: jest.fn()
+    }
+
+    CampaignManagerParentTable.methods.handleSearchChange.call(ctx, {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [
+              { FieldName: 'CategoryDistributionType', Value: 'AI' },
+              { FieldName: 'CategoryDistributionType', Value: 'Random' }
+            ]
+          }
+        ]
+      }
+    })
+
+    expect(ctx.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'ScenarioDistribution', Value: 'AI' },
+      { FieldName: 'CategoryDistributionType', Value: 'Random' }
+    ])
+  })
+
+  it('tooltip and target users helpers return defaults for empty row', () => {
+    expect(CampaignManagerParentTable.methods.getTooltipDisabilityStatus.call({}, {})).toBe(true)
+    expect(CampaignManagerParentTable.methods.isTargetUsersShowGroups.call({}, {})).toBe(false)
+  })
+
   it('calls callForData on mounted hook', () => {
     const callForData = jest.fn()
     CampaignManagerParentTable.mounted.call({ callForData })
     expect(callForData).toHaveBeenCalled()
+  })
+
+  it('exportCampaignManagerList writes csv filename suffix correctly', async () => {
+    exportCampaignManager.mockResolvedValue({ data: new Blob(['x']) })
+    const originalCreateObjectURL = window.URL.createObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'blob:csv-url')
+    const createdLinks = []
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(() => {
+      const link = { click: jest.fn(), href: '', download: '' }
+      createdLinks.push(link)
+      return link
+    })
+
+    const ctx = {
+      getCampaignManagerParentExportPermissions: true,
+      axiosPayload: {
+        orderBy: 'createTime',
+        ascending: false,
+        filter: { FilterGroups: [] }
+      }
+    }
+
+    CampaignManagerParentTable.methods.exportCampaignManagerList.call(ctx, {
+      exportTypes: ['CSV'],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: false
+    })
+    await flushPromises()
+
+    expect(createdLinks[0].download).toBe('Campaign-Manager.csv')
+
+    window.URL.createObjectURL = originalCreateObjectURL
+    createElementSpy.mockRestore()
+  })
+
+  it('handleMultipleDeleteOfCampaigns emits zero count when no selected items and selectAll=false', () => {
+    const emit = jest.fn()
+    const ctx = {
+      axiosPayload: { filter: { FilterGroups: [] } },
+      serverSideProps: { totalNumberOfRecords: 10 },
+      $emit: emit
+    }
+
+    CampaignManagerParentTable.methods.handleMultipleDeleteOfCampaigns.call(
+      ctx,
+      [],
+      [],
+      false
+    )
+
+    expect(emit).toHaveBeenCalledWith(
+      'on-multiple-delete',
+      {
+        items: [],
+        excludedItems: [],
+        selectAll: false,
+        filter: { FilterGroups: [] }
+      },
+      0
+    )
+  })
+
+  it('getErrorMessage returns empty string when status is Error but message missing', () => {
+    expect(CampaignManagerParentTable.methods.getErrorMessage.call({}, { status: 'Error' })).toBe('')
   })
 })

@@ -79,6 +79,13 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
       expect(wrapper.findComponent({ name: 'AlertBox' }).exists()).toBe(true)
     })
 
+    it('should not render AlertBox when infoMessage is empty', () => {
+      const wrapper = mountComponent({
+        infoMessage: ''
+      })
+      expect(wrapper.findComponent({ name: 'AlertBox' }).exists()).toBe(false)
+    })
+
     it('should have loading capability', () => {
       const wrapper = mountComponent()
       expect(wrapper.vm.isLoading !== undefined).toBe(true)
@@ -204,6 +211,19 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
 
       expect(phishingsimulatorAPI.getCampaignTargetGroups).not.toHaveBeenCalled()
     })
+
+    it('should clear target groups when watcher receives false status', () => {
+      const ctx = {
+        campaignResourceId: 'campaign-123',
+        targetGroups: [{ name: 'Old Group', count: 5 }],
+        fetchTargetGroups: jest.fn()
+      }
+
+      CampaignManagerTargetGroupsDialog.watch.status.handler.call(ctx, false)
+
+      expect(ctx.fetchTargetGroups).not.toHaveBeenCalled()
+      expect(ctx.targetGroups).toEqual([])
+    })
   })
 
   describe('Methods - fetchTargetGroups', () => {
@@ -283,6 +303,21 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
 
       await wrapper.vm.fetchTargetGroups()
       expect(wrapper.vm.targetGroups).toEqual(defaultTargetGroups)
+    })
+
+    it('should map to empty array when API payload does not include groups', async () => {
+      const response = {
+        data: {
+          data: {
+            groups: {}
+          }
+        }
+      }
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue(response)
+      const wrapper = mountComponent()
+
+      await wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual([])
     })
 
     it('should clear targetGroups on error', async () => {
@@ -411,6 +446,13 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
     it('handleClose should be callable', () => {
       const wrapper = mountComponent()
       expect(() => wrapper.vm.handleClose()).not.toThrow()
+    })
+
+    it('handleClose should emit on-close', () => {
+      const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+      wrapper.vm.handleClose()
+      expect(emitSpy).toHaveBeenCalledWith('on-close')
     })
   })
 

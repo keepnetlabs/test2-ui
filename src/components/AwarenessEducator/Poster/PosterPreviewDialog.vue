@@ -309,7 +309,7 @@ export default {
       })
         .then((response) => {
           if (this.isPdf) {
-            this.pdfSrc = window.URL.createObjectURL(response.data)
+            this.pdfSrc = globalThis.URL.createObjectURL(response.data)
             return
           }
           this.downloadPDFObject(window.URL.createObjectURL(response.data))
