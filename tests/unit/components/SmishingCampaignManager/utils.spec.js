@@ -25,15 +25,25 @@ describe('SmishingCampaignManager utils', () => {
     expect(DISTRIBUTION_START_TYPES.NOW).toBe(1)
   })
 
-  it('maps campaign statuses to badge props', () => {
-    expect(getStatusBadgeProps('Completed')).toEqual({ color: '#217124', text: 'Completed' })
-    expect(getStatusBadgeProps('Running')).toEqual({ color: '#1173C1', text: 'Running' })
-    expect(getStatusBadgeProps('Paused')).toEqual({ color: '#B6791D', text: 'Paused' })
-    expect(getStatusBadgeProps('Canceled')).toEqual({ color: '#B6791D', text: 'Cancelled' })
-    expect(getStatusBadgeProps('Error')).toEqual({
-      color: '#F56C6C',
-      text: 'Error',
-      outline: false
+  describe('getStatusBadgeProps', () => {
+    it('maps all campaign statuses to badge props', () => {
+      expect(getStatusBadgeProps('Completed')).toEqual({ color: '#217124', text: 'Completed' })
+      expect(getStatusBadgeProps('Running')).toEqual({ color: '#1173C1', text: 'Running' })
+      expect(getStatusBadgeProps('Idle')).toEqual({ color: '#0198AC', text: 'Idle' })
+      expect(getStatusBadgeProps('Paused')).toEqual({ color: '#B6791D', text: 'Paused' })
+      expect(getStatusBadgeProps('Cancelled')).toEqual({ color: '#B6791D', text: 'Cancelled' })
+      expect(getStatusBadgeProps('Canceled')).toEqual({ color: '#B6791D', text: 'Cancelled' })
+      expect(getStatusBadgeProps('Scheduled')).toEqual({ color: '#757575', text: 'Scheduled' })
+      expect(getStatusBadgeProps('Error')).toEqual({
+        color: '#F56C6C',
+        text: 'Error',
+        outline: false
+      })
+    })
+
+    it('returns undefined for unknown status', () => {
+      expect(getStatusBadgeProps('Unknown')).toBeUndefined()
+      expect(getStatusBadgeProps('')).toBeUndefined()
     })
   })
 

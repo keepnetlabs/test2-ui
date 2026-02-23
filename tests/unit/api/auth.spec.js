@@ -52,6 +52,86 @@ describe('auth API', () => {
     mockStorage.clear()
   })
 
+  describe('loginAction branch coverage', () => {
+    it('should set skipMfa true when mfa is Inactive and not expired', async () => {
+      const payload = {
+        email: 'user@example.com',
+        password: 'pass',
+        mfa: { StatusName: 'Inactive', IsExpired: false }
+      }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('skip_mfa')).toBe('true')
+    })
+
+    it('should set skipMfa false when mfa is Inactive and expired', async () => {
+      const payload = {
+        email: 'user@example.com',
+        password: 'pass',
+        mfa: { StatusName: 'Inactive', IsExpired: true }
+      }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('skip_mfa')).toBe('false')
+    })
+
+    it('should set skipMfa false when skipMfa is forced even with inactive mfa', async () => {
+      const payload = {
+        email: 'user@example.com',
+        password: 'pass',
+        skipMfa: 'forced',
+        mfa: { StatusName: 'Inactive', IsExpired: false }
+      }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('skip_mfa')).toBe('false')
+    })
+
+    it('should not append uuid when uuid email does not match payload email', async () => {
+      const uuid = { email: 'other@example.com', uuid: 'uuid-123' }
+      mockStorage.setItem('uuid', JSON.stringify(uuid))
+      const payload = { email: 'user@example.com', password: 'pass' }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('uuid')).toBeNull()
+    })
+
+    it('should append uuid when uuid email matches payload email', async () => {
+      const uuid = { email: 'user@example.com', uuid: 'uuid-123' }
+      mockStorage.setItem('uuid', JSON.stringify(uuid))
+      const payload = { email: 'user@example.com', password: 'pass' }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('uuid')).toBe('uuid-123')
+    })
+
+    it('should not append uuid when localStorage uuid is empty', async () => {
+      mockStorage.clear()
+      const payload = { email: 'user@example.com', password: 'pass' }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('uuid')).toBeNull()
+    })
+
+    it('should use default skipMfa when mfa is undefined', async () => {
+      const payload = { email: 'user@example.com', password: 'pass' }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('skip_mfa')).toBe('false')
+    })
+
+    it('should use default skipMfa when mfa StatusName is not Inactive', async () => {
+      const payload = {
+        email: 'user@example.com',
+        password: 'pass',
+        mfa: { StatusName: 'Active', IsExpired: false }
+      }
+      await authApi.loginAction(payload)
+      const params = authTestRequest.post.mock.calls[0][1]
+      expect(params.get('skip_mfa')).toBe('false')
+    })
+  })
+
   describe('login operations', () => {
     it('should call loginAction with email and password', async () => {
       const payload = { email: 'user@example.com', password: 'password123' }
