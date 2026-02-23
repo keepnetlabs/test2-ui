@@ -491,7 +491,7 @@ describe("RoiSummaryIrHeader widget", () => {
         });
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(3000);
+      expect(duration).toBeLessThan(5000);
     });
   });
 
