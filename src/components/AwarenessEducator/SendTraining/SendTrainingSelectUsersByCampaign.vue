@@ -430,9 +430,9 @@ export default {
         : 'You do not have any Campaigns yet.'
     },
     getTableEmptySubMessage() {
-      return !this.isFilterOrSearchActive
-        ? 'Go to Phishing Simulator>Campaign Manager to create a new campaign'
-        : 'Please try adjusting your search or filter'
+      return this.isFilterOrSearchActive
+        ? 'Please try adjusting your search or filter'
+        : 'Go to Phishing Simulator>Campaign Manager to create a new campaign'
     },
     getSingleTemplateDetails() {
       return this?.landingPageTemplates?.[0]?.content || ''

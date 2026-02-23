@@ -298,6 +298,29 @@ describe('CampaignManagerRowActions.vue', () => {
       })
       expect(wrapper.vm.getItems.length).toBeGreaterThan(0)
     })
+
+    it('getItems for COMPLETE status should not include duplicate action', () => {
+      const wrapper = mountComponent({
+        scope: {
+          row: { status: ACTION_STATUSES.COMPLETE, frequency: 0 },
+          $index: 0
+        }
+      })
+      const duplicateAction = wrapper.vm.getItems.find(item => item.action === 'on-duplicate')
+      expect(duplicateAction).toBeUndefined()
+    })
+
+    it('getItems for COMPLETE with quishing should include print-preview action', () => {
+      const wrapper = mountComponent({
+        scope: {
+          row: { status: ACTION_STATUSES.COMPLETE, frequency: 0 },
+          $index: 0
+        },
+        isQuishingPrintPreview: true
+      })
+      const printPreviewAction = wrapper.vm.getItems.find(item => item.action === 'on-print-preview')
+      expect(printPreviewAction).toBeDefined()
+    })
   })
 
   describe('Edit Action Disabled State', () => {
@@ -388,6 +411,38 @@ describe('CampaignManagerRowActions.vue', () => {
 
       expect(() => wrapper.vm.handleItemClick(action)).not.toThrow()
     })
+
+    it('handleItemClick should map COMPLETE to on-launch', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.scope = { row: { status: ACTION_STATUSES.COMPLETE, frequency: 0 }, $index: 0 }
+
+      wrapper.vm.handleItemClick({ action: ACTION_STATUSES.COMPLETE })
+      expect(wrapper.emitted('on-launch')).toBeTruthy()
+    })
+
+    it('handleItemClick should map CANCEL to on-launch', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.scope = { row: { status: ACTION_STATUSES.CANCEL, frequency: 0 }, $index: 0 }
+
+      wrapper.vm.handleItemClick({ action: ACTION_STATUSES.CANCEL })
+      expect(wrapper.emitted('on-launch')).toBeTruthy()
+    })
+
+    it('handleItemClick should map IDLE to on-launch', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.scope = { row: { status: ACTION_STATUSES.IDLE, frequency: 0 }, $index: 0 }
+
+      wrapper.vm.handleItemClick({ action: ACTION_STATUSES.IDLE })
+      expect(wrapper.emitted('on-launch')).toBeTruthy()
+    })
+
+    it('handleItemClick should emit raw event name for non-mapped actions', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.scope = { row: { status: ACTION_STATUSES.IDLE, frequency: 0, id: 5 }, $index: 0 }
+
+      wrapper.vm.handleItemClick({ action: 'on-delete' })
+      expect(wrapper.emitted('on-delete')[0][0]).toEqual({ status: ACTION_STATUSES.IDLE, frequency: 0, id: 5 })
+    })
   })
 
   describe('Event Emission', () => {
@@ -457,6 +512,21 @@ describe('CampaignManagerRowActions.vue', () => {
       })
       const deleteAction = wrapper.vm.getItems.find(item => item.action === 'on-delete')
       expect(deleteAction.disabled).toBe(true)
+    })
+
+    it('new instance action should be disabled without create permission', () => {
+      const wrapper = mountComponent(undefined, {
+        computed: {
+          getCampaignManagerParentPreviewPermissions: () => true,
+          getCampaignManagerParentCreatePermissions: () => false,
+          getCampaignManagerParentDeletePermissions: () => true,
+          getCampaignManagerParentUpdatePermissions: () => true
+        }
+      })
+      const newInstanceAction = wrapper.vm.getItems.find(
+        item => item.id === 'btn-new-instance-item-row-actions-campaign-manager'
+      )
+      expect(newInstanceAction.disabled).toBe(true)
     })
   })
 

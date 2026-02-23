@@ -134,8 +134,8 @@ export default {
     getItems() {
       const newItems = { ...this.items }
       Object.keys(this.items).forEach((key) => {
-        if (!newItems[key].show) delete newItems[key]
-        else newItems[key] = newItems[key].value
+        if (newItems[key].show) newItems[key] = newItems[key].value
+        else delete newItems[key]
       })
       return newItems
     },

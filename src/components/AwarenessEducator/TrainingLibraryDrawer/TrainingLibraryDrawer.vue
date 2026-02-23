@@ -207,13 +207,8 @@ export default {
       // Edit modal açılırken drawer kapanır
       this.skipBodyScrollOnClose = true
 
-      if (this.isDeepNested) {
-        // Deep nested drawer'daysa tüm drawer'ları kapat
-        this.isVisible = false
-        this.$emit('input', false)
-        this.$emit('close-parent', { skipBodyScroll: true })
-      } else if (this.isNested) {
-        // Nested drawer'daysa hem nested hem parent drawer'ı kapat
+      if (this.isDeepNested || this.isNested) {
+        // Nested veya deep nested drawer'daysa tüm drawer'ları kapat
         this.isVisible = false
         this.$emit('input', false)
         this.$emit('close-parent', { skipBodyScroll: true })
@@ -233,13 +228,8 @@ export default {
       // Send modal açıldığında drawer'ı kapat ama store'u reset etme
       this.skipBodyScrollOnClose = true
 
-      if (this.isDeepNested) {
-        // Deep nested drawer'daysa tüm drawer'ları kapat
-        this.isVisible = false
-        this.$emit('input', false)
-        this.$emit('close-parent', { skipBodyScroll: true })
-      } else if (this.isNested) {
-        // Nested drawer'daysa hem nested hem parent drawer'ı kapat
+      if (this.isDeepNested || this.isNested) {
+        // Nested veya deep nested drawer'daysa tüm drawer'ları kapat
         this.isVisible = false
         this.$emit('input', false)
         this.$emit('close-parent', { skipBodyScroll: true })

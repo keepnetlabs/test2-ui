@@ -641,10 +641,10 @@ export default {
     callForPhishingScenarios(isSelectFirstItem = true) {
       if (this.isEdit && this.defaultPhishingScenariosValuesMapped.length && !this.value.length) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
-        this.axiosPayload.pageSize =
-          this.defaultPhishingScenariosValuesMapped.length < 10
-            ? 10
-            : this.defaultPhishingScenariosValuesMapped.length
+        this.axiosPayload.pageSize = Math.max(
+          10,
+          this.defaultPhishingScenariosValuesMapped.length
+        )
       } else if (this.value.length && this.isEdit) {
         this.axiosPayload.resourceId = this.campaignManagerResourceId || ''
       }

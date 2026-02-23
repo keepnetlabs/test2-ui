@@ -191,7 +191,7 @@ export default {
   },
   computed: {
     getContainerStyle() {
-      return !this.isValid ? { border: '1px solid #ff5252 !important' } : {}
+      return this.isValid ? {} : { border: '1px solid #ff5252 !important' }
     }
   },
   watch: {
@@ -225,7 +225,7 @@ export default {
     },
     addRowClassName({ row = {} }) {
       if (this.lastColumnName === 'phoneNumber')
-        return !row.phoneNumber ? 'k-table-row--disabled' : ''
+        return row.phoneNumber ? '' : 'k-table-row--disabled'
       return ''
     }
   }

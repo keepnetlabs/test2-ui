@@ -225,12 +225,37 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.$router.replace).toHaveBeenCalledWith('/phishing-simulator/campaign-manager')
   })
 
+  it('does not reset table state via route query watcher when status is not parent', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      selectedParentItem: { resourceId: 'p1' },
+      selectedInstanceItem: { instanceGroup: 'i1' },
+      isItemTableShowing: true,
+      isFrequencyTableShowing: true
+    })
+
+    wrapper.vm.$options.watch['$route.query'].handler.call(wrapper.vm, { status: 'item' })
+
+    expect(wrapper.vm.selectedParentItem).toEqual({ resourceId: 'p1' })
+    expect(wrapper.vm.selectedInstanceItem).toEqual({ instanceGroup: 'i1' })
+    expect(wrapper.vm.isItemTableShowing).toBe(true)
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(true)
+    expect(wrapper.vm.$router.replace).not.toHaveBeenCalled()
+  })
+
   it('uses fallback status items when form details are empty', () => {
     const wrapper = createWrapper()
     wrapper.setData({ formDetails: {} })
 
     expect(Array.isArray(wrapper.vm.getStatusItems)).toBe(true)
     expect(wrapper.vm.getStatusItems.length).toBeGreaterThan(0)
+  })
+
+  it('uses form status items when provided', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ formDetails: { status: [{ text: 'Paused', value: 'Paused' }] } })
+
+    expect(wrapper.vm.getStatusItems).toEqual([{ text: 'Paused', value: 'Paused' }])
   })
 
   it('runs start and stop in frequency mode by calling frequency table ref', async () => {
@@ -381,6 +406,43 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.isItemTableShowing).toBe(false)
   })
 
+  it('navigates to campaign report from parent row using mostRecentInstanceGroup when present', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, mostRecentInstanceGroup: 7 })
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'Campaign Report',
+      params: { id: 'p-1', instanceGroup: 7 }
+    })
+  })
+
   it('navigates to campaign report from item row when only one record exists', () => {
     const push = jest.fn()
     const wrapper = shallowMount(CampaignManager, {
@@ -456,6 +518,17 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('')
   })
 
+  it('computes target group fallback campaign type and stringifies instanceGroup', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      targetGroupsDialogCampaign: { resourceId: 'c2', campaignType: null, instanceGroup: 99 }
+    })
+
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('c2')
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(CAMPAIGN_TYPE.Phishing)
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('99')
+  })
+
   it('refreshes parent table and closes add/edit modal on submit', () => {
     const wrapper = createWrapper()
     const parentCall = jest.fn()
@@ -475,4 +548,197 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.isEdit).toBe(false)
     expect(wrapper.vm.isDuplicate).toBe(false)
   })
+
+  it('handles multiple delete success and resets action button disabled state', async () => {
+    bulkDeleteCampaignReports.mockResolvedValueOnce()
+    const wrapper = createWrapper()
+    const resetSelectableParams = jest.fn()
+    const callForData = jest.fn()
+    wrapper.vm.$refs.campaignManagerParentTable = {
+      callForData,
+      $refs: { refTable: { resetSelectableParams } }
+    }
+    wrapper.setData({
+      multipleSystemUserPayload: { ids: ['x'] },
+      isShowDeleteDialog: true
+    })
+
+    await wrapper.vm.handleOnMultipleDelete()
+    await flushPromises()
+
+    expect(bulkDeleteCampaignReports).toHaveBeenCalledWith({ ids: ['x'] })
+    expect(resetSelectableParams).toHaveBeenCalled()
+    expect(callForData).toHaveBeenCalled()
+    expect(wrapper.vm.isDeleteDialogActionButtonDisabled).toBe(false)
+    expect(wrapper.vm.isShowDeleteDialog).toBe(false)
+  })
+
+  it('submits new instance without item table refresh when item table is hidden', () => {
+    const wrapper = createWrapper()
+    const parentCall = jest.fn()
+    const itemCall = jest.fn()
+    wrapper.vm.$refs.campaignManagerParentTable = { callForData: parentCall }
+    wrapper.vm.$refs.campaignManagerItemTable = { callForData: itemCall }
+    wrapper.setData({ isItemTableShowing: false, isShowNewInstanceModal: true, instanceResourceId: 'new-2' })
+
+    wrapper.vm.handleOnSubmitNewInstance()
+
+    expect(itemCall).not.toHaveBeenCalled()
+    expect(parentCall).toHaveBeenCalled()
+    expect(wrapper.vm.isShowNewInstanceModal).toBe(false)
+    expect(wrapper.vm.instanceResourceId).toBe('')
+  })
+
+  it('allows route leave when campaign modal ref is missing', () => {
+    const wrapper = createWrapper()
+    const next = jest.fn()
+
+    wrapper.vm.$refs = {}
+    wrapper.vm.$options.beforeRouteLeave.call(wrapper.vm, {}, {}, next)
+
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('handles parent record click without item table ref', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.campaignManagerItemTable = undefined
+
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'parent-2', total: 3 })
+
+    expect(wrapper.vm.selectedParentItem).toEqual({ resourceId: 'parent-2', total: 3 })
+    expect(wrapper.vm.isItemTableShowing).toBe(true)
+  })
+
+  it('handles back actions safely when table refs are missing', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ isItemTableShowing: true, isFrequencyTableShowing: true })
+    wrapper.vm.$refs.campaignManagerParentTable = undefined
+    wrapper.vm.$refs.campaignManagerItemTable = undefined
+
+    wrapper.vm.handleOnBackClick()
+    wrapper.vm.handleOnFrequencyBackClick()
+
+    expect(wrapper.vm.isItemTableShowing).toBe(false)
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(false)
+  })
+
+  it('prefers selected parent row in preview over provided row', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ selectedParentItem: { resourceId: 'parent-priority' } })
+
+    wrapper.vm.handleItemOnPreview({ resourceId: 'row-preview' })
+
+    expect(wrapper.vm.selectedRow).toEqual({ resourceId: 'parent-priority' })
+    expect(wrapper.vm.isShowPreviewDialog).toBe(true)
+  })
+
+  it('computes empty resource id when target group row has empty resource id', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      targetGroupsDialogCampaign: { resourceId: '', campaignType: 0, instanceGroup: null }
+    })
+
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('')
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(0)
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('')
+  })
+
+  it('setDeleteDialogActionButtonDisabled uses explicit and default values', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.setDeleteDialogActionButtonDisabled(true)
+    expect(wrapper.vm.isDeleteDialogActionButtonDisabled).toBe(true)
+
+    wrapper.vm.setDeleteDialogActionButtonDisabled()
+    expect(wrapper.vm.isDeleteDialogActionButtonDisabled).toBe(false)
+  })
+
+  it('runs immediate route watcher on mount when query status is parent', async () => {
+    const replace = jest.fn()
+    shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: { status: 'parent' } },
+        $router: { replace }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    await flushPromises()
+    expect(replace).toHaveBeenCalledWith('/phishing-simulator/campaign-manager')
+  })
+
+  it('sets payload and toggles start/stop dialogs via handleStart and handleStop', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.handleStart({ resourceId: 's1', instanceGroup: 'g1' })
+    expect(wrapper.vm.startStopCampaignPayload).toEqual({ resourceId: 's1', instanceGroup: 'g1' })
+    expect(wrapper.vm.isShowStartDialog).toBe(true)
+
+    wrapper.vm.handleStop({ resourceId: 's2', instanceGroup: 'g2' })
+    expect(wrapper.vm.startStopCampaignPayload).toEqual({ resourceId: 's2', instanceGroup: 'g2' })
+    expect(wrapper.vm.isShowStopDialog).toBe(true)
+  })
+
+  it('opens and closes start/stop dialog toggles explicitly', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.isShowStartDialog).toBe(false)
+    expect(wrapper.vm.isShowStopDialog).toBe(false)
+
+    wrapper.vm.toggleStartCampaignDialog()
+    wrapper.vm.toggleStopCampaignDialog()
+    expect(wrapper.vm.isShowStartDialog).toBe(true)
+    expect(wrapper.vm.isShowStopDialog).toBe(true)
+
+    wrapper.vm.toggleStartCampaignDialog()
+    wrapper.vm.toggleStopCampaignDialog()
+    expect(wrapper.vm.isShowStartDialog).toBe(false)
+    expect(wrapper.vm.isShowStopDialog).toBe(false)
+  })
+
+  it('handles item delete click by selecting row and opening delete dialog', () => {
+    const wrapper = createWrapper()
+    const row = { resourceId: 'del-77' }
+
+    wrapper.vm.handleItemOnDelete(row)
+
+    expect(wrapper.vm.selectedRow).toEqual(row)
+    expect(wrapper.vm.isShowDeleteDialog).toBe(true)
+  })
+
+  it('toggleAddCampaignManagerModal opens without resetting flags when initially closed', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      isShowAddOrEditCampaignManagerModal: false,
+      selectedRow: { id: 'keep' },
+      isEdit: true,
+      isDuplicate: true
+    })
+
+    wrapper.vm.toggleAddCampaignManagerModal()
+
+    expect(wrapper.vm.isShowAddOrEditCampaignManagerModal).toBe(true)
+    expect(wrapper.vm.selectedRow).toEqual({ id: 'keep' })
+    expect(wrapper.vm.isEdit).toBe(true)
+    expect(wrapper.vm.isDuplicate).toBe(true)
+  })
+
 })

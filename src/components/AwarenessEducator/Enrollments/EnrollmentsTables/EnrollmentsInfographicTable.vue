@@ -80,8 +80,9 @@ import useEnrollmentTableFilters from '@/hooks/enrollments/useEnrollmentTableFil
 export default {
   name: 'EnrollmentsInfographicTable',
   components: {
+    DataTable,
     EnrollmentsTableRowActions,
-    DataTable
+    LanguagesColumn
   },
   props: {
     languages: {
@@ -255,7 +256,7 @@ export default {
         AwarenessEducatorService.exportEnrollments(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Infographic-List.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`

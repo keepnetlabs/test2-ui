@@ -182,6 +182,18 @@ describe('CampaignManagerLanguageSupportDialog.vue', () => {
       const wrapper = mountComponent()
       expect(wrapper.vm.getCompanyName === null || typeof wrapper.vm.getCompanyName === 'string').toBe(true)
     })
+
+    it('company getters should return undefined when current company is missing', () => {
+      const wrapper = mountComponent({}, {
+        mocks: {
+          $store: { getters: { 'login/getCurrentCompany': null } },
+          $emit: jest.fn()
+        }
+      })
+
+      expect(wrapper.vm.getCompanyPreferredLanguage).toBeUndefined()
+      expect(wrapper.vm.getCompanyName).toBeUndefined()
+    })
   })
 
   describe('Computed Properties - Company Names Comparison', () => {
@@ -221,6 +233,31 @@ describe('CampaignManagerLanguageSupportDialog.vue', () => {
         ]
       })
       expect(wrapper.vm.isCompanyNamesDifferent).toBe(true)
+    })
+
+    it('isCompanyNamesDifferent should be false when all groups match current company', () => {
+      const wrapper = mountComponent(
+        {
+          selectedTargetGroups: [
+            { companyName: 'Company A' },
+            { companyName: 'Company A' }
+          ]
+        },
+        {
+          mocks: {
+            $store: {
+              getters: {
+                'login/getCurrentCompany': {
+                  name: 'Company A',
+                  preferredLanguageTypeName: 'English'
+                }
+              }
+            },
+            $emit: jest.fn()
+          }
+        }
+      )
+      expect(wrapper.vm.isCompanyNamesDifferent).toBe(false)
     })
   })
 
@@ -308,6 +345,20 @@ describe('CampaignManagerLanguageSupportDialog.vue', () => {
       const wrapper = mountComponent({ userCountDetailResponse: userResponse })
       expect(wrapper.vm.getMissingCompanyLanguages).toContain(',')
     })
+
+    it('getMissingPreferredLanguages should be undefined when no preferred languages exist', () => {
+      const wrapper = mountComponent({
+        userCountDetailResponse: { data: { data: [] } }
+      })
+      expect(wrapper.vm.getMissingPreferredLanguages).toBeUndefined()
+    })
+
+    it('getMissingCompanyLanguages should be empty string when no random languages exist', () => {
+      const wrapper = mountComponent({
+        userCountDetailResponse: { data: { data: [] } }
+      })
+      expect(wrapper.vm.getMissingCompanyLanguages).toBe('')
+    })
   })
 
   describe('Methods', () => {
@@ -343,6 +394,24 @@ describe('CampaignManagerLanguageSupportDialog.vue', () => {
       const wrapper = mountComponent()
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
       expect(footer.exists()).toBe(true)
+    })
+
+    it('handleClose emits on-close event', () => {
+      const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+
+      wrapper.vm.handleClose()
+
+      expect(emitSpy).toHaveBeenCalledWith('on-close')
+    })
+
+    it('handleConfirm emits on-confirm event', () => {
+      const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+
+      wrapper.vm.handleConfirm()
+
+      expect(emitSpy).toHaveBeenCalledWith('on-confirm')
     })
   })
 
@@ -388,6 +457,48 @@ describe('CampaignManagerLanguageSupportDialog.vue', () => {
       const wrapper = mountComponent({ userCountDetailResponse: userResponse })
       expect(wrapper.vm.preferredLanguages).toContain('English')
       expect(wrapper.vm.preferredLanguages).toContain('Spanish')
+    })
+
+    it('created hook should ignore preferred language rows when status is not No', () => {
+      const wrapper = mountComponent({
+        userCountDetailResponse: {
+          data: {
+            data: [
+              {
+                hasPreferredLanguage: [
+                  {
+                    status: 'Yes',
+                    hasPreferredLanguage: [{ status: 'German' }]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      })
+
+      expect(wrapper.vm.preferredLanguages).toEqual([])
+    })
+
+    it('created hook should ignore random language rows when status is not Yes', () => {
+      const wrapper = mountComponent({
+        userCountDetailResponse: {
+          data: {
+            data: [
+              {
+                hasRandomLanguage: [
+                  {
+                    status: 'No',
+                    hasRandomLanguage: [{ status: 'Italian' }]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      })
+
+      expect(wrapper.vm.randomLanguages).toEqual([])
     })
   })
 
@@ -594,6 +705,20 @@ describe('CampaignManagerLanguageSupportDialog.vue', () => {
       expect(wrapper.vm.status).toBe(true)
       await wrapper.setProps({ status: false })
       expect(wrapper.vm.status).toBe(false)
+    })
+
+    it('should mount safely when userCountDetailResponse is null', () => {
+      const wrapper = mountComponent({ userCountDetailResponse: null })
+
+      expect(wrapper.vm.preferredLanguages).toEqual([])
+      expect(wrapper.vm.randomLanguages).toEqual([])
+    })
+
+    it('should mount safely when userCountDetailResponse is missing data path', () => {
+      const wrapper = mountComponent({ userCountDetailResponse: {} })
+
+      expect(wrapper.vm.preferredLanguages).toEqual([])
+      expect(wrapper.vm.randomLanguages).toEqual([])
     })
   })
 
