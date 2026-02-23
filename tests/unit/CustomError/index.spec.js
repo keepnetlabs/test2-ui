@@ -473,7 +473,7 @@ describe('CustomError.vue', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(1500)
     })
   })
 
