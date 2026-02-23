@@ -201,6 +201,7 @@ describe('QuishingEmailTemplatesTable.vue', () => {
       activeTemplateTypes: [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
     }
 
+    const createObjectURLCallCountBefore = createObjectURLSpy.mock.calls.length
     QuishingEmailTemplatesTable.methods.exportQuishingEmailTemplates.call(ctx, {
       exportTypes: ['XLS', 'CSV'],
       reportAllPages: true,
@@ -218,7 +219,7 @@ describe('QuishingEmailTemplatesTable.vue', () => {
       expect.objectContaining({ exportType: 'CSV', reportAllPages: true })
     )
     expect(click).toHaveBeenCalledTimes(2)
-    expect(createObjectURLSpy).toHaveBeenCalledTimes(2)
+    expect(createObjectURLSpy.mock.calls.length - createObjectURLCallCountBefore).toBe(2)
 
     createObjectURLSpy.mockRestore()
     createElementSpy.mockRestore()
