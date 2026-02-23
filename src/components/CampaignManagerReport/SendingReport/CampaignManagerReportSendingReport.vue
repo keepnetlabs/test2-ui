@@ -67,7 +67,7 @@ export default {
   },
   computed: {
     getLastSendingStatusItems() {
-      return this?.formDetails?.userStatuses || []
+      return (this.formDetails && this.formDetails.userStatuses) || []
     }
   },
   methods: {

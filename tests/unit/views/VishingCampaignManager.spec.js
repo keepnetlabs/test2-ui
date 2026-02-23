@@ -17,7 +17,7 @@ jest.mock('@/api/vishing', () => ({
   ),
   exportVishingCampaigns: jest.fn(() =>
     Promise.resolve({
-      data: new Blob(['x'], { type: 'application/octet-stream' })
+      data: new (globalThis.Blob || global.Blob)(['x'], { type: 'application/octet-stream' })
     })
   ),
   getVishingTemplateLanguages: jest.fn(() =>

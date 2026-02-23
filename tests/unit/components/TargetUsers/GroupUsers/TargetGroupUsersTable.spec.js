@@ -3,7 +3,9 @@ import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGro
 
 jest.mock('@/api/targetUsers', () => ({
   exportTargetGroupUsers: jest.fn(() =>
-    Promise.resolve({ data: new Blob(['x'], { type: 'application/octet-stream' }) })
+    Promise.resolve({
+      data: new (globalThis.Blob || global.Blob)(['x'], { type: 'application/octet-stream' })
+    })
   ),
   getTargetGroup: jest.fn(() => Promise.resolve({ data: { data: {} } })),
   getTargetUserCustomFieldsByCompanyId: jest.fn(() => Promise.resolve({ data: { data: [] } })),
