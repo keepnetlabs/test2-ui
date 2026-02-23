@@ -251,7 +251,7 @@ export default {
     },
     handleOnMultipleDelete() {},
     handleOnRecordButtonClick(row) {
-      if (row.total === 1) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Smishing Report',
           params: {
@@ -400,7 +400,7 @@ export default {
       this.isNoTargetUserGroupModalVisible = true
     },
     handleItemTableRecordButtonClick(row) {
-      if (row.total === 1) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Smishing Report',
           params: {

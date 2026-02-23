@@ -20,6 +20,21 @@ describe('CallbackScenarioPreview.vue methods', () => {
     expect(
       CallbackScenarioPreview.computed.getSubtitle.call({ selectedRow: { name: 'Scenario A' } })
     ).toBe('Scenario A')
+    expect(CallbackScenarioPreview.computed.getSubtitle.call({ selectedRow: {} })).toBe('')
+  })
+
+  it('created triggers data fetch and beforeDestroy clears timeout', () => {
+    const callForData = jest.fn()
+    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout').mockImplementation(() => {})
+    const createdCtx = { callForData }
+    const destroyCtx = { timeoutId: 99 }
+
+    CallbackScenarioPreview.created.call(createdCtx)
+    expect(callForData).toHaveBeenCalled()
+
+    CallbackScenarioPreview.beforeDestroy.call(destroyCtx)
+    expect(clearTimeoutSpy).toHaveBeenCalledWith(99)
+    clearTimeoutSpy.mockRestore()
   })
 
   it('setLoading toggles loading state', () => {
@@ -103,6 +118,57 @@ describe('CallbackScenarioPreview.vue methods', () => {
     expect(ctx.callbackTemplateParams.invalidDialingNotice).toEqual({ text: 'invalid' })
     expect(ctx.callbackTemplateParams.callGreeting).toEqual({ text: 'greeting' })
     expect(ctx.isTextToSpeechCompatible).toBe(true)
+    expect(ctx.isLoading).toBe(false)
+
+    setTimeoutSpy.mockRestore()
+  })
+
+  it('callForData handles missing attachment and non-compatible voice provider', async () => {
+    const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation((cb) => {
+      cb()
+      return 2
+    })
+    CallbackService.getCallbackScenarioPreview.mockResolvedValueOnce({
+      data: {
+        data: {
+          emailTemplate: {
+            template: '<html>mail-2</html>',
+            fromName: 'Keepnet 2',
+            fromAddress: 'test2@keepnet.com',
+            name: 'Email Name 2',
+            difficultyResourceId: 'unknown-id',
+            phishingFileName: null,
+            subject: 'Subject 2'
+          },
+          callbackTemplate: {
+            vishingLanguageResourceId: 'lang-2',
+            steps: [{ text: 'invalid2' }, { text: 'greeting2' }, { text: 'step-2' }]
+          }
+        }
+      }
+    })
+    const ctx = {
+      selectedRow: { resourceId: 'scenario-2' },
+      languages: [
+        { resourceId: 'lang-2', language: 'Turkish', name: 'Deniz', voiceProviderTypeId: 1 }
+      ],
+      setLoading: CallbackScenarioPreview.methods.setLoading,
+      isLoading: false,
+      emailTemplateParams: {},
+      callbackTemplateParams: {},
+      emailTemplate: null,
+      isTextToSpeechCompatible: true,
+      timeoutId: ''
+    }
+
+    CallbackScenarioPreview.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.emailTemplate).toBe('<html>mail-2</html>')
+    expect(ctx.emailTemplateParams.attachment).toBe(null)
+    expect(ctx.callbackTemplateParams.language).toBe('Turkish')
+    expect(ctx.callbackTemplateParams.voice).toBe('Deniz')
+    expect(ctx.isTextToSpeechCompatible).toBe(false)
     expect(ctx.isLoading).toBe(false)
 
     setTimeoutSpy.mockRestore()

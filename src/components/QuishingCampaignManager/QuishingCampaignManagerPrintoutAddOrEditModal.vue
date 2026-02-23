@@ -499,13 +499,13 @@ export default {
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
             scheduleTypeId: Number.parseInt(scheduleFormData.scheduleTypeId),
             scheduledDate:
-              scheduleFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : scheduleFormData.scheduledDate,
+              scheduleFormData?.scheduleTypeId?.toString() === SCHEDULE_TYPES.SCHEDULE_TO
+                ? scheduleFormData.scheduledDate
+                : null,
             scheduledDateTimeZoneId:
-              scheduleFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : scheduleFormData.scheduledDateTimeZoneId,
+              scheduleFormData?.scheduleTypeId?.toString() === SCHEDULE_TYPES.SCHEDULE_TO
+                ? scheduleFormData.scheduledDateTimeZoneId
+                : null,
             distributionTypeId: DISTRIBUTION_TYPES.QUISHING_INDIVIDUAL_PRINTOUT,
             distributionDelayEvery: 20,
             distributionDelayTimeTypeId: '1',

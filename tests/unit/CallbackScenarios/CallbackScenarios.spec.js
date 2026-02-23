@@ -45,6 +45,28 @@ describe('CallbackScenarios.vue methods', () => {
     expect(ctx.selectedRow).toBe(null)
   })
 
+  it('handleFastLaunch and handlePreview set selected rows and toggle dialogs', () => {
+    const toggleShowFastLaunch = jest.fn()
+    const toggleShowPreviewDialog = jest.fn()
+    const fastLaunchCtx = {
+      selectedRow: null,
+      toggleShowFastLaunch
+    }
+    const previewCtx = {
+      selectedPhishingScenario: {},
+      toggleShowPreviewDialog
+    }
+    const row = { resourceId: 's-10', name: 'Row' }
+
+    CallbackScenarios.methods.handleFastLaunch.call(fastLaunchCtx, row)
+    expect(fastLaunchCtx.selectedRow).toEqual(row)
+    expect(toggleShowFastLaunch).toHaveBeenCalled()
+
+    CallbackScenarios.methods.handlePreview.call(previewCtx, row)
+    expect(previewCtx.selectedPhishingScenario).toEqual(row)
+    expect(toggleShowPreviewDialog).toHaveBeenCalled()
+  })
+
   it('handleEdit sets modal/edit/duplicate flags and scenario id', () => {
     const row = { resourceId: 'sc-1', name: 'Scenario' }
     const ctx = {
@@ -87,6 +109,27 @@ describe('CallbackScenarios.vue methods', () => {
     expect(ctx.isEdit).toBe(false)
     expect(ctx.isDuplicate).toBe(false)
     expect(callForData).toHaveBeenCalled()
+  })
+
+  it('changeNewScenarioModalStatus keeps selected row when opening modal', () => {
+    const ctx = {
+      modalStatus: false,
+      selectedRow: { resourceId: 'sc-1' },
+      editableFormValues: { name: 'x' },
+      scenarioId: 'sc-1',
+      isEdit: true,
+      isDuplicate: true,
+      callForData: jest.fn()
+    }
+
+    CallbackScenarios.methods.changeNewScenarioModalStatus.call(ctx, true, false)
+
+    expect(ctx.modalStatus).toBe(true)
+    expect(ctx.selectedRow).toEqual({ resourceId: 'sc-1' })
+    expect(ctx.scenarioId).toBe(null)
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.callForData).not.toHaveBeenCalled()
   })
 
   it('callForData maps language names and updates server-side props', async () => {
@@ -144,6 +187,21 @@ describe('CallbackScenarios.vue methods', () => {
     expect(ctx.loading).toBe(false)
   })
 
+  it('callForData does nothing when search permission is missing', () => {
+    const ctx = {
+      loading: false,
+      getCallbackScenariosSearchPermissions: false,
+      axiosPayload: { filter: {} },
+      tableData: [{ resourceId: 'x' }]
+    }
+
+    CallbackScenarios.methods.callForData.call(ctx)
+
+    expect(CallbackService.searchCallbackScenarios).not.toHaveBeenCalled()
+    expect(ctx.loading).toBe(true)
+    expect(ctx.tableData).toEqual([{ resourceId: 'x' }])
+  })
+
   it('handleMultipleDelete prepares payload for selected rows mode', () => {
     const ctx = {
       isMultipleDelete: false,
@@ -184,6 +242,67 @@ describe('CallbackScenarios.vue methods', () => {
     expect(ctx.multipleScenariosPayload.items).toEqual([])
   })
 
+  it('handleActionDelete opens single delete modal with selected row', () => {
+    const row = { resourceId: 'row-1' }
+    const ctx = {
+      isMultipleDelete: true,
+      selectedScenario: {},
+      showDeleteModal: false
+    }
+
+    CallbackScenarios.methods.handleActionDelete.call(ctx, row)
+
+    expect(ctx.isMultipleDelete).toBe(false)
+    expect(ctx.selectedScenario).toEqual(row)
+    expect(ctx.showDeleteModal).toBe(true)
+  })
+
+  it('success delete handlers reset selection and trigger refresh', () => {
+    const resetSelectableParams = jest.fn()
+    const callForData = jest.fn()
+    const ctx = {
+      showDeleteModal: true,
+      callForData,
+      $refs: {
+        refScenariosList: {
+          resetSelectableParams
+        }
+      }
+    }
+
+    CallbackScenarios.methods.handleSuccessDeleteAction.call(ctx, {})
+    expect(resetSelectableParams).toHaveBeenCalled()
+    expect(ctx.showDeleteModal).toBe(false)
+    expect(callForData).toHaveBeenCalledTimes(1)
+
+    CallbackScenarios.methods.handleSuccessMultipleDeleteAction.call(ctx)
+    expect(resetSelectableParams).toHaveBeenCalledTimes(2)
+    expect(callForData).toHaveBeenCalledTimes(2)
+  })
+
+  it('close-check methods call child guards only when refs are available', () => {
+    const modalGuard = jest.fn()
+    const fastLaunchGuard = jest.fn()
+    const ctx = {
+      $refs: {
+        newScenarioModal: { changeNewScenarioModalStatus: modalGuard },
+        fastLaunch: { closeOverlay: fastLaunchGuard }
+      }
+    }
+    CallbackScenarios.methods.checkIfCanCLoseNewScenarioModal.call(ctx)
+    CallbackScenarios.methods.checkIfCanCloseFastLaunchModal.call(ctx)
+    expect(modalGuard).toHaveBeenCalled()
+    expect(fastLaunchGuard).toHaveBeenCalled()
+
+    const noRefCtx = { $refs: {} }
+    expect(() =>
+      CallbackScenarios.methods.checkIfCanCLoseNewScenarioModal.call(noRefCtx)
+    ).not.toThrow()
+    expect(() =>
+      CallbackScenarios.methods.checkIfCanCloseFastLaunchModal.call(noRefCtx)
+    ).not.toThrow()
+  })
+
   it('exportScenario creates downloadable file links for each export type', async () => {
     const blob = new Blob(['x'], { type: 'text/plain' })
     CallbackService.exportCallbackScenarios
@@ -219,6 +338,76 @@ describe('CallbackScenarios.vue methods', () => {
     )
     expect(window.URL.createObjectURL).toHaveBeenCalledWith(blob)
     expect(click).toHaveBeenCalledTimes(2)
+
+    createElementSpy.mockRestore()
+    window.URL.createObjectURL = originalCreateObjectURL
+  })
+
+  it('handleSuccessMultipleDeleteAction works safely when table ref is missing', () => {
+    const callForData = jest.fn()
+    const ctx = {
+      showDeleteModal: true,
+      callForData,
+      $refs: {}
+    }
+
+    expect(() =>
+      CallbackScenarios.methods.handleSuccessMultipleDeleteAction.call(ctx)
+    ).not.toThrow()
+    expect(ctx.showDeleteModal).toBe(false)
+    expect(callForData).toHaveBeenCalled()
+  })
+
+  it('changeNewScenarioModalStatus closes without restart and keeps editable state', () => {
+    const ctx = {
+      modalStatus: true,
+      selectedRow: { resourceId: 'sc-1' },
+      editableFormValues: { name: 'existing' },
+      scenarioId: 'sc-1',
+      isEdit: true,
+      isDuplicate: true,
+      callForData: jest.fn()
+    }
+
+    CallbackScenarios.methods.changeNewScenarioModalStatus.call(ctx, false, false)
+
+    expect(ctx.modalStatus).toBe(false)
+    expect(ctx.selectedRow).toBe(null)
+    expect(ctx.editableFormValues).toEqual({ name: 'existing' })
+    expect(ctx.scenarioId).toBe(null)
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.callForData).not.toHaveBeenCalled()
+  })
+
+  it('exportScenario keeps lower-case extension for non-xls types', async () => {
+    const blob = new Blob(['x'], { type: 'text/plain' })
+    CallbackService.exportCallbackScenarios.mockResolvedValueOnce({ data: blob })
+
+    const link = { click: jest.fn(), href: '', download: '' }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    const originalCreateObjectURL = window.URL.createObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'blob:url')
+
+    const ctx = { axiosPayload: { filter: {} } }
+    CallbackScenarios.methods.exportScenario.call(ctx, {
+      exportTypes: ['PDF'],
+      reportAllPages: false,
+      pageNumber: 2,
+      pageSize: 50
+    })
+    await flushPromises()
+
+    expect(link.download).toBe('Callback-Scenarios.pdf')
+    expect(link.click).toHaveBeenCalled()
+    expect(CallbackService.exportCallbackScenarios).toHaveBeenCalledWith(
+      expect.objectContaining({
+        exportType: 'PDF',
+        pageNumber: 2,
+        pageSize: 50,
+        reportAllPages: false
+      })
+    )
 
     createElementSpy.mockRestore()
     window.URL.createObjectURL = originalCreateObjectURL

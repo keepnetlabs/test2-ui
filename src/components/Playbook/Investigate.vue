@@ -140,7 +140,7 @@
             :rules="[(v) => v.length > 0 || 'Required']"
             required
             outlined
-            autocomplete="disabled"
+            autocomplete="off"
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
             hide-details
             :no-data-text="isTargetUsersLoading ? 'Loading...' : 'No user group available'"

@@ -118,7 +118,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewPosterContent : labels.EditPosterContent
+      return this.isEdit ? labels.EditPosterContent : labels.CreateNewPosterContent
     }
   },
   created() {

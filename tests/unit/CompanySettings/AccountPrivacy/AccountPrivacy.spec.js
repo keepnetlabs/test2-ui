@@ -10,7 +10,7 @@ jest.mock('@/api/company', () => ({
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('AccountPrivacy.vue', () => {
-  const createWrapper = () =>
+  const createWrapper = (selectedTimeZone = 'UTC', dispatchMock = jest.fn(() => Promise.resolve())) =>
     shallowMount(AccountPrivacy, {
       stubs: {
         CompanySettingsHeader: true,
@@ -24,9 +24,9 @@ describe('AccountPrivacy.vue', () => {
       mocks: {
         $store: {
           getters: {
-            'common/getSelectedTimeZoneName': 'UTC'
+            'common/getSelectedTimeZoneName': selectedTimeZone
           },
-          dispatch: jest.fn(() => Promise.resolve())
+          dispatch: dispatchMock
         }
       }
     })
@@ -103,5 +103,62 @@ describe('AccountPrivacy.vue', () => {
     localStorage.setItem('selectedCompanyRequestId', '2')
     wrapper = createWrapper()
     expect(wrapper.vm.isReturnMainAccountVisible).toBe(true)
+  })
+
+  it('created requests settings when selected timezone is missing', async () => {
+    const dispatch = jest.fn(() => Promise.resolve())
+    createWrapper('', dispatch)
+    await flushPromises()
+    expect(dispatch).toHaveBeenCalledWith('common/callForSettings')
+  })
+
+  it('setAccessTextAndIcon handles continuous access branch', () => {
+    const ctx = {
+      privacyDurationId: PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY,
+      accessIcon: '',
+      accessText: ''
+    }
+    AccountPrivacy.methods.setAccessTextAndIcon.call(ctx)
+
+    expect(ctx.accessIcon).toBe('mdi-lock-open-outline')
+    expect(ctx.accessText).toContain('continuous access')
+  })
+
+  it('toggleShowAccountPrivacyDialog toggles and refreshes when forceUpdate is true', () => {
+    const callForData = jest.fn()
+    const ctx = {
+      isShowAccountPrivacyDialog: false,
+      callForData
+    }
+
+    AccountPrivacy.methods.toggleShowAccountPrivacyDialog.call(ctx, true)
+    expect(callForData).toHaveBeenCalled()
+    expect(ctx.isShowAccountPrivacyDialog).toBe(true)
+
+    AccountPrivacy.methods.toggleShowAccountPrivacyDialog.call(ctx, false)
+    expect(ctx.isShowAccountPrivacyDialog).toBe(false)
+  })
+
+  it('callForData falls back to defaults when response is empty', async () => {
+    getCompanyPrivacy.mockResolvedValueOnce({})
+    const ctx = {
+      setLoading: jest.fn(),
+      privacyDurationId: 999,
+      privacyDurationStartTime: 'x',
+      privacyDurationEndTime: 'y',
+      confirmedPrivacyDurationId: 999,
+      isConfirmed: false,
+      setAccessTextAndIcon: jest.fn()
+    }
+
+    AccountPrivacy.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.privacyDurationId).toBe(PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY)
+    expect(ctx.privacyDurationStartTime).toBe('')
+    expect(ctx.privacyDurationEndTime).toBe('')
+    expect(ctx.confirmedPrivacyDurationId).toBe(PRIVACY_DURATIONS.ACCESS_CONTINUOUSLY)
+    expect(ctx.isConfirmed).toBe(true)
+    expect(ctx.setAccessTextAndIcon).toHaveBeenCalled()
   })
 })

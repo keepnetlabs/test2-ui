@@ -54,7 +54,7 @@
             <TheRecordsButton
               label="recurrence"
               plural-label="recurrences"
-              single-label="View Report"
+              :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
               zero-label="No Recurrence"
               width="150px"
               variant="primary"
@@ -396,7 +396,7 @@ export default {
           (response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `Campaign-Manager-Instance.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
@@ -502,7 +502,7 @@ export default {
         row.instanceGroup
       ).then((response) => {
         const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(response.data)
+        link.href = globalThis.URL.createObjectURL(response.data)
         link.download = `Quishing Campaign - ${this.item.name} - ${row.startDate}.pdf`
         link.click()
         this.$set(row, 'isDownloading', false)

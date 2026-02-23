@@ -344,7 +344,7 @@ export default {
           this.spinnerStatus = false
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `DiagnosticTool.msi`
           link.click()
         })

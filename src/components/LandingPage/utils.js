@@ -154,11 +154,13 @@ export function processTemplateWithCustomScripts(templateString) {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = templateString
 
-  // Find all script elements with data-custom-landing-page-script attribute
-  const customScripts = tempDiv.querySelectorAll('script[data-custom-landing-page-script="true"]')
+  // Find all script elements marked as custom landing page scripts.
+  const customScripts = Array.from(
+    tempDiv.querySelectorAll('script[data-custom-landing-page-script]')
+  )
 
   // Extract custom scripts
-  const extractedScripts = Array.from(customScripts).map((script) => {
+  const extractedScripts = customScripts.map((script) => {
     return {
       src: script.src || null,
       type: script.type || null,
@@ -169,8 +171,12 @@ export function processTemplateWithCustomScripts(templateString) {
   const scriptsPlacement =
     customScripts[0]?.getAttribute('data-custom-landing-page-script-position') || 'body-start'
 
-  // Remove custom scripts from template
-  customScripts.forEach((script) => script.remove())
+  // Remove custom scripts from template. Use parentNode.removeChild for broad runtime compatibility.
+  customScripts.forEach((script) => {
+    if (script && script.parentNode) {
+      script.parentNode.removeChild(script)
+    }
+  })
   const cleanTemplate = tempDiv.innerHTML
 
   // Get custom scripts content

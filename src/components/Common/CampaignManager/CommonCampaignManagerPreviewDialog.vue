@@ -38,7 +38,7 @@
           style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
         >
           <div>
-            <span class="text-primary-color fs-5 fw-600">{{ selectedRow?.name }}</span>
+            <span class="text-primary-color fs-5 fw-600">{{ getSubtitle }}</span>
           </div>
           <div class="d-flex align-center gap-2">
             <VTooltip bottom>

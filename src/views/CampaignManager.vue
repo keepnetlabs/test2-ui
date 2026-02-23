@@ -284,7 +284,7 @@ export default {
         });
     },
     handleOnRecordButtonClick(row) {
-      if (row.total === 1) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Campaign Report',
           params: {
@@ -302,7 +302,7 @@ export default {
       this.toggleItemTableShowing();
     },
     handleItemTableRecordButtonClick(row) {
-      if (row.total === 1) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Campaign Report',
           params: {

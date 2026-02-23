@@ -1025,7 +1025,6 @@ export default {
         // Eğer bulunamazsa, languages[0]'ı kullan
         if (!mainLanguage && languagesPayload.length > 0) {
           mainLanguage = languagesPayload[0];
-          mainLanguageIndex = 0;
         }
 
         // Ana dili formValues'e ata

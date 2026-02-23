@@ -530,7 +530,7 @@ export default {
         return labels.InvalidURL
       }
       return value
-        ? /[(w{}.)?A-Z0-9@:%_+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_+.~#?&/=]*)/gi.test(value) ||
+        ? /[(w{}.)?A-Z0-9@:%_+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_+.~#?&=\/]*)/gi.test(value) ||
             labels.InvalidURL
         : true
     },

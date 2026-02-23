@@ -672,9 +672,9 @@ export default {
         }
         this.saveDisable = true
         const payload = this.createFormDataPayload(formData)
-        const promise = !this.isEdit
-          ? createSamlSetting(payload)
-          : updateSamlSetting(payload, this.resourceId)
+        const promise = this.isEdit
+          ? updateSamlSetting(payload, this.resourceId)
+          : createSamlSetting(payload)
         promise
           .then(() => {
             this.$emit('on-success')

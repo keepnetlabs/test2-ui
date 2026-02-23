@@ -232,7 +232,7 @@ export default {
         const { data: { data = {} } = {} } = response
         this.connectionUrl = `https://login.microsoftonline.com/common/adminconsent?client_id=${
           data.applicationId
-        }&redirect_uri=${data.redirectUri ? data.redirectUri : window.location.href}`
+        }&redirect_uri=${data.redirectUri ? data.redirectUri : globalThis.location.href}`
       })
     },
     handleClose(forceUpdate = false) {

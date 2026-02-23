@@ -422,7 +422,7 @@ export default {
       this.isDelegatedLevelAuthorizing = true
       this.handleConnectAccount()
         .then((link) => {
-          window.location.href = link
+          globalThis.location.href = link
         })
         .finally(() => {
           this.closeDelegatedLevelAuthorizationDialog()
@@ -435,7 +435,7 @@ export default {
         .then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `GoogleWorkspaceAddIn.zip`
           link.click()
         })
@@ -459,7 +459,7 @@ export default {
         .then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Microsoft365PhishingReporterAddin.xml`
           link.click()
         })
@@ -473,7 +473,7 @@ export default {
         .then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `MicrosoftPhishingReporterRibbon.xml`
           link.click()
         })
@@ -488,7 +488,7 @@ export default {
           this.clearOutlookAddInTimeout()
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `OutlookPhishingReporter.msi`
           link.click()
         })
@@ -517,7 +517,7 @@ export default {
           this.clearDiagnosticToolTimeout()
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `DiagnosticTool.msi`
           link.click()
         })
@@ -553,7 +553,7 @@ export default {
         } = response
         return `https://login.microsoftonline.com/common/adminconsent?client_id=${
           data.applicationId
-        }&redirect_uri=${data.redirectUri ? data.redirectUri : window.location.href}`
+        }&redirect_uri=${data.redirectUri ? data.redirectUri : globalThis.location.href}`
       })
     },
     handleConnectApplicationLevelAccount() {
@@ -583,7 +583,7 @@ export default {
       this.isApplicationLevelAuthorizing = true
       this.handleConnectApplicationLevelAccount()
         .then((link) => {
-          window.location.href = link
+          globalThis.location.href = link
         })
         .finally(() => {
           this.closeApplicationLevelDialog()

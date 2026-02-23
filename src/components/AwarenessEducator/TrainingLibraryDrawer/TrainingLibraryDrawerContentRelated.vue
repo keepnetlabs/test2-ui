@@ -186,6 +186,13 @@ export default {
 
       this.isLoading = true
 
+      let trainingType = this.type
+      if (this.type === TRAINING_LIBRARY_TYPES.TRAINING) {
+        trainingType = 'SCORM'
+      } else if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) {
+        trainingType = 'LearningPath'
+      }
+
       const payload = {
         pageNumber: 1,
         pageSize: 4, // 4 çek, birini filtrele, 3 kalsın
@@ -208,12 +215,7 @@ export default {
           ]
         },
         trainingSearchType: 1,
-        trainingType:
-          this.type === TRAINING_LIBRARY_TYPES.TRAINING
-            ? 'SCORM'
-            : this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH
-            ? 'LearningPath'
-            : this.type
+        trainingType
       }
 
       AwarenessEducatorService.searchTraining(payload)

@@ -755,9 +755,7 @@ export default {
             mfa
           } = data?.scenarioStats || {}
           let pieData = []
-          pieData.push(noResponseEmail)
-          pieData.push(openedEmail)
-          pieData.push(reportedEmail)
+          pieData.push(noResponseEmail, openedEmail, reportedEmail)
           if (this.methodTypeId !== 3) pieData.push(clickedEmail)
           if (this.campaignMethod === 'Data Submission') pieData.push(submittedEmail)
           if (this.methodTypeId === 3) pieData.push(attachmentOpenedEmail)

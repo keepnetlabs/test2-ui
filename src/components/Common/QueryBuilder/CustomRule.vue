@@ -335,13 +335,15 @@ export default {
             this.validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320))
         ]
         if (operator !== 'Contains' && operator !== 'DoesNotContain') {
-          emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
-          emailValidationArray.push((v) => {
-            if (this.validations.email(v)) {
-              return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+          emailValidationArray.push(
+            (v) => this.validations.mail(v, labels.InvalidEmailAddress),
+            (v) => {
+              if (this.validations.email(v)) {
+                return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+              }
+              return false
             }
-            return false
-          })
+          )
         }
         return emailValidationArray
       }

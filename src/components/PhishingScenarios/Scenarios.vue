@@ -93,7 +93,7 @@
         <LanguagesColumn
           v-if="scope.column.property === 'languageTypeName'"
           :value="scope.row.languageTypeName"
-          :preferred-language-types="scenarioDetailsLookup?.preferredLanguageTypes || []"
+          :preferred-language-types="preferredLanguageTypes"
         />
       </template>
       <template #datatable-row-actions="{ scope }">
@@ -334,6 +334,11 @@ export default {
     ...mapGetters({
       getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
     }),
+    preferredLanguageTypes() {
+      return this.scenarioDetailsLookup && this.scenarioDetailsLookup.preferredLanguageTypes
+        ? this.scenarioDetailsLookup.preferredLanguageTypes
+        : []
+    },
     isAttachmentBasedScenario() {
       return this.selectedRow?.method === 'Attachment' || undefined
     }
@@ -551,7 +556,7 @@ export default {
         exportScenarios(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Scenarios.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`

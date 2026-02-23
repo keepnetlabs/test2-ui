@@ -50,7 +50,7 @@ export default {
         return `${indent}(${
           indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
         }) synced users cannot be deleted`
-      return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
+      return this.getDisabledStatusOfAction ? 'No Permission' : this.name
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

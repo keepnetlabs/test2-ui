@@ -36,7 +36,7 @@ export default {
       getTargetGroupsDeleteUsersPermissions: 'permissions/getTargetGroupsDeleteUsersPermissions'
     }),
     getTooltipMessage() {
-      return !this.getDisabledStatusOfAction ? 'Remove from group' : 'No Permission'
+      return this.getDisabledStatusOfAction ? 'No Permission' : 'Remove from group'
     },
     getDisabledStatusOfAction() {
       return !this.isGroupEditable || !this.getTargetGroupsDeleteUsersPermissions

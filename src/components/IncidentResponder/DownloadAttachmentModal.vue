@@ -97,7 +97,7 @@ export default {
         if (response?.data && response?.data instanceof Blob) {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `attachment-${this.attachment.name}.zip`
           link.click()
           this.$emit('changeDownloadModalStatus', false)

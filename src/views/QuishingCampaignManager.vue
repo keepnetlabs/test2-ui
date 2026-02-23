@@ -257,7 +257,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnRecordButtonClick(row) {
-      if (row.total === 1) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Quishing Report',
           params: {
@@ -350,7 +350,7 @@ export default {
       this.isItemTableShowing = !this.isItemTableShowing
     },
     handleItemTableRecordButtonClick(row) {
-      if (row.total === 1) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Quishing Report',
           params: {

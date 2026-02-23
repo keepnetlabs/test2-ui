@@ -932,7 +932,7 @@ export default {
             ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
             : this.$store.state.auth.logoUrl || ''
         if (!logo) logo = this?.$store?.state?.whitelabel?.mainLogoUrl || ''
-        return html.replace(/\{COMPANYLOGO\}/g, logo)
+        return html.replaceAll('{COMPANYLOGO}', logo)
       }
       return html
     },
@@ -1691,7 +1691,7 @@ export default {
         // Add main language content
         if (landingPage.languageTypeResourceId && landingPage.content) {
           pageLanguages[landingPage.languageTypeResourceId] = landingPage.content
-          if (!languages.find((lang) => lang.value === landingPage.languageTypeResourceId)) {
+          if (!languages.some((lang) => lang.value === landingPage.languageTypeResourceId)) {
             const lang = this.languages.find(
               (l) =>
                 l.value === landingPage.languageTypeResourceId ||

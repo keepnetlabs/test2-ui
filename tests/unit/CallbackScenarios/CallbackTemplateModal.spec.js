@@ -194,6 +194,61 @@ describe('CallbackTemplateModal.vue', () => {
     expect(ctx.fileUploadErrorText).toBe('')
   })
 
+  it('supports helper methods for audio/language/input type and back navigation', () => {
+    const ctx = {
+      step: 2,
+      isPlayAudioClicked: false,
+      selectedCallbackVoice: 'Amy',
+      formValues: {
+        dialingNoticeStepInputType: 'TextToSpeech',
+        dialingNoticeStepInputText: 'hello',
+        dialingNoticeStepInputUrl: 'https://x',
+        dialingNoticeStepContent: { name: 'a.mp3' }
+      }
+    }
+
+    CallbackTemplateModal.methods.handlePlayAudio.call(ctx)
+    expect(ctx.isPlayAudioClicked).toBe(true)
+
+    CallbackTemplateModal.methods.onCallbackLanguageChange.call(ctx)
+    expect(ctx.selectedCallbackVoice).toBe('')
+
+    CallbackTemplateModal.methods.onDialingNoticeInputTypeChange.call(ctx, 'TextToSpeech')
+    expect(ctx.formValues.dialingNoticeStepInputUrl).toBeNull()
+    expect(ctx.formValues.dialingNoticeStepContent).toBeNull()
+
+    ctx.formValues.dialingNoticeStepInputText = 'hello'
+    CallbackTemplateModal.methods.onDialingNoticeInputTypeChange.call(ctx, 'FileUpload')
+    expect(ctx.formValues.dialingNoticeStepInputText).toBeNull()
+
+    CallbackTemplateModal.methods.backStep.call(ctx)
+    expect(ctx.step).toBe(1)
+  })
+
+  it('input type and difficulty mappers return expected numeric values', () => {
+    expect(CallbackTemplateModal.methods.getInputTypeValue('TextToSpeech')).toBe(1)
+    expect(CallbackTemplateModal.methods.getInputTypeValue('FileUpload')).toBe(2)
+    expect(CallbackTemplateModal.methods.getInputTypeValue('Pause')).toBe(3)
+    expect(CallbackTemplateModal.methods.getInputTypeValue('Unknown')).toBe(1)
+
+    expect(CallbackTemplateModal.methods.getDifficultyValue('Easy')).toBe(1)
+    expect(CallbackTemplateModal.methods.getDifficultyValue('Medium')).toBe(2)
+    expect(CallbackTemplateModal.methods.getDifficultyValue('Hard')).toBe(3)
+    expect(CallbackTemplateModal.methods.getDifficultyValue('Unknown')).toBe(1)
+  })
+
+  it('onClearFile clears dialing notice file fields', () => {
+    const ctx = {
+      formValues: {
+        dialingNoticeStepContent: { name: 'x.mp3' },
+        dialingNoticeStepInputUrl: 'https://x'
+      }
+    }
+    CallbackTemplateModal.methods.onClearFile.call(ctx)
+    expect(ctx.formValues.dialingNoticeStepContent).toBeNull()
+    expect(ctx.formValues.dialingNoticeStepInputUrl).toBeNull()
+  })
+
   it('changeCallbackTemplateModalStatus emits directly when unchanged, dispatches when changed', () => {
     const emit = jest.fn()
     const dispatch = jest.fn((_, payload) => payload.callback())
@@ -432,5 +487,54 @@ describe('CallbackTemplateModal.vue', () => {
     expect(CallbackService.updateCallbackTemplate).toHaveBeenCalledWith('tpl-9', expect.any(FormData))
     expect(emit).toHaveBeenCalledWith('changeCallbackTemplateModalStatus', false, true)
     expect(ctx.isSubmitDisabled).toBe(false)
+  })
+
+  it('submit exits when step-2 form is invalid', async () => {
+    const ctx = {
+      isEdit: false,
+      isDuplicate: false,
+      isSubmitDisabled: false,
+      languageItems: [],
+      selectedCallbackLanguage: '',
+      selectedCallbackVoice: '',
+      formValues: {
+        name: 'Template',
+        description: '',
+        tags: [],
+        difficulty: 1,
+        availableForRequests: [],
+        dialingNoticeStepInputType: 'TextToSpeech',
+        dialingNoticeStepInputText: 'notice',
+        dialingNoticeStepContent: null,
+        dialingNoticeStepInputUrl: null,
+        callGreeting: {
+          inputType: 'TextToSpeech',
+          inputText: 'hello',
+          content: null,
+          duration: 0,
+          isVishingStep: false,
+          inputUrl: null
+        },
+        steps: [{ inputType: 'TextToSpeech', inputText: 'step', inputDigit: 1, isVishingStep: true }]
+      },
+      getVoiceResourceId: '',
+      getInputTypeValue: CallbackTemplateModal.methods.getInputTypeValue,
+      validateFailStep: jest.fn(() => true),
+      validateSteps: jest.fn(() => false),
+      $refs: {
+        refFormStep2: {
+          validate: jest.fn(() => false),
+          $el: { querySelector: jest.fn(() => 'message-el') }
+        }
+      },
+      $store: { dispatch: jest.fn() },
+      $emit: jest.fn()
+    }
+
+    CallbackTemplateModal.methods.submit.call(ctx)
+    await flushPromises()
+    expect(scrollToComponent).toHaveBeenCalledWith('message-el')
+    expect(ctx.isSubmitDisabled).toBe(false)
+    expect(CallbackService.createCallbackTemplate).not.toHaveBeenCalled()
   })
 })

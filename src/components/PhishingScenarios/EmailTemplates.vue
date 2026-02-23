@@ -89,7 +89,7 @@
         <LanguagesColumn
           v-else-if="scope.column.property === 'languageTypeName'"
           :value="scope.row.languageTypeName"
-          :preferred-language-types="scenarioDetailsLookup?.preferredLanguageTypes || []"
+          :preferred-language-types="preferredLanguageTypes"
         />
         <span v-else-if="scope.column.property === 'isAssistedByAI'">
           {{ scope.row.isAssistedByAI ? 'AI Ally' : 'Manual' }}
@@ -404,7 +404,12 @@ export default {
   computed: {
     ...mapGetters({
       getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
-    })
+    }),
+    preferredLanguageTypes() {
+      return this.scenarioDetailsLookup && this.scenarioDetailsLookup.preferredLanguageTypes
+        ? this.scenarioDetailsLookup.preferredLanguageTypes
+        : []
+    }
   },
   mounted() {
     this.callForLanguages('refEmailTemplatesList')
@@ -525,7 +530,7 @@ export default {
         exportEmailTemplates(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `EmailTemplates.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`

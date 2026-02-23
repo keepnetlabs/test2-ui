@@ -51,7 +51,7 @@ export default {
           indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName
         }) synced groups cannot be deleted`
       }
-      return !this.getDisabledStatusOfAction ? 'Delete' : 'No Permission'
+      return this.getDisabledStatusOfAction ? 'No Permission' : 'Delete'
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

@@ -571,8 +571,6 @@ export default {
     handleEditFromPreview() {
       if (this.selectedItem) {
         this.toggleNotificationPreviewDialog()
-        // Set selectedItem before toggling, so it's not cleared
-        const itemToEdit = this.selectedItem
         this.toggleNewNotificationTemplate(false) // Don't clear selectedItem
         this.isDuplicate = false
         this.editItemsDisabled = false

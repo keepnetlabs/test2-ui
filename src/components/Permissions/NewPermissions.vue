@@ -299,7 +299,9 @@ export default {
           const availableForListFromBackend = this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
             this.permissionEditData.availableForList
           )
-          if (!availableForListFromBackend.length) {
+          if (availableForListFromBackend.length) {
+            this.availableForRequests = availableForListFromBackend
+          } else {
             this.availableForRequests = [
               {
                 id: 'MyCompanyOnly',
@@ -308,8 +310,6 @@ export default {
                 resourceId: null
               }
             ]
-          } else {
-            this.availableForRequests = availableForListFromBackend
           }
         } else {
           this.availableForRequests = [

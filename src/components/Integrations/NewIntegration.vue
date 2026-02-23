@@ -1929,7 +1929,7 @@ export default {
         }
       } else if (name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
         if (this.formValues) {
-          this.formValues.apiUrl = window.location.origin
+          this.formValues.apiUrl = globalThis.location.origin
           this.formValues.apiKey = ''
           this.formValues.password = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])

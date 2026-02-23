@@ -287,7 +287,7 @@ export default {
           (response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Clicked-Emails.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
