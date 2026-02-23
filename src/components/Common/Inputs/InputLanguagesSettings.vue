@@ -635,7 +635,7 @@ export default {
     },
     isRemovingLastLocalized(languageId) {
       const translatedIds = new Set(
-        (this.translatedLanguageResourceIds || []).map((id) => String(id))
+        (this.translatedLanguageResourceIds || []).map(String)
       )
       const currentId = String(languageId)
       const remainingCount = [...translatedIds].filter((id) => id !== currentId).length

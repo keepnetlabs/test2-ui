@@ -33,5 +33,11 @@ describe('CallbackCampaignManager/NoScenarioModal.vue', () => {
     expect(wrapper.emitted('on-close')).toBeTruthy()
     expect(wrapper.emitted('on-confirm')).toBeTruthy()
   })
+
+  it('has boolean status prop definition and keeps default status true in mount helper', () => {
+    expect(NoScenarioModal.props.status.type).toBe(Boolean)
+    const wrapper = mountComponent()
+    expect(wrapper.vm.status).toBe(true)
+  })
 })
 

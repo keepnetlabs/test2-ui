@@ -36,6 +36,7 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(m.getFileNameFromDisposition('attachment; filename="report.csv"')).toBe('report.csv')
     expect(m.getFileNameFromDisposition('attachment; filename=plain.txt')).toBe('plain.txt')
     expect(m.getFileNameFromDisposition('')).toBe('')
+    expect(m.getFileNameFromDisposition('attachment')).toBe('')
   })
 
   it('getExtensionFromType maps known and generic mime types', () => {
@@ -48,6 +49,7 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(m.getExtensionFromType('video/custom')).toBe('.custom')
     expect(m.getExtensionFromType('application/x-custom')).toBe('.x-custom')
     expect(m.getExtensionFromType('')).toBe('')
+    expect(m.getExtensionFromType('invalid-type')).toBe('')
   })
 
   it('handleDownload sets error state when required query params are missing', async () => {
@@ -202,6 +204,25 @@ describe('TrainingsDownloadContent.vue', () => {
     closeSpy.mockRestore()
   })
 
+  it('handleCloseTab returns false when tab is not closable', () => {
+    const closeSpy = jest.spyOn(window, 'close').mockImplementation(() => {})
+    const originalOpener = window.opener
+    const originalHistory = window.history
+
+    Object.defineProperty(window, 'history', {
+      value: { length: 2 },
+      configurable: true
+    })
+    Object.defineProperty(window, 'opener', { value: null, configurable: true })
+
+    expect(TrainingsDownloadContent.methods.handleCloseTab()).toBe(false)
+    expect(closeSpy).not.toHaveBeenCalled()
+
+    Object.defineProperty(window, 'opener', { value: originalOpener, configurable: true })
+    Object.defineProperty(window, 'history', { value: originalHistory, configurable: true })
+    closeSpy.mockRestore()
+  })
+
   it('triggerDownload uses msSaveOrOpenBlob when available', () => {
     const originalNavigator = window.navigator
     const msSaveOrOpenBlob = jest.fn()
@@ -229,10 +250,9 @@ describe('TrainingsDownloadContent.vue', () => {
     }
 
     const appendChildSpy = jest.spyOn(document.body, 'appendChild')
-
     const link = document.createElement('a')
-    const clickSpy = jest.spyOn(link, 'click').mockImplementation(() => {})
-    const removeSpy = jest.spyOn(link, 'remove').mockImplementation(() => {})
+    const clickSpy = jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+    const removeSpy = jest.spyOn(Element.prototype, 'remove').mockImplementation(() => {})
     const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
 
     TrainingsDownloadContent.methods.triggerDownload(new Blob(['x']), 'b.pdf')
@@ -241,6 +261,7 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(appendChildSpy).toHaveBeenCalledWith(link)
     expect(clickSpy).toHaveBeenCalled()
     expect(removeSpy).toHaveBeenCalled()
+    expect(link.getAttribute('download')).toBe('b.pdf')
     expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test')
 
     Object.defineProperty(window, 'navigator', { value: originalNavigator, configurable: true })

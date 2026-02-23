@@ -197,7 +197,7 @@ export default {
     },
     mockApiRequest(payload) {
       return new Promise((resolve) => {
-        window.setTimeout(() => {
+        globalThis.setTimeout(() => {
           resolve(payload);
         }, 350);
       });

@@ -120,6 +120,20 @@ describe('AddCompaniesToCompanyGroup.vue', () => {
     expect(wrapper.vm.saveDisable).toBe(false)
   })
 
+  it('confirm sends empty company array when no selection exists', async () => {
+    const wrapper = createWrapper({ selectedGroup: { resourceId: 'g-1', name: 'Group 1' } })
+    wrapper.vm.selectedArray = []
+
+    wrapper.vm.confirm()
+    await flushPromises()
+
+    expect(addCompanyToCompanyGroup).toHaveBeenCalledWith('g-1', {
+      companyResourceIdArray: []
+    })
+    expect(wrapper.emitted('close-overlay-with-update')).toBeTruthy()
+    expect(wrapper.vm.saveDisable).toBe(false)
+  })
+
   it('closeOverlay emits close-overlay', () => {
     const wrapper = createWrapper()
     wrapper.vm.closeOverlay()
@@ -175,5 +189,86 @@ describe('AddCompaniesToCompanyGroup.vue', () => {
     expect(wrapper.vm.$router.go).toHaveBeenCalledWith(0)
     expect(localStorage.getItem('companyId')).toBe('c-55')
     expect(localStorage.getItem('selectedCompanyName')).toBe('Switch Inc')
+  })
+
+  it('toggleConfigureNewCompanyModal toggles modal and resets created company id on close', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.callForData = jest.fn()
+    wrapper.vm.isShowConfigureCompanyModal = true
+    wrapper.vm.createdCompanyResourceIdForConfigureCompany = 'new-company-1'
+
+    wrapper.vm.toggleConfigureNewCompanyModal()
+    expect(wrapper.vm.callForData).toHaveBeenCalled()
+    expect(wrapper.vm.isShowConfigureCompanyModal).toBe(false)
+    expect(wrapper.vm.createdCompanyResourceIdForConfigureCompany).toBe('')
+
+    wrapper.vm.toggleConfigureNewCompanyModal()
+    expect(wrapper.vm.isShowConfigureCompanyModal).toBe(true)
+  })
+
+  it('toggleConfigureNewCompanyModal does not call refresh when opening from closed state', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.callForData = jest.fn()
+    wrapper.vm.isShowConfigureCompanyModal = false
+
+    wrapper.vm.toggleConfigureNewCompanyModal()
+
+    expect(wrapper.vm.callForData).not.toHaveBeenCalled()
+    expect(wrapper.vm.isShowConfigureCompanyModal).toBe(true)
+  })
+
+  it('isNumberOfUsersExceed and handleChangeIsSettingsOpen branches', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.isNumberOfUsersExceed({
+        isNumberOfUsersLimited: true,
+        targetUserCount: 11,
+        numberOfUsers: 10
+      })
+    ).toBe(true)
+    expect(
+      wrapper.vm.isNumberOfUsersExceed({
+        isNumberOfUsersLimited: true,
+        targetUserCount: 9,
+        numberOfUsers: 10
+      })
+    ).toBe(false)
+    expect(
+      wrapper.vm.isNumberOfUsersExceed({
+        isNumberOfUsersLimited: false,
+        targetUserCount: 100,
+        numberOfUsers: 1
+      })
+    ).toBe(false)
+
+    wrapper.vm.isShowExtended = true
+    wrapper.vm.handleChangeIsSettingsOpen(true)
+    expect(wrapper.vm.isShowExtended).toBe(false)
+  })
+
+  it('callForData handles lookup error and still turns loading off', async () => {
+    LookupLocalStorage.getMultiple.mockRejectedValueOnce(new Error('lookup error'))
+    searchCompanies.mockRejectedValueOnce(new Error('search error'))
+    const wrapper = createWrapper()
+    await flushPromises()
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.loading).toBe(false)
+  })
+
+  it('callForData sets empty table when response does not include results', async () => {
+    searchCompanies.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+    const wrapper = createWrapper()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.loading).toBe(false)
   })
 })

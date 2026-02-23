@@ -104,6 +104,11 @@ describe('CampaignManagerCallbackScenarios.vue', () => {
         emailTemplateParams: { name: 'Template X' }
       })
     ).toBe('Template X')
+    expect(
+      CampaignManagerCallbackScenarios.computed.getTemplateHeader.call({
+        emailTemplateParams: null
+      })
+    ).toBe('')
   })
 
   it('computed empty-message helpers switch text by filter/search state', () => {
@@ -243,6 +248,21 @@ describe('CampaignManagerCallbackScenarios.vue', () => {
     }
     CampaignManagerCallbackScenarios.methods.handleScroll.call(ctx, {
       target: { scrollTop: 90, scrollHeight: 100, offsetHeight: 10 }
+    })
+
+    expect(ctx.axiosPayload.pageSize).toBe(10)
+    expect(ctx.callForPhishingScenarios).not.toHaveBeenCalled()
+  })
+
+  it('handleScroll does not fetch when not near list end', () => {
+    const ctx = {
+      isShowSelectedScenarios: false,
+      axiosPayload: { pageSize: 10 },
+      debounce: (cb) => cb(),
+      callForPhishingScenarios: jest.fn()
+    }
+    CampaignManagerCallbackScenarios.methods.handleScroll.call(ctx, {
+      target: { scrollTop: 20, scrollHeight: 200, offsetHeight: 100 }
     })
 
     expect(ctx.axiosPayload.pageSize).toBe(10)
@@ -622,5 +642,48 @@ describe('CampaignManagerCallbackScenarios.vue', () => {
     expect(ctx.callbackTemplate.steps).toHaveLength(1)
     expect(ctx.isTextToSpeechCompatible).toBe(true)
     expect(ctx.tab).toBe('email')
+  })
+
+  it('callForSelectedPhishingScenario keeps existing list item and sets tts false for other providers', async () => {
+    CallbackService.getCallbackScenario.mockResolvedValueOnce({
+      data: { data: { resourceId: 'cb-2', name: 'Scenario 2' } }
+    })
+    CallbackService.getCallbackScenarioPreview.mockResolvedValueOnce({
+      data: {
+        data: {
+          callbackTemplate: {
+            vishingLanguageResourceId: 'lang-2',
+            voiceProviderTypeId: 1,
+            steps: [{ id: 's1' }, { id: 's2' }]
+          },
+          emailTemplate: {
+            template: '<html2 />',
+            name: 'Email 2',
+            subject: 'Subj 2'
+          }
+        }
+      }
+    })
+
+    const ctx = {
+      phishingScenarioItems: [{ resourceId: 'cb-2', name: 'Already Exists' }],
+      selectedTemplateResourceId: null,
+      languageItems: [{ resourceId: 'lang-2', language: 'Turkish', name: 'Ayse' }],
+      callbackTemplate: null,
+      emailTemplate: null,
+      emailTemplateParams: null,
+      tab: 'callbackTemplate',
+      isTextToSpeechCompatible: true
+    }
+
+    CampaignManagerCallbackScenarios.methods.callForSelectedPhishingScenario.call(ctx, 'cb-2')
+    await flushPromises()
+    await flushPromises()
+
+    expect(ctx.phishingScenarioItems).toHaveLength(1)
+    expect(ctx.callbackTemplate.language).toBe('Turkish')
+    expect(ctx.callbackTemplate.voice).toBe('Ayse')
+    expect(ctx.callbackTemplate.steps).toHaveLength(0)
+    expect(ctx.isTextToSpeechCompatible).toBe(false)
   })
 })

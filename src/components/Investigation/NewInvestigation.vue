@@ -304,14 +304,16 @@ export default {
         this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
         this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
       }
-      filterList.push(...this.getSelectedMailFromFilter())
-      filterList.push(...this.getSelectedMailSubjectFilter())
-      filterList.push(...this.getSelectedMailAttachmentFilter())
-      filterList.push(...this.getSelectedMailBccFilter())
-      filterList.push(...this.getSelectedMailCcFilter())
-      filterList.push(...this.getSelectedMailToFilter())
-      filterList.push(...this.getSelectedMailUrlFilter())
-      filterList.push(...this.getSelectedMailSenderIpFilter())
+      filterList.push(
+        ...this.getSelectedMailFromFilter(),
+        ...this.getSelectedMailSubjectFilter(),
+        ...this.getSelectedMailAttachmentFilter(),
+        ...this.getSelectedMailBccFilter(),
+        ...this.getSelectedMailCcFilter(),
+        ...this.getSelectedMailToFilter(),
+        ...this.getSelectedMailUrlFilter(),
+        ...this.getSelectedMailSenderIpFilter()
+      )
       this.setFormQuery(this?.selectedEmail?.logicalOperator ?? OPERATORS.AND, filterList)
     },
     setFormQuery(logicalOperator = OPERATORS.AND, children = []) {
@@ -326,14 +328,16 @@ export default {
       this.selectedMail.attachments.forEach((item) => {
         const attachmentCase = this.isTs ? !item.isHidden && item.isFlagged : true
         if (!attachmentCase) return
-        filterList.push({
-          query: { operand: 'md5', value: item.md5, rule: 'conditions' },
-          type: 'query-builder-rule'
-        })
-        filterList.push({
-          query: { operand: 'sha512', value: item.sha512, rule: 'conditions' },
-          type: 'query-builder-rule'
-        })
+        filterList.push(
+          {
+            query: { operand: 'md5', value: item.md5, rule: 'conditions' },
+            type: 'query-builder-rule'
+          },
+          {
+            query: { operand: 'sha512', value: item.sha512, rule: 'conditions' },
+            type: 'query-builder-rule'
+          }
+        )
       })
       return filterList
     },

@@ -213,7 +213,7 @@ export default {
         const departmentIndex = this.tableOptions.columns.findIndex(
           (column) => column.property === 'department'
         )
-        const insertIndex = groupIndex !== -1 ? groupIndex : departmentIndex
+        const insertIndex = groupIndex === -1 ? departmentIndex : groupIndex
         if (insertIndex !== -1) {
           this.tableOptions.columns.splice(insertIndex + 1, 0, ...fields)
         }
@@ -297,7 +297,7 @@ export default {
           (response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `Campaign-Report-Submitted-Data-Mfa.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`

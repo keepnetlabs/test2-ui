@@ -187,7 +187,7 @@ export default {
           rule: this.selectedRule.id,
           operator: this.selectedRule.operators[0].value || this.selectedRule.operators[0],
           operand:
-            typeof this.selectedRule.operands === 'undefined'
+            this.selectedRule.operands === undefined
               ? this.selectedRule.label
               : this.selectedRule.operands[0].value || this.selectedRule.operands[0],
           value: null
