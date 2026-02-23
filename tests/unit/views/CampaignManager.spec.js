@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils'
 import CampaignManager from '@/views/CampaignManager.vue'
+import { CAMPAIGN_TYPE } from '@/components/CampaignManager/utils'
 
 jest.mock('@/api/phishingsimulator', () => ({
   bulkDeleteCampaignReports: jest.fn(() => Promise.resolve()),
@@ -340,5 +341,138 @@ describe('CampaignManager.vue', () => {
 
     await wrapper.vm.handleOnDelete({ resourceId: 'not-called' })
     expect(deleteCampaignManager).not.toHaveBeenCalled()
+  })
+
+  it('navigates to campaign report from parent row when only one record exists', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1 })
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'Campaign Report',
+      params: { id: 'p-1', instanceGroup: 1 }
+    })
+    expect(wrapper.vm.isItemTableShowing).toBe(false)
+  })
+
+  it('navigates to campaign report from item row when only one record exists', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.setData({ selectedParentItem: { resourceId: 'parent-22' } })
+    wrapper.vm.handleItemTableRecordButtonClick({ total: 1, instanceGroup: 'ig-4' })
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'Campaign Report',
+      params: { id: 'parent-22', instanceGroup: 'ig-4' }
+    })
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(false)
+  })
+
+  it('resets launch id and selected row while closing launch/preview/delete dialogs', () => {
+    const wrapper = createWrapper()
+
+    wrapper.setData({ isShowLaunchDialog: true, launchResourceId: 'launch-1' })
+    wrapper.vm.toggleShowLaunchDialog()
+    expect(wrapper.vm.isShowLaunchDialog).toBe(false)
+    expect(wrapper.vm.launchResourceId).toBe('')
+
+    wrapper.setData({ isShowPreviewDialog: true, selectedRow: { id: 'preview-1' } })
+    wrapper.vm.toggleShowPreviewDialog()
+    expect(wrapper.vm.isShowPreviewDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toBe(null)
+
+    wrapper.setData({
+      isShowDeleteDialog: true,
+      selectedRow: { id: 'delete-1' },
+      multipleSystemUserPayload: { ids: ['a'] },
+      isMultipleDelete: true
+    })
+    wrapper.vm.toggleShowDeleteDialog()
+    expect(wrapper.vm.isShowDeleteDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toBe(null)
+    expect(wrapper.vm.multipleSystemUserPayload).toEqual({})
+    expect(wrapper.vm.isMultipleDelete).toBe(false)
+  })
+
+  it('computes target group defaults when campaign is missing', () => {
+    const wrapper = createWrapper()
+
+    wrapper.setData({ targetGroupsDialogCampaign: null })
+
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('')
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(CAMPAIGN_TYPE.Phishing)
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('')
+  })
+
+  it('refreshes parent table and closes add/edit modal on submit', () => {
+    const wrapper = createWrapper()
+    const parentCall = jest.fn()
+    wrapper.vm.$refs.campaignManagerParentTable = { callForData: parentCall }
+    wrapper.setData({
+      isShowAddOrEditCampaignManagerModal: true,
+      selectedRow: { id: 'row-1' },
+      isEdit: true,
+      isDuplicate: true
+    })
+
+    wrapper.vm.handleOnSubmit()
+
+    expect(parentCall).toHaveBeenCalled()
+    expect(wrapper.vm.isShowAddOrEditCampaignManagerModal).toBe(false)
+    expect(wrapper.vm.selectedRow).toBe(null)
+    expect(wrapper.vm.isEdit).toBe(false)
+    expect(wrapper.vm.isDuplicate).toBe(false)
   })
 })

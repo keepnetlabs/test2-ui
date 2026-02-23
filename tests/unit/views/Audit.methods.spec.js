@@ -1,17 +1,6 @@
 jest.mock('@/api/dashboard', () => ({
-  getAuditLogs: jest.fn(() =>
-    Promise.resolve({
-      data: {
-        data: {
-          results: [{ id: 1 }],
-          totalNumberOfRecords: 1,
-          totalNumberOfPages: 1,
-          pageNumber: 1
-        }
-      }
-    })
-  ),
-  exportAuditLog: jest.fn(() => Promise.resolve({ data: new Blob(['csv']) }))
+  getAuditLogs: jest.fn(),
+  exportAuditLog: jest.fn()
 }))
 
 jest.mock('@/utils/helperFunctions', () => ({
@@ -30,6 +19,17 @@ describe('Audit.vue methods', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    getAuditLogs.mockResolvedValue({
+      data: {
+        data: {
+          results: [{ id: 1 }],
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1
+        }
+      }
+    })
+    exportAuditLog.mockResolvedValue({ data: new Uint8Array([99, 115, 118]) })
   })
 
   it('serverSidePageNumberChanged updates page number and calls getDatatableList', () => {
