@@ -147,7 +147,7 @@ export default {
           ) {
             this.isAIAllySettingsEnabled = true
           }
-          this.initialAiAllySettings = JSON.parse(JSON.stringify(this.aiAllySettings))
+          this.initialAiAllySettings = structuredClone(this.aiAllySettings)
         })
         .finally(() => {
           this.isLoading = false
@@ -157,7 +157,7 @@ export default {
       this.isSaveDisabled = true
       saveAIAllySettings(this.aiAllySettings).finally(() => {
         this.isSaveDisabled = false
-        this.initialAiAllySettings = JSON.parse(JSON.stringify(this.aiAllySettings))
+        this.initialAiAllySettings = structuredClone(this.aiAllySettings)
       })
     }
   }

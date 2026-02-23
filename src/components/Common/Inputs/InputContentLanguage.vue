@@ -97,7 +97,7 @@ export default {
   },
   computed: {
     isAllSelected() {
-      return this.value.some((item) => item === labels.All)
+      return this.value.includes(labels.All)
     }
   },
   watch: {

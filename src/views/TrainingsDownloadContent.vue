@@ -176,8 +176,8 @@ export default {
       return ''
     },
     triggerDownload(blob, fileName) {
-      if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveOrOpenBlob(blob, fileName)
+      if (globalThis.navigator?.msSaveOrOpenBlob) {
+        globalThis.navigator.msSaveOrOpenBlob(blob, fileName)
         return
       }
 

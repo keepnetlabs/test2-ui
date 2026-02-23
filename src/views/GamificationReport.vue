@@ -180,8 +180,8 @@ export default {
       }
     ]
     if (
-      window.location.hostname.includes('localhost') ||
-      window.location.hostname.includes('test-ui.devkeepnet.com')
+      globalThis.location.hostname.includes('localhost') ||
+      globalThis.location.hostname.includes('test-ui.devkeepnet.com')
     ) {
       rowActions.push({
         name: 'Autonomous AI',
@@ -698,7 +698,7 @@ export default {
             ? options.sendAfterPhishingSimulation || false
             : false
       }
-      const isLocalhost = window.location.hostname.includes('localhost')
+      const isLocalhost = globalThis.location.hostname.includes('localhost')
       const url = isLocalhost
         ? 'http://localhost:4111/autonomous'
         : 'https://agentic-ai-agent.keepnetlabs.com/autonomous'

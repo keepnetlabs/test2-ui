@@ -307,7 +307,7 @@ export default {
         })
     },
     handleConnectAccount() {
-      window.location.href = this.connectionUrl
+      globalThis.location.href = this.connectionUrl
     },
     handleDomainFocus() {
       this.isShowDomainsLoader = this.isDomainsLoading

@@ -22,7 +22,7 @@
         </div>
       </div>
       <div
-        v-if="isShowEmailTemplate && formData.languages?.length > 0"
+        v-if="isShowEmailTemplate && hasLanguages"
         style="display: flex; justify-content: flex-start; padding: 12px 0; margin-left: 24px;"
       >
         <InputLanguagePreview
@@ -81,6 +81,9 @@ export default {
     }
   },
   computed: {
+    hasLanguages() {
+      return (this.formData && this.formData.languages && this.formData.languages.length) > 0
+    },
     isFormData() {
       return Object.keys(this.formData).length
     },

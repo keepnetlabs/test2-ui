@@ -1642,8 +1642,8 @@ export default {
     },
     isTestEnvironment() {
       return (
-        window.location.hostname.includes("test-ui.devkeepnet.com") ||
-        window.location.hostname.includes("localhost")
+        globalThis.location.hostname.includes("test-ui.devkeepnet.com") ||
+        globalThis.location.hostname.includes("localhost")
       );
     }
   },
@@ -1664,7 +1664,7 @@ export default {
     }
   },
   mounted() {
-    this.baseUrl = `${window.location.origin}`;
+    this.baseUrl = `${globalThis.location.origin}`;
     // Restore mini state from localStorage
     const savedMini = localStorage.getItem("navigationMiniState");
     if (savedMini !== null) {

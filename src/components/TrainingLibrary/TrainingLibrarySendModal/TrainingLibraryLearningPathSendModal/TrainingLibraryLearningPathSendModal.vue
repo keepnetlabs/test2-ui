@@ -252,10 +252,10 @@ export default {
       const enrollmentAutoEnroll = refSendTrainingSettings?.formData?.enrollmentAutoEnroll
       const deliveryMethod = refSendTrainingSettings?.formData?.deliveryMethod
       const isDeliveryMethodSMS = deliveryMethod === DELIVERY_METHODS.SMS
-      const preferredLanguageLabel = !refSendTrainingSettings?.formData
+      const preferredLanguageLabel = refSendTrainingSettings?.formData
         ?.sendTemplatesInPreferredLanguage
-        ? 'Company Language'
-        : 'Target Users Language'
+        ? 'Target Users Language'
+        : 'Company Language'
       if (isDeliveryMethodSMS) {
         formData.settings = {
           'Delivery Method': getDeliveryMethodLabel(deliveryMethod),
@@ -385,7 +385,7 @@ export default {
         } = response
         const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
         const languages = data.template.languages || []
-        const mainTemplate = data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+        const mainTemplate = data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
         if (data.template.languageTypeResourceId && data.template.languageTypeName) {
           languages.unshift({
@@ -398,7 +398,7 @@ export default {
         // Replace logo in other languages
         languages.forEach((lang) => {
           if (lang.template) {
-            lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+            lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
           }
         })
 
@@ -424,7 +424,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const certificateLanguages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             certificateLanguages.unshift({
@@ -437,7 +437,7 @@ export default {
           // Replace logo in other languages
           certificateLanguages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 
@@ -464,7 +464,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const enrollmentLanguages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             enrollmentLanguages.unshift({
@@ -477,7 +477,7 @@ export default {
           // Replace logo in other languages
           enrollmentLanguages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 

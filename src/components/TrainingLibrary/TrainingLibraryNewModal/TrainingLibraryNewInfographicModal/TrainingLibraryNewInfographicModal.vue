@@ -126,9 +126,9 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit
-        ? labels.CreateNewInfographic
-        : labels.EditInfographic;
+      return this.isEdit
+        ? labels.EditInfographic
+        : labels.CreateNewInfographic;
     }
   },
   created() {

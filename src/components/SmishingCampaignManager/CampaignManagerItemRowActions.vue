@@ -111,7 +111,7 @@ export default {
         this.actionStatus === ACTION_STATUSES.RUNNING ||
         this.actionStatus === ACTION_STATUSES.ERROR
       ) {
-        const copyOfRowActions = JSON.parse(JSON.stringify(rowActions))
+        const copyOfRowActions = structuredClone(rowActions)
         copyOfRowActions.splice(0, 1)
         copyOfRowActions.splice(0, 0, {
           name: labels.ViewReport,

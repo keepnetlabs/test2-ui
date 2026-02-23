@@ -154,7 +154,7 @@ export default {
   methods: {
     exportDownloadHistoryList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.payload.filter)),
+        structuredClone(this.payload.filter),
         this.$refs.refPhishingReporterDownloadHistory,
         'CreateTime'
       )

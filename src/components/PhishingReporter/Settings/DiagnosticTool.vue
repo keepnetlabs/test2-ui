@@ -293,7 +293,7 @@ export default {
         this.authenticationTypeId = 1
       }
     }
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.initialFormValues = structuredClone(this.formValues)
     this.$emit('getInitialFormValues', this.formValues)
   },
   methods: {

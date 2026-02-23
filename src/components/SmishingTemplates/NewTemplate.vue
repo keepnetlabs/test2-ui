@@ -706,7 +706,9 @@ export default {
                 this.formValues.template = enhancedData.rewritten_text
               }
             }
-          } catch (error) {}
+          } catch (error) {
+            console.error('Failed to parse enhanced smishing text:', error)
+          }
           this.isEnhanceDisabled = false
         })
         .catch(() => {

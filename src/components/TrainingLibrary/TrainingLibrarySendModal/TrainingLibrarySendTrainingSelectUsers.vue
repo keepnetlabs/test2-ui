@@ -304,7 +304,7 @@ export default {
     handleTableSelectionChange(items) {
       this.selectedTargetGroups = items
       this.formData.targetGroupResourceIds = items
-        .filter((item) => item)
+        .filter(Boolean)
         .map((item) => ({
           text: item.text || item.name,
           value: item.value || item.resourceId,

@@ -1079,16 +1079,18 @@ export default {
         });
         this.payload.orderBy = "";
       } else if (statusValues.length) {
-        clearedItems.push({
-          FieldName: "Status",
-          Value: statusValues.join(","),
-          Operator: "Include"
-        });
-        clearedItems.push({
-          FieldName: "IsDeleted",
-          Value: false,
-          Operator: "Contains"
-        });
+        clearedItems.push(
+          {
+            FieldName: "Status",
+            Value: statusValues.join(","),
+            Operator: "Include"
+          },
+          {
+            FieldName: "IsDeleted",
+            Value: false,
+            Operator: "Contains"
+          }
+        );
         this.payload.orderBy = "";
       } else if (!this.activeSummaryKeys.includes("monthly")) {
         this.payload.orderBy = this.defaultRequestBody.orderBy;
@@ -1495,11 +1497,12 @@ export default {
       );
       this.payload.filter.FilterGroups[0].FilterItems = normalized.andItems;
       this.payload.filter.FilterGroups[1].FilterItems = normalized.orItems;
-      const statusFilter = Array.isArray(filter)
-        ? filter.find((item) => item.FieldName === PROPERTY_STORE.STATUS)
-        : filter?.FieldName === PROPERTY_STORE.STATUS
-        ? filter
-        : null;
+      let statusFilter = null;
+      if (Array.isArray(filter)) {
+        statusFilter = filter.find((item) => item.FieldName === PROPERTY_STORE.STATUS);
+      } else if (filter?.FieldName === PROPERTY_STORE.STATUS) {
+        statusFilter = filter;
+      }
       if (statusFilter) {
         const nextKeys = this.getSummaryKeysFromStatusValue(statusFilter.Value);
         const hasMonthly = this.activeSummaryKeys.includes("monthly");
@@ -1928,7 +1931,7 @@ export default {
         exportTargetUsers(payload).then((response) => {
           const { data } = response;
           const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          link.href = globalThis.URL.createObjectURL(data);
           link.download = `Target Users.${
             exportType.toLocaleLowerCase() === "xls"
               ? "xlsx"

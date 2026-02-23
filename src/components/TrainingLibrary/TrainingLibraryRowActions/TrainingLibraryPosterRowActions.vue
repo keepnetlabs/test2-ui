@@ -18,14 +18,6 @@
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
       />
-      <!-- <DefaultMenuRowAction
-        :id="rowActions[2].id"
-        :scope="scope"
-        :disabled="rowActions[2].disabled"
-        :icon="rowActions[2].icon"
-        :text="rowActions[2].name"
-        @on-click="handleDownloadPoster(scope.row)"
-      /> -->
       <DefaultMenuRowAction
         :id="rowActions[2].id"
         :scope="scope"

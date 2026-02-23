@@ -124,7 +124,9 @@ export default {
                 ctx.fillStyle = '#383B41'
                 ctx.fillText(text, x, y)
                 ctx.font = `bold ${fontSize}px ${fontFamily}`
-                const offset = text === 'Enrollments' ? -5 : text === 'Completed' ? 0 : -2
+                let offset = -2
+                if (text === 'Enrollments') offset = -5
+                else if (text === 'Completed') offset = 0
                 ctx.fillText(percentage, x + ctx.measureText(text).width + offset, y + 0.5)
                 ctx.font = `${fontSize}px ${fontFamily}`
               }

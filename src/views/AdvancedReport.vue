@@ -43,7 +43,7 @@ export default {
             navContentPaneEnabled: false
           }
         }
-        this.report = window.powerbi.embed(this.$refs.reportContainer, config)
+        this.report = globalThis.powerbi.embed(this.$refs.reportContainer, config)
         this.report.on('loaded', () => {
           this.setLoading()
         })

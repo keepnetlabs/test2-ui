@@ -236,7 +236,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
+      if (this.axiosPayload.activityType === undefined) this.axiosPayload.activityType = 0
       QuishingService.searchCampaignJobUserEmailClicked(
         this.axiosPayload,
         this.id,

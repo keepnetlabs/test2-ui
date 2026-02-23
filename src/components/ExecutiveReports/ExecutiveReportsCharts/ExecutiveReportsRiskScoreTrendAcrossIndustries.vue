@@ -186,7 +186,7 @@ export default {
               },
               ticks: {
                 min: 0,
-                max: maxY > 100 ? maxY : 100,
+                max: Math.max(maxY, 100),
                 stepSize: maxY > 100 ? Math.ceil(maxY / 6 / 2) * 2 : 20,
                 labelOffset: 0,
                 fontColor: '#383B41',

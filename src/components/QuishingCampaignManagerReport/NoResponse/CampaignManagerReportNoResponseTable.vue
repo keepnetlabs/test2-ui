@@ -93,7 +93,14 @@ export default {
     const isQuishingTypePrintout = this.getQuishingTypePrintOut()
     const rowActions = []
     const columns = [COLUMNS.FIRST_NAME, COLUMNS.LAST_NAME, COLUMNS.EMAIL, COLUMNS.DEPARTMENT]
-    if (!isQuishingTypePrintout) {
+    if (isQuishingTypePrintout) {
+      columns.push({
+        ...COLUMNS.PHISHING_SCENARIO_NAME,
+        fixed: 'right',
+        width: 'auto',
+        minWidth: 'auto'
+      })
+    } else {
       rowActions.push({
         name: labels.Resend,
         id: 'btn-resend--row-actions-campaign-manager-report-no-response',
@@ -102,13 +109,6 @@ export default {
         disabled: false
       })
       columns.push(COLUMNS.PHISHING_SCENARIO_NAME, COLUMNS.EMAIL_SEND_DATE)
-    } else {
-      columns.push({
-        ...COLUMNS.PHISHING_SCENARIO_NAME,
-        fixed: 'right',
-        width: 'auto',
-        minWidth: 'auto'
-      })
     }
     return {
       CONSTANTS: {

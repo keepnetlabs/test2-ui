@@ -116,8 +116,8 @@ export default {
   },
   data() {
     const isTestEnvironment =
-      window.location.hostname.includes("test-ui.devkeepnet.com") ||
-      window.location.hostname.includes("localhost");
+      globalThis.location.hostname.includes("test-ui.devkeepnet.com") ||
+      globalThis.location.hostname.includes("localhost");
 
     return {
       isTestEnvironment,
@@ -937,7 +937,7 @@ export default {
       if (!this.isTestEnvironment) return;
 
       if (
-        !layoutArray.find((widget) => widget.key === "AgenticAIStatusWidget")
+        !layoutArray.some((widget) => widget.key === "AgenticAIStatusWidget")
       ) {
         this.removeAvailableWidget({ key: "AgenticAIStatusWidget" });
         this.availableWidgets = this.availableWidgets.filter(

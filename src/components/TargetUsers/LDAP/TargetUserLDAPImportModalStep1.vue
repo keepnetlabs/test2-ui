@@ -41,7 +41,7 @@
           custom-menu-class="target-user-ldap__target-groups"
           outlined
           clearable
-          autocomplete="disabled"
+          autocomplete="off"
           placeholder="- All Users -"
           no-data-text="No user group available"
           :position="selectedRadioGroupIndex === 0 ? 'bottom' : 'top'"
@@ -169,18 +169,18 @@ export default {
   },
   computed: {
     getLDAPGroupsErrorMessage() {
-      return !this?.selectedLDAPItems?.length ? 'Required' : ''
+      return this?.selectedLDAPItems?.length ? '' : 'Required'
     },
     getSwitchLabel() {
       return this.isActive ? labels.Active : labels.Passive
     },
     getLDAPTargetUserTableStyle() {
-      return !this.isLDAPGroupsValid
-        ? {
+      return this.isLDAPGroupsValid
+        ? {}
+        : {
             border: '1px solid rgb(255, 82, 82) !important',
             borderRadius: '12px !important'
           }
-        : {}
     }
   },
   watch: {

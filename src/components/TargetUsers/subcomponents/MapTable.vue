@@ -52,7 +52,7 @@ export default {
   name: 'MapTable',
   computed: {
     columns() {
-      return !this.mapTableData ? [] : this.mapTableData.columns
+      return this.mapTableData ? this.mapTableData.columns : []
     }
   },
   data() {

@@ -936,13 +936,14 @@ export default {
     getTextAreaRules(key) {
       const validations = []
       if (this.formValues[key]) {
-        validations.push((v) => this.validations.required(v, this.labels.Required))
-        validations.push((v) =>
-          this.validations.maxLength(
-            v,
-            256,
-            this.labels.getMaxLengthMessage('Confirmation message', 256)
-          )
+        validations.push(
+          (v) => this.validations.required(v, this.labels.Required),
+          (v) =>
+            this.validations.maxLength(
+              v,
+              256,
+              this.labels.getMaxLengthMessage('Confirmation message', 256)
+            )
         )
       }
       return validations

@@ -1275,7 +1275,7 @@ import DatatableTextWithBadge from "./DataTableComponents/DatatableTextWithBadge
 import DataTableFilter from "./DataTableComponents/DataTableFilter";
 import DataTableStatus from "./DataTableComponents/DataTableStatus";
 import RowColorHandler from "@/directives/datatable-row-color-handler";
-window.Vue = Vue;
+globalThis.Vue = Vue;
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import enLocale from "element-ui/lib/locale/lang/en";
@@ -1762,14 +1762,14 @@ export default {
       } item(s)`;
     },
     getBulletedIcon() {
-      return !this.selectedCluster
-        ? require(`../assets/img/selected-bulletin-list.svg`)
-        : require(`../assets/img/bulletin-list.svg`);
+      return this.selectedCluster
+        ? require(`../assets/img/bulletin-list.svg`)
+        : require(`../assets/img/selected-bulletin-list.svg`);
     },
     getGroupedListIcon() {
-      return !this.selectedCluster
-        ? require("../assets/img/unselected-bulletin.svg")
-        : require("../assets/img/ic-grouped-list.svg");
+      return this.selectedCluster
+        ? require("../assets/img/ic-grouped-list.svg")
+        : require("../assets/img/unselected-bulletin.svg");
     },
     getTableHeaderClass() {
       if (this.serverSideEvents.search) {
@@ -2039,10 +2039,10 @@ export default {
       }
     },
     lastColFixed(val) {
-      if (!val) {
-        this.actionFixed = false;
-      } else {
+      if (val) {
         this.actionFixed = "right";
+      } else {
+        this.actionFixed = false;
       }
     },
     multipleSelection() {
@@ -2782,15 +2782,15 @@ export default {
         this.lastColFixed = lastColFixed;
       }
 
-      if (!renderedColumns.length) {
-        this.setRenderedColumns();
-      } else {
+      if (renderedColumns.length) {
         this.columns.forEach((col) => {
           col.show = renderedColumns.find(
             (property) => property === col?.property || ""
           );
           this.renderedColumns = renderedColumns;
         });
+      } else {
+        this.setRenderedColumns();
       }
     },
     addItemToClusteredItems(item = {}) {

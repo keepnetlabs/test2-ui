@@ -17,10 +17,10 @@ const imageToUri = function (url, mimeType, cb) {
   img.onerror = function () {
     cb(new Error('FailedToLoadImage'))
   }
-  if (!canvas.getContext) {
-    cb(new Error('CanvasIsNotSupported'))
-  } else {
+  if (canvas.getContext) {
     img.src = url
+  } else {
+    cb(new Error('CanvasIsNotSupported'))
   }
 }
 

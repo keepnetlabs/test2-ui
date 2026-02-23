@@ -217,7 +217,7 @@ export default {
     },
     targetGroupsDialogInstanceGroup() {
       const val = this.targetGroupsDialogCampaign?.instanceGroup;
-      return val != null ? String(val) : "";
+      return val == null ? "" : String(val);
     }
   },
   created() {
@@ -284,7 +284,8 @@ export default {
         });
     },
     handleOnRecordButtonClick(row) {
-      if (row.total === 1 && row.status !== 'Idle') {
+      const isOneTime = row.frequency == null || row.frequency === 0
+      if (row.total === 1 && row.status !== 'Idle' && isOneTime) {
         this.$router.push({
           name: 'Campaign Report',
           params: {
@@ -302,7 +303,9 @@ export default {
       this.toggleItemTableShowing();
     },
     handleItemTableRecordButtonClick(row) {
-      if (row.total === 1 && row.status !== 'Idle') {
+      const parentFrequency = this.selectedParentItem?.frequency
+      const isParentOneTime = parentFrequency == null || parentFrequency === 0
+      if (row.total === 1 && row.status !== 'Idle' && isParentOneTime) {
         this.$router.push({
           name: 'Campaign Report',
           params: {

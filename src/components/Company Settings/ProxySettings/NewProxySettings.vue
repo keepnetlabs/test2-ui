@@ -253,7 +253,7 @@ export default {
   },
   created() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit && this.resourceId) {
       this.callForGetProxySettings()
@@ -309,13 +309,13 @@ export default {
         })
     },
     handleChangeServiceProvider(item = '') {
-      if (item !== ':') {
+      if (item === ':') {
+        this.formValues.serverAddress = ''
+        this.formValues.serverPort = ''
+      } else {
         const [serverAddress, serverPort] = item?.split(':') || []
         this.formValues.serverAddress = serverAddress
         this.formValues.serverPort = serverPort
-      } else {
-        this.formValues.serverAddress = ''
-        this.formValues.serverPort = ''
       }
     },
     clearTimeoutIfHasTimeout() {
@@ -398,7 +398,7 @@ export default {
         this.formValues.userName = username
         this.formValues.password = password
         this.formValues.isDefault = isDefault
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
   }

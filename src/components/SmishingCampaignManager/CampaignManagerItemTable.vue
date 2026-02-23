@@ -54,7 +54,7 @@
             <TheRecordsButton
               label="recurrence"
               plural-label="recurrences"
-              :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
+              :single-label="getRecordsButtonSingleLabel(scope.row)"
               zero-label="No Recurrence"
               width="150px"
               variant="primary"
@@ -368,6 +368,11 @@ export default {
     },
     handleRecordButtonClick(row) {
       this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
+    },
+    getRecordsButtonSingleLabel(row = {}) {
+      const isIdle = row.status === 'Idle'
+      const isRecurring = this.item?.frequency != null && this.item?.frequency !== 0
+      return isIdle || isRecurring ? '' : 'View Report'
     },
     reRenderFilters(filterValues = undefined) {
       this?.$refs?.refTable?.reRenderFilters(filterValues)
