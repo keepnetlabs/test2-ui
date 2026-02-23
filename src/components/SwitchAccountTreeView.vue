@@ -122,7 +122,7 @@ export default {
       const menu = document.querySelector('.switch-account__container')
       if (menu) {
         const { bottom } = menu.getBoundingClientRect()
-        const { innerHeight } = window
+        const { innerHeight } = globalThis
         const maxBottom = bottom + (300 - Number.parseInt(this.menuMaxHeight.replace('px', '')))
         if (maxBottom > innerHeight) {
           const diff = Math.round(maxBottom - innerHeight) + 8

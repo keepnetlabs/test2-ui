@@ -181,7 +181,8 @@ export default (router) => {
   })
   Sentry.addEventProcessor(function (event) {
     if (event.type === 'replay_event') {
-      if (window.location.pathname.includes('/training/scorm')) {
+      const pathname = (globalThis.location && globalThis.location.pathname) || ''
+      if (pathname.includes('/training/scorm')) {
         return null
       }
     }

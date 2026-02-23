@@ -156,7 +156,7 @@
               multiple
               dense
               deletable-chips
-              autocomplete="disabled"
+              autocomplete="off"
               small-chips
               outlined
               class="pop-up-card__invite-member"

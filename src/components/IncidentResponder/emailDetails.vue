@@ -736,8 +736,8 @@ export default {
     },
     showAIAnalyze() {
       return (
-        window.location.hostname.includes('localhost') ||
-        window.location.hostname.includes('test-ui.devkeepnet.com')
+        globalThis.location.hostname.includes('localhost') ||
+        globalThis.location.hostname.includes('test-ui.devkeepnet.com')
       )
     }
   },

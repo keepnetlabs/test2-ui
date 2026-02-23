@@ -1714,7 +1714,7 @@ export default {
           landingPage.languages.forEach((languagePage) => {
             if (languagePage.languageTypeResourceId && languagePage.content) {
               pageLanguages[languagePage.languageTypeResourceId] = languagePage.content
-              if (!languages.find((lang) => lang.value === languagePage.languageTypeResourceId)) {
+              if (!languages.some((lang) => lang.value === languagePage.languageTypeResourceId)) {
                 const lang = this.languages.find(
                   (l) =>
                     l.value === languagePage.languageTypeResourceId ||

@@ -18,14 +18,6 @@
         :text="rowActions[1].name"
         @on-click="handleSend(scope.row)"
       />
-      <!-- <DefaultMenuRowAction
-        :id="rowActions[2].id"
-        :scope="scope"
-        :disabled="rowActions[1].disabled"
-        :icon="rowActions[2].icon"
-        :text="rowActions[2].name"
-        @on-click="handleDownloadInfographic(scope.row)"
-      /> -->
       <DefaultMenuRowAction
         :id="rowActions[2].id"
         :scope="scope"

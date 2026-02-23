@@ -80,7 +80,7 @@
             <span class="gamification-report-user-details-training-overview-tab__points-text">
               {{ scope.row.points
               }}<template v-if="scope.row.isMaxPoints">
-                ({{ usersDashboardLabels?.yourLearningMaxPoints || 'max' }})</template
+                ({{ maxPointsLabel }})</template
               >
             </span>
           </div>
@@ -120,6 +120,9 @@ export default {
     ...mapGetters({
       usersDashboardLabels: 'usersDashboard/getLabels'
     }),
+    maxPointsLabel() {
+      return (this.usersDashboardLabels && this.usersDashboardLabels.yourLearningMaxPoints) || 'max'
+    },
     targetUserResourceId() {
       return this.selectedRow?.targetUserResourceId || this.selectedRow?.resourceId
     }

@@ -807,9 +807,9 @@ export default {
       let payload = {
         ...this.emailTemplateData,
         name:
-          this.editData.name !== this.emailTemplateData.name
-            ? this.editData.name
-            : `${this.editData.name} - Copy`,
+          this.editData.name === this.emailTemplateData.name
+            ? `${this.editData.name} - Copy`
+            : this.editData.name,
         isDuplicated: true,
         duplicatedTemplateResourceId: this.emailTemplateData.resourceId,
         availableForRequests: this.emailTemplateData.availableForList,
@@ -1297,7 +1297,7 @@ export default {
           this.phishingEmailTemplates = []
           let template = data?.template || ''
           template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplateData = { ...(item || {}), ...(data || {}) }
+          this.emailTemplateData = { ...item, ...data }
           this.selectedTemplateHeader = data?.name || ''
           this.templateHTML = template
           this.templateFromName = data?.fromName || ''

@@ -834,8 +834,8 @@ const trainingLibrary = {
     },
     restoreDefaultFilters({ commit, dispatch }) {
       const filters = localStorage.getItem("training-library-filters");
-      if (!filters) commit("RESET_FILTERS");
-      else commit("SET_DEFAULT_TABLE_FILTERS");
+      if (filters) commit("SET_DEFAULT_TABLE_FILTERS");
+      else commit("RESET_FILTERS");
       dispatch("callForTrainingLibrary");
     },
     writeFiltersToLocalStorage({ commit }) {

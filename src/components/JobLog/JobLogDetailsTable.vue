@@ -250,10 +250,10 @@ export default {
               if (pe?.inputData) {
                 const parsedData = JSON.parse(pe.inputData)
                 parsedData['Status'] = this.getStatusName(
-                  parsedData?.Status !== undefined ? parsedData?.Status : ''
+                  parsedData?.Status ?? ''
                 )
                 parsedData['Priority'] = this.getPriorityName(
-                  parsedData?.Priority !== undefined ? parsedData?.Priority : ''
+                  parsedData?.Priority ?? ''
                 )
                 return parsedData
               }

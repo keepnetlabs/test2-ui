@@ -1625,11 +1625,11 @@ export default {
         mfaTextTemplate: this.mfaData?.mfaTextTemplate || '',
         availableForRequests: this.availableForRequests
       }
-      if (!this.isPhishing) {
+      if (this.isPhishing) {
+        delete payload.languageTypeResourceId
+      } else {
         delete payload.categoryId
         delete payload.category
-      } else {
-        delete payload.languageTypeResourceId
       }
       if (this.isQuishing) {
         payload.templateType = this.quishingType
@@ -1727,9 +1727,8 @@ export default {
           value: item.languageTypeResourceId
         })
       })
-      this.summaryData.emailTemplate.languageShortCode = [
-        ...this.phishingEmailTemplates.map((item) => item.languageShortCode)
-      ]
+      this.summaryData.emailTemplate.languageShortCode =
+        this.phishingEmailTemplates.map((item) => item.languageShortCode)
       this.handleEmailTemplatePreviewLanguageChange(this.languagePreview)
     },
     handleEmailTemplatePreviewLanguageChange(value) {

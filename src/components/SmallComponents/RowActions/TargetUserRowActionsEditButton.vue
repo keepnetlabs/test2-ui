@@ -58,7 +58,7 @@ export default {
         return `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
           this.type
         } cannot be edited`
-      } else return !this.getDisabledStatusOfAction ? this.name : 'No Permission'
+      } else return this.getDisabledStatusOfAction ? 'No Permission' : this.name
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

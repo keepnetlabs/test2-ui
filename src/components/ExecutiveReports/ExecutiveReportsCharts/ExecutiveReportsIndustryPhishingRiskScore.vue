@@ -445,10 +445,10 @@ export default {
         ...industryAverageData.map((obj) => obj.y)
       )
       let maxYRemainder = Math.floor(maxY / 50)
-      if (!maxYRemainder) {
-        maxY = 100
-      } else {
+      if (maxYRemainder) {
         maxY = maxYRemainder * 50 + 50
+      } else {
+        maxY = 100
       }
       this.chartData = {
         labels: xLabels,

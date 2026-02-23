@@ -567,7 +567,7 @@ export default {
         exportTargetGroups(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Target Groups.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
@@ -619,16 +619,18 @@ export default {
       if (Object.keys(filterValues).length) {
         for (const [key, value] of Object.entries(filterValues)) {
           if (value.selectValue === 'between') {
-            this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
-              Value: value.textValue[0],
-              FieldName: key,
-              Operator: '>='
-            })
-            this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
-              Value: value.textValue[1],
-              FieldName: key,
-              Operator: '<='
-            })
+            this.tableCredientials.filter.FilterGroups[0].FilterItems.push(
+              {
+                Value: value.textValue[0],
+                FieldName: key,
+                Operator: '>='
+              },
+              {
+                Value: value.textValue[1],
+                FieldName: key,
+                Operator: '<='
+              }
+            )
           } else {
             this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
               Value: value.textValue,

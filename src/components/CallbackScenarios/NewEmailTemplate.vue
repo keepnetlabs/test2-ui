@@ -578,7 +578,7 @@ export default {
       return MERGED_TEXTS[item]
     },
     setActiveBlockManagerComponents(activeComponent = []) {
-      const phishingCodeIndex = activeComponent.findIndex((item) => item === '{PHISHING_CODE}')
+      const phishingCodeIndex = activeComponent.indexOf('{PHISHING_CODE}')
       if (phishingCodeIndex) {
         activeComponent.unshift(activeComponent[phishingCodeIndex])
         activeComponent.splice(phishingCodeIndex, 1)

@@ -173,7 +173,7 @@ export default {
 
         return `${day}/${month}/${year}`
       } catch (error) {
-        console.warn('Invalid date format for badge:', dateString)
+        console.warn('Invalid date format for badge:', dateString, error)
         return ''
       }
     }

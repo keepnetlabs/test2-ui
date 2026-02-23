@@ -251,7 +251,8 @@ export default {
     },
     handleOnMultipleDelete() {},
     handleOnRecordButtonClick(row) {
-      if (row.total === 1 && row.status !== 'Idle') {
+      const isOneTime = row.frequency == null || row.frequency === 0
+      if (row.total === 1 && row.status !== 'Idle' && isOneTime) {
         this.$router.push({
           name: 'Smishing Report',
           params: {
@@ -400,7 +401,9 @@ export default {
       this.isNoTargetUserGroupModalVisible = true
     },
     handleItemTableRecordButtonClick(row) {
-      if (row.total === 1 && row.status !== 'Idle') {
+      const parentFrequency = this.selectedParentItem?.frequency
+      const isParentOneTime = parentFrequency == null || parentFrequency === 0
+      if (row.total === 1 && row.status !== 'Idle' && isParentOneTime) {
         this.$router.push({
           name: 'Smishing Report',
           params: {

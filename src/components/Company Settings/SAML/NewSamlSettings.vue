@@ -586,15 +586,15 @@ export default {
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
-      if (!isChanged) {
-        return this.$emit('on-close')
-      } else {
+      if (isChanged) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
             this.$emit('on-close')
           }
         })
+      } else {
+        return this.$emit('on-close')
       }
     },
     handleCopyToClipboard(key = '') {

@@ -8,7 +8,7 @@
       persistent-hint
       hint="*Required"
       :rules="rules"
-      autocomplete="disabled"
+      autocomplete="off"
     />
   </TestFormWrapper>
 </template>

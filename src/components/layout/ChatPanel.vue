@@ -95,7 +95,6 @@
           title="Agentic AI Chat"
           class="chat-iframe"
           @load="onIframeLoad"
-          frameborder="0"
           allowfullscreen
           allow="accelerometer; 
          autoplay; 
@@ -147,7 +146,7 @@ export default {
   methods: {
     getAbsoluteUrl(url) {
       try {
-        return new URL(url, window.location.origin);
+        return new URL(url, globalThis.location.origin);
       } catch (e) {
         return null;
       }
@@ -158,7 +157,7 @@ export default {
         const parsedUrl = this.getAbsoluteUrl(url);
         if (!parsedUrl) return url;
         const isLocalhost = ["localhost", "127.0.0.1"].includes(
-          window.location.hostname
+          globalThis.location.hostname
         );
         if (isLocalhost) {
           parsedUrl.searchParams.set(
@@ -330,8 +329,8 @@ export default {
     }, 500);
 
     // İframe'den gelen mesajları dinle
-    window.addEventListener("message", this.handleIframeMessage);
-    window.addEventListener("open-agentic-ai-chat", this.handleExternalOpen);
+    globalThis.addEventListener("message", this.handleIframeMessage);
+    globalThis.addEventListener("open-agentic-ai-chat", this.handleExternalOpen);
   },
 
   beforeDestroy() {
@@ -341,8 +340,8 @@ export default {
       this.chatPopupInterval = null;
     }
     // Event listener'ı kaldır
-    window.removeEventListener("message", this.handleIframeMessage);
-    window.removeEventListener("open-agentic-ai-chat", this.handleExternalOpen);
+    globalThis.removeEventListener("message", this.handleIframeMessage);
+    globalThis.removeEventListener("open-agentic-ai-chat", this.handleExternalOpen);
     // Diğer chat-popup elemanını aç
     const otherChatPopup = document.querySelector(".chat-popup");
     if (otherChatPopup) {

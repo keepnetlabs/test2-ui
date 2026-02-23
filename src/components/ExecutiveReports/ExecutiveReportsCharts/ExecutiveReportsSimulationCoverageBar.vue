@@ -420,10 +420,10 @@ export default {
         biggestValue = 80
       } else {
         const remainder = Math.floor(biggestValue / 50)
-        if (!remainder) {
-          biggestValue = 100
-        } else {
+        if (remainder) {
           biggestValue = remainder * 50 + 50
+        } else {
+          biggestValue = 100
         }
       }
       return biggestValue

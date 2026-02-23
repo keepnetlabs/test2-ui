@@ -85,7 +85,7 @@
         />
         <CampaignManagerReportGroupsColumn
           v-if="col.property === COLUMNS.GROUPS.property"
-          :value="scope.row?.targetGroups"
+          :value="(scope.row && scope.row.targetGroups)"
           @click="handleGroupsClick"
         />
       </template>

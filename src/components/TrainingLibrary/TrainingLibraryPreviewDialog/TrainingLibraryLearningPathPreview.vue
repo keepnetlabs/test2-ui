@@ -477,10 +477,10 @@ export default {
       })
         .then((response) => {
           if (this.isPdf) {
-            this.activeTrainingContentPdfSrc = window.URL.createObjectURL(response.data)
+            this.activeTrainingContentPdfSrc = globalThis.URL.createObjectURL(response.data)
             return
           }
-          this.downloadPDFObject(window.URL.createObjectURL(response.data))
+          this.downloadPDFObject(globalThis.URL.createObjectURL(response.data))
         })
         .finally(() => {
           if (this.isPdf) this.isLoading = false

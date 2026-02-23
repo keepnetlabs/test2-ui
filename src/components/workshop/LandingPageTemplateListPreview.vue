@@ -915,8 +915,7 @@ import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
-import { isDifferent } from '@/utils/functions'
-import { handleIsSafari } from '@/utils/functions'
+import { isDifferent, handleIsSafari } from '@/utils/functions'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 export default {
@@ -1584,7 +1583,7 @@ export default {
         // Add main language content
         if (landingPage.languageTypeResourceId && landingPage.content) {
           pageLanguages[landingPage.languageTypeResourceId] = landingPage.content
-          if (!languages.find((lang) => lang.value === landingPage.languageTypeResourceId)) {
+          if (!languages.some((lang) => lang.value === landingPage.languageTypeResourceId)) {
             languages.push({
               value: landingPage.languageTypeResourceId,
               text: landingPage.languageTypeName || mainLanguageTypeName
@@ -1597,7 +1596,7 @@ export default {
           landingPage.languages.forEach((languagePage) => {
             if (languagePage.languageTypeResourceId && languagePage.content) {
               pageLanguages[languagePage.languageTypeResourceId] = languagePage.content
-              if (!languages.find((lang) => lang.value === languagePage.languageTypeResourceId)) {
+              if (!languages.some((lang) => lang.value === languagePage.languageTypeResourceId)) {
                 languages.push({
                   value: languagePage.languageTypeResourceId,
                   text: languagePage.languageTypeName

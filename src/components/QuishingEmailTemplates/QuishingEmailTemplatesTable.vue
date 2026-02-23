@@ -267,7 +267,7 @@ export default {
         if (selectValue) {
           // selectValue is a string of comma-separated values
           const values = typeof selectValue === 'string' ? selectValue.split(',') : selectValue
-          this.activeTemplateTypes = values.filter(v => v) // Remove empty strings
+          this.activeTemplateTypes = values.filter(Boolean) // Remove empty strings
         }
       }
     },
@@ -346,7 +346,7 @@ export default {
         QuishingService.exportQuishingEmailTemplates(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Quishing-Templates.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
@@ -370,13 +370,13 @@ export default {
     },
     columnFilterChanged(filter) {
       if (filter.FieldName === 'quishingType') {
-        if (!filter.Value)
+        if (filter.Value) {
+          this.activeTemplateTypes = filter.Value.split(',')
+        } else {
           this.activeTemplateTypes = [
             QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
             QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
           ]
-        else {
-          this.activeTemplateTypes = filter.Value.split(',')
         }
       } else {
         this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(

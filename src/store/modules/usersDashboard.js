@@ -1,5 +1,4 @@
-import { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
-import usersDashboardLabels from '@/model/constants/usersDashboardLabels'
+import usersDashboardLabels, { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
 import {
   login as loginAPI,
   getTopPerformance,
@@ -293,7 +292,7 @@ const usersDashboard = {
 
       try {
         const response = await getTopPerformance()
-        if (response && response.data && response.data.data) {
+        if (response?.data?.data) {
           const topPerformanceData = response.data.data
           commit('SET_TOP_PERFORMANCE', topPerformanceData)
 
@@ -331,7 +330,7 @@ const usersDashboard = {
 
       try {
         const response = await getMyLearning()
-        if (response && response.data && response.data.data && response.data.data.results) {
+        if (response?.data?.data?.results) {
           commit('SET_MY_LEARNING', response.data.data.results)
         } else {
           // Set empty array on invalid response instead of error
@@ -353,7 +352,7 @@ const usersDashboard = {
 
       try {
         const response = await getMyCertificates()
-        if (response && response.data && response.data.data && response.data.data.results) {
+        if (response?.data?.data?.results) {
           commit('SET_MY_CERTIFICATES', response.data.data.results)
         } else {
           // Set empty array on invalid response instead of error
@@ -375,7 +374,7 @@ const usersDashboard = {
 
       try {
         const response = await getMyBadges()
-        if (response && response.data && response.data.data && Array.isArray(response.data.data)) {
+        if (Array.isArray(response?.data?.data)) {
           const mappedBadges = response.data.data.map((badge) => {
             if (badge.badgeType === 5 && 'earnedDate' in badge) {
               return { ...badge, earnedDate: '' }
@@ -403,7 +402,7 @@ const usersDashboard = {
 
       try {
         const response = await getPhishingResult()
-        if (response && response.data && response.data.data) {
+        if (response?.data?.data) {
           commit('SET_PHISHING_RESULT', response.data.data)
         } else {
           // Set null on invalid response instead of error
@@ -422,7 +421,7 @@ const usersDashboard = {
     async fetchUserInfo({ commit }) {
       try {
         const response = await getUserInfo()
-        if (response && response.data && response.data.data) {
+        if (response?.data?.data) {
           const userData = response.data.data
           commit('SET_USER_INFO', {
             email: userData.email || '',
@@ -447,7 +446,7 @@ const usersDashboard = {
         // Call the actual login API
         const response = await loginAPI(payload.companyEmail)
 
-        if (response && response.data && response.data.data) {
+        if (response?.data?.data) {
           const { email, saml } = response.data.data
 
           // Update email in userInfo if provided

@@ -720,13 +720,13 @@ export default {
             duration: campaignManagerFormData.duration,
             scheduleTypeId: Number.parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
-              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : deliverySettingsFormData.scheduledDate,
+              deliverySettingsFormData?.scheduleTypeId?.toString() === SCHEDULE_TYPES.SCHEDULE_TO
+                ? deliverySettingsFormData.scheduledDate
+                : null,
             scheduledDateTimeZoneId:
-              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : deliverySettingsFormData.scheduledDateTimeZoneId,
+              deliverySettingsFormData?.scheduleTypeId?.toString() === SCHEDULE_TYPES.SCHEDULE_TO
+                ? deliverySettingsFormData.scheduledDateTimeZoneId
+                : null,
             distributionTypeId: deliverySettingsFormData.distributionTypeId,
             distributionDelayEvery: deliverySettingsFormData.distributionDelayEvery,
             distributionDelayTimeTypeId: deliverySettingsFormData.distributionDelayTimeTypeId,

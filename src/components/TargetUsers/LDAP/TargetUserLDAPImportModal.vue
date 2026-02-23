@@ -202,9 +202,9 @@ export default {
         } else {
           this.step2Step = 1
         }
-        this.editedScheduledFilter = !filter?.filterGroups?.length
-          ? getDefaultAxiosPayload().filter
-          : filter
+        this.editedScheduledFilter = filter?.filterGroups?.length
+          ? filter
+          : getDefaultAxiosPayload().filter
 
         this.$refs.refStep1.targetGroupResourceId = targetGroupResourceId
         this.$refs.refStep1.isActive = Boolean(status)

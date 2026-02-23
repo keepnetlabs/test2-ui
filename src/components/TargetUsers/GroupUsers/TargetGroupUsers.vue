@@ -126,10 +126,10 @@ export default {
       if (params.from) this.from = params.from
       this.resourceId = params.id
       this.callForGetTargetUserCustomFieldsByCompanyId()
-      if (!params.label) {
-        this.$route.params.label = localStorage.getItem('lastTargetGroupUsers')
-      } else {
+      if (params.label) {
         localStorage.setItem('lastTargetGroupUsers', this.$route.params.label)
+      } else {
+        this.$route.params.label = localStorage.getItem('lastTargetGroupUsers')
       }
     } else {
       this.handleRouteBackToTargetUsers()

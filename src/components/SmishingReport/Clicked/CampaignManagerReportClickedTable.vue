@@ -221,7 +221,7 @@ export default {
     },
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined') this.axiosPayload.activityType = 0
+      if (this.axiosPayload.activityType === undefined) this.axiosPayload.activityType = 0
       SmishingService.searchCampaignJobType(
         'clicked',
         this.axiosPayload,
@@ -270,7 +270,7 @@ export default {
           (response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `Smishing-Report-Clicked.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`

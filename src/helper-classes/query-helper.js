@@ -15,10 +15,7 @@ export default class QueryHelperForTable {
   }
 
   controlRouteQuery() {
-    if (!this.isRouteQuery()) {
-      this.setRouterQuery('page', 1)
-      this.setRouterQuery('size', 10)
-    } else {
+    if (this.isRouteQuery()) {
       const { size, page } = this.route.query
       if (!['5', '10', '25'].some((defaultNum) => defaultNum === size)) {
         this.setRouterQuery('size', 10)
@@ -27,6 +24,9 @@ export default class QueryHelperForTable {
       if (Number.isNaN(parsedPage) || parsedPage <= 0) {
         this.setRouterQuery('page', 1)
       }
+    } else {
+      this.setRouterQuery('page', 1)
+      this.setRouterQuery('size', 10)
     }
   }
 

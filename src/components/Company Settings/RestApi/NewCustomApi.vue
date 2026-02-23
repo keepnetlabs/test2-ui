@@ -267,7 +267,7 @@ export default {
   created() {
     this.getRoles().then(() => {
       if (!this.selectedRow) {
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       }
       if (this.selectedRow && this.selectedRow.resourceId) {
         getRestApi(this.selectedRow.resourceId).then((response) => {
@@ -277,7 +277,7 @@ export default {
             value: ip
           }))
           this.fillForm({ ...data, allowedIpAddresses })
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.initialFormValues = structuredClone(this.formValues)
         })
       }
     })

@@ -457,7 +457,7 @@ export default {
   created() {
     if (!this.editData) {
       this.callForTargetGroups()
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     for (let field of this.customFields) {
       const { fieldDataType, resourceId } = field
@@ -545,15 +545,15 @@ export default {
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
-      if (!isChanged) {
-        return this.$emit('closeAddUserModal')
-      } else {
+      if (isChanged) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
             this.$emit('closeAddUserModal')
           }
         })
+      } else {
+        return this.$emit('closeAddUserModal')
       }
     },
     validatePicker(item = {}) {
@@ -769,7 +769,7 @@ export default {
             managerEmail: editedData.managerEmail || ''
           }
         }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       }
     }
   }

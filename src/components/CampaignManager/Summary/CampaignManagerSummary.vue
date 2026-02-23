@@ -763,11 +763,9 @@ export default {
             name: this.selectedScenarioResourceId,
             index: 0
           })
-        } else {
-          if (this.formData.trainingForCategory?.trainingId) {
-            this.selectedTraining = this.formData.trainingForCategory
-            this.callForTrainingDetail(this.formData.trainingForCategory.trainingId)
-          }
+        } else if (this.formData.trainingForCategory?.trainingId) {
+          this.selectedTraining = this.formData.trainingForCategory
+          this.callForTrainingDetail(this.formData.trainingForCategory.trainingId)
         }
       },
       deep: true,
@@ -892,9 +890,8 @@ export default {
                 }
               }) || [])
             )
-            this.emailTemplateParams.languageShortCode = [
-              ...this.phishingEmailTemplates.map((item) => item.languageTypeName)
-            ]
+            this.emailTemplateParams.languageShortCode =
+              this.phishingEmailTemplates.map((item) => item.languageTypeName)
           }
           const {
             name: landingPageName = '',
