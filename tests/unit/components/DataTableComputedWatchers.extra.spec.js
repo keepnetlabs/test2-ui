@@ -26,6 +26,70 @@ describe('DataTable.vue computed/watch extra coverage', () => {
     expect(DataTable.computed.actionsLabel.call({ dashboardLabels: null })).toBe('Actions')
   })
 
+  it('add button computed values resolve defaults and custom values', () => {
+    expect(DataTable.computed.getAddButtonLabel.call({ addButton: null })).toBe('NEW')
+    expect(DataTable.computed.getAddButtonLabel.call({ addButton: { label: 'Create' } })).toBe('Create')
+
+    expect(DataTable.computed.getAddButtonIcon.call({ addButton: null })).toBe('mdi-plus')
+    expect(DataTable.computed.getAddButtonIcon.call({ addButton: { icon: null } })).toBe(null)
+    expect(DataTable.computed.getAddButtonIcon.call({ addButton: { icon: 'mdi-account' } })).toBe('mdi-account')
+
+    expect(DataTable.computed.getAddButtonType.call({ addButton: null })).toBe('primary')
+    expect(DataTable.computed.getAddButtonType.call({ addButton: { type: 'outlined' } })).toBe('outlined')
+  })
+
+  it('table header related computed values handle server/client cases', () => {
+    expect(
+      DataTable.computed.isExtendedViewRender.call({
+        isWantToEditRow: false,
+        isExtendedViewCreateMode: false,
+        isShowExtendedViewWithExternalValue: false
+      })
+    ).toBe(false)
+    expect(
+      DataTable.computed.isExtendedViewRender.call({
+        isWantToEditRow: false,
+        isExtendedViewCreateMode: true,
+        isShowExtendedViewWithExternalValue: false
+      })
+    ).toBe(true)
+
+    expect(
+      DataTable.computed.getTableHeaderRender.call({
+        isServerSide: true,
+        isServerSideSelection: true,
+        serverSideSelectionCount: 2,
+        multipleSelection: [],
+        tableData: [{ id: 1 }]
+      })
+    ).toBe(1)
+    expect(
+      DataTable.computed.getTableHeaderRender.call({
+        isServerSide: false,
+        isServerSideSelection: false,
+        serverSideSelectionCount: 0,
+        multipleSelection: [],
+        tableData: [{ id: 1 }]
+      })
+    ).toBe(0)
+
+    expect(
+      DataTable.computed.getTableHeaderClass.call({
+        serverSideEvents: { search: true },
+        tableData: [],
+        search: '',
+        isColumnFilterActive: false
+      })
+    ).toBe('table-header-disable')
+    expect(
+      DataTable.computed.getTableHeaderClass.call({
+        serverSideEvents: { search: false },
+        tableData: [],
+        isColumnFilterActive: true
+      })
+    ).toBe('')
+  })
+
   it('shouldRenderTable reflects data/filter/loading combinations', () => {
     expect(
       DataTable.computed.shouldRenderTable.call({

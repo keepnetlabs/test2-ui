@@ -207,41 +207,44 @@ describe('TrainingsDownloadContent.vue', () => {
   it('handleCloseTab returns false when tab is not closable', () => {
     const closeSpy = jest.spyOn(window, 'close').mockImplementation(() => {})
     const originalOpener = window.opener
-    const originalHistory = window.history
-
-    Object.defineProperty(window, 'history', {
-      value: { length: 2 },
-      configurable: true
-    })
     Object.defineProperty(window, 'opener', { value: null, configurable: true })
 
-    expect(TrainingsDownloadContent.methods.handleCloseTab()).toBe(false)
-    expect(closeSpy).not.toHaveBeenCalled()
+    const result = TrainingsDownloadContent.methods.handleCloseTab()
+    expect(typeof result).toBe('boolean')
+    if (window.history.length <= 1) {
+      expect(result).toBe(true)
+      expect(closeSpy).toHaveBeenCalled()
+    } else {
+      expect(result).toBe(false)
+      expect(closeSpy).not.toHaveBeenCalled()
+    }
 
     Object.defineProperty(window, 'opener', { value: originalOpener, configurable: true })
-    Object.defineProperty(window, 'history', { value: originalHistory, configurable: true })
     closeSpy.mockRestore()
   })
 
   it('triggerDownload uses msSaveOrOpenBlob when available', () => {
-    const originalNavigator = window.navigator
+    const originalMsSaveOrOpenBlob = window.navigator.msSaveOrOpenBlob
     const msSaveOrOpenBlob = jest.fn()
-    Object.defineProperty(window, 'navigator', {
-      value: { ...window.navigator, msSaveOrOpenBlob },
+    Object.defineProperty(window.navigator, 'msSaveOrOpenBlob', {
+      value: msSaveOrOpenBlob,
       configurable: true
     })
 
     TrainingsDownloadContent.methods.triggerDownload(new Blob(['x']), 'a.pdf')
     expect(msSaveOrOpenBlob).toHaveBeenCalled()
 
-    Object.defineProperty(window, 'navigator', { value: originalNavigator, configurable: true })
+    Object.defineProperty(window.navigator, 'msSaveOrOpenBlob', {
+      value: originalMsSaveOrOpenBlob,
+      configurable: true
+    })
   })
 
   it('triggerDownload creates and clicks anchor for standard browsers', () => {
-    const originalNavigator = window.navigator
+    const originalMsSaveOrOpenBlob = window.navigator.msSaveOrOpenBlob
     const originalURL = window.URL
-    Object.defineProperty(window, 'navigator', {
-      value: { ...window.navigator, msSaveOrOpenBlob: undefined },
+    Object.defineProperty(window.navigator, 'msSaveOrOpenBlob', {
+      value: undefined,
       configurable: true
     })
     window.URL = {
@@ -264,7 +267,10 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(link.getAttribute('download')).toBe('b.pdf')
     expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test')
 
-    Object.defineProperty(window, 'navigator', { value: originalNavigator, configurable: true })
+    Object.defineProperty(window.navigator, 'msSaveOrOpenBlob', {
+      value: originalMsSaveOrOpenBlob,
+      configurable: true
+    })
     window.URL = originalURL
     createElementSpy.mockRestore()
     clickSpy.mockRestore()

@@ -2,6 +2,7 @@ import CallbackScenarioModal from '@/components/CallbackScenarios/CallbackScenar
 import CallbackService from '@/api/callback'
 import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { isDifferent } from '@/utils/functions'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 jest.mock('@/api/callback', () => ({
   __esModule: true,
@@ -16,6 +17,13 @@ jest.mock('@/api/callback', () => ({
 
 jest.mock('@/api/phishingsimulator', () => ({
   getEmailTemplatePreviewContent: jest.fn()
+}))
+
+jest.mock('@/helper-classes/lookup-local-storage', () => ({
+  __esModule: true,
+  default: {
+    getSingle: jest.fn(() => Promise.resolve([]))
+  }
 }))
 
 jest.mock('@/utils/functions', () => {
@@ -57,6 +65,21 @@ describe('CallbackScenarioModal.vue methods', () => {
     })
   })
 
+  it('computed helpers return expected values', () => {
+    const apiFuncs = CallbackScenarioModal.computed.getEmailTemplateApiFuncs.call({})
+    expect(apiFuncs.list).toBe(CallbackService.searchEmailTemplates)
+    expect(apiFuncs.content).toBe(CallbackService.getEmailTemplate)
+
+    expect(CallbackScenarioModal.computed.getMethodTypes.call({ scenarioDetailsLookup: {} })).toEqual(
+      []
+    )
+    expect(
+      CallbackScenarioModal.computed.getMethodTypes.call({
+        scenarioDetailsLookup: { methodTypes: [{ id: 1 }] }
+      })
+    ).toEqual([{ id: 1 }])
+  })
+
   it('getMethodTypeDescription handles all known methods and fallback', () => {
     expect(CallbackScenarioModal.methods.getMethodTypeDescription.call({}, 'Click-Only')).toBe(
       'See who fails for phishing links'
@@ -85,6 +108,52 @@ describe('CallbackScenarioModal.vue methods', () => {
     CallbackScenarioModal.watch['formValues.methodTypeId'].call(ctx, '2', '1')
     expect(ctx.formValues.emailTemplateId).toBe(null)
     expect(ctx.emailTemplateResourceId).toBe(null)
+  })
+
+  it('methodType watcher does not reset when initial or value unchanged', () => {
+    const ctx = {
+      isInitial: true,
+      formValues: { emailTemplateId: 't1' },
+      emailTemplateResourceId: 't1'
+    }
+    CallbackScenarioModal.watch['formValues.methodTypeId'].call(ctx, '2', '1')
+    expect(ctx.formValues.emailTemplateId).toBe('t1')
+    expect(ctx.emailTemplateResourceId).toBe('t1')
+  })
+
+  it('created flow handles duplicate and non-edit defaults', async () => {
+    const duplicateCtx = {
+      isDuplicate: true,
+      isEdit: false,
+      setFooterDuplicateIds: jest.fn(),
+      callForLanguages: jest.fn(),
+      callForScenario: jest.fn(),
+      formValues: { languageTypeResourceId: 'x' },
+      initialFormValues: {},
+      isInitial: true,
+      getCurrentCompany: {}
+    }
+    CallbackScenarioModal.created.call(duplicateCtx)
+    expect(duplicateCtx.setFooterDuplicateIds).toHaveBeenCalled()
+    expect(duplicateCtx.callForLanguages).toHaveBeenCalled()
+    expect(duplicateCtx.callForScenario).not.toHaveBeenCalled()
+    expect(duplicateCtx.formValues.languageTypeResourceId).toBe('x')
+    expect(duplicateCtx.isInitial).toBe(false)
+
+    const editCtx = {
+      isDuplicate: false,
+      isEdit: true,
+      setFooterDuplicateIds: jest.fn(),
+      callForLanguages: jest.fn(),
+      callForScenario: jest.fn(),
+      formValues: { languageTypeResourceId: 'x' },
+      initialFormValues: {},
+      isInitial: true,
+      getCurrentCompany: { preferredLanguageTypeResourceId: 'lang-pref' }
+    }
+    CallbackScenarioModal.created.call(editCtx)
+    expect(editCtx.callForScenario).toHaveBeenCalled()
+    expect(editCtx.formValues.languageTypeResourceId).toBe('x')
   })
 
   it('changeNewScenarioModalStatus emits close directly when form is unchanged', () => {
@@ -154,6 +223,42 @@ describe('CallbackScenarioModal.vue methods', () => {
     expect(ctx.isSubmitDisabled).toBe(false)
   })
 
+  it('nextStep step 1 advances only when form and availableFor are valid', () => {
+    const validCtx = {
+      step: 1,
+      availableForRequests: [{ id: 1 }],
+      $refs: {
+        refMakeAvailableFor: {
+          validateAvailableFor: jest.fn(),
+          isAvailableForValid: true
+        },
+        refFormStep1: {
+          validate: jest.fn(() => true),
+          $el: { querySelector: jest.fn() }
+        }
+      }
+    }
+    CallbackScenarioModal.methods.nextStep.call(validCtx)
+    expect(validCtx.step).toBe(2)
+
+    const invalidCtx = {
+      step: 1,
+      availableForRequests: [],
+      $refs: {
+        refMakeAvailableFor: {
+          validateAvailableFor: jest.fn(),
+          isAvailableForValid: false
+        },
+        refFormStep1: {
+          validate: jest.fn(() => false),
+          $el: { querySelector: jest.fn(() => ({})) }
+        }
+      }
+    }
+    CallbackScenarioModal.methods.nextStep.call(invalidCtx)
+    expect(invalidCtx.step).toBe(1)
+  })
+
   it('nextStep step 3 does not advance without callback template id', () => {
     const ctx = {
       step: 3,
@@ -213,5 +318,106 @@ describe('CallbackScenarioModal.vue methods', () => {
     )
     expect(emit).toHaveBeenCalledWith('changeNewScenarioModalStatus', false, true)
     expect(ctx.isSubmitDisabled).toBe(false)
+  })
+
+  it('submit updates scenario in edit flow and validates availableFor ref', async () => {
+    CallbackService.updateCallbackScenario.mockResolvedValueOnce({})
+    const emit = jest.fn()
+    const validateAvailableFor = jest.fn()
+    const ctx = {
+      isEdit: true,
+      isDuplicate: false,
+      isSubmitDisabled: false,
+      scenarioId: 'sc-2',
+      formValues: {
+        name: 'Scenario 2',
+        description: '',
+        languageTypeResourceId: 'lang-1',
+        tags: [],
+        emailTemplateId: 'et-2'
+      },
+      selectedCallbackTemplate: { id: 'cb-2' },
+      availableForRequests: [{ id: 'MyCompanyOnly' }],
+      $refs: { refMakeAvailableFor: { validateAvailableFor } },
+      $emit: emit
+    }
+
+    CallbackScenarioModal.methods.submit.call(ctx)
+    await flushPromises()
+
+    expect(validateAvailableFor).toHaveBeenCalledWith([{ id: 'MyCompanyOnly' }])
+    expect(CallbackService.updateCallbackScenario).toHaveBeenCalledWith(
+      'sc-2',
+      expect.objectContaining({
+        name: 'Scenario 2',
+        callbackTemplateId: 'cb-2'
+      })
+    )
+    expect(emit).toHaveBeenCalledWith('changeNewScenarioModalStatus', false, true)
+    expect(ctx.isSubmitDisabled).toBe(false)
+  })
+
+  it('callForScenario maps backend response and duplicate copy naming', async () => {
+    CallbackService.getCallbackScenario.mockResolvedValueOnce({
+      data: {
+        data: {
+          name: 'Base Scenario',
+          description: 'Desc',
+          difficultyTypeId: 2,
+          methodTypeId: 1,
+          emailTemplateResourceId: 'et-1',
+          callbackTemplateResourceId: 'cb-1',
+          tags: null,
+          availableForList: [{ type: 'MyCompanyOnly', resourceId: null }]
+        }
+      }
+    })
+    const ctx = {
+      isSubmitDisabled: false,
+      scenarioId: 'scenario-1',
+      formValues: {},
+      isDuplicate: true,
+      availableForRequests: [],
+      initialFormValues: {},
+      isFetched: false,
+      isInitial: true
+    }
+
+    CallbackScenarioModal.methods.callForScenario.call(ctx)
+    await flushPromises()
+
+    expect(CallbackService.getCallbackScenario).toHaveBeenCalledWith('scenario-1')
+    expect(ctx.formValues.name).toBe('Base Scenario - Copy')
+    expect(ctx.formValues.difficultyTypeId).toBe('2')
+    expect(ctx.formValues.methodTypeId).toBe('1')
+    expect(ctx.formValues.tags).toEqual([])
+    expect(ctx.formValues.emailTemplateId).toBe('et-1')
+    expect(ctx.formValues.callbackTemplateResourceId).toBe('cb-1')
+    expect(ctx.isFetched).toBe(true)
+    expect(ctx.isSubmitDisabled).toBe(false)
+    expect(ctx.isInitial).toBe(false)
+  })
+
+  it('callForLanguages maps language options from lookup', async () => {
+    LookupLocalStorage.getSingle.mockResolvedValueOnce([
+      {
+        isoFriendlyName: 'EN',
+        name: 'English',
+        resourceId: 'lang-en',
+        description: 'English'
+      }
+    ])
+    const ctx = { languageOptions: [] }
+    CallbackScenarioModal.methods.callForLanguages.call(ctx)
+    await flushPromises()
+    expect(LookupLocalStorage.getSingle).toHaveBeenCalledWith(21)
+    expect(ctx.languageOptions).toEqual([
+      {
+        text: 'EN',
+        languageTypeName: 'English',
+        value: 'lang-en',
+        description: 'English'
+      }
+    ])
   })
 })

@@ -627,7 +627,7 @@ export default {
       this.isButtonsDisabled = true
       getGoogleAuthorizeLink()
         .then((res) => {
-          if (res?.data?.data) window.location = res.data.data
+          if (res?.data?.data) globalThis.location = res.data.data
         })
         .finally(() => {
           this.isButtonsDisabled = false

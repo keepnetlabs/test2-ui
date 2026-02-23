@@ -122,10 +122,10 @@ export default {
         })
         if (maxEmailCount) {
           const remainder = Math.floor(maxEmailCount / 50)
-          if (!remainder) {
-            maxEmailCount = 50
-          } else {
+          if (remainder) {
             maxEmailCount = remainder * 50 + 50
+          } else {
+            maxEmailCount = 50
           }
         } else {
           maxEmailCount += 10 - (maxEmailCount % 10)

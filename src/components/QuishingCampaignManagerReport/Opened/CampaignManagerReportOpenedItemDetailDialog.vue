@@ -229,7 +229,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      if (typeof this.axiosPayload.activityType === 'undefined')
+      if (this.axiosPayload.activityType === undefined)
         this.axiosPayload.activityType = this.isShowSandboxFromParent ? 2 : 0
       QuishingService.searchCampaignJobUserEmailOpenedDetails(
         this.axiosPayload,

@@ -20,7 +20,7 @@
           <span>{{ getBodyValue }}</span>
         </div>
       </template>
-      <template #TargetGroups="{ props: { key, val } }">
+      <template #TargetGroups>
         <div class="campaign-manager-summary-card__body-item-key">Target Groups</div>
         <div class="campaign-manager-summary-card__body-item-value">
           <div

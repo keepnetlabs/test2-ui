@@ -107,15 +107,12 @@ export default {
         this.actionStatus === ACTION_STATUSES.IDLE ||
         this.actionStatus === ACTION_STATUSES.RUNNING
       ) {
-        copyOfRowActions.push(newInstanceItem)
-        copyOfRowActions.push(duplicateItem)
-        copyOfRowActions.push(deleteItem)
+        copyOfRowActions.push(newInstanceItem, duplicateItem, deleteItem)
       } else if (
         this.actionStatus === ACTION_STATUSES.COMPLETE ||
         this.actionStatus === ACTION_STATUSES.CANCEL
       ) {
-        copyOfRowActions.push(newInstanceItem)
-        copyOfRowActions.push(deleteItem)
+        copyOfRowActions.push(newInstanceItem, deleteItem)
       } else {
         copyOfRowActions.push(deleteItem)
       }

@@ -2911,7 +2911,7 @@ export default {
         span = span.querySelector("div");
       }
       let aggregation = this.isCustomOverflowedColumn ? 0 : 20;
-      if (window.safari || navigator.vendor.match(/apple/i)) {
+      if (globalThis.safari || navigator.vendor.match(/apple/i)) {
         if (
           [...cell.parentNode.classList].some(
             (item) => item === "el-table__row--level-1"

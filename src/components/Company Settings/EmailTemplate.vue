@@ -536,7 +536,7 @@
             multiple
             dense
             deletable-chips
-            autocomplete="disabled"
+            autocomplete="off"
             small-chips
             outlined
             persistent-hint
@@ -949,7 +949,7 @@ export default {
       mergeTagRules: [
         (v) => {
           if (!v) return true
-          const matches = v.match(/{(.*?)}/gi)
+          const matches = v.match(/\{([A-Za-z0-9_]*)\}/g)
           if (!matches?.length) return true
           const tags = this.mergeTags.map((tag) => tag.value)
           for (const match of matches) {
@@ -980,7 +980,7 @@ export default {
       learningPathMergeTagRules: [
         (v) => {
           if (!v) return true
-          const matches = v.match(/{(.*?)}/gi)
+          const matches = v.match(/\{([A-Za-z0-9_]*)\}/g)
           if (!matches?.length) return true
           const tags = this.learningPathEnrollmentReminderMergeTags.map((tag) => tag.value)
           for (const match of matches) {

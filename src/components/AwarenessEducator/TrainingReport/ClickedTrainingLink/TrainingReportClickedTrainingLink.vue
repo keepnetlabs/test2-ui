@@ -302,11 +302,10 @@ export default {
   methods: {
     handleSearchChange(searchFilter = {}) {
       const customFieldNames = this.customFields?.map?.((field) => field.name)
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+      this.axiosPayload.filter.FilterGroups[1].FilterItems =
+        searchFilter.filter.FilterGroups[0].FilterItems.filter(
           (field) => !customFieldNames.includes(field.FieldName)
         )
-      ]
       this.resetPageNumber()
       this.callForData()
     },
@@ -384,7 +383,7 @@ export default {
           (response) => {
             const { data } = response
             const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
+            link.href = globalThis.URL.createObjectURL(data)
             link.download = `${this.isSurvey ? 'Survey' : 'Training'}-Clicked-Emails.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`

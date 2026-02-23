@@ -98,6 +98,26 @@ describe('EnrollmentsInfographicTable.vue methods/computed', () => {
     expect(ctx.tableData[0].targetAudience).toEqual([])
   })
 
+  it('callForData handles undefined response object with default fallback', async () => {
+    const apiFunc = jest.fn(() => Promise.resolve(undefined))
+    const ctx = {
+      apiFunc,
+      axiosPayload: {},
+      languages: [],
+      serverSideProps: { totalNumberOfRecords: 9, totalNumberOfPages: 9, pageNumber: 9 },
+      tableData: [{ enrollmentId: 'old' }],
+      setLoading: jest.fn()
+    }
+
+    EnrollmentsInfographicTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.serverSideProps.totalNumberOfRecords).toBeUndefined()
+    expect(ctx.serverSideProps.totalNumberOfPages).toBeUndefined()
+    expect(ctx.serverSideProps.pageNumber).toBeUndefined()
+    expect(ctx.tableData).toEqual([])
+  })
+
   it('exportEnrollments maps XLS to Excel and uses Infographic file name', async () => {
     const links = []
     const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(() => {
@@ -212,5 +232,59 @@ describe('EnrollmentsInfographicTable.vue methods/computed', () => {
 
     createElementSpy.mockRestore()
     objectUrlSpy.mockRestore()
+  })
+
+  it('exportEnrollments processes multiple types and maps xls to Excel only', async () => {
+    const links = []
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(() => {
+      const link = { click: jest.fn(), href: '', download: '' }
+      links.push(link)
+      return link
+    })
+    if (!globalThis.URL.createObjectURL) {
+      globalThis.URL.createObjectURL = jest.fn()
+    }
+    const objectUrlSpy = jest.spyOn(globalThis.URL, 'createObjectURL').mockReturnValue('blob:multi')
+    const ctx = {
+      axiosPayload: { orderBy: 'name', ascending: true, filter: {}, enrollmentType: 4 }
+    }
+
+    EnrollmentsInfographicTable.methods.exportEnrollments.call(ctx, {
+      exportTypes: ['XLS', 'PDF'],
+      pageNumber: 1,
+      pageSize: 20,
+      reportAllPages: true
+    })
+    await flushPromises()
+
+    expect(AwarenessEducatorService.exportEnrollments).toHaveBeenCalledTimes(2)
+    expect(AwarenessEducatorService.exportEnrollments).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ exportType: 'Excel' })
+    )
+    expect(AwarenessEducatorService.exportEnrollments).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ exportType: 'PDF' })
+    )
+    expect(links[0].download).toBe('Infographic-List.xlsx')
+    expect(links[1].download).toBe('Infographic-List.pdf')
+
+    createElementSpy.mockRestore()
+    objectUrlSpy.mockRestore()
+  })
+
+  it('data keeps download button hidden when showDownloadButton is false', () => {
+    const data = EnrollmentsInfographicTable.data.call({
+      isTrash: false,
+      showDownloadButton: false,
+      $store: {
+        getters: {
+          'permissions/getExportEnrollmentPermission': true,
+          'permissions/getEnrollmentEditPermission': true,
+          'permissions/getDeleteEnrollmentPermission': true
+        }
+      }
+    })
+    expect(data.tableOptions.downloadButton.show).toBe(false)
   })
 })

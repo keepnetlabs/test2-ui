@@ -11,7 +11,7 @@
     persistent-hint
     small-chips
     deletable-chips
-    autocomplete="disabled"
+    autocomplete="off"
     hint="*Required"
     item-value="mailConfigurationResourceId"
     item-text="mailConfigurationName"

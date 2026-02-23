@@ -447,7 +447,7 @@ export default {
     },
     parseDurationToMinutes(duration, durationDisplayName) {
       const normalizedDisplay = (durationDisplayName || '').toString().toLowerCase()
-      const displayMatch = normalizedDisplay.match(/(\d+)\s?(hour|minute)/)
+      const displayMatch = normalizedDisplay.match(/(\d{1,5})\s?(hour|minute)/)
       if (displayMatch) {
         const value = Number(displayMatch[1])
         const unit = displayMatch[2]
@@ -479,13 +479,21 @@ export default {
       // trainingOrder'a göre sırala ve map et
       this.learningPathSteps = [...trainingGroups]
         .sort((a, b) => (a.trainingOrder || 0) - (b.trainingOrder || 0))
-        .map((step) => ({
-          title: step.name,
-          type: step.hasQuiz ? 'Survey' : step.type === 'SCORM' ? 'Training' : step.type,
-          detailTrainingId: step.detailTrainingId,
-          languages: step.languages,
-          coverImage: step.coverImage
-        }))
+        .map((step) => {
+          let stepType = step.type
+          if (step.hasQuiz) {
+            stepType = 'Survey'
+          } else if (step.type === 'SCORM') {
+            stepType = 'Training'
+          }
+          return {
+            title: step.name,
+            type: stepType,
+            detailTrainingId: step.detailTrainingId,
+            languages: step.languages,
+            coverImage: step.coverImage
+          }
+        })
     },
     handlePreviewStep(step) {
       // Eğer zaten nested içindeysek, deep nested drawer açmalıyız
@@ -571,14 +579,14 @@ export default {
         .catch(() => {})
     },
     downloadBlob(blob, filename) {
-      const url = window.URL.createObjectURL(blob)
+      const url = globalThis.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
       a.download = filename
       document.body.appendChild(a)
       a.click()
       a.remove()
-      window.URL.revokeObjectURL(url)
+      globalThis.URL.revokeObjectURL(url)
     },
     getLanguagesTooltip() {
       if (this.availableLanguages && this.availableLanguages.length > 1) {
@@ -738,7 +746,7 @@ export default {
 
             AwarenessEducatorService.downloadPoster({ trainingId, languageId })
               .then((blobResponse) => {
-                const blobUrl = window.URL.createObjectURL(blobResponse.data)
+                const blobUrl = globalThis.URL.createObjectURL(blobResponse.data)
                 this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
                   status: true,
                   previewData: blobUrl,

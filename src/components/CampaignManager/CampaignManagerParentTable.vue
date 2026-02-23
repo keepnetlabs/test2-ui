@@ -41,7 +41,7 @@
           <TheRecordsButton
             label="Run"
             plural-label="Runs"
-            single-label="View Report"
+            :single-label="scope.row.status === 'Idle' ? '' : 'View Report'"
             zero-label="No Run"
             width="140px"
             variant="primary"

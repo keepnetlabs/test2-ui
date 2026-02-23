@@ -330,8 +330,8 @@ import NextButton from '@/components/Common/Buttons/NextButton'
 import SaveButton from '@/components/Common/Buttons/SaveButton'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
 import { mapGetters } from 'vuex'
-import { defaultRedFlags } from './utils'
 import {
+  defaultRedFlags,
   getEmailTemplateMethodItems,
   EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
   EMAIL_TEMPLATE_DIFFICULTY_ITEMS,
@@ -747,18 +747,20 @@ export default {
       const companyLanguageTypeResourceId =
         this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
       const languageItems = []
-      languageItems.push({
-        value: 1,
-        text: 'Preferred Languages',
-        children: preferredLanguageTypes
-      })
-      languageItems.push({
-        value: 5,
-        text: 'All Languages',
-        children: languageTypes.filter(
-          (item) => !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
-        )
-      })
+      languageItems.push(
+        {
+          value: 1,
+          text: 'Preferred Languages',
+          children: preferredLanguageTypes
+        },
+        {
+          value: 5,
+          text: 'All Languages',
+          children: languageTypes.filter(
+            (item) => !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
+          )
+        }
+      )
       this.languageItems = languageItems
       if (this.isEdit) return
       const findedLanguage = languageTypes?.find(
@@ -1087,9 +1089,9 @@ export default {
       }
       this.formValues.prompt = this?.$refs?.refEmailTemplate?.aiTemplateText
       const name =
-        this.formValues.name !== this.initialFormValues.name
-          ? this.formValues.name
-          : `${this.formValues.name} - Copy`
+        this.formValues.name === this.initialFormValues.name
+          ? `${this.formValues.name} - Copy`
+          : this.formValues.name
       let payload = {
         ...this.formValues,
         name,
@@ -1395,7 +1397,6 @@ export default {
     handleShowRedFlagsClick() {
       this.isShowRedFlags = !this.isShowRedFlags
       this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
-      //let differentProperties = {}
       if (this.isShowRedFlags) {
         const responseFlags = this.compareRedFlags()
         if (

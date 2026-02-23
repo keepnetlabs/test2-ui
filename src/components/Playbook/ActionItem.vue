@@ -263,7 +263,7 @@
               persistent-hint
               small-chips
               :items="systemUsersItems"
-              :rules="[(v) => (!v?.length ? 'Required' : true)]"
+              :rules="[requiredArrayRule]"
               :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
             />
           </v-col>
@@ -298,7 +298,7 @@
               persistent-hint
               small-chips
               :return-object="false"
-              :rules="[(v) => (!v?.length ? 'Required' : true)]"
+              :rules="[requiredArrayRule]"
               :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
               :slots="{ selection: true, item: false }"
             >
@@ -653,6 +653,9 @@ export default {
     }
   },
   methods: {
+    requiredArrayRule(value) {
+      return !value || !value.length ? 'Required' : true
+    },
     callForSystemUsers(addPage) {
       if (addPage) {
         this.systemUsersAxiosPayload.pageNumber += 1
@@ -905,7 +908,7 @@ export default {
               selected: val
             }
           })
-          return this.searchEnginesData.find(
+          return this.searchEnginesData.some(
             (searchItem) => searchItem.resourceId === item.resourceId
           )
             ? {

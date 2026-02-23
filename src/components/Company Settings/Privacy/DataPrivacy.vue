@@ -132,10 +132,10 @@ export default {
       })
     },
     handleSave() {
-      if (!this.pentesterMasked) {
-        this.isShowPrivacyOptionsDialog = true
-      } else {
+      if (this.pentesterMasked) {
         this.callForSubmitApi()
+      } else {
+        this.isShowPrivacyOptionsDialog = true
       }
     },
     callForSubmitApi() {

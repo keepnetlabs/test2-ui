@@ -757,17 +757,17 @@ export default {
   watch: {
     formData: {
       handler(val) {
-        if (this.formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
-          if (this.formData.trainingForCategory?.trainingId) {
-            this.selectedTraining = this.formData.trainingForCategory
-            this.callForTrainingDetail(this.formData.trainingForCategory.trainingId)
-          }
-        } else {
+        if (this.formData.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY) {
           this.selectedScenarioResourceId = val?.selectedPhishingScenarios?.[0]?.resourceId
           this.callForScenarioDetail({
             name: this.selectedScenarioResourceId,
             index: 0
           })
+        } else {
+          if (this.formData.trainingForCategory?.trainingId) {
+            this.selectedTraining = this.formData.trainingForCategory
+            this.callForTrainingDetail(this.formData.trainingForCategory.trainingId)
+          }
         }
       },
       deep: true,

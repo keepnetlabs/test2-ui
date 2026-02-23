@@ -215,7 +215,7 @@ export default {
       mergeTagRules: [
         (v) => {
           if (!v) return true
-          const matches = v.match(/\{([^}]*)\}/gi)
+          const matches = v.match(/\{([A-Za-z0-9_]*)\}/g)
           if (!matches?.length) return true
           const tags = this.mergeTags.map((tag) => tag.value)
           for (const match of matches) {

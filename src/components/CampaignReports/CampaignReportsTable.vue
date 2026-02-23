@@ -261,29 +261,33 @@ export default {
           this.tableData = results.map((row) => {
             const campaignStatus = [row['totalNoResponseCount']]
             if (row.method === 'Multiple Method') {
-              campaignStatus.push(row['totalClickedCount'])
-              campaignStatus.push(row['totalOpenedCount'])
-              campaignStatus.push(row['totalSubmittedCount'])
-              campaignStatus.push(row['totalAttachmentOpenedCount'])
+              campaignStatus.push(
+                row['totalClickedCount'],
+                row['totalOpenedCount'],
+                row['totalSubmittedCount'],
+                row['totalAttachmentOpenedCount']
+              )
             }
             if (row.method === 'Click-Only') {
-              campaignStatus.push(row['totalClickedCount'])
-              campaignStatus.push(row['totalOpenedCount'])
+              campaignStatus.push(row['totalClickedCount'], row['totalOpenedCount'])
             }
             if (row.method === 'Attachment') {
-              campaignStatus.push(row['totalOpenedCount'])
-              campaignStatus.push(row['totalAttachmentOpenedCount'])
+              campaignStatus.push(row['totalOpenedCount'], row['totalAttachmentOpenedCount'])
             }
 
             if (row.method === 'Data Submission') {
-              campaignStatus.push(row['totalClickedCount'])
-              campaignStatus.push(row['totalOpenedCount'])
-              campaignStatus.push(row['totalSubmittedCount'])
+              campaignStatus.push(
+                row['totalClickedCount'],
+                row['totalOpenedCount'],
+                row['totalSubmittedCount']
+              )
             } else if (row.method === 'MFA') {
-              campaignStatus.push(row['totalClickedCount'])
-              campaignStatus.push(row['totalOpenedCount'])
-              campaignStatus.push(row['totalSubmittedCount'])
-              campaignStatus.push(row['totalSubmittedMFACount'])
+              campaignStatus.push(
+                row['totalClickedCount'],
+                row['totalOpenedCount'],
+                row['totalSubmittedCount'],
+                row['totalSubmittedMFACount']
+              )
             }
             return {
               ...row,
@@ -311,7 +315,7 @@ export default {
         exportCampaignReports(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Campaign-Manager-Report.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`

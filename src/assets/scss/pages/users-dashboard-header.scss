@@ -183,10 +183,6 @@
       }
     }
 
-    &__language-text {
-      font-size: 12px;
-    }
-
     &__language-btn {
       padding: 0 8px !important;
       height: 36px !important;
@@ -213,6 +209,7 @@
     }
 
     &__language-text {
+      font-size: 12px;
       display: none;
     }
 
