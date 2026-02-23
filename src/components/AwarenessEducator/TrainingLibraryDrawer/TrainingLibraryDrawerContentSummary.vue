@@ -720,12 +720,6 @@ export default {
       const trainingId = this.trainingData.trainingId || this.trainingData.resourceId
       const languageId = language.value
 
-      // Poster, Screensaver, Infographic için scormPlayerUrl boş gelirse direkt blob download yap
-      const isPosterLikeType =
-        this.type === TRAINING_LIBRARY_TYPES.POSTER ||
-        this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER ||
-        this.type === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
-
       AwarenessEducatorService.getTrainingUrlForPreview(trainingId, languageId)
         .then((response) => {
           const previewData = response?.data?.data || response?.data

@@ -684,9 +684,9 @@ export default {
             name: campaignManagerFormData.name,
             scheduleTypeId: Number.parseInt(deliverySettingsFormData.scheduleTypeId),
             scheduledDate:
-              deliverySettingsFormData?.scheduleTypeId?.toString() !== SCHEDULE_TYPES.SCHEDULE_TO
-                ? null
-                : deliverySettingsFormData.scheduledDate,
+              deliverySettingsFormData?.scheduleTypeId?.toString() === SCHEDULE_TYPES.SCHEDULE_TO
+                ? deliverySettingsFormData.scheduledDate
+                : null,
             scheduledDateTimeZoneId: deliverySettingsFormData.scheduledDateTimeZoneId,
             duration: Number.parseInt(campaignManagerFormData.duration),
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,

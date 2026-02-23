@@ -360,4 +360,96 @@ describe('CampaignManagerItemTable.vue', () => {
     expect(usersCol.width).toBe(240)
     expect(statusCol.width).toBe(240)
   })
+
+  it('does not throw when statusItems watcher runs without status column', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.tableOptions.columns = wrapper.vm.tableOptions.columns.filter(
+      (col) => col.property !== COLUMNS.STATUS.property
+    )
+    wrapper.vm.reRenderFilters = jest.fn()
+
+    await wrapper.setProps({ statusItems: [{ text: 'Running' }] })
+
+    expect(wrapper.vm.reRenderFilters).not.toHaveBeenCalled()
+  })
+
+  it('handleDelete selects row and opens delete dialog', () => {
+    const wrapper = createWrapper()
+    const row = { instanceGroup: 'ig-del-2' }
+
+    wrapper.vm.handleDelete(row)
+
+    expect(wrapper.vm.selectedRow).toEqual(row)
+    expect(wrapper.vm.isShowDeleteDialog).toBe(true)
+  })
+
+  it('reRenderFilters and resetSearchText behavior depends on table ref methods', () => {
+    const wrapper = createWrapper()
+
+    expect(() => wrapper.vm.reRenderFilters()).toThrow()
+    expect(() => wrapper.vm.resetSearchText()).toThrow()
+
+    const reRenderFilters = jest.fn()
+    const resetSearchText = jest.fn()
+    wrapper.vm.$refs.refTable = { reRenderFilters, resetSearchText }
+
+    wrapper.vm.reRenderFilters()
+    wrapper.vm.resetSearchText()
+
+    expect(reRenderFilters).toHaveBeenCalledWith(undefined)
+    expect(resetSearchText).toHaveBeenCalled()
+  })
+
+  it('emits launch payload from add button click', () => {
+    const wrapper = createWrapper({
+      item: {
+        resourceId: 'campaign-add-1',
+        name: 'Campaign A',
+        frequency: 1,
+        categoryDistributionType: SCENARIO_DISTRIBUTION_TEXTS[0]
+      }
+    })
+
+    wrapper.vm.handleOnAddButtonClick()
+
+    expect(wrapper.emitted('on-launch')[0][0]).toEqual({ resourceId: 'campaign-add-1' })
+  })
+
+  it('item watcher returns early for null and keeps add button enabled when frequency is zero', async () => {
+    const wrapper = createWrapper()
+    const initialTooltip = wrapper.vm.tableOptions.addButton.tooltip
+
+    await wrapper.setProps({ item: null })
+    expect(wrapper.vm.tableOptions.addButton.tooltip).toBe(initialTooltip)
+
+    await wrapper.setProps({
+      item: {
+        resourceId: 'campaign-1',
+        name: 'Campaign A',
+        frequency: 0,
+        categoryDistributionType: SCENARIO_DISTRIBUTION_TEXTS[1]
+      }
+    })
+    expect(wrapper.vm.tableOptions.addButton.disabled).toBe(false)
+    expect(wrapper.vm.tableOptions.addButton.tooltip).toBe('Add a Campaign')
+  })
+
+  it('statusItems watcher does nothing for empty values', async () => {
+    const wrapper = createWrapper({ statusItems: [{ text: 'Running' }] })
+    wrapper.vm.reRenderFilters = jest.fn()
+
+    await wrapper.setProps({ statusItems: [] })
+    await wrapper.setProps({ statusItems: null })
+
+    expect(wrapper.vm.reRenderFilters).not.toHaveBeenCalled()
+  })
+
+  it('tooltip and table text helpers cover default branches', () => {
+    const wrapper = createWrapper()
+
+    expect(wrapper.vm.getTooltipDisabilityStatus({ status: 'Running', jobResultMessage: 'x' })).toBe(
+      true
+    )
+    expect(wrapper.vm.getTableAllRecordsText).toBe('Campaign Name: Campaign A')
+  })
 })

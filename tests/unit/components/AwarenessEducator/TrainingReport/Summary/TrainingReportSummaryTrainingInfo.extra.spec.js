@@ -65,4 +65,31 @@ describe('TrainingReportSummaryTrainingInfo.vue (extra)', () => {
     methods.handleAudienceClick.call(ctx)
     expect(ctx.$emit).toHaveBeenCalledWith('audienceClick')
   })
+
+  it('formats singular user text and keeps only visible item keys', () => {
+    const items = {
+      'Target Users': { show: true, value: 1 },
+      'Target Groups': { show: true, value: [{ id: 1 }] },
+      HiddenA: { show: false, value: 'x' },
+      HiddenB: { show: false, value: 'y' }
+    }
+
+    expect(computed.getBodyValue.call({ items })).toBe('1 user')
+    expect(Object.keys(computed.getItems.call({ items }))).toEqual([
+      'Target Users',
+      'Target Groups'
+    ])
+  })
+
+  it('returns default values for missing group list and unknown type', () => {
+    const items = { 'Target Users': { value: 0 } }
+    expect(computed.getTargetGroups.call({ items })).toEqual([])
+    expect(
+      computed.getAudienceText.call({
+        isFromUserGroups: false,
+        isFromPhishingCampaign: false,
+        items
+      })
+    ).toBe('')
+  })
 })

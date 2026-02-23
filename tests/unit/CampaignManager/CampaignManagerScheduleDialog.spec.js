@@ -180,6 +180,14 @@ describe('CampaignManagerScheduleDialog.vue', () => {
       expect(wrapper.vm.getTitle).toBe('Phishing Scenarios Frequency Schedule')
     })
 
+    it('getTitle should use quishing constants title when type is PHISHING and scenarioType is QUISHING', () => {
+      const wrapper = mountComponent({
+        type: DISTRIBUTION_TYPES.PHISHING,
+        scenarioType: SCENARIO_TYPES.QUISHING
+      })
+      expect(wrapper.vm.getTitle).toBe('Quishing Scenarios Frequency Schedule')
+    })
+
     it('getTitle should return smishing title when type is not PHISHING', () => {
       const wrapper = mountComponent({ type: 'SMISHING' })
       expect(wrapper.vm.getTitle).toBe('Smishing Scenarios Frequency Schedule')
@@ -206,20 +214,48 @@ describe('CampaignManagerScheduleDialog.vue', () => {
       const wrapper = mountComponent()
       expect(() => wrapper.vm.handleDelete()).not.toThrow()
     })
+
+    it('closeModal emits on-close', () => {
+      const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+      wrapper.vm.closeModal()
+      expect(emitSpy).toHaveBeenCalledWith('on-close')
+    })
+
+    it('handleDelete emits on-delete with undefined payload when item is not defined', () => {
+      const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+      wrapper.vm.handleDelete()
+      expect(emitSpy).toHaveBeenCalledWith('on-delete', undefined)
+    })
+
+    it('handleDelete emits on-delete with item payload when context item exists', () => {
+      const emit = jest.fn()
+      CampaignManagerScheduleDialog.methods.handleDelete.call({
+        item: { id: 'x1' },
+        $emit: emit
+      })
+      expect(emit).toHaveBeenCalledWith('on-delete', { id: 'x1' })
+    })
   })
 
   describe('Event Emission', () => {
     it('should emit on-close when changeStatus is triggered', () => {
       const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
       const appDialog = wrapper.findComponent({ name: 'AppDialog' })
       expect(appDialog.exists()).toBe(true)
-      // AppDialog emits changeStatus which triggers closeModal
+      appDialog.vm.$listeners.changeStatus()
+      expect(emitSpy).toHaveBeenCalledWith('on-close')
     })
 
     it('should emit on-close when close button is clicked', async () => {
       const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
       const closeButton = wrapper.find('#btn-close--campaign-manager-schedule-close')
       expect(closeButton.exists()).toBe(true)
+      closeButton.vm.$listeners.click()
+      expect(emitSpy).toHaveBeenCalledWith('on-close')
     })
   })
 

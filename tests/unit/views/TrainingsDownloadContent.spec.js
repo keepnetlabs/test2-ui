@@ -34,6 +34,7 @@ describe('TrainingsDownloadContent.vue', () => {
 
     expect(m.getFileNameFromDisposition("attachment; filename*=UTF-8''my%20file.pdf")).toBe('my file.pdf')
     expect(m.getFileNameFromDisposition('attachment; filename="report.csv"')).toBe('report.csv')
+    expect(m.getFileNameFromDisposition('attachment; filename=plain.txt')).toBe('plain.txt')
     expect(m.getFileNameFromDisposition('')).toBe('')
   })
 
@@ -41,7 +42,9 @@ describe('TrainingsDownloadContent.vue', () => {
     const m = TrainingsDownloadContent.methods
 
     expect(m.getExtensionFromType('application/pdf')).toBe('.pdf')
+    expect(m.getExtensionFromType('application/octet-stream')).toBe('')
     expect(m.getExtensionFromType('image/png; charset=utf-8')).toBe('.png')
+    expect(m.getExtensionFromType('audio/ogg')).toBe('.ogg')
     expect(m.getExtensionFromType('video/custom')).toBe('.custom')
     expect(m.getExtensionFromType('application/x-custom')).toBe('.x-custom')
     expect(m.getExtensionFromType('')).toBe('')
@@ -107,6 +110,34 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(ctx.isLoading).toBe(false)
   })
 
+  it('handleDownload uses fallback filename when disposition header is missing', async () => {
+    axios.get.mockResolvedValueOnce({
+      data: new Blob(['x']),
+      headers: {
+        'content-type': 'application/pdf'
+      }
+    })
+
+    const triggerDownload = jest.fn()
+    const ctx = {
+      isLoading: true,
+      statusMessage: 'Preparing download...',
+      shouldShowCloseButton: false,
+      $route: {
+        query: { EnrollmentContentId: 'ec-2', TargetUserResourceId: 'tu-2' }
+      },
+      getFileNameFromDisposition: TrainingsDownloadContent.methods.getFileNameFromDisposition,
+      getExtensionFromType: TrainingsDownloadContent.methods.getExtensionFromType,
+      triggerDownload,
+      handleAutoClose: jest.fn()
+    }
+
+    await TrainingsDownloadContent.methods.handleDownload.call(ctx)
+    await flushPromises()
+
+    expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'download.pdf')
+  })
+
   it('handleDownload failure path sets failed message and close button', async () => {
     axios.get.mockRejectedValueOnce(new Error('network'))
 
@@ -155,22 +186,68 @@ describe('TrainingsDownloadContent.vue', () => {
     jest.useRealTimers()
   })
 
-  it('handleCloseTab returns true when closable and false on error', () => {
+  it('handleCloseTab returns true when closable and false on close error', () => {
     const closeSpy = jest.spyOn(window, 'close').mockImplementation(() => {})
 
     const originalOpener = window.opener
     Object.defineProperty(window, 'opener', { value: {}, configurable: true })
     expect(TrainingsDownloadContent.methods.handleCloseTab()).toBe(true)
 
-    Object.defineProperty(window, 'opener', {
-      get() {
-        throw new Error('blocked')
-      },
-      configurable: true
+    closeSpy.mockImplementation(() => {
+      throw new Error('blocked')
     })
     expect(TrainingsDownloadContent.methods.handleCloseTab()).toBe(false)
 
     Object.defineProperty(window, 'opener', { value: originalOpener, configurable: true })
     closeSpy.mockRestore()
+  })
+
+  it('triggerDownload uses msSaveOrOpenBlob when available', () => {
+    const originalNavigator = window.navigator
+    const msSaveOrOpenBlob = jest.fn()
+    Object.defineProperty(window, 'navigator', {
+      value: { ...window.navigator, msSaveOrOpenBlob },
+      configurable: true
+    })
+
+    TrainingsDownloadContent.methods.triggerDownload(new Blob(['x']), 'a.pdf')
+    expect(msSaveOrOpenBlob).toHaveBeenCalled()
+
+    Object.defineProperty(window, 'navigator', { value: originalNavigator, configurable: true })
+  })
+
+  it('triggerDownload creates and clicks anchor for standard browsers', () => {
+    const originalNavigator = window.navigator
+    const originalURL = window.URL
+    Object.defineProperty(window, 'navigator', {
+      value: { ...window.navigator, msSaveOrOpenBlob: undefined },
+      configurable: true
+    })
+    window.URL = {
+      createObjectURL: jest.fn(() => 'blob:test'),
+      revokeObjectURL: jest.fn()
+    }
+
+    const appendChildSpy = jest.spyOn(document.body, 'appendChild')
+
+    const link = document.createElement('a')
+    const clickSpy = jest.spyOn(link, 'click').mockImplementation(() => {})
+    const removeSpy = jest.spyOn(link, 'remove').mockImplementation(() => {})
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+
+    TrainingsDownloadContent.methods.triggerDownload(new Blob(['x']), 'b.pdf')
+
+    expect(window.URL.createObjectURL).toHaveBeenCalled()
+    expect(appendChildSpy).toHaveBeenCalledWith(link)
+    expect(clickSpy).toHaveBeenCalled()
+    expect(removeSpy).toHaveBeenCalled()
+    expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test')
+
+    Object.defineProperty(window, 'navigator', { value: originalNavigator, configurable: true })
+    window.URL = originalURL
+    createElementSpy.mockRestore()
+    clickSpy.mockRestore()
+    removeSpy.mockRestore()
+    appendChildSpy.mockRestore()
   })
 })

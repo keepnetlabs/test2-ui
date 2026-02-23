@@ -115,10 +115,10 @@ export default {
     }
   },
   created() {
-    const data = this.userCountDetailResponse?.data?.data
+    const data = this.userCountDetailResponse?.data?.data || []
     const preferredLanguages = new Set()
     const randomLanguages = new Set()
-    data.map((row) => {
+    data.forEach((row) => {
       if (row.hasPreferredLanguage) {
         const noPrefLanguages = row.hasPreferredLanguage.filter((r) => r.status === 'No')
         if (noPrefLanguages.length) {

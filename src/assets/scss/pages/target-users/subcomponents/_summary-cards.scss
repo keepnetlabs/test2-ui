@@ -131,16 +131,21 @@
   }
 
   .summary-card--disabled {
+    cursor: not-allowed;
+
+    &:hover {
+      cursor: not-allowed;
+    }
+
     .summary-icon-image {
       opacity: 0.5;
       filter: grayscale(1);
     }
+
     .summary-icon {
       opacity: 0.5;
     }
-  }
 
-  .summary-card--disabled {
     .summary-filter-icon {
       opacity: 0.5;
     }
@@ -153,13 +158,5 @@
 
   .summary-card--clickable:hover {
     cursor: pointer;
-  }
-
-  .summary-card--disabled {
-    cursor: not-allowed;
-  }
-
-  .summary-card--disabled:hover {
-    cursor: not-allowed;
   }
 }
