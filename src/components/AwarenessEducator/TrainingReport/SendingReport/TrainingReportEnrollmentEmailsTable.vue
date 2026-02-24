@@ -4,6 +4,9 @@
     ref="refTable"
     rowKey="targetUserResourceId"
     selectable
+    :add-row-class-name="getDeletedRowClassName"
+    :handle-set-cell-class="getDeletedRowCellClass"
+    :get-cell-tooltip-text="getDeletedRowTooltipText"
     filterable
     options
     is-server-side-selection
@@ -57,6 +60,13 @@
         </template>
         <span>{{ getErrorMessage(scope.row) }}</span>
       </v-tooltip>
+      <Badge
+        v-else-if="col.property === 'targetUserStatus' && scope.row && getTargetUserStatusDisplay(scope.row)"
+        :color="getBtnStatusColor(getTargetUserStatusDisplay(scope.row))"
+        :text="getTargetUserStatusDisplay(scope.row)"
+        :col="col"
+        size="medium"
+      />
     </template>
     <template #extended-view-slot>
       <div
@@ -257,6 +267,23 @@ export default {
                 text: status.displayName || status.name,
                 value: status.name
               })) || []
+          },
+          {
+            property: 'targetUserStatus',
+            align: 'center',
+            editable: false,
+            fixed: false,
+            label: 'User Status',
+            sortable: true,
+            show: true,
+            type: 'slot',
+            width: 180,
+            filterableType: 'select',
+            filterableItems: [
+              { text: labels.Active, value: 'Active' },
+              { text: labels.InActive, value: 'Inactive' },
+              { text: 'Deleted', value: 'Deleted' }
+            ]
           },
           {
             property: PROPERTY_STORE.EMAIL_DELIVERY,
@@ -467,6 +494,25 @@ export default {
     },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
+    },
+    getTargetUserStatusDisplay(row) {
+      return row?.targetUserStatus || ''
+    },
+    isRowTypeDeleted(row) {
+      return String(row?.targetUserStatus || '').trim().toLowerCase() === 'deleted'
+    },
+    getDeletedRowClassName({ row } = {}) {
+      return this.isRowTypeDeleted(row) ? ' training-report-enrollment__deleted-row' : ''
+    },
+    getDeletedRowCellClass({ row, column } = {}) {
+      if (!this.isRowTypeDeleted(row)) return ''
+      if (column?.property === 'targetUserStatus') return ''
+      return 'training-report-enrollment__deleted-row-cell'
+    },
+    getDeletedRowTooltipText({ row, column } = {}) {
+      if (!this.isRowTypeDeleted(row)) return ''
+      if (!column?.property || column.property === 'targetUserStatus') return ''
+      return 'This user has been deleted'
     },
     callForData() {
       this.setLoading(true)

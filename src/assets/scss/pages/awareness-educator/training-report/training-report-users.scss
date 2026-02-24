@@ -5,3 +5,11 @@
     align-items: center;
   }
 }
+
+#training-report-users-data-table {
+  .training-report-enrollment__deleted-row-cell {
+    .cell {
+      opacity: 0.5;
+    }
+  }
+}
