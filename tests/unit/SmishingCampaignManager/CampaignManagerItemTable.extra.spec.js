@@ -1,6 +1,6 @@
 jest.mock('@/api/phishingsimulator', () => ({
   searchCampaignPhishingJob: jest.fn().mockResolvedValue({ data: { data: {} } }),
-  exportCampaignManagerItem: jest.fn().mockResolvedValue({ data: new Blob() })
+  exportCampaignManagerItem: jest.fn().mockResolvedValue({ data: Buffer.from('') })
 }))
 
 import CampaignManagerItemTable from '@/components/SmishingCampaignManager/CampaignManagerItemTable.vue'

@@ -11,7 +11,7 @@ jest.mock('@/api/callback', () => ({
         }
       }
     }),
-    exportCallbackJobs: jest.fn().mockResolvedValue({ data: new Blob() })
+    exportCallbackJobs: jest.fn().mockResolvedValue({ data: Buffer.from('') })
   }
 }))
 
