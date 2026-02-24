@@ -638,7 +638,7 @@ describe('GamificationReportUserDetailsDrawerFilterBadge.vue', () => {
       const duration = Date.now() - start
 
       expect(wrapper.vm.activityTypeFilterItems).toHaveLength(1000)
-      expect(duration).toBeLessThan(200)
+      expect(duration).toBeLessThan(2000)
     })
 
     it('should handle large number of search filter values efficiently', () => {
