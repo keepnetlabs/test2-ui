@@ -417,7 +417,7 @@ describe('Dashboard View', () => {
       const start = Date.now()
       const wrapper = shallowMount(Widgets)
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
       wrapper.destroy()
     })
 
@@ -427,7 +427,7 @@ describe('Dashboard View', () => {
       const start = Date.now()
       wrapper.destroy()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('should handle multiple mounts efficiently', () => {

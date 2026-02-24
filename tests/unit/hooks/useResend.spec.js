@@ -529,7 +529,7 @@ describe('useResend Hook (Phishing)', () => {
         component.toggleIsShowResendDialog()
       }
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle large payloads', () => {

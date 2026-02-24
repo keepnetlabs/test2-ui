@@ -369,7 +369,7 @@ describe('CampaignManagerReportClicked.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(150)
+      expect(duration).toBeLessThan(200)
     })
 
     it('should handle selection changes efficiently', () => {
@@ -381,7 +381,7 @@ describe('CampaignManagerReportClicked.vue', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 })

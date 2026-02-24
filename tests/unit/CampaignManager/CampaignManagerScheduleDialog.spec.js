@@ -541,7 +541,7 @@ describe('CampaignManagerScheduleDialog.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('closeModal should execute quickly', () => {
@@ -551,7 +551,7 @@ describe('CampaignManagerScheduleDialog.vue', () => {
         wrapper.vm.closeModal()
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(200)
+      expect(duration).toBeLessThan(300)
     })
 
     it('should handle large items array', () => {

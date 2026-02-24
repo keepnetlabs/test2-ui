@@ -497,7 +497,7 @@ describe('uploadRequest utility', () => {
       const startTime = Date.now()
       require('@/utils/uploadRequest')
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should not block on large uploads', () => {

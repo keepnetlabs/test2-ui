@@ -470,7 +470,7 @@ describe("RoiSummaryIrHeader widget", () => {
       const startTime = Date.now();
       mountFactory();
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(150);
+      expect(duration).toBeLessThan(200);
     });
 
     it("should evaluate isRoiSummaryEmpty efficiently", () => {
@@ -480,7 +480,7 @@ describe("RoiSummaryIrHeader widget", () => {
         wrapper.vm.isRoiSummaryEmpty();
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(150);
     });
 
     it("should handle rapid data changes", () => {

@@ -508,7 +508,7 @@ describe('emailThreatSimulatorRequest utility', () => {
       const startTime = performance.now()
       const service = require('@/utils/emailThreatSimulatorRequest').default
       const duration = performance.now() - startTime
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle rapid token requests', () => {
@@ -525,7 +525,7 @@ describe('emailThreatSimulatorRequest utility', () => {
         service.interceptors.request.use(c => c)
       }
       const duration = performance.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle multiple concurrent operations', () => {

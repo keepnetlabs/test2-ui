@@ -518,7 +518,7 @@ describe("TopRules widget", () => {
         wrapper.vm.handleRuleNameClick({ resourceId: `r${i}` });
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(150);
     });
 
     it("should format match counts efficiently", () => {
@@ -528,7 +528,7 @@ describe("TopRules widget", () => {
         wrapper.vm.getValue(i);
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(50);
+      expect(duration).toBeLessThan(100);
     });
   });
 

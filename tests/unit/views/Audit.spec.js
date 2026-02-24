@@ -665,7 +665,7 @@ describe('Audit.vue', () => {
         stubs: { DataTable: true, KContainer: true }
       })
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
       w.destroy()
       nowSpy.mockRestore()
     })

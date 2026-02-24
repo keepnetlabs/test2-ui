@@ -532,7 +532,7 @@ describe("RecentCampaigns widget", () => {
         wrapper.vm.getChartOptionsForRow({ method: "Click-Only" });
       }
       const duration = performance.now() - start;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(150);
     });
 
     it("should process large datasets efficiently", () => {

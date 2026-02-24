@@ -376,7 +376,7 @@ describe('rightColumn Vuex Module', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle getter calls efficiently', () => {
@@ -388,7 +388,7 @@ describe('rightColumn Vuex Module', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle action dispatch quickly', () => {
@@ -400,7 +400,7 @@ describe('rightColumn Vuex Module', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 

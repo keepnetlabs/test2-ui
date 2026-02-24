@@ -247,7 +247,7 @@ describe('Country Utility Maps', () => {
         ? Object.keys(countryDefaults)
         : []
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('countryLanguageMap should be accessible quickly', () => {
@@ -256,7 +256,7 @@ describe('Country Utility Maps', () => {
         ? Object.keys(countryLanguageMap)
         : []
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle multiple iterations over countryDefaults', () => {

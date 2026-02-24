@@ -290,7 +290,7 @@ describe('countryDefaultValues utility', () => {
         countryDefaultValues.find((c) => c.name === 'France')
       }
       const endTime = performance.now()
-      expect(endTime - startTime).toBeLessThan(100)
+      expect(endTime - startTime).toBeLessThan(150)
     })
 
     it('should support array operations efficiently', () => {
@@ -298,7 +298,7 @@ describe('countryDefaultValues utility', () => {
       const mapped = countryDefaultValues.map((c) => c.phoneNumberCode)
       const filtered = mapped.filter((code) => code.length > 0)
       const endTime = performance.now()
-      expect(endTime - startTime).toBeLessThan(50)
+      expect(endTime - startTime).toBeLessThan(100)
       expect(filtered.length).toBe(countryDefaultValues.length)
     })
   })

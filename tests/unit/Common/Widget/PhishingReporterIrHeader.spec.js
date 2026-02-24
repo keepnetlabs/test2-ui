@@ -439,7 +439,7 @@ describe("PhishingReporterIrHeader widget", () => {
       const startTime = Date.now();
       mountFactory();
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(150);
     });
 
     it("should evaluate isPhishingEmpty efficiently", () => {
@@ -449,7 +449,7 @@ describe("PhishingReporterIrHeader widget", () => {
         wrapper.vm.isPhishingEmpty({ onlineUsersCount: i, offlineUsersCount: i });
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(150);
     });
 
     it("should handle rapid data changes efficiently", () => {

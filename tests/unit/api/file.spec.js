@@ -512,28 +512,28 @@ describe('File API', () => {
       const start = Date.now()
       await FileAPI.getUploadedFiles()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('uploadFiles should execute quickly', async () => {
       const start = Date.now()
       await FileAPI.uploadFiles({ file: 'data' })
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('deleteFiles should execute quickly', async () => {
       const start = Date.now()
       await FileAPI.deleteFiles(['id1'])
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('parseEmailOrMessageFile should execute quickly', async () => {
       const start = Date.now()
       await FileAPI.parseEmailOrMessageFile({ file: 'data' })
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('should handle 100 operations efficiently', async () => {

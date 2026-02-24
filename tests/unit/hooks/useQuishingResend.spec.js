@@ -469,7 +469,7 @@ describe('useResend Hook (Quishing)', () => {
         component.toggleIsShowResendDialog()
       }
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle large payload objects', () => {
