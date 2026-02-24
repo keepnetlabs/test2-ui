@@ -82,6 +82,11 @@ describe('vishing API', () => {
       expect(vishingRequest.get).toHaveBeenCalledWith(`/vishing-template/preview/${id}`)
     })
 
+    it('should call getVishingTemplatePreview with default resourceId', async () => {
+      await vishingApi.getVishingTemplatePreview()
+      expect(vishingRequest.get).toHaveBeenCalledWith('/vishing-template/preview/')
+    })
+
     it('should call getVishingTemplateLanguages', async () => {
       await vishingApi.getVishingTemplateLanguages()
       expect(vishingRequest.get).toHaveBeenCalledWith('/vishing-template/language')
@@ -174,6 +179,11 @@ describe('vishing API', () => {
       const id = 'campaign-123'
       await vishingApi.getVishingCampaignPreview(id)
       expect(vishingRequest.get).toHaveBeenCalledWith(`/vishing-campaign/preview/${id}`)
+    })
+
+    it('should call getVishingCampaignPreview with default resourceId', async () => {
+      await vishingApi.getVishingCampaignPreview()
+      expect(vishingRequest.get).toHaveBeenCalledWith('/vishing-campaign/preview/')
     })
 
     it('should call getVishingCampaignDistributionCalculation', async () => {
@@ -527,6 +537,123 @@ describe('vishing API', () => {
       const error = new Error('Report fetch failed')
       vishingRequest.get.mockRejectedValueOnce(error)
       await expect(vishingApi.getVishingReportSummary('id')).rejects.toThrow('Report fetch failed')
+    })
+  })
+
+  describe('default parameter branch coverage', () => {
+    it('calls with default payload when no arg', async () => {
+      await vishingApi.exportVishingTemplates()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-template/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('calls with default resourceId when no arg', async () => {
+      await vishingApi.getVishingTemplate()
+      expect(vishingRequest.get).toHaveBeenCalledWith('/vishing-template/')
+    })
+
+    it('calls updateVishingTemplate with defaults when no args', async () => {
+      await vishingApi.updateVishingTemplate()
+      expect(vishingRequest.put).toHaveBeenCalledWith('/vishing-template/', {}, expect.any(Object))
+    })
+
+    it('calls createVishingTemplate with default payload', async () => {
+      await vishingApi.createVishingTemplate()
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-template', {}, expect.any(Object))
+    })
+
+    it('calls getVishingCampaign with default resourceId', async () => {
+      await vishingApi.getVishingCampaign()
+      expect(vishingRequest.get).toHaveBeenCalledWith('/vishing-campaign/')
+    })
+
+    it('calls updateVishingCampaign with default payload and resourceId', async () => {
+      await vishingApi.updateVishingCampaign()
+      expect(vishingRequest.put).toHaveBeenCalledWith('/vishing-campaign/', {}, expect.any(Object))
+    })
+
+    it('calls getVishingReportUsers with default payload and resourceId', async () => {
+      await vishingApi.getVishingReportUsers()
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-report//users/search', {})
+    })
+
+    it('calls getVishingReportAnswered with default payload and resourceId', async () => {
+      await vishingApi.getVishingReportAnswered()
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-report//answered/search', {})
+    })
+
+    it('calls playTextToSpeech with default payload', async () => {
+      await vishingApi.playTextToSpeech()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-template/language/get-voice-url',
+        {}
+      )
+    })
+
+    it('calls exportVishingUsers with default payload and resourceId', async () => {
+      await vishingApi.exportVishingUsers()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-report//users/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('calls exportVishingAnsweredUsers with default payload and resourceId', async () => {
+      await vishingApi.exportVishingAnsweredUsers()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-report//answered/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('calls getVishingReportDialedNumber with default payload and resourceId', async () => {
+      await vishingApi.getVishingReportDialedNumber()
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-report//dialed-number/search', {})
+    })
+
+    it('calls exportVishingReportDialedNumbers with default payload and resourceId', async () => {
+      await vishingApi.exportVishingReportDialedNumbers()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-report//dialed-number/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('calls getVishingReportNoResponse with default payload and resourceId', async () => {
+      await vishingApi.getVishingReportNoResponse()
+      expect(vishingRequest.post).toHaveBeenCalledWith('/vishing-report//no-response/search', {})
+    })
+
+    it('calls exportVishingReportNoResponse with default payload and resourceId', async () => {
+      await vishingApi.exportVishingReportNoResponse()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-report//no-response/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('calls exportVishingReportSummary with default resourceId', async () => {
+      await vishingApi.exportVishingReportSummary()
+      expect(vishingRequest.get).toHaveBeenCalledWith(
+        '/vishing-report//export',
+        { responseType: 'blob' }
+      )
+    })
+
+    it('calls resendVishingReport with default resourceId and payload', async () => {
+      await vishingApi.resendVishingReport()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/vishing-report/resend/',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
     })
   })
 })

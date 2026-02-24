@@ -70,7 +70,42 @@ describe('DataTable misc components', () => {
     expect(DataTableColorfulText.props).toHaveProperty('scope')
     expect(DataTableColorfulText.props).toHaveProperty('col')
     expect(DataTableColorfulText.props).toHaveProperty('text')
-    expect(DataTableColorfulText.getTextColor('open')).toBeTruthy()
+    expect(DataTableColorfulText.getTextColor('open')).toBe('#f56c6c')
+  })
+
+  it('DataTableColorfulText renders value when row has property', () => {
+    const wrapper = mount(DataTableColorfulText, {
+      propsData: {
+        scope: { row: { status: 'open' } },
+        col: { property: 'status', emptyText: 'N/A' },
+        text: 'open'
+      },
+      stubs: { 'v-icon': true }
+    })
+    expect(wrapper.text()).toContain('open')
+    expect(wrapper.find('.datatable__colorful-text').exists()).toBe(true)
+  })
+
+  it('DataTableColorfulText renders emptyText when row value is falsy', () => {
+    const wrapper = mount(DataTableColorfulText, {
+      propsData: {
+        scope: { row: {} },
+        col: { property: 'status', emptyText: 'No status' },
+        text: ''
+      }
+    })
+    expect(wrapper.text()).toContain('No status')
+  })
+
+  it('DataTableColorfulText uses empty string when emptyText not provided', () => {
+    const wrapper = mount(DataTableColorfulText, {
+      propsData: {
+        scope: { row: {} },
+        col: { property: 'status' },
+        text: ''
+      }
+    })
+    expect(wrapper.find('span').exists()).toBe(true)
   })
 
   it('DataTableText helper methods detect content and validation details', () => {

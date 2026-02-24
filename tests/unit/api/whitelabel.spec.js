@@ -109,6 +109,15 @@ describe('whitelabel API', () => {
       )
     })
 
+    it('should call updateWhiteLabel with default payload, id and config', async () => {
+      await whitelabelApi.updateWhiteLabel()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/whitelabeling/',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deleteWhiteLabel', async () => {
       const resourceId = 'brand-123'
       await whitelabelApi.deleteWhiteLabel(resourceId)

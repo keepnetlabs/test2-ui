@@ -30,6 +30,29 @@ describe('Investigation utils', () => {
     expect(createHeaderDataFactory().subject).toBeNull()
   })
 
+  it('createBodyDataFactory returns defaults for empty params', () => {
+    const body = createBodyDataFactory()
+    expect(body.url).toBeNull()
+    expect(body.keyword).toBeNull()
+    expect(body.regex).toBeNull()
+  })
+
+  it('createAttachmentDataFactory returns defaults for empty params', () => {
+    const att = createAttachmentDataFactory()
+    expect(att.size).toBeNull()
+    expect(att.name).toBeNull()
+    expect(att.md5).toBeNull()
+    expect(att.sha512).toBeNull()
+    expect(att.extension).toBeNull()
+  })
+
+  it('createHeaderDataFactory merges params over defaults', () => {
+    const header = createHeaderDataFactory({ ip: '1.2.3.4', subject: 'Test' })
+    expect(header.ip).toBe('1.2.3.4')
+    expect(header.subject).toBe('Test')
+    expect(header.from).toBeNull()
+  })
+
   it('exports keys and operators', () => {
     expect(HEADER_KEYS).toContain('subject')
     expect(BODY_KEYS).toContain('regex')

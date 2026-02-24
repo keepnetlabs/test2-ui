@@ -10,4 +10,9 @@ describe('JobLog utils', () => {
   it('returns waiting state for unknown status', () => {
     expect(getStatusBadgeProps('Unknown')).toEqual({ color: '#1173C1', text: 'Waiting' })
   })
+
+  it('returns waiting state for empty or undefined status', () => {
+    expect(getStatusBadgeProps('')).toEqual({ color: '#1173C1', text: 'Waiting' })
+    expect(getStatusBadgeProps()).toEqual({ color: '#1173C1', text: 'Waiting' })
+  })
 })

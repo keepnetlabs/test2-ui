@@ -88,6 +88,15 @@ describe('smtpSettings API', () => {
       )
     })
 
+    it('should call testSmtpConnection with default payload and resourceId', async () => {
+      await smtpSettingsApi.testSmtpConnection()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/companies/smtp-settings//test',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call testConnectionWhenSmtpCreated', async () => {
       const payload = { host: 'smtp.example.com', port: 587 }
       await smtpSettingsApi.testConnectionWhenSmtpCreated(payload)

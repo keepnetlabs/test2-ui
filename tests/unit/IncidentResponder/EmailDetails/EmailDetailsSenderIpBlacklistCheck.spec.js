@@ -24,4 +24,22 @@ describe('EmailDetailsSenderIpBlacklistCheck.vue', () => {
 
     expect(emit).toHaveBeenCalledWith('on-refresh-click')
   })
+
+  it('created sets empty tableData when mailDetails.ips is missing', () => {
+    const ctx = { mailDetails: { ips: [] }, tableData: [] }
+    created.call(ctx)
+    expect(ctx.tableData).toEqual([])
+  })
+
+  it('created sets empty tableData when ips array is empty', () => {
+    const ctx = { mailDetails: { ips: [] }, tableData: [] }
+    created.call(ctx)
+    expect(ctx.tableData).toEqual([])
+  })
+
+  it('created sets empty tableData when first ip has no analysisList', () => {
+    const ctx = { mailDetails: { ips: [{}] }, tableData: [] }
+    created.call(ctx)
+    expect(ctx.tableData).toEqual([])
+  })
 })

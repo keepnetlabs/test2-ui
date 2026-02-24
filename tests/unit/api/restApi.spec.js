@@ -38,6 +38,11 @@ describe('restApi API', () => {
       await restApiApi.getRestApi(resourceId)
       expect(testRequest.get).toHaveBeenCalledWith(`${API_URL}/${resourceId}`)
     })
+
+    it('should call getRestApi with default resourceId', async () => {
+      await restApiApi.getRestApi()
+      expect(testRequest.get).toHaveBeenCalledWith(`${API_URL}/`)
+    })
   })
 
   describe('REST API management', () => {
@@ -71,11 +76,28 @@ describe('restApi API', () => {
       )
     })
 
+    it('should call updateRestApi with default resourceId and payload', async () => {
+      await restApiApi.updateRestApi()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${API_URL}/`,
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deleteRestApi', async () => {
       const resourceId = 'api-123'
       await restApiApi.deleteRestApi(resourceId)
       expect(testRequest.delete).toHaveBeenCalledWith(
         `${API_URL}/${resourceId}`,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteRestApi with default resourceId', async () => {
+      await restApiApi.deleteRestApi()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        `${API_URL}/`,
         { snackbar: COMMON_SNACKBAR }
       )
     })

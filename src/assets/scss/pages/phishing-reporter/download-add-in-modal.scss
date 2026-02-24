@@ -31,3 +31,113 @@
     justify-content: center;
     align-items: center;
 }
+
+.download-add-in-drawer {
+    transition: right 0.25s ease-in-out !important;
+
+    &__layout {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    &__body {
+        display: flex;
+        flex: 1;
+        align-items: flex-start;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #fff;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        padding: 24px 0 24px 48px;
+    }
+
+    &__nav-list {
+        padding: 0 0 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__nav-label {
+        color: var(--Black-Black, #383b41);
+        font-feature-settings: 'liga' off, 'clig' off;
+        font-family: "Open Sans", sans-serif;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 24px;
+        padding: 0 0 4px;
+    }
+
+    &__nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 236px;
+        min-width: 236px;
+        padding: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        transition: border-color 0.2s, background-color 0.2s;
+
+        &:hover {
+            background: rgba(33, 150, 243, 0.06);
+        }
+
+        &--active {
+            border: 2px solid #2196f3;
+            padding: 15px;
+        }
+    }
+
+    &__nav-item-logo {
+        width: 160px;
+        height: 26px;
+        object-fit: contain;
+        object-position: left center;
+        flex-shrink: 0;
+    }
+
+    &__nav-item[data-integration="microsoft365"] &__nav-item-logo {
+        width: 190px;
+        height: 32px;
+    }
+
+    &__nav-item[data-integration="googleWorkspace"] &__nav-item-logo {
+        width: 165px;
+    }
+
+    &__nav-item[data-integration="outlook"] &__nav-item-logo {
+        width: 140px;
+    }
+
+    &__nav-item-text {
+        color: var(--Black-Black, #383b41);
+        font-feature-settings: 'liga' off, 'clig' off;
+        font-family: "Open Sans", sans-serif;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 24px;
+    }
+
+    &__content {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        margin: 64px 48px 0 0;
+        padding: 24px 24px 24px 24px;
+        border-radius: 8px;
+        border: 1px solid var(--Gray-Light-Gray, #f2f2f2);
+        background: #fff;
+    }
+}

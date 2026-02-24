@@ -348,6 +348,14 @@ describe('Company API', () => {
       })
     })
 
+    it('should handle default resourceId and payload', async () => {
+      await CompanyAPI.removeCompanyToCompanyGroup()
+      expect(testRequest.delete).toHaveBeenCalledWith('/company-groups//participants', {
+        data: {},
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.removeCompanyToCompanyGroup('id-8', {})
       expect(typeof result.then).toBe('function')
@@ -405,6 +413,13 @@ describe('Company API', () => {
       })
     })
 
+    it('should call POST with default payload', async () => {
+      await CompanyAPI.createEmailTemplate()
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates', {}, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.createEmailTemplate({})
       expect(typeof result.then).toBe('function')
@@ -415,6 +430,11 @@ describe('Company API', () => {
     it('should call GET with template id', async () => {
       await CompanyAPI.getEmailTemplate('template-123')
       expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/template-123')
+    })
+
+    it('should call GET with default resourceId', async () => {
+      await CompanyAPI.getEmailTemplate()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/')
     })
 
     it('should return thenable', () => {
@@ -441,6 +461,11 @@ describe('Company API', () => {
       expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/template-456/default')
     })
 
+    it('should call GET with default resourceId', async () => {
+      await CompanyAPI.getDefaultEmailTemplate()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates//default')
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.getDefaultEmailTemplate('id-10')
       expect(typeof result.then).toBe('function')
@@ -452,6 +477,13 @@ describe('Company API', () => {
       const payload = { filter: 'all' }
       await CompanyAPI.exportEmailTemplate(payload)
       expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates/search/export', payload, {
+        responseType: 'blob'
+      })
+    })
+
+    it('should call POST with default payload', async () => {
+      await CompanyAPI.exportEmailTemplate()
+      expect(testRequest.post).toHaveBeenCalledWith('/companies/email-templates/search/export', {}, {
         responseType: 'blob'
       })
     })
@@ -471,6 +503,13 @@ describe('Company API', () => {
       })
     })
 
+    it('should call PUT with default resourceId and payload', async () => {
+      await CompanyAPI.updateEmailTemplate()
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/email-templates/', {}, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.updateEmailTemplate('id-11', {})
       expect(typeof result.then).toBe('function')
@@ -483,6 +522,11 @@ describe('Company API', () => {
       expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/merge-tags/template-abc')
     })
 
+    it('should call GET with default resourceId', async () => {
+      await CompanyAPI.getMergedTags()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/email-templates/merge-tags/')
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.getMergedTags('id-12')
       expect(typeof result.then).toBe('function')
@@ -493,6 +537,13 @@ describe('Company API', () => {
     it('should call DELETE with COMMON_SNACKBAR', async () => {
       await CompanyAPI.deleteEmailTemplate('template-def')
       expect(testRequest.delete).toHaveBeenCalledWith('/companies/email-templates/template-def', {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should call DELETE with default resourceId', async () => {
+      await CompanyAPI.deleteEmailTemplate()
+      expect(testRequest.delete).toHaveBeenCalledWith('/companies/email-templates/', {
         snackbar: COMMON_SNACKBAR
       })
     })
@@ -533,6 +584,11 @@ describe('Company API', () => {
       expect(testRequest.get).toHaveBeenCalledWith('/companies/company-123/license-check')
     })
 
+    it('should call GET with default resourceId', async () => {
+      await CompanyAPI.getCheckCompanyLicense()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies//license-check')
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.getCheckCompanyLicense('id-14')
       expect(typeof result.then).toBe('function')
@@ -545,6 +601,14 @@ describe('Company API', () => {
       await CompanyAPI.bulkDeleteCompanies(payload)
       expect(testRequest.delete).toHaveBeenCalledWith('/companies/bulk-delete', {
         data: payload,
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should call DELETE with default payload', async () => {
+      await CompanyAPI.bulkDeleteCompanies()
+      expect(testRequest.delete).toHaveBeenCalledWith('/companies/bulk-delete', {
+        data: {},
         snackbar: COMMON_SNACKBAR
       })
     })
@@ -565,6 +629,14 @@ describe('Company API', () => {
       })
     })
 
+    it('should call DELETE with default payload', async () => {
+      await CompanyAPI.bulkDeleteCompanyGroups()
+      expect(testRequest.delete).toHaveBeenCalledWith('/company-groups/bulk-delete', {
+        data: {},
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
     it('should return thenable', () => {
       const result = CompanyAPI.bulkDeleteCompanyGroups({})
       expect(typeof result.then).toBe('function')
@@ -576,6 +648,13 @@ describe('Company API', () => {
       const payload = { default: true }
       await CompanyAPI.makeDefaultTemplate('template-123', payload)
       expect(testRequest.put).toHaveBeenCalledWith('/companies/email-templates/make-default/template-123', payload, {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should call PUT with default resourceId and payload', async () => {
+      await CompanyAPI.makeDefaultTemplate()
+      expect(testRequest.put).toHaveBeenCalledWith('/companies/email-templates/make-default/', {}, {
         snackbar: COMMON_SNACKBAR
       })
     })
@@ -617,6 +696,11 @@ describe('Company API', () => {
     it('should call GET with timeZoneId', async () => {
       await CompanyAPI.getTimeByTimeZone('EST')
       expect(testRequest.get).toHaveBeenCalledWith('/companies/get-current-time/EST')
+    })
+
+    it('should call GET with default timeZoneId', async () => {
+      await CompanyAPI.getTimeByTimeZone()
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/get-current-time/')
     })
 
     it('should return thenable', () => {

@@ -409,6 +409,15 @@ describe('quishing API', () => {
         { snackbar: COMMON_SNACKBAR }
       )
     })
+
+    it('should call launchQuishingCampaign with default params', async () => {
+      await quishingApi.launchQuishingCampaign()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job/start/',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
   })
 
   describe('campaign job operations', () => {
@@ -441,12 +450,30 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call stopQuishingCampaignJob with default params', async () => {
+      await quishingApi.stopQuishingCampaignJob()
+      expect(testRequest.patch).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job/stop//',
+        null,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call launchQuishingCampaignInstanceGroup', async () => {
       const id = 'campaign-123'
       const instanceGroup = 'group-1'
       await quishingApi.launchQuishingCampaignInstanceGroup(id, instanceGroup)
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job/start/${id}/${instanceGroup}`,
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call launchQuishingCampaignInstanceGroup with default params', async () => {
+      await quishingApi.launchQuishingCampaignInstanceGroup()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job/start//',
         {},
         { snackbar: COMMON_SNACKBAR }
       )
@@ -469,6 +496,14 @@ describe('quishing API', () => {
       await quishingApi.deleteQuishingCampaignJob(id, instanceGroup)
       expect(testRequest.delete).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job/${id}/${instanceGroup}`,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteQuishingCampaignJob with default params', async () => {
+      await quishingApi.deleteQuishingCampaignJob()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job//',
         { snackbar: COMMON_SNACKBAR }
       )
     })
@@ -506,12 +541,27 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call getCampaignJobEmailActivity with default resourceId', async () => {
+      await quishingApi.getCampaignJobEmailActivity()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job/email-activity/'
+      )
+    })
+
     it('should call exportQuishingCampaignJob', async () => {
       const id = 'campaign-123'
       const instanceGroup = 'group-1'
       await quishingApi.exportQuishingCampaignJob(id, instanceGroup)
       expect(testRequest.get).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/export/${id}/${instanceGroup}`,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportQuishingCampaignJob with default params', async () => {
+      await quishingApi.exportQuishingCampaignJob()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/export//',
         { responseType: 'blob' }
       )
     })
@@ -724,6 +774,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserEmailClicked with default params', async () => {
+      await quishingApi.searchCampaignJobUserEmailClicked()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/clicked/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserEmailClicked', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -732,6 +790,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/clicked/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserEmailClicked with default params', async () => {
+      await quishingApi.exportCampaignJobUserEmailClicked()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/clicked/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -747,6 +814,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserNoResponse with default params', async () => {
+      await quishingApi.searchCampaignJobUserNoResponse()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/noresponse/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserNoResponse', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -755,6 +830,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/noresponse/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserNoResponse with default params', async () => {
+      await quishingApi.exportCampaignJobUserNoResponse()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/noresponse/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -770,6 +854,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserAttachmentOpened with default params', async () => {
+      await quishingApi.searchCampaignJobUserAttachmentOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/attachmentopened/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserAttachmentOpened', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -778,6 +870,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/attachmentopened/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserAttachmentOpened with default params', async () => {
+      await quishingApi.exportCampaignJobUserAttachmentOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/attachmentopened/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -793,6 +894,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserPhishingReport with default params', async () => {
+      await quishingApi.searchCampaignJobUserPhishingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/reported/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserPhishingReport', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -801,6 +910,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/reported/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserPhishingReport with default params', async () => {
+      await quishingApi.exportCampaignJobUserPhishingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/reported/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -816,6 +934,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserSendingReport with default params', async () => {
+      await quishingApi.searchCampaignJobUserSendingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/all/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserSendingReport', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -824,6 +950,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/all/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserSendingReport with default params', async () => {
+      await quishingApi.exportCampaignJobUserSendingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/all/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -839,6 +974,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserEmailSubmitted with default params', async () => {
+      await quishingApi.searchCampaignJobUserEmailSubmitted()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/submitteddata/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserEmailSubmitted', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -847,6 +990,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/submitteddata/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserEmailSubmitted with default params', async () => {
+      await quishingApi.exportCampaignJobUserEmailSubmitted()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/submitteddata/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -862,6 +1014,14 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserEmailSubmittedMfa with default params', async () => {
+      await quishingApi.searchCampaignJobUserEmailSubmittedMfa()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/mfa/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserEmailSubmittedMfa', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -870,6 +1030,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job-report/mfa/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserEmailSubmittedMfa with default params', async () => {
+      await quishingApi.exportCampaignJobUserEmailSubmittedMfa()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/mfa/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -886,6 +1055,15 @@ describe('quishing API', () => {
       )
     })
 
+    it('should call resendQuishingCampaignToUsers with default params', async () => {
+      await quishingApi.resendQuishingCampaignToUsers()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job/resend//',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call resendQuishingCampaignToUserList', async () => {
       const payload = { userIds: ['user-1', 'user-2'] }
       const id = 'campaign-123'
@@ -894,6 +1072,15 @@ describe('quishing API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/quishing-simulator/quishing-campaign-job/resend/list/${id}/${instanceGroup}`,
         payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendQuishingCampaignToUserList with default params', async () => {
+      await quishingApi.resendQuishingCampaignToUserList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job/resend/list//',
+        {},
         { snackbar: COMMON_SNACKBAR }
       )
     })
@@ -1115,6 +1302,59 @@ describe('quishing API', () => {
       )
     })
 
+    it('should handle phishingFileName without extension (getQuishingFileType null branch)', async () => {
+      const payload = {
+        ...basePayload,
+        isAttachmentBasedTemplate: true,
+        isAddedNewPhishingFile: false,
+        isPhishingFileModified: false,
+        phishingFileName: 'noextension',
+        attachmentFiles: [],
+        importedEmailAttachments: [new Blob(['x'], { type: 'application/octet-stream' })]
+      }
+      await quishingApi.createQuishingEmailTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should handle payload without tags (payload?.tags optional chaining)', async () => {
+      const payload = {
+        ...basePayload,
+        tags: undefined,
+        type: 'email'
+      }
+      delete payload.tags
+      await quishingApi.createQuishingEmailTemplate(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should create printout template without type (payload.type branch)', async () => {
+      const payloadWithoutType = { ...basePayload }
+      delete payloadWithoutType.type
+      await quishingApi.createQuishingPrintoutTemplate(payloadWithoutType)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
     it('should create printout template with multipart form data', async () => {
       const payload = {
         ...basePayload,
@@ -1199,6 +1439,14 @@ describe('quishing API', () => {
         payload
       )
     })
+
+    it('should call searchCampaignJobPrintoutUserSendingReport with default params', async () => {
+      await quishingApi.searchCampaignJobPrintoutUserSendingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/printout-users/search//',
+        {}
+      )
+    })
   })
 
   describe('template creation utility functions', () => {
@@ -1263,6 +1511,110 @@ describe('quishing API', () => {
         attachmentFiles: []
       }
       expect(payload.attachmentFiles.length).toBe(0)
+    })
+  })
+
+  describe('default parameter branch coverage', () => {
+    it('should call searchCampaignQuishingJob with default payload and id', async () => {
+      await quishingApi.searchCampaignQuishingJob()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report//search',
+        {}
+      )
+    })
+
+    it('should call getCampaignJobSummary with default id and instanceGroup', async () => {
+      await quishingApi.getCampaignJobSummary()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/summary//'
+      )
+    })
+
+    it('should call getCampaignJobSummaryTargetGroups with defaults', async () => {
+      await quishingApi.getCampaignJobSummaryTargetGroups()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/summary/target-groups//'
+      )
+    })
+
+    it('should call updateQuishingEmailTemplate with default id', async () => {
+      const payload = {
+        name: 'T',
+        description: 'D',
+        categoryResourceId: 'c',
+        tags: [],
+        difficultyResourceId: 'd',
+        availableForRequests: [],
+        fromAddress: 'a@b.com',
+        fromName: 'N',
+        subject: 'S',
+        template: '<html></html>',
+        languageTypeResourceId: 'l'
+      }
+      await quishingApi.updateQuishingEmailTemplate(payload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates/',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should call updateQuishingPrintoutTemplate with default id', async () => {
+      const payload = {
+        name: 'T',
+        description: 'D',
+        categoryResourceId: 'c',
+        tags: [],
+        difficultyResourceId: 'd',
+        availableForRequests: [],
+        template: '<html></html>',
+        languageTypeResourceId: 'l'
+      }
+      await quishingApi.updateQuishingPrintoutTemplate(payload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-templates/',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' },
+          snackbar: COMMON_SNACKBAR
+        })
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailOpened with default params', async () => {
+      await quishingApi.searchCampaignJobUserEmailOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign-job-report/opened/search//',
+        {}
+      )
+    })
+
+    it('should call exportCampaignManager with default payload', async () => {
+      await quishingApi.exportCampaignManager()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-campaign/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call createCampaignManager with default payload', async () => {
+      await quishingApi.createCampaignManager()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign',
+        {},
+        expect.objectContaining({ snackbar: COMMON_SNACKBAR })
+      )
+    })
+
+    it('should call getQuishingScenarioLandingPageAndEmailTemplate with defaults', async () => {
+      await quishingApi.getQuishingScenarioLandingPageAndEmailTemplate()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-scenario/preview/email/'
+      )
     })
   })
 

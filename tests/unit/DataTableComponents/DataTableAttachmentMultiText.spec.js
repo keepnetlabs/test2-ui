@@ -11,6 +11,40 @@ describe('DataTable multi text and utils', () => {
     expect(DataTableAttachment.props).toHaveProperty('col')
   })
 
+  it('DataTableAttachment renders check icon when value > 0', () => {
+    const wrapper = mount(DataTableAttachment, {
+      propsData: {
+        scope: { row: { attachmentCount: 3 } },
+        col: { property: 'attachmentCount' }
+      },
+      stubs: { 'v-icon': true }
+    })
+    expect(wrapper.find('span').exists()).toBe(true)
+    expect(wrapper.html()).toContain('mdi-check')
+  })
+
+  it('DataTableAttachment renders cancel icon when value is 0 or missing', () => {
+    const wrapper = mount(DataTableAttachment, {
+      propsData: {
+        scope: { row: { attachmentCount: 0 } },
+        col: { property: 'attachmentCount' }
+      },
+      stubs: { 'v-icon': true }
+    })
+    expect(wrapper.html()).toContain('mdi-cancel')
+  })
+
+  it('DataTableAttachment renders cancel when scope.row is missing', () => {
+    const wrapper = mount(DataTableAttachment, {
+      propsData: {
+        scope: {},
+        col: { property: 'attachmentCount' }
+      },
+      stubs: { 'v-icon': true }
+    })
+    expect(wrapper.html()).toContain('mdi-cancel')
+  })
+
   it('DETECTED_COLORS includes expected status color mappings', () => {
     expect(DETECTED_COLORS.online).toBe('#00BCD4')
     expect(DETECTED_COLORS.inactive).toBe('#F56C6C')

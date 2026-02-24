@@ -9,6 +9,10 @@ describe('MFA Cant Login component', () => {
     return new MFACantLogin(localVue, propsData).wrapper
   }
 
+  const createObject = (propsData = {}) => {
+    return new MFACantLogin(localVue, propsData)
+  }
+
   describe('component rendering', () => {
     it('should render main container', () => {
       const wrapper = mountComponent()
@@ -390,6 +394,59 @@ describe('MFA Cant Login component', () => {
       const wrapper2 = mountComponent({ phoneNumber: '+1-555-0123' })
       expect(wrapper1.props('phoneNumber')).toBeNull()
       expect(typeof wrapper2.props('phoneNumber')).toBe('string')
+    })
+  })
+
+  describe('Object getWrapper and rules coverage', () => {
+    it('getWrapper returns the same as .wrapper', () => {
+      const obj = createObject()
+      expect(obj.getWrapper()).toBe(obj.wrapper)
+      expect(obj.getWrapper().vm.$options.name).toBe('MFACantLogin')
+    })
+
+    it('default rules.max returns error for long strings', () => {
+      const wrapper = mountComponent()
+      const rules = wrapper.props('rules')
+      expect(rules.max('a'.repeat(255))).toBe('Email address cannot exceed 320 characters')
+      expect(rules.max('short')).toBe(true)
+    })
+
+    it('default rules.required returns error for empty value', () => {
+      const wrapper = mountComponent()
+      const rules = wrapper.props('rules')
+      expect(rules.required('')).toBe('Required')
+      expect(rules.required('value')).toBe(true)
+    })
+
+    it('default rules.minPassword validates password pattern', () => {
+      const wrapper = mountComponent()
+      const rules = wrapper.props('rules')
+      expect(rules.minPassword('weak')).toContain('Password must be at least 8 characters')
+      expect(rules.minPassword('ValidPass1!')).toBe(true)
+    })
+
+    it('default rules.equalToNewPassword and equalToConfirmPassword', () => {
+      const wrapper = mountComponent()
+      const rules = wrapper.props('rules')
+      expect(rules.equalToNewPassword('a')).toContain("do not match")
+      expect(rules.equalToConfirmPassword('b')).toContain("do not match")
+    })
+
+    it('default rules.min returns error for short strings', () => {
+      const wrapper = mountComponent()
+      const rules = wrapper.props('rules')
+      expect(rules.min('short')).toBe('Minimum 8 characters')
+      expect(rules.min('longenough')).toBe(true)
+    })
+
+    it('default rules.email and controlEmail validate', () => {
+      const wrapper = mountComponent()
+      const rules = wrapper.props('rules')
+      expect(rules.email('invalid')).toBeDefined()
+      expect(rules.email('valid@test.com')).toBe(true)
+      const longLeft = 'a'.repeat(65) + '@b.com'
+      expect(typeof rules.controlEmail(longLeft)).toBe('string')
+      expect(rules.controlEmail('short@test.com')).toBe(true)
     })
   })
 
