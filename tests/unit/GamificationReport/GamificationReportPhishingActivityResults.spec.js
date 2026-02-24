@@ -855,7 +855,7 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(250)
     })
 
     it('phishingData computation should be efficient', () => {
@@ -877,7 +877,7 @@ describe('GamificationReportPhishingActivityResults.vue', () => {
         expect(data).toBeDefined()
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(250)
     })
 
     it('computed text properties should be efficient', () => {

@@ -29,6 +29,11 @@ describe('commonConstants (extra coverage)', () => {
     it('returns lowercase when type is LOWERCASE', () => {
       expect(getStoreValue('email', COMMON_CONSTANTS.LOWERCASE)).toBe('email')
     })
+
+    it('throws when unknown key is requested with casing transform', () => {
+      expect(() => getStoreValue('missing_key', COMMON_CONSTANTS.UPPERCASE)).toThrow()
+      expect(() => getStoreValue('missing_key', COMMON_CONSTANTS.LOWERCASE)).toThrow()
+    })
   })
 
   describe('COMMON_CONSTANTS', () => {
@@ -65,6 +70,17 @@ describe('commonConstants (extra coverage)', () => {
       const emailSpy = jest.spyOn(Validations, 'email').mockReturnValueOnce(false)
       expect(controlLengthRule('force-else-branch')).toBe(false)
       emailSpy.mockRestore()
+    })
+
+    it('DEFAULT_EMAIL_RULES returns InvalidEmailAddress when controlEmailLength fails', () => {
+      const controlLengthRule = COMMON_CONSTANTS.DEFAULT_EMAIL_RULES[3]
+      const emailSpy = jest.spyOn(Validations, 'email').mockReturnValue(true)
+      const controlSpy = jest.spyOn(Validations, 'controlEmailLength').mockReturnValue(false)
+
+      expect(controlLengthRule('valid@example.com')).toBe('Invalid email address')
+
+      emailSpy.mockRestore()
+      controlSpy.mockRestore()
     })
     it('DEFAULT_URL_RULES execute expected branches', () => {
       const [startsWithSpaceRule, urlRule, maxLengthRule, noWhitespaceRule] =

@@ -674,4 +674,52 @@ describe('permissions store module (real)', () => {
       expect(hasSpecialChars).toBe(true)
     })
   })
+
+  describe('Additional Branch Coverage', () => {
+    it('initializes state from cached localStorage permissions object', () => {
+      const firstStore = loadPermissionsStore()
+      const cachedState = JSON.parse(JSON.stringify(firstStore.state))
+      cachedState.permissions = ['cached/from-local-storage|GET']
+      localStorage.setItem('permissions', JSON.stringify(cachedState))
+
+      jest.resetModules()
+      const cachedStore = loadPermissionsStore()
+
+      expect(cachedStore.state.permissions).toEqual(['cached/from-local-storage|GET'])
+    })
+
+    it('getCallbackCampaignCreatePermissions returns undefined when parent permissions are missing', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.callbackCampaignManagerParentPermissions = undefined
+
+      expect(store.getters.getCallbackCampaignCreatePermissions(state)).toBeUndefined()
+    })
+
+    it('SET_ALL_PERMISSIONS marks callback campaign create permission when matched', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+      const callbackCreate = state.callbackCampaignManagerParentPermissions.CREATE
+
+      state.permissions = [`${callbackCreate.url}|${callbackCreate.method}`]
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      expect(state.callbackCampaignManagerParentPermissions.CREATE.hasPermission).toBe(true)
+      expect(state.callbackCampaignManagerParentPermissions.isOneOfThemPermitted).toBe(true)
+      expect(store.getters.getCallbackCampaignCreatePermissions(state)).toBe(true)
+    })
+
+    it('SET_ALL_PERMISSIONS keeps callback campaign job permission false when unmatched', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+      state.permissions = ['unmatched/url|GET']
+
+      store.mutations.SET_ALL_PERMISSIONS(state)
+
+      expect(state.callbackCampaignJobPermissions.SEARCH.hasPermission).toBe(false)
+      expect(state.callbackCampaignJobPermissions.isOneOfThemPermitted).toBe(false)
+      expect(store.getters.getCallbackCampaignJobSearchPermissions(state)).toBe(false)
+    })
+  })
 })

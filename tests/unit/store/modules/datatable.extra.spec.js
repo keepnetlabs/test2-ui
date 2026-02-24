@@ -23,6 +23,27 @@ describe('datatable store (extra coverage)', () => {
       })
       expect(state.tables.t1).not.toHaveProperty('key')
     })
+
+    it('setTable stores under undefined key when payload has no key', () => {
+      datatableStore.mutations.setTable(state, {
+        page: 3,
+        size: 20
+      })
+      expect(state.tables.undefined).toEqual({ page: 3, size: 20 })
+    })
+
+    it('setTable overwrites existing table entry with same key', () => {
+      datatableStore.mutations.setTable(state, { key: 't1', page: 1 })
+      datatableStore.mutations.setTable(state, { key: 't1', page: 9, size: 99 })
+      expect(state.tables.t1).toEqual({ page: 9, size: 99 })
+    })
+
+    it('setTable mutates original payload by removing key', () => {
+      const payload = { key: 'origin', page: 4 }
+      datatableStore.mutations.setTable(state, payload)
+      expect(payload.key).toBeUndefined()
+      expect(payload.page).toBe(4)
+    })
   })
 
   describe('actions', () => {
@@ -34,6 +55,12 @@ describe('datatable store (extra coverage)', () => {
     it('setTable defaults to empty object', () => {
       const commit = jest.fn()
       datatableStore.actions.setTable({ commit })
+      expect(commit).toHaveBeenCalledWith('setTable', {})
+    })
+
+    it('setTable with explicit undefined payload still uses default empty object', () => {
+      const commit = jest.fn()
+      datatableStore.actions.setTable({ commit }, undefined)
       expect(commit).toHaveBeenCalledWith('setTable', {})
     })
   })

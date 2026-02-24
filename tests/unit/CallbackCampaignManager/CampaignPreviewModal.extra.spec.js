@@ -16,6 +16,7 @@ jest.mock('@/api/awarenessEducator', () => ({
 
 import CampaignPreviewModal from '@/components/CallbackCampaignManager/CampaignPreviewModal.vue'
 import CallbackService from '@/api/callback'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -131,6 +132,63 @@ describe('CampaignPreviewModal.vue (extra branch coverage)', () => {
 
       CampaignPreviewModal.methods.callForScenarioDetail.call(ctx, { index: '0' })
       expect(setActiveScenario).toHaveBeenCalledWith({ value: 'a' })
+    })
+  })
+
+  describe('fallback branches', () => {
+    it('callForData handles empty phishingScenarios list', async () => {
+      CallbackService.getCallbackCampaign.mockResolvedValueOnce({
+        data: { data: { phishingScenarios: [] } }
+      })
+      jest.useFakeTimers()
+      const setLoading = jest.fn()
+      const setActiveScenario = jest.fn()
+      const ctx = {
+        selectedRow: { resourceId: 'cmp-empty' },
+        phishingScenarios: [],
+        selectedScenario: null,
+        timeoutId: '',
+        setLoading,
+        setActiveScenario
+      }
+
+      CampaignPreviewModal.methods.callForData.call(ctx)
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(ctx.phishingScenarios).toEqual([])
+      expect(ctx.selectedScenario).toEqual({})
+      expect(setActiveScenario).toHaveBeenCalledWith({})
+
+      jest.advanceTimersByTime(500)
+      jest.useRealTimers()
+    })
+
+    it('callForLanguages falls back to empty array on missing payload', async () => {
+      AwarenessEducatorService.getLanguages.mockResolvedValueOnce({ data: {} })
+      const ctx = { isPreviewLoading: false, trainingLanguages: [{ id: 1 }] }
+
+      CampaignPreviewModal.methods.callForLanguages.call(ctx)
+      await flushPromises()
+
+      expect(ctx.trainingLanguages).toEqual([])
+      expect(ctx.isPreviewLoading).toBe(true)
+    })
+
+    it('callForTrainingDetail ignores non-existing language ids', async () => {
+      AwarenessEducatorService.getTraining.mockResolvedValueOnce({
+        data: { data: { name: 'Any' } }
+      })
+      const ctx = {
+        trainingParams: { trainingId: 't1', trainingLanguageIds: [99] },
+        trainingLanguages: [{ id: 1, name: 'English' }],
+        selectedLanguages: []
+      }
+
+      CampaignPreviewModal.methods.callForTrainingDetail.call(ctx)
+      await flushPromises()
+
+      expect(ctx.selectedLanguages).toEqual([])
+      expect(ctx.trainingParams.languages).toBe('')
     })
   })
 
