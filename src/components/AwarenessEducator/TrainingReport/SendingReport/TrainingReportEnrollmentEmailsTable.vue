@@ -407,7 +407,9 @@ export default {
       const { events = [] } = this.extendedViewValue[0] || { events: [] }
       return events
         ? events.map((event) => ({
-            status: event?.event?.substring(0, 1)?.toUpperCase() + event?.event?.substring(1),
+            status: event?.event
+              ? event.event.substring(0, 1).toUpperCase() + event.event.substring(1)
+              : undefined,
             date: event.timestamp,
             reason: this.getEventReason(event),
             mxServer: event.mxServer
@@ -470,7 +472,7 @@ export default {
       this.$emit('on-selection-text-change', selectionCount)
     },
     handleSearchChange(searchFilter = {}) {
-      const customFieldNames = this.customFields?.map?.((field) => field.name)
+      const customFieldNames = this.customFields?.map?.((field) => field.name) || []
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
           (field) => !customFieldNames.includes(field.FieldName)

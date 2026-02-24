@@ -268,4 +268,117 @@ describe('TrainingReportReminderEmailsTable.vue (extra)', () => {
     })
     expect(callForData).toHaveBeenCalled()
   })
+
+  it('getEvents returns empty list for null events and no-event message is case-sensitive', () => {
+    const events = TrainingReportReminderEmailsTable.computed.getEvents.call({
+      extendedViewValue: [{ events: null }],
+      getEventReason: jest.fn()
+    })
+    expect(events).toEqual([])
+
+    const msg = TrainingReportReminderEmailsTable.computed.getNoEventMessage.call({
+      extendedViewValue: [{ serviceProvider: 'sendgrid' }]
+    })
+    expect(msg).toBe('Event history is only available for SMTP')
+  })
+
+  it('callForData handles empty rows and calls loading in start and finally', async () => {
+    AwarenessEducatorService.searchSendingReportReminderEmails.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [],
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+    const setLoading = jest.fn()
+    const ctx = {
+      id: 'rem-empty',
+      axiosPayload: {},
+      serverSideProps: {},
+      tableData: [{ id: 'old-row' }],
+      setLoading
+    }
+
+    TrainingReportReminderEmailsTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([])
+    expect(ctx.serverSideProps.totalNumberOfRecords).toBe(0)
+    expect(setLoading).toHaveBeenCalledWith(true)
+    expect(setLoading).toHaveBeenCalledTimes(2)
+  })
+
+  it('export maps uppercase XLS to Excel and forwards payload fields', async () => {
+    AwarenessEducatorService.exportSendingReport.mockResolvedValueOnce({ data: new Blob(['x']) })
+    const oldURL = globalThis.URL.createObjectURL
+    globalThis.URL.createObjectURL = jest.fn(() => 'blob:rem-xls')
+    const link = { click: jest.fn(), download: '', href: '' }
+    const oldCreateElement = document.createElement
+    document.createElement = jest.fn(() => link)
+
+    const ctx = {
+      id: 'rem-xls',
+      isSurvey: false,
+      axiosPayload: { orderBy: 'lastSendDate', ascending: false, filter: { x: 1 } }
+    }
+    TrainingReportReminderEmailsTable.methods.exportTrainingReportSendingReportTable.call(ctx, {
+      exportTypes: ['XLS'],
+      pageNumber: 3,
+      pageSize: 20,
+      reportAllPages: true
+    })
+    await flushPromises()
+
+    expect(AwarenessEducatorService.exportSendingReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pageNumber: 3,
+        pageSize: 20,
+        orderBy: 'lastSendDate',
+        ascending: false,
+        reportAllPages: true,
+        exportType: 'Excel',
+        filter: { x: 1 }
+      }),
+      'rem-xls'
+    )
+    expect(link.download).toBe('Training-Sending-Report-Reminder-Emails.xlsx')
+
+    globalThis.URL.createObjectURL = oldURL
+    document.createElement = oldCreateElement
+  })
+
+  it('handleOnDetail maps null data into extended view without entering error state', async () => {
+    AwarenessEducatorService.getTrainingReportReminderEmailDetails.mockResolvedValueOnce({
+      data: { data: null }
+    })
+    const ctx = {
+      id: 'r-null',
+      extendedViewOptions: { isErrorState: false },
+      extendedViewLoading: false,
+      isShowExtendedView: false,
+      extendedViewValue: []
+    }
+
+    TrainingReportReminderEmailsTable.methods.handleOnDetail.call(ctx, { userEmailId: 'u-null' })
+    await flushPromises()
+
+    expect(ctx.extendedViewValue).toEqual([null])
+    expect(ctx.extendedViewOptions.isErrorState).toBe(false)
+    expect(ctx.extendedViewLoading).toBe(false)
+  })
+
+  it('customFields watcher does not insert when email column index is zero', () => {
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: 'email' }, { property: 'status' }]
+      }
+    }
+
+    TrainingReportReminderEmailsTable.watch.customFields.handler.call(ctx, [{ name: 'cf0' }])
+
+    expect(ctx.tableOptions.columns.map((x) => x.property)).toEqual(['email', 'status'])
+  })
 })

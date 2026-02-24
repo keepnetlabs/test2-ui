@@ -43,7 +43,6 @@ const investigations = {
       }
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
-      console.log('SET_INVESTIGATIONDETAILSLISTDATA', payload)
       if (payload?.data?.results?.length > 0) {
         payload.data.results = payload.data.results.map((item) => {
           return {
