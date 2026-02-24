@@ -9,7 +9,7 @@
     :status="status"
     @changeStatus="closeModal"
   >
-    <template #app-dialog-body> Instance will be deleted. </template>
+    <template #app-dialog-body> Run will be deleted. </template>
     <template #app-dialog-footer>
       <AppDialogFooter
         type="delete"
@@ -44,8 +44,8 @@ export default {
     return {
       CONSTANTS: {
         icon: 'mdi-delete',
-        title: 'Delete Campaign Instance?',
-        subtitle: 'Instance will deleted permanently'
+        title: 'Delete Campaign Run?',
+        subtitle: 'Run will be deleted permanently'
       }
     }
   },

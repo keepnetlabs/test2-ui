@@ -54,6 +54,22 @@ describe('Common/Charts/Gauge.vue (extra branch coverage)', () => {
     expect(wrapper.vm.options).toEqual(customOptions)
   })
 
+  it('refId default function generates unique id when not provided', () => {
+    const wrapper1 = mountComponent()
+    const wrapper2 = mountComponent()
+    expect(wrapper1.vm.refId).toMatch(/^gauge-key-\d+$/)
+    expect(wrapper2.vm.refId).toMatch(/^gauge-key-\d+$/)
+    expect(wrapper1.vm.refId).not.toBe(wrapper2.vm.refId)
+  })
+
+  it('options default function returns full default object when not provided', () => {
+    const wrapper = mountComponent()
+    const opts = wrapper.vm.options
+    expect(opts.arcOverEffect).toBe(false)
+    expect(opts.rangeLabelFontSize).toBe(false)
+    expect(opts.arcLabelFontSize).toBe(true)
+  })
+
   it('passes refId and options to VueGauge', () => {
     const wrapper = mountComponent({
       refId: 'gauge-123',

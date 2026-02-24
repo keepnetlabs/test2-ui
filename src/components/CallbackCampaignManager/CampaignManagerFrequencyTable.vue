@@ -251,7 +251,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = globalThis.URL.createObjectURL(data)
-          link.download = `Callback-Campaign-Instances.${
+          link.download = `Callback-Campaign-Runs.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

@@ -265,7 +265,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = globalThis.URL.createObjectURL(data)
-            link.download = `Smishing-Campaign-Instances.${
+            link.download = `Smishing-Campaign-Runs.${
               item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
             }`
             link.click()

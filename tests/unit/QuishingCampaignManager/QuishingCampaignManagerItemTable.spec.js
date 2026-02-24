@@ -167,8 +167,8 @@ describe('QuishingCampaignManager/QuishingCampaignManagerItemTable.vue', () => {
     expect(QuishingService.exportCampaignManagerItem.mock.calls[1][0]).toEqual(
       expect.objectContaining({ exportType: 'PDF' })
     )
-    expect(createdLinks[0].download).toBe('Campaign-Manager-Instance.xlsx')
-    expect(createdLinks[1].download).toBe('Campaign-Manager-Instance.pdf')
+    expect(createdLinks[0].download).toBe('Campaign-Manager-Run.xlsx')
+    expect(createdLinks[1].download).toBe('Campaign-Manager-Run.pdf')
 
     window.URL.createObjectURL = originalCreateObjectURL
     createElementSpy.mockRestore()

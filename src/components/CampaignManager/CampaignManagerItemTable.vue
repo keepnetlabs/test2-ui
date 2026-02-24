@@ -281,7 +281,7 @@ export default {
             ...this.tableOptions.addButton,
             disabled: true,
             tooltip:
-              "A new instance with frequency and random scenarios can’t be created."
+              "A new run with frequency and random scenarios can’t be created."
           };
         } else {
           this.tableOptions.addButton = {
@@ -358,7 +358,7 @@ export default {
             const { data } = response;
             const link = document.createElement("a");
             link.href = globalThis.URL.createObjectURL(data);
-            link.download = `Campaign-Manager-Instance.${
+            link.download = `Campaign-Manager-Run.${
               item.toLocaleLowerCase() === "xls"
                 ? "xlsx"
                 : item.toLocaleLowerCase()

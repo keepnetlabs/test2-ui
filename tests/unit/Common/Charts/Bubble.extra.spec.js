@@ -26,6 +26,24 @@ describe('Common/Charts/Bubble.vue (extra branch coverage)', () => {
     expect(formatter({ r: 4.8 })).toBe(5)
   })
 
+  it('handles undefined chartOptions', () => {
+    const renderChart = jest.fn()
+    mountComponent(
+      { chartOptions: undefined },
+      { addPlugin: jest.fn(), renderChart }
+    )
+    const options = renderChart.mock.calls[0][1]
+    expect(options.responsive).toBe(true)
+    expect(options.maintainAspectRatio).toBe(false)
+  })
+
+  it('datalabel formatter handles zero radius', () => {
+    const renderChart = jest.fn()
+    mountComponent({}, { addPlugin: jest.fn(), renderChart })
+    const formatter = renderChart.mock.calls[0][1].plugins.datalabels.formatter
+    expect(formatter({ r: 0 })).toBe(0)
+  })
+
   it('merges chartOptions into options', () => {
     const renderChart = jest.fn()
     mountComponent(

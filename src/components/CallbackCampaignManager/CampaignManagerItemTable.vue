@@ -190,7 +190,7 @@ export default {
           COLUMNS.CREATE_TIME_ITEM_TABLE
         ],
         iEmpty: {
-          message: `You do not have any Campaign Instances`,
+          message: `You do not have any Campaign Runs`,
           id: 'btn-empty--campaign-manager-report'
         },
         addButton: {
@@ -308,7 +308,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = globalThis.URL.createObjectURL(data)
-          link.download = `Callback-Campaign-Instances.${
+          link.download = `Callback-Campaign-Runs.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()
