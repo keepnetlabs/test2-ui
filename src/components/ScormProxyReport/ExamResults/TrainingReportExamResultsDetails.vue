@@ -190,7 +190,8 @@ export default {
         this.item.targetUserResourceId
       )
         .then((response) => {
-          this.tableData = response?.data?.data.map((item) => ({
+          const data = response?.data?.data || []
+          this.tableData = data.map((item) => ({
             ...item,
             ...item.trackingInfo
           }))

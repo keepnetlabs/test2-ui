@@ -1,6 +1,6 @@
 jest.mock('@/api/phishingsimulator', () => ({
   deletePhishingCampaignJob: jest.fn().mockResolvedValue({}),
-  exportCampaignManagerItem: jest.fn().mockResolvedValue({ data: new Blob() }),
+  exportCampaignManagerItem: jest.fn().mockResolvedValue({ data: Buffer.from('') }),
   searchCampaignPhishingJob: jest.fn().mockResolvedValue({
     data: {
       data: {
