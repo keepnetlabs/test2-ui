@@ -109,6 +109,55 @@ describe('widgets store (extra coverage)', () => {
     })
   })
 
+  describe('getters - all cards', () => {
+    it('getIncidentAnalysisCard returns state', () => {
+      state.incidentAnalysisCard = { total: 10 }
+      expect(widgetsStore.getters.getIncidentAnalysisCard(state)).toEqual({ total: 10 })
+    })
+    it('getPhishingReporterCard returns state', () => {
+      state.phishingReporterCard = { active: 5 }
+      expect(widgetsStore.getters.getPhishingReporterCard(state)).toEqual({ active: 5 })
+    })
+    it('getROISummaryCard returns state', () => {
+      state.roiSummaryCard = { roi: 100 }
+      expect(widgetsStore.getters.getROISummaryCard(state)).toEqual({ roi: 100 })
+    })
+    it('getTopRulesCard returns state', () => {
+      state.topRulesCard = [{ id: 1 }]
+      expect(widgetsStore.getters.getTopRulesCard(state)).toEqual([{ id: 1 }])
+    })
+    it('getRecentInvestigationsCard returns state', () => {
+      state.recentInvestigationsCard = [{ id: 1 }]
+      expect(widgetsStore.getters.getRecentInvestigationsCard(state)).toEqual([{ id: 1 }])
+    })
+    it('getReportersCard returns state', () => {
+      state.reportersCard = [{ id: 1 }]
+      expect(widgetsStore.getters.getReportersCard(state)).toEqual([{ id: 1 }])
+    })
+    it('getReportedEmailTrendsCard returns state', () => {
+      state.reportedEmailTrendsCard = [{ month: 'Jan' }]
+      expect(widgetsStore.getters.getReportedEmailTrendsCard(state)).toEqual([{ month: 'Jan' }])
+    })
+    it('getMostPhishedUsersCard returns state', () => {
+      state.mostPhishedUsers = [{ email: 'a@b.com' }]
+      expect(widgetsStore.getters.getMostPhishedUsersCard(state)).toEqual([{ email: 'a@b.com' }])
+    })
+    it('getPhishingCampaignTrendsCard returns state', () => {
+      state.phishingCampaignTrends = [{ month: 'Feb' }]
+      expect(widgetsStore.getters.getPhishingCampaignTrendsCard(state)).toEqual([{ month: 'Feb' }])
+    })
+    it('getMostEngagedCampaignsCard returns state', () => {
+      state.mostEngagedCampaigns = [{ name: 'C1' }]
+      expect(widgetsStore.getters.getMostEngagedCampaignsCard(state)).toEqual([{ name: 'C1' }])
+    })
+    it('getTopPhishingSimulationReportersCard returns state', () => {
+      state.topPhishingSimulationReporters = [{ id: 1 }]
+      expect(widgetsStore.getters.getTopPhishingSimulationReportersCard(state)).toEqual([
+        { id: 1 }
+      ])
+    })
+  })
+
   describe('mutations', () => {
     it('SET_LOADING updates state', () => {
       widgetsStore.mutations.SET_LOADING(state, true)
@@ -117,6 +166,54 @@ describe('widgets store (extra coverage)', () => {
     it('SET_TOP_RULES updates state', () => {
       widgetsStore.mutations.SET_TOP_RULES(state, [{ id: 1 }])
       expect(state.topRulesCard).toEqual([{ id: 1 }])
+    })
+    it('SET_INVESTIGATION_CARD updates state', () => {
+      widgetsStore.mutations.SET_INVESTIGATION_CARD(state, { count: 5 })
+      expect(state.investigationCard).toEqual({ count: 5 })
+    })
+    it('SET_INCIDENT_ANALYSIS_CARD updates state', () => {
+      widgetsStore.mutations.SET_INCIDENT_ANALYSIS_CARD(state, { total: 10 })
+      expect(state.incidentAnalysisCard).toEqual({ total: 10 })
+    })
+    it('SET_PHISHING_REPORTER_CARD updates state', () => {
+      widgetsStore.mutations.SET_PHISHING_REPORTER_CARD(state, { active: 3 })
+      expect(state.phishingReporterCard).toEqual({ active: 3 })
+    })
+    it('SET_ROI_SUMMARY updates state', () => {
+      widgetsStore.mutations.SET_ROI_SUMMARY(state, { roi: 250 })
+      expect(state.roiSummaryCard).toEqual({ roi: 250 })
+    })
+    it('SET_RECENT_INVESTIGATIONS updates state', () => {
+      widgetsStore.mutations.SET_RECENT_INVESTIGATIONS(state, [{ id: 1 }])
+      expect(state.recentInvestigationsCard).toEqual([{ id: 1 }])
+    })
+    it('SET_REPORTERS updates state', () => {
+      widgetsStore.mutations.SET_REPORTERS(state, [{ id: 1 }])
+      expect(state.reportersCard).toEqual([{ id: 1 }])
+    })
+    it('SET_REPORTED_EMAIL_TRENDS updates state', () => {
+      widgetsStore.mutations.SET_REPORTED_EMAIL_TRENDS(state, [{ month: 'Jan' }])
+      expect(state.reportedEmailTrendsCard).toEqual([{ month: 'Jan' }])
+    })
+    it('SET_RECENT_CAMPAIGNS updates state', () => {
+      widgetsStore.mutations.SET_RECENT_CAMPAIGNS(state, [{ id: 1 }])
+      expect(state.recentCampaignsCard).toEqual([{ id: 1 }])
+    })
+    it('SET_MOST_PHISHED_USERS updates state', () => {
+      widgetsStore.mutations.SET_MOST_PHISHED_USERS(state, [{ email: 'x@y.com' }])
+      expect(state.mostPhishedUsers).toEqual([{ email: 'x@y.com' }])
+    })
+    it('SET_PHISHING_CAMPAIGN_TRENDS updates state', () => {
+      widgetsStore.mutations.SET_PHISHING_CAMPAIGN_TRENDS(state, [{ month: 'Mar' }])
+      expect(state.phishingCampaignTrends).toEqual([{ month: 'Mar' }])
+    })
+    it('SET_MOST_ENGAGED_CAMPAIGNS updates state', () => {
+      widgetsStore.mutations.SET_MOST_ENGAGED_CAMPAIGNS(state, [{ name: 'Campaign' }])
+      expect(state.mostEngagedCampaigns).toEqual([{ name: 'Campaign' }])
+    })
+    it('SET_TOP_PHISHING_SIMULATION_REPORTERS updates state', () => {
+      widgetsStore.mutations.SET_TOP_PHISHING_SIMULATION_REPORTERS(state, [{ id: 2 }])
+      expect(state.topPhishingSimulationReporters).toEqual([{ id: 2 }])
     })
   })
 
@@ -127,6 +224,45 @@ describe('widgets store (extra coverage)', () => {
       await widgetsStore.actions.callForWidgets({ commit })
       expect(commit).toHaveBeenCalledWith('SET_LOADING', true)
       expect(getSummary).toHaveBeenCalled()
+    })
+    it('callForWidgets commits all card mutations from full response', async () => {
+      const { getSummary } = require('@/api/widgets')
+      getSummary.mockResolvedValueOnce({
+        data: {
+          dashboardSummary: {
+            data: {
+              investigationTypeCount: { a: 1 },
+              notifiedEmailResultCount: { b: 2 },
+              phishingReporterUserStatusCount: { c: 3 },
+              roiSummary: { roi: 100 }
+            }
+          },
+          dashboardTopRules: { data: [{ id: 1 }] },
+          runningInvestigations: { data: [{ id: 2 }] },
+          topReporters: { data: [{ id: 3 }] },
+          reportedEmailTrends: { data: [{ month: 'Jan' }] },
+          recentPhishingCampaigns: { data: [{ id: 4 }] },
+          mostPhishedUsers: { data: [{ email: 'u@x.com' }] },
+          phishingCampaignTrends: { data: [{ m: 1 }] },
+          mostEngagedCampaigns: { data: [{ n: 1 }] },
+          topPhishingSimulationReporters: { data: [{ id: 5 }] }
+        }
+      })
+      const commit = jest.fn()
+      await widgetsStore.actions.callForWidgets({ commit })
+      expect(commit).toHaveBeenCalledWith('SET_INVESTIGATION_CARD', { a: 1 })
+      expect(commit).toHaveBeenCalledWith('SET_INCIDENT_ANALYSIS_CARD', { b: 2 })
+      expect(commit).toHaveBeenCalledWith('SET_PHISHING_REPORTER_CARD', { c: 3 })
+      expect(commit).toHaveBeenCalledWith('SET_ROI_SUMMARY', { roi: 100 })
+      expect(commit).toHaveBeenCalledWith('SET_TOP_RULES', [{ id: 1 }])
+      expect(commit).toHaveBeenCalledWith('SET_RECENT_INVESTIGATIONS', [{ id: 2 }])
+      expect(commit).toHaveBeenCalledWith('SET_REPORTERS', [{ id: 3 }])
+      expect(commit).toHaveBeenCalledWith('SET_REPORTED_EMAIL_TRENDS', [{ month: 'Jan' }])
+      expect(commit).toHaveBeenCalledWith('SET_RECENT_CAMPAIGNS', [{ id: 4 }])
+      expect(commit).toHaveBeenCalledWith('SET_MOST_PHISHED_USERS', [{ email: 'u@x.com' }])
+      expect(commit).toHaveBeenCalledWith('SET_PHISHING_CAMPAIGN_TRENDS', [{ m: 1 }])
+      expect(commit).toHaveBeenCalledWith('SET_MOST_ENGAGED_CAMPAIGNS', [{ n: 1 }])
+      expect(commit).toHaveBeenCalledWith('SET_TOP_PHISHING_SIMULATION_REPORTERS', [{ id: 5 }])
     })
   })
 })
