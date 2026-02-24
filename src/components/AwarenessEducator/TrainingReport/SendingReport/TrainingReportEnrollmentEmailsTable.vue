@@ -39,6 +39,28 @@
     @on-details="handleOnDetail"
     @on-selection-text-change="handleSelectionChange"
   >
+    <template #datatable-row-actions="{ scope }">
+      <DefaultButtonRowAction
+        :id="getRowActionId(scope, 0)"
+        :icon="tableOptions.rowActions[0].icon"
+        :text="tableOptions.rowActions[0].name"
+        :scope="scope"
+        :disabled="getRowActionDisabled(scope, 0)"
+        :checkIsOwnerProperty="false"
+        :disabledTooltipText="getDeletedRowActionTooltip(scope)"
+        @on-click="handleRowResendClick(scope)"
+      />
+      <DefaultButtonRowAction
+        :id="getRowActionId(scope, 1)"
+        :icon="tableOptions.rowActions[1].icon"
+        :text="tableOptions.rowActions[1].name"
+        :scope="scope"
+        :disabled="getRowActionDisabled(scope, 1)"
+        :checkIsOwnerProperty="false"
+        :disabledTooltipText="getDeletedRowActionTooltip(scope)"
+        @on-click="handleRowDetailsClick(scope)"
+      />
+    </template>
     <template #datatable-custom-column="{ scope, col }">
       <v-btn style="display: none;" />
       <v-tooltip
@@ -103,6 +125,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import Badge from '@/components/Badge'
+import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import TrainingReportSendingReportExtendedView from '@/components/AwarenessEducator/TrainingReport/SendingReport/TrainingReportSendingReportExtendedView'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
@@ -126,6 +149,7 @@ export default {
   components: {
     DataTable,
     Badge,
+    DefaultButtonRowAction,
     TrainingReportSendingReportExtendedView
   },
   mixins: [useLoading, useDefaultTableFunctions],
@@ -479,6 +503,22 @@ export default {
         this.axiosPayload.filter
       )
     },
+    getRowActionId(scope, actionIndex) {
+      return `${this.tableOptions.rowActions[actionIndex].id}-${scope.$index}`
+    },
+    getRowActionDisabled(scope, actionIndex) {
+      const action = this.tableOptions.rowActions[actionIndex]
+      return !!action?.disabled || this.isRowTypeDeleted(scope.row)
+    },
+    getDeletedRowActionTooltip(scope) {
+      return this.isRowTypeDeleted(scope.row) ? 'This user has been deleted' : undefined
+    },
+    handleRowResendClick(scope) {
+      this.handleOnResend(scope.row, [], false)
+    },
+    handleRowDetailsClick(scope) {
+      this.handleOnDetail(scope.row)
+    },
     getEventReason(event = {}) {
       const { reason, event: eventName } = event
       if (reason) return reason
@@ -499,9 +539,11 @@ export default {
       return getBtnStatusColor(type)
     },
     getTargetUserStatusDisplay(row) {
+      if (row?.targetUserIsDeleted) return 'Deleted'
       return row?.targetUserStatus || ''
     },
     isRowTypeDeleted(row) {
+      if (row?.targetUserIsDeleted) return true
       return String(row?.targetUserStatus || '').trim().toLowerCase() === 'deleted'
     },
     getDeletedRowClassName({ row } = {}) {
