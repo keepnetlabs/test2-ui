@@ -348,4 +348,101 @@ describe('TrainingReportCertificateEmailsTable.vue (extra)', () => {
     })
     expect(callForData).toHaveBeenCalled()
   })
+
+  it('getEvents returns empty list when events is null and provider check is case-sensitive', () => {
+    const events = TrainingReportCertificateEmailsTable.computed.getEvents.call({
+      extendedViewValue: [{ events: null }],
+      getEventReason: jest.fn()
+    })
+    expect(events).toEqual([])
+
+    const lowerCaseProviderMessage =
+      TrainingReportCertificateEmailsTable.computed.getNoEventMessage.call({
+        extendedViewValue: [{ serviceProvider: 'sendgrid' }]
+      })
+    expect(lowerCaseProviderMessage).toBe('Event history is only available for SMTP')
+  })
+
+  it('callForData triggers loading start/finally on empty result payload', async () => {
+    AwarenessEducatorService.searchSendingReportCertificateEmails.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [],
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+    const setLoading = jest.fn()
+    const ctx = {
+      isLearningPath: false,
+      id: 'cert-empty',
+      axiosPayload: {},
+      serverSideProps: {},
+      tableData: [{ id: 'old' }],
+      setLoading
+    }
+
+    TrainingReportCertificateEmailsTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([])
+    expect(ctx.serverSideProps.totalNumberOfRecords).toBe(0)
+    expect(setLoading).toHaveBeenCalledWith(true)
+    expect(setLoading).toHaveBeenCalledTimes(2)
+  })
+
+  it('handleOnDetail maps malformed success response into empty-array view value', async () => {
+    AwarenessEducatorService.getTrainingReportCertificateEmailDetails.mockResolvedValueOnce({})
+    const ctx = {
+      isLearningPath: false,
+      id: 'cert-malformed',
+      extendedViewOptions: { isErrorState: false },
+      extendedViewLoading: false,
+      isShowExtendedView: false,
+      extendedViewValue: []
+    }
+
+    TrainingReportCertificateEmailsTable.methods.handleOnDetail.call(ctx, { userEmailId: 'u-mal' })
+    await flushPromises()
+
+    expect(ctx.extendedViewValue).toEqual([[]])
+    expect(ctx.extendedViewOptions.isErrorState).toBe(false)
+    expect(ctx.extendedViewLoading).toBe(false)
+  })
+
+  it('handleOnResend supports empty selections and still emits payload', () => {
+    const emit = jest.fn()
+    const ctx = {
+      handleSelectionChange: jest.fn(),
+      $emit: emit
+    }
+    const items = []
+    const excluded = ['a']
+    const filter = { FilterGroups: [{ FilterItems: [] }] }
+
+    TrainingReportCertificateEmailsTable.methods.handleOnResend.call(
+      ctx,
+      items,
+      excluded,
+      false,
+      filter
+    )
+
+    expect(ctx.handleSelectionChange).toHaveBeenCalledWith(0)
+    expect(emit).toHaveBeenCalledWith('on-resend', items, excluded, false, filter)
+  })
+
+  it('customFields watcher does not insert when email column index is zero', () => {
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: 'email' }, { property: 'status' }]
+      }
+    }
+
+    TrainingReportCertificateEmailsTable.watch.customFields.handler.call(ctx, [{ name: 'cf0' }])
+
+    expect(ctx.tableOptions.columns.map((x) => x.property)).toEqual(['email', 'status'])
+  })
 })

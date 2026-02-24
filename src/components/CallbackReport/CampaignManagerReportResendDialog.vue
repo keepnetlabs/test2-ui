@@ -65,9 +65,9 @@ export default {
           this.resendItemCount > 1 ? 's' : ''
         } you’ve selected. Are you sure?`
       }
-      if (this.payload?.items.length) {
-        return `You are about to re-send this campaign to ${this.payload.items.length} user${
-          this.payload.items.length > 1 ? 's' : ''
+      if (this.payload?.items?.length) {
+        return `You are about to re-send this campaign to ${this.payload.items?.length} user${
+          (this.payload.items?.length || 0) > 1 ? 's' : ''
         } you’ve selected. Are you sure?`
       }
 
