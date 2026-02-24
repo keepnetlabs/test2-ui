@@ -54,6 +54,24 @@ describe('gamificationBadges store (extra coverage)', () => {
       }
       expect(gamificationBadges.getters.hasValidCache(state)('user1')).toBe(true)
     })
+
+    it('getAllBadgesForUser returns null when cache is expired', () => {
+      const state = {
+        badgesByUserId: {
+          user1: { fetchedAt: Date.now() - (CACHE_TTL_MS + 1), badges: [{ earned: true }] }
+        }
+      }
+      expect(gamificationBadges.getters.getAllBadgesForUser(state)('user1')).toBeNull()
+    })
+
+    it('hasValidCache returns false when cache is expired', () => {
+      const state = {
+        badgesByUserId: {
+          user1: { fetchedAt: Date.now() - (CACHE_TTL_MS + 1), badges: [] }
+        }
+      }
+      expect(gamificationBadges.getters.hasValidCache(state)('user1')).toBe(false)
+    })
   })
 
   describe('mutations branch coverage', () => {
@@ -122,6 +140,55 @@ describe('gamificationBadges store (extra coverage)', () => {
         targetUserResourceId: 'user1',
         badges: [{ earned: true }]
       })
+    })
+
+    it('fetchBadgesForUser handles raw array response shape', async () => {
+      getGamificationBadgesCached.mockResolvedValueOnce({
+        data: [{ earned: true, id: 1 }]
+      })
+      const commit = jest.fn()
+      const getters = { hasValidCache: () => false }
+
+      await gamificationBadges.actions.fetchBadgesForUser({ commit, getters }, 'user2')
+
+      expect(commit).toHaveBeenCalledWith('SET_BADGES', {
+        targetUserResourceId: 'user2',
+        badges: [{ earned: true, id: 1 }]
+      })
+    })
+
+    it('fetchBadgesForUser commits empty badge array when response has no badges field', async () => {
+      getGamificationBadgesCached.mockResolvedValueOnce({
+        data: { data: { unexpected: true } }
+      })
+      const commit = jest.fn()
+      const getters = { hasValidCache: () => false }
+
+      await gamificationBadges.actions.fetchBadgesForUser({ commit, getters }, 'user3')
+
+      expect(commit).toHaveBeenCalledWith('SET_BADGES', {
+        targetUserResourceId: 'user3',
+        badges: []
+      })
+    })
+
+    it('fetchBadgesForTable clears fetching flag in finally when calculate fails', async () => {
+      const commit = jest.fn()
+      const getters = { hasValidCache: () => false }
+      const dispatch = jest.fn((actionName) => {
+        if (actionName === 'calculateBadges') return Promise.reject(new Error('calc failed'))
+        return Promise.resolve()
+      })
+
+      await expect(
+        gamificationBadges.actions.fetchBadgesForTable(
+          { commit, dispatch, getters },
+          ['u1']
+        )
+      ).rejects.toThrow('calc failed')
+
+      expect(commit).toHaveBeenNthCalledWith(1, 'SET_FETCHING', true)
+      expect(commit).toHaveBeenLastCalledWith('SET_FETCHING', false)
     })
   })
 })

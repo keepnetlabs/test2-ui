@@ -95,6 +95,23 @@ describe('whitelabel store (extra coverage)', () => {
       expect(dispatch).toHaveBeenCalledWith('callForSystemVersion')
     })
 
+    it('updateData capitalizes FormData keys and removes id key', async () => {
+      const dispatch = jest.fn()
+      const payload = {
+        resourceId: 'res-xyz',
+        id: 'legacy-id',
+        brandName: 'Brand X',
+        countryCode: 'TR'
+      }
+
+      await whitelabel.actions.updateData({ dispatch }, payload)
+      const [formData] = whitelabelApi.updateWhiteLabel.mock.calls[0]
+
+      expect(formData.get('BrandName')).toBe('Brand X')
+      expect(formData.get('CountryCode')).toBe('TR')
+      expect(formData.get('Id')).toBeNull()
+    })
+
     it('callForData commits SET_DATA and TOGGLE_LOADING', async () => {
       whitelabelApi.resolveWhiteLabel.mockResolvedValue({
         data: { data: { brandName: 'Fetched' } }
@@ -190,6 +207,64 @@ describe('whitelabel store (extra coverage)', () => {
       whitelabel.actions.callForSystemVersion({ commit })
       await new Promise((r) => setImmediate(r))
       expect(commit).toHaveBeenCalledWith('SET_SYSTEM_VERSION', '3.0.0')
+    })
+
+    it('toggleShowExceedDialog closes when already open', () => {
+      const commit = jest.fn()
+      whitelabel.actions.toggleShowExceedDialog({
+        state: { showLicenseExceededDialog: true },
+        commit,
+        rootGetters: {}
+      })
+      expect(commit).toHaveBeenCalledWith('SET_SHOW_EXCEED_DIALOG', false)
+    })
+
+    it('toggleShowExceedDialog returns when company id is missing', () => {
+      const commit = jest.fn()
+      whitelabel.actions.toggleShowExceedDialog({
+        state: { showLicenseExceededDialog: false },
+        commit,
+        rootGetters: { 'login/getCurrentCompany': null }
+      })
+      expect(commit).not.toHaveBeenCalled()
+    })
+
+    it('toggleShowExceedDialog opens and stores timestamp on first show', () => {
+      const commit = jest.fn()
+      whitelabel.actions.toggleShowExceedDialog({
+        state: { showLicenseExceededDialog: false },
+        commit,
+        rootGetters: { 'login/getCurrentCompany': { resourceId: 'comp-1' } }
+      })
+      expect(commit).toHaveBeenCalledWith('SET_SHOW_EXCEED_DIALOG', true)
+      expect(localStorage.getItem('lastLicenseExceededDialogShown_comp-1')).toBeTruthy()
+    })
+
+    it('toggleShowExceedDialog does not open when less than 24 hours passed', () => {
+      const now = Date.now()
+      localStorage.setItem('lastLicenseExceededDialogShown_comp-2', String(now - 60 * 60 * 1000))
+      const commit = jest.fn()
+      whitelabel.actions.toggleShowExceedDialog({
+        state: { showLicenseExceededDialog: false },
+        commit,
+        rootGetters: { 'login/getCurrentCompany': { resourceId: 'comp-2' } }
+      })
+      expect(commit).not.toHaveBeenCalledWith('SET_SHOW_EXCEED_DIALOG', true)
+    })
+
+    it('toggleShowExceedDialog opens when more than 24 hours passed', () => {
+      const oldTime = Date.now() - 26 * 60 * 60 * 1000
+      localStorage.setItem('lastLicenseExceededDialogShown_comp-3', String(oldTime))
+      const commit = jest.fn()
+      whitelabel.actions.toggleShowExceedDialog({
+        state: { showLicenseExceededDialog: false },
+        commit,
+        rootGetters: { 'login/getCurrentCompany': { resourceId: 'comp-3' } }
+      })
+      expect(commit).toHaveBeenCalledWith('SET_SHOW_EXCEED_DIALOG', true)
+      const stored = Number(localStorage.getItem('lastLicenseExceededDialogShown_comp-3'))
+      expect(Number.isNaN(stored)).toBe(false)
+      expect(stored).toBeGreaterThan(oldTime)
     })
   })
 
