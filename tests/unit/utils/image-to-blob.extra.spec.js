@@ -6,6 +6,34 @@ describe('image-to-blob.js (extra coverage)', () => {
     imageToBlob = require('@/utils/image-to-blob').default
   })
 
+  it('handles options as callback (options is function)', (done) => {
+    const cb = jest.fn((err) => {
+      expect(err).toBeTruthy()
+      expect(err.message).toContain('IMG DOM node')
+      done()
+    })
+    imageToBlob(null, cb)
+  })
+
+  it('handles IMG DOM element as first param', (done) => {
+    const img = document.createElement('img')
+    img.src = 'data:image/png;base64,iVBORw0KGgo='
+    imageToBlob(img, { convert: false }, (err, blob) => {
+      expect(err).toBeNull()
+      expect(blob).toBeInstanceOf(Blob)
+      done()
+    })
+  })
+
+  it('handles data URI without convert (default path)', (done) => {
+    const dataUri = 'data:image/jpeg;base64,abc123'
+    imageToBlob(dataUri, (err, blob) => {
+      expect(err).toBeNull()
+      expect(blob).toBeInstanceOf(Blob)
+      done()
+    })
+  })
+
   it('calls callback with error when img is null', () => {
     const cb = jest.fn()
     imageToBlob(null, cb)

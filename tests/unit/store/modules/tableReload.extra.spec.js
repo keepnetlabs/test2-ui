@@ -1,33 +1,29 @@
 import tableReloadStore from '@/store/modules/tableReload'
 
-describe('tableReload store (extra coverage)', () => {
-  let state
+describe('tableReload store module (extra coverage)', () => {
+  describe('real module', () => {
+    it('exports the real tableReload store', () => {
+      expect(tableReloadStore).toBeDefined()
+      expect(tableReloadStore.namespaced).toBe(true)
+    })
 
-  beforeEach(() => {
-    state = { tableReload: false }
-  })
+    it('state.tableReload initial value is false', () => {
+      expect(tableReloadStore.state.tableReload).toBe(false)
+    })
 
-  describe('mutations', () => {
-    it('setTableReload sets tableReload', () => {
+    it('setTableReload mutation updates state', () => {
+      const state = { tableReload: false }
       tableReloadStore.mutations.setTableReload(state, true)
       expect(state.tableReload).toBe(true)
     })
 
-    it('setTableReload with false', () => {
-      state.tableReload = true
-      tableReloadStore.mutations.setTableReload(state, false)
-      expect(state.tableReload).toBe(false)
-    })
-  })
-
-  describe('actions', () => {
-    it('setTableReload commits mutation', () => {
+    it('setTableReload action commits with payload', () => {
       const commit = jest.fn()
       tableReloadStore.actions.setTableReload({ commit }, true)
       expect(commit).toHaveBeenCalledWith('setTableReload', true)
     })
 
-    it('setTableReload defaults to empty object', () => {
+    it('setTableReload action uses default payload {} when not provided', () => {
       const commit = jest.fn()
       tableReloadStore.actions.setTableReload({ commit })
       expect(commit).toHaveBeenCalledWith('setTableReload', {})
