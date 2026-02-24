@@ -1,4 +1,14 @@
 .add-in-configuration {
+  /* Drawer açıkken: footer arkada, drawer üstte (AddInConfiguration'da DOM yapısı farklı, k-navigation-drawer selector eşleşmiyor) */
+  &:has(.download-add-in-drawer) .k-overlay__footer {
+    z-index: 3 !important;
+  }
+
+  /* Drawer body scroll sonu footer'a değmesin */
+  .download-add-in-drawer__body {
+    padding-bottom: 92px !important;
+  }
+
   &__container {
     .v-sheet.v-card {
       @media (max-width: 500px) {

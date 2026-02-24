@@ -698,12 +698,21 @@ describe('smishing API', () => {
       expect(testRequest.get).toHaveBeenCalledWith('/smishing-simulator/excluded-ip-list')
     })
 
-    it('should call postExcludedIPAddresses', async () => {
+    it('should call postExcludedIPAddresses with payload', async () => {
       const payload = { ips: ['1.1.1.1'] }
       await smishingApi.postExcludedIPAddresses(payload)
       expect(testRequest.post).toHaveBeenCalledWith(
         '/smishing-simulator/excluded-ip',
         payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call postExcludedIPAddresses with default empty payload when no arg', async () => {
+      await smishingApi.postExcludedIPAddresses()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/smishing-simulator/excluded-ip',
+        {},
         { snackbar: COMMON_SNACKBAR }
       )
     })

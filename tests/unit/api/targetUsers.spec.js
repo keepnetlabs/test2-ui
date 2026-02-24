@@ -69,6 +69,15 @@ describe('targetUsers API', () => {
       )
     })
 
+    it('should call bulkImportTargetUsersToGroups with default payload', async () => {
+      await targetUsersApi.bulkImportTargetUsersToGroups()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/target-groups/users',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call downloadExampleTargetUserFile', async () => {
       const payload = { format: 'csv' }
       await targetUsersApi.downloadExampleTargetUserFile(payload)
@@ -85,6 +94,15 @@ describe('targetUsers API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         '/target-users/search/export',
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportTargetUsers with default payload', async () => {
+      await targetUsersApi.exportTargetUsers()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/target-users/search/export',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -138,11 +156,21 @@ describe('targetUsers API', () => {
       expect(testRequest.put).toHaveBeenCalledWith(`/target-users/${id}/update`)
     })
 
+    it('should call updateTransactionId with default id', async () => {
+      await targetUsersApi.updateTransactionId()
+      expect(testRequest.put).toHaveBeenCalledWith('/target-users//update')
+    })
+
     it('should call getTargetUserViewUserGroups', async () => {
       const resourceId = 'user-123'
       const payload = {}
       await targetUsersApi.getTargetUserViewUserGroups(resourceId, payload)
       expect(testRequest.post).toHaveBeenCalledWith(`target-users/${resourceId}/groups`, payload)
+    })
+
+    it('should call getTargetUserViewUserGroups with default resourceId and payload', async () => {
+      await targetUsersApi.getTargetUserViewUserGroups()
+      expect(testRequest.post).toHaveBeenCalledWith('target-users//groups', {})
     })
 
     it('should call uploadExcelOrCsvForTargetUsers', async () => {
@@ -299,12 +327,30 @@ describe('targetUsers API', () => {
       )
     })
 
+    it('should call exportTargetGroupUsers with default id and payload', async () => {
+      await targetUsersApi.exportTargetGroupUsers()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/target-groups//users/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call exportTargetGroups', async () => {
       const payload = { filters: {} }
       await targetUsersApi.exportTargetGroups(payload)
       expect(testRequest.post).toHaveBeenCalledWith(
         '/target-groups/search/export',
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportTargetGroups with default payload', async () => {
+      await targetUsersApi.exportTargetGroups()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/target-groups/search/export',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -316,6 +362,14 @@ describe('targetUsers API', () => {
       expect(testRequest.delete).toHaveBeenCalledWith(
         `/target-groups/${id}/users`,
         { data: payload, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteTargetGroupUsers with default id and payload', async () => {
+      await targetUsersApi.deleteTargetGroupUsers()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/target-groups//users',
+        { data: {}, snackbar: COMMON_SNACKBAR }
       )
     })
   })

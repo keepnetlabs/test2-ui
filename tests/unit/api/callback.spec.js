@@ -105,6 +105,39 @@ describe('callback API', () => {
         payload
       )
     })
+
+    it('should call exportCallbackTemplates with default payload', async () => {
+      await callbackApi.exportCallbackTemplates()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/callback-template/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getCallbackTemplatePreview with default resourceId', async () => {
+      await callbackApi.getCallbackTemplatePreview()
+      expect(vishingRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/callback-template/preview/'
+      )
+    })
+
+    it('should call createCallbackTemplate with default payload', async () => {
+      await callbackApi.createCallbackTemplate()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/callback-template',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call getVoiceUrl with default payload', async () => {
+      await callbackApi.getVoiceUrl()
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/callback-template/get-voice-url',
+        {}
+      )
+    })
   })
 
   describe('email template operations', () => {
@@ -126,6 +159,24 @@ describe('callback API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         '/callback-simulator/email-template',
         payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call exportEmailTemplates with default payload', async () => {
+      await callbackApi.exportEmailTemplates()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/email-template/search/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call createEmailTemplate with default payload', async () => {
+      await callbackApi.createEmailTemplate()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/email-template',
+        {},
         { snackbar: COMMON_SNACKBAR }
       )
     })
@@ -237,11 +288,36 @@ describe('callback API', () => {
       )
     })
 
+    it('should call exportCallbackScenarios with default payload', async () => {
+      await callbackApi.exportCallbackScenarios()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/scenario/export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call getCallbackScenarioPreview', async () => {
       const id = 'scenario-123'
       await callbackApi.getCallbackScenarioPreview(id)
       expect(testRequest.get).toHaveBeenCalledWith(
         `/callback-simulator/scenario/preview/${id}`
+      )
+    })
+
+    it('should call getCallbackScenarioPreview with default resourceId', async () => {
+      await callbackApi.getCallbackScenarioPreview()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/scenario/preview/'
+      )
+    })
+
+    it('should call createCallbackScenario with default payload', async () => {
+      await callbackApi.createCallbackScenario()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/scenario',
+        {},
+        { snackbar: COMMON_SNACKBAR }
       )
     })
   })
@@ -264,6 +340,15 @@ describe('callback API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         '/callback-simulator/settings/search/export',
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCallbackSettings with default payload', async () => {
+      await callbackApi.exportCallbackSettings()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/settings/search/export',
+        {},
         { responseType: 'blob' }
       )
     })

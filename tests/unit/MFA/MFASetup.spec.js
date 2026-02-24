@@ -3,6 +3,13 @@ import MFASetup from '../Objects/MFASetup'
 
 describe('MFA Setup component', () => {
   const localVue = createLocalVue()
+
+  it('getWrapper returns the same as .wrapper', () => {
+    const obj = new MFASetup(localVue)
+    expect(obj.getWrapper()).toBe(obj.wrapper)
+    expect(obj.getWrapper().find('.mfa-setup--dashboard').exists()).toBe(true)
+  })
+
   it('Check render', () => {
     const { wrapper } = new MFASetup(localVue)
     //check renders container

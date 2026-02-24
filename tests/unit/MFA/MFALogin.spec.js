@@ -8,6 +8,16 @@ describe('MFA Login component', () => {
     return new MFALogin(localVue, propsData).wrapper
   }
 
+  const createObject = (propsData = {}) => new MFALogin(localVue, propsData)
+
+  describe('Object getWrapper coverage', () => {
+    it('getWrapper returns the same as .wrapper', () => {
+      const obj = createObject()
+      expect(obj.getWrapper()).toBe(obj.wrapper)
+      expect(obj.getWrapper().vm.$options.name).toBe('MFALogin')
+    })
+  })
+
   describe('rendering', () => {
     it('should render component', () => {
       const wrapper = mountComponent()

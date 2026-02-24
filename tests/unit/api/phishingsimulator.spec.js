@@ -121,6 +121,17 @@ describe('phishingsimulator API', () => {
       expect(result).toEqual(attachment)
     })
 
+    it('should handle non-string non-Blob content with fallback', () => {
+      const attachment = {
+        name: 'data.bin',
+        content: new Uint8Array([1, 2, 3]),
+        contentType: 'application/octet-stream'
+      }
+      const result = phishingApi.convertContentToFile(attachment)
+      expect(result).toBeInstanceOf(File)
+      expect(result.name).toBe('data.bin')
+    })
+
     it('should fallback when base64 decode fails', () => {
       const originalAtob = global.atob
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
@@ -373,6 +384,14 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call deleteCampaignManager with default resourceId', async () => {
+      await phishingApi.deleteCampaignManager()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        'phishing-simulator/phishing-campaign/',
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call createCampaignManager with payload', async () => {
       const payload = { name: 'New Campaign' }
       await phishingApi.createCampaignManager(payload)
@@ -402,6 +421,13 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call getCampaignManager with default resourceId', async () => {
+      await phishingApi.getCampaignManager()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'phishing-simulator/phishing-campaign/'
+      )
+    })
+
     it('should call getCampaignManagerFormDetails', async () => {
       await phishingApi.getCampaignManagerFormDetails()
       expect(testRequest.get).toHaveBeenCalledWith(
@@ -414,6 +440,13 @@ describe('phishingsimulator API', () => {
       await phishingApi.getCampaignManagerPreview(id)
       expect(testRequest.get).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign/preview/${id}`
+      )
+    })
+
+    it('should call getCampaignManagerPreview with default resourceId', async () => {
+      await phishingApi.getCampaignManagerPreview()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign/preview/'
       )
     })
 
@@ -438,6 +471,13 @@ describe('phishingsimulator API', () => {
       await phishingApi.getPhishingScenarioLandingPageAndEmailTemplate(id)
       expect(testRequest.get).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-scenario/preview/${id}`
+      )
+    })
+
+    it('should call getPhishingScenarioLandingPageAndEmailTemplate with default resourceId', async () => {
+      await phishingApi.getPhishingScenarioLandingPageAndEmailTemplate()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-scenario/preview/'
       )
     })
 
@@ -502,6 +542,15 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call stopPhishingCampaignJob with default params', async () => {
+      await phishingApi.stopPhishingCampaignJob()
+      expect(testRequest.patch).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job/stop//',
+        null,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call launchPhishingCampaign', async () => {
       const id = 'campaign-123'
       const payload = { status: 'running' }
@@ -509,6 +558,15 @@ describe('phishingsimulator API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job/start/${id}`,
         payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call launchPhishingCampaign with default params', async () => {
+      await phishingApi.launchPhishingCampaign()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job/start/',
+        {},
         { snackbar: COMMON_SNACKBAR }
       )
     })
@@ -524,12 +582,29 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call launchPhishingCampaignInstanceGroup with default params', async () => {
+      await phishingApi.launchPhishingCampaignInstanceGroup()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job/start//',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deletePhishingCampaignJob', async () => {
       const id = 'campaign-123'
       const instanceGroup = 'group-1'
       await phishingApi.deletePhishingCampaignJob(id, instanceGroup)
       expect(testRequest.delete).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job/${id}/${instanceGroup}`,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deletePhishingCampaignJob with default params', async () => {
+      await phishingApi.deletePhishingCampaignJob()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job//',
         { snackbar: COMMON_SNACKBAR }
       )
     })
@@ -550,6 +625,13 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call getCampaignJobSummary with default id and instanceGroup', async () => {
+      await phishingApi.getCampaignJobSummary()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/summary//'
+      )
+    })
+
     it('should call getCampaignJobSummaryForTraining', async () => {
       const id = 'campaign-123'
       const instanceGroup = 'group-1'
@@ -559,12 +641,26 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call getCampaignJobSummaryForTraining with default params', async () => {
+      await phishingApi.getCampaignJobSummaryForTraining()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/summary/training//'
+      )
+    })
+
     it('should call getCampaignJobSummaryTargetGroups', async () => {
       const id = 'campaign-123'
       const instanceGroup = 'group-1'
       await phishingApi.getCampaignJobSummaryTargetGroups(id, instanceGroup)
       expect(testRequest.get).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job-report/summary/target-groups/${id}/${instanceGroup}`
+      )
+    })
+
+    it('should call getCampaignJobSummaryTargetGroups with default params', async () => {
+      await phishingApi.getCampaignJobSummaryTargetGroups()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/summary/target-groups//'
       )
     })
 
@@ -585,6 +681,32 @@ describe('phishingsimulator API', () => {
         { responseType: 'blob' }
       )
     })
+
+    it('should call exportPhishingCampaignJob with default params', async () => {
+      await phishingApi.exportPhishingCampaignJob()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/export//',
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call resendPhishingCampaignToUsers with default params', async () => {
+      await phishingApi.resendPhishingCampaignToUsers()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job/resend//',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendPhishingCampaignToUserList with default params', async () => {
+      await phishingApi.resendPhishingCampaignToUserList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job/resend/list//',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
   })
 
   describe('campaign report operations', () => {
@@ -599,6 +721,14 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserEmailClicked with default params', async () => {
+      await phishingApi.searchCampaignJobUserEmailClicked()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/clicked/search//',
+        {}
+      )
+    })
+
     it('should call searchCampaignJobUserEmailOpened', async () => {
       const payload = { page: 1 }
       const id = 'campaign-123'
@@ -610,6 +740,14 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserEmailOpened with default params', async () => {
+      await phishingApi.searchCampaignJobUserEmailOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/opened/search//',
+        {}
+      )
+    })
+
     it('should call searchCampaignJobUserAttachmentOpened', async () => {
       const payload = { page: 1 }
       const id = 'campaign-123'
@@ -618,6 +756,23 @@ describe('phishingsimulator API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job-report/attachmentopened/search/${id}/${instanceGroup}`,
         payload
+      )
+    })
+
+    it('should call searchCampaignJobUserAttachmentOpened with default params', async () => {
+      await phishingApi.searchCampaignJobUserAttachmentOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/attachmentopened/search//',
+        {}
+      )
+    })
+
+    it('should call exportCampaignJobUserAttachmentOpened with default params', async () => {
+      await phishingApi.exportCampaignJobUserAttachmentOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/attachmentopened/search/export//',
+        {},
+        { responseType: 'blob' }
       )
     })
 
@@ -633,6 +788,15 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call exportCampaignJobUserEmailClicked with default params', async () => {
+      await phishingApi.exportCampaignJobUserEmailClicked()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/clicked/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call exportCampaignJobUserEmailOpened', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -642,6 +806,23 @@ describe('phishingsimulator API', () => {
         `/phishing-simulator/phishing-campaign-job-report/opened/search/export/${id}/${instanceGroup}`,
         payload,
         { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserEmailOpened with default params', async () => {
+      await phishingApi.exportCampaignJobUserEmailOpened()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/opened/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call searchCampaignJobUserNoResponse with default params', async () => {
+      await phishingApi.searchCampaignJobUserNoResponse()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/noresponse/search//',
+        {}
       )
     })
 
@@ -668,6 +849,15 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call exportCampaignJobUserNoResponse with default params', async () => {
+      await phishingApi.exportCampaignJobUserNoResponse()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/noresponse/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call searchCampaignJobUserEmailSubmitted', async () => {
       const payload = { page: 1 }
       const id = 'campaign-123'
@@ -676,6 +866,14 @@ describe('phishingsimulator API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job-report/submitteddata/search/${id}/${instanceGroup}`,
         payload
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailSubmitted with default params', async () => {
+      await phishingApi.searchCampaignJobUserEmailSubmitted()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/submitteddata/search//',
+        {}
       )
     })
 
@@ -691,6 +889,15 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call exportCampaignJobUserEmailSubmitted with default params', async () => {
+      await phishingApi.exportCampaignJobUserEmailSubmitted()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/submitteddata/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call searchCampaignJobUserReplied', async () => {
       const payload = { page: 1 }
       const id = 'campaign-123'
@@ -702,6 +909,48 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserReplied with default params', async () => {
+      await phishingApi.searchCampaignJobUserReplied()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/replied/search//',
+        {}
+      )
+    })
+
+    it('should call exportCampaignJobUserReplied with default params', async () => {
+      await phishingApi.exportCampaignJobUserReplied()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/replied/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call searchCampaignJobUserRepliedDetails with default params', async () => {
+      await phishingApi.searchCampaignJobUserRepliedDetails()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/search-email-replied/',
+        {}
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailSubmittedMfa with default params', async () => {
+      await phishingApi.searchCampaignJobUserEmailSubmittedMfa()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/mfa/search//',
+        {}
+      )
+    })
+
+    it('should call exportCampaignJobUserEmailSubmittedMfa with default params', async () => {
+      await phishingApi.exportCampaignJobUserEmailSubmittedMfa()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/mfa/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call searchCampaignJobUserSendingReport', async () => {
       const payload = { page: 1 }
       const id = 'campaign-123'
@@ -710,6 +959,14 @@ describe('phishingsimulator API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job-report/all/search/${id}/${instanceGroup}`,
         payload
+      )
+    })
+
+    it('should call searchCampaignJobUserSendingReport with default params', async () => {
+      await phishingApi.searchCampaignJobUserSendingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/all/search//',
+        {}
       )
     })
 
@@ -725,6 +982,15 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call exportCampaignJobUserSendingReport with default params', async () => {
+      await phishingApi.exportCampaignJobUserSendingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/all/search/export//',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
     it('should call searchCampaignJobUserPhishingReport', async () => {
       const payload = { page: 1 }
       const id = 'campaign-123'
@@ -736,6 +1002,14 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call searchCampaignJobUserPhishingReport with default params', async () => {
+      await phishingApi.searchCampaignJobUserPhishingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/reported/search//',
+        {}
+      )
+    })
+
     it('should call exportCampaignJobUserPhishingReport', async () => {
       const payload = { filters: {} }
       const id = 'campaign-123'
@@ -744,6 +1018,15 @@ describe('phishingsimulator API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(
         `/phishing-simulator/phishing-campaign-job-report/reported/search/export/${id}/${instanceGroup}`,
         payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportCampaignJobUserPhishingReport with default params', async () => {
+      await phishingApi.exportCampaignJobUserPhishingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/reported/search/export//',
+        {},
         { responseType: 'blob' }
       )
     })
@@ -854,6 +1137,15 @@ describe('phishingsimulator API', () => {
       )
     })
 
+    it('should call postExcludedIPAddresses with default payload', async () => {
+      await phishingApi.postExcludedIPAddresses()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/excluded-ip',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call getEmailDeliveries', async () => {
       await phishingApi.getEmailDeliveries()
       expect(testRequest.get).toHaveBeenCalledWith(
@@ -906,6 +1198,20 @@ describe('phishingsimulator API', () => {
       })
       expect(testRequest.get).toHaveBeenCalledWith(
         '/phishing-simulator/campaign-2/target-groups?campaignType=3&instanceGroup=group-a'
+      )
+    })
+
+    it('should call getCampaignTargetGroups with campaignType only', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-3', { campaignType: 1 })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-3/target-groups?campaignType=1'
+      )
+    })
+
+    it('should call getCampaignTargetGroups with instanceGroup only', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-4', { instanceGroup: 'main' })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-4/target-groups?instanceGroup=main'
       )
     })
 

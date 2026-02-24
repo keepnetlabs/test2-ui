@@ -38,6 +38,11 @@ describe('samlSettings API', () => {
       await samlSettingsApi.getSamlSetting(resourceId)
       expect(testRequest.get).toHaveBeenCalledWith(`${BASE_URL}/${resourceId}`)
     })
+
+    it('should call getSamlSetting with default resourceId', async () => {
+      await samlSettingsApi.getSamlSetting()
+      expect(testRequest.get).toHaveBeenCalledWith(`${BASE_URL}/`)
+    })
   })
 
   describe('SAML settings management', () => {
@@ -81,11 +86,29 @@ describe('samlSettings API', () => {
       )
     })
 
+    it('should call updateSamlSetting with default resourceId', async () => {
+      const payload = { name: 'Updated' }
+      await samlSettingsApi.updateSamlSetting(payload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${BASE_URL}/`,
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deleteSamlSettings', async () => {
       const resourceId = 'saml-123'
       await samlSettingsApi.deleteSamlSettings(resourceId)
       expect(testRequest.delete).toHaveBeenCalledWith(
         `${BASE_URL}/${resourceId}`,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteSamlSettings with default resourceId', async () => {
+      await samlSettingsApi.deleteSamlSettings()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        `${BASE_URL}/`,
         { snackbar: COMMON_SNACKBAR }
       )
     })

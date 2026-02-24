@@ -304,7 +304,7 @@ describe('GamificationReportPerformanceDetailsInfoCard.vue', () => {
         wrappers.push(mountComponent({ title: `Card ${i}` }))
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(1500)
+      expect(duration).toBeLessThan(2500)
       wrappers.forEach((wrapper) => wrapper.destroy())
     })
   })

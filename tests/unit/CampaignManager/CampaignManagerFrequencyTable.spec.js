@@ -81,6 +81,12 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     jest.restoreAllMocks()
   })
 
+  it('renders FrequencyType label with frequencyDescription in table-all-records', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.text()).toContain('Frequency Type:')
+    expect(wrapper.text()).toContain('Weekly')
+  })
+
   it('loads data on created with frequencyGroup payload', async () => {
     const wrapper = createWrapper()
     await flushPromises()
@@ -189,6 +195,34 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(click).toHaveBeenCalled()
   })
 
+  it('maps PDF export type to PDF payload and pdf extension', async () => {
+    const wrapper = createWrapper()
+    const click = jest.fn()
+    const originalCreateElement = document.createElement.bind(document)
+    jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = originalCreateElement(tagName)
+      if (tagName === 'a') {
+        element.click = click
+      }
+      return element
+    })
+    jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:test-pdf')
+
+    wrapper.vm.exportCampaignManagerItemList({
+      exportTypes: ['PDF'],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: false
+    })
+    await flushPromises()
+
+    expect(exportCampaignManagerItem).toHaveBeenCalledWith(
+      expect.objectContaining({ exportType: 'PDF', phishingCampaignFrequencyGroup: 'fg-1' }),
+      'parent-1'
+    )
+    expect(click).toHaveBeenCalled()
+  })
+
   it('maps XLS export type to Excel payload and xlsx extension', async () => {
     const wrapper = createWrapper()
     const click = jest.fn()
@@ -227,10 +261,12 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(wrapper.vm.getErrorMessage({ status: 'Running', jobResultMessage: 'e1' })).toBe('')
     expect(wrapper.vm.getTooltipDisabilityStatus({ status: 'Error', jobResultMessage: 'e1' })).toBe(false)
     expect(wrapper.vm.getTooltipDisabilityStatus({ status: 'Error', jobResultMessage: '' })).toBe(true)
+    expect(wrapper.vm.getTooltipDisabilityStatus({ status: 'Scheduled' })).toBe(true)
 
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.IDLE })).toBe(true)
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.SCHEDULED })).toBe(true)
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.RUNNING })).toBe(false)
+    expect(wrapper.vm.isTargetUsersShowGroups({})).toBe(false)
   })
 
   it('emits navigation and action events', () => {

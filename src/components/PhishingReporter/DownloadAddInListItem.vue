@@ -12,7 +12,7 @@
         {{ title }}
         <span v-if="isOptional" class="download-add-in__list-item-optional">Optional</span>
       </div>
-      <div class="download-add-in__list-item-desc">
+      <div v-if="description" class="download-add-in__list-item-desc">
         <slot name="description">
           {{ description }}
         </slot>
@@ -88,7 +88,6 @@ export default {
   computed: {
     getButtonStyle() {
       const style = {
-        marginLeft: '5px !important',
         textTransform: 'capitalize'
       }
       if (this.isButtonDisabled) {

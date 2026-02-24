@@ -8,6 +8,16 @@ describe('PasswordChecker component', () => {
     return new PasswordChecker(localVue, propsData).wrapper
   }
 
+  const createObject = (propsData = {}) => new PasswordChecker(localVue, propsData)
+
+  describe('Object getWrapper coverage', () => {
+    it('getWrapper returns the same as .wrapper', () => {
+      const obj = createObject({ propsData: { password: 'test' } })
+      expect(obj.getWrapper()).toBe(obj.wrapper)
+      expect(obj.getWrapper().vm.$options.name).toBe('PasswordChecker')
+    })
+  })
+
   describe('component rendering', () => {
     it('should render password-complexity container', () => {
       const wrapper = mountComponent({ propsData: { password: 'test' } })
