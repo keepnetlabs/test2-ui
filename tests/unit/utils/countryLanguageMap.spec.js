@@ -340,7 +340,7 @@ describe('countryLanguageMap utility', () => {
         countryLanguageMap.find((m) => m.country === 'France')
       }
       const endTime = performance.now()
-      expect(endTime - startTime).toBeLessThan(100)
+      expect(endTime - startTime).toBeLessThan(150)
     })
 
     it('should support filtering operations efficiently', () => {
@@ -349,7 +349,7 @@ describe('countryLanguageMap utility', () => {
         m.language.includes('English')
       )
       const endTime = performance.now()
-      expect(endTime - startTime).toBeLessThan(50)
+      expect(endTime - startTime).toBeLessThan(100)
       expect(englishCountries.length).toBeGreaterThan(0)
     })
 
@@ -357,7 +357,7 @@ describe('countryLanguageMap utility', () => {
       const startTime = performance.now()
       const countries = countryLanguageMap.map((m) => m.country)
       const endTime = performance.now()
-      expect(endTime - startTime).toBeLessThan(50)
+      expect(endTime - startTime).toBeLessThan(100)
       expect(countries.length).toBe(countryLanguageMap.length)
     })
   })

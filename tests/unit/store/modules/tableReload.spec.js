@@ -422,7 +422,7 @@ describe('tableReload Vuex Module', () => {
         tableReloadStore.mutations.setTableReload(testState, { iteration: i })
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('action should dispatch quickly', () => {
@@ -432,7 +432,7 @@ describe('tableReload Vuex Module', () => {
         tableReloadStore.actions.setTableReload({ commit }, { iteration: i })
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 })

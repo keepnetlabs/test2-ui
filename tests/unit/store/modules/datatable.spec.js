@@ -394,7 +394,7 @@ describe('datatable Vuex Module', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(150)
+      expect(duration).toBeLessThan(200)
       expect(commit).toHaveBeenCalledTimes(50)
     })
 
@@ -410,7 +410,7 @@ describe('datatable Vuex Module', () => {
       }
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
   })
 

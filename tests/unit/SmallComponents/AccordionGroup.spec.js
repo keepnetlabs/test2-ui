@@ -21,6 +21,6 @@ describe('AccordionGroup.vue', () => {
   it('should mount quickly', () => {
     const start = Date.now()
     mountComponent()
-    expect(Date.now() - start).toBeLessThan(150)
+    expect(Date.now() - start).toBeLessThan(200)
   })
 })

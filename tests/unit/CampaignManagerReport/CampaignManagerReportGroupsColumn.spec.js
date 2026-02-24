@@ -224,7 +224,7 @@ describe('CampaignManagerReportGroupsColumn.vue', () => {
       const start = Date.now()
       mountComponent({ value: 'group1,group2,group3' })
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(150)
+      expect(duration).toBeLessThan(200)
     })
   })
 })

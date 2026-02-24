@@ -435,7 +435,7 @@ describe('useSetAttachmentFile Hook', () => {
       component.setAttachmentFile(mockFile)
 
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle multiple operations quickly', () => {

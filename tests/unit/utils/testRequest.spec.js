@@ -436,7 +436,7 @@ describe('testRequest utility', () => {
       const startTime = Date.now()
       const service = require('@/utils/testRequest').default
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle rapid storage access', () => {

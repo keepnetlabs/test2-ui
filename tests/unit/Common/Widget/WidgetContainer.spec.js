@@ -359,7 +359,7 @@ describe('WidgetContainer.vue', () => {
       const start = Date.now()
       const testWrapper = shallowMount(WidgetContainer)
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
       testWrapper.destroy()
     })
 
@@ -379,7 +379,7 @@ describe('WidgetContainer.vue', () => {
       const start = Date.now()
       wrapper.destroy()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
   })
 

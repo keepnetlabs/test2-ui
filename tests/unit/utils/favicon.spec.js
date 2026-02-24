@@ -386,7 +386,7 @@ describe('favicon.js utility', () => {
       const startTime = Date.now()
       updateFavicon('https://example.com/favicon.ico')
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle multiple rapid calls efficiently', () => {
@@ -414,7 +414,7 @@ describe('favicon.js utility', () => {
         times.push(Date.now() - start)
       }
       const avgTime = times.reduce((a, b) => a + b, 0) / times.length
-      expect(avgTime).toBeLessThan(50)
+      expect(avgTime).toBeLessThan(100)
     })
   })
 

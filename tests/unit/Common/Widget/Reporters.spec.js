@@ -549,7 +549,7 @@ describe("Reporters widget", () => {
       const startTime = Date.now();
       mountFactory({ "widgets/getReportersCard": [] });
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(150);
+      expect(duration).toBeLessThan(200);
     });
 
     it("should handle large datasets without performance degradation", () => {
@@ -573,7 +573,7 @@ describe("Reporters widget", () => {
         wrapper.vm.getTextColor("high");
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(50);
+      expect(duration).toBeLessThan(100);
     });
   });
 

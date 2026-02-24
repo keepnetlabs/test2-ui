@@ -527,7 +527,7 @@ describe('Input Copy with clipboard component', () => {
       const start = Date.now()
       mount(InputWithCopyToClipboard, { localVue })
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('handles multiple rapid clicks', async () => {

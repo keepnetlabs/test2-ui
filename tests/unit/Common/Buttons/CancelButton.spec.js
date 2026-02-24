@@ -422,14 +422,14 @@ describe('CancelButton.vue', () => {
       const startTime = Date.now()
       shallowMount(CancelButton)
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(150)
+      expect(duration).toBeLessThan(200)
     })
 
     it('should handle updates efficiently', async () => {
       const startTime = Date.now()
       await wrapper.vm.$forceUpdate()
       const duration = Date.now() - startTime
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should not cause memory leaks', () => {

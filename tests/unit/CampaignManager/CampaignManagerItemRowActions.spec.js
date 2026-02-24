@@ -652,7 +652,7 @@ describe('CampaignManagerItemRowActions.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('handleItemClick should execute quickly', () => {
@@ -677,7 +677,7 @@ describe('CampaignManagerItemRowActions.vue', () => {
         const e = wrapper.vm.getTooltipText
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 })

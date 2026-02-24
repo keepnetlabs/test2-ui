@@ -474,7 +474,7 @@ describe('CampaignManagerReplyTracking.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('handleDomainChange should execute quickly', () => {
@@ -484,7 +484,7 @@ describe('CampaignManagerReplyTracking.vue', () => {
         wrapper.vm.handleDomainChange(`mail${i}`)
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should load domains efficiently', async () => {

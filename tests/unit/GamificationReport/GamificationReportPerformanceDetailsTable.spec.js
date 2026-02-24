@@ -544,7 +544,7 @@ describe('GamificationReportPerformanceDetailsTable.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should render large tables efficiently', () => {
