@@ -119,4 +119,88 @@ describe('trainingLibrary store (mapping branch extra)', () => {
     expect(commit).toHaveBeenNthCalledWith(1, 'RESET_TABLE_PARAMS')
     expect(commit).toHaveBeenNthCalledWith(2, 'RESET_FILTERS')
   })
+
+  it('SET_LIST_VIEW toggles page size for list and grid views', () => {
+    const state = createState()
+    state.isListView = false
+    state.serverSideProps.pageSize = 9
+    state.axiosPayload.pageSize = 9
+
+    trainingLibrary.mutations.SET_LIST_VIEW(state, true)
+    expect(state.isListView).toBe(true)
+    expect(state.serverSideProps.pageSize).toBe(10)
+    expect(state.axiosPayload.pageSize).toBe(10)
+
+    trainingLibrary.mutations.SET_LIST_VIEW(state, false)
+    expect(state.isListView).toBe(false)
+    expect(state.serverSideProps.pageSize).toBe(9)
+    expect(state.axiosPayload.pageSize).toBe(9)
+  })
+
+  it('SET_DEFAULT_TABLE_SETTINGS hydrates rendered columns and fixed flags from localStorage', () => {
+    const state = createState()
+    localStorage.setItem(
+      'training-library-columns',
+      JSON.stringify({
+        renderedColumns: ['type', 'category'],
+        firstColFixed: true,
+        lastColFixed: false
+      })
+    )
+
+    trainingLibrary.mutations.SET_DEFAULT_TABLE_SETTINGS(state)
+
+    expect(state.renderedColumns).toEqual(['type', 'category'])
+    expect(state.firstColFixed).toBe(true)
+    expect(state.lastColFixed).toBe(false)
+  })
+
+  it('setSortBy commits sort mapping and dispatches table data reload', () => {
+    const commit = jest.fn()
+    const dispatch = jest.fn()
+
+    trainingLibrary.actions.setSortBy(
+      { commit, dispatch },
+      {
+        item: { text: 'Name', orderBy: 'name' },
+        sort: { text: 'A-Z', ascending: true }
+      }
+    )
+
+    expect(commit).toHaveBeenNthCalledWith(1, 'SET_SORT_BY', 'Name - A-Z')
+    expect(commit).toHaveBeenNthCalledWith(2, 'SET_SORT_BY_TO_PAYLOAD', {
+      ascending: true,
+      orderBy: 'name'
+    })
+    expect(dispatch).toHaveBeenCalledWith('callForTableData')
+  })
+
+  it('setFilterType commits payload condition changes and reloads table', () => {
+    const commit = jest.fn()
+    const dispatch = jest.fn()
+
+    trainingLibrary.actions.setFilterType({ commit, dispatch }, 'AND')
+
+    expect(commit).toHaveBeenNthCalledWith(1, 'SET_FILTER_TYPE', 'AND')
+    expect(commit).toHaveBeenNthCalledWith(2, 'SET_FILTER_TYPE_TO_PAYLOAD')
+    expect(commit).toHaveBeenNthCalledWith(3, 'RESET_PAGINATION')
+    expect(dispatch).toHaveBeenCalledWith('callForTableData')
+  })
+
+  it('setNewLearningPathModal dispatches reset when status is false', () => {
+    const commit = jest.fn()
+    const dispatch = jest.fn()
+
+    trainingLibrary.actions.setNewLearningPathModal(
+      { commit, dispatch },
+      { status: false }
+    )
+
+    expect(commit).toHaveBeenCalledWith('SET_NEW_LEARNING_PATH_MODAL', { status: false })
+    expect(dispatch).toHaveBeenCalledWith(
+      'learningPath/resetSelectedLearningPathTrainings',
+      undefined,
+      { root: true }
+    )
+  })
 })

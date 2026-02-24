@@ -64,6 +64,17 @@ describe('whitelabel store (extra coverage)', () => {
       expect(state.brandName).toBe('')
       expect(state.loading).toBe(true)
     })
+
+    it('SET_DATA does not overwrite existing systemVersion key', () => {
+      const state = createState()
+      state.systemVersion = '9.9.9'
+      whitelabel.mutations.SET_DATA(state, {
+        systemVersion: '1.0.0',
+        brandName: 'X'
+      })
+      expect(state.systemVersion).toBe('9.9.9')
+      expect(state.brandName).toBe('X')
+    })
   })
 
   describe('actions', () => {
@@ -129,6 +140,30 @@ describe('whitelabel store (extra coverage)', () => {
         { commit, dispatch },
         { checkExceedDialog: true }
       )
+      expect(dispatch).not.toHaveBeenCalledWith('toggleShowExceedDialog')
+    })
+
+    it('callForSystemInfoSummary skips exceed checks when checkExceedDialog is false', async () => {
+      whitelabelApi.callForSystemInfoSummary.mockResolvedValue({
+        data: {
+          versionInfo: { data: { version: '4.2.0' } },
+          companyLicense: { data: { isLicenseExceeded: true, isLimited: true } },
+          company: { data: { countryName: 'France' } },
+          summary: { data: { countryCode: 'FR' } }
+        }
+      })
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+
+      await whitelabel.actions.callForSystemInfoSummary(
+        { commit, dispatch },
+        { checkExceedDialog: false }
+      )
+
+      expect(commit).toHaveBeenCalledWith('SET_SYSTEM_VERSION', '4.2.0')
+      expect(commit).toHaveBeenCalledWith('SET_DATA', { countryCode: 'FR' })
+      expect(commit).toHaveBeenCalledWith('SET_COUNTRY_NAME', 'France')
+      expect(commit).not.toHaveBeenCalledWith('SET_COMPANY_LICENSE', expect.anything())
       expect(dispatch).not.toHaveBeenCalledWith('toggleShowExceedDialog')
     })
 

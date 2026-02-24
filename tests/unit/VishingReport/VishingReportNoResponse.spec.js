@@ -17,7 +17,7 @@ jest.mock('@/api/vishing', () => ({
       }
     })
   ),
-  exportVishingReportNoResponse: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportVishingReportNoResponse: jest.fn(() => Promise.resolve({ data: {} }))
 }))
 
 describe('VishingReportNoResponse.vue', () => {

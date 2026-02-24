@@ -225,6 +225,14 @@ describe('widgets store (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_LOADING', true)
       expect(getSummary).toHaveBeenCalled()
     })
+
+    it('callForWidgets passes undefined loading flag when payload is empty object', async () => {
+      const commit = jest.fn()
+      const { getSummary } = require('@/api/widgets')
+      await widgetsStore.actions.callForWidgets({ commit }, {})
+      expect(getSummary).toHaveBeenCalledWith({}, undefined)
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
     it('callForWidgets commits all card mutations from full response', async () => {
       const { getSummary } = require('@/api/widgets')
       getSummary.mockResolvedValueOnce({
@@ -263,6 +271,34 @@ describe('widgets store (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_PHISHING_CAMPAIGN_TRENDS', [{ m: 1 }])
       expect(commit).toHaveBeenCalledWith('SET_MOST_ENGAGED_CAMPAIGNS', [{ n: 1 }])
       expect(commit).toHaveBeenCalledWith('SET_TOP_PHISHING_SIMULATION_REPORTERS', [{ id: 5 }])
+    })
+
+    it('callForWidgets commits empty-array defaults when nested cards are missing', async () => {
+      const { getSummary } = require('@/api/widgets')
+      getSummary.mockResolvedValueOnce({
+        data: {
+          dashboardSummary: { data: {} },
+          dashboardTopRules: {},
+          runningInvestigations: {},
+          topReporters: {},
+          reportedEmailTrends: {},
+          recentPhishingCampaigns: {},
+          mostPhishedUsers: {},
+          phishingCampaignTrends: {},
+          mostEngagedCampaigns: {},
+          topPhishingSimulationReporters: {}
+        }
+      })
+      const commit = jest.fn()
+
+      await widgetsStore.actions.callForWidgets({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_RECENT_CAMPAIGNS', [])
+      expect(commit).toHaveBeenCalledWith('SET_MOST_PHISHED_USERS', [])
+      expect(commit).toHaveBeenCalledWith('SET_PHISHING_CAMPAIGN_TRENDS', [])
+      expect(commit).toHaveBeenCalledWith('SET_MOST_ENGAGED_CAMPAIGNS', [])
+      expect(commit).toHaveBeenCalledWith('SET_TOP_PHISHING_SIMULATION_REPORTERS', [])
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
   })
 })

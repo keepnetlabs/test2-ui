@@ -65,6 +65,26 @@ describe('common store (extra - real module)', () => {
       common.mutations.SET_ACTIVE_TRAINING_TYPE(state, 'Survey')
       expect(state.activeTrainingType).toBe('Survey')
     })
+
+    it('SET_IS_LOADING supports increment and decrement branches', () => {
+      state.isLoading = 0
+      common.mutations.SET_IS_LOADING(state, 2)
+      expect(state.isLoading).toBe(2)
+      common.mutations.SET_IS_LOADING(state, -1)
+      expect(state.isLoading).toBe(1)
+    })
+
+    it('SET_CLOSE_SNACKBAR removes exact match and keeps non-matching items', () => {
+      const snack1 = { id: 1, message: 'A' }
+      const snack2 = { id: 2, message: 'B' }
+      state.snackbars = [snack1, snack2]
+
+      common.mutations.SET_CLOSE_SNACKBAR(state, { id: 1, message: 'A' })
+      expect(state.snackbars).toEqual([snack2])
+
+      common.mutations.SET_CLOSE_SNACKBAR(state, { id: 999, message: 'X' })
+      expect(state.snackbars).toEqual([snack2])
+    })
   })
 
   describe('actions', () => {
@@ -141,6 +161,16 @@ describe('common store (extra - real module)', () => {
       expect(commit).toHaveBeenCalledWith('SET_TIMEZONE', { UTC: 'UTC', EST: 'EST' })
     })
 
+    it('getTimezone commits undefined when response path is missing', async () => {
+      getTimezones.mockResolvedValue({ data: {} })
+      const commit = jest.fn()
+
+      common.actions.getTimezone({ commit })
+      await flushPromises()
+
+      expect(commit).toHaveBeenCalledWith('SET_TIMEZONE', undefined)
+    })
+
     it('setActivePageRouterName commits SET_ACTIVE_PAGE_ROUTE_NAME', () => {
       const commit = jest.fn()
       common.actions.setActivePageRouterName({ commit }, 'Report')
@@ -173,6 +203,17 @@ describe('common store (extra - real module)', () => {
       expect(getSystemUserSettings).toHaveBeenCalled()
       expect(dispatch).toHaveBeenCalledWith('setSelectedTimeZone', 'tz-1')
       expect(dispatch).toHaveBeenCalledWith('setSelectedTimeZoneName', 'UTC')
+    })
+
+    it('callForSettings dispatches undefined values when response data is missing', async () => {
+      getSystemUserSettings.mockResolvedValue({ data: { data: {} } })
+      const dispatch = jest.fn()
+
+      common.actions.callForSettings({ dispatch })
+      await flushPromises()
+
+      expect(dispatch).toHaveBeenCalledWith('setSelectedTimeZone', undefined)
+      expect(dispatch).toHaveBeenCalledWith('setSelectedTimeZoneName', undefined)
     })
 
     it('setActiveTrainingType commits SET_ACTIVE_TRAINING_TYPE', () => {

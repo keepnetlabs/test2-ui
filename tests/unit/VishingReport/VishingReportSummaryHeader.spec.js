@@ -3,7 +3,7 @@ import VishingReportSummaryHeader from '@/components/VishingReport/VishingReport
 import { exportVishingReportSummary, resendVishingReport } from '@/api/vishing'
 
 jest.mock('@/api/vishing', () => ({
-  exportVishingReportSummary: jest.fn(() => Promise.resolve({ data: new Blob() })),
+  exportVishingReportSummary: jest.fn(() => Promise.resolve({ data: {} })),
   resendVishingReport: jest.fn(() => Promise.resolve())
 }))
 

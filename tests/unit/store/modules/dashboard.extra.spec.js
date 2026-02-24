@@ -76,6 +76,16 @@ describe('dashboard store (extra coverage)', () => {
       expect(localStorage.getItem('isSelectCompany')).toBe('true')
     })
 
+    it('SET_SELECTED_COMPANY falls back to null values when localStorage keys are absent', () => {
+      const payload = { id: 7, name: 'Original' }
+      dashboard.mutations.SET_SELECTED_COMPANY(state, payload)
+
+      expect(payload.name).toBeNull()
+      expect(payload.id).toBeNull()
+      expect(state.selectedCompany).toBe(payload)
+      expect(localStorage.getItem('isSelectCompany')).toBe('true')
+    })
+
     it('SET_SWITCH_DIALOG updates state', () => {
       dashboard.mutations.SET_SWITCH_DIALOG(state, true)
       expect(state.isSwitchDialogOpen).toBe(true)
@@ -218,6 +228,15 @@ describe('dashboard store (extra coverage)', () => {
       getCompanyList.mockResolvedValue({ data: { data: [{ id: 1 }, { id: 2 }] } })
       await dashboard.actions.getDropdownCompanies({ commit }, 'User')
       expect(commit).toHaveBeenCalledWith('SET_DROPDOWN_COMPANIES', [{ id: 1 }, { id: 2 }])
+    })
+
+    it('getDropdownCompanies treats undefined payload as non-admin and fetches list', async () => {
+      const commit = jest.fn()
+      getCompanyList.mockResolvedValue({ data: { data: [{ id: 5 }] } })
+      await dashboard.actions.getDropdownCompanies({ commit }, undefined)
+
+      expect(getCompanyList).toHaveBeenCalled()
+      expect(commit).toHaveBeenCalledWith('SET_DROPDOWN_COMPANIES', [{ id: 5 }])
     })
   })
 })

@@ -15,7 +15,7 @@ jest.mock('@/api/awarenessEducator', () => ({
       }
     })
   ),
-  exportNoResponseReportResults: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportNoResponseReportResults: jest.fn(() => Promise.resolve({ data: {} }))
 }))
 
 describe('TrainingReportNoResponse.vue', () => {
