@@ -49,6 +49,17 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     expect(JSON.stringify(state.tableColumns)).toBe(before)
   })
 
+  it('SET_DEFAULT_TABLE_FILTERS sets default OR condition when localStorage is empty', () => {
+    const state = createState()
+    state.filterType = 'And'
+    state.axiosPayload.filter.FilterGroups[0].Condition = 'AND'
+
+    trainingLibrary.mutations.SET_DEFAULT_TABLE_FILTERS(state)
+
+    expect(state.filterType).toBe('Or')
+    expect(state.axiosPayload.filter.FilterGroups[0].Condition).toBe('Or')
+  })
+
   it('SET_DEFAULT_TABLE_FILTERS hydrates saved settings from localStorage', () => {
     const state = createState()
     localStorage.setItem(
@@ -92,6 +103,23 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     })
   })
 
+  it('SET_SEARCH_TO_PAYLOAD updates existing trainingName filter and pushes when missing', () => {
+    const state = createState()
+    state.search = 'first'
+    state.axiosPayload.filter.FilterGroups[1].FilterItems = []
+
+    trainingLibrary.mutations.SET_SEARCH_TO_PAYLOAD(state)
+    expect(state.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'trainingName', Value: 'first', Operator: 'Contains' }
+    ])
+
+    state.search = 'second'
+    trainingLibrary.mutations.SET_SEARCH_TO_PAYLOAD(state)
+    expect(state.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'trainingName', Value: 'second', Operator: 'Contains' }
+    ])
+  })
+
   it('REMOVE_FILTER_FROM_PAYLOAD handles search filters for empty and non-empty values', () => {
     const state = createState()
     state.axiosPayload.filter.FilterGroups[0].FilterItems = [
@@ -113,6 +141,25 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toHaveLength(0)
   })
 
+  it('REMOVE_FILTER_FROM_PAYLOAD removes 2 items for date-between filter', () => {
+    const state = createState()
+    state.axiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'dateCreated', Value: '2026-01-01', Operator: '>=' },
+      { FieldName: 'dateCreated', Value: '2026-01-31', Operator: '<=' },
+      { FieldName: 'vendor', Value: 'A', Operator: 'Contains' }
+    ]
+
+    trainingLibrary.mutations.REMOVE_FILTER_FROM_PAYLOAD(state, {
+      key: 'dateCreated',
+      filterType: 'date',
+      activeOperator: 'between'
+    })
+
+    expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+      { FieldName: 'vendor', Value: 'A', Operator: 'Contains' }
+    ])
+  })
+
   it('SET_TRAINING_TYPE sets null for all types and value for specific type', () => {
     const state = createState()
     trainingLibrary.mutations.SET_TRAINING_TYPE(state, TRAINING_LIBRARY_PAYLOAD_TYPES.ALL_TYPES)
@@ -127,6 +174,21 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     const commit = jest.fn()
     const dispatch = jest.fn()
     trainingLibrary.actions.setListView({ commit, dispatch, state }, state.isListView)
+    expect(commit).not.toHaveBeenCalled()
+    expect(dispatch).not.toHaveBeenCalled()
+  })
+
+  it('setSubSelectedTrainingContent returns early when selected item is same', () => {
+    const state = createState()
+    state.selectedSubTrainingContent = TRAINING_LIBRARY_TYPES.TRAINING
+    const commit = jest.fn()
+    const dispatch = jest.fn()
+
+    trainingLibrary.actions.setSubSelectedTrainingContent(
+      { commit, dispatch, state },
+      { name: TRAINING_LIBRARY_TYPES.TRAINING }
+    )
+
     expect(commit).not.toHaveBeenCalled()
     expect(dispatch).not.toHaveBeenCalled()
   })

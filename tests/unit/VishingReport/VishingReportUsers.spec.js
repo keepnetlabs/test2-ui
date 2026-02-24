@@ -1,8 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
 import VishingReportUsers from '@/components/VishingReport/VishingReportUsers.vue'
-import { getVishingReportUsers } from '@/api/vishing'
-
-const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 jest.mock('@/api/vishing', () => ({
   getVishingReportUsers: jest.fn(() =>
@@ -17,8 +14,12 @@ jest.mock('@/api/vishing', () => ({
       }
     })
   ),
-  exportVishingUsers: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportVishingUsers: jest.fn(() => Promise.resolve({ data: {} }))
 }))
+
+import * as vishingApi from '@/api/vishing'
+
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 if (!globalThis.URL) globalThis.URL = {}
 if (!globalThis.URL.createObjectURL) globalThis.URL.createObjectURL = jest.fn(() => 'blob:mock')
@@ -89,7 +90,7 @@ describe('VishingReportUsers.vue', () => {
   it('callForData fetches users on mount', async () => {
     const wrapper = mountComponent()
     await flushPromises()
-    expect(getVishingReportUsers).toHaveBeenCalledWith(
+    expect(vishingApi.getVishingReportUsers).toHaveBeenCalledWith(
       expect.any(Object),
       'v1'
     )

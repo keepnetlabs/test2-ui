@@ -15,7 +15,7 @@ jest.mock('@/api/vishing', () => ({
       }
     })
   ),
-  exportVishingAnsweredUsers: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportVishingAnsweredUsers: jest.fn(() => Promise.resolve({ data: {} }))
 }))
 
 if (!globalThis.URL) globalThis.URL = {}

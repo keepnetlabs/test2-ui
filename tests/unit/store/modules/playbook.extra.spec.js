@@ -40,10 +40,53 @@ describe('playbook store (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_PLAYBOOK_LIST', expect.any(Object))
     })
 
+    it('getPlaybookList returns response and injects matchCount for each result item', async () => {
+      searchPlaybook.mockResolvedValue({
+        data: { data: { results: [{ id: 1, name: 'A' }, { id: 2, name: 'B' }] } }
+      })
+      const commit = jest.fn()
+
+      const response = await playbook.actions.getPlaybookList({ commit }, { pageNumber: 1 })
+
+      expect(response).toBeDefined()
+      expect(response.data.data.results).toEqual([
+        { id: 1, name: 'A', matchCount: 1 },
+        { id: 2, name: 'B', matchCount: 1 }
+      ])
+      expect(commit).toHaveBeenCalledWith(
+        'SET_PLAYBOOK_LIST',
+        expect.objectContaining({
+          data: expect.objectContaining({
+            results: [
+              { id: 1, name: 'A', matchCount: 1 },
+              { id: 2, name: 'B', matchCount: 1 }
+            ]
+          })
+        })
+      )
+    })
+
+    it('getPlaybookList handles empty results array branch', async () => {
+      searchPlaybook.mockResolvedValue({
+        data: { data: { results: [] } }
+      })
+      const commit = jest.fn()
+
+      const response = await playbook.actions.getPlaybookList({ commit }, {})
+
+      expect(response.data.data.results).toEqual([])
+      expect(commit).toHaveBeenCalledWith('SET_PLAYBOOK_LIST', {
+        data: { results: [] }
+      })
+    })
+
     it('getPlaybookList commits error state on catch', async () => {
       searchPlaybook.mockRejectedValue(new Error('API error'))
       const commit = jest.fn()
       await playbook.actions.getPlaybookList({ commit }, {})
+      expect(commit).toHaveBeenCalledWith('common/SET_SNACK_STATUS', true, { root: true })
+      expect(commit).toHaveBeenCalledWith('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+      expect(commit).toHaveBeenCalledWith('common/SET_ERROR_STATE', true, { root: true })
       expect(commit).toHaveBeenCalledWith('common/SET_ERROR_MESSAGE', 'Error when getting playbook list', {
         root: true
       })

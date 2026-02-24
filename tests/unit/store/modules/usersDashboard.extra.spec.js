@@ -12,6 +12,7 @@ import usersDashboard from '@/store/modules/usersDashboard'
 import {
   getTopPerformance,
   getMyLearning,
+  getMyBadges,
   getMyCertificates,
   getPhishingResult,
   getUserInfo,
@@ -209,6 +210,48 @@ describe('usersDashboard store module (extra coverage)', () => {
   })
 
   describe('login', () => {
+    it('commits company/login method and SAML+email details on success response', async () => {
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+      loginApi.mockResolvedValue({
+        data: {
+          data: {
+            email: 'user@company.com',
+            saml: {
+              provider: 'microsoft',
+              redirectUrl: 'https://sso.example.com'
+            }
+          }
+        }
+      })
+
+      const payload = { companyEmail: 'company.com', loginMethod: 'microsoft' }
+      const response = await usersDashboard.actions.login({ commit, dispatch }, payload)
+
+      expect(response).toBeDefined()
+      expect(commit).toHaveBeenCalledWith('SET_COMPANY_EMAIL', 'company.com')
+      expect(commit).toHaveBeenCalledWith('SET_LOGIN_METHOD', 'microsoft')
+      expect(commit).toHaveBeenCalledWith('SET_USER_INFO', { email: 'user@company.com' })
+      expect(commit).toHaveBeenCalledWith('SET_SAML_INFO', {
+        provider: 'microsoft',
+        redirectUrl: 'https://sso.example.com'
+      })
+    })
+
+    it('commits base login info without SAML when response data is empty', async () => {
+      const commit = jest.fn()
+      loginApi.mockResolvedValue({ data: {} })
+
+      await usersDashboard.actions.login(
+        { commit },
+        { companyEmail: 'empty.com', loginMethod: 'magic-link' }
+      )
+
+      expect(commit).toHaveBeenCalledWith('SET_COMPANY_EMAIL', 'empty.com')
+      expect(commit).toHaveBeenCalledWith('SET_LOGIN_METHOD', 'magic-link')
+      expect(commit).not.toHaveBeenCalledWith('SET_SAML_INFO', expect.anything())
+    })
+
     it('throws on API error', async () => {
       const commit = jest.fn()
       loginApi.mockRejectedValue(new Error('Login failed'))
@@ -219,6 +262,82 @@ describe('usersDashboard store module (extra coverage)', () => {
           { companyEmail: 'user@test.com', loginMethod: 'email' }
         )
       ).rejects.toThrow('Login failed')
+    })
+  })
+
+  describe('fetchMyBadges', () => {
+    it('maps badgeType=5 earnedDate to empty string', async () => {
+      const commit = jest.fn()
+      getMyBadges.mockResolvedValue({
+        data: {
+          data: [
+            { badgeType: 5, earnedDate: '2026-01-01' },
+            { badgeType: 1, earnedDate: '2026-01-02' }
+          ]
+        }
+      })
+
+      await usersDashboard.actions.fetchMyBadges({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_MY_BADGES', [
+        { badgeType: 5, earnedDate: '' },
+        { badgeType: 1, earnedDate: '2026-01-02' }
+      ])
+    })
+
+    it('sets empty badges and error on failure', async () => {
+      const commit = jest.fn()
+      getMyBadges.mockRejectedValue(new Error('Badges failed'))
+
+      const result = await usersDashboard.actions.fetchMyBadges({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_MY_BADGES', [])
+      expect(commit).toHaveBeenCalledWith('SET_MY_BADGES_ERROR', 'Badges failed')
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('initializeFromStorage', () => {
+    it('restores token+language when storage keys are valid', () => {
+      const commit = jest.fn()
+      localStorage.setItem(
+        'usersDashboardAuth',
+        JSON.stringify({ token: 'tok-1', expired: 10, status: 'ok' })
+      )
+      localStorage.setItem('usersDashboardLoginSource', 'users-dashboard-login')
+      localStorage.setItem('usersDashboardLanguage', 'tr-TR')
+
+      usersDashboard.actions.initializeFromStorage({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOKEN', {
+        token: 'tok-1',
+        expiredIn: 10,
+        status: 'ok'
+      })
+      expect(commit).toHaveBeenCalledWith('SET_LANGUAGE', 'tr-TR')
+    })
+
+    it('resets state when storage token is invalid json', () => {
+      const commit = jest.fn()
+      localStorage.setItem('usersDashboardAuth', '{broken-json')
+      localStorage.setItem('usersDashboardLoginSource', 'users-dashboard-login')
+
+      usersDashboard.actions.initializeFromStorage({ commit })
+      expect(commit).toHaveBeenCalledWith('RESET_STATE')
+    })
+
+    it('does nothing when login source does not match', () => {
+      const commit = jest.fn()
+      localStorage.setItem(
+        'usersDashboardAuth',
+        JSON.stringify({ token: 'tok-2', expired: 20, status: 'ok' })
+      )
+      localStorage.setItem('usersDashboardLoginSource', 'other-source')
+
+      usersDashboard.actions.initializeFromStorage({ commit })
+
+      expect(commit).not.toHaveBeenCalledWith('SET_TOKEN', expect.anything())
+      expect(commit).not.toHaveBeenCalledWith('RESET_STATE')
     })
   })
 
@@ -275,6 +394,13 @@ describe('usersDashboard store module (extra coverage)', () => {
       usersDashboard.mutations.SET_MY_BADGES_ERROR(state, 'Error')
       expect(state.myBadges.error).toBe('Error')
       expect(state.myBadges.isLoading).toBe(false)
+    })
+
+    it('SET_SAML_INFO uses null fallbacks for missing provider/redirect', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_SAML_INFO(state, {})
+      expect(state.samlProvider).toBeNull()
+      expect(state.samlRedirectUrl).toBeNull()
     })
 
     it('SET_PHISHING_RESULT_LOADING', () => {

@@ -141,6 +141,48 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
     })
   })
 
+  describe('mapping fallback branches', () => {
+    it('callForCategories falls back to category.name when displayName is missing', async () => {
+      AwarenessEducatorService.getCategories.mockResolvedValue({
+        data: { data: [{ name: 'OnlyNameCategory' }] }
+      })
+
+      await trainingLibraryHelpers.actions.callForCategories({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_CATEGORIES', [
+        { text: 'OnlyNameCategory', value: 'OnlyNameCategory' }
+      ])
+    })
+
+    it('callForLevels uses levelId fallback and name as text when displayName is missing', async () => {
+      AwarenessEducatorService.getTrainingLevels.mockResolvedValue({
+        data: {
+          data: [{ levelId: 9, name: 'Expert-Level' }]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForLevels({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_LEVELS', [
+        { id: 9, name: 'Expert-Level', text: 'Expert-Level', value: '' }
+      ])
+    })
+
+    it('callForDurations uses durationId fallback and name as text when displayName missing', async () => {
+      AwarenessEducatorService.getTrainingDurations.mockResolvedValue({
+        data: {
+          data: [{ durationId: 11, name: '11 min' }]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForDurations({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_DURATIONS', [
+        { id: 11, name: '11 min', text: '11 min', value: '' }
+      ])
+    })
+  })
+
   describe('callForCompliances', () => {
     it('maps compliances and dispatches filter items', async () => {
       AwarenessEducatorService.getCompliances.mockResolvedValue({
@@ -296,6 +338,22 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
         { text: 'Turkish', value: 'r2' }
       ])
     })
+
+    it('filters out unmatched preferred language values', async () => {
+      LookupLocalStorage.getSingle.mockResolvedValue([
+        { resourceId: 'r1', isoFriendlyName: 'English' }
+      ])
+      getScenarioDataDetails.mockResolvedValue({
+        data: { data: { preferredLanguageTypes: [{ value: 'r1' }, { value: 'missing' }] } }
+      })
+
+      trainingLibraryHelpers.actions.callForScenarioFormDetails({ commit })
+      await flushPromises()
+
+      expect(commit).toHaveBeenCalledWith('SET_PREFERRED_LANGUAGE_TYPES', [
+        { text: 'English', value: 'r1' }
+      ])
+    })
   })
 
   describe('callForFormDetails', () => {
@@ -386,6 +444,12 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
         { text: 'English', value: 'en' }
       ])
     })
+
+    it('getCanSaveVendor and getEnumTypes return state values', () => {
+      const state = { canSaveVendor: true, enumTypes: { status: 'active' } }
+      expect(trainingLibraryHelpers.getters.getCanSaveVendor(state)).toBe(true)
+      expect(trainingLibraryHelpers.getters.getEnumTypes(state)).toEqual({ status: 'active' })
+    })
   })
 
   describe('mutations', () => {
@@ -399,6 +463,14 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
       const state = { scormTypes: [] }
       trainingLibraryHelpers.mutations.SET_SCORM_TYPES(state, [{ text: 'SCORM', value: '1' }])
       expect(state.scormTypes).toEqual([{ text: 'SCORM', value: '1' }])
+    })
+
+    it('SET_ENUM_TYPES and SET_CAN_SAVE_VENDOR update state', () => {
+      const state = { enumTypes: {}, canSaveVendor: false }
+      trainingLibraryHelpers.mutations.SET_ENUM_TYPES(state, { a: 1 })
+      trainingLibraryHelpers.mutations.SET_CAN_SAVE_VENDOR(state, true)
+      expect(state.enumTypes).toEqual({ a: 1 })
+      expect(state.canSaveVendor).toBe(true)
     })
   })
 })
