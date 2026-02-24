@@ -42,8 +42,8 @@ export default {
       multipleDeletedUserCount: 0,
       CONSTANTS: {
         icon: '$custom-new-instance',
-        title: 'Create New Instance',
-        content: 'Do you want to create a new instance?'
+        title: 'Create New Run',
+        content: 'Do you want to create a new run?'
       }
     }
   },

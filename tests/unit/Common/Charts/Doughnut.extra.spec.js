@@ -21,6 +21,19 @@ describe('Common/Charts/Doughnut.vue (extra branch coverage)', () => {
     expect(addPlugin).not.toHaveBeenCalled()
   })
 
+  it('adds single custom plugin when customPlugins has one item', () => {
+    const addPlugin = jest.fn()
+    const renderChart = jest.fn()
+    const plugin = { id: 'single' }
+    const chartData = { labels: ['A'], datasets: [{ data: [25] }] }
+    mountComponent(
+      { chartData, addDataLabelPlugin: false, customPlugins: [plugin] },
+      { addPlugin, renderChart }
+    )
+    expect(addPlugin).toHaveBeenCalledWith(plugin)
+    expect(renderChart).toHaveBeenCalledWith(chartData, { cutoutPercentage: 80 })
+  })
+
   it('does not add custom plugins when customPlugins is empty', () => {
     const addPlugin = jest.fn()
     const renderChart = jest.fn()

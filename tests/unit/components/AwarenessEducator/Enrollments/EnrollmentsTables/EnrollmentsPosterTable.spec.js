@@ -2,9 +2,7 @@ jest.mock('@/api/awarenessEducator', () => ({
   __esModule: true,
   default: {
     searchEnrollments: jest.fn(() => Promise.resolve({ data: { data: {} } })),
-    exportEnrollments: jest.fn(() =>
-      Promise.resolve({ data: new (globalThis.Blob || global.Blob)(['x']) })
-    )
+    exportEnrollments: jest.fn(() => Promise.resolve({ data: Buffer.from('x') }))
   }
 }))
 

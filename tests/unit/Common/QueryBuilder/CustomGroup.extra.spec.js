@@ -62,6 +62,38 @@ describe('CustomGroup.vue (extra branch coverage)', () => {
   })
 
   describe('addRule', () => {
+    it('uses operators[0].value when operators have value property', () => {
+      const ctx = {
+        selectedRule: {
+          id: 'conditions',
+          operands: [{ value: 'From' }],
+          operators: [{ value: 'Equal', text: 'equals' }]
+        },
+        ruleById: () => ({ type: 'text' }),
+        query: { children: [] },
+        $emit: jest.fn()
+      }
+      CustomGroup.methods.addRule.call(ctx)
+      const emittedQuery = ctx.$emit.mock.calls[0][1]
+      expect(emittedQuery.children[0].query.operator).toBe('Equal')
+    })
+
+    it('uses operators[0] when operators[0].value is undefined', () => {
+      const ctx = {
+        selectedRule: {
+          id: 'conditions',
+          operands: ['From'],
+          operators: ['Contains']
+        },
+        ruleById: () => ({ type: 'text' }),
+        query: { children: [] },
+        $emit: jest.fn()
+      }
+      CustomGroup.methods.addRule.call(ctx)
+      const emittedQuery = ctx.$emit.mock.calls[0][1]
+      expect(emittedQuery.children[0].query.operator).toBe('Contains')
+    })
+
     it('uses operands[0].value when operands defined', () => {
       const ctx = {
         selectedRule: {
@@ -155,6 +187,18 @@ describe('CustomGroup.vue (extra branch coverage)', () => {
       }
       CustomGroup.methods.addGroup.call(ctx)
       expect(ctx.$emit).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('data and getCustomBadgeRender', () => {
+    it('getCustomBadgeRender is true when depth !== 1', () => {
+      const data = CustomGroup.data.call({ depth: 2 })
+      expect(data.getCustomBadgeRender).toBe(true)
+    })
+
+    it('getCustomBadgeRender is false when depth === 1', () => {
+      const data = CustomGroup.data.call({ depth: 1 })
+      expect(data.getCustomBadgeRender).toBe(false)
     })
   })
 

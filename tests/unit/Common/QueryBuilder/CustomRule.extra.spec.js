@@ -66,20 +66,44 @@ describe('CustomRule.vue (extra branch coverage)', () => {
       expect(CustomRule.methods.getRules.call(createRuleContext({ query: null }))).toEqual([])
     })
 
-    it('returns Email validation rules when format is Email', () => {
+    it('returns Email validation rules when format is Email and operator is not Contains', () => {
       const ctx = createRuleContext({
         query: { format: 'Email', operator: 'Equal' }
       })
       const rules = CustomRule.methods.getRules.call(ctx)
-      expect(rules.length).toBeGreaterThan(0)
+      expect(rules.length).toBeGreaterThan(2)
     })
 
-    it('returns Domain validation rules when format is Domain', () => {
+    it('returns fewer Email rules when operator is Contains', () => {
+      const ctx = createRuleContext({
+        query: { format: 'Email', operator: 'Contains' }
+      })
+      const rules = CustomRule.methods.getRules.call(ctx)
+      expect(rules.length).toBe(2)
+    })
+
+    it('returns fewer Email rules when operator is DoesNotContain', () => {
+      const ctx = createRuleContext({
+        query: { format: 'Email', operator: 'DoesNotContain' }
+      })
+      const rules = CustomRule.methods.getRules.call(ctx)
+      expect(rules.length).toBe(2)
+    })
+
+    it('returns Domain validation rules when format is Domain and operator is not Contains', () => {
       const ctx = createRuleContext({
         query: { format: 'Domain', operator: 'Equal' }
       })
       const rules = CustomRule.methods.getRules.call(ctx)
-      expect(rules.length).toBeGreaterThan(0)
+      expect(rules.length).toBeGreaterThan(2)
+    })
+
+    it('returns fewer Domain rules when operator is Contains', () => {
+      const ctx = createRuleContext({
+        query: { format: 'Domain', operator: 'Contains' }
+      })
+      const rules = CustomRule.methods.getRules.call(ctx)
+      expect(rules.length).toBe(2)
     })
 
     it('returns Regex validation rules when format is Regex', () => {
@@ -108,6 +132,11 @@ describe('CustomRule.vue (extra branch coverage)', () => {
   })
 
   describe('getPlaceholder', () => {
+    it('returns default when query is null', () => {
+      const ctx = createRuleContext({ query: null })
+      expect(CustomRule.methods.getPlaceholder.call(ctx)).toBe('Enter custom field value')
+    })
+
     it('returns default when query.format is missing', () => {
       const ctx = createRuleContext({ query: {} })
       expect(CustomRule.methods.getPlaceholder.call(ctx)).toBe('Enter custom field value')
@@ -179,6 +208,20 @@ describe('CustomRule.vue (extra branch coverage)', () => {
     })
   })
 
+  describe('created', () => {
+    it('sets format to Email when query.format is falsy', () => {
+      const ctx = createRuleContext({ query: { format: null, operand: 'From' } })
+      CustomRule.created.call(ctx)
+      expect(ctx.query.format).toBe('Email')
+    })
+
+    it('does not change format when query.format exists', () => {
+      const ctx = createRuleContext({ query: { format: 'Domain', operand: 'From' } })
+      CustomRule.created.call(ctx)
+      expect(ctx.query.format).toBe('Domain')
+    })
+  })
+
   describe('isDeleteRuleButton', () => {
     it('returns true when more than one rule', () => {
       const ctx = createRuleContext({
@@ -207,6 +250,50 @@ describe('CustomRule.vue (extra branch coverage)', () => {
         }
       })
       expect(CustomRule.methods.isDeleteRuleButton.call(ctx)).toBe(false)
+    })
+
+    it('counts only query-builder-rule types', () => {
+      const ctx = createRuleContext({
+        $parent: {
+          $parent: {
+            query: {
+              children: [
+                { type: 'query-builder-rule' },
+                { type: 'query-builder-group' },
+                { type: 'query-builder-rule' }
+              ]
+            }
+          }
+        }
+      })
+      expect(CustomRule.methods.isDeleteRuleButton.call(ctx)).toBe(true)
+    })
+  })
+
+  describe('getSubjectRules, getKeywordRules, getAttachmentRules', () => {
+    it('getSubjectRules returns validation array', () => {
+      const rules = CustomRule.methods.getSubjectRules.call(createRuleContext())
+      expect(rules).toHaveLength(2)
+    })
+
+    it('getKeywordRules returns validation array', () => {
+      const rules = CustomRule.methods.getKeywordRules.call(createRuleContext())
+      expect(rules).toHaveLength(2)
+    })
+
+    it('getAttachmentNameRules returns validation array', () => {
+      const rules = CustomRule.methods.getAttachmentNameRules.call(createRuleContext())
+      expect(rules).toHaveLength(2)
+    })
+
+    it('getAttachmentExtensionRules returns validation array', () => {
+      const rules = CustomRule.methods.getAttachmentExtensionRules.call(createRuleContext())
+      expect(rules).toHaveLength(3)
+    })
+
+    it('getAttachmentHashRules returns validation array', () => {
+      const rules = CustomRule.methods.getAttachmentHashRules.call(createRuleContext())
+      expect(rules).toHaveLength(2)
     })
   })
 })

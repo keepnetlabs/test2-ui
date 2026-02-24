@@ -2,7 +2,7 @@
   <AppModal
     :status="status"
     icon-name="$custom-new-instance"
-    title="Create New Instance"
+    title="Create New Run"
     class-name="add-in-configuration"
     title-id="text--create-new-instance__title"
     confirm-button-id="btn-save--campaign-manager-new-instance-modal"

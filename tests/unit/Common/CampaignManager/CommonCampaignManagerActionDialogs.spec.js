@@ -43,7 +43,7 @@ describe('Common campaign manager action dialogs', () => {
 
     expect(wrapper.emitted('on-close')).toBeTruthy()
     expect(wrapper.emitted('on-confirm')).toEqual([['res-123']])
-    expect(wrapper.vm.CONSTANTS.title).toBe('Create New Instance')
+    expect(wrapper.vm.CONSTANTS.title).toBe('Create New Run')
     expect(wrapper.vm.CONSTANTS.icon).toBe('$custom-new-instance')
   })
 
@@ -92,7 +92,7 @@ describe('Common campaign manager action dialogs', () => {
       }
     })
 
-    expect(wrapper.vm.CONSTANTS.content).toBe('Do you want to create a new instance?')
+    expect(wrapper.vm.CONSTANTS.content).toBe('Do you want to create a new run?')
     expect(wrapper.vm.isActionButtonDisabled).toBe(false)
   })
 
