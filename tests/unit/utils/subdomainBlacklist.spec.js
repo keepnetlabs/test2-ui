@@ -2,7 +2,7 @@ describe('subdomainBlacklist.js utility', () => {
   let subdomainBlacklist
 
   beforeEach(() => {
-    subdomainBlacklist = require('../../../src/utils/subdomainBlacklist.js').default
+    subdomainBlacklist = require('@/utils/subdomainBlacklist').default
   })
 
   describe('export structure', () => {

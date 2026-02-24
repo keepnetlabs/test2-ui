@@ -23,6 +23,11 @@ describe('direct-creation API', () => {
       expect(testRequest.post).toHaveBeenCalledWith(`${API_URL}/search`, payload)
     })
 
+    it('should call searchEmailCreations with default payload', async () => {
+      await directCreationApi.searchEmailCreations()
+      expect(testRequest.post).toHaveBeenCalledWith(`${API_URL}/search`, {})
+    })
+
     it('should call getDirectEmailCreation', async () => {
       const resourceId = 'email-123'
       await directCreationApi.getDirectEmailCreation(resourceId)
@@ -81,11 +86,37 @@ describe('direct-creation API', () => {
       )
     })
 
+    it('should call updateDirectEmailCreation with default payload', async () => {
+      await directCreationApi.updateDirectEmailCreation('email-123')
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${API_URL}/email-123`,
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call updateDirectEmailCreation with default resourceId and payload', async () => {
+      await directCreationApi.updateDirectEmailCreation()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${API_URL}/`,
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deleteEmailCreation', async () => {
       const resourceId = 'email-123'
       await directCreationApi.deleteEmailCreation(resourceId)
       expect(testRequest.delete).toHaveBeenCalledWith(
         `${API_URL}/${resourceId}`,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteEmailCreation with default resourceId', async () => {
+      await directCreationApi.deleteEmailCreation()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        `${API_URL}/`,
         { snackbar: COMMON_SNACKBAR }
       )
     })
@@ -101,6 +132,15 @@ describe('direct-creation API', () => {
       )
     })
 
+    it('should call makeDefault with default resourceId and payload', async () => {
+      await directCreationApi.makeDefault()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${API_URL}/make-default/`,
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call removeDefault', async () => {
       const resourceId = 'email-123'
       const payload = {}
@@ -108,6 +148,15 @@ describe('direct-creation API', () => {
       expect(testRequest.put).toHaveBeenCalledWith(
         `${API_URL}/remove-default/${resourceId}`,
         payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call removeDefault with default resourceId and payload', async () => {
+      await directCreationApi.removeDefault()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        `${API_URL}/remove-default/`,
+        {},
         { snackbar: COMMON_SNACKBAR }
       )
     })

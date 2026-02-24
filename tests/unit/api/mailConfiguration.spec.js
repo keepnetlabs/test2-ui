@@ -47,6 +47,14 @@ describe('mailConfiguration API', () => {
         { loading: true }
       )
     })
+
+    it('should call getGoogleWorkSpace with default resourceId', async () => {
+      await mailConfigurationApi.getGoogleWorkSpace()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'mail-configurations/googleworkspace/',
+        { loading: true }
+      )
+    })
   })
 
   describe('O365 configuration operations', () => {
@@ -144,11 +152,28 @@ describe('mailConfiguration API', () => {
       )
     })
 
+    it('should call updateGoogleWorkSpace with default payload and resourceId', async () => {
+      await mailConfigurationApi.updateGoogleWorkSpace()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'mail-configurations/googleworkspace/',
+        {},
+        { loading: true, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deleteGoogleWorkSpace', async () => {
       const resourceId = 'config-123'
       await mailConfigurationApi.deleteGoogleWorkSpace(resourceId)
       expect(testRequest.delete).toHaveBeenCalledWith(
         `mail-configurations/googleworkspace/${resourceId}`,
+        { loading: true, snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteGoogleWorkSpace with default resourceId', async () => {
+      await mailConfigurationApi.deleteGoogleWorkSpace()
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        'mail-configurations/googleworkspace/',
         { loading: true, snackbar: COMMON_SNACKBAR }
       )
     })
@@ -377,6 +402,14 @@ describe('mailConfiguration API', () => {
 
     it('should call getExchangeVersions with default payload', async () => {
       await mailConfigurationApi.getExchangeVersions()
+      expect(testRequest.post).toHaveBeenCalledWith('lookups', {
+        typeName: 'Exchange Versions',
+        typeidlist: []
+      })
+    })
+
+    it('should call getExchangeVersions with null payload (nullish coalescing branch)', async () => {
+      await mailConfigurationApi.getExchangeVersions(null)
       expect(testRequest.post).toHaveBeenCalledWith('lookups', {
         typeName: 'Exchange Versions',
         typeidlist: []

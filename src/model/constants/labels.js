@@ -245,6 +245,7 @@ export const labels = {
   Later: 'Later',
   Training: 'Training',
   RecurrencesOfInstance: 'Recurrences Of Instance',
+  FrequencyType: 'Frequency Type:',
   RecentIncidents: 'Recent Incidents',
   CompanyProfile: 'Company Profile',
   Frequency: 'Frequency',

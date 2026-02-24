@@ -8,6 +8,16 @@ describe('Make available for test cases suite', () => {
     return new MakeAvailableFor(localVue).wrapper
   }
 
+  const createObject = (propsData) => new MakeAvailableFor(localVue, propsData)
+
+  describe('Object getWrapper coverage', () => {
+    it('getWrapper returns the same as .wrapper', () => {
+      const obj = createObject()
+      expect(obj.getWrapper()).toBe(obj.wrapper)
+      expect(obj.getWrapper().find('.k-form-group__title').exists()).toBe(true)
+    })
+  })
+
   describe('component rendering', () => {
     it('Check render', () => {
       const wrapper = mountComponent()

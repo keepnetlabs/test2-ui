@@ -87,6 +87,15 @@ describe('siemIntegrations API', () => {
       )
     })
 
+    it('should call updateSIEMIntegration with default params', async () => {
+      await siemIntegrationsApi.updateSIEMIntegration()
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/companies/siem-settings/',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
     it('should call deleteSIEMIntegration', async () => {
       const resourceId = 'siem-123'
       await siemIntegrationsApi.deleteSIEMIntegration(resourceId)

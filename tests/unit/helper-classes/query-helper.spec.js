@@ -480,6 +480,25 @@ describe('QueryHelperForTable', () => {
     })
   })
 
+  describe('returnQueryValues', () => {
+    it('returns parsed page and size when valid', () => {
+      queryHelper.query = { page: '3', size: '25' }
+      expect(queryHelper.returnQueryValues()).toEqual({ page: 3, size: 25 })
+    })
+    it('returns default page 1 when page is NaN', () => {
+      queryHelper.query = { page: 'abc', size: '10' }
+      expect(queryHelper.returnQueryValues()).toEqual({ page: 1, size: 10 })
+    })
+    it('returns default size 10 when size is NaN', () => {
+      queryHelper.query = { page: '1', size: 'xyz' }
+      expect(queryHelper.returnQueryValues()).toEqual({ page: 1, size: 10 })
+    })
+    it('returns defaults when both are invalid', () => {
+      queryHelper.query = { page: 'invalid', size: 'invalid' }
+      expect(queryHelper.returnQueryValues()).toEqual({ page: 1, size: 10 })
+    })
+  })
+
   describe('getter properties', () => {
     it('should provide access to router and route', () => {
       queryHelper = new QueryHelperForTable(mockRouter, mockRoute)

@@ -357,6 +357,15 @@ describe('awarenessEducator API', () => {
       )
     })
 
+    it('should call searchTrainingReportUsers without trainingType (falsy branch)', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchTrainingReportUsers(payload, 'enroll-123', null)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/enroll-123/users/search`,
+        payload
+      )
+    })
+
     it('should call getTrainingReportInteractions with interactionType and trainingType', async () => {
       await awarenessApi.getTrainingReportInteractions('enroll-1', 'res-1', 4, 2)
       expect(testRequest.get).toHaveBeenCalledWith(
@@ -371,6 +380,20 @@ describe('awarenessEducator API', () => {
       )
     })
 
+    it('should call getTrainingReportInteractions with only interactionType (no trainingType)', async () => {
+      await awarenessApi.getTrainingReportInteractions('enroll-1', 'res-1', 5, null)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/interactions/res-1?emailEventType=5`
+      )
+    })
+
+    it('should call getTrainingReportInteractions with neither interactionType nor trainingType', async () => {
+      await awarenessApi.getTrainingReportInteractions('enroll-1', 'res-1', null, null)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        `/training-reports/enroll-1/interactions/res-1`
+      )
+    })
+
     it('should call getTrainingReportNonTargetUserInteractions', async () => {
       const payload = { page: 1 }
       await awarenessApi.getTrainingReportNonTargetUserInteractions(
@@ -381,6 +404,20 @@ describe('awarenessEducator API', () => {
       )
       expect(testRequest.post).toHaveBeenCalledWith(
         `/training-reports/anonymous/enroll-1/user-detail/user-1?emailEventType=3`,
+        payload
+      )
+    })
+
+    it('should call getTrainingReportNonTargetUserInteractions without interactionType', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.getTrainingReportNonTargetUserInteractions(
+        'enroll-1',
+        'user-1',
+        null,
+        payload
+      )
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/anonymous/enroll-1/user-detail/user-1`,
         payload
       )
     })
@@ -458,6 +495,131 @@ describe('awarenessEducator API', () => {
         '/trainings/get-training-type-count',
         payload,
         options
+      )
+    })
+
+    it('should call getTrainingTypeCount with default options', async () => {
+      const payload = { filters: {} }
+      await awarenessApi.getTrainingTypeCount(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/trainings/get-training-type-count',
+        payload,
+        {}
+      )
+    })
+  })
+
+  describe('default parameter branch coverage', () => {
+    it('should call restoreEnrollment with default resourceId', async () => {
+      await awarenessApi.restoreEnrollment()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/enrollments/archive//restore',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call downloadEnrollmentPackage with default resourceId', async () => {
+      await awarenessApi.downloadEnrollmentPackage()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/enrollments/downloadscormproxy/',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportTrainingReport with default id', async () => {
+      await awarenessApi.exportTrainingReport()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//export',
+        {},
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getPhishedLandingPage with default resourceId', async () => {
+      await awarenessApi.getPhishedLandingPage()
+      expect(testRequest.get).toHaveBeenCalledWith('/enrollments//content')
+    })
+
+    it('should call resendTrainingToUsers with default payload and id', async () => {
+      await awarenessApi.resendTrainingToUsers()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendCertificateToUserList with default payload', async () => {
+      await awarenessApi.resendCertificateToUserList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        expect.any(String),
+        {},
+        expect.objectContaining({ snackbar: COMMON_SNACKBAR })
+      )
+    })
+
+    it('should call resendTrainingToUserList with default payload and id', async () => {
+      await awarenessApi.resendTrainingToUserList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//users/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendTrainingToOpenedEmailList with default params', async () => {
+      await awarenessApi.resendTrainingToOpenedEmailList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//opened-emails/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendTrainingToClickedLinkList with default params', async () => {
+      await awarenessApi.resendTrainingToClickedLinkList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//clicked-emails/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendTrainingToProgressList with default params', async () => {
+      await awarenessApi.resendTrainingToProgressList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//progress/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendTrainingToExamResultList with default params', async () => {
+      await awarenessApi.resendTrainingToExamResultList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//exam-results/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendTrainingNoResponseList with default params', async () => {
+      await awarenessApi.resendTrainingNoResponseList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//no-response/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendTrainingSendingReportList with default params', async () => {
+      await awarenessApi.resendTrainingSendingReportList()
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports//sending-report/resend',
+        {},
+        { snackbar: COMMON_SNACKBAR }
       )
     })
   })

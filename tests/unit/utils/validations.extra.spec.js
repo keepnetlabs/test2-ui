@@ -38,6 +38,175 @@ describe('validations.js (extra coverage)', () => {
     expect(validations.subdomainDashDot('abc.def-123')).toBe(true)
   })
 
+  it('url and urlOrIpAddress branch coverage', () => {
+    expect(validations.url('https://example.com')).toBe(true)
+    expect(validations.url('invalid url', 'Bad URL')).toBe('Bad URL')
+    expect(validations.url('has space in url', 'Invalid')).toBe('Invalid')
+    expect(validations.url('', 'Empty')).toBe(true)
+    expect(validations.url(null, 'Null')).toBe(true)
+
+    expect(validations.urlOrIpAddress('https://site.com')).toBe(true)
+    expect(validations.urlOrIpAddress('has space', 'No spaces')).toBe('No spaces')
+    expect(validations.urlOrIpAddress('', 'Empty')).toBe(true)
+  })
+
+  it('getValue branch coverage for null and undefined', () => {
+    expect(validations.getValue(null)).toBe('')
+    expect(validations.getValue(undefined)).toBe('')
+  })
+
+  it('hasValue returns value when truthy, undefined when falsy', () => {
+    expect(validations.hasValue('x')).toBe('x')
+    expect(validations.hasValue(1)).toBe(1)
+    expect(validations.hasValue([])).toEqual([])
+    expect(validations.hasValue('')).toBeUndefined()
+    expect(validations.hasValue(null)).toBeUndefined()
+    expect(validations.hasValue(undefined)).toBeUndefined()
+  })
+
+  it('maxLength branch coverage', () => {
+    expect(validations.maxLength('ab', 2)).toBe(true)
+    expect(validations.maxLength('ab', 3)).toBe(true)
+    expect(validations.maxLength('abc', 2, 'Too long')).toBe('Too long')
+  })
+
+  it('minLength branch coverage', () => {
+    expect(validations.minLength('ab', 2)).toBe(true)
+    expect(validations.minLength('abc', 2)).toBe(true)
+    expect(validations.minLength('a', 2, 'Too short')).toBe('Too short')
+  })
+
+  it('startsWithHttpOrHttps branch coverage', () => {
+    expect(validations.startsWithHttpOrHttps('http://example.com')).toBe(true)
+    expect(validations.startsWithHttpOrHttps('https://example.com')).toBe(true)
+    expect(validations.startsWithHttpOrHttps('ftp://example.com', 'Bad')).toBe('Bad')
+    expect(validations.startsWithHttpOrHttps('has space', 'Spaces')).toBe('Spaces')
+  })
+
+  it('ip and ipv4Oripv6 branch coverage', () => {
+    expect(validations.ip('192.168.1.1')).toBe(true)
+    expect(validations.ip('192.168.1.0/24', 'Invalid')).toBe(true)
+    expect(validations.ip('invalid', 'Bad IP')).toBe('Bad IP')
+
+    expect(validations.ipv4Oripv6('192.168.1.1')).toBe(true)
+    expect(validations.ipv4Oripv6('::1')).toBe(true)
+  })
+
+  it('urlWithPort branch coverage', () => {
+    expect(validations.urlWithPort('https://example.com:8080')).toBe(true)
+    expect(validations.urlWithPort('has space', 'Bad')).toBe('Bad')
+    expect(validations.urlWithPort('', 'Empty')).toBe(true)
+  })
+
+  it('domain and extension branch coverage', () => {
+    expect(validations.domain('example.com')).toBe(true)
+    expect(validations.domain('invalid', 'Bad domain')).toBe('Bad domain')
+    expect(validations.extension('txt')).toBe(true)
+    expect(validations.extension('.txt', 'Must not start with dot')).toBe('Must not start with dot')
+  })
+
+  it('required and trim branch coverage', () => {
+    expect(validations.required('x')).toBe(true)
+    expect(validations.required('', 'Required')).toBe('Required')
+    expect(validations.required(null, 'Required')).toBe('Required')
+    expect(validations.trim('  x  ')).toBe(true)
+    expect(validations.trim('   ', 'Empty')).toBe('Empty')
+  })
+
+  it('startsWith and startsWithSpace branch coverage', () => {
+    expect(validations.startsWith('hello', 'Bad', 'hi')).toBe(true)
+    expect(validations.startsWith('hello', 'Bad', 'he')).toBe('Bad')
+    expect(validations.startsWithSpace('no leading space')).toBe(true)
+    expect(validations.startsWithSpace(' has space', 'No space')).toBe('No space')
+  })
+
+  it('port branch coverage', () => {
+    expect(validations.port('8080')).toBe(true)
+    expect(validations.port('1')).toBe(true)
+    expect(validations.port('65536')).toBe(true)
+    expect(validations.port('0', 'Bad')).toBe('Invalid port number')
+    expect(validations.port('99999')).toBe('Invalid port number')
+    expect(validations.port('abc', 'Numbers only')).toBe('Numbers only')
+  })
+
+  it('noWhitespace and phone branch coverage', () => {
+    expect(validations.noWhitespace('nospaces')).toBe(true)
+    expect(validations.noWhitespace('has space', 'No spaces')).toBe('No spaces')
+    expect(validations.phone('+12345678901')).toBe(true)
+    expect(validations.phone('invalid', 'Bad phone')).toBe('Bad phone')
+  })
+
+  it('email and emailOrDomain branch coverage', () => {
+    expect(validations.email('user@example.com')).toBe(true)
+    expect(validations.email('', 'Empty')).toBe(true)
+    expect(validations.email('bad', 'Invalid')).toBe('Invalid')
+    expect(validations.emailOrDomain('example.com')).toBe(true)
+    expect(validations.emailOrDomain('user@example.com')).toBe(true)
+    expect(validations.emailOrDomain('', 'Empty')).toBe('Invalid domain')
+  })
+
+  it('isNumber and isDescriptionSpecialCharacter branch coverage', () => {
+    expect(validations.isNumber('123')).toBe(true)
+    expect(validations.isNumber('abc', 'Numbers only')).toBe('Numbers only')
+    expect(validations.isDescriptionSpecialCharacter('valid text 123')).toBe(true)
+    expect(validations.isDescriptionSpecialCharacter('invalid@', 'Bad')).toBe('Bad')
+  })
+
+  it('isNameSpecialCharacter and isEntityNameSpecialCharacter branch coverage', () => {
+    expect(validations.isNameSpecialCharacter("O'Brien")).toBe(true)
+    expect(validations.isNameSpecialCharacter('invalid123', 'Bad')).toBe('Bad')
+    expect(validations.isEntityNameSpecialCharacter('Acme Corp')).toBe(true)
+    expect(validations.isEntityNameSpecialCharacter('invalid@', 'Bad')).toBe('Bad')
+  })
+
+  it('isProxyAddressOrIp branch coverage', () => {
+    expect(validations.isProxyAddressOrIp('192.168.1.1')).toBe(true)
+    expect(validations.isProxyAddressOrIp('invalid@', 'Bad')).toBe('Bad')
+  })
+
+  it('isFileExtensionSpecialCharacter branch coverage', () => {
+    expect(validations.isFileExtensionSpecialCharacter('txt')).toBe(true)
+    expect(validations.isFileExtensionSpecialCharacter('invalid-', 'Bad')).toBe('Bad')
+  })
+
+  it('numberRangeRule empty string branch', () => {
+    expect(validations.numberRangeRule('', 1, 10)).toBe('Enter a number between 1 and 10')
+  })
+
+  it('isDomainUrl branch coverage', () => {
+    expect(validations.isDomainUrl('https://example.com')).toBe(true)
+    expect(validations.isDomainUrl('invalid', 'Bad URL')).toBe('Bad URL')
+  })
+
+  it('isGsm7 and ldapConnectionStringUrl branch coverage', () => {
+    expect(validations.isGsm7('Hello World')).toBe(true)
+    expect(validations.isGsm7('Invalid \u0001', 'Bad')).toBe('Bad')
+    expect(validations.ldapConnectionStringUrl('ldap://10.0.0.1:389')).toBe(true)
+    expect(validations.ldapConnectionStringUrl('ldaps://server.local:636')).toBe(true)
+    expect(validations.ldapConnectionStringUrl('!bad', 'Bad path')).toBe('Bad path')
+  })
+
+  it('verifiedDomains with @ extracts domain', () => {
+    const verified = ['example.com']
+    expect(validations.verifiedDomains('user@example.com', verified)).toBe(true)
+    expect(validations.verifiedDomains('user@other.com', verified, 'Unverified')).toBe('Unverified')
+  })
+
+  it('subdomainBlacklist returns banned message when match', () => {
+    const result = validations.subdomainBlacklist('google')
+    expect(result).toContain('banned')
+  })
+  it('subdomainBlacklist returns true when no banned word', () => {
+    expect(validations.subdomainBlacklist('myvalidsubdomain')).toBe(true)
+  })
+
+  it('subdomainDash and subdomainDashDot branch coverage', () => {
+    expect(validations.subdomainDash('valid-123')).toBe(true)
+    expect(validations.subdomainDash('invalid_underscore', 'Bad')).toBe('Bad')
+    expect(validations.subdomainDashDot('valid.abc-123')).toBe(true)
+    expect(validations.subdomainDashDot('invalid@', 'Bad')).toBe('Bad')
+  })
+
   it('controlEmailLength and noDots validate edge conditions', () => {
     const longLeft = `${'a'.repeat(65)}@mail.com`
     const longRight = `a@${'b'.repeat(257)}.com`
