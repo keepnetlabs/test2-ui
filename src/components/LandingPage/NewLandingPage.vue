@@ -329,6 +329,7 @@
                               >
                                 <template #activator="{ on: menu }">
                                   <v-icon
+                                    v-ripple="false"
                                     v-on="menu"
                                     @click.stop
                                     color="#757575"

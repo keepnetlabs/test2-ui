@@ -2,15 +2,16 @@ import { createLocalVue, shallowMount } from '@vue/test-utils'
 import DownloadAddInModal from '@/components/PhishingReporter/DownloadAddInModal.vue'
 import Vuetify from 'vuetify'
 
+const mockBlobLike = { size: 0, type: '' }
 jest.mock('@/api/phishingReporter', () => ({
   connectGraphAccount: jest.fn(() => Promise.resolve({ data: { data: { applicationId: 'app-1', redirectUri: 'http://test.com', appPermissionAuthorizationUrl: 'http://auth.com' } } })),
   deleteGraphAccount: jest.fn(() => Promise.resolve()),
-  downloadDiagnosticTool: jest.fn(() => Promise.resolve({ data: new Blob() })),
-  downloadOutlookAddIn: jest.fn(() => Promise.resolve({ data: new Blob() })),
-  downloadSpamReport: jest.fn(() => Promise.resolve({ data: new Blob() })),
+  downloadDiagnosticTool: jest.fn(() => Promise.resolve({ data: mockBlobLike })),
+  downloadOutlookAddIn: jest.fn(() => Promise.resolve({ data: mockBlobLike })),
+  downloadSpamReport: jest.fn(() => Promise.resolve({ data: mockBlobLike })),
   generateDiagnosticTool: jest.fn(() => Promise.resolve({ data: { data: { resourceId: 'res-1' } } })),
-  generateGoogleWorkSpaceAddIn: jest.fn(() => Promise.resolve({ data: new Blob() })),
-  generateO365AddIn: jest.fn(() => Promise.resolve({ data: new Blob() })),
+  generateGoogleWorkSpaceAddIn: jest.fn(() => Promise.resolve({ data: mockBlobLike })),
+  generateO365AddIn: jest.fn(() => Promise.resolve({ data: mockBlobLike })),
   generateOutlookAddIn: jest.fn(() => Promise.resolve({ data: { data: { resourceId: 'res-1' } } })),
   updateApplicationLevelAccount: jest.fn(() => Promise.resolve())
 }))

@@ -66,14 +66,8 @@
 }
 
 .landing-page-tab__dots {
-  &::before {
+  /* Ripple efektini kaldır - ::before opacity ile gizlenmemeli çünkü ikon içeriği de ::before'da */
+  &::after {
     background: none !important;
-    opacity: 0 !important;
-  }
-  &:hover::before {
-    opacity: 0 !important;
-  }
-  &:focus::before {
-    opacity: 0 !important;
   }
 }
