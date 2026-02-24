@@ -709,7 +709,6 @@ export default {
           }
         })
         .then((response) => {
-          console.log('Response:', response)
           this.handleCloseSendWithAIDialog()
         })
         .catch((error) => {

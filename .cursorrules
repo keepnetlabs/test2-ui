@@ -204,6 +204,11 @@ describe('MyComponent', () => {
 })
 ```
 
+### Unit Test Pitfalls (CI/Azure/Ubuntu Compatibility)
+- **jest.mock factory:** Never reference out-of-scope variables. Use only `jest.fn()`, `Promise.resolve`, and literals. Put `import * as api from '@/api/...'` AFTER jest.mock.
+- **new Blob():** Avoid in mock factories (Node <18 may lack Blob). Use `{ data: {} }` for export mocks.
+- **Performance tests (toBeLessThan):** Use generous thresholds (e.g. 250ms instead of 100ms) - CI runners vary. Prefer 1.5–2x local timing.
+
 ---
 
 ## 📁 FILE STRUCTURE
