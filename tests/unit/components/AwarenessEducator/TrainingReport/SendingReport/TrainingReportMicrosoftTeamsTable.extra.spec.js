@@ -344,4 +344,188 @@ describe('TrainingReportMicrosoftTeamsTable.vue (extra)', () => {
     globalThis.URL.createObjectURL = oldURL
     document.createElement = oldCreateElement
   })
+
+  it('resendItem array branch resets dialog state even when one resend request fails', async () => {
+    AwarenessEducatorService.resendMicrosoftTeamsSendingReportEmails
+      .mockResolvedValueOnce({})
+      .mockRejectedValueOnce(new Error('fail'))
+
+    const ctx = {
+      selectedRow: [{ id: 'ok' }, { id: 'fail' }],
+      isResendActionButtonDisabled: false,
+      isShowResendDialog: true,
+      $refs: { refTable: { resetSelectableParams: jest.fn() } },
+      callForData: jest.fn()
+    }
+
+    TrainingReportMicrosoftTeamsTable.methods.resendItem.call(ctx)
+    await flushPromises()
+
+    expect(ctx.callForData).not.toHaveBeenCalled()
+    expect(ctx.isResendActionButtonDisabled).toBe(false)
+    expect(ctx.isShowResendDialog).toBe(false)
+    expect(ctx.selectedRow).toBeNull()
+  })
+
+  it('callForData handles empty rows and triggers loading start/finally', async () => {
+    AwarenessEducatorService.searchMicrosoftTeamsSendingReportEmails.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [],
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+    const setLoading = jest.fn()
+    const ctx = {
+      id: 'empty-report',
+      bodyTrainingType: 'training',
+      axiosPayload: { orderBy: 'email', ascending: true, filter: {} },
+      serverSideProps: {},
+      tableData: [{ id: 'old' }],
+      setLoading
+    }
+
+    TrainingReportMicrosoftTeamsTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([])
+    expect(ctx.serverSideProps.totalNumberOfRecords).toBe(0)
+    expect(ctx.serverSideProps.totalNumberOfPages).toBe(0)
+    expect(ctx.serverSideProps.pageNumber).toBe(1)
+    expect(setLoading).toHaveBeenCalledWith(true)
+    expect(setLoading).toHaveBeenCalledTimes(2)
+  })
+
+  it('handleSearchChange removes all matching custom field names', () => {
+    const resetPageNumber = jest.fn()
+    const callForData = jest.fn()
+    const ctx = {
+      customFields: [{ name: 'cf1' }, { name: 'cf2' }],
+      axiosPayload: { filter: { FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }] } },
+      resetPageNumber,
+      callForData
+    }
+
+    TrainingReportMicrosoftTeamsTable.methods.handleSearchChange.call(ctx, {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [
+              { FieldName: 'email' },
+              { FieldName: 'cf1' },
+              { FieldName: 'cf2' },
+              { FieldName: 'department' }
+            ]
+          }
+        ]
+      }
+    })
+
+    expect(ctx.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'email' },
+      { FieldName: 'department' }
+    ])
+    expect(resetPageNumber).toHaveBeenCalled()
+    expect(callForData).toHaveBeenCalled()
+  })
+
+  it('resendItem single branch resets state when resend request fails', async () => {
+    AwarenessEducatorService.resendMicrosoftTeamsSendingReportEmails.mockRejectedValueOnce(
+      new Error('single-fail')
+    )
+    const ctx = {
+      selectedRow: { id: 'single-fail' },
+      isResendActionButtonDisabled: false,
+      isShowResendDialog: true,
+      $refs: { refTable: { resetSelectableParams: jest.fn() } },
+      callForData: jest.fn()
+    }
+
+    TrainingReportMicrosoftTeamsTable.methods.resendItem.call(ctx)
+    await flushPromises()
+
+    expect(ctx.callForData).not.toHaveBeenCalled()
+    expect(ctx.isResendActionButtonDisabled).toBe(false)
+    expect(ctx.isShowResendDialog).toBe(false)
+    expect(ctx.selectedRow).toBeNull()
+  })
+
+  it('callForData keeps row object when customFieldValues does not exist', async () => {
+    AwarenessEducatorService.searchMicrosoftTeamsSendingReportEmails.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [{ id: 'row-1' }],
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1
+        }
+      }
+    })
+    const ctx = {
+      id: 'report-no-custom',
+      bodyTrainingType: 'training',
+      axiosPayload: { orderBy: 'email', ascending: true, filter: {} },
+      serverSideProps: {},
+      tableData: [],
+      setLoading: jest.fn()
+    }
+
+    TrainingReportMicrosoftTeamsTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([{ id: 'row-1' }])
+    expect(ctx.setLoading).toHaveBeenCalledTimes(2)
+  })
+
+  it('customFields watcher does not insert when department index is zero', () => {
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: 'department' }, { property: 'email' }]
+      }
+    }
+
+    TrainingReportMicrosoftTeamsTable.watch.customFields.handler.call(ctx, [{ name: 'cf-x' }])
+
+    expect(ctx.tableOptions.columns.map((x) => x.property)).toEqual(['department', 'email'])
+  })
+
+  it('export forwards pagination and sort payload fields', async () => {
+    AwarenessEducatorService.exportSendingReport.mockResolvedValueOnce({ data: new Blob(['x']) })
+    const oldURL = globalThis.URL.createObjectURL
+    globalThis.URL.createObjectURL = jest.fn(() => 'blob:payload')
+    const oldCreateElement = document.createElement
+    document.createElement = jest.fn(() => ({ click: jest.fn(), download: '', href: '' }))
+
+    const ctx = {
+      id: 'payload-report',
+      bodyTrainingType: 'training',
+      axiosPayload: { orderBy: 'lastSendDate', ascending: false, filter: { f: 1 } }
+    }
+    TrainingReportMicrosoftTeamsTable.methods.exportTrainingReportSendingReportTable.call(ctx, {
+      exportTypes: ['CSV'],
+      pageNumber: 4,
+      pageSize: 50,
+      reportAllPages: true
+    })
+    await flushPromises()
+
+    expect(AwarenessEducatorService.exportSendingReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pageNumber: 4,
+        pageSize: 50,
+        orderBy: 'lastSendDate',
+        ascending: false,
+        reportAllPages: true,
+        exportType: 'CSV',
+        filter: { f: 1 }
+      }),
+      'payload-report'
+    )
+
+    globalThis.URL.createObjectURL = oldURL
+    document.createElement = oldCreateElement
+  })
 })

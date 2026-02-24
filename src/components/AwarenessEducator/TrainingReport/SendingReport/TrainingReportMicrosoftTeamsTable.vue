@@ -327,6 +327,7 @@ export default {
             this.$refs?.refTable?.resetSelectableParams?.()
             this.callForData()
           })
+          .catch(() => {})
           .finally(() => {
             this.isResendActionButtonDisabled = false
             this.isShowResendDialog = false
@@ -340,6 +341,7 @@ export default {
             this.$refs?.refTable?.resetSelectableParams?.()
             this.callForData()
           })
+          .catch(() => {})
           .finally(() => {
             this.isResendActionButtonDisabled = false
             this.isShowResendDialog = false
