@@ -61,6 +61,20 @@ describe('CallbackCampaignManager/CampaignManagerItemRowActions.vue (extra)', ()
     expect(wrapper.vm.getRowActions).toEqual(baseActions)
   })
 
+  it('getRowActions prepends view-report action for ERROR status', () => {
+    const baseActions = [
+      { action: 'on-stop', icon: 'mdi-stop', name: 'Stop', id: 'btn-stop' },
+      { action: 'on-delete', icon: 'mdi-delete', name: 'Delete', id: 'btn-delete' }
+    ]
+    const wrapper = createWrapper({ status: ACTION_STATUSES.ERROR, rowActions: baseActions })
+    expect(wrapper.vm.getRowActions[0]).toEqual(
+      expect.objectContaining({
+        action: 'on-view-report',
+        icon: 'mdi-text-box'
+      })
+    )
+  })
+
   it('isMenuRender is false for complete/idle/delete/cancel/error statuses', () => {
     ;[
       ACTION_STATUSES.COMPLETE,
@@ -81,5 +95,15 @@ describe('CallbackCampaignManager/CampaignManagerItemRowActions.vue (extra)', ()
       status: ACTION_STATUSES.RUNNING,
       instanceGroup: 'ig-2'
     })
+  })
+
+  it('handleItemClick emits custom action on idle status without routing', () => {
+    const wrapper = createWrapper({ status: ACTION_STATUSES.IDLE })
+    wrapper.vm.handleItemClick({ action: 'on-delete' })
+    expect(wrapper.emitted('on-delete')[0][0]).toEqual({
+      status: ACTION_STATUSES.IDLE,
+      instanceGroup: 'ig-2'
+    })
+    expect(wrapper.vm.$router.push).not.toHaveBeenCalled()
   })
 })

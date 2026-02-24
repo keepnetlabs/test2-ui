@@ -147,4 +147,116 @@ describe('CallbackCampaignManager/CampaignManagerParentTable.vue (extra branch c
     expect(ctx.tableOptions.addButton.disabled).toBe(false)
     expect(ctx.callForData).toHaveBeenCalledWith({ isInitial: false })
   })
+
+  it('watch statusItems handles missing status column without crashing', () => {
+    const set = jest.fn()
+    const reRenderFilters = jest.fn()
+    const ctx = {
+      tableOptions: { columns: [{ property: 'other' }] },
+      $set: set,
+      $refs: { refTable: { reRenderFilters } }
+    }
+
+    CampaignManagerParentTable.watch.statusItems.call(ctx, [{ text: 'Error' }])
+    expect(set).toHaveBeenCalledWith(undefined, 'filterableItems', [{ text: 'Error', value: 'Error' }])
+    expect(reRenderFilters).toHaveBeenCalled()
+  })
+
+  it('setLoading emits update:is-loading with default and explicit values', () => {
+    const emit = jest.fn()
+    const ctx = { $emit: emit }
+
+    CampaignManagerParentTable.methods.setLoading.call(ctx)
+    CampaignManagerParentTable.methods.setLoading.call(ctx, true)
+
+    expect(emit).toHaveBeenNthCalledWith(1, 'update:is-loading', false)
+    expect(emit).toHaveBeenNthCalledWith(2, 'update:is-loading', true)
+  })
+
+  it('exportCampaignManagerList no-ops when exportTypes is empty array', async () => {
+    const ctx = {
+      getCallbackCampaignExportPermissions: true,
+      axiosPayload: { orderBy: 'CreateTime', ascending: false, filter: {} }
+    }
+
+    CampaignManagerParentTable.methods.exportCampaignManagerList.call(ctx, {
+      exportTypes: [],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: false
+    })
+    await flushPromises()
+    expect(CallbackService.exportCallbackCampaigns).not.toHaveBeenCalled()
+  })
+
+  it('getMethodDetail returns empty object when methodDetail is falsy', () => {
+    expect(CampaignManagerParentTable.methods.getMethodDetail.call({}, null)).toEqual({})
+  })
+
+  it('handleEdit emits edit event and created hook triggers callForNumbers', () => {
+    const emit = jest.fn()
+    CampaignManagerParentTable.methods.handleEdit.call({ $emit: emit }, { resourceId: 'c-1' })
+    expect(emit).toHaveBeenCalledWith('on-edit', { resourceId: 'c-1' })
+
+    const callForNumbers = jest.fn()
+    CampaignManagerParentTable.created.call({ callForNumbers })
+    expect(callForNumbers).toHaveBeenCalled()
+  })
+
+  it('canRenderAlertBox is false when available numbers exist', () => {
+    expect(
+      CampaignManagerParentTable.computed.canRenderAlertBox.call({
+        isLoading: false,
+        selectedNumberCount: 2,
+        availablePhoneNumbers: 3
+      })
+    ).toBe(false)
+  })
+
+  it('callForData toggles loading at start when isInitial is false', async () => {
+    CallbackService.searchCallbackCampaigns.mockResolvedValueOnce({
+      data: { data: { results: [] } }
+    })
+    const ctx = {
+      getCallbackCampaignSearchPermissions: true,
+      axiosPayload: {},
+      serverSideProps: {},
+      tableData: [],
+      setLoading: jest.fn()
+    }
+
+    CampaignManagerParentTable.methods.callForData.call(ctx, { isInitial: false })
+    await flushPromises()
+
+    expect(ctx.setLoading).toHaveBeenCalledTimes(2)
+    expect(ctx.setLoading).toHaveBeenNthCalledWith(1, true)
+  })
+
+  it('exportCampaignManagerList keeps lowercase xls type and still downloads xlsx', async () => {
+    CallbackService.exportCallbackCampaigns.mockResolvedValueOnce({ data: { ok: true } })
+    const originalCreateObjectURL = window.URL.createObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'blob:lower-cb')
+    const createElementSpy = jest
+      .spyOn(document, 'createElement')
+      .mockReturnValue({ href: '', download: '', click: jest.fn() })
+
+    const ctx = {
+      getCallbackCampaignExportPermissions: true,
+      axiosPayload: { orderBy: 'CreateTime', ascending: false, filter: {} }
+    }
+    CampaignManagerParentTable.methods.exportCampaignManagerList.call(ctx, {
+      exportTypes: ['xls'],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: false
+    })
+    await flushPromises()
+
+    const [payload] = CallbackService.exportCallbackCampaigns.mock.calls[0]
+    expect(payload.exportType).toBe('xls')
+    expect(createElementSpy.mock.results[0].value.download).toBe('callback-campaign-manager.xlsx')
+
+    window.URL.createObjectURL = originalCreateObjectURL
+    createElementSpy.mockRestore()
+  })
 })
