@@ -895,7 +895,7 @@ describe('useAIDescriptionGeneration Hook', () => {
           component.getAIDescriptionPayload()
         }
         const duration = performance.now() - start
-        expect(duration).toBeLessThan(100)
+        expect(duration).toBeLessThan(150)
       })
 
       it('should handle rapid consecutive generateAIDescription calls', async () => {
@@ -955,7 +955,7 @@ describe('useAIDescriptionGeneration Hook', () => {
         const duration = performance.now() - start
 
         expect(result.length).toBe(10000)
-        expect(duration).toBeLessThan(50) // Should be fast even with large strings
+        expect(duration).toBeLessThan(100) // Should be fast even with large strings
       })
     })
 

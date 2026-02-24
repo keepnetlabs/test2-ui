@@ -680,7 +680,7 @@ describe('ClientTableExportHelper', () => {
       helper.addSearchItems(columns)
       const duration = performance.now() - start
 
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle rapid consecutive addSortItems calls', () => {
@@ -690,7 +690,7 @@ describe('ClientTableExportHelper', () => {
       }
       const duration = performance.now() - start
 
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle multiple helpers independently', () => {

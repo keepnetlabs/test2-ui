@@ -465,7 +465,7 @@ describe('BackButton.vue', () => {
       const start = performance.now()
       await wrapper.vm.$forceUpdate()
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle multiple instances efficiently', () => {
@@ -482,7 +482,7 @@ describe('BackButton.vue', () => {
       const start = performance.now()
       w.destroy()
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
   })
 

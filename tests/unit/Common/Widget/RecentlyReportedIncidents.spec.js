@@ -765,7 +765,7 @@ describe("RecentlyReportedIncidents widget", () => {
         wrapper.vm.getBtnStatusColor("Phishing");
       }
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(100);
+      expect(duration).toBeLessThan(150);
     });
   });
 

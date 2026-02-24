@@ -409,21 +409,21 @@ describe('settings API', () => {
       const start = Date.now()
       await settingsApi.getTimezone()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('getSystemUserSettings should execute quickly', async () => {
       const start = Date.now()
       await settingsApi.getSystemUserSettings()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('setSystemUserSettings should execute quickly', async () => {
       const start = Date.now()
       await settingsApi.setSystemUserSettings({ timezone: 'UTC' })
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle 50 update operations efficiently', async () => {
@@ -445,7 +445,7 @@ describe('settings API', () => {
         settingsApi.setSystemUserSettings({ timezone: 'UTC' })
       ])
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 

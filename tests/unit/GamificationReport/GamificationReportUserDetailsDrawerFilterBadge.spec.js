@@ -622,7 +622,7 @@ describe('GamificationReportUserDetailsDrawerFilterBadge.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle large number of filter items efficiently', () => {

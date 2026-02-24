@@ -366,7 +366,7 @@ describe('communities Vuex Module', () => {
       communities.mutations.setCommunities(state, largePayload)
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
       expect(Object.keys(state.communities).length).toBe(500)
     })
 

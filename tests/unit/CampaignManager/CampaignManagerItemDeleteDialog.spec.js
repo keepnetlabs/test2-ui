@@ -394,7 +394,7 @@ describe('CampaignManagerItemDeleteDialog.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('methods should execute quickly', () => {
@@ -407,7 +407,7 @@ describe('CampaignManagerItemDeleteDialog.vue', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 })

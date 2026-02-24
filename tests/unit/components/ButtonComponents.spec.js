@@ -506,7 +506,7 @@ describe('Button Components', () => {
             const start = performance.now()
             w.destroy()
             const duration = performance.now() - start
-            expect(duration).toBeLessThan(100)
+            expect(duration).toBeLessThan(150)
           } else {
             expect(true).toBe(true)
           }

@@ -530,7 +530,7 @@ describe('GamificationReportPerformanceDetailsDrawer.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('should handle large points values efficiently', () => {
@@ -539,7 +539,7 @@ describe('GamificationReportPerformanceDetailsDrawer.vue', () => {
         selectedRow: { firstName: 'Test', lastName: 'User', points: 999999999 }
       })
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 

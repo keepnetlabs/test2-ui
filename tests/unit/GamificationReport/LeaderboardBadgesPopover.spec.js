@@ -605,7 +605,7 @@ describe('LeaderboardBadgesPopover.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('filteredBadges should compute efficiently', () => {

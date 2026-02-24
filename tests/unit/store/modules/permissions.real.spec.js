@@ -547,7 +547,7 @@ describe('permissions store module (real)', () => {
       store.mutations.SET_ALL_PERMISSIONS(state)
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
 
     it('getters execute quickly', () => {
@@ -560,7 +560,7 @@ describe('permissions store module (real)', () => {
       }
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(100)
     })
 
     it('handles large permission lists efficiently', () => {

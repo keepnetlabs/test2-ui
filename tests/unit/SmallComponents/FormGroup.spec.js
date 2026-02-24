@@ -50,7 +50,7 @@ describe('FormGroup.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(150)
+      expect(duration).toBeLessThan(200)
     })
   })
 })

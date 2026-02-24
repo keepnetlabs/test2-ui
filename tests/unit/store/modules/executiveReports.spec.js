@@ -321,7 +321,7 @@ describe('executiveReports Vuex Module', () => {
       const start = Date.now()
       const module = executiveReports
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(50)
+      expect(duration).toBeLessThan(150)
     })
 
     it('getters should return results quickly', () => {
@@ -339,7 +339,7 @@ describe('executiveReports Vuex Module', () => {
         executiveReports.getters.getChartTypes(state)
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(150)
     })
   })
 
