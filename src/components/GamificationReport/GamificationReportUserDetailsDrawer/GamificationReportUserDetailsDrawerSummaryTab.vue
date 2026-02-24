@@ -280,7 +280,7 @@
             <div
               v-else-if="
                 ['smishing', 'vishing', 'quishing'].includes(
-                  item.productType.split(' - ')[0].toLowerCase()
+                  ((item.productType || '').split(' - ')[0] || '').toLowerCase()
                 ) && ACTIVITY_TYPES_FAIL_MAP[item.ActionType]
               "
               :class="[
@@ -555,6 +555,7 @@ export default {
           const results = res?.data?.data?.results || []
           this.timelinePreview = results
         })
+        .catch(() => {})
         .finally(() => {
           this.isTimelineLoading = false
         })
@@ -605,26 +606,28 @@ export default {
       }
     },
     isProductAwareness(item) {
+      const productType = (item?.productType || '').split(' - ')[0] || ''
       return (
-        item.productType.split(' - ')[0] === 'AWARENESS EDUCATOR' ||
-        item.productType === 'SECURITY AWARENESS' ||
-        item.productType.split(' - ')[0] === 'SECURITY AWARENESS'
+        productType === 'AWARENESS EDUCATOR' ||
+        item?.productType === 'SECURITY AWARENESS' ||
+        productType === 'SECURITY AWARENESS'
       )
     },
     getProductType(product) {
-      if (product.productType.split(' - ')[0] === 'PHISHING SIMULATOR') {
+      const productType = (product?.productType || '').split(' - ')[0] || ''
+      if (productType === 'PHISHING SIMULATOR') {
         return 'phishing campaign'
       }
-      if (product.productType.split(' - ')[0] === 'SMISHING SIMULATOR') {
+      if (productType === 'SMISHING SIMULATOR') {
         return 'smishing campaign'
       }
-      if (product.productType.split(' - ')[0] === 'CALLBACK SIMULATOR') {
+      if (productType === 'CALLBACK SIMULATOR') {
         return 'callback campaign'
       }
-      if (product.productType.split(' - ')[0] === 'VISHING SIMULATOR') {
+      if (productType === 'VISHING SIMULATOR') {
         return 'vishing campaign'
       }
-      if (product.productType.split(' - ')[0] === 'QUISHING SIMULATOR') {
+      if (productType === 'QUISHING SIMULATOR') {
         return 'quishing campaign'
       }
       return ''

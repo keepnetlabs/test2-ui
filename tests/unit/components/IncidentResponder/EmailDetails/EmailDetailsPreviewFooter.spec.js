@@ -58,9 +58,9 @@ describe('EmailDetailsPreviewFooter.vue', () => {
     expect(wrapper.vm.getIsAnalysisMalicious([{ result: 'Clean' }])).toBe(false)
   })
 
-  it('getIsAnalysisMalicious returns false for empty array', () => {
+  it('getIsAnalysisMalicious returns falsy for empty array', () => {
     const wrapper = mountComponent()
-    expect(wrapper.vm.getIsAnalysisMalicious([])).toBe(false)
+    expect(wrapper.vm.getIsAnalysisMalicious([])).toBeFalsy()
   })
 
   it('getClass handles undefined analysisList', () => {

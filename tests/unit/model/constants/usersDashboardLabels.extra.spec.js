@@ -1,5 +1,69 @@
 import usersDashboardLabels, { getUsersDashboardLabel } from '@/model/constants/usersDashboardLabels'
 
+function getArgsForSweepKey(key, variant = 'default') {
+  if (key === 'welcomeTitle') return ['Alex']
+  if (key === 'yourBadgesEarnedOn') return ['2026-02-24']
+  if (key === 'activityTimelineEnrollmentEmailSentTo') {
+    return variant === 'withoutCategory'
+      ? ['Alex', 'Secure Training']
+      : ['Alex', 'Secure Training', 'Awareness']
+  }
+  if (key === 'activityTimelineAwarenessPoints') {
+    if (variant === 'noRule') return ['Alex', 15, 'Secure Training', 'Awareness', 88]
+    if (variant === 'negative') return ['Alex', -8, 'Secure Training', 'Awareness', 42]
+    if (variant === 'joinedAfter3Days') {
+      return [
+        'Alex',
+        12,
+        'Secure Training',
+        'Awareness',
+        55,
+        { ruleName: 'Joined After 3 Days', rulePoint: -5 }
+      ]
+    }
+    if (variant === 'joined1To3Days') {
+      return [
+        'Alex',
+        12,
+        'Secure Training',
+        'Awareness',
+        55,
+        { ruleName: 'Joined 1Ã¢â‚¬â€œ3 Days', rulePoint: 3 }
+      ]
+    }
+    return [
+      'Alex',
+      12,
+      'Secure Training',
+      'Awareness',
+      55,
+      { ruleName: 'Joined Within 24 Hours', rulePoint: 6 }
+    ]
+  }
+  if (key === 'activityTimelineCampaignPoints') {
+    return variant === 'negative'
+      ? ['Alex', -4, 'Campaign X', 'callback campaign', 'medium', 40]
+      : ['Alex', 9, 'Campaign X', 'phishing campaign', 'easy', 90]
+  }
+  if (key === 'activityTimelineAwarenessOpened') return ['Alex', 'Secure Training', 'Awareness']
+  if (key === 'activityTimelineCampaignOpened') {
+    return ['Alex', 'Campaign X', 'smishing campaign', 'hard']
+  }
+  if (key === 'activityTimelineCampaignSentTo') {
+    return ['Campaign X', 'vishing campaign', 'medium', 'Alex']
+  }
+  if (key === 'activityTimelineEarnedPoints') return [10]
+  if (key === 'activityTimelineLostPoints') return [5]
+  if (key === 'phishingTestResultsEarnedPoints') return [variant === 'zero' ? 0 : 7]
+  if (key === 'phishingTestResultsLostPoints') return [variant === 'zero' ? 0 : 3]
+  if (key === 'phishingTestResultsAccuracyUp') {
+    if (variant === 'negative') return [-6]
+    if (variant === 'zero') return [0]
+    return [11]
+  }
+  return []
+}
+
 describe('usersDashboardLabels (extra coverage)', () => {
   it('getUsersDashboardLabel returns string label when not function', () => {
     expect(getUsersDashboardLabel('en-GB', 'userMenuEmail')).toBe('Email:')
@@ -22,6 +86,11 @@ describe('usersDashboardLabels (extra coverage)', () => {
   it('getUsersDashboardLabel falls back to en-GB for unknown language', () => {
     const result = getUsersDashboardLabel('zz-ZZ', 'leaderboardTitle')
     expect(result).toBe(usersDashboardLabels['en-GB'].leaderboardTitle)
+  })
+
+  it('getUsersDashboardLabel fallback language still executes function labels with args', () => {
+    const result = getUsersDashboardLabel('unknown-language', 'welcomeTitle', 'Fallback User')
+    expect(result).toContain('Fallback User')
   })
 
   it('usersDashboardLabels has en-GB and en-US', () => {
@@ -294,6 +363,34 @@ describe('usersDashboardLabels (extra coverage)', () => {
       )
       expect(result).toContain('geri arama')
     })
+
+    it('keeps unknown campaign type after cleanup when no mapping exists', () => {
+      const result = getUsersDashboardLabel(
+        'tr-TR',
+        'activityTimelineCampaignPoints',
+        'User',
+        11,
+        'Campaign',
+        'custom campaign',
+        'orta',
+        65
+      )
+      expect(result).toMatch(/custom/i)
+    })
+
+    it('maps smishing campaign type in campaign points text', () => {
+      const result = getUsersDashboardLabel(
+        'tr-TR',
+        'activityTimelineCampaignPoints',
+        'User',
+        7,
+        'Campaign',
+        'smishing campaign',
+        'zor',
+        70
+      )
+      expect(result).toContain('smishing')
+    })
   })
 
   describe('de-DE labels', () => {
@@ -329,6 +426,97 @@ describe('usersDashboardLabels (extra coverage)', () => {
       expect(getUsersDashboardLabel('es-ES', 'phishingTestResultsAccuracyUp', 6)).toContain(
         'aumentó'
       )
+    })
+  })
+
+  describe('sweep migration coverage', () => {
+    it('executes all function labels across all languages without throwing', () => {
+      Object.entries(usersDashboardLabels).forEach(([language, langLabels]) => {
+        Object.entries(langLabels).forEach(([key, value]) => {
+          if (typeof value !== 'function') return
+
+          const result = getUsersDashboardLabel(language, key, ...getArgsForSweepKey(key))
+          expect(typeof result).toBe('string')
+        })
+      })
+    })
+
+    it('covers dynamic label branch variants across all languages', () => {
+      Object.keys(usersDashboardLabels).forEach((language) => {
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'activityTimelineEnrollmentEmailSentTo',
+            ...getArgsForSweepKey('activityTimelineEnrollmentEmailSentTo', 'withoutCategory')
+          )
+        ).toEqual(expect.any(String))
+
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'activityTimelineAwarenessPoints',
+            ...getArgsForSweepKey('activityTimelineAwarenessPoints', 'noRule')
+          )
+        ).toEqual(expect.any(String))
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'activityTimelineAwarenessPoints',
+            ...getArgsForSweepKey('activityTimelineAwarenessPoints', 'negative')
+          )
+        ).toEqual(expect.any(String))
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'activityTimelineAwarenessPoints',
+            ...getArgsForSweepKey('activityTimelineAwarenessPoints', 'joinedAfter3Days')
+          )
+        ).toEqual(expect.any(String))
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'activityTimelineAwarenessPoints',
+            ...getArgsForSweepKey('activityTimelineAwarenessPoints', 'joined1To3Days')
+          )
+        ).toEqual(expect.any(String))
+
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'activityTimelineCampaignPoints',
+            ...getArgsForSweepKey('activityTimelineCampaignPoints', 'negative')
+          )
+        ).toEqual(expect.any(String))
+
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'phishingTestResultsEarnedPoints',
+            ...getArgsForSweepKey('phishingTestResultsEarnedPoints', 'zero')
+          )
+        ).toEqual(expect.any(String))
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'phishingTestResultsLostPoints',
+            ...getArgsForSweepKey('phishingTestResultsLostPoints', 'zero')
+          )
+        ).toEqual(expect.any(String))
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'phishingTestResultsAccuracyUp',
+            ...getArgsForSweepKey('phishingTestResultsAccuracyUp', 'negative')
+          )
+        ).toEqual(expect.any(String))
+        expect(
+          getUsersDashboardLabel(
+            language,
+            'phishingTestResultsAccuracyUp',
+            ...getArgsForSweepKey('phishingTestResultsAccuracyUp', 'zero')
+          )
+        ).toEqual(expect.any(String))
+      })
     })
   })
 })

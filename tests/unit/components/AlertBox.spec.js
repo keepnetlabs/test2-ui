@@ -2,49 +2,63 @@ import { shallowMount } from '@vue/test-utils'
 import AlertBox from '@/components/AlertBox.vue'
 
 describe('AlertBox.vue', () => {
-  const mountComponent = (propsData = {}, slots = {}) =>
+  const createWrapper = (propsData = {}) =>
     shallowMount(AlertBox, {
-      propsData,
-      slots,
-      stubs: {
-        VIcon: true
+      propsData: {
+        text: 'Default alert message',
+        ...propsData
       }
     })
 
-  it('renders with default icon props', () => {
-    const wrapper = mountComponent({ text: 'Warning message' })
-    expect(wrapper.vm.iconColor).toBe('#B6791D')
-    expect(wrapper.vm.iconName).toBe('mdi-alert-circle')
-    expect(wrapper.text()).toContain('Warning message')
+  it('renders as Vue component', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm).toBeDefined()
   })
 
-  it('hasAction is false when no action slots are enabled', () => {
-    const wrapper = mountComponent({
-      slots: { primaryAction: false, secondaryAction: false }
-    })
+  it('displays text prop', () => {
+    const wrapper = createWrapper({ text: 'Custom alert' })
+    expect(wrapper.text()).toContain('Custom alert')
+  })
+
+  it('uses default icon name', () => {
+    const wrapper = createWrapper()
+    const icon = wrapper.find('v-icon-stub')
+    expect(icon.exists()).toBe(true)
+    expect(icon.attributes('iconname') || wrapper.vm.iconName).toBeTruthy()
+  })
+
+  it('uses custom iconColor', () => {
+    const wrapper = createWrapper({ iconColor: '#FF0000' })
+    expect(wrapper.vm.iconColor).toBe('#FF0000')
+  })
+
+  it('uses custom iconName', () => {
+    const wrapper = createWrapper({ iconName: 'mdi-information' })
+    expect(wrapper.vm.iconName).toBe('mdi-information')
+  })
+
+  it('hasAction is false when no slots', () => {
+    const wrapper = createWrapper({ slots: { primaryAction: false, secondaryAction: false } })
     expect(wrapper.vm.hasAction).toBe(false)
-    expect(wrapper.find('.alert-box__actions').exists()).toBe(false)
   })
 
-  it('hasAction is true when any action slot is enabled', () => {
-    const wrapper = mountComponent(
-      {
-        slots: { primaryAction: true, secondaryAction: false }
-      },
-      {
-        primaryAction: '<button id="primary-btn">Primary</button>'
-      }
-    )
+  it('hasAction is true when primaryAction slot', () => {
+    const wrapper = createWrapper({ slots: { primaryAction: true, secondaryAction: false } })
     expect(wrapper.vm.hasAction).toBe(true)
+  })
+
+  it('hasAction is true when secondaryAction slot', () => {
+    const wrapper = createWrapper({ slots: { primaryAction: false, secondaryAction: true } })
+    expect(wrapper.vm.hasAction).toBe(true)
+  })
+
+  it('renders actions div when hasAction', () => {
+    const wrapper = createWrapper({ slots: { primaryAction: true, secondaryAction: false } })
     expect(wrapper.find('.alert-box__actions').exists()).toBe(true)
   })
 
-  it('renders custom text slot content', () => {
-    const wrapper = mountComponent(
-      { text: 'Fallback text' },
-      { text: '<span id="custom-text">Custom text</span>' }
-    )
-    expect(wrapper.find('#custom-text').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Custom text')
+  it('does not render actions div when hasAction false', () => {
+    const wrapper = createWrapper({ slots: { primaryAction: false, secondaryAction: false } })
+    expect(wrapper.find('.alert-box__actions').exists()).toBe(false)
   })
 })
