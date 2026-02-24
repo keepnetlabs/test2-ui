@@ -320,6 +320,7 @@ export default {
             fixed: false,
             label: 'User Status',
             sortable: false,
+            hideSort: true,
             show: true,
             type: 'slot',
             width: 180
