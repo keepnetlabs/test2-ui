@@ -35,10 +35,30 @@
     @searchChangedEvent="handleSearchChange"
     @downloadEvent="exportTrainingReportSendingReportTable"
     @refreshAction="callForData"
+    @handleSelectionChange="handleTableSelectionChange"
     @on-resend="handleOnResend"
     @on-details="handleOnDetail"
     @on-selection-text-change="handleSelectionChange"
   >
+    <template #selection-all-slot>
+      <v-tooltip bottom opacity="1">
+        <template v-slot:activator="{ on }">
+          <span v-on="on">
+            <v-btn
+              class="btn-selected-hover mr-1"
+              icon
+              :style="getResendButtonStyle"
+              @click="handleResendSelectionClick"
+            >
+              <v-icon class="selection-icons" color="white"
+                >$white-resend</v-icon
+              >
+            </v-btn>
+          </span>
+        </template>
+        <span class="tooltip-span">{{ resendTooltip }}</span>
+      </v-tooltip>
+    </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :id="getRowActionId(scope, 0)"
@@ -179,6 +199,7 @@ export default {
   },
   data() {
     return {
+      selection: [],
       selectedRow: null,
       isShowInteractionsModal: false,
       CONSTANTS: {
@@ -194,7 +215,7 @@ export default {
           TABLE_SETTINGS_KEYS.TRAINING_REPORT_ENROLLMENT_EMAILS_TABLE,
         serverSideEvents: { pagination: true, search: true, sort: true },
         selectEvent: {
-          resend: true,
+          resend: false,
           clipboard: true
         },
         columns: [
@@ -298,16 +319,11 @@ export default {
             editable: false,
             fixed: false,
             label: 'User Status',
-            sortable: true,
+            sortable: false,
+            hideSort: true,
             show: true,
             type: 'slot',
-            width: 180,
-            filterableType: 'select',
-            filterableItems: [
-              { text: labels.Active, value: 'Active' },
-              { text: labels.InActive, value: 'Inactive' },
-              { text: 'Deleted', value: 'Deleted' }
-            ]
+            width: 180
           },
           {
             property: PROPERTY_STORE.EMAIL_DELIVERY,
@@ -403,6 +419,20 @@ export default {
     }
   },
   computed: {
+    hasDeletedSelection() {
+      return this.selection.some((row) => this.isRowTypeDeleted(row))
+    },
+    getResendButtonStyle() {
+      if (!this.hasDeletedSelection) return null
+      return {
+        opacity: 0.5,
+        pointerEvents: 'none'
+      }
+    },
+    resendTooltip() {
+      if (!this.hasDeletedSelection) return 'Resend'
+      return 'Deleted users cannot be resent.'
+    },
     getEvents() {
       const { events = [] } = this.extendedViewValue[0] || { events: [] }
       return events
@@ -467,6 +497,19 @@ export default {
     },
     getTooltipDisabilityStatus(row) {
       return !(row.hasTooltip || row.errorMessage)
+    },
+    handleTableSelectionChange(selection = []) {
+      this.selection = selection
+    },
+    handleResendSelectionClick() {
+      if (this.hasDeletedSelection) return
+      const selections = this.$refs.refTable.getSelectedMultipleValues()
+      const params = this.$refs.refTable.getServerSideSelectionParams()
+      this.handleOnResend(
+        selections,
+        params.excludedResourceIdList || [],
+        params.isSelectedAllEver || false
+      )
     },
     handleSelectionChange(selectionCount) {
       this.$emit('on-selection-text-change', selectionCount)
