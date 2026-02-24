@@ -48,6 +48,41 @@ describe('Common/Charts/Bar.vue (extra branch coverage)', () => {
     expect(renderChart).not.toHaveBeenCalled()
   })
 
+  it('chartData watcher re-renders when chartData changes from null to data', async () => {
+    const renderChart = jest.fn()
+    const wrapper = shallowMount(BarChart, {
+      propsData: {
+        chartData: null,
+        chartOptions: { responsive: true }
+      },
+      methods: { addPlugin: jest.fn(), renderChart }
+    })
+    expect(renderChart).not.toHaveBeenCalled()
+
+    await wrapper.setProps({
+      chartData: { labels: ['X'], datasets: [{ data: [5] }] }
+    })
+    expect(renderChart).toHaveBeenCalledWith(
+      { labels: ['X'], datasets: [{ data: [5] }] },
+      { responsive: true }
+    )
+  })
+
+  it('adds single custom plugin when customPlugin has one item', () => {
+    const plugin = { id: 'single' }
+    const addPlugin = jest.fn()
+    const renderChart = jest.fn()
+    shallowMount(BarChart, {
+      propsData: {
+        chartData: { labels: ['A'], datasets: [{ data: [1] }] },
+        chartOptions: {},
+        customPlugin: [plugin]
+      },
+      methods: { addPlugin, renderChart }
+    })
+    expect(addPlugin).toHaveBeenCalledWith(plugin)
+  })
+
   it('uses addCustomLegendLabelHeight in plugin', () => {
     const addPlugin = jest.fn()
     const renderChart = jest.fn()

@@ -183,8 +183,8 @@ describe('SmishingCampaignManager/CampaignManagerItemTable.vue', () => {
     expect(SmishingService.exportSmishingCampaignItems.mock.calls[1][0]).toEqual(
       expect.objectContaining({ exportType: 'PDF' })
     )
-    expect(createdLinks[0].download).toBe('Smishing-Campaign-Instances.xlsx')
-    expect(createdLinks[1].download).toBe('Smishing-Campaign-Instances.pdf')
+    expect(createdLinks[0].download).toBe('Smishing-Campaign-Runs.xlsx')
+    expect(createdLinks[1].download).toBe('Smishing-Campaign-Runs.pdf')
     expect(createdLinks[0].click).toHaveBeenCalled()
     expect(createdLinks[1].click).toHaveBeenCalled()
 

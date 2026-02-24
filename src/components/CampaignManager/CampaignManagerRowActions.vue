@@ -124,8 +124,8 @@ export default {
         action: 'on-launch',
         disabled: !this.getCampaignManagerParentCreatePermissions || this.isNewInstanceDisabled,
         disabledText: this.isNewInstanceDisabled
-          ? `A new instance with frequency and random scenarios can’t be created.`
-          : 'Create New Instance'
+          ? `A new run with frequency and random scenarios can’t be created.`
+          : 'Create New Run'
       }
       const duplicateItem = {
         name: labels.Duplicate,

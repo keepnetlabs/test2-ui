@@ -208,8 +208,8 @@ describe('CallbackCampaignManager/CampaignManagerItemTable.vue', () => {
     expect(CallbackService.exportCallbackJobs.mock.calls[1][1]).toEqual(
       expect.objectContaining({ exportType: 'CSV' })
     )
-    expect(createdLinks[0].download).toBe('Callback-Campaign-Instances.xlsx')
-    expect(createdLinks[1].download).toBe('Callback-Campaign-Instances.csv')
+    expect(createdLinks[0].download).toBe('Callback-Campaign-Runs.xlsx')
+    expect(createdLinks[1].download).toBe('Callback-Campaign-Runs.csv')
     expect(createdLinks[0].click).toHaveBeenCalled()
     expect(createdLinks[1].click).toHaveBeenCalled()
 

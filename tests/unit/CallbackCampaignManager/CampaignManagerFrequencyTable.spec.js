@@ -156,8 +156,8 @@ describe('CallbackCampaignManager/CampaignManagerFrequencyTable.vue', () => {
     expect(CallbackService.exportCallbackJobs.mock.calls[0][1]).toEqual(
       expect.objectContaining({ exportType: 'Excel', phishingCampaignFrequencyGroup: 'fg-4' })
     )
-    expect(createdLinks[0].download).toBe('Callback-Campaign-Instances.xlsx')
-    expect(createdLinks[1].download).toBe('Callback-Campaign-Instances.pdf')
+    expect(createdLinks[0].download).toBe('Callback-Campaign-Runs.xlsx')
+    expect(createdLinks[1].download).toBe('Callback-Campaign-Runs.pdf')
 
     globalThis.URL.createObjectURL = originalCreateObjectURL
     createElementSpy.mockRestore()

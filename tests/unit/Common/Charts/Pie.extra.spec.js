@@ -64,6 +64,18 @@ describe('Common/Charts/Pie.vue (extra branch coverage)', () => {
     expect(chartData.labels).toBeUndefined()
   })
 
+  it('handles undefined chartOptions in attachToDom', () => {
+    const renderChart = jest.fn()
+    mountComponent(
+      { chartOptions: undefined, data: [1, 2, 3] },
+      { addPlugin: jest.fn(), renderChart }
+    )
+    const chartData = renderChart.mock.calls[0][0]
+    expect(chartData.labels).toBeUndefined()
+    expect(chartData.datasets[0].data).toEqual([1, 2, 3])
+    expect(chartData.datasets[0].backgroundColor).toBeUndefined()
+  })
+
   it('uses undefined backgroundColor when not in chartOptions', () => {
     const renderChart = jest.fn()
     mountComponent(

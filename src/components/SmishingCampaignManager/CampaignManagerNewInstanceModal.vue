@@ -2,7 +2,7 @@
   <AppModal
     :status="status"
     icon-name="$custom-new-instance"
-    title="Create New Instance"
+    title="Create New Run"
     class-name="add-in-configuration"
     title-id="text--create-new-instance__title"
     confirm-button-id="btn-save--campaign-manager-new-instance-modal"
@@ -16,7 +16,7 @@
     <template #overlay-body>
       <AppModalBodyHeader
         :title="labels.CampaignInstance"
-        sub-title="Select target groups and schedule options for this smishing campaign instance"
+        sub-title="Select target groups and schedule options for this smishing campaign run"
       />
       <FormGroup
         class-name="campaign-manager__target-groups"

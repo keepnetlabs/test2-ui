@@ -43,6 +43,30 @@ describe('TrainingReportCertificate.vue (extra)', () => {
     expect(ctx.selectedTemplate).toBe('fallback-template')
   })
 
+  it('handleLanguageChange updates formData and selectedTemplate when language found', () => {
+    const set = jest.fn((obj, key, value) => {
+      obj[key] = value
+    })
+    const ctx = {
+      formData: {
+        selectedLanguageResourceId: 'en',
+        selectedLanguageName: 'English',
+        languages: [
+          { languageTypeResourceId: 'en', languageTypeName: 'English', template: 'template-en' },
+          { languageTypeResourceId: 'tr', languageTypeName: 'Turkish', template: 'template-tr' }
+        ]
+      },
+      selectedTemplate: 'template-en',
+      $set: set
+    }
+
+    methods.handleLanguageChange.call(ctx, 'tr')
+
+    expect(set).toHaveBeenCalledWith(ctx.formData, 'selectedLanguageResourceId', 'tr')
+    expect(set).toHaveBeenCalledWith(ctx.formData, 'selectedLanguageName', 'Turkish')
+    expect(ctx.selectedTemplate).toBe('template-tr')
+  })
+
   it('handleLanguageChange does nothing for unknown language id', () => {
     const set = jest.fn((obj, key, value) => {
       obj[key] = value

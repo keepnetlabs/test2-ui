@@ -43,7 +43,7 @@ describe('CampaignManagerItemDeleteDialog.vue', () => {
 
     it('should display delete confirmation message', () => {
       const wrapper = mountComponent()
-      expect(wrapper.text()).toContain('Instance will be deleted')
+      expect(wrapper.text()).toContain('Run will be deleted')
     })
   })
 
@@ -85,7 +85,7 @@ describe('CampaignManagerItemDeleteDialog.vue', () => {
 
     it('should have delete title', () => {
       const wrapper = mountComponent()
-      expect(wrapper.vm.CONSTANTS.title).toBe('Delete Campaign Instance?')
+      expect(wrapper.vm.CONSTANTS.title).toBe('Delete Campaign Run?')
     })
 
     it('should have delete subtitle', () => {
