@@ -91,5 +91,35 @@ describe('playbook store (extra coverage)', () => {
         root: true
       })
     })
+
+    it('getPlaybookList forwards payload object to searchPlaybook', async () => {
+      searchPlaybook.mockResolvedValue({
+        data: { data: { results: [{ id: 7 }] } }
+      })
+      const commit = jest.fn()
+      const payload = { pageNumber: 3, pageSize: 50 }
+
+      await playbook.actions.getPlaybookList({ commit }, payload)
+
+      expect(searchPlaybook).toHaveBeenCalledWith(payload)
+    })
+
+    it('getPlaybookList falls into catch when results shape is invalid', async () => {
+      searchPlaybook.mockResolvedValue({
+        data: { data: { results: null } }
+      })
+      const commit = jest.fn()
+
+      await playbook.actions.getPlaybookList({ commit }, {})
+
+      expect(commit).toHaveBeenCalledWith('common/SET_SNACK_STATUS', true, { root: true })
+      expect(commit).toHaveBeenCalledWith('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+      expect(commit).toHaveBeenCalledWith('common/SET_ERROR_STATE', true, { root: true })
+      expect(commit).toHaveBeenCalledWith(
+        'common/SET_ERROR_MESSAGE',
+        'Error when getting playbook list',
+        { root: true }
+      )
+    })
   })
 })
