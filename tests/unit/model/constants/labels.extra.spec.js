@@ -38,5 +38,9 @@ describe('model/constants/labels (extra coverage)', () => {
       expect(labels.Active).toBeDefined()
       expect(labels.Inactive).toBeDefined()
     })
+
+    it('has FrequencyType label', () => {
+      expect(labels.FrequencyType).toBe('Frequency Type:')
+    })
   })
 })
