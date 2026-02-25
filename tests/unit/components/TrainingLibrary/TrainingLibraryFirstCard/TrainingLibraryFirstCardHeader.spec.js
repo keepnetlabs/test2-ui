@@ -1,5 +1,5 @@
 jest.mock('@/api/awarenessEducator', () => ({
-  exportTrainingList: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportTrainingList: jest.fn(() => Promise.resolve({ data: 'mock-file' }))
 }))
 
 import TrainingLibraryFirstCardHeader from '@/components/TrainingLibrary/TrainingLibraryFirstCard/TrainingLibraryFirstCardHeader.vue'

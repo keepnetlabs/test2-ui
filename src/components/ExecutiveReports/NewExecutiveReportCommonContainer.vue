@@ -130,7 +130,6 @@ export default {
             data: { data }
           } = response || {}
           this.cards = data.metrics
-          console.log('this.cards', this.cards)
         })
         .finally(this.setLoading)
     },

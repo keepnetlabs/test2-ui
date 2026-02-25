@@ -2,7 +2,7 @@ jest.mock('@/api/awarenessEducator', () => ({
   __esModule: true,
   default: {
     downloadTrainingPackage: jest.fn(() =>
-      Promise.resolve({ data: new Blob(['x'], { type: 'application/zip' }) })
+      Promise.resolve({ data: 'mock-file' })
     )
   }
 }))
