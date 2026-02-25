@@ -11,7 +11,7 @@ jest.mock('@/api/siemIntegrations', () => ({
       }
     })
   ),
-  exportSIEMIntegrations: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportSIEMIntegrations: jest.fn(() => Promise.resolve({ data: {} }))
 }))
 
 const createObjectURL = jest.fn(() => 'blob:mock')
