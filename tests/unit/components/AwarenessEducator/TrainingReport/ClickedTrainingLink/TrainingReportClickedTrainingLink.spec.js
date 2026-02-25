@@ -14,7 +14,7 @@ jest.mock('@/api/awarenessEducator', () => ({
       })
     ),
     resendTrainingToClickedLinkList: jest.fn(() => Promise.resolve()),
-    exportClickedTrainingReportEmails: jest.fn(() => Promise.resolve({ data: new Blob(['x']) }))
+    exportClickedTrainingReportEmails: jest.fn(() => Promise.resolve({ data: 'mock-file' }))
   }
 }))
 

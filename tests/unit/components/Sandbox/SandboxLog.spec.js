@@ -1,6 +1,6 @@
 jest.mock('@/api/sandbox', () => ({
   getSandboxLog: jest.fn(() => Promise.resolve({ data: { data: { results: [] }, totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 1 } })),
-  exportSandboxLog: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportSandboxLog: jest.fn(() => Promise.resolve({ data: 'mock-file' }))
 }))
 
 import SandboxLog from '@/components/Sandbox/SandboxLog.vue'

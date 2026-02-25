@@ -18,7 +18,7 @@ jest.mock('@/api/callback', () => ({
         }
       })
     ),
-    exportCampaignTabUsers: jest.fn(() => Promise.resolve({ data: new Blob(['x']) }))
+    exportCampaignTabUsers: jest.fn(() => Promise.resolve({ data: 'mock-file' }))
   }
 }))
 
