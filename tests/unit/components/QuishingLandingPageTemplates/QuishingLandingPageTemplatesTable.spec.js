@@ -11,7 +11,7 @@ jest.mock('@/api/quishing', () => ({
       }
     })
   ),
-  exportLandingPageTemplates: jest.fn(() => Promise.resolve(new Blob()))
+  exportLandingPageTemplates: jest.fn(() => Promise.resolve({ data: {} }))
 }))
 
 globalThis.URL = { createObjectURL: jest.fn(() => 'blob:mock') }

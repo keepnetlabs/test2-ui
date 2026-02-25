@@ -93,7 +93,9 @@ export default {
   },
   watch: {
     feedbackMessage() {
-      this.textAreaHeight = this.$refs.refTextArea.$el.getBoundingClientRect().height
+      const textAreaEl = this.$refs?.refTextArea?.$el
+      if (!textAreaEl || typeof textAreaEl.getBoundingClientRect !== 'function') return
+      this.textAreaHeight = textAreaEl.getBoundingClientRect().height
     }
   },
   methods: {
