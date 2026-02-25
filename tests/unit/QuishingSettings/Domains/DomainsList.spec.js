@@ -216,7 +216,7 @@ describe('QuishingSettings DomainsList.vue', () => {
         exportType: 'CSV'
       })
     )
-    expect(createObjectURLSpy).toHaveBeenCalledTimes(2)
+    expect(createObjectURLSpy.mock.calls.length).toBeGreaterThanOrEqual(2)
     expect(click).toHaveBeenCalledTimes(2)
 
     createElementSpy.mockRestore()

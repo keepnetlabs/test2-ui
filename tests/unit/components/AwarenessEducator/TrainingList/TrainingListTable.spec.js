@@ -2,7 +2,7 @@ jest.mock('@/api/awarenessEducator', () => ({
   searchTraining: jest.fn(() =>
     Promise.resolve({ data: { data: { results: [], totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 1 } } })
   ),
-  exportTrainingList: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
+  exportTrainingList: jest.fn(() => Promise.resolve({ data: 'mock-file' })),
   duplicateTraining: jest.fn(() => Promise.resolve())
 }))
 
