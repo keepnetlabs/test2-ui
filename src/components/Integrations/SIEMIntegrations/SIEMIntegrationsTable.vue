@@ -179,6 +179,9 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results
         })
+        .catch(() => {
+          this.tableData = []
+        })
         .finally(this.setLoading)
     },
     toggleAddOrEditModal() {

@@ -27,6 +27,6 @@ export function getStatusBadgeProps(status) {
     NotStarted: { color: '#757575', text: 'Not Started', outline: true },
     Downloaded: { color: '#217124', text: 'Downloaded' }
   }
-  const trimmedStatus = status?.replace(/\s/g, '')
+  const trimmedStatus = status?.replaceAll(/\s/g, '')
   return statusMap[trimmedStatus] || null
 }

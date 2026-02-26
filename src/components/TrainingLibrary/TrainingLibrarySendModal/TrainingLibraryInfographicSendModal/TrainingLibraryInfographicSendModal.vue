@@ -373,7 +373,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const languages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             languages.unshift({
@@ -386,7 +386,7 @@ export default {
           // Replace logo in other languages
           languages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 
@@ -413,7 +413,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const certificateLanguages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             certificateLanguages.unshift({
@@ -426,7 +426,7 @@ export default {
           // Replace logo in other languages
           certificateLanguages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 
@@ -453,7 +453,7 @@ export default {
           const companyLogoUrl = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
           const enrollmentLanguages = data.template.languages || []
           const mainTemplate =
-            data.template.template?.replace(/{COMPANYLOGO}/g, companyLogoUrl) || ''
+            data.template.template?.replaceAll('{COMPANYLOGO}', companyLogoUrl) || ''
 
           if (data.template.languageTypeResourceId && data.template.languageTypeName) {
             enrollmentLanguages.unshift({
@@ -466,7 +466,7 @@ export default {
           // Replace logo in other languages
           enrollmentLanguages.forEach((lang) => {
             if (lang.template) {
-              lang.template = lang.template.replace(/{COMPANYLOGO}/g, companyLogoUrl)
+              lang.template = lang.template.replaceAll('{COMPANYLOGO}', companyLogoUrl)
             }
           })
 

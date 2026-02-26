@@ -19,7 +19,8 @@ jest.mock('@/api/awarenessEducator', () => ({
         }
       })
     ),
-    resendTrainingToProgressList: jest.fn(() => Promise.resolve())
+    resendTrainingToProgressList: jest.fn(() => Promise.resolve()),
+    exportProgressTrainingReportEmails: jest.fn(() => Promise.resolve({ data: 'blob-data' }))
   }
 }))
 
@@ -30,6 +31,8 @@ jest.mock('@/utils/helperFunctions', () => ({
 
 import TrainingReportProgress from '@/components/AwarenessEducator/TrainingReport/Progress/TrainingReportProgress.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import labels from '@/model/constants/labels'
+import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 describe('TrainingReportProgress.vue', () => {
   beforeEach(() => {
@@ -100,5 +103,96 @@ describe('TrainingReportProgress.vue', () => {
     )
     expect(ctx.isShowResendDialog).toBe(false)
     expect(ctx.isResendActionButtonDisabled).toBe(false)
+  })
+
+  it('computed resend dialog title/body cover survey/infographic/default', () => {
+    expect(
+      TrainingReportProgress.computed.getResendDialogTitle.call({
+        isSurvey: true,
+        trainingSummary: {}
+      })
+    ).toBe(labels.ResendSurvey)
+    expect(
+      TrainingReportProgress.computed.getResendDialogTitle.call({
+        isSurvey: false,
+        trainingSummary: { trainingTypeName: TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC }
+      })
+    ).toBe(labels.ResendInfographic)
+    expect(
+      TrainingReportProgress.computed.getBodyTrainingType.call({
+        isSurvey: false,
+        trainingSummary: {}
+      })
+    ).toBe(labels.Training.toLowerCase())
+  })
+
+  it('watch isScormProxy removes resend action for current survey state', () => {
+    const ctx = {
+      isSurvey: false,
+      tableOptions: { rowActions: [{ name: 'Resend Training' }, { name: 'Details' }] }
+    }
+    TrainingReportProgress.watch.isScormProxy.handler.call(ctx, true)
+    expect(ctx.tableOptions.rowActions).toEqual([{ name: 'Details' }])
+  })
+
+  it('toggleIsShowResendDialog and toggleIsShowDetailsModal clear selectedRow on close', () => {
+    const ctx = { isShowResendDialog: false, isShowDetailsModal: false, selectedRow: { id: 1 } }
+    TrainingReportProgress.methods.toggleIsShowResendDialog.call(ctx)
+    expect(ctx.isShowResendDialog).toBe(true)
+    TrainingReportProgress.methods.toggleIsShowResendDialog.call(ctx)
+    expect(ctx.isShowResendDialog).toBe(false)
+    expect(ctx.selectedRow).toBeNull()
+
+    ctx.selectedRow = { id: 2 }
+    TrainingReportProgress.methods.toggleIsShowDetailsModal.call(ctx)
+    expect(ctx.isShowDetailsModal).toBe(true)
+    TrainingReportProgress.methods.toggleIsShowDetailsModal.call(ctx)
+    expect(ctx.isShowDetailsModal).toBe(false)
+    expect(ctx.selectedRow).toBeNull()
+  })
+
+  it('handleDetails and handleResend set selected row and open dialogs', () => {
+    const ctx = {
+      selectedRow: null,
+      toggleIsShowDetailsModal: jest.fn(),
+      toggleIsShowResendDialog: jest.fn()
+    }
+    TrainingReportProgress.methods.handleDetails.call(ctx, { id: 'd1' })
+    expect(ctx.selectedRow).toEqual({ id: 'd1' })
+    expect(ctx.toggleIsShowDetailsModal).toHaveBeenCalled()
+
+    TrainingReportProgress.methods.handleResend.call(ctx, { id: 'r1' })
+    expect(ctx.selectedRow).toEqual({ id: 'r1' })
+    expect(ctx.toggleIsShowResendDialog).toHaveBeenCalled()
+  })
+
+  it('exportTrainingProgressEmailTable maps XLS to Excel and triggers download', async () => {
+    const click = jest.fn()
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue({
+      set href(v) {},
+      set download(v) {},
+      click
+    })
+    const originalCreateObjectURL = globalThis.URL.createObjectURL
+    globalThis.URL.createObjectURL = jest.fn(() => 'blob:1')
+    const ctx = {
+      id: 'p1',
+      isSurvey: false,
+      axiosPayload: { orderBy: 'email', ascending: true, filter: {} }
+    }
+    TrainingReportProgress.methods.exportTrainingProgressEmailTable.call(ctx, {
+      exportTypes: ['XLS'],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: true
+    })
+    await Promise.resolve()
+    expect(AwarenessEducatorService.exportProgressTrainingReportEmails).toHaveBeenCalledWith(
+      expect.objectContaining({ exportType: 'Excel' }),
+      'p1'
+    )
+    expect(click).toHaveBeenCalled()
+    createElementSpy.mockRestore()
+    globalThis.URL.createObjectURL = originalCreateObjectURL
   })
 })

@@ -132,7 +132,7 @@ export default {
           this.dataContainerWithSearchItems =
             response?.data?.data?.phishingCampaignExcludedIPList.map((item) => item.excludedIP) ||
             []
-          this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+          this.initialData = structuredClone(this.dataContainerWithSearchItems)
         })
         .finally(() => {
           this.isLoading = false
@@ -165,7 +165,7 @@ export default {
         }
         this.isActionButtonDisabled = true
         const payload = {
-          excludedIPs: JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+          excludedIPs: structuredClone(this.dataContainerWithSearchItems)
         }
         QuishingService.postQuishingExcludedIPAddresses(payload)
           .then(() => {

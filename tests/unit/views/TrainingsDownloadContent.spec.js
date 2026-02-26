@@ -11,15 +11,8 @@ jest.mock('axios', () => ({
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('TrainingsDownloadContent.vue', () => {
-  let consoleSpy
-
   beforeEach(() => {
     jest.clearAllMocks()
-    consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
-  })
-
-  afterEach(() => {
-    consoleSpy.mockRestore()
   })
 
   it('mounted triggers handleDownload', () => {
@@ -39,6 +32,13 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(m.getFileNameFromDisposition('attachment')).toBe('')
   })
 
+  it('getFileNameFromDisposition trims quotes in utf8 filename variant', () => {
+    const m = TrainingsDownloadContent.methods
+    expect(m.getFileNameFromDisposition(`attachment; filename*=UTF-8''\"my%20file.txt\"`)).toBe(
+      'my file.txt'
+    )
+  })
+
   it('getExtensionFromType maps known and generic mime types', () => {
     const m = TrainingsDownloadContent.methods
 
@@ -50,6 +50,12 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(m.getExtensionFromType('application/x-custom')).toBe('.x-custom')
     expect(m.getExtensionFromType('')).toBe('')
     expect(m.getExtensionFromType('invalid-type')).toBe('')
+  })
+
+  it('getExtensionFromType returns empty for unknown octet-stream subtype and custom for other subtypes', () => {
+    const m = TrainingsDownloadContent.methods
+    expect(m.getExtensionFromType('application/octet-stream; charset=utf-8')).toBe('')
+    expect(m.getExtensionFromType('video/x-matroska')).toBe('.x-matroska')
   })
 
   it('handleDownload sets error state when required query params are missing', async () => {
@@ -138,6 +144,34 @@ describe('TrainingsDownloadContent.vue', () => {
     await flushPromises()
 
     expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'download.pdf')
+  })
+
+  it('handleDownload falls back to plain download name when content type has no extension', async () => {
+    axios.get.mockResolvedValueOnce({
+      data: new Blob(['x']),
+      headers: {
+        'content-type': 'application/octet-stream'
+      }
+    })
+
+    const triggerDownload = jest.fn()
+    const ctx = {
+      isLoading: true,
+      statusMessage: 'Preparing download...',
+      shouldShowCloseButton: false,
+      $route: {
+        query: { EnrollmentContentId: 'ec-3', TargetUserResourceId: 'tu-3' }
+      },
+      getFileNameFromDisposition: TrainingsDownloadContent.methods.getFileNameFromDisposition,
+      getExtensionFromType: TrainingsDownloadContent.methods.getExtensionFromType,
+      triggerDownload,
+      handleAutoClose: jest.fn()
+    }
+
+    await TrainingsDownloadContent.methods.handleDownload.call(ctx)
+    await flushPromises()
+
+    expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'download')
   })
 
   it('handleDownload failure path sets failed message and close button', async () => {

@@ -1,6 +1,17 @@
 import TrainingLibrary from '@/views/TrainingLibrary.vue'
 
 describe('TrainingLibrary.vue', () => {
+  it('has correct component name', () => {
+    expect(TrainingLibrary.name).toBe('TrainingLibrary')
+  })
+
+  it('registers expected child components', () => {
+    expect(TrainingLibrary.components.KContainer).toBeDefined()
+    expect(TrainingLibrary.components.TrainingLibraryFirstCard).toBeDefined()
+    expect(TrainingLibrary.components.TrainingLibraryListViewCard).toBeDefined()
+    expect(TrainingLibrary.components.TrainingLibraryCardView).toBeDefined()
+  })
+
   it('beforeRouteLeave resets modals and allows navigation', () => {
     const resetAllModals = jest.fn()
     const next = jest.fn()

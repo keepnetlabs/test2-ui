@@ -16,7 +16,7 @@
     outlined
     :items="items"
     :rules="rules"
-    autocomplete="disabled"
+    autocomplete="off"
     :placeholder="placeholder"
     :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
     @change="handleInputChange"

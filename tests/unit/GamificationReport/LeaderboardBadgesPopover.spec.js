@@ -171,6 +171,12 @@ describe('LeaderboardBadgesPopover.vue', () => {
       expect(filtered).toEqual(defaultBadges)
     })
 
+    it('should handle null search query like empty query', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.searchQuery = null
+      expect(wrapper.vm.filteredBadges).toEqual(defaultBadges)
+    })
+
     it('should return empty array when no matches', () => {
       const wrapper = mountComponent()
       wrapper.vm.searchQuery = 'NonExistent'
@@ -319,6 +325,12 @@ describe('LeaderboardBadgesPopover.vue', () => {
       expect(level).toBe(0)
     })
 
+    it('should return false when level is boolean false', () => {
+      const wrapper = mountComponent()
+      const level = wrapper.vm.getBadgeLevel({ level: false })
+      expect(level).toBe(false)
+    })
+
     it('should handle null badge', () => {
       const wrapper = mountComponent()
       const level = wrapper.vm.getBadgeLevel(null)
@@ -353,6 +365,13 @@ describe('LeaderboardBadgesPopover.vue', () => {
       const wrapper = mountComponent({ onClose: onCloseFn })
       await wrapper.find('.leaderboard-badges-popover__close-btn').trigger('click')
       expect(onCloseFn).toHaveBeenCalledTimes(1)
+    })
+
+    it('close icon click does nothing when onClose is null', async () => {
+      const wrapper = mountComponent({ onClose: null })
+      await expect(
+        wrapper.find('.leaderboard-badges-popover__close-btn').trigger('click')
+      ).resolves.toBeUndefined()
     })
   })
 

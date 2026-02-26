@@ -14,12 +14,10 @@
     >
       <div class="select-click-only-drawer__content-wrapper">
         <div class="select-click-only-drawer__header">
-          <span class="select-click-only-drawer__header-title">Add Landing Page Template</span>
-          <VIcon
-            color="#757575"
-            style="font-size: 32px;"
-            @click="handleClose"
+          <span class="select-click-only-drawer__header-title"
+            >Add Landing Page Template</span
           >
+          <VIcon color="#757575" style="font-size: 32px;" @click="handleClose">
             mdi-close
           </VIcon>
         </div>
@@ -33,6 +31,7 @@
 
         <div class="select-click-only-drawer__body">
           <LandingPageTemplateListPreview
+            ref="templateListPreview"
             :scenario-details-lookup="scenarioDetailsLookup"
             :method="method"
             :languages="languages"
@@ -56,7 +55,11 @@
             color="#2196f3"
             dark
             :disabled="!selectedResourceId"
-            style="box-shadow: 0 0 3px 0 rgba(0,0,0,0.1), 0 2px 5px 0 rgba(33,150,243,0.3) !important; font-weight: 600;"
+            style="
+              box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1),
+                0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+              font-weight: 600;
+            "
             @click="handleAddTemplate"
           >
             ADD TEMPLATE
@@ -68,12 +71,12 @@
 </template>
 
 <script>
-import LandingPageTemplateListPreview from '@/components/workshop/LandingPageTemplateListPreview.vue'
-import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader.vue'
-import { createRandomCryptStringNumber } from '@/utils/functions'
+import LandingPageTemplateListPreview from "@/components/workshop/LandingPageTemplateListPreview.vue";
+import ConfigureCompanyStepHeader from "@/components/Companies/ConfigureCompanyStepHeader.vue";
+import { createRandomCryptStringNumber } from "@/utils/functions";
 
 export default {
-  name: 'SelectClickOnlyPageModal',
+  name: "SelectClickOnlyPageModal",
   components: { LandingPageTemplateListPreview, ConfigureCompanyStepHeader },
   props: {
     status: {
@@ -82,7 +85,7 @@ export default {
     },
     method: {
       type: String,
-      default: ''
+      default: ""
     },
     scenarioDetailsLookup: {
       type: Object,
@@ -94,7 +97,7 @@ export default {
     },
     type: {
       type: String,
-      default: ''
+      default: ""
     },
     apiFuncs: {
       type: Object,
@@ -107,72 +110,80 @@ export default {
       drawerId: `drawer-${createRandomCryptStringNumber()}`,
       selectedResourceId: null,
       isJustOpened: false
-    }
+    };
   },
   computed: {
     stepSubtitle() {
-      const m = (this.method || '').toLowerCase()
-      if (m.includes('click')) return 'Choose your click only type landing page'
-      if (m.includes('data')) return 'Choose your data submission type landing page'
-      return 'Select a Click Only or Data Submission type landing page'
+      const m = (this.method || "").toLowerCase();
+      if (m.includes("click"))
+        return "Choose your click only type landing page";
+      if (m.includes("data"))
+        return "Choose your data submission type landing page";
+      return "Select a Click Only or Data Submission type landing page";
     }
   },
   watch: {
     status(newVal) {
       if (newVal && !this.isVisible) {
-        this.isVisible = true
-        this.isJustOpened = true
+        this.isVisible = true;
+        this.isJustOpened = true;
         this.$nextTick(() => {
-          this.openDrawer()
+          this.openDrawer();
           setTimeout(() => {
-            this.isJustOpened = false
-          }, 300)
-        })
+            this.isJustOpened = false;
+          }, 300);
+        });
       } else if (!newVal && this.isVisible) {
-        this.closeDrawer()
+        this.closeDrawer();
       }
     }
   },
   methods: {
     openDrawer() {
-      const el = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
+      const el = document.querySelector(`[data-drawer-id="${this.drawerId}"]`);
       if (el) {
-        el.style.right = '-100%'
+        el.style.right = "-100%";
         setTimeout(() => {
-          el.style.right = '0'
-        }, 10)
+          el.style.right = "0";
+        }, 10);
       }
     },
     closeDrawer() {
-      const el = document.querySelector(`[data-drawer-id="${this.drawerId}"]`)
-      if (el) el.style.right = '-100%'
+      const el = document.querySelector(`[data-drawer-id="${this.drawerId}"]`);
+      if (el) el.style.right = "-100%";
       setTimeout(() => {
-        this.isVisible = false
-        this.selectedResourceId = null
-        this.$emit('close')
-      }, 250)
+        this.isVisible = false;
+        this.selectedResourceId = null;
+        this.$emit("close");
+      }, 250);
     },
     handleClose() {
-      this.closeDrawer()
+      this.closeDrawer();
     },
     handleClickOutside(event) {
-      if (this.isJustOpened) return
-      const target = event?.target
+      if (this.isJustOpened) return;
+      const target = event?.target;
       if (
         target &&
-        (target.closest('.el-select-dropdown') ||
-          target.closest('.el-picker-panel') ||
-          target.closest('.el-popper') ||
-          target.closest('.v-menu__content'))
+        (target.closest(".el-select-dropdown") ||
+          target.closest(".el-picker-panel") ||
+          target.closest(".el-popper") ||
+          target.closest(".v-menu__content"))
       ) {
-        return
+        return;
       }
-      this.handleClose()
+      this.handleClose();
     },
     handleAddTemplate() {
-      if (!this.selectedResourceId) return
-      this.$emit('add', this.selectedResourceId)
+      if (!this.selectedResourceId) return;
+      const pageIndex = this.getSelectedPageIndex();
+      this.$emit("add", this.selectedResourceId, pageIndex);
+    },
+    getSelectedPageIndex() {
+      const tab = this.$refs.templateListPreview?.selectedLandingPageTab;
+      const index = Number.parseInt(tab, 10) - 1;
+      return Number.isNaN(index) || index < 0 ? 0 : index;
     }
   }
-}
+};
 </script>

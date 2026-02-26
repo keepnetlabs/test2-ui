@@ -465,7 +465,7 @@ export default {
           } else if (this.$store.state['communities'].communities.communitiesData) {
             if (
               this.$parent.$refs.tsCommunities &&
-              this.$parent.$refs.tsCommunities.listData.find(
+              this.$parent.$refs.tsCommunities.listData.some(
                 (item) => item.communityResourceId === this.communityDetails.resourceId
               )
             ) {
@@ -831,7 +831,7 @@ export default {
 
           if (privacyStatusName === 'Public' && this.$parent.$refs.tsCommunities) {
             if (
-              this.$parent.$refs.tsCommunities.listData.find(
+              this.$parent.$refs.tsCommunities.listData.some(
                 (item) => item.communityResourceId === resourceId
               )
             ) {

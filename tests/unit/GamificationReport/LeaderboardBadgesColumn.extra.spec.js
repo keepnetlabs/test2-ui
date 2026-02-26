@@ -81,4 +81,49 @@ describe('LeaderboardBadgesColumn.vue (extra coverage)', () => {
     expect(wrapper.vm.visibleBadges).toHaveLength(3)
     expect(wrapper.vm.overflowBadges).toEqual([])
   })
+
+  it('normalizeBadgeForMixin prioritizes badgeName/badgeType over name/type', () => {
+    const wrapper = mountComponent()
+    const normalized = wrapper.vm.normalizeBadgeForMixin({
+      badgeName: 'Primary',
+      name: 'Fallback',
+      badgeType: 'gold',
+      type: 'silver',
+      level: 4
+    })
+
+    expect(normalized).toEqual({
+      name: 'Primary',
+      type: 'gold',
+      level: 4
+    })
+  })
+
+  it('getBadgeTooltipText prioritizes description then badgeName then name', () => {
+    const wrapper = mountComponent()
+
+    expect(
+      wrapper.vm.getBadgeTooltipText({
+        description: 'Desc',
+        badgeName: 'BadgeName',
+        name: 'Name'
+      })
+    ).toBe('Desc')
+    expect(wrapper.vm.getBadgeTooltipText({ badgeName: 'BadgeName', name: 'Name' })).toBe(
+      'BadgeName'
+    )
+    expect(wrapper.vm.getBadgeTooltipText({ name: 'Name' })).toBe('Name')
+  })
+
+  it('getBadgeKey falls back to type and level default values', () => {
+    const wrapper = mountComponent()
+
+    expect(wrapper.vm.getBadgeKey({ type: 'fallback-type' }, 1)).toBe('fallback-type-0-1')
+    expect(wrapper.vm.getBadgeKey({}, 2)).toBe('-0-2')
+  })
+
+  it('totalBadgeCount returns 0 for non-array badges', () => {
+    const wrapper = mountComponent({ badges: null })
+    expect(wrapper.vm.totalBadgeCount).toBe(0)
+  })
 })

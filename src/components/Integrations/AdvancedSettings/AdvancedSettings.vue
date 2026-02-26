@@ -89,6 +89,7 @@ export default {
           const { exclusionItems } = data
           this.formData = exclusionItems
         })
+        .catch(() => undefined)
         .finally(this.setLoading)
     },
     handleSubmit(payload = {}, key = null) {
@@ -98,6 +99,7 @@ export default {
         .then(() => {
           this.getAnalysisExclusions()
         })
+        .catch(() => undefined)
         .finally(this.setLoading)
     },
     setLoading(value = false) {

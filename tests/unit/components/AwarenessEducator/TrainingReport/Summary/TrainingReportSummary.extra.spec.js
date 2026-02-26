@@ -14,6 +14,8 @@ jest.mock('@/api/company', () => ({
 import TrainingReportSummary from '@/components/AwarenessEducator/TrainingReport/Summary/TrainingReportSummary.vue'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
+import { getDefaultEmailTemplate } from '@/api/company'
 
 describe('TrainingReportSummary.vue (extra branch coverage)', () => {
   it('getAudienceDetailsType returns phishingCampaign when isFromPhishingCampaign is true', () => {
@@ -79,5 +81,73 @@ describe('TrainingReportSummary.vue (extra branch coverage)', () => {
         getTrainingType: TRAINING_LIBRARY_TYPES.LEARNING_PATH
       })
     ).toBe(true)
+  })
+
+  it('watch handlers call API methods only when ids are truthy', () => {
+    const vm = {
+      callForCertificate: jest.fn(),
+      callForEnrollmentEmail: jest.fn()
+    }
+
+    TrainingReportSummary.watch.getCertificateEmailNotificationTemplateTypeResourceId.handler.call(
+      vm,
+      'cert-id'
+    )
+    TrainingReportSummary.watch.getCertificateEmailNotificationTemplateTypeResourceId.handler.call(
+      vm,
+      ''
+    )
+    TrainingReportSummary.watch.getTrainingEmailNotificationTemplateTypeResourceId.handler.call(
+      vm,
+      'tmpl-id'
+    )
+    TrainingReportSummary.watch.getTrainingEmailNotificationTemplateTypeResourceId.handler.call(
+      vm,
+      null
+    )
+
+    expect(vm.callForCertificate).toHaveBeenCalledTimes(1)
+    expect(vm.callForEnrollmentEmail).toHaveBeenCalledTimes(1)
+  })
+
+  it('callForEnrollmentEmail returns early when template id is missing', () => {
+    const ctx = {
+      getTrainingEmailNotificationTemplateTypeResourceId: '',
+      enrollmentEmailData: {}
+    }
+
+    TrainingReportSummary.methods.callForEnrollmentEmail.call(ctx)
+    expect(getDefaultEmailTemplate).not.toHaveBeenCalled()
+  })
+
+  it('callForCertificate returns early when certificate id is missing', () => {
+    const ctx = {
+      getCertificateEmailNotificationTemplateTypeResourceId: '',
+      certificateEmailData: {}
+    }
+
+    TrainingReportSummary.methods.callForCertificate.call(ctx)
+    expect(AwarenessEducatorService.getCertificateHtml).not.toHaveBeenCalled()
+  })
+
+  it('resendItem safely finalizes when certificate table refs are missing', async () => {
+    const ctx = {
+      awardCertificateEnrollmentId: 'enroll-2',
+      resendPayload: { selectedItems: ['u1'] },
+      isResendActionButtonDisabled: false,
+      isShowResendDialog: true,
+      toggleIsShowResendDialog: jest.fn(),
+      $refs: {}
+    }
+
+    TrainingReportSummary.methods.resendItem.call(ctx)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(AwarenessEducatorService.resendCertificateToUserList).toHaveBeenCalledWith([
+      { targetUserResourceId: 'u1', enrollmentId: 'enroll-2' }
+    ])
+    expect(ctx.toggleIsShowResendDialog).toHaveBeenCalled()
+    expect(ctx.isResendActionButtonDisabled).toBe(false)
+    expect(ctx.isShowResendDialog).toBe(false)
   })
 })

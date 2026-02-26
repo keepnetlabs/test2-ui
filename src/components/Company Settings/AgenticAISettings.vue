@@ -992,7 +992,7 @@ export default {
               : "AI actions now require approval before execution.";
         } else if (payload.behavioralPolicies) {
           const values = Object.values(payload.behavioralPolicies);
-          const isEnabled = values.some((value) => value === true);
+          const isEnabled = values.includes(true);
           message = isEnabled
             ? "This policy is now active and applied immediately."
             : "This policy is now inactive and no longer applied.";

@@ -59,7 +59,7 @@
                   outlined
                   :class="{ 'input-error': isErrorActive }"
                   validate-on-blur
-                  autocomplete="disabled"
+                  autocomplete="off"
                   hint="*Required"
                   persistent-hint
                   type="number"

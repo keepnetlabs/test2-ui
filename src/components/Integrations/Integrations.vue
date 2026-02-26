@@ -303,6 +303,8 @@ export default {
             this.tableData = []
           })
           .finally(() => (this.loading = false))
+      } else {
+        this.loading = false
       }
     },
     handleSearchChange(searchFilter = {}) {
@@ -367,7 +369,7 @@ export default {
         exportReportedEmails(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          link.href = globalThis.URL.createObjectURL(data)
           link.download = `Integrations.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`

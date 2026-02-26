@@ -1947,7 +1947,7 @@ export default {
           this.$nextTick(() => {
             this.tableData.forEach((item) => {
               if (
-                !this.excludedResourceIdList.find(
+                !this.excludedResourceIdList.some(
                   (id) => id === item[this.rowKey]
                 )
               ) {

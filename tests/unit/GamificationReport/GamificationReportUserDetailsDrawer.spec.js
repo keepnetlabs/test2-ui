@@ -425,6 +425,32 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       ])
     })
 
+    it('setFilterToPayload updates existing item and joins array values for non-between operator', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems = [
+        { FieldName: 'product', Value: 'OLD', Operator: 'Contains' }
+      ]
+
+      wrapper.vm.setFilterToPayload({
+        key: 'product',
+        activeValue: 'NEW',
+        activeOperator: 'Contains'
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'product', Value: 'NEW', Operator: 'Contains' }
+      ])
+
+      wrapper.vm.setFilterToPayload({
+        key: 'activityType',
+        activeValue: ['Clicked Link', 'Reported'],
+        activeOperator: 'Include'
+      })
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'product', Value: 'NEW', Operator: 'Contains' },
+        { FieldName: 'activityType', Value: 'Clicked Link,Reported', Operator: 'Include' }
+      ])
+    })
+
     it('clearFilter and handleFilter trigger timeline refresh', () => {
       const wrapper = mountComponent()
       wrapper.vm.callForTimeline = jest.fn()
@@ -520,6 +546,51 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
         activeOperator: 'Include'
       })
       expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+      expect(wrapper.vm.axiosPayload.pageNumber).toBe(1)
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
+    })
+
+    it('removeFilterFromPayload returns early when field does not exist', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems = [
+        { FieldName: 'product', Value: 'X', Operator: 'Contains' }
+      ]
+      wrapper.vm.axiosPayload.pageNumber = 5
+      wrapper.vm.serverSideProps.pageNumber = 5
+
+      wrapper.vm.removeFilterFromPayload({
+        key: 'non-existing-key',
+        filterType: 'select',
+        activeValue: '',
+        activeOperator: 'Contains'
+      })
+
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'product', Value: 'X', Operator: 'Contains' }
+      ])
+      expect(wrapper.vm.axiosPayload.pageNumber).toBe(5)
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(5)
+    })
+
+    it('removeFilterFromPayload removes select filter item when found', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems = [
+        { FieldName: 'product', Value: 'PHISHING', Operator: 'Contains' },
+        { FieldName: 'difficulty', Value: 'EASY', Operator: 'Contains' }
+      ]
+      wrapper.vm.axiosPayload.pageNumber = 3
+      wrapper.vm.serverSideProps.pageNumber = 3
+
+      wrapper.vm.removeFilterFromPayload({
+        key: 'product',
+        filterType: 'select',
+        activeValue: '',
+        activeOperator: 'Contains'
+      })
+
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'difficulty', Value: 'EASY', Operator: 'Contains' }
+      ])
       expect(wrapper.vm.axiosPayload.pageNumber).toBe(1)
       expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
     })
@@ -755,6 +826,75 @@ describe('GamificationReportUserDetailsDrawer.vue', () => {
       expect(wrapper.vm.filters.every((f) => Array.isArray(f.activeValue) && f.activeValue.length === 0)).toBe(true)
       expect(wrapper.vm.callForTimeline).toHaveBeenCalledTimes(1)
       expect(wrapper.vm.filtersRenderKey.startsWith('filters-key-')).toBe(true)
+    })
+
+    it('clearAllFilters resets select/date filter operators and values correctly', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.callForTimeline = jest.fn()
+
+      wrapper.vm.filters = [
+        {
+          key: 'activityType',
+          filterType: 'search',
+          value: ['Clicked Link'],
+          activeValue: ['Clicked Link'],
+          operator: '=',
+          activeOperator: '=',
+          isFilterActive: true,
+          show: true
+        },
+        {
+          key: 'customSelect',
+          filterType: 'select',
+          value: 'A',
+          activeValue: 'A',
+          operator: '=',
+          activeOperator: '=',
+          isFilterActive: true,
+          show: true
+        },
+        {
+          key: 'customDate',
+          filterType: 'date',
+          value: '2025-01-01',
+          activeValue: '2025-01-01',
+          operator: 'between',
+          activeOperator: 'between',
+          isFilterActive: true,
+          show: true
+        }
+      ]
+
+      wrapper.vm.clearAllFilters()
+
+      expect(wrapper.vm.filters[0]).toEqual(
+        expect.objectContaining({
+          value: [],
+          activeValue: [],
+          operator: 'Include',
+          activeOperator: 'Include',
+          isFilterActive: false
+        })
+      )
+      expect(wrapper.vm.filters[1]).toEqual(
+        expect.objectContaining({
+          value: '',
+          activeValue: '',
+          operator: 'Contains',
+          activeOperator: 'Contains',
+          isFilterActive: false
+        })
+      )
+      expect(wrapper.vm.filters[2]).toEqual(
+        expect.objectContaining({
+          value: '',
+          activeValue: '',
+          operator: '=',
+          activeOperator: '=',
+          isFilterActive: false
+        })
+      )
+      expect(wrapper.vm.callForTimeline).toHaveBeenCalledTimes(1)
     })
 
     it('refreshes and loads more timeline with correct pagination behavior', () => {
