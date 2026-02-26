@@ -21,6 +21,17 @@ describe('QuishingSettings.vue', () => {
     expect(excludeCtx.tab).toBe('ExcludeIpAddress')
   })
 
+  it('created keeps default tab when domain permission is available', () => {
+    const ctx = {
+      tab: 'Domains',
+      getDomainSearchPermissions: true,
+      getDnsSearchPermissions: true,
+      getExcludedIpAddressGetPermissions: true
+    }
+    QuishingSettings.created.call(ctx)
+    expect(ctx.tab).toBe('Domains')
+  })
+
   it('beforeRouteLeave blocks for open domain/dns modals and handles exclude-ip dirty state', () => {
     const next = jest.fn()
 
@@ -58,6 +69,13 @@ describe('QuishingSettings.vue', () => {
     const next = jest.fn()
     const ctx = { $refs: {} }
 
+    QuishingSettings.beforeRouteLeave.call(ctx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('beforeRouteLeave allows when Exclude IP data is unchanged', () => {
+    const next = jest.fn()
+    const ctx = { $refs: { refExcludeIPAddress: { isInitialDataAndModelEqual: true } } }
     QuishingSettings.beforeRouteLeave.call(ctx, {}, {}, next)
     expect(next).toHaveBeenCalledWith()
   })

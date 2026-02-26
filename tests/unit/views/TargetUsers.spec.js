@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils'
 import Vuex from 'vuex'
 import TargetUsers from '@/views/TargetUsers.vue'
+import { getCheckCompanyLicense } from '@/api/company'
 
 jest.mock('@/api/company', () => ({
   getCheckCompanyLicense: jest.fn().mockResolvedValue({ data: { data: {} } })
@@ -96,5 +97,108 @@ describe('TargetUsers.vue', () => {
     expect(wrapper.vm.isOpenTargetGroupModalOnCreated).toBe(true)
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.isOpenTargetGroupModalOnCreated).toBe(false)
+  })
+
+  it('created maps route params tab values and falls back to groups by permissions', () => {
+    const ctxFromFirst = {
+      tab: 'target-users--group',
+      $route: { params: { tab: 'first' } },
+      getTargetUsersSearchPermissions: true,
+      getTargetGroupsSearchPermissions: true,
+      callForLicenseCheck: jest.fn()
+    }
+    TargetUsers.created.call(ctxFromFirst)
+    expect(ctxFromFirst.tab).toBe('target-users--people')
+    expect(ctxFromFirst.callForLicenseCheck).toHaveBeenCalledWith(true)
+
+    const ctxPermissionFallback = {
+      tab: 'target-users--people',
+      $route: { params: { tab: 'custom-tab' } },
+      getTargetUsersSearchPermissions: false,
+      getTargetGroupsSearchPermissions: true,
+      callForLicenseCheck: jest.fn()
+    }
+    TargetUsers.created.call(ctxPermissionFallback)
+    expect(ctxPermissionFallback.tab).toBe('target-users--group')
+  })
+
+  it('beforeRouteEnter sets group tab and load state only for non-people return path', () => {
+    const next = jest.fn((cb) => cb(vm))
+    const vm = { tab: 'target-users--people', isLoadState: false }
+    TargetUsers.beforeRouteEnter({ name: 'Target Users' }, { name: 'Target Group Users', params: { tab: 'second' } }, next)
+    expect(vm.tab).toBe('target-users--group')
+    expect(vm.isLoadState).toBe(true)
+
+    const nextNoChange = jest.fn((cb) => cb(vm2))
+    const vm2 = { tab: 'target-users--people', isLoadState: false }
+    TargetUsers.beforeRouteEnter({ name: 'Target Users' }, { name: 'Target Group Users', params: { tab: 'people' } }, nextNoChange)
+    expect(vm2.tab).toBe('target-users--people')
+    expect(vm2.isLoadState).toBe(false)
+  })
+
+  it('callForLicenseCheck opens cachable dialog only when license is exceeded', async () => {
+    getCheckCompanyLicense.mockResolvedValueOnce({
+      data: { data: { isLimited: true, isLicenseExceeded: true, licenseLimit: 10, activeUserCount: 15 } }
+    })
+    const ctx = {
+      companyLicense: null,
+      showLicenseExceededDialog: false,
+      getCurrentCompany: { resourceId: 'comp-1' },
+      canShowCachableDialog: jest.fn(() => true),
+      saveCachableDialogTimestamp: jest.fn()
+    }
+    localStorage.setItem('companyId', 'company-1')
+    TargetUsers.methods.callForLicenseCheck.call(ctx, true)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(getCheckCompanyLicense).toHaveBeenCalledWith('company-1')
+    expect(ctx.showLicenseExceededDialog).toBe(true)
+    expect(ctx.canShowCachableDialog).toHaveBeenCalledWith('licenseExceededDialog_comp-1')
+    expect(ctx.saveCachableDialogTimestamp).toHaveBeenCalled()
+  })
+
+  it('beforeRouteLeave covers delete/import/custom-fields and no-ref branches', () => {
+    const next = jest.fn()
+    const deleteCtx = {
+      $refs: { refPeople: { isWantToShowDeleteUserModal: true, changeDeleteModalStatus: jest.fn() } }
+    }
+    TargetUsers.beforeRouteLeave.call(deleteCtx, {}, {}, next)
+    expect(deleteCtx.$refs.refPeople.changeDeleteModalStatus).toHaveBeenCalledWith(false)
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
+    const importCtx = {
+      $refs: {
+        refPeople: {
+          isWantToShowDeleteUserModal: false,
+          isWantToShowAddUsersManuallyModal: false,
+          isWantToShowAddUsersModal: false,
+          isWantToShowImportUsersFromFileModal: true
+        }
+      }
+    }
+    TargetUsers.beforeRouteLeave.call(importCtx, {}, {}, next)
+    expect(importCtx.$refs.refPeople.isWantToShowImportUsersFromFileModal).toBe(false)
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
+    const customFieldsCtx = {
+      $refs: {
+        refPeople: {
+          isWantToShowDeleteUserModal: false,
+          isWantToShowAddUsersManuallyModal: false,
+          isWantToShowAddUsersModal: false,
+          isWantToShowImportUsersFromFileModal: false,
+          isWantToShowCustomFieldsModal: true
+        }
+      }
+    }
+    TargetUsers.beforeRouteLeave.call(customFieldsCtx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
+    TargetUsers.beforeRouteLeave.call({ $refs: {} }, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
   })
 })

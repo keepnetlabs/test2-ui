@@ -7,6 +7,7 @@ jest.mock('@/api/awarenessEducator', () => ({
 import TrainingList from '@/views/TrainingList.vue'
 import labels from '@/model/constants/labels'
 import { TRAINING_TYPES } from '@/components/AwarenessEducator/utils'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 describe('TrainingList.vue', () => {
   it('has correct component name', () => {
@@ -182,5 +183,33 @@ describe('TrainingList.vue', () => {
     TrainingList.methods.toggleShowSendTrainingModal.call(ctx, false)
     expect(ctx.selectedRow).toEqual({ id: 15 })
     expect(ctx.isShowSendTrainingModal).toBe(true)
+  })
+
+  it('callForFormDetails maps ids and enum pairs with safe fallback payload', async () => {
+    AwarenessEducatorService.getEnrollmentFormDetails.mockResolvedValueOnce({
+      data: {
+        data: {
+          certificateEmailNotificationTemplateTypeResourceId: 'cert-1',
+          reminderEmailNotificationTemplateTypeResourceId: 'rem-1',
+          trainingEmailNotificationTemplateTypeResourceId: 'train-1',
+          enumNameValuePairs: { A: 1 }
+        }
+      }
+    })
+    const ctx = {
+      distributionDelayTimeTypes: [],
+      enumTypes: {},
+      certificateEmailNotificationTemplateTypeResourceId: '',
+      reminderEmailNotificationTemplateTypeResourceId: '',
+      trainingEmailNotificationTemplateTypeResourceId: ''
+    }
+    TrainingList.methods.callForFormDetails.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(ctx.enumTypes).toEqual({ A: 1 })
+    expect(ctx.certificateEmailNotificationTemplateTypeResourceId).toBe('cert-1')
+    expect(ctx.reminderEmailNotificationTemplateTypeResourceId).toBe('rem-1')
+    expect(ctx.trainingEmailNotificationTemplateTypeResourceId).toBe('train-1')
+    expect(Array.isArray(ctx.distributionDelayTimeTypes)).toBe(true)
   })
 })

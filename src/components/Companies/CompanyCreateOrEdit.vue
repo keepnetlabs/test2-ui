@@ -1066,9 +1066,9 @@ export default {
 
       let normalized = format
         // . ile / değiştir
-        .replaceAll(/\./g, '/')
+        .replaceAll('.', '/')
         // - ile / değiştir
-        .replaceAll(/-/g, '/')
+        .replaceAll('-', '/')
 
       // Tek d'yi dd yap (yyyy'yi etkilememek için kelime sınırlarını kullan)
       normalized = normalized.replaceAll(/\b(d)\b/g, 'dd')
