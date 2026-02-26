@@ -29,6 +29,11 @@ describe('Playbook.vue', () => {
     expect(wrapper.vm.$options.name).toBe('Playbook')
   })
 
+  it('permissions computed is mapped from store getter', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.permissions).toEqual({})
+  })
+
   describe('beforeRouteLeave', () => {
     const getBeforeRouteLeave = (wrapper) => {
       const guard = wrapper.vm.$options.beforeRouteLeave

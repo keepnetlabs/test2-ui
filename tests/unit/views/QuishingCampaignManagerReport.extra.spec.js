@@ -131,4 +131,29 @@ describe('QuishingCampaignManagerReport.vue (extra)', () => {
     expect(ctx.tabItems.some((t) => t.name === labels.OpenedAttachment)).toBe(true)
     expect(ctx.isLoading).toBe(false)
   })
+
+  it('computed helpers return safe fallbacks for missing route/store values', () => {
+    expect(QuishingCampaignManagerReport.computed.id.call({ $route: {} })).toBeUndefined()
+    expect(QuishingCampaignManagerReport.computed.instanceGroup.call({ $route: {} })).toBeUndefined()
+    expect(QuishingCampaignManagerReport.computed.getQuishingScenarioName.call({ $store: { state: {} } })).toBe('')
+  })
+
+  it('provide exposes printout and campaignDuration getters', () => {
+    const provide = QuishingCampaignManagerReport.provide.call({
+      isQuishingTypePrintout: true,
+      campaignDurationExpired: false
+    })
+    expect(provide.getQuishingTypePrintOut()).toBe(true)
+    expect(provide.campaignDurationExpired()).toBe(false)
+  })
+
+  it('route watcher ignores empty id and calls label setup for valid id', () => {
+    const setSubmittedDataTabLabel = jest.fn()
+    const ctx = { setSubmittedDataTabLabel }
+    QuishingCampaignManagerReport.watch['$route.params.id'].handler.call(ctx, '')
+    expect(setSubmittedDataTabLabel).not.toHaveBeenCalled()
+
+    QuishingCampaignManagerReport.watch['$route.params.id'].handler.call(ctx, 'job-2')
+    expect(setSubmittedDataTabLabel).toHaveBeenCalledTimes(1)
+  })
 })

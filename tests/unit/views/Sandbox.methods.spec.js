@@ -5,9 +5,25 @@ jest.mock('@/api/sandbox', () => ({
     })
   )
 }))
+jest.mock('@/api/restApi', () => ({
+  searchRestApi: jest.fn(() =>
+    Promise.resolve({
+      data: { data: { results: [{ resourceId: 'c1', clientName: 'Company 1' }], totalNumberOfPages: 2 } }
+    })
+  )
+}))
+jest.mock('@/api/targetUsers', () => ({
+  searchTargetGroups: jest.fn(() =>
+    Promise.resolve({
+      data: { data: { results: [{ resourceId: 'g1', clientName: 'Group 1' }] } }
+    })
+  )
+}))
 
 import Sandbox from '@/views/Sandbox.vue'
 import { getSandboxSummaryData } from '@/api/sandbox'
+import { searchRestApi } from '@/api/restApi'
+import { searchTargetGroups } from '@/api/targetUsers'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -150,6 +166,93 @@ describe('Sandbox.vue methods', () => {
     methods.changeDateValue.call(closeCtx)
     expect(closeCtx.summaryOptions.filter.FilterGroups[0].FilterItems[2].Value).toBe('2025-01-01')
     expect(closeCtx.getSummaryData).toHaveBeenCalledTimes(1)
+  })
+
+  it('callForCompanies handles paging limit and maps response data', async () => {
+    const setCompanies = jest.fn(function (response) {
+      this.companyItems = [...this.companyItems, ...(response?.data?.data?.results || [])]
+    })
+    const ctx = {
+      companyAxiosPayload: { pageNumber: 1 },
+      totalPageOfCompanies: 1,
+      companyItems: [],
+      isCompaniesLoading: true,
+      setCompanies,
+      callForCompanies: methods.callForCompanies
+    }
+
+    methods.callForCompanies.call(ctx, true)
+    expect(searchRestApi).not.toHaveBeenCalled()
+
+    ctx.companyAxiosPayload.pageNumber = 1
+    ctx.totalPageOfCompanies = 3
+    methods.callForCompanies.call(ctx)
+    await flushPromises()
+
+    expect(searchRestApi).toHaveBeenCalledWith(ctx.companyAxiosPayload)
+    expect(ctx.companyItems).toEqual([{ resourceId: 'c1', clientName: 'Company 1' }])
+    expect(ctx.totalPageOfCompanies).toBe(2)
+    expect(ctx.isCompaniesLoading).toBe(false)
+  })
+
+  it('callForSearchCompanies uses search api for query and fallback method for empty input', async () => {
+    const setCompanies = jest.fn()
+    const ctx = {
+      companyAxiosPayload: {
+        pageNumber: 1,
+        pageSize: 10,
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      companyItems: [],
+      isCompaniesLoading: true,
+      setCompanies,
+      callForTargetGroups: jest.fn()
+    }
+
+    methods.callForSearchCompanies.call(ctx, 'acme')
+    await flushPromises()
+    expect(searchTargetGroups).toHaveBeenCalled()
+    expect(setCompanies).toHaveBeenCalled()
+    expect(ctx.isCompaniesLoading).toBe(false)
+
+    methods.callForSearchCompanies.call(ctx, '')
+    expect(ctx.callForTargetGroups).toHaveBeenCalledTimes(1)
+  })
+
+  it('setFilterOptions writes only available filter fields into localStorage', () => {
+    const ctx = {
+      companyValue: ['c1'],
+      analysisEngineTypeResourceId: ['VirusTotal'],
+      filteredDateValueSelect: { name: 'Custom', value: 'custom' },
+      filteredSelectValueDate: 'between',
+      filteredDateValueRange: ['2025-01-01', '2025-01-02'],
+      filteredDateValue: null
+    }
+
+    methods.setFilterOptions.call(ctx)
+
+    expect(localStorage.getItem('sandboxCompany')).toBe('c1')
+    expect(localStorage.getItem('sandboxIntegration')).toBe('VirusTotal')
+    expect(localStorage.getItem('sandboxDateValue')).toBe('custom')
+    expect(localStorage.getItem('sandboxDateFormat')).toBe('between')
+    expect(localStorage.getItem('sandboxDateOption')).toContain('2025-01-01')
+  })
+
+  it('clearFilter and changeBlurValue update menu visibility states', () => {
+    const ctx = {
+      menuOpen: true,
+      filteredDateValueSelect: { name: 'Custom', value: 'custom' }
+    }
+    methods.clearFilter.call(ctx)
+    expect(ctx.menuOpen).toBe(false)
+    expect(ctx.filteredDateValueSelect).toEqual({ name: 'All Time', value: '' })
+
+    methods.changeBlurValue.call(ctx, { currentPlacement: 'bottom-start', relatedTarget: {} })
+    expect(ctx.menuOpen).toBe(false)
+    methods.changeBlurValue.call(ctx, { currentPlacement: 'top-start', relatedTarget: { id: 'x' } })
+    expect(ctx.menuOpen).toBe(true)
   })
 
   it('getAnalysisEngineTypeResourceId and getDateFilter return mapped values', () => {

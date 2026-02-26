@@ -21,6 +21,17 @@ describe('SmishingScenarios.vue', () => {
     expect(landingCtx.tab).toBe('landingPage')
   })
 
+  it('created keeps scenarios tab when scenarios permission is available', () => {
+    const ctx = {
+      tab: 'scenarios',
+      getSmishingScenariosSearchPermissions: true,
+      getSmishingTextMessageTemplatesSearchPermissions: true,
+      getSmishingLandingPageTemplatesSearchPermissions: true
+    }
+    SmishingScenarios.created.call(ctx)
+    expect(ctx.tab).toBe('scenarios')
+  })
+
   it('changeTabStatus and no-template handlers switch tabs and trigger modal openers', () => {
     const ctx = {
       tab: 'scenarios',
@@ -83,5 +94,16 @@ describe('SmishingScenarios.vue', () => {
     const allowCtx = { $refs: {} }
     SmishingScenarios.beforeRouteLeave.call(allowCtx, {}, {}, next)
     expect(next).toHaveBeenCalledWith()
+  })
+
+  it('beforeRouteLeave covers templates modal branch without close handler', () => {
+    const next = jest.fn()
+    const ctx = {
+      $refs: {
+        refTemplates: { modalStatus: true }
+      }
+    }
+    SmishingScenarios.beforeRouteLeave.call(ctx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith(false)
   })
 })
