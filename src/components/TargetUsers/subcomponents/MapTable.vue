@@ -106,8 +106,8 @@ export default {
             return false
           }
           return (
-            hItem.selectedValue?.name?.replace(/\s+/g, '')?.toLowerCase() ===
-            i?.name?.replace(/\s+/g, '')?.toLowerCase()
+            hItem.selectedValue?.name?.replaceAll(/\s+/g, '')?.toLowerCase() ===
+            i?.name?.replaceAll(/\s+/g, '')?.toLowerCase()
           )
         })
         return {

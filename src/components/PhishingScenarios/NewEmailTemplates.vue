@@ -1706,8 +1706,8 @@ export default {
       const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
-      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
-      cleanedTemplate = cleanedTemplate.replace(
+      let cleanedTemplate = template.replaceAll(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replaceAll(
         new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
         ''
       )
@@ -1719,14 +1719,14 @@ export default {
       let cleanedTemplate = template
 
       // Remove <style> tags containing flagged-area CSS
-      cleanedTemplate = cleanedTemplate.replace(
+      cleanedTemplate = cleanedTemplate.replaceAll(
         /<style[^>]*>[\s\S]*?\.flagged-area[\s\S]*?<\/style>/gi,
         ''
       )
 
       // Remove flagged-area and flagged-area-img classes from elements
-      cleanedTemplate = cleanedTemplate.replace(
-        /\s*class=["']([^"']*)?["']/gi,
+      cleanedTemplate = cleanedTemplate.replaceAll(
+        /\s?class=["']([^"']*)["']/gi,
         (match, classContent) => {
           if (!classContent) return match
           const cleanedClasses = classContent
@@ -1739,7 +1739,7 @@ export default {
       )
 
       // Remove data-flag-tooltip attributes
-      cleanedTemplate = cleanedTemplate.replace(/\s*data-flag-tooltip=["'][^"']*["']/gi, '')
+      cleanedTemplate = cleanedTemplate.replaceAll(/\s?data-flag-tooltip=["'][^"']*["']/gi, '')
 
       return cleanedTemplate
     },
@@ -1793,7 +1793,7 @@ export default {
     },
 
     _escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
     }
   }
 }

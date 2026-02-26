@@ -40,12 +40,12 @@ export default {
               this.src = `${data.scormPlayerUrl}?TargetUserResourceId=${targetUserResourceId}&EnrollmentContentId=${enrollmentContentResourceId}&DomainUrl=${APP_CONFIG.VUE_APP_AWARENESS_URL}&scoAddress=${data.trainingUrl}`
             })
             .catch((error) => {
-              window.alert(error?.response?.data?.message)
+              globalThis.alert(error?.response?.data?.message)
             })
             .finally(() => {
               setTimeout(() => {
-                if (window.__beforeUnloadHandler) {
-                  window.removeEventListener('beforeunload', window.__beforeUnloadHandler)
+                if (globalThis.__beforeUnloadHandler) {
+                  globalThis.removeEventListener('beforeunload', globalThis.__beforeUnloadHandler)
                 }
               }, 12000)
               this.registerFrameChannelForQuestionExtractorProxy()
@@ -60,7 +60,7 @@ export default {
         iframe.addEventListener('load', () => {
           try {
             iframe.contentWindow.postMessage({ type: 'QEX_PARAMS_CHANNEL' }, '*', [channel.port2])
-            const query = new URLSearchParams(window.location.search)
+            const query = new URLSearchParams(globalThis.location.search)
             const data = {
               EnrollmentContentId: query.get('EnrollmentContentId') || '',
               TargetUserResourceId: query.get('TargetUserResourceId') || ''

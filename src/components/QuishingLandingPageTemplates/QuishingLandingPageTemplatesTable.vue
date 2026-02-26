@@ -33,7 +33,12 @@
     @handleMultipleDelete="handleMultipleDelete"
   >
     <template #datatable-custom-column="{ scope }">
-      <span v-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
+      <LanguagesColumn
+        v-if="scope.column.property === 'languageTypeName'"
+        :value="scope.row.languageTypeName"
+        :preferred-language-types="preferredLanguageTypes"
+      />
+      <span v-else-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
         {{ scope.row.isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled' }}
       </span>
     </template>
@@ -96,10 +101,12 @@ import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QuishingService from '@/api/quishing'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 
 export default {
   name: 'QuishingLandingPageTemplatesTable',
   components: {
+    LanguagesColumn,
     DefaultMenuRowAction,
     RowActionsMenu,
     ScenariosRowActionsEditButton,
@@ -122,7 +129,7 @@ export default {
         columns: [
           COMMON_SIMULATOR_COLUMNS.TEMPLATE_NAME,
           COMMON_SIMULATOR_COLUMNS.QUISHING_METHOD,
-          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          { ...COMMON_SIMULATOR_COLUMNS.LANGUAGES, type: 'slot' },
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
@@ -203,17 +210,23 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  computed: {
+    preferredLanguageTypes() {
+      return this.landingPageData?.preferredLanguageTypes || []
+    }
+  },
   watch: {
     landingPageData(val) {
+      if (!val) return
       this.$set(
         this.tableOptions.columns[1],
         'filterableItems',
-        val.methodTypes.map((item) => item.text)
+        (val.methodTypes || []).map((item) => item.text)
       )
       this.$set(
-        this.tableOptions.columns[3],
+        this.tableOptions.columns[4],
         'filterableItems',
-        val.difficultyTypes.map((item) => item.text)
+        (val.difficultyTypes || []).map((item) => item.text)
       )
       this?.$refs?.refLandingPageList?.reRenderFilters()
     }

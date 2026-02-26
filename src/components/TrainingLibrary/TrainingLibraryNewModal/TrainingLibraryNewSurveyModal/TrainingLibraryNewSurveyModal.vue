@@ -125,7 +125,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit ? labels.CreateNewSurvey : labels.EditSurvey;
+      return this.isEdit ? labels.EditSurvey : labels.CreateNewSurvey;
     }
   },
   created() {

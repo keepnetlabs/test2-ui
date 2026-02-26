@@ -124,7 +124,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => /^[a-zA-Z0-9_.-]+(\.[a-zA-Z0-9_.-]+)+$/.test(v) || 'Invalid domain',
+          (v) => /^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)+$/.test(v) || 'Invalid domain',
           (v) => Validations.maxLength(v, 160, labels.getMaxLengthMessage('Domain Name', 160))
         ]
       },

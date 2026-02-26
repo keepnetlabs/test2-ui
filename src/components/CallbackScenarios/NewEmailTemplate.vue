@@ -583,9 +583,7 @@ export default {
         activeComponent.unshift(activeComponent[phishingCodeIndex])
         activeComponent.splice(phishingCodeIndex, 1)
       }
-      const phishingCallbackPhoneIndex = activeComponent.findIndex(
-        (item) => item === '{PHISHING_CALLBACK_PHONE}'
-      )
+      const phishingCallbackPhoneIndex = activeComponent.indexOf('{PHISHING_CALLBACK_PHONE}')
       if (phishingCallbackPhoneIndex) {
         activeComponent.unshift(activeComponent[phishingCallbackPhoneIndex])
         activeComponent.splice(phishingCallbackPhoneIndex, 1)

@@ -370,7 +370,7 @@ export default {
     this.setFooterButtonIds()
     this.callForMergedTags()
     this.callForLanguages()
-    if (!this.isEdit) this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    if (!this.isEdit) this.initialFormValues = structuredClone(this.formValues)
     if (this.isEdit) {
       QuishingService.getQuishingTemplatePreviewContent(this.emailTemplateId).then((response) => {
         if (response?.data?.data?.template) {
@@ -406,7 +406,7 @@ export default {
             }
           ]
         }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {

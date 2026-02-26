@@ -452,13 +452,13 @@ export default {
         })
     },
     handleChangeServiceProvider(item = '') {
-      if (item !== ':') {
+      if (item === ':') {
+        this.formValues.serverAddress = ''
+        this.formValues.serverPort = ''
+      } else {
         const [serverAddress, serverPort] = item?.split(':') || []
         this.formValues.serverAddress = serverAddress
         this.formValues.serverPort = serverPort
-      } else {
-        this.formValues.serverAddress = ''
-        this.formValues.serverPort = ''
       }
     },
     handleTestConnection() {

@@ -41,6 +41,10 @@ describe('LanguagesColumn.vue', () => {
     expect(LanguagesColumn.computed.preferredTexts.call({ preferredLanguageTypes: null })).toEqual([])
   })
 
+  it('preferredTexts returns empty array when preferredLanguageTypes is undefined', () => {
+    expect(LanguagesColumn.computed.preferredTexts.call({})).toEqual([])
+  })
+
   it('overflowLanguages returns tail items only', () => {
     expect(LanguagesColumn.computed.overflowLanguages.call({ languages: ['English'] })).toEqual([])
     expect(
@@ -94,6 +98,22 @@ describe('LanguagesColumn.vue', () => {
     })
 
     expect(wrapper.find('.languages-column__empty').text()).toBe('No language')
+  })
+
+  it('renders empty text when value array contains only falsy items', () => {
+    const wrapper = shallowMount(LanguagesColumn, {
+      propsData: {
+        value: [null, '', undefined],
+        emptyText: 'No language'
+      },
+      stubs: {
+        VMenu: true,
+        LanguagesPopover: true
+      }
+    })
+
+    expect(wrapper.find('.languages-column__empty').text()).toBe('No language')
+    expect(wrapper.find('.languages-column__first').exists()).toBe(false)
   })
 
   it('renders singular/plural overflow label based on overflow count', () => {
@@ -158,6 +178,122 @@ describe('LanguagesColumn.vue', () => {
     const wrapper = shallowMount(LanguagesColumn, {
       propsData: {
         value: ['English']
+      },
+      stubs: {
+        VMenu: true,
+        LanguagesPopover: true
+      }
+    })
+
+    expect(wrapper.find('.languages-column__first').text()).toBe('English')
+    expect(wrapper.find('.languages-column__overflow').exists()).toBe(false)
+  })
+
+  it('firstLanguage returns empty string when no normalized languages exist', () => {
+    const result = LanguagesColumn.computed.firstLanguage.call({ languages: [] })
+    expect(result).toBe('')
+  })
+
+  it('overflowCount never goes below zero', () => {
+    expect(LanguagesColumn.computed.overflowCount.call({ languages: [] })).toBe(0)
+    expect(LanguagesColumn.computed.overflowCount.call({ languages: ['English'] })).toBe(0)
+  })
+
+  it('renders preferred and non-preferred overflow lists as popover props', () => {
+    const wrapper = shallowMount(LanguagesColumn, {
+      propsData: {
+        value: ['English', 'Turkish', 'German'],
+        preferredLanguageTypes: [{ text: 'Turkish' }]
+      },
+      stubs: {
+        VMenu: {
+          name: 'VMenu',
+          props: ['value'],
+          template: '<div><slot name="activator" :on="{}" :attrs="{}" /><slot /></div>'
+        },
+        LanguagesPopover: {
+          name: 'LanguagesPopover',
+          props: ['preferredLanguages', 'nonPreferredLanguages', 'onClose'],
+          template: '<div class="popover-stub" />'
+        }
+      }
+    })
+
+    const popover = wrapper.findComponent({ name: 'LanguagesPopover' })
+    expect(popover.props('preferredLanguages')).toEqual(['Turkish'])
+    expect(popover.props('nonPreferredLanguages')).toEqual(['German'])
+  })
+
+  it('overflow preferred matching is case-insensitive with prefix support', () => {
+    const ctx = {
+      preferredTexts: ['english'],
+      overflowLanguages: ['ENGLISH', 'English UK', 'German']
+    }
+
+    expect(LanguagesColumn.computed.overflowPreferredLanguages.call(ctx)).toEqual([
+      'ENGLISH',
+      'English UK'
+    ])
+    expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual(['German'])
+  })
+
+  it('overflow preferred prefix requires a space separator', () => {
+    const ctx = {
+      preferredTexts: ['english'],
+      overflowLanguages: ['EnglishUK', 'English US']
+    }
+
+    expect(LanguagesColumn.computed.overflowPreferredLanguages.call(ctx)).toEqual(['English US'])
+    expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual(['EnglishUK'])
+  })
+
+  it('overflow preferred matching trims language values before comparison', () => {
+    const ctx = {
+      preferredTexts: ['turkish'],
+      overflowLanguages: ['  Turkish  ', ' German ']
+    }
+
+    expect(LanguagesColumn.computed.overflowPreferredLanguages.call(ctx)).toEqual([
+      '  Turkish  '
+    ])
+    expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual([
+      ' German '
+    ])
+  })
+
+  it('overflow split safely handles null/undefined language entries', () => {
+    const ctx = {
+      preferredTexts: ['english'],
+      overflowLanguages: [null, undefined, 'English', 'German']
+    }
+
+    expect(LanguagesColumn.computed.overflowPreferredLanguages.call(ctx)).toEqual([
+      'English'
+    ])
+    expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual([
+      null,
+      undefined,
+      'German'
+    ])
+  })
+
+  it('overflow preferred matching trims preferred text values before comparison', () => {
+    const ctx = {
+      preferredTexts: [' english '],
+      overflowLanguages: ['English', 'German']
+    }
+
+    expect(LanguagesColumn.computed.overflowPreferredLanguages.call(ctx)).toEqual([])
+    expect(LanguagesColumn.computed.overflowNonPreferredLanguages.call(ctx)).toEqual([
+      'English',
+      'German'
+    ])
+  })
+
+  it('renders first language from string input value', () => {
+    const wrapper = shallowMount(LanguagesColumn, {
+      propsData: {
+        value: 'English'
       },
       stubs: {
         VMenu: true,

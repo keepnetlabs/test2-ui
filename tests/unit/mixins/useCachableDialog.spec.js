@@ -150,6 +150,26 @@ describe('useCachableDialog mixin', () => {
       expect(result).toBe(false)
     })
 
+    it('should parse numeric string with leading spaces', () => {
+      const key = 'test-dialog'
+      const now = new Date().getTime()
+      const recentTime = now - 1000
+      mockLocalStorage.setItem(key, `   ${recentTime}`)
+
+      const result = canShowCachableDialog.call({}, key)
+      expect(result).toBe(false)
+    })
+
+    it('should return true when timestamp is far older than 24 hours', () => {
+      const key = 'test-dialog'
+      const now = new Date().getTime()
+      const oldTime = now - (7 * 24 * 60 * 60 * 1000)
+      mockLocalStorage.setItem(key, oldTime.toString())
+
+      const result = canShowCachableDialog.call({}, key)
+      expect(result).toBe(true)
+    })
+
     it('should use company-specific storage keys correctly', () => {
       const companyId = '123'
       const key = `dialog_${companyId}`
@@ -435,8 +455,7 @@ describe('useCachableDialog mixin', () => {
       mockLocalStorage.setItem(key, exactlyTwentyFourHoursAgo.toString())
 
       const result = canShowCachableDialog.call({}, key)
-      // Behavior depends on implementation - might be true or false at exactly 24 hours
-      expect(typeof result).toBe('boolean')
+      expect(result).toBe(false)
     })
 
     it('should handle different time intervals consistently', () => {

@@ -149,7 +149,7 @@ const login = {
           const data = response?.data?.data;
           const enabled = !!data?.agenticAIEnabled;
           commit("SET_AGENTIC_AI_ENABLED", enabled);
-          if(data && data.executionMode) {
+          if(data?.executionMode) {
              commit("SET_AGENTIC_AI_EXECUTION_MODE", data.executionMode);
           }
           return enabled;

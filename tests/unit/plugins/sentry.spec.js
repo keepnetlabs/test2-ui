@@ -148,6 +148,22 @@ describe('plugins/sentry', () => {
     expect(processor(event)).toBeNull()
   })
 
+  it('filters known message-level overhead errors', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'error',
+      message: 'HTTP/1.1 Overhead detected during fetch'
+    }
+
+    expect(processor(event)).toBeNull()
+  })
+
   it('keeps replay events outside scorm pages', () => {
     const { plugin, sentryMock } = loadPlugin({
       sentryStatus: true,
@@ -158,6 +174,29 @@ describe('plugins/sentry', () => {
     const processor = sentryMock.addEventProcessor.mock.calls[0][0]
     const event = { type: 'replay_event' }
     expect(processor(event)).toBe(event)
+  })
+
+  it('keeps replay events when pathname is unavailable', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    const originalLocation = global.location
+    Object.defineProperty(global, 'location', {
+      value: undefined,
+      configurable: true,
+      writable: true
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    expect(processor({ type: 'replay_event' })).toEqual({ type: 'replay_event' })
+
+    Object.defineProperty(global, 'location', {
+      value: originalLocation,
+      configurable: true,
+      writable: true
+    })
   })
 
   it('sets fallback username when user has no company name', () => {
@@ -171,6 +210,103 @@ describe('plugins/sentry', () => {
       username: 'Company',
       email: 'user@acme.com'
     })
+  })
+
+  it('sets fallback email when email is missing', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme Corp' })
+    })
+    plugin({})
+
+    expect(sentryMock.setUser).toHaveBeenCalledWith({
+      username: 'Acme Corp',
+      email: 'Guest Email'
+    })
+  })
+
+  it('filters smartlook related exception messages', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'error',
+      exception: {
+        values: [{ value: 'something smartlook happened' }]
+      }
+    }
+
+    expect(processor(event)).toBeNull()
+  })
+
+  it('returns event when error level has no exception and no filtered message', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'error',
+      message: 'Unhandled but meaningful error message'
+    }
+
+    expect(processor(event)).toBe(event)
+  })
+
+  it('does not filter matching message when level is not error', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'warning',
+      message: 'Vuetify runtime warning'
+    }
+
+    expect(processor(event)).toBe(event)
+  })
+
+  it('filters message-level [object Event] errors', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'error',
+      message: 'Event [object Event] captured as exception'
+    }
+
+    expect(processor(event)).toBeNull()
+  })
+
+  it('filters network error signature from exception message', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'error',
+      exception: {
+        values: [{ value: 'Network Error while calling API' }]
+      }
+    }
+
+    expect(processor(event)).toBeNull()
   })
 
   it('initializes sentry integrations with router tracing config', () => {

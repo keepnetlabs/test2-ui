@@ -77,6 +77,19 @@ describe('SelectClickOnlyPageModal.vue', () => {
     expect(wrapper.emitted('add')).toBeFalsy()
   })
 
+  it('emits add with parsed page index from selected tab', async () => {
+    const wrapper = mountComponent()
+    wrapper.vm.$refs.templateListPreview = {
+      selectedLandingPageTab: '4'
+    }
+    await wrapper.setData({ selectedResourceId: 'lp-456' })
+
+    wrapper.vm.handleAddTemplate()
+
+    expect(wrapper.emitted('add')).toBeTruthy()
+    expect(wrapper.emitted('add')[0]).toEqual(['lp-456', 3])
+  })
+
   it('stores selected resource id in local state', async () => {
     const wrapper = mountComponent()
     await wrapper.setData({ selectedResourceId: 'lp-999' })
@@ -98,6 +111,21 @@ describe('SelectClickOnlyPageModal.vue', () => {
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: '' })
     ).toBe('Select a Click Only or Data Submission type landing page')
+  })
+
+  it('stepSubtitle matches method case-insensitively', () => {
+    expect(
+      SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'CLICK ONLY' })
+    ).toBe('Choose your click only type landing page')
+    expect(
+      SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'DATA SUBMISSION' })
+    ).toBe('Choose your data submission type landing page')
+  })
+
+  it('stepSubtitle prefers click branch when method contains both click and data', () => {
+    expect(
+      SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'click and data submission' })
+    ).toBe('Choose your click only type landing page')
   })
 
   it('status watcher opens drawer flow when status becomes true', () => {
@@ -300,6 +328,55 @@ describe('SelectClickOnlyPageModal.vue', () => {
     SelectClickOnlyPageModal.methods.handleClose.call(ctx)
 
     expect(closeDrawer).toHaveBeenCalledTimes(1)
+  })
+
+  it('getSelectedPageIndex returns parsed positive index', () => {
+    const ctx = {
+      $refs: {
+        templateListPreview: {
+          selectedLandingPageTab: '3'
+        }
+      }
+    }
+
+    expect(SelectClickOnlyPageModal.methods.getSelectedPageIndex.call(ctx)).toBe(2)
+  })
+
+  it('getSelectedPageIndex returns 0 for invalid tab values', () => {
+    const invalidCtx = {
+      $refs: {
+        templateListPreview: {
+          selectedLandingPageTab: 'not-a-number'
+        }
+      }
+    }
+    const zeroCtx = {
+      $refs: {
+        templateListPreview: {
+          selectedLandingPageTab: '0'
+        }
+      }
+    }
+
+    expect(SelectClickOnlyPageModal.methods.getSelectedPageIndex.call(invalidCtx)).toBe(0)
+    expect(SelectClickOnlyPageModal.methods.getSelectedPageIndex.call(zeroCtx)).toBe(0)
+  })
+
+  it('getSelectedPageIndex returns 0 for negative tab values', () => {
+    const ctx = {
+      $refs: {
+        templateListPreview: {
+          selectedLandingPageTab: '-2'
+        }
+      }
+    }
+
+    expect(SelectClickOnlyPageModal.methods.getSelectedPageIndex.call(ctx)).toBe(0)
+  })
+
+  it('getSelectedPageIndex returns 0 when template ref is missing', () => {
+    const ctx = { $refs: {} }
+    expect(SelectClickOnlyPageModal.methods.getSelectedPageIndex.call(ctx)).toBe(0)
   })
 
 })

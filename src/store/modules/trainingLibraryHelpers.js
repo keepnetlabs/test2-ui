@@ -283,7 +283,7 @@ const trainingLibraryHelpers = {
             return {
               id,
               text: targetAudience.displayName,
-              value: id != null ? String(id) : ""
+              value: id == null ? "" : String(id)
             };
           }) || [];
         commit("SET_TARGET_AUDIENCES", targetAudience);
@@ -364,7 +364,7 @@ const trainingLibraryHelpers = {
             id: level.id || level.resourceId || level.levelId || "",
             name: level.name || level.displayName || "",
             text: level.displayName || level.name,
-            value: level.id != null ? String(level.id) : ""
+            value: level.id == null ? "" : String(level.id)
           })) || [];
         commit("SET_LEVELS", levels);
         dispatch(
@@ -392,7 +392,7 @@ const trainingLibraryHelpers = {
             id: duration.id || duration.resourceId || duration.durationId || "",
             name: duration.name || duration.displayName || "",
             text: duration.displayName || duration.name,
-            value: duration.id != null ? String(duration.id) : ""
+            value: duration.id == null ? "" : String(duration.id)
           })) || [];
         commit("SET_DURATIONS", durations);
         dispatch(

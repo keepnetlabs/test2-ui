@@ -163,9 +163,7 @@ export default {
         required: (v) =>
           (v && v.length <= 256) || "It must between 1 - 256 characters",
         format: (v) =>
-          /(ftp|http|https):\/\/(\w+:?\w*@)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%@\-/]))?/gi.test(
-            v
-          ) || "invalid url"
+          /^(ftp|https?):\/\/[^\s]+$/i.test(v) || "invalid url"
       },
       urlMergedTexts: [{ value: "", name: "No Merged Text" }],
       editedCustomHeadScripts: "",
@@ -704,30 +702,30 @@ export default {
           const buttonStyles = { ...droppedComponent.target.getStyle() };
           let arrangedComment =
             '<!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:34px;v-text-anchor:middle;width:65px;" arcsize="12%" stroke="f" fillcolor="#2196F3">        <w:anchorlock/>        <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:13px;">    <![endif]-->';
-          arrangedComment = arrangedComment.replace(
+          arrangedComment = arrangedComment.replaceAll(
             /href="([^'"]+)?"/g,
             `href="${droppedComponent?.target?.attributes?.attributes?.href}"`
           );
-          arrangedComment = arrangedComment.replace(
+          arrangedComment = arrangedComment.replaceAll(
             /fillcolor="([^'"]+)?"/g,
             `fillcolor="${
               buttonStyles["background-color"] || buttonStyles["background"]
             }}"`
           );
-          arrangedComment = arrangedComment.replace(
+          arrangedComment = arrangedComment.replaceAll(
             /color\:\#?(\w|\s|-)+\;/g,
             `color:${buttonStyles.color};`
           );
-          arrangedComment = arrangedComment.replace(
+          arrangedComment = arrangedComment.replaceAll(
             /font-family\:\#?(\w|\s|-|\,)+\;/g,
             `font-family:${buttonStyles["font-family"]};`
           );
-          arrangedComment = arrangedComment.replace(
+          arrangedComment = arrangedComment.replaceAll(
             /font-size\:\#?(\w|\s|-)+\;/g,
             `font-size:${buttonStyles["font-size"]};`
           );
           if (buttonStyles["width"]) {
-            arrangedComment = arrangedComment.replace(
+            arrangedComment = arrangedComment.replaceAll(
               /width\:\#?(\w|\s|-)+\;/g,
               `width:${
                 buttonStyles["width"]?.includes("px")
@@ -736,7 +734,7 @@ export default {
               }px;`
             );
           } else if (
-            typeof buttonStyles["width"] === "undefined" ||
+            buttonStyles["width"] === undefined ||
             buttonStyles["width"] === ""
           ) {
             let width = droppedComponent?.target
@@ -752,7 +750,7 @@ export default {
               width += 22;
             }
             width = Math.round(width);
-            arrangedComment = arrangedComment.replace(
+            arrangedComment = arrangedComment.replaceAll(
               /width\:\#?(\w|\s|-)+\;/g,
               `width:${width}px;`
             );
@@ -835,13 +833,13 @@ export default {
                   "background-color" ||
                 styleChanges?.property?.attributes?.property === "background"
               ) {
-                commentElement.attributes.content = commentElement.attributes.content.replace(
+                commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                   /fillcolor="([^'"]+)"/g,
                   `fillcolor="${styleChanges.value}"`
                 );
               }
               if (styleChanges?.property?.attributes?.property === "color") {
-                commentElement.attributes.content = commentElement.attributes.content.replace(
+                commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                   /color\:\#?(\w|\s|-)+\;/g,
                   `color:${styleChanges.value};`
                 );
@@ -849,7 +847,7 @@ export default {
               if (
                 styleChanges?.property?.attributes?.property === "font-family"
               ) {
-                commentElement.attributes.content = commentElement.attributes.content.replace(
+                commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                   /font-family\:\#?(\w|\s|-|\,)+\;/g,
                   `font-family:${styleChanges.value};`
                 );
@@ -857,7 +855,7 @@ export default {
               if (
                 styleChanges?.property?.attributes?.property === "font-size"
               ) {
-                commentElement.attributes.content = commentElement.attributes.content.replace(
+                commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                   /font-size\:\#?(\w|\s|-)+\;/g,
                   `font-size:${styleChanges.value};`
                 );
@@ -882,22 +880,22 @@ export default {
                       width += 22;
                     }
                     width = Math.round(width);
-                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                    commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                       /width\:\#?(\w|\s|-)+\;/g,
                       `width:${width}px;`
                     );
-                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                    commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                       /width:undefinedpx;/g,
                       `width:${width}px;`
                     );
                   }, 500);
                 } else {
                   setTimeout(() => {
-                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                    commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                       /width\:\#?(\w|\s|-)+\;/g,
                       `width:${styleChanges?.to?.value}px;`
                     );
-                    commentElement.attributes.content = commentElement.attributes.content.replace(
+                    commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                       /width:undefinedpx;/g,
                       `width:${styleChanges?.to?.value}px;`
                     );
@@ -920,7 +918,7 @@ export default {
           if (updatedComponent?.changed?.attributes?.href) {
             const commentElement = getCommentElement();
             if (commentElement) {
-              commentElement.attributes.content = commentElement.attributes.content.replace(
+              commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                 /href="([^'"]+)?"/g,
                 `href="${updatedComponent?.changed?.attributes?.href}"`
               );
@@ -942,11 +940,11 @@ export default {
                 width += 22;
               }
 
-              commentElement.attributes.content = commentElement.attributes.content.replace(
+              commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                 /width\:\#?(\w|\s|-)+\;/g,
                 `width:${Math.round(width)}px;`
               );
-              commentElement.attributes.content = commentElement.attributes.content.replace(
+              commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                 /width:undefinedpx/g,
                 `width:${Math.round(width)}px;`
               );
@@ -961,19 +959,19 @@ export default {
             updatedComponent
           );
           if (commentElement?.attributes) {
-            commentElement.attributes.content = commentElement.attributes.content.replace(
+            commentElement.attributes.content = commentElement.attributes.content.replaceAll(
               /width\:\#?(\w|\s|-)+\;/g,
               `width:180px;`
             );
-            commentElement.attributes.content = commentElement.attributes.content.replace(
+            commentElement.attributes.content = commentElement.attributes.content.replaceAll(
               /width:undefinedpx/g,
               `width:180px;`
             );
-            commentElement.attributes.content = commentElement.attributes.content.replace(
+            commentElement.attributes.content = commentElement.attributes.content.replaceAll(
               /height\:\#?(\w|\s|-)+\;/g,
               `height:70px;`
             );
-            commentElement.attributes.content = commentElement.attributes.content.replace(
+            commentElement.attributes.content = commentElement.attributes.content.replaceAll(
               /height:undefinedpx/g,
               `height:70px;`
             );

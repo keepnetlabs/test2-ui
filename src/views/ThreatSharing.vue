@@ -112,7 +112,7 @@ export default {
       const communitiesData = vm.$store.state['communities'].communities
       const isTableReload = vm.$store.state['tableReload'].tableReload
       if (incidentsData.incidentsData || communitiesData.communitiesData) {
-        vm.tab = !incidentsData.incidentsData ? 1 : 0
+        vm.tab = incidentsData.incidentsData ? 0 : 1
         vm.isLoadState = true
         vm.isTableReload = isTableReload
       }

@@ -132,8 +132,8 @@ export default {
       batchEverySendSecond: 0,
       totalTargetUserCount: 0,
       labels,
-      initialFormValues: JSON.parse(JSON.stringify(defaultFormValues)),
-      formValues: JSON.parse(JSON.stringify(defaultFormValues)),
+      initialFormValues: structuredClone(defaultFormValues),
+      formValues: structuredClone(defaultFormValues),
       isTargetGroupSearchLoading: false,
       isTargetGroupLoading: false,
       isTargetGroupFocused: false,
@@ -233,7 +233,7 @@ export default {
   },
   created() {
     this.callForTargetGroups()
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.initialFormValues = structuredClone(this.formValues)
   },
   methods: {
     closeOverlay() {

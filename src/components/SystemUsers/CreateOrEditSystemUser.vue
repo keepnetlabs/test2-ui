@@ -132,7 +132,7 @@ export default {
   },
   async created() {
     if (!this.selectedRow) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     try {
       const response = await getAvailableSystemUsersRole()
@@ -166,8 +166,8 @@ export default {
         this.setRoleItems(availableRoles)
         this.setDefaultRole(availableRoles)
       }
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    } catch (e) {}
+      this.initialFormValues = structuredClone(this.formValues)
+    } catch {}
   },
   mounted() {
     this.$nextTick(() => {

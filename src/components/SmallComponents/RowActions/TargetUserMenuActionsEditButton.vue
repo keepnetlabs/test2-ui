@@ -60,11 +60,11 @@ export default {
       }
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      if (!row.isEditable)
+      if (row.isEditable) return this.getDisabledStatusOfAction ? 'No Permission' : this.name
+      else
         return `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
           this.type
         } cannot be edited`
-      else return this.getDisabledStatusOfAction ? 'No Permission' : this.name
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

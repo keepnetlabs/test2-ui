@@ -20,7 +20,13 @@ import {
   getTextColor,
   getTimeZoneForMoment,
   isOwnerOrMember,
-  isOwner
+  isOwner,
+  scrollToComponent,
+  handleIsSafari,
+  cancellableAxiosRequest,
+  fileToBase64,
+  openHtmlInNewWindow,
+  copyToClipboard
 } from '@/utils/functions'
 
 describe('functions.js (extra coverage)', () => {
@@ -186,6 +192,19 @@ describe('functions.js (extra coverage)', () => {
         expect.objectContaining({ Value: 'test', FieldName: 'name', Operator: 'Contains' })
       )
     })
+
+    it('getSelectSearchPayload appends extraFilterItems', () => {
+      const base = {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      }
+      const extra = [{ Value: 'x', FieldName: 'status', Operator: '=' }]
+      const result = getSelectSearchPayload(base, 'abc', 'name', extra)
+      expect(result.filter.FilterGroups[1].FilterItems).toEqual(
+        expect.arrayContaining(extra)
+      )
+    })
   })
 
   describe('datePrettier and strReverse', () => {
@@ -233,6 +252,26 @@ describe('functions.js (extra coverage)', () => {
       const result = getTimeValueFormatZone()
       expect(result).toContain('dd')
     })
+
+    it('getTimeZone includes 12h time token when not isDate', () => {
+      localStorage.setItem('selectedDateFormat', 'DD/MM/YYYY')
+      localStorage.setItem('selectedTimeFormat', '12h')
+      expect(getTimeZone(false)).toBe('dd/MM/yyyy hh:mm A')
+    })
+
+    it('getTimeValueFormatZone keeps unknown date format unchanged', () => {
+      localStorage.setItem('selectedDateFormat', 'CUSTOM')
+      localStorage.setItem('selectedTimeFormat', '24h')
+      expect(getTimeValueFormatZone()).toBe('CUSTOM')
+    })
+
+    it('getTimeZone maps MM/DD/YYYY and YYYY/MM/DD date branches', () => {
+      localStorage.setItem('selectedDateFormat', 'MM/DD/YYYY')
+      expect(getTimeZone(true)).toBe('MM/dd/yyyy')
+
+      localStorage.setItem('selectedDateFormat', 'YYYY/MM/DD')
+      expect(getTimeZone(true)).toBe('yyyy/MM/dd')
+    })
   })
 
   describe('getBtnStatusColor branch coverage', () => {
@@ -256,6 +295,10 @@ describe('functions.js (extra coverage)', () => {
     it('returns default for unknown status', () => {
       expect(getBtnStatusColor('unknownstatus')).toBe('#00bcd4')
     })
+
+    it('returns default for numeric zero type', () => {
+      expect(getBtnStatusColor(0)).toBe('#00bcd4')
+    })
   })
 
   describe('getBtnPriorityColor branch coverage', () => {
@@ -277,6 +320,12 @@ describe('functions.js (extra coverage)', () => {
     it('returns undefined for unknown', () => {
       expect(getBtnPriorityColor('unknown')).toBeUndefined()
     })
+
+    it('covers very low and n/a aliases', () => {
+      expect(getBtnPriorityColor('very low')).toBe('#757575')
+      expect(getBtnPriorityColor('verylow')).toBe('#757575')
+      expect(getBtnPriorityColor('n/a')).toBe('#00bcd4')
+    })
   })
 
   describe('getTextColor branch coverage', () => {
@@ -291,6 +340,11 @@ describe('functions.js (extra coverage)', () => {
     })
     it('returns undefined for unknown', () => {
       expect(getTextColor('unknown')).toBeUndefined()
+    })
+
+    it('covers in progress and false positive branches', () => {
+      expect(getTextColor('in progress')).toBe('#2196f3')
+      expect(getTextColor('false positive')).toBe('#e6a23c')
     })
   })
 
@@ -316,6 +370,58 @@ describe('functions.js (extra coverage)', () => {
       const result = getTimeZoneForMoment(fallback)
       expect(result).toContain('YYYY')
     })
+
+    it('returns raw/empty format when date format is unknown', () => {
+      localStorage.setItem('selectedDateFormat', 'UNKNOWN')
+      localStorage.setItem('selectedTimeFormat', '24h')
+      const result = getTimeZoneForMoment()
+      expect(result).toBe('UNKNOWN')
+    })
+  })
+
+  describe('scrollToComponent and handleIsSafari', () => {
+    it('scrollToComponent returns early when element is missing', () => {
+      expect(scrollToComponent()).toBeUndefined()
+    })
+
+    it('scrollToComponent uses direct scrollIntoView on safari', () => {
+      const originalSafari = globalThis.safari
+      const originalVendor = navigator.vendor
+      Object.defineProperty(globalThis, 'safari', { value: {}, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: 'Apple', configurable: true })
+      const scrollIntoView = jest.fn()
+
+      scrollToComponent({ scrollIntoView })
+
+      expect(scrollIntoView).toHaveBeenCalledWith()
+      Object.defineProperty(globalThis, 'safari', { value: originalSafari, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: originalVendor, configurable: true })
+    })
+
+    it('scrollToComponent passes options on non-safari browsers', () => {
+      const originalSafari = globalThis.safari
+      const originalVendor = navigator.vendor
+      Object.defineProperty(globalThis, 'safari', { value: undefined, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: 'Google Inc.', configurable: true })
+      const scrollIntoView = jest.fn()
+      const options = { behavior: 'auto', block: 'start', inline: 'nearest' }
+
+      scrollToComponent({ scrollIntoView }, options)
+
+      expect(scrollIntoView).toHaveBeenCalledWith(options)
+      Object.defineProperty(globalThis, 'safari', { value: originalSafari, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: originalVendor, configurable: true })
+    })
+
+    it('handleIsSafari returns truthy for apple vendor', () => {
+      const originalSafari = globalThis.safari
+      const originalVendor = navigator.vendor
+      Object.defineProperty(globalThis, 'safari', { value: undefined, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: 'Apple Computer, Inc.', configurable: true })
+      expect(handleIsSafari()).toBeTruthy()
+      Object.defineProperty(globalThis, 'safari', { value: originalSafari, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: originalVendor, configurable: true })
+    })
   })
 
   describe('isOwnerOrMember and isOwner', () => {
@@ -334,6 +440,10 @@ describe('functions.js (extra coverage)', () => {
     it('isOwner returns false for 2', () => {
       expect(isOwner(2)).toBe(false)
     })
+
+    it('isOwner returns true for string "1" due to loose equality', () => {
+      expect(isOwner('1')).toBe(true)
+    })
   })
 
   describe('isDifferent recursive branch coverage', () => {
@@ -345,6 +455,234 @@ describe('functions.js (extra coverage)', () => {
     })
     it('returns true when value differs', () => {
       expect(isDifferent({ a: 1 }, { a: 2 })).toBe(true)
+    })
+
+    it('returns false when arrays have same length and same primitive fields', () => {
+      expect(
+        isDifferent(
+          { arr: [1, 2], x: 'same' },
+          { arr: [3, 4], x: 'same' }
+        )
+      ).toBe(false)
+    })
+  })
+
+  describe('cancellableAxiosRequest', () => {
+    it('returns wrapped function response and resets abort flag on non-empty response', async () => {
+      const fn = jest.fn((payload, opts) =>
+        Promise.resolve({ data: payload, signalExists: !!opts?.signal })
+      )
+      const wrapped = cancellableAxiosRequest(fn)
+
+      const result = await wrapped({ id: 1 })
+
+      expect(result).toEqual({ data: { id: 1 }, signalExists: true })
+      expect(fn).toHaveBeenCalledTimes(1)
+      expect(fn.mock.calls[0][1]).toEqual(expect.objectContaining({ signal: expect.anything() }))
+    })
+
+    it('keeps aborted mode when response is empty object and still calls with signal', async () => {
+      const fn = jest.fn(() => Promise.resolve({}))
+      const wrapped = cancellableAxiosRequest(fn)
+
+      await wrapped({ first: true })
+      await wrapped({ second: true })
+
+      expect(fn).toHaveBeenCalledTimes(2)
+      expect(fn.mock.calls[0][1]).toEqual(expect.objectContaining({ signal: expect.anything() }))
+      expect(fn.mock.calls[1][1]).toEqual(expect.objectContaining({ signal: expect.anything() }))
+    })
+
+    it('appends abort signal as last argument while preserving original params', async () => {
+      const fn = jest.fn((a, b, c, opts) =>
+        Promise.resolve({ ok: true, params: [a, b, c], hasSignal: !!opts?.signal })
+      )
+      const wrapped = cancellableAxiosRequest(fn)
+
+      const result = await wrapped('p1', 2, { x: 3 })
+
+      expect(result).toEqual({
+        ok: true,
+        params: ['p1', 2, { x: 3 }],
+        hasSignal: true
+      })
+    })
+  })
+
+  describe('fileToBase64', () => {
+    it('resolves with FileReader result for Blob input', async () => {
+      const originalFileReader = global.FileReader
+      class MockReader {
+        readAsDataURL() {
+          this.result = 'data:text/plain;base64,QQ=='
+          setTimeout(() => {
+            if (typeof this.onload === 'function') this.onload()
+          }, 0)
+        }
+      }
+      global.FileReader = MockReader
+
+      const result = await fileToBase64(new Blob(['A']))
+      expect(result).toBe('data:text/plain;base64,QQ==')
+
+      global.FileReader = originalFileReader
+    })
+
+    it('rejects when FileReader emits error', async () => {
+      const originalFileReader = global.FileReader
+      class MockReader {
+        readAsDataURL() {
+          setTimeout(() => {
+            if (typeof this.onerror === 'function') this.onerror(new Error('read-failed'))
+          }, 0)
+        }
+      }
+      global.FileReader = MockReader
+
+      await expect(fileToBase64(new Blob(['A']))).rejects.toBeDefined()
+      global.FileReader = originalFileReader
+    })
+  })
+
+  describe('openHtmlInNewWindow', () => {
+    it('returns early when html is empty', () => {
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      openHtmlInNewWindow('')
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
+
+    it('injects title/meta/script and opens blob url', () => {
+      jest.useFakeTimers()
+      const originalCreateObjectURL = globalThis.URL.createObjectURL
+      const originalRevokeObjectURL = globalThis.URL.revokeObjectURL
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      globalThis.URL.createObjectURL = jest.fn(() => 'blob:test-url')
+      globalThis.URL.revokeObjectURL = jest.fn()
+
+      openHtmlInNewWindow('<html><body><a href="#">x</a></body></html>')
+
+      expect(globalThis.URL.createObjectURL).toHaveBeenCalled()
+      expect(openSpy).toHaveBeenCalledWith('blob:test-url', '_blank')
+      jest.advanceTimersByTime(101)
+      expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-url')
+
+      openSpy.mockRestore()
+      globalThis.URL.createObjectURL = originalCreateObjectURL
+      globalThis.URL.revokeObjectURL = originalRevokeObjectURL
+      jest.useRealTimers()
+    })
+
+    it('replaces existing title when title tag already exists', () => {
+      jest.useFakeTimers()
+      const originalCreateObjectURL = globalThis.URL.createObjectURL
+      const originalRevokeObjectURL = globalThis.URL.revokeObjectURL
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      globalThis.URL.createObjectURL = jest.fn(() => 'blob:test-url-2')
+      globalThis.URL.revokeObjectURL = jest.fn()
+
+      openHtmlInNewWindow('<html><head><title>Old</title></head><body>x</body></html>')
+
+      expect(globalThis.URL.createObjectURL).toHaveBeenCalled()
+      expect(openSpy).toHaveBeenCalledWith('blob:test-url-2', '_blank')
+      jest.advanceTimersByTime(101)
+      expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-url-2')
+
+      openSpy.mockRestore()
+      globalThis.URL.createObjectURL = originalCreateObjectURL
+      globalThis.URL.revokeObjectURL = originalRevokeObjectURL
+      jest.useRealTimers()
+    })
+  })
+
+  describe('copyToClipboard', () => {
+    let originalClipboard
+    let originalSecureContext
+    let originalExecCommand
+    let execCommandMock
+    let createElementSpy
+
+    beforeEach(() => {
+      originalClipboard = navigator.clipboard
+      originalSecureContext = globalThis.isSecureContext
+      originalExecCommand = document.execCommand
+      execCommandMock = jest.fn(() => true)
+      Object.defineProperty(document, 'execCommand', {
+        value: execCommandMock,
+        configurable: true,
+        writable: true
+      })
+      createElementSpy = jest.spyOn(document, 'createElement')
+    })
+
+    afterEach(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: originalClipboard,
+        configurable: true
+      })
+      Object.defineProperty(globalThis, 'isSecureContext', {
+        value: originalSecureContext,
+        configurable: true
+      })
+      Object.defineProperty(document, 'execCommand', {
+        value: originalExecCommand,
+        configurable: true,
+        writable: true
+      })
+      createElementSpy.mockRestore()
+    })
+
+    it('uses navigator clipboard in secure context and resolves true', async () => {
+      const writeText = jest.fn().mockResolvedValue(undefined)
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText },
+        configurable: true
+      })
+      Object.defineProperty(globalThis, 'isSecureContext', {
+        value: true,
+        configurable: true
+      })
+
+      const result = await copyToClipboard('hello')
+
+      expect(writeText).toHaveBeenCalledWith('hello')
+      expect(result).toBe(true)
+    })
+
+    it('falls back to execCommand when clipboard write fails', async () => {
+      const writeText = jest.fn().mockRejectedValue(new Error('denied'))
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText },
+        configurable: true
+      })
+      Object.defineProperty(globalThis, 'isSecureContext', {
+        value: true,
+        configurable: true
+      })
+      execCommandMock.mockReturnValue(true)
+
+      const result = await copyToClipboard('fallback')
+
+      expect(writeText).toHaveBeenCalledWith('fallback')
+      expect(execCommandMock).toHaveBeenCalledWith('copy')
+      expect(result).toBe(true)
+    })
+
+    it('returns false when non-secure fallback copy fails', async () => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: undefined,
+        configurable: true
+      })
+      Object.defineProperty(globalThis, 'isSecureContext', {
+        value: false,
+        configurable: true
+      })
+      execCommandMock.mockReturnValue(false)
+
+      const result = await copyToClipboard('x')
+
+      expect(execCommandMock).toHaveBeenCalledWith('copy')
+      expect(result).toBe(false)
     })
   })
 })

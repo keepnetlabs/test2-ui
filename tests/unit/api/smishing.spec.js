@@ -367,6 +367,34 @@ describe('smishing API', () => {
       )
     })
 
+    it('should call calculateSendingInfo', async () => {
+      const payload = { users: 10 }
+      await smishingApi.calculateSendingInfo(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/smishing-simulator/smishing-campaign/calculate-sending-info',
+        payload
+      )
+    })
+
+    it('should call calculateScheduleInfo', async () => {
+      const payload = { scheduleType: 'daily' }
+      await smishingApi.calculateScheduleInfo(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/smishing-simulator/smishing-campaign/calculate-schedule-info',
+        payload
+      )
+    })
+
+    it('should call getCampaignManagerFormDetails', async () => {
+      await smishingApi.getCampaignManagerFormDetails()
+      expect(testRequest.get).toHaveBeenCalledWith('/smishing-simulator/smishing-campaign/form-details')
+    })
+
+    it('should call getSmishingScenariosPhoneNumber', async () => {
+      await smishingApi.getSmishingScenariosPhoneNumber()
+      expect(testRequest.get).toHaveBeenCalledWith('/smishing-simulator/smishing-scenario/mfa-phone-number')
+    })
+
     it('should call launchSmishingCampaign', async () => {
       const id = 'campaign-123'
       const payload = { status: 'launched' }

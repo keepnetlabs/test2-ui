@@ -110,16 +110,9 @@ describe('Scorm.vue', () => {
 
   it('callForData removes beforeunload handler after timeout in finally block', async () => {
     jest.useFakeTimers()
-    const removeEventListener = jest.fn()
-    const originalWindow = global.window
-    Object.defineProperty(global, 'window', {
-      value: {
-        ...originalWindow,
-        __beforeUnloadHandler: jest.fn(),
-        removeEventListener
-      },
-      configurable: true
-    })
+    const removeEventListenerSpy = jest.spyOn(globalThis, 'removeEventListener')
+    const originalBeforeUnloadHandler = globalThis.__beforeUnloadHandler
+    globalThis.__beforeUnloadHandler = jest.fn()
 
     AwarenessEducatorService.getTrainingUrl.mockResolvedValueOnce({
       data: { data: { scormPlayerUrl: 'https://player.example', trainingUrl: '/course/a' } }
@@ -140,24 +133,21 @@ describe('Scorm.vue', () => {
     await Promise.resolve()
     jest.advanceTimersByTime(12000)
 
-    expect(removeEventListener).toHaveBeenCalledWith('beforeunload', window.__beforeUnloadHandler)
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      globalThis.__beforeUnloadHandler
+    )
 
-    Object.defineProperty(global, 'window', { value: originalWindow, configurable: true })
+    globalThis.__beforeUnloadHandler = originalBeforeUnloadHandler
+    removeEventListenerSpy.mockRestore()
     jest.useRealTimers()
   })
 
   it('callForData does not try to remove listener when beforeunload handler is absent', async () => {
     jest.useFakeTimers()
-    const removeEventListener = jest.fn()
-    const originalWindow = global.window
-    Object.defineProperty(global, 'window', {
-      value: {
-        ...originalWindow,
-        __beforeUnloadHandler: null,
-        removeEventListener
-      },
-      configurable: true
-    })
+    const removeEventListenerSpy = jest.spyOn(globalThis, 'removeEventListener')
+    const originalBeforeUnloadHandler = globalThis.__beforeUnloadHandler
+    globalThis.__beforeUnloadHandler = null
     AwarenessEducatorService.getTrainingUrl.mockResolvedValueOnce({
       data: { data: { scormPlayerUrl: 'https://player.example', trainingUrl: '/course/a' } }
     })
@@ -177,8 +167,9 @@ describe('Scorm.vue', () => {
     await Promise.resolve()
     jest.advanceTimersByTime(12000)
 
-    expect(removeEventListener).not.toHaveBeenCalled()
-    Object.defineProperty(global, 'window', { value: originalWindow, configurable: true })
+    expect(removeEventListenerSpy).not.toHaveBeenCalled()
+    globalThis.__beforeUnloadHandler = originalBeforeUnloadHandler
+    removeEventListenerSpy.mockRestore()
     jest.useRealTimers()
   })
 

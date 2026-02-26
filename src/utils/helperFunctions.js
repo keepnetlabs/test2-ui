@@ -122,7 +122,7 @@ export function isColumnFilterActive(axiosPayload = {}) {
 
 export function downloadExportedFile(data = {}, fileName = '', type = '') {
   const link = document.createElement('a')
-  link.href = window.URL.createObjectURL(data)
+  link.href = globalThis.URL.createObjectURL(data)
   link.download = `${fileName}.${
     type.toLocaleLowerCase() === 'xls' ? 'xlsx' : type.toLocaleLowerCase()
   }`

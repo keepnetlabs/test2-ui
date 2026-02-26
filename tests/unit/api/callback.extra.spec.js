@@ -112,6 +112,27 @@ describe('callback API (extra coverage)', () => {
         '/callback-simulator/settings/available-numbers?companyResourceId=comp-1'
       )
     })
+
+    it('encodes companyId query value', async () => {
+      await callbackApi.getAvailableCallbackNumbers('company id/1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/settings/available-numbers?companyResourceId=company%20id%2F1'
+      )
+    })
+
+    it('does not append company query when companyId is numeric zero', async () => {
+      await callbackApi.getAvailableCallbackNumbers(0)
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/settings/available-numbers'
+      )
+    })
+
+    it('appends company query when companyId is string zero', async () => {
+      await callbackApi.getAvailableCallbackNumbers('0')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/settings/available-numbers?companyResourceId=0'
+      )
+    })
   })
 
   describe('getCampaignManagerFormDetails', () => {

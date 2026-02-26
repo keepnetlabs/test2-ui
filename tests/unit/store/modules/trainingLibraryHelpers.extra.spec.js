@@ -139,6 +139,88 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
       expect(call[1][0].text).toBe('No ID')
       expect(call[1][0].value).toBe('')
     })
+
+    it('uses roleId when id is 0 (falsy id fallback branch)', async () => {
+      AwarenessEducatorService.getTargetAudiences.mockResolvedValue({
+        data: {
+          data: [{ id: 0, roleId: 7, displayName: 'Role Fallback' }]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForTargetAudiences({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TARGET_AUDIENCES', [
+        { id: 7, text: 'Role Fallback', value: '7' }
+      ])
+    })
+  })
+
+  describe('callForLanguages', () => {
+    it('commits languages and dispatches mapped language filter items', async () => {
+      AwarenessEducatorService.getLanguages.mockResolvedValue({
+        data: {
+          data: [
+            { isoFriendlyName: 'English', code: 'en' },
+            { isoFriendlyName: 'Turkish', code: 'tr' }
+          ]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForLanguages({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_LANGUAGES', [
+        { isoFriendlyName: 'English', code: 'en' },
+        { isoFriendlyName: 'Turkish', code: 'tr' }
+      ])
+      expect(dispatch).toHaveBeenCalledWith(
+        'trainingLibrary/setFilterItems',
+        {
+          key: PROPERTY_STORE.LANGUAGES,
+          items: [
+            { text: 'English', value: 'en' },
+            { text: 'Turkish', value: 'tr' }
+          ]
+        },
+        { root: true }
+      )
+      expect(dispatch).toHaveBeenCalledWith(
+        'learningPath/setLearningPathFilterItems',
+        {
+          key: PROPERTY_STORE.LANGUAGES,
+          items: [
+            { text: 'English', value: 'en' },
+            { text: 'Turkish', value: 'tr' }
+          ]
+        },
+        { root: true }
+      )
+    })
+
+    it('handles empty languages list safely', async () => {
+      AwarenessEducatorService.getLanguages.mockResolvedValue({
+        data: { data: [] }
+      })
+
+      await trainingLibraryHelpers.actions.callForLanguages({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_LANGUAGES', [])
+      expect(dispatch).toHaveBeenCalledWith(
+        'trainingLibrary/setFilterItems',
+        {
+          key: PROPERTY_STORE.LANGUAGES,
+          items: []
+        },
+        { root: true }
+      )
+      expect(dispatch).toHaveBeenCalledWith(
+        'learningPath/setLearningPathFilterItems',
+        {
+          key: PROPERTY_STORE.LANGUAGES,
+          items: []
+        },
+        { root: true }
+      )
+    })
   })
 
   describe('mapping fallback branches', () => {
@@ -181,6 +263,7 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
         { id: 11, name: '11 min', text: '11 min', value: '' }
       ])
     })
+
   })
 
   describe('callForCompliances', () => {
@@ -354,6 +437,120 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
         { text: 'English', value: 'r1' }
       ])
     })
+
+    it('uses language name as fallback when isoFriendlyName is missing', async () => {
+      LookupLocalStorage.getSingle.mockResolvedValue([
+        { resourceId: 'r2', name: 'German' }
+      ])
+      getScenarioDataDetails.mockResolvedValue({
+        data: { data: { preferredLanguageTypes: [{ value: 'r2' }] } }
+      })
+
+      trainingLibraryHelpers.actions.callForScenarioFormDetails({ commit })
+      await flushPromises()
+
+      expect(commit).toHaveBeenCalledWith('SET_PREFERRED_LANGUAGE_TYPES', [
+        { text: 'German', value: 'r2' }
+      ])
+    })
+
+    it('commits empty array when scenario details has no preferredLanguageTypes', async () => {
+      LookupLocalStorage.getSingle.mockResolvedValue([
+        { resourceId: 'r1', isoFriendlyName: 'English' }
+      ])
+      getScenarioDataDetails.mockResolvedValue({
+        data: { data: {} }
+      })
+
+      trainingLibraryHelpers.actions.callForScenarioFormDetails({ commit })
+      await flushPromises()
+
+      expect(commit).toHaveBeenCalledWith('SET_PREFERRED_LANGUAGE_TYPES', [])
+    })
+
+    it('filters out preferred items when value is missing', async () => {
+      LookupLocalStorage.getSingle.mockResolvedValue([
+        { resourceId: 'r1', isoFriendlyName: 'English' }
+      ])
+      getScenarioDataDetails.mockResolvedValue({
+        data: { data: { preferredLanguageTypes: [{}, { value: 'r1' }] } }
+      })
+
+      trainingLibraryHelpers.actions.callForScenarioFormDetails({ commit })
+      await flushPromises()
+
+      expect(commit).toHaveBeenCalledWith('SET_PREFERRED_LANGUAGE_TYPES', [
+        { text: 'English', value: 'r1' }
+      ])
+    })
+  })
+
+  describe('callForTypes', () => {
+    it('maps training types and filters out Screensaver/Learning Path for learning path list', async () => {
+      AwarenessEducatorService.getTrainingTypes.mockResolvedValue({
+        data: {
+          data: [
+            { id: 1, displayName: 'Training' },
+            { id: 2, displayName: 'Screensaver' },
+            { id: 3, displayName: 'Learning Path' }
+          ]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForTypes({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TYPES', [
+        { text: 'Training', value: '1' },
+        { text: 'Screensaver', value: '2' },
+        { text: 'Learning Path', value: '3' }
+      ])
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_TRAINING_TYPES', [
+        { text: 'Training', value: '1' }
+      ])
+      expect(dispatch).toHaveBeenCalledWith(
+        'trainingLibrary/setFilterItems',
+        { key: PROPERTY_STORE.TYPE, items: expect.any(Array) },
+        { root: true }
+      )
+      expect(dispatch).toHaveBeenCalledWith(
+        'learningPath/setLearningPathFilterItems',
+        { key: PROPERTY_STORE.TYPE, items: [{ text: 'Training', value: '1' }] },
+        { root: true }
+      )
+    })
+
+    it('handles empty type list', async () => {
+      AwarenessEducatorService.getTrainingTypes.mockResolvedValue({
+        data: { data: [] }
+      })
+
+      await trainingLibraryHelpers.actions.callForTypes({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TYPES', [])
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_TRAINING_TYPES', [])
+    })
+
+    it('keeps all types in learning path list when excluded labels are absent', async () => {
+      AwarenessEducatorService.getTrainingTypes.mockResolvedValue({
+        data: {
+          data: [
+            { id: 11, displayName: 'Poster' },
+            { id: 12, displayName: 'Survey' }
+          ]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForTypes({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TYPES', [
+        { text: 'Poster', value: '11' },
+        { text: 'Survey', value: '12' }
+      ])
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_TRAINING_TYPES', [
+        { text: 'Poster', value: '11' },
+        { text: 'Survey', value: '12' }
+      ])
+    })
   })
 
   describe('callForFormDetails', () => {
@@ -433,7 +630,49 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
         'SET_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
         ''
       )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_TRAINING_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_INFOGRAPHIC_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_LEARNING_PATH_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_POSTER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_SURVEY_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_SURVEY_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith(
+        'SET_LEARNING_PATH_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
+      expect(commit).toHaveBeenCalledWith('SET_ENUM_TYPES', {})
       expect(commit).toHaveBeenCalledWith('SET_CAN_SAVE_VENDOR', false)
+    })
+
+    it('uses defaults when response shape is missing', async () => {
+      AwarenessEducatorService.getEnrollmentFormDetails.mockResolvedValue({})
+
+      await trainingLibraryHelpers.actions.callForFormDetails({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_ENUM_TYPES', {})
+      expect(commit).toHaveBeenCalledWith('SET_CAN_SAVE_VENDOR', false)
+      expect(commit).toHaveBeenCalledWith(
+        'SET_LEARNING_PATH_REMINDER_EMAIL_NOTIFICATION_TEMPLATE_TYPE_RESOURCE_ID',
+        ''
+      )
     })
   })
 
