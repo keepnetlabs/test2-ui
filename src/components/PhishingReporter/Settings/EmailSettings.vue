@@ -318,7 +318,7 @@ export default {
         this.formValues.bcc = bcc || ''
         this.formValues.subject = subject || ''
         this.formValues.content = content || ''
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       }
     },
     formValues: {
@@ -340,9 +340,9 @@ export default {
       this.formValues.content = content || ''
       this.formValues.isSendInformationEmail = isSendInformationEmail
       this.formValues.sendUsACopy = sendUsACopy
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.initialFormValues = structuredClone(this.formValues)
     this.$emit('getInitialFormValues', this.formValues)
   },
   methods: {

@@ -54,4 +54,14 @@ describe('Enrollments.vue', () => {
     await Promise.resolve()
     expect(ctx.enrollmentStatusEnum).toEqual([{ name: 'Active', value: 1 }])
   })
+
+  it('callForFormDetails falls back to empty array when response payload is missing', async () => {
+    AwarenessEducatorService.getEnrollmentFormDetails.mockResolvedValueOnce({})
+    const ctx = { enrollmentStatusEnum: [{ name: 'Old', value: 9 }] }
+
+    Enrollments.methods.callForFormDetails.call(ctx)
+    await Promise.resolve()
+
+    expect(ctx.enrollmentStatusEnum).toEqual([])
+  })
 })

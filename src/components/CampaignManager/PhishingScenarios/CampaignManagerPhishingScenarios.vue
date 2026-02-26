@@ -1265,7 +1265,7 @@ export default {
         }
       }
       if (filter.key === 'Category') {
-        const index = this.category.findIndex((item) => item === filter.value)
+        const index = this.category.indexOf(filter.value)
         if (index !== -1) {
           this.category.splice(index, 1)
         }

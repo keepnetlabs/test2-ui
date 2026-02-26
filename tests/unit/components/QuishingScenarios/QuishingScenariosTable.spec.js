@@ -11,8 +11,10 @@ jest.mock('@/api/quishing', () => ({
       }
     })
   ),
-  exportScenarios: jest.fn(() => Promise.resolve({ data: new Blob(['x']) })),
-  getQuishingPdfScenarioPreviewContent: jest.fn(() => Promise.resolve({ data: new Blob(['pdf']) }))
+  exportScenarios: jest.fn(() => Promise.resolve({ data: 'mock-export-blob' })),
+  getQuishingPdfScenarioPreviewContent: jest.fn(() =>
+    Promise.resolve({ data: 'mock-preview-blob' })
+  )
 }))
 
 jest.mock('@/utils/helperFunctions', () => ({

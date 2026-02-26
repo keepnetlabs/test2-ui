@@ -428,7 +428,7 @@ export default {
     },
     getStatusColor(status) {
       if (!status) return '#757575'
-      const trimmedStatus = status.replace(/\s/g, '')
+      const trimmedStatus = status.replaceAll(/\s/g, '')
       if (trimmedStatus === 'Completed') {
         return '#217124'
       }
@@ -439,7 +439,7 @@ export default {
     },
     getStatusText(status) {
       if (!status) return ''
-      const trimmedStatus = status.replace(/\s/g, '')
+      const trimmedStatus = status.replaceAll(/\s/g, '')
       if (trimmedStatus === 'Completed') {
         return 'Completed'
       }

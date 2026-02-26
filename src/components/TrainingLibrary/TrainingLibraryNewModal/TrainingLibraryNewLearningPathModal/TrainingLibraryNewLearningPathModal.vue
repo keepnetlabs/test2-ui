@@ -141,9 +141,9 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit
-        ? labels.CreateNewLearningPath
-        : labels.EditLearningPath;
+      return this.isEdit
+        ? labels.EditLearningPath
+        : labels.CreateNewLearningPath;
     }
   },
   created() {

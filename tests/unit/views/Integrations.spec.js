@@ -73,4 +73,37 @@ describe('Integrations.vue', () => {
     wrapper.vm.changeTabStatus('advanced-settings')
     expect(wrapper.vm.tab).toBe('advanced-settings')
   })
+
+  it('isRenderAdvancedSettings returns false when SEARCH permission is missing', () => {
+    const wrapper = createWrapper({
+      getAdvancedSettingsPermissions: { SEARCH: { hasPermission: false } }
+    })
+    wrapper.vm.tab = 'advanced-settings'
+    expect(wrapper.vm.isRenderAdvancedSettings).toBe(false)
+  })
+
+  it('beforeRouteLeave blocks when integrations modal is open', () => {
+    const next = jest.fn()
+    const checkIfCanCloseNewIntegrationModal = jest.fn()
+    const ctx = {
+      $refs: {
+        refIntegrations: {
+          modalStatus: true,
+          checkIfCanCloseNewIntegrationModal
+        }
+      }
+    }
+
+    Integrations.beforeRouteLeave.call(ctx, {}, {}, next)
+
+    expect(checkIfCanCloseNewIntegrationModal).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(false)
+  })
+
+  it('beforeRouteLeave allows navigation when no open modal exists', () => {
+    const next = jest.fn()
+
+    Integrations.beforeRouteLeave.call({ $refs: { refIntegrations: { modalStatus: false } } }, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
+  })
 })

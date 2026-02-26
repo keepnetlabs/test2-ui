@@ -249,16 +249,18 @@ const learningPath = {
         value = payload.activeValue.trim()
       } else if (Array.isArray(payload.activeValue)) {
         if (payload.activeOperator === 'between') {
-          filterItems.push({
+          filterItems.push(
+          {
             FieldName: payloadKey,
             Value: payload.activeValue[0],
             Operator: '>='
-          })
-          filterItems.push({
+          },
+          {
             FieldName: payloadKey,
             Value: payload.activeValue[1],
             Operator: '<='
-          })
+          }
+        )
           return
         }
         value = payload.activeValue.join(',')

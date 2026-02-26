@@ -138,9 +138,9 @@ export function getDataTableFieldLabel(field = "") {
   const defField = String(field).trim();
   const normalizedField = defField
     .toLowerCase()
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ");
-  const compactField = normalizedField.replace(/\s+/g, "");
+    .replaceAll(/[_-]+/g, " ")
+    .replaceAll(/\s+/g, " ");
+  const compactField = normalizedField.replaceAll(/\s+/g, "");
 
   const fieldMap = {
     beinganalyzed: "Being Analyzed",
@@ -171,7 +171,7 @@ export function getDataTableFieldLabel(field = "") {
     return fieldMap[compactField];
   }
   if (/^[A-Za-z0-9]+$/.test(defField) && /[a-z][A-Z]/.test(defField)) {
-    return defField.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+    return defField.replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2");
   }
   return defField;
 }
@@ -279,7 +279,7 @@ export function passwordComplexity(pwd) {
   if (pwd) {
     nScore = Number.parseInt(pwd.length * nMultLength);
     nLength = pwd.length;
-    let arrPwd = pwd.replace(/\s+/g, "")?.split(/\s*/);
+    let arrPwd = pwd.replaceAll(/\s+/g, "")?.split(/\s*/);
     let arrPwdLen = arrPwd.length;
 
     /* Loop through password to check for Symbol, Numeric, Lowercase and Uppercase pattern matches */

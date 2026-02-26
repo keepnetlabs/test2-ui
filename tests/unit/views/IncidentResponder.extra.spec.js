@@ -159,4 +159,67 @@ describe('IncidentResponder.vue (extra)', () => {
     expect(ctx.isMultipleSelectedTemplateResourceId).toBe(false)
     expect(toggleEmailTemplateModal).toHaveBeenCalledTimes(1)
   })
+
+  it('clearFilterByHashProps clears parent hash filter and refreshes parent table', () => {
+    const ctx = {
+      hashfilterProps: { hash: 'abc' },
+      defaultHashfilterProps: { hash: '' },
+      isShowingClusteredTable: false,
+      requestBodyReportedEmails: {
+        filter: {
+          FilterGroups: [{ FilterItems: [{ FieldName: 'SHA512' }, { FieldName: 'subject' }] }]
+        }
+      },
+      clusteredTableAxios: { filter: { FilterGroups: [{ FilterItems: [] }] } },
+      callForSearchNotifiedMail: jest.fn(),
+      callForClusteredTable: jest.fn()
+    }
+
+    methods.clearFilterByHashProps.call(ctx)
+
+    expect(ctx.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems).toEqual([
+      { FieldName: 'subject' }
+    ])
+    expect(ctx.callForSearchNotifiedMail).toHaveBeenCalledTimes(1)
+    expect(ctx.callForClusteredTable).not.toHaveBeenCalled()
+  })
+
+  it('beforeRouteLeave blocks on unsaved new investigation and allows details route', () => {
+    const next = jest.fn()
+    const handleClose = jest.fn()
+    const ctx = {
+      isWantToAddNewInvestigation: true,
+      $refs: { refNewInvestigation: { handleClose } }
+    }
+
+    IncidentResponder.beforeRouteLeave.call(ctx, { name: 'Investigations' }, {}, next)
+    expect(handleClose).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
+    IncidentResponder.beforeRouteLeave.call(ctx, { name: 'Investigation Details' }, {}, next)
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('beforeRouteEnter redirects with isLoadState only from Analysis Details', () => {
+    const next = jest.fn()
+
+    IncidentResponder.beforeRouteEnter(
+      { name: 'Incident Responder', params: {} },
+      { name: 'Analysis Details' },
+      next
+    )
+    expect(next).toHaveBeenCalledWith({
+      name: 'Incident Responder',
+      params: { isLoadState: true }
+    })
+
+    next.mockClear()
+    IncidentResponder.beforeRouteEnter(
+      { name: 'Incident Responder', params: { isLoadState: true } },
+      { name: 'Analysis Details' },
+      next
+    )
+    expect(next).toHaveBeenCalledWith()
+  })
 })

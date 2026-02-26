@@ -169,14 +169,14 @@ export default {
         return
       }
 
-      const url = window.URL.createObjectURL(blob)
+      const url = globalThis.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
       link.setAttribute('download', fileName)
       document.body.appendChild(link)
       link.click()
       link.remove()
-      window.URL.revokeObjectURL(url)
+      globalThis.URL.revokeObjectURL(url)
     },
     handleAutoClose() {
       this.shouldShowCloseHint = true
@@ -187,8 +187,8 @@ export default {
     },
     handleCloseTab() {
       try {
-        if (window.opener || window.history.length <= 1) {
-          window.close()
+        if (globalThis.opener || globalThis.history.length <= 1) {
+          globalThis.close()
           return true
         }
       } catch (error) {

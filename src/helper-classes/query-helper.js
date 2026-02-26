@@ -17,7 +17,7 @@ export default class QueryHelperForTable {
   controlRouteQuery() {
     if (this.isRouteQuery()) {
       const { size, page } = this.route.query
-      if (!['5', '10', '25'].some((defaultNum) => defaultNum === size)) {
+      if (!['5', '10', '25'].includes(size)) {
         this.setRouterQuery('size', 10)
       }
       const parsedPage = Number.parseInt(page)

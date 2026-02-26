@@ -499,7 +499,7 @@ export default {
           } = response
           const { results = [] } = data
           this.campaignItems = results.map((item) => {
-            const newItem = JSON.parse(JSON.stringify(item))
+            const newItem = structuredClone(item)
             delete newItem['instanceCount']
             newItem.targetUsers = Number(newItem.targetUsers)
             newItem.total = Number(item['instanceCount'])
@@ -779,7 +779,7 @@ export default {
               pieData.splice(4, 0, submittedEmail)
             }
           }
-          this.pieData = JSON.parse(JSON.stringify(pieData))
+          this.pieData = structuredClone(pieData)
         })
         .finally(() => {
           this.isCampaignLoading = false

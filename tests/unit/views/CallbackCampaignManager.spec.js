@@ -105,6 +105,14 @@ describe('CallbackCampaignManager.vue', () => {
     expect(resetTable).toHaveBeenCalled()
     expect(callForData).toHaveBeenCalled()
     expect(wrapper.vm.isItemTableShowing).toBe(true)
+
+    wrapper.vm.handleOnRecordButtonClick({
+      resourceId: 'r3',
+      total: 1,
+      status: 'Running',
+      frequency: 1
+    })
+    expect(wrapper.vm.$router.push).toHaveBeenCalledTimes(1)
   })
 
   it('handles item row record click for report and frequency paths', () => {
@@ -119,6 +127,19 @@ describe('CallbackCampaignManager.vue', () => {
 
     wrapper.vm.handleItemTableRecordButtonClick({ total: 2, status: 'Running', instanceGroup: 'ig-2' })
     expect(wrapper.vm.selectedInstanceItem).toEqual({ total: 2, status: 'Running', instanceGroup: 'ig-2' })
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(true)
+
+    wrapper.setData({
+      selectedParentItem: { resourceId: 'parent-2', frequency: 2 },
+      isFrequencyTableShowing: false
+    })
+    wrapper.vm.handleItemTableRecordButtonClick({ total: 1, status: 'Running', instanceGroup: 'ig-3' })
+    expect(wrapper.vm.$router.push).toHaveBeenCalledTimes(1)
+    expect(wrapper.vm.selectedInstanceItem).toEqual({
+      total: 1,
+      status: 'Running',
+      instanceGroup: 'ig-3'
+    })
     expect(wrapper.vm.isFrequencyTableShowing).toBe(true)
   })
 

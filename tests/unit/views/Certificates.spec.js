@@ -13,6 +13,21 @@ describe('Certificates.vue', () => {
     expect(ctx.isDuplicate).toBe(false)
   })
 
+  it('toggleShowNewCertificateModal triggers table refresh when forceUpdate is true', () => {
+    const callForData = jest.fn()
+    const ctx = {
+      isShowNewCertificateModal: false,
+      selectedRow: null,
+      isDuplicate: false,
+      $refs: { refTable: { callForData } }
+    }
+
+    Certificates.methods.toggleShowNewCertificateModal.call(ctx, true)
+
+    expect(callForData).toHaveBeenCalledTimes(1)
+    expect(ctx.isShowNewCertificateModal).toBe(true)
+  })
+
   it('toggleShowPreviewModal toggles and resets selectedRow', () => {
     const ctx = {
       isShowPreviewCertificateDialog: true,
@@ -49,6 +64,24 @@ describe('Certificates.vue', () => {
     Certificates.methods.handleDeleteRowClick.call(ctx, row)
     expect(ctx.selectedRow).toEqual(row)
     expect(toggleShowDeleteCertificatesDialog).toHaveBeenCalled()
+  })
+
+  it('toggleShowDeleteCertificatesDialog forceUpdate branch unselects row and refreshes table', () => {
+    const unSelectRow = jest.fn()
+    const callForData = jest.fn()
+    const selectedRow = { id: 9 }
+    const ctx = {
+      isShowDeleteCertificateDialog: true,
+      selectedRow,
+      $refs: { refTable: { $refs: { refTable: { unSelectRow } }, callForData } }
+    }
+
+    Certificates.methods.toggleShowDeleteCertificatesDialog.call(ctx, true)
+
+    expect(unSelectRow).toHaveBeenCalledWith(selectedRow)
+    expect(callForData).toHaveBeenCalledTimes(1)
+    expect(ctx.selectedRow).toBeNull()
+    expect(ctx.isShowDeleteCertificateDialog).toBe(false)
   })
 
   it('handleDuplicateRowClick sets selectedRow, isDuplicate and calls toggleShowNewCertificateModal', () => {
