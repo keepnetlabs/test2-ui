@@ -763,8 +763,8 @@ export default {
   },
   watch: {
     value(rows) {
-      this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
-      this.defaultValues = JSON.parse(JSON.stringify(rows))
+      this.copyOfEditedRows = structuredClone(rows)
+      this.defaultValues = structuredClone(rows)
     },
     editMode(val) {
       if (this.changeFooterPosition) {
@@ -865,9 +865,8 @@ export default {
         i[key] = value
       })
       if (Array.isArray(value)) {
-        value = value.reduce((acc, item) => {
-          const defaultVal = item || ''
-          const trimmedVal = defaultVal.trim()
+        value = value.reduce((acc, item = '') => {
+          const trimmedVal = item.trim()
           if (trimmedVal?.length) acc.push(trimmedVal)
           return acc
         }, [])
@@ -909,7 +908,7 @@ export default {
         this.editMode = false
         this.multipleEditModels = []
         this.editedPopupProperties = []
-        this.copyOfEditedRows = JSON.parse(JSON.stringify(this.defaultValues))
+        this.copyOfEditedRows = structuredClone(this.defaultValues)
         this.multipleEditDisables = []
       }
     },
@@ -933,9 +932,7 @@ export default {
             this.value.map((item, index) => {
               const keys = Object.keys(item)
               keys.forEach((key) => {
-                const keyIndex = this.editedPopupProperties.findIndex((k) => {
-                  return k === key
-                })
+                const keyIndex = this.editedPopupProperties.indexOf(key)
                 if (keyIndex === -1) {
                   item[key] = this.copyOfEditedRows[index][key]
                 }
@@ -1020,8 +1017,8 @@ export default {
     }
   },
   created() {
-    this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
-    this.defaultValues = JSON.parse(JSON.stringify(this.value))
+    this.copyOfEditedRows = structuredClone(this.value)
+    this.defaultValues = structuredClone(this.value)
     this.editMode = this.createMode
   }
 }

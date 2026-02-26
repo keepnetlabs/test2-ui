@@ -1698,7 +1698,7 @@ export default {
         accessToken,
         apiBaseUrl
       };
-      const isLocalhost = window.location.hostname.includes("localhost");
+      const isLocalhost = globalThis.location.hostname.includes("localhost");
       const url = isLocalhost
         ? "http://localhost:4111/email-ir/analyze"
         : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";
@@ -2081,7 +2081,7 @@ export default {
           if (!isSelectedAllEver) {
             const removedItems = this.extendedViewValue.filter(
               (extendedViewItem) =>
-                !selections.find(
+                !selections.some(
                   ({ resourceId }) => resourceId === extendedViewItem.resourceId
                 )
             );
@@ -2286,8 +2286,8 @@ export default {
       });
     },
     irPreviewOnClick(row) {
-      window.open(
-        `${window.location.href}/reported-emails/email-details/${row.resourceId}?tab=third`
+      globalThis.open(
+        `${globalThis.location.href}/reported-emails/email-details/${row.resourceId}?tab=third`
       );
     },
     handleIsNotify(value) {
@@ -2384,7 +2384,7 @@ export default {
       selectedFilter = JSON.parse(JSON.stringify(selectedFilter));
       if (this.isShowingClusteredTable) {
         if (
-          !selectedFilter.filter.FilterGroups[0].FilterItems.find(
+          !selectedFilter.filter.FilterGroups[0].FilterItems.some(
             (item) => item.FieldName === cluster
           )
         ) {
@@ -2450,8 +2450,8 @@ export default {
       return payload;
     },
     irDetailsOnClick(row) {
-      window.open(
-        `${window.location.href}/reported-emails/email-details/${row.resourceId}`
+      globalThis.open(
+        `${globalThis.location.href}/reported-emails/email-details/${row.resourceId}`
       );
     },
     handleReportedEmailInvestigate(row) {
@@ -2494,7 +2494,7 @@ export default {
         exportNotifiedEmails(payload).then((response) => {
           const { data } = response;
           const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          link.href = globalThis.URL.createObjectURL(data);
           link.download = `Reported Emails.${
             exportType.toLocaleLowerCase() === "xls"
               ? "xlsx"
@@ -2525,7 +2525,7 @@ export default {
           .then((response) => {
             const { data } = response;
             const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(data);
+            link.href = globalThis.URL.createObjectURL(data);
             link.download = `Reported Emails ${
               this.clusteredRow[this.getClusteredField(this.selectedCluster)]
             }.${

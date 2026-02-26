@@ -197,7 +197,7 @@ export default {
       if (!methodDetail) return {}
       try {
         return JSON.parse(methodDetail)
-      } catch (e) {
+      } catch {
         return {}
       }
     },

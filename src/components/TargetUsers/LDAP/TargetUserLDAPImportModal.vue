@@ -226,14 +226,16 @@ export default {
       if (!((this.isEdit && [0, 1].includes(this.step2Step)) || [1, 2].includes(this.step2Step))) {
         this.totalNumberOfRecords = 0
       }
-      if (!step1.validateForm()) {
+      if (step1.validateForm()) {
+        callback()
+      } else {
         const comparator = this.serverSideSelectionParams?.isSelectedAllEver
           ? this.serverSideSelectionParams?.isSelectedAllEver
           : this.selectedLDAPItems?.length
         if (!comparator) {
           this.isLDAPGroupsValid = false
         }
-      } else callback()
+      }
     },
     getPayloadFilter() {
       if (this.isEdit) {

@@ -53,6 +53,7 @@
     />
     <QuishingEmailTemplatesTable
       ref="refTable"
+      :preferred-language-types="preferredLanguageTypes"
       @on-edit-or-new="toggleNewEmailTemplateModal"
       @on-preview="togglePreviewDialog"
       @on-delete="toggleDeleteDialog"
@@ -72,8 +73,11 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import NewQuishingIndividualPrintoutTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingIndividualPrintoutTemplatesModal.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import useQuishingScenarioDetailsLookup from '@/hooks/useQuishingScenarioDetailsLookup'
+
 export default {
   name: 'QuishingEmailTemplates',
+  mixins: [useQuishingScenarioDetailsLookup],
   components: {
     NewQuishingIndividualPrintoutTemplatesModal,
     NewQuishingEmailTemplatesModal,
@@ -100,9 +104,13 @@ export default {
     }
   },
   created() {
+    this.callForScenarioDetails()
     this.callForLanguages()
   },
   computed: {
+    preferredLanguageTypes() {
+      return this.scenarioDetailsLookup?.preferredLanguageTypes || []
+    },
     getDeleteApiFunc() {
       if (this.isIndividualPrintoutTemplate) return QuishingService.deleteIndividualPrintoutTemplate
       return QuishingService.deleteEmailTemplate

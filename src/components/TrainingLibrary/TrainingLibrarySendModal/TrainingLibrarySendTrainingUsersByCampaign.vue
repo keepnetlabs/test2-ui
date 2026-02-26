@@ -756,7 +756,7 @@ export default {
             noResponseEmail,
             openedEmail,
             reportedEmail,
-            ...(this.methodTypeId !== 3 ? [clickedEmail] : []),
+            ...(this.methodTypeId === 3 ? [] : [clickedEmail]),
             ...(this.campaignMethod === 'Data Submission' ? [submittedEmail] : []),
             ...(this.methodTypeId === 3 ? [attachmentOpenedEmail] : []),
             failedToSend

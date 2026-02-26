@@ -126,9 +126,9 @@ export default {
   },
   computed: {
     getTitle() {
-      return !this.isEdit
-        ? labels.CreateNewScreensaver
-        : labels.EditScreensaver;
+      return this.isEdit
+        ? labels.EditScreensaver
+        : labels.CreateNewScreensaver;
     }
   },
   created() {

@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       labels,
-      customFields: JSON.parse(JSON.stringify(this.initialCustomFields)),
+      customFields: structuredClone(this.initialCustomFields),
       tableData: [],
       mappingData: {
         columns: [],
@@ -103,21 +103,19 @@ export default {
           required: false,
           customFieldResourceId: cField.resourceId
         }))
-        const mappedHeaders = [
-          ...this.fieldMappings.map((item) => ({
-            name:
-              this.customFields.find(
-                (cField) => cField.customFieldResourceId === item.customFieldResourceId
-              )?.name || item.customFieldResourceId,
-            selectedValue:
-              this.mappingData.columns.find(
-                (column) => column.resourceId === item['ldapFieldResourceId']
-              ) || null,
-            required: false
-          }))
-        ]
+        const mappedHeaders = this.fieldMappings.map((item) => ({
+          name:
+            this.customFields.find(
+              (cField) => cField.customFieldResourceId === item.customFieldResourceId
+            )?.name || item.customFieldResourceId,
+          selectedValue:
+            this.mappingData.columns.find(
+              (column) => column.resourceId === item['ldapFieldResourceId']
+            ) || null,
+          required: false
+        }))
         const customFields = this.customFields.filter((cField) => {
-          return !mappedHeaders.find((mappedHeader) => mappedHeader.name === cField.name)
+          return !mappedHeaders.some((mappedHeader) => mappedHeader.name === cField.name)
         })
         this.mappingData.headers = [...mappedHeaders, ...customFields]
         this.mappingData.headers[0].isSelectDisabled = true
@@ -125,7 +123,7 @@ export default {
         this.setLoading()
         this.$nextTick(() => {
           this?.$refs?.refMapTable?.setDisabilityOfSelect()
-          this.initialMappingData = JSON.parse(JSON.stringify(this.mappingData))
+          this.initialMappingData = structuredClone(this.mappingData)
         })
       })
     },
@@ -137,13 +135,13 @@ export default {
       const defaultNewItem = {}
       this.mappingData.headers.map((header) => (defaultNewItem[header.name] = ''))
       this.mappingData.tableData = this.tableData.map((item) => {
-        const newItem = { ...JSON.parse(JSON.stringify(defaultNewItem)) }
+        const newItem = structuredClone(defaultNewItem)
         for (const mapper of defaultFieldMappings) {
           newItem[mapper.customFieldResourceId] = item[mapper.customFieldResourceId] || ''
         }
         for (const key of Object.keys(customFieldDefaultValues)) {
-          if (!item[key]) newItem[key] = customFieldDefaultValues[key]
-          else newItem[key] = item[key]
+          if (item[key]) newItem[key] = item[key]
+          else newItem[key] = customFieldDefaultValues[key]
         }
         return newItem
       })

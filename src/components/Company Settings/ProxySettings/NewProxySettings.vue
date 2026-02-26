@@ -361,15 +361,15 @@ export default {
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
-      if (!isChanged) {
-        return this.$emit('closeOverlay')
-      } else {
+      if (isChanged) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
             this.$emit('closeOverlay')
           }
         })
+      } else {
+        return this.$emit('closeOverlay')
       }
     },
     onPortChange(val) {

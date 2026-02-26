@@ -81,6 +81,22 @@ describe('UsersDashboardYourCertificates.vue', () => {
     )
   })
 
+  it('tableData falls back to empty actions when certificate actions are missing', () => {
+    const wrapper = createWrapper({
+      'usersDashboard/getMyCertificates': [
+        {
+          certificateName: 'Security Awareness',
+          enrollmentStartDate: '2026-01-01',
+          trainingStatus: 'Completed',
+          trainingUrl: 'https://example.com',
+          enrollmentId: 'enr-1'
+        }
+      ]
+    })
+
+    expect(wrapper.vm.tableData[0].actions).toEqual([])
+  })
+
   it('returns the first enabled action from getPrimaryAction', () => {
     const wrapper = createWrapper()
     const row = {
@@ -91,6 +107,12 @@ describe('UsersDashboardYourCertificates.vue', () => {
     }
 
     expect(wrapper.vm.getPrimaryAction(row)).toEqual(row.actions[1])
+  })
+
+  it('getPrimaryAction returns null when actions are missing', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getPrimaryAction({})).toBe(null)
+    expect(wrapper.vm.getPrimaryAction({ actions: [] })).toBe(null)
   })
 
   it('falls back to first action when none are enabled', () => {
@@ -104,6 +126,11 @@ describe('UsersDashboardYourCertificates.vue', () => {
 
     expect(wrapper.vm.getPrimaryAction(row)).toEqual(row.actions[0])
     expect(wrapper.vm.isActionEnabled(row)).toBe(false)
+  })
+
+  it('isActionEnabled returns false when primary action is null', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.isActionEnabled({ actions: [] })).toBe(false)
   })
 
   it('returns warning tooltip when certificate download is disabled with warning', () => {
@@ -209,6 +236,32 @@ describe('UsersDashboardYourCertificates.vue', () => {
     expect(wrapper.vm.getTrainingUrlForDialog).toBe('https://example.com/start')
   })
 
+  it('getTrainingUrlForDialog returns empty string when TrainingUrl action has no url', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({
+      selectedRowForDialog: {
+        actions: [{ actionType: 'TrainingUrl', url: '' }]
+      }
+    })
+
+    expect(wrapper.vm.getTrainingUrlForDialog).toBe('')
+  })
+
+  it('getTrainingUrlForDialog returns first valid TrainingUrl among mixed actions', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({
+      selectedRowForDialog: {
+        actions: [
+          { actionType: 'TrainingUrl', url: '' },
+          { actionType: 'CertificateDownload', url: 'https://example.com/cert' },
+          { actionType: 'TrainingUrl', url: 'https://example.com/start' }
+        ]
+      }
+    })
+
+    expect(wrapper.vm.getTrainingUrlForDialog).toBe('https://example.com/start')
+  })
+
   it('computes tooltip style and visibility on mouse enter/leave', () => {
     const wrapper = createWrapper()
     const row = {
@@ -285,5 +338,393 @@ describe('UsersDashboardYourCertificates.vue', () => {
     createElementSpy.mockRestore()
     createObjectURLSpy.mockRestore()
     revokeObjectURLSpy.mockRestore()
+  })
+
+  it('getStatusColor/getStatusLabel return fallback values for unknown status', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getStatusColor('Unknown Status')).toBe('#757575')
+    expect(wrapper.vm.getStatusLabel('Unknown Status')).toBe('Unknown Status')
+  })
+
+  it('getActionIcon falls back based on training status when no actions exist', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getActionIcon({ trainingStatus: 'Completed', actions: [] })).toBe('mdi-download')
+    expect(wrapper.vm.getActionIcon({ trainingStatus: 'In Progress', actions: [] })).toBe(
+      'mdi-play-circle'
+    )
+  })
+
+  it('getActionIcon returns play icon for unknown action types', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.getActionIcon({
+        actions: [{ actionType: 'UnknownAction', isEnabled: true }]
+      })
+    ).toBe('mdi-play-circle')
+  })
+
+  it('getActionIcon returns download/play icons for known action types', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.getActionIcon({
+        actions: [{ actionType: 'CertificateDownload', isEnabled: true }]
+      })
+    ).toBe('mdi-download')
+    expect(
+      wrapper.vm.getActionIcon({
+        actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+      })
+    ).toBe('mdi-play-circle')
+  })
+
+  it('getActionTooltip uses fallback labels when no actions exist', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getActionTooltip({ trainingStatus: 'Completed', actions: [] })).toBe(
+      labels.yourCertificatesDownloadCertificate
+    )
+    expect(wrapper.vm.getActionTooltip({ trainingStatus: 'In Progress', actions: [] })).toBe(
+      labels.yourLearningStartTraining
+    )
+  })
+
+  it('getActionTooltip returns empty string for unknown action types', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.getActionTooltip({
+        actions: [{ actionType: 'UnknownAction', isEnabled: true }]
+      })
+    ).toBe('')
+  })
+
+  it('getActionTooltip returns retake warning for enabled TrainingUrl with warning', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.getActionTooltip({
+        actions: [
+          {
+            actionType: 'TrainingUrl',
+            isEnabled: true,
+            warningMessage: 'can-retake',
+            url: 'https://example.com'
+          }
+        ]
+      })
+    ).toBe(labels.yourCertificatesWarningCanRetakeNoCertificate)
+  })
+
+  it('getActionTooltip returns default labels for enabled known actions without warnings', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.getActionTooltip({
+        actions: [{ actionType: 'CertificateDownload', isEnabled: true }]
+      })
+    ).toBe(labels.yourCertificatesDownloadCertificate)
+    expect(
+      wrapper.vm.getActionTooltip({
+        actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+      })
+    ).toBe(labels.yourLearningStartTraining)
+  })
+
+  it('getActionTooltip returns default download tooltip for disabled certificate action without warning', () => {
+    const wrapper = createWrapper()
+    expect(
+      wrapper.vm.getActionTooltip({
+        actions: [{ actionType: 'CertificateDownload', isEnabled: false, warningMessage: '' }]
+      })
+    ).toBe(labels.yourCertificatesDownloadCertificate)
+  })
+
+  it('getTrainingUrlForDialog returns empty string when selected row is invalid', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getTrainingUrlForDialog).toBe('')
+
+    wrapper.setData({ selectedRowForDialog: {} })
+    expect(wrapper.vm.getTrainingUrlForDialog).toBe('')
+  })
+
+  it('handleAction no-ops when primary action is disabled', () => {
+    const wrapper = createWrapper()
+    const handleDownloadSpy = jest.spyOn(wrapper.vm, 'handleDownload').mockResolvedValue(undefined)
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+
+    wrapper.vm.handleAction({
+      actions: [{ actionType: 'CertificateDownload', isEnabled: false }]
+    })
+
+    expect(handleDownloadSpy).not.toHaveBeenCalled()
+    expect(openSpy).not.toHaveBeenCalled()
+    handleDownloadSpy.mockRestore()
+    openSpy.mockRestore()
+  })
+
+  it('handleAction fallback triggers download when no actions and status is completed', () => {
+    const wrapper = createWrapper()
+    const handleDownloadSpy = jest.spyOn(wrapper.vm, 'handleDownload').mockResolvedValue(undefined)
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+
+    wrapper.vm.handleAction({
+      trainingStatus: 'Completed',
+      enrollmentId: 'enr-1',
+      certificateName: 'Cert',
+      actions: []
+    })
+
+    expect(handleDownloadSpy).toHaveBeenCalled()
+    expect(openSpy).not.toHaveBeenCalled()
+    handleDownloadSpy.mockRestore()
+    openSpy.mockRestore()
+  })
+
+  it('handleAction fallback no-ops when no actions and no trainingUrl', () => {
+    const wrapper = createWrapper()
+    const handleDownloadSpy = jest.spyOn(wrapper.vm, 'handleDownload').mockResolvedValue(undefined)
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+
+    wrapper.vm.handleAction({
+      trainingStatus: 'In Progress',
+      actions: []
+    })
+
+    expect(handleDownloadSpy).not.toHaveBeenCalled()
+    expect(openSpy).not.toHaveBeenCalled()
+    handleDownloadSpy.mockRestore()
+    openSpy.mockRestore()
+  })
+
+  it('handleAction fallback opens training url when no actions and training exists', () => {
+    const wrapper = createWrapper()
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+    const handleDownloadSpy = jest.spyOn(wrapper.vm, 'handleDownload').mockResolvedValue(undefined)
+
+    wrapper.vm.handleAction({
+      trainingStatus: 'In Progress',
+      trainingUrl: 'https://example.com/training',
+      actions: []
+    })
+
+    expect(openSpy).toHaveBeenCalledWith('https://example.com/training', '_blank')
+    expect(handleDownloadSpy).not.toHaveBeenCalled()
+    openSpy.mockRestore()
+    handleDownloadSpy.mockRestore()
+  })
+
+  it('handleTooltipMouseEnter hides tooltip when tooltip text is empty', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ showTooltip: true, tooltipContent: 'x' })
+
+    wrapper.vm.handleTooltipMouseEnter(
+      {
+        currentTarget: {
+          querySelector: () => null,
+          getBoundingClientRect: () => ({ left: 0, bottom: 0, width: 10 })
+        }
+      },
+      {
+        actions: [{ actionType: 'UnknownAction', isEnabled: true }]
+      }
+    )
+
+    expect(wrapper.vm.showTooltip).toBe(false)
+  })
+
+  it('handleTooltipMouseEnter uses event.target fallback when currentTarget is missing', () => {
+    const wrapper = createWrapper()
+    const row = {
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+    }
+    const target = {
+      querySelector: () => null,
+      getBoundingClientRect: () => ({ left: 100, bottom: 250, width: 80 })
+    }
+
+    wrapper.vm.handleTooltipMouseEnter({ target }, row)
+
+    expect(wrapper.vm.showTooltip).toBe(true)
+    expect(wrapper.vm.tooltipContent).toBe(labels.yourLearningStartTraining)
+    expect(wrapper.vm.tooltipStyle).toEqual(
+      expect.objectContaining({
+        top: '260px',
+        left: '140px'
+      })
+    )
+  })
+
+  it('handleTooltipMouseEnter is safe when event target is missing', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ showTooltip: true, tooltipContent: 'x' })
+    const row = {
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+    }
+
+    expect(() => wrapper.vm.handleTooltipMouseEnter({}, row)).not.toThrow()
+    expect(wrapper.vm.showTooltip).toBe(false)
+  })
+
+  it('handleAction does nothing when TrainingUrl action has no url', () => {
+    const wrapper = createWrapper()
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+
+    wrapper.vm.handleAction({
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, warningMessage: '', url: '' }]
+    })
+
+    expect(openSpy).not.toHaveBeenCalled()
+    expect(wrapper.vm.showCertificateNotAvailableDialog).toBe(false)
+    openSpy.mockRestore()
+  })
+
+  it('handleAction does nothing when TrainingUrl has warning but url is missing', () => {
+    const wrapper = createWrapper()
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+
+    wrapper.vm.handleAction({
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, warningMessage: 'retake', url: '' }]
+    })
+
+    expect(openSpy).not.toHaveBeenCalled()
+    expect(wrapper.vm.showCertificateNotAvailableDialog).toBe(false)
+    expect(wrapper.vm.selectedRowForDialog).toBe(null)
+    openSpy.mockRestore()
+  })
+
+  it('handleTooltipMouseEnter hides tooltip when target has no getBoundingClientRect', () => {
+    const wrapper = createWrapper()
+    const row = {
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+    }
+
+    wrapper.vm.handleTooltipMouseEnter(
+      {
+        currentTarget: {
+          querySelector: () => ({})
+        }
+      },
+      row
+    )
+
+    expect(wrapper.vm.showTooltip).toBe(false)
+  })
+
+  it('handleTooltipMouseEnter uses currentTarget rect when querySelector returns null', () => {
+    const wrapper = createWrapper()
+    const row = {
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+    }
+
+    wrapper.vm.handleTooltipMouseEnter(
+      {
+        currentTarget: {
+          querySelector: () => null,
+          getBoundingClientRect: () => ({ left: 50, bottom: 90, width: 20 })
+        }
+      },
+      row
+    )
+
+    expect(wrapper.vm.showTooltip).toBe(true)
+    expect(wrapper.vm.tooltipStyle).toEqual(
+      expect.objectContaining({
+        top: '100px',
+        left: '60px'
+      })
+    )
+  })
+
+  it('handleTooltipMouseEnter works when target has no querySelector function but has rect', () => {
+    const wrapper = createWrapper()
+    const row = {
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+    }
+
+    wrapper.vm.handleTooltipMouseEnter(
+      {
+        currentTarget: {
+          getBoundingClientRect: () => ({ left: 30, bottom: 70, width: 20 })
+        }
+      },
+      row
+    )
+
+    expect(wrapper.vm.showTooltip).toBe(true)
+    expect(wrapper.vm.tooltipStyle).toEqual(
+      expect.objectContaining({
+        top: '80px',
+        left: '40px'
+      })
+    )
+  })
+
+  it('covers all known status color and label mappings', () => {
+    const wrapper = createWrapper()
+    const cases = [
+      ['Not Started', '#757575', labels.yourLearningNotStarted],
+      ['Not Completed', '#B83A3A', labels.yourLearningNotCompleted],
+      ['In Progress', '#FF9800', labels.yourLearningInProgress],
+      ['Completed', '#217124', labels.yourLearningCompleted],
+      ['Exam Passed', '#43A047', labels.actionTypeExamPassed],
+      ['In Queue', '#1173C1', labels.yourCertificatesInQueue],
+      ['Exam Failed', '#F56C6C', labels.actionTypeExamFailed]
+    ]
+
+    cases.forEach(([status, color, label]) => {
+      expect(wrapper.vm.getStatusColor(status)).toBe(color)
+      expect(wrapper.vm.getStatusLabel(status)).toBe(label)
+    })
+  })
+
+  it('getTrainingUrlForDialog returns empty when actions exist but no TrainingUrl action', async () => {
+    const wrapper = createWrapper()
+    await wrapper.setData({
+      selectedRowForDialog: {
+        actions: [{ actionType: 'CertificateDownload', url: 'https://example.com/cert' }]
+      }
+    })
+
+    expect(wrapper.vm.getTrainingUrlForDialog).toBe('')
+  })
+
+  it('handleAction no-ops for unknown enabled action types', () => {
+    const wrapper = createWrapper()
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null)
+    const handleDownloadSpy = jest.spyOn(wrapper.vm, 'handleDownload').mockResolvedValue(undefined)
+
+    wrapper.vm.handleAction({
+      actions: [{ actionType: 'UnknownAction', isEnabled: true, url: 'https://example.com' }]
+    })
+
+    expect(openSpy).not.toHaveBeenCalled()
+    expect(handleDownloadSpy).not.toHaveBeenCalled()
+    expect(wrapper.vm.showCertificateNotAvailableDialog).toBe(false)
+    openSpy.mockRestore()
+    handleDownloadSpy.mockRestore()
+  })
+
+  it('getActionTooltip falls back to default training label when TrainingUrl is disabled with warning', () => {
+    const wrapper = createWrapper()
+
+    const result = wrapper.vm.getActionTooltip({
+      actions: [
+        {
+          actionType: 'TrainingUrl',
+          isEnabled: false,
+          warningMessage: 'warning',
+          url: 'https://example.com'
+        }
+      ]
+    })
+
+    expect(result).toBe(labels.yourLearningStartTraining)
+  })
+
+  it('handleTooltipMouseEnter hides tooltip when currentTarget has no querySelector and no rect', () => {
+    const wrapper = createWrapper()
+    const row = {
+      actions: [{ actionType: 'TrainingUrl', isEnabled: true, url: 'https://example.com' }]
+    }
+
+    wrapper.vm.handleTooltipMouseEnter({ currentTarget: {} }, row)
+
+    expect(wrapper.vm.showTooltip).toBe(false)
   })
 })

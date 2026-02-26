@@ -210,6 +210,130 @@ describe('EnrollmentsSubTabs.vue', () => {
     expect(wrapper.vm.selectedRow).toBeNull()
   })
 
+  it('handles restore and refreshes active table', async () => {
+    const wrapper = createWrapper()
+    const callForData = jest.fn()
+    wrapper.vm.tab = TRAINING_LIBRARY_TYPES.ALL_TYPES
+    wrapper.vm.$refs[`refTable${wrapper.vm.tab}`] = [{ callForData }]
+
+    wrapper.vm.handleRestoreRowClick({ enrollmentId: 'restore-1' })
+    await flushPromises()
+
+    expect(AwarenessEducatorService.restoreEnrollment).toHaveBeenCalledWith('restore-1')
+    expect(callForData).toHaveBeenCalled()
+  })
+
+  it('toggles permanently delete dialog and refreshes when forced', () => {
+    const wrapper = createWrapper()
+    const callForData = jest.fn()
+    wrapper.vm.tab = TRAINING_LIBRARY_TYPES.ALL_TYPES
+    wrapper.vm.$refs[`refTable${wrapper.vm.tab}`] = { refTable: { callForData } }
+    wrapper.vm.selectedRow = { enrollmentId: 'perm-1' }
+
+    wrapper.vm.toggleShowPermanentlyDeleteDialog(true)
+    expect(wrapper.vm.isShowDeletePermanentlyDialog).toBe(true)
+    expect(callForData).toHaveBeenCalledTimes(1)
+
+    wrapper.vm.toggleShowPermanentlyDeleteDialog()
+    expect(wrapper.vm.isShowDeletePermanentlyDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toBeNull()
+  })
+
+  it('handleDeleteSuccess and handleDuplicateSuccess call table refresh only when ref exists', () => {
+    const wrapper = createWrapper()
+    const callForData = jest.fn()
+    wrapper.vm.tab = 'NotExistingTab'
+
+    wrapper.vm.handleDeleteSuccess()
+    wrapper.vm.handleDuplicateSuccess()
+    expect(callForData).not.toHaveBeenCalled()
+
+    wrapper.vm.tab = TRAINING_LIBRARY_TYPES.ALL_TYPES
+    wrapper.vm.$refs[`refTable${wrapper.vm.tab}`] = [{ callForData }]
+    wrapper.vm.handleDeleteSuccess()
+    wrapper.vm.handleDuplicateSuccess()
+    expect(callForData).toHaveBeenCalledTimes(2)
+  })
+
+  it('opens and closes stop enrollment dialog and supports refresh on force update', () => {
+    const wrapper = createWrapper()
+    const callForData = jest.fn()
+    wrapper.vm.tab = TRAINING_LIBRARY_TYPES.ALL_TYPES
+    wrapper.vm.$refs[`refTable${wrapper.vm.tab}`] = [{ callForData }]
+
+    wrapper.vm.handleStop({ enrollmentId: 'stop-1' })
+    expect(wrapper.vm.isShowStopEnrollmentDialog).toBe(true)
+    expect(wrapper.vm.selectedRow).toEqual({ enrollmentId: 'stop-1' })
+
+    wrapper.vm.toggleShowStopEnrollmentDialog(true)
+    expect(wrapper.vm.isShowStopEnrollmentDialog).toBe(false)
+    expect(wrapper.vm.selectedRow).toBeNull()
+    expect(callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('handlePreviewRowClick opens survey/training/learning path previews', async () => {
+    const wrapper = createWrapper()
+
+    await wrapper.vm.handlePreviewRowClick({
+      enrollmentId: 'p-1',
+      type: TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY,
+      hasQuiz: false
+    })
+    await flushPromises()
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
+      'trainingLibrary/setSurveyPreviewDialog',
+      expect.objectContaining({ status: true, onlyPreview: true })
+    )
+
+    await wrapper.vm.handlePreviewRowClick({
+      enrollmentId: 'p-2',
+      type: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING,
+      hasQuiz: false
+    })
+    await flushPromises()
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
+      'trainingLibrary/setTrainingPreviewDialog',
+      expect.objectContaining({ status: true, onlyPreview: true })
+    )
+
+    await wrapper.vm.handlePreviewRowClick({
+      enrollmentId: 'p-3',
+      type: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH,
+      hasQuiz: false
+    })
+    await flushPromises()
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
+      'trainingLibrary/setLearningPathPreviewDialog',
+      expect.objectContaining({ status: true, onlyPreview: true })
+    )
+  })
+
+  it('handlePreviewRowClick opens poster and infographic previews', async () => {
+    const wrapper = createWrapper()
+
+    await wrapper.vm.handlePreviewRowClick({
+      enrollmentId: 'p-4',
+      type: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER,
+      hasQuiz: false
+    })
+    await flushPromises()
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
+      'trainingLibrary/setPosterPreviewDialog',
+      expect.objectContaining({ status: true, type: 'poster', onlyPreview: true })
+    )
+
+    await wrapper.vm.handlePreviewRowClick({
+      enrollmentId: 'p-5',
+      type: TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC,
+      hasQuiz: false
+    })
+    await flushPromises()
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
+      'trainingLibrary/setInfographicPreviewDialog',
+      expect.objectContaining({ status: true, type: 'infographic', onlyPreview: true })
+    )
+  })
+
   it('routes to report for infographic, screensaver and learning path types', () => {
     const wrapper = createWrapper()
 

@@ -481,12 +481,12 @@ export default {
     },
     handleMicrosoftLogin() {
       if (this.samlRedirectUrl) {
-        window.location.href = this.samlRedirectUrl
+        globalThis.location.href = this.samlRedirectUrl
       }
     },
     handleGoogleLogin() {
       if (this.samlRedirectUrl) {
-        window.location.href = this.samlRedirectUrl
+        globalThis.location.href = this.samlRedirectUrl
       }
     },
     async handleMagicLink() {

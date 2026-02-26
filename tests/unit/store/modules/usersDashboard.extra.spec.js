@@ -339,6 +339,24 @@ describe('usersDashboard store module (extra coverage)', () => {
       expect(commit).not.toHaveBeenCalledWith('SET_TOKEN', expect.anything())
       expect(commit).not.toHaveBeenCalledWith('RESET_STATE')
     })
+
+    it('restores token without language when no savedLanguage exists', () => {
+      const commit = jest.fn()
+      localStorage.setItem(
+        'usersDashboardAuth',
+        JSON.stringify({ token: 'tok-3', expired: 30, status: 'ok' })
+      )
+      localStorage.setItem('usersDashboardLoginSource', 'users-dashboard-login')
+
+      usersDashboard.actions.initializeFromStorage({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOKEN', {
+        token: 'tok-3',
+        expiredIn: 30,
+        status: 'ok'
+      })
+      expect(commit).not.toHaveBeenCalledWith('SET_LANGUAGE', expect.anything())
+    })
   })
 
   describe('mutations', () => {
@@ -401,6 +419,27 @@ describe('usersDashboard store module (extra coverage)', () => {
       usersDashboard.mutations.SET_SAML_INFO(state, {})
       expect(state.samlProvider).toBeNull()
       expect(state.samlRedirectUrl).toBeNull()
+    })
+
+    it('SET_PERMISSIONS falls back to empty array for undefined payload', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_PERMISSIONS(state, undefined)
+      expect(state.permissions).toEqual([])
+    })
+
+    it('SET_LANGUAGE persists language to localStorage', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_LANGUAGE(state, 'de-DE')
+      expect(state.language).toBe('de-DE')
+      expect(localStorage.getItem('usersDashboardLanguage')).toBe('de-DE')
+    })
+
+    it('SET_USER_INFO merges partial payload into existing userInfo', () => {
+      const state = createState()
+      state.userInfo = { ...state.userInfo, name: 'Old Name', email: 'old@example.com' }
+      usersDashboard.mutations.SET_USER_INFO(state, { email: 'new@example.com' })
+      expect(state.userInfo.name).toBe('Old Name')
+      expect(state.userInfo.email).toBe('new@example.com')
     })
 
     it('SET_PHISHING_RESULT_LOADING', () => {
@@ -468,6 +507,47 @@ describe('usersDashboard store module (extra coverage)', () => {
       state.language = 'xx-XX'
       const labels = usersDashboard.getters.getLabels(state)
       expect(labels.leaderboardTitle).toBeDefined()
+    })
+
+    it('primitive getters return expected values', () => {
+      const state = createState()
+      state.token = 'tok'
+      state.companyEmail = 'company@example.com'
+      state.loginMethod = 'magic-link'
+      state.samlProvider = 'google'
+      state.samlRedirectUrl = 'https://redirect'
+      state.isAuthenticated = true
+
+      expect(usersDashboard.getters.getToken(state)).toBe('tok')
+      expect(usersDashboard.getters.getCompanyEmail(state)).toBe('company@example.com')
+      expect(usersDashboard.getters.getLoginMethod(state)).toBe('magic-link')
+      expect(usersDashboard.getters.getSamlProvider(state)).toBe('google')
+      expect(usersDashboard.getters.getSamlRedirectUrl(state)).toBe('https://redirect')
+      expect(usersDashboard.getters.isAuthenticated(state)).toBe(true)
+    })
+  })
+
+  describe('simple actions', () => {
+    it('setToken and setPermissions commit expected mutations', () => {
+      const commit = jest.fn()
+      usersDashboard.actions.setToken({ commit }, { token: 't1' })
+      usersDashboard.actions.setPermissions({ commit }, ['A|GET'])
+      expect(commit).toHaveBeenCalledWith('SET_TOKEN', { token: 't1' })
+      expect(commit).toHaveBeenCalledWith('SET_PERMISSIONS', ['A|GET'])
+    })
+
+    it('setLanguage and setUserInfo commit expected mutations', () => {
+      const commit = jest.fn()
+      usersDashboard.actions.setLanguage({ commit }, 'fr-FR')
+      usersDashboard.actions.setUserInfo({ commit }, { email: 'u@example.com' })
+      expect(commit).toHaveBeenCalledWith('SET_LANGUAGE', 'fr-FR')
+      expect(commit).toHaveBeenCalledWith('SET_USER_INFO', { email: 'u@example.com' })
+    })
+
+    it('logout commits RESET_STATE', () => {
+      const commit = jest.fn()
+      usersDashboard.actions.logout({ commit })
+      expect(commit).toHaveBeenCalledWith('RESET_STATE')
     })
   })
 })

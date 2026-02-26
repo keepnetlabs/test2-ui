@@ -212,6 +212,19 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
       expect(phishingsimulatorAPI.getCampaignTargetGroups).not.toHaveBeenCalled()
     })
 
+    it('should clear stale targetGroups when status is true but campaignResourceId is empty', () => {
+      const ctx = {
+        campaignResourceId: '',
+        targetGroups: [{ name: 'Old Group', count: 5 }],
+        fetchTargetGroups: jest.fn()
+      }
+
+      CampaignManagerTargetGroupsDialog.watch.status.handler.call(ctx, true)
+
+      expect(ctx.fetchTargetGroups).not.toHaveBeenCalled()
+      expect(ctx.targetGroups).toEqual([])
+    })
+
     it('should clear target groups when watcher receives false status', () => {
       const ctx = {
         campaignResourceId: 'campaign-123',
@@ -227,6 +240,34 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
   })
 
   describe('Methods - fetchTargetGroups', () => {
+    it('should clear stale targetGroups before applying new response', async () => {
+      let resolveRequest
+      phishingsimulatorAPI.getCampaignTargetGroups.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveRequest = resolve
+          })
+      )
+      const wrapper = mountComponent()
+      wrapper.vm.targetGroups = [{ name: 'Stale Group', count: 999 }]
+
+      const pending = wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual([])
+      expect(wrapper.vm.isLoading).toBe(true)
+
+      resolveRequest({
+        data: {
+          data: {
+            targetGroups: [{ name: 'Fresh Group', count: 1 }]
+          }
+        }
+      })
+      await pending
+
+      expect(wrapper.vm.targetGroups).toEqual([{ name: 'Fresh Group', count: 1 }])
+      expect(wrapper.vm.isLoading).toBe(false)
+    })
+
     it('should set isLoading to true during fetch', async () => {
       phishingsimulatorAPI.getCampaignTargetGroups.mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve(mockApiResponse), 50))
@@ -374,6 +415,12 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
   })
 
   describe('Methods - getGroupCount', () => {
+    it('should return 0 when count is explicitly zero', () => {
+      const wrapper = mountComponent()
+      const group = { count: 0, usersCount: 99 }
+      expect(wrapper.vm.getGroupCount(group)).toBe(0)
+    })
+
     it('should return count property when available', () => {
       const wrapper = mountComponent()
       const group = { count: 100 }
@@ -417,6 +464,17 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
   })
 
   describe('Methods - getGroupName', () => {
+    it('should return empty string for null group', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getGroupName(null)).toBe('')
+    })
+
+    it('should fallback to targetGroupName when name is empty string', () => {
+      const wrapper = mountComponent()
+      const group = { name: '', targetGroupName: 'Fallback Group' }
+      expect(wrapper.vm.getGroupName(group)).toBe('Fallback Group')
+    })
+
     it('should return name property when available', () => {
       const wrapper = mountComponent()
       const group = { name: 'Target Group A' }

@@ -634,7 +634,7 @@ export default {
       getVishingTemplate(this.templateId).then((response) => {
         this.formValues = {
           ...this.formValues,
-          ...(response?.data?.data || {})
+          ...response?.data?.data
         }
         for (const step of this.formValues.steps) {
           if (step.order === 1) {

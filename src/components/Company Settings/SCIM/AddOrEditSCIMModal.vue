@@ -309,7 +309,7 @@ export default {
               this.formData[key] = data[key]
             }
           }
-          this.initialFormData = JSON.parse(JSON.stringify(this.formData))
+          this.initialFormData = structuredClone(this.formData)
         })
         .finally(() => {
           this.isLoading = false
@@ -323,7 +323,7 @@ export default {
           value: resourceId,
           disabled: false
         }))
-        this.defaultScimFields = JSON.parse(JSON.stringify(this.scimFields))
+        this.defaultScimFields = structuredClone(this.scimFields)
       })
     },
     callForCustomFields() {
@@ -342,7 +342,7 @@ export default {
             customFieldResourceId: cField.value,
             scimFieldResourceId: ''
           }))
-          this.defaultCustomFields = JSON.parse(JSON.stringify(customFields))
+          this.defaultCustomFields = structuredClone(customFields)
         })
         .finally(() => (this.isLoading = false))
     },

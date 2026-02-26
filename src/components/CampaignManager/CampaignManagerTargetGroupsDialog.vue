@@ -139,6 +139,7 @@ export default {
     },
     getGroupCount,
     getGroupName(group) {
+      if (!group) return ''
       return group.name || group.targetGroupName || ''
     },
     handleClose() {

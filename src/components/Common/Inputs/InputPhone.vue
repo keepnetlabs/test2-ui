@@ -86,12 +86,12 @@ export default {
         newVal?.length > 12 &&
         this.$refs.refTelInput.phoneObject.possibility === 'too-long'
       ) {
-        if (this.regionCode !== this.$refs.refTelInput.phoneObject.regionCode) {
-          this.$refs.refTelInput.phone = newVal
-          this.$emit('input', newVal)
-        } else {
+        if (this.regionCode === this.$refs.refTelInput.phoneObject.regionCode) {
           this.$refs.refTelInput.phone = this.value
           this.$emit('input', this.value)
+        } else {
+          this.$refs.refTelInput.phone = newVal
+          this.$emit('input', newVal)
         }
       } else if (
         //CHINA BUG
@@ -120,13 +120,13 @@ export default {
       this.validatePhoneNumber()
     },
     setOldValueBySplitter(splitter = '-', newVal = '') {
-      if (!this.value) {
+      if (this.value) {
+        this.$refs.refTelInput.phone = this.value
+        this.$emit('input', this.value)
+      } else {
         const splittedVal = newVal?.split(splitter)?.[0]
         this.$refs.refTelInput.phone = splittedVal
         this.$emit('input', splittedVal)
-      } else {
-        this.$refs.refTelInput.phone = this.value
-        this.$emit('input', this.value)
       }
     },
     setValueSubStr(length, newVal) {

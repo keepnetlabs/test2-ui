@@ -659,13 +659,13 @@ export default {
   },
   created() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit || this.isDuplicate) {
       CallbackService.getCallbackTemplate(this.templateId).then((response) => {
         this.formValues = {
           ...this.formValues,
-          ...(response?.data?.data || {})
+          ...response?.data?.data
         }
         for (const step of this.formValues.steps) {
           step['isExpanded'] = false
@@ -692,7 +692,7 @@ export default {
         this.formValues.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
   },

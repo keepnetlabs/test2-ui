@@ -294,12 +294,12 @@ export default {
   },
   created() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDomainEditData(this.resourceId).then((res) => {
-        this.formValues = JSON.parse(JSON.stringify(res.data.data))
+        this.formValues = structuredClone(res.data.data)
         this.formValues.domain = res?.data?.data?.domain
         this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
         this.formValues.proxyStatusId = this.formValues.proxyStatusId?.toString()
@@ -313,7 +313,9 @@ export default {
           const availableForListFromBackend = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             availableForList
           )
-          if (!availableForListFromBackend.length) {
+          if (availableForListFromBackend.length) {
+            this.availableForRequests = availableForListFromBackend
+          } else {
             this.availableForRequests = [
               {
                 id: 'MyCompanyOnly',
@@ -322,8 +324,6 @@ export default {
                 resourceId: null
               }
             ]
-          } else {
-            this.availableForRequests = availableForListFromBackend
           }
         } else {
           this.availableForRequests = [
@@ -336,7 +336,7 @@ export default {
           ]
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
   },
@@ -348,7 +348,7 @@ export default {
       this.saveButtonDisabled = newValue
     },
     onTestConnectionValuesChange(isSuccess, isSave) {
-      this.formValuesAfterTest = JSON.parse(JSON.stringify(this.formValues))
+      this.formValuesAfterTest = structuredClone(this.formValues)
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         if (isSave) {

@@ -233,7 +233,7 @@
                                 >
                               </v-chip>
                             </template>
-                            <template #item="{ item,parent,attrs,on }">
+                            <template #item="{ item,attrs,on }">
                               <VListItem>
                                 <VListItemAction v-on="on">
                                   <VSimpleCheckbox
@@ -1138,9 +1138,9 @@ export default {
       this.getDatatableList()
     },
     setTableOption() {
-      return !this.isShowInvalid
-        ? `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
-        : `SHOW ALL ${this.mappingStatus.totalRowCount}`
+      return this.isShowInvalid
+        ? `SHOW ALL ${this.mappingStatus.totalRowCount}`
+        : `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
     },
     onlyImportNewUsers() {},
     onlyUpdateExistingUsers() {},
@@ -1316,8 +1316,7 @@ export default {
           })
           _this.tableData = data || []
 
-          _this.tableOptions.columns.push(...customFields)
-          _this.tableOptions.columns.push({
+          _this.tableOptions.columns.push(...customFields, {
             property: PROPERTY_STORE.STATUS,
             align: 'center',
             label: getStoreValue(PROPERTY_STORE.STATUS),
@@ -1498,20 +1497,20 @@ export default {
               selectedValue:
                 this.mappingData.columns.find(
                   (column) =>
-                    column?.name?.replace(/\s+/g, '')?.toLowerCase() ===
-                    item?.replace(/\s+/g, '')?.toLowerCase()
+                    column?.name?.replaceAll(/\s+/g, '')?.toLowerCase() ===
+                    item?.replaceAll(/\s+/g, '')?.toLowerCase()
                 ) || null,
               required:
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
                   return (
-                    name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                    name.toLowerCase().replaceAll(/ +/g, '') === item.toLowerCase().replaceAll(/ +/g, '')
                   )
                 }) &&
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
                   return (
-                    name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                    name.toLowerCase().replaceAll(/ +/g, '') === item.toLowerCase().replaceAll(/ +/g, '')
                   )
                 }).required
             }

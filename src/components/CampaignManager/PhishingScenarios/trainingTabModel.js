@@ -1,3 +1,26 @@
+const DEFAULT_ENROLLMENT_REMINDER = {
+  periodCount: 1,
+  periodType: 'Day',
+  endType: 'TrainingCompleted',
+  occurrenceCount: 1,
+  stopTime: '',
+  sendReminderEvery: false
+}
+
+const DEFAULT_TRAINING_REDIRECT_PAGE = {
+  informationMessage:
+    'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin',
+  redirectMessage: 'Please start the training and complete the training as soon as possible',
+  startButtonLabel: 'Start Training'
+}
+
+const DEFAULT_QUISHING_REDIRECT_PAGE = {
+  informationMessage:
+    'Because you failed the quishing simulation test, you have been assigned to a training selected by the company admin',
+  redirectMessage: 'Please start the training and complete the training as soon as possible',
+  startButtonLabel: 'Start Training'
+}
+
 export default class TrainingTabModel {
   constructor(
     trainingId = '',
@@ -7,20 +30,8 @@ export default class TrainingTabModel {
     enrollmentSendTypeId = '1',
     awardCertificate = false,
     certificateConfigSendType = 'SendOnFirstAttempt',
-    enrollmentReminder = {
-      periodCount: 1,
-      periodType: 'Day',
-      endType: 'TrainingCompleted',
-      occurrenceCount: 1,
-      stopTime: '',
-      sendReminderEvery: false
-    },
-    trainingRedirectPage = {
-      informationMessage:
-        'Because you failed the phishing simulation test, you have been assigned to a training selected by the company admin',
-      redirectMessage: 'Please start the training and complete the training as soon as possible',
-      startButtonLabel: 'Start Training'
-    }
+    enrollmentReminder = null,
+    trainingRedirectPage = null
   ) {
     this.trainingId = trainingId
     this.trainingName = trainingName
@@ -29,8 +40,8 @@ export default class TrainingTabModel {
     this.enrollmentSendTypeId = enrollmentSendTypeId
     this.awardCertificate = awardCertificate
     this.certificateConfigSendType = certificateConfigSendType
-    this.enrollmentReminder = enrollmentReminder
-    this.trainingRedirectPage = trainingRedirectPage
+    this.enrollmentReminder = enrollmentReminder ?? structuredClone(DEFAULT_ENROLLMENT_REMINDER)
+    this.trainingRedirectPage = trainingRedirectPage ?? structuredClone(DEFAULT_TRAINING_REDIRECT_PAGE)
   }
   static getTrainingRedirectPage() {
     return {
@@ -51,20 +62,8 @@ export class QuishingTrainingTabModel extends TrainingTabModel {
     enrollmentSendTypeId = '1',
     awardCertificate = false,
     certificateConfigSendType = 'SendOnFirstAttempt',
-    enrollmentReminder = {
-      periodCount: 1,
-      periodType: 'Day',
-      endType: 'TrainingCompleted',
-      occurrenceCount: 1,
-      stopTime: '',
-      sendReminderEvery: false
-    },
-    trainingRedirectPage = {
-      informationMessage:
-        'Because you failed the quishing simulation test, you have been assigned to a training selected by the company admin',
-      redirectMessage: 'Please start the training and complete the training as soon as possible',
-      startButtonLabel: 'Start Training'
-    }
+    enrollmentReminder = null,
+    trainingRedirectPage = null
   ) {
     super(
       trainingId,
@@ -75,7 +74,7 @@ export class QuishingTrainingTabModel extends TrainingTabModel {
       awardCertificate,
       certificateConfigSendType,
       enrollmentReminder,
-      trainingRedirectPage
+      trainingRedirectPage ?? structuredClone(DEFAULT_QUISHING_REDIRECT_PAGE)
     )
   }
 }

@@ -368,9 +368,9 @@ describe('InputAddress.vue', () => {
       expect(textarea.attributes('dense')).toBeDefined()
     })
 
-    it('should have street-address autocomplete', () => {
+    it('should have autocomplete off', () => {
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('autocomplete')).toBe('street-address')
+      expect(textarea.attributes('autocomplete')).toBe('off')
     })
 
     it('should have no-resize enabled', () => {
@@ -1169,5 +1169,65 @@ describe('InputAddress.vue', () => {
       expect(wrapper.vm.maxLength).toBe(400)
     })
 
+  })
+
+  describe('validation rule branch execution', () => {
+    it('should execute startsWithSpace rule with label message', () => {
+      Validations.startsWithSpace.mockReturnValueOnce(true)
+      const rule = wrapper.vm.rules.find(ruleFn => {
+        ruleFn('value')
+        return Validations.startsWithSpace.mock.calls.length > 0
+      })
+
+      expect(rule).toBeDefined()
+      expect(Validations.startsWithSpace).toHaveBeenCalledWith('value', labels.CannotStartWithSpace)
+    })
+
+    it('should execute maxLength rule with computed max length message', () => {
+      Validations.maxLength.mockReturnValueOnce(true)
+      const rule = wrapper.vm.rules.find(ruleFn => {
+        ruleFn('abc')
+        return Validations.maxLength.mock.calls.length > 0
+      })
+
+      expect(rule).toBeDefined()
+      expect(labels.getMaxLengthMessage).toHaveBeenCalledWith(labels.Address, 200)
+      expect(Validations.maxLength).toHaveBeenCalledWith(
+        'abc',
+        200,
+        'Address cannot exceed 200 characters'
+      )
+    })
+
+    it('should execute required rule when required=true', () => {
+      Validations.required.mockReturnValueOnce(true)
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          required: true
+        }
+      })
+
+      const result = wrapper.vm.rules[0]('filled')
+
+      expect(result).toBe(true)
+      expect(Validations.required).toHaveBeenCalledWith('filled')
+    })
+
+    it('should use custom initialRules instead of default validation rules', () => {
+      const customRule = jest.fn(() => true)
+      jest.clearAllMocks()
+      wrapper = shallowMount(InputAddress, {
+        propsData: {
+          initialRules: [customRule]
+        }
+      })
+
+      const result = wrapper.vm.rules[0]('custom-input')
+
+      expect(result).toBe(true)
+      expect(customRule).toHaveBeenCalledWith('custom-input')
+      expect(Validations.startsWithSpace).not.toHaveBeenCalled()
+      expect(Validations.maxLength).not.toHaveBeenCalled()
+    })
   })
 })

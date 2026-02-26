@@ -194,7 +194,7 @@ export default {
         .finally(() => (this.isLoading = false))
     },
     handleSelection(selection) {
-      this.selectedRows = JSON.parse(JSON.stringify(selection))
+      this.selectedRows = structuredClone(selection)
     },
     handleClose() {
       this.$emit('onClose')

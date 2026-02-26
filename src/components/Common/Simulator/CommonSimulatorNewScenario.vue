@@ -1022,7 +1022,7 @@ export default {
     if (this.isEdit) {
       this.callForScenario()
     } else {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
       this.isInitial = false
     }
     if (!(this.isEdit || this.isDuplicate))
@@ -1374,7 +1374,7 @@ export default {
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.initialFormValues = structuredClone(this.formValues)
           this.isFetched = true
           if (this.isQuishing) this.quishingType = response.data.data.templateType
         })
@@ -1434,7 +1434,7 @@ export default {
       })
     },
     nextStep() {
-      const currentStep = JSON.parse(JSON.stringify(this.step))
+      const currentStep = structuredClone(this.step)
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
         this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
@@ -1482,7 +1482,7 @@ export default {
                   this.selectedEmailTemplate.difficultyName
                 )
               }
-              this.summaryData.emailTemplate = JSON.parse(JSON.stringify(emailTemplateData))
+              this.summaryData.emailTemplate = structuredClone(emailTemplateData)
               this.summaryData.emailTemplate.fromEmailAddress = this.summaryData.emailTemplate.fromAddress
               this.summaryData.emailTemplate.cc = this.summaryData.emailTemplate.ccAddresses
               this.setPhishingEmailTemplates(this.summaryData)

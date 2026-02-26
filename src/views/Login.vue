@@ -990,11 +990,11 @@ export default {
     setQueryResetPasswordOrCreatePassword() {
       if (this.$route.query.cp) {
         this.pageNumber = 5;
-        this.token = this.getToken("cp", window.location.href);
+        this.token = this.getToken("cp", globalThis.location.href);
         this.resetType = "createPassword";
       } else if (this.$route.query.rp) {
         this.pageNumber = 5;
-        this.token = this.getToken("rp", window.location.href);
+        this.token = this.getToken("rp", globalThis.location.href);
         this.resetType = "resetPassword";
       }
     },

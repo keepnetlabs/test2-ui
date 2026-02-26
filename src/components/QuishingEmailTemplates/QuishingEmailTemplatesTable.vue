@@ -33,6 +33,13 @@
       @searchChangedEvent="handleSearchChange"
       @handleMultipleDelete="handleMultipleDelete"
     >
+      <template #datatable-custom-column="{ scope }">
+        <LanguagesColumn
+          v-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="preferredLanguageTypes"
+        />
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
@@ -142,10 +149,12 @@ import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/Defa
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 
 export default {
   name: 'QuishingEmailTemplatesTable',
   components: {
+    LanguagesColumn,
     ScenariosRowActionsDeleteButton,
     DefaultButtonRowAction,
     DefaultMenuRowAction,
@@ -154,6 +163,12 @@ export default {
     DataTable
   },
   mixins: [useLoading, useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  props: {
+    preferredLanguageTypes: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
@@ -169,7 +184,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.TEMPLATE_NAME,
           COMMON_SIMULATOR_COLUMNS.QUISHING_TYPE,
           COMMON_SIMULATOR_COLUMNS.QUISHING_CATEGORY_NAME,
-          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          { ...COMMON_SIMULATOR_COLUMNS.LANGUAGES, type: 'slot' },
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY_EMAIL_TEMPLATE,
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
@@ -273,7 +288,7 @@ export default {
     },
     checkIsQuishingTypePrintout(row) {
       if (!row) return false
-      return row.quishingType.toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      return (row.quishingType || '').toLowerCase() === QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
     },
     callForData() {
       this.setLoading(true)
@@ -361,7 +376,9 @@ export default {
         })
         const fileURL = URL.createObjectURL(file)
         const newWindow = window.open(fileURL)
+        if (!newWindow) return
         newWindow.onload = function () {
+          if (!newWindow.document) return
           setTimeout(() => {
             newWindow.document.title = 'Quishing PDF Preview'
           }, 250)

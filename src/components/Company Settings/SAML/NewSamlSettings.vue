@@ -603,7 +603,7 @@ export default {
     handleDomainToAddButtonClick() {
       if (
         this.$refs.refDomainToAddForm.validate() &&
-        !this.dataContainerWithSearchItems.some((item) => item === this.formValues.domainToAdd)
+        !this.dataContainerWithSearchItems.includes(this.formValues.domainToAdd)
       ) {
         this.dataContainerWithSearchItems.unshift(this.formValues.domainToAdd)
         this.formValues.domainToAdd = ''

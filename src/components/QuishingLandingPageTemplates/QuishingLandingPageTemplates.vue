@@ -57,6 +57,7 @@ import {
   SCENARIO_DELETE_DIALOG_TYPES
 } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
+import { getScenarioDataDetails } from '@/api/scenarios'
 import QuishingNewLandingPageModal from '@/components/QuishingLandingPageTemplates/QuishingNewLandingPageModal.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -139,31 +140,44 @@ export default {
       this.$refs?.refTable?.callForData()
     },
     callForLookups() {
-      LookupLocalStorage.getSingle(21).then((response) => {
-        this.languageOptions =
-          response?.map((language) => ({
-            text: language.isoFriendlyName,
-            languageTypeName: language.name,
-            value: language.resourceId,
-            code: language.description
-          })) || []
-      })
-      QuishingService.getLandingPageFormDetails().then((response) => {
-        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
-          return {
+      LookupLocalStorage.getSingle(21)
+        .then((response) => {
+          this.languageOptions =
+            response?.map((language) => ({
+              text: language.isoFriendlyName,
+              languageTypeName: language.name,
+              value: language.resourceId,
+              code: language.description
+            })) || []
+          return Promise.all([
+            QuishingService.getLandingPageFormDetails(),
+            getScenarioDataDetails()
+          ])
+        })
+        .then(([landingResponse, phishingResponse]) => {
+          const data = landingResponse?.data?.data || {}
+          const domainRecords = (data.domainRecords || []).map((item) => ({
             text: item.domain,
             value: item.id.toString(),
             extraDatas: [
-              {
-                text: item.urlSchemaType,
-                value: item.urlSchemaTypeId.toString()
-              },
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
               { text: item.isStopBotActivity, value: item.isStopBotActivity }
             ]
+          }))
+          const preferredRaw =
+            phishingResponse?.data?.data?.preferredLanguageTypes || []
+          const preferredLanguageTypes = preferredRaw
+            .map((lang) => {
+              const match = this.languageOptions.find((opt) => opt.value === lang.value)
+              return match ? { ...lang, text: match.text } : null
+            })
+            .filter(Boolean)
+          this.landingPageData = {
+            ...data,
+            domainRecords,
+            preferredLanguageTypes
           }
         })
-        this.landingPageData = { ...response.data.data, domainRecords }
-      })
     },
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newLandingPage) {

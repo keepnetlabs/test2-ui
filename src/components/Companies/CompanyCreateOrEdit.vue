@@ -1011,7 +1011,7 @@ export default {
   },
   mounted() {
     this.callForExpiryDateLimited()
-    this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
+    this.defaultFormData = structuredClone(this.formData)
     this.getLookupContents()
     this.getCompanyGroups()
     this.fetchCountryTimezones()
@@ -1057,7 +1057,7 @@ export default {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
           this.companyGroupList.push(x)
         })
-      this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
+      this.defaultFormData = structuredClone(this.formData)
     }
   },
   methods: {
@@ -1066,18 +1066,18 @@ export default {
 
       let normalized = format
         // . ile / değiştir
-        .replace(/\./g, '/')
+        .replaceAll(/\./g, '/')
         // - ile / değiştir
-        .replace(/-/g, '/')
+        .replaceAll(/-/g, '/')
 
       // Tek d'yi dd yap (yyyy'yi etkilememek için kelime sınırlarını kullan)
-      normalized = normalized.replace(/\b(d)\b/g, 'dd')
+      normalized = normalized.replaceAll(/\b(d)\b/g, 'dd')
       // Tek M'yi MM yap
-      normalized = normalized.replace(/\b(M)\b/g, 'MM')
+      normalized = normalized.replaceAll(/\b(M)\b/g, 'MM')
       // Tek y'yi yyyy yap
-      normalized = normalized.replace(/\b(y)\b/g, 'yyyy')
+      normalized = normalized.replaceAll(/\b(y)\b/g, 'yyyy')
       // yy'yi yyyy yap
-      normalized = normalized.replace(/\byy\b/g, 'yyyy')
+      normalized = normalized.replaceAll(/\byy\b/g, 'yyyy')
 
       return normalized
     },
@@ -1140,7 +1140,7 @@ export default {
         }
       }
       const selectedStartDateInMs = selectedStartDate.getTime() + 1000 * 60 * 60 * 24
-      return selectedStartDateInMs > val.getTime() || val.getTime() < new Date().getTime()
+      return selectedStartDateInMs > val.getTime() || val.getTime() < Date.now()
     },
     handleCancel() {
       if (this.isFormDataChanged()) {

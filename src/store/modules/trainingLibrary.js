@@ -509,16 +509,18 @@ const trainingLibrary = {
         value = payload.activeValue.trim();
       } else if (Array.isArray(payload.activeValue)) {
         if (payload.activeOperator === "between") {
-          filterItems.push({
-            FieldName: payloadKey,
-            Value: payload.activeValue[0],
-            Operator: ">="
-          });
-          filterItems.push({
-            FieldName: payloadKey,
-            Value: payload.activeValue[1],
-            Operator: "<="
-          });
+          filterItems.push(
+            {
+              FieldName: payloadKey,
+              Value: payload.activeValue[0],
+              Operator: ">="
+            },
+            {
+              FieldName: payloadKey,
+              Value: payload.activeValue[1],
+              Operator: "<="
+            }
+          );
           state.tableFilterRenderKey = `table-filter-render-key-${createRandomCryptStringNumber()}`;
           return;
         }

@@ -654,8 +654,7 @@ export default {
           (item) => item.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
         );
         if (directEmailItems.length) {
-          deliveries.push({ header: "Direct Email Creation" });
-          deliveries.push(...directEmailItems);
+          deliveries.push({ header: "Direct Email Creation" }, ...directEmailItems);
         }
         this.emailDeliveryItems = deliveries;
       });
@@ -798,19 +797,21 @@ export default {
         this.companyLanguageTypeResourceId || "";
 
       const grouped = [];
-      grouped.push({
-        value: 1,
-        text: "Preferred Languages",
-        children: preferredLanguageTypes
-      });
-      grouped.push({
-        value: 5,
-        text: "All Languages",
-        children: languageTypes.filter(
-          (item) =>
-            !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
-        )
-      });
+      grouped.push(
+        {
+          value: 1,
+          text: "Preferred Languages",
+          children: preferredLanguageTypes
+        },
+        {
+          value: 5,
+          text: "All Languages",
+          children: languageTypes.filter(
+            (item) =>
+              !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
+          )
+        }
+      );
       this.groupedLanguageItems = grouped;
 
       // Initial açılışta category'den template set et
@@ -881,15 +882,15 @@ export default {
     },
     closeOverlay() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues);
-      if (!isChanged) {
-        return this.$emit("closeOverlay");
-      } else {
+      if (isChanged) {
         this.$store.dispatch("common/setIsShowLeavingDialog", {
           show: true,
           callback: () => {
             this.$emit("closeOverlay");
           }
         });
+      } else {
+        return this.$emit("closeOverlay");
       }
     },
     callForMergedTags(resourceId = "") {
@@ -982,12 +983,12 @@ export default {
           });
         }
       }
-      if (!this.blockManagerComponents.hasOwnProperty(resourceId)) {
-        this.callForMergedTags(resourceId);
-      } else {
+      if (this.blockManagerComponents.hasOwnProperty(resourceId)) {
         this.setActiveBlockManagerComponents(
           this.blockManagerComponents[resourceId]
         );
+      } else {
+        this.callForMergedTags(resourceId);
       }
     },
     submit() {

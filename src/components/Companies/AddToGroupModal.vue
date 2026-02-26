@@ -201,7 +201,7 @@ export default {
         FilterItems: [],
         FilterGroups: []
       }
-      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
+      const copyOfFilter = structuredClone(this.payload.filter)
       if (this.$refs.refGroupDataList && this.$refs.refGroupDataList.search) {
         searchFilter.FilterItems = this.$refs.refGroupDataList
           .getSearchFilterItems()

@@ -1551,7 +1551,7 @@ export default {
     disabledDates(date) {
       const lastYear = new Date()
       lastYear.setFullYear(lastYear.getFullYear() - 1)
-      return date.getTime() < lastYear.getTime() || date.getTime() > new Date().getTime()
+      return date.getTime() < lastYear.getTime() || date.getTime() > Date.now()
     },
     getSmartWidgetStyle(item) {
       // Activity widgets should have auto height instead of grid-defined height

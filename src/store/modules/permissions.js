@@ -849,7 +849,7 @@ const store = {
         SEARCH_LOG?.hasPermission,
         SEARCH_STATS?.hasPermission,
         NOTIFY_RESULT?.hasPermission
-      ].some((permission) => permission)
+      ].some(Boolean)
     },
     getCrossCompanyPagePermissions() {
       const { SEARCH_LOG = {}, SEARCH_STATS = {} } =
