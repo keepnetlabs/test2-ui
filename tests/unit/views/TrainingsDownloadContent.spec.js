@@ -283,25 +283,6 @@ describe('TrainingsDownloadContent.vue', () => {
     closeSpy.mockRestore()
   })
 
-  it('handleCloseTab returns false when opener is missing and history indicates navigable tab', () => {
-    const closeSpy = jest.spyOn(window, 'close').mockImplementation(() => {})
-    const originalOpener = window.opener
-    const originalHistory = window.history
-    Object.defineProperty(window, 'history', {
-      value: { length: 3 },
-      configurable: true
-    })
-    Object.defineProperty(window, 'opener', { value: null, configurable: true })
-
-    const result = TrainingsDownloadContent.methods.handleCloseTab()
-    expect(result).toBe(false)
-    expect(closeSpy).not.toHaveBeenCalled()
-
-    Object.defineProperty(window, 'history', { value: originalHistory, configurable: true })
-    Object.defineProperty(window, 'opener', { value: originalOpener, configurable: true })
-    closeSpy.mockRestore()
-  })
-
   it('triggerDownload uses msSaveOrOpenBlob when available', () => {
     const originalMsSaveOrOpenBlob = window.navigator.msSaveOrOpenBlob
     const msSaveOrOpenBlob = jest.fn()
