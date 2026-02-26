@@ -116,6 +116,33 @@ describe('ThreatSharing.vue', () => {
     expect(vm.isTableReload).toBe(true)
   })
 
+  it('beforeRouteEnter keeps state unchanged when returning from Community without cached data', () => {
+    const next = jest.fn()
+    ThreatSharing.beforeRouteEnter({ query: {}, params: {} }, { name: 'Community' }, next)
+
+    const vm = {
+      tab: 0,
+      isLoadState: false,
+      isTableReload: false,
+      $route: { query: {}, params: {} },
+      $router: { push: jest.fn() },
+      getCommunityPostsPermission: true,
+      getAllCommunitiesPermission: true,
+      $store: {
+        state: {
+          incidents: { incidents: { incidentsData: null } },
+          communities: { communities: { communitiesData: null } },
+          tableReload: { tableReload: false }
+        }
+      }
+    }
+    const callback = next.mock.calls[0][0]
+    callback(vm)
+    expect(vm.tab).toBe(0)
+    expect(vm.isLoadState).toBe(false)
+    expect(vm.isTableReload).toBe(false)
+  })
+
   it('beforeRouteLeave blocks navigation for open modal states, otherwise allows', () => {
     const next = jest.fn()
     const onCancelClicked = jest.fn()
@@ -151,6 +178,17 @@ describe('ThreatSharing.vue', () => {
     const ctx4 = { $refs: {} }
     ThreatSharing.beforeRouteLeave.call(ctx4, {}, {}, next)
     expect(next).toHaveBeenCalledWith()
+  })
+
+  it('beforeRouteLeave allows when new community form is already submitted', () => {
+    const next = jest.fn()
+    const ctx = {
+      isWantToAddNewCommunity: true,
+      $refs: { refNewCommunity: { isSubmitted: true, onCancelClicked: jest.fn() } }
+    }
+    ThreatSharing.beforeRouteLeave.call(ctx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
+    expect(ctx.$refs.refNewCommunity.onCancelClicked).not.toHaveBeenCalled()
   })
 
   it('setThreatSharingStepLoading, setLoadState, openCreateCommunityModal, onAddClose work as expected', () => {

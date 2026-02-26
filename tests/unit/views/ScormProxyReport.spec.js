@@ -129,4 +129,27 @@ describe('ScormProxyReport.vue', () => {
     expect(ctx.tabItems).toHaveLength(8)
     expect(ctx.isLoading).toBe(false)
   })
+
+  it('callForSummary uses safe defaults when summary payload is missing', async () => {
+    AwarenessEducatorService.getTrainingReportSummary.mockResolvedValueOnce({ data: {} })
+    AwarenessEducatorService.getScormProxyTrainingReportSummary.mockResolvedValueOnce({ data: {} })
+    const dispatch = jest.fn()
+    const ctx = {
+      id: 't-3',
+      isLoading: false,
+      isSurvey: false,
+      trainingSummary: null,
+      scormTrainingSummary: null,
+      tabItems: [{}, {}, {}, {}, {}, {}, {}, {}],
+      $store: { dispatch }
+    }
+
+    methods.callForSummary.call(ctx)
+    await flushPromises()
+
+    expect(ctx.trainingSummary).toBeUndefined()
+    expect(ctx.isSurvey).toBeUndefined()
+    expect(dispatch).toHaveBeenCalledWith('common/setActivePageRouterName', '')
+    expect(ctx.isLoading).toBe(false)
+  })
 })

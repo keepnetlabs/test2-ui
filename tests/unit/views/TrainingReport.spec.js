@@ -231,6 +231,35 @@ describe('TrainingReport.vue', () => {
     )
   })
 
+  it('callForSummary keeps default tabs for normal training and uses default query type', async () => {
+    AwarenessEducatorService.getTrainingReportSummary.mockResolvedValueOnce({
+      data: {
+        data: {
+          name: 'Classic Training',
+          trainingTypeName: 'OtherType',
+          deliveryMethod: ['Email'],
+          trainingDetails: { hasQuiz: false }
+        }
+      }
+    })
+    const dispatch = jest.fn()
+    const ctx = {
+      ...TrainingReport.data(),
+      id: 'normal-id',
+      $route: { query: {} },
+      $store: { dispatch }
+    }
+    const initialLength = ctx.tabItems.length
+    await TrainingReport.methods.callForSummary.call(ctx)
+    await flushPromises()
+
+    expect(AwarenessEducatorService.getTrainingReportSummary).toHaveBeenCalledWith('normal-id', 0)
+    expect(ctx.tabItems).toHaveLength(initialLength)
+    expect(ctx.isMicrosoftTeams).toBe(false)
+    expect(dispatch).toHaveBeenCalledWith('common/setActiveTrainingType', 'OtherType')
+    expect(ctx.isLoading).toBe(false)
+  })
+
   it('handleTabClick refreshes summary only on Summary tab', async () => {
     AwarenessEducatorService.getTrainingReportSummary.mockResolvedValue({
       data: { data: { name: 'Reloaded' } }
@@ -250,5 +279,19 @@ describe('TrainingReport.vue', () => {
     AwarenessEducatorService.getTrainingReportSummary.mockClear()
     await TrainingReport.methods.handleTabClick.call(ctx, { name: labels.Users })
     expect(AwarenessEducatorService.getTrainingReportSummary).not.toHaveBeenCalled()
+  })
+
+  it('handleTabClick uses default training type when query is missing', async () => {
+    AwarenessEducatorService.getTrainingReportSummary.mockResolvedValueOnce({
+      data: { data: { name: 'Reloaded 2' } }
+    })
+    const ctx = {
+      id: 'tab-id-2',
+      trainingSummary: null,
+      $route: {}
+    }
+    await TrainingReport.methods.handleTabClick.call(ctx, { name: labels.Summary })
+    await flushPromises()
+    expect(AwarenessEducatorService.getTrainingReportSummary).toHaveBeenCalledWith('tab-id-2', 0)
   })
 })

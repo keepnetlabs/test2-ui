@@ -885,7 +885,7 @@ export default {
                       `width:${width}px;`
                     );
                     commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-                      /width:undefinedpx;/g,
+                      'width:undefinedpx;',
                       `width:${width}px;`
                     );
                   }, 500);
@@ -896,7 +896,7 @@ export default {
                       `width:${styleChanges?.to?.value}px;`
                     );
                     commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-                      /width:undefinedpx;/g,
+                      'width:undefinedpx;',
                       `width:${styleChanges?.to?.value}px;`
                     );
                   }, 500);
@@ -945,7 +945,7 @@ export default {
                 `width:${Math.round(width)}px;`
               );
               commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-                /width:undefinedpx/g,
+                'width:undefinedpx',
                 `width:${Math.round(width)}px;`
               );
             }
@@ -964,7 +964,7 @@ export default {
               `width:180px;`
             );
             commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-              /width:undefinedpx/g,
+              'width:undefinedpx',
               `width:180px;`
             );
             commentElement.attributes.content = commentElement.attributes.content.replaceAll(

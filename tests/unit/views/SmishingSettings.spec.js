@@ -21,6 +21,17 @@ describe('SmishingSettings.vue', () => {
     expect(excludeCtx.tab).toBe('ExcludeIpAddress')
   })
 
+  it('created keeps Domains when no permission condition matches', () => {
+    const ctx = {
+      tab: 'Domains',
+      getSmishingDomainSearchPermissions: false,
+      getSmishingDnsSearchPermissions: false,
+      getSmishingExcludedIpGetPermissions: false
+    }
+    SmishingSettings.created.call(ctx)
+    expect(ctx.tab).toBe('Domains')
+  })
+
   it('beforeRouteLeave blocks for open domain/dns modals and handles exclude-ip dirty state', () => {
     const next = jest.fn()
 
@@ -94,5 +105,14 @@ describe('SmishingSettings.vue', () => {
 
     SmishingSettings.methods.changeTabStatus.call(ctx, 'DNSServices')
     expect(ctx.tab).toBe('DNSServices')
+  })
+
+  it('beforeRouteLeave allows when exclude ip data is unchanged', () => {
+    const next = jest.fn()
+    const ctx = {
+      $refs: { refExcludeIPAddress: { isInitialDataAndModelEqual: true } }
+    }
+    SmishingSettings.beforeRouteLeave.call(ctx, {}, {}, next)
+    expect(next).toHaveBeenCalledWith()
   })
 })

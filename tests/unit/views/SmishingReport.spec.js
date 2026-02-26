@@ -35,6 +35,12 @@ describe('SmishingReport.vue', () => {
     expect(SmishingReport.computed.getPhishingScenarioName.call(ctx)).toBe('Scenario A')
   })
 
+  it('computed helpers return safe fallback values for missing route/store data', () => {
+    expect(SmishingReport.computed.id.call({ $route: {} })).toBeUndefined()
+    expect(SmishingReport.computed.instanceGroup.call({ $route: {} })).toBeUndefined()
+    expect(SmishingReport.computed.getPhishingScenarioName.call({ $store: { state: {} } })).toBe('')
+  })
+
   it('watch route id calls setSubmittedDataTabLabel when id exists', () => {
     const ctx = { setSubmittedDataTabLabel: jest.fn() }
 
@@ -125,6 +131,29 @@ describe('SmishingReport.vue', () => {
     const tabNames = ctx.tabItems.map((item) => item.name)
     expect(tabNames).toContain(labels.SubmittedData)
     expect(tabNames).toContain('Submitted MFA Code')
+    expect(ctx.isLoading).toBe(false)
+  })
+
+  it('setSubmittedDataTabLabel keeps tabs unchanged when scenario list is empty', async () => {
+    SmishingService.getCampaignJobSummary.mockResolvedValueOnce({
+      data: { data: { campaignDurationExpired: false, scenarios: [] } }
+    })
+    const initialTabs = [{ name: labels.Summary }, { name: labels.Clicked }]
+    const ctx = {
+      id: 'cmp-2',
+      instanceGroup: 'grp-2',
+      isLoading: true,
+      apiResponse: {},
+      campaignDurationExpired: true,
+      tabItems: [...initialTabs],
+      $store: { getters: { 'permissions/getSmishingReportSearchTypePermissions': true } }
+    }
+
+    SmishingReport.methods.setSubmittedDataTabLabel.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tabItems).toEqual(initialTabs)
+    expect(ctx.campaignDurationExpired).toBe(false)
     expect(ctx.isLoading).toBe(false)
   })
 })

@@ -69,6 +69,17 @@ describe('Settings.vue', () => {
     expect(ctx.tab).toBe('Domains')
   })
 
+  it('created hook keeps Domains when no settings permission is enabled', () => {
+    const ctx = {
+      tab: 'Domains',
+      getDomainSearchPermissions: false,
+      getDnsSearchPermissions: false,
+      getExcludedIpAddressGetPermissions: false
+    }
+    Settings.created.call(ctx)
+    expect(ctx.tab).toBe('Domains')
+  })
+
   it('beforeRouteLeave blocks navigation and asks domain modal to close', () => {
     const next = jest.fn()
     const checkIfCanCloseDomainModal = jest.fn()
@@ -227,5 +238,22 @@ describe('Settings.vue', () => {
 
     expect(ctx.tab).toBe('ExcludeIpAddress')
     expect(dispatch).not.toHaveBeenCalled()
+  })
+
+  it('changeTabStatus keeps tab and opens leaving flow when exclude-ip ref is missing', () => {
+    const ctx = {
+      tab: 'ExcludeIpAddress',
+      $store: { dispatch: jest.fn((_, payload) => payload.callback()) },
+      $refs: {
+        refTabs: { value: 'ExcludeIpAddress', currentName: 'ExcludeIpAddress' }
+      }
+    }
+    Settings.methods.changeTabStatus.call(ctx, 'Domains')
+    expect(ctx.tab).toBe('Domains')
+    expect(ctx.$refs.refTabs.value).toBe('ExcludeIpAddress')
+    expect(ctx.$store.dispatch).toHaveBeenCalledWith(
+      'common/setIsShowLeavingDialog',
+      expect.objectContaining({ show: true })
+    )
   })
 })

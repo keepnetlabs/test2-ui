@@ -146,6 +146,31 @@ describe('TrainingsDownloadContent.vue', () => {
     expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'download.pdf')
   })
 
+  it('handleDownload prefers utf8 filename from content-disposition', async () => {
+    axios.get.mockResolvedValueOnce({
+      data: new Blob(['x']),
+      headers: {
+        'content-disposition': "attachment; filename*=UTF-8''custom%20name.txt",
+        'content-type': 'text/plain'
+      }
+    })
+    const triggerDownload = jest.fn()
+    const ctx = {
+      isLoading: true,
+      statusMessage: 'Preparing download...',
+      shouldShowCloseButton: false,
+      $route: { query: { EnrollmentContentId: 'ec-utf', TargetUserResourceId: 'tu-utf' } },
+      getFileNameFromDisposition: TrainingsDownloadContent.methods.getFileNameFromDisposition,
+      getExtensionFromType: TrainingsDownloadContent.methods.getExtensionFromType,
+      triggerDownload,
+      handleAutoClose: jest.fn()
+    }
+
+    await TrainingsDownloadContent.methods.handleDownload.call(ctx)
+    await flushPromises()
+    expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'custom name.txt')
+  })
+
   it('handleDownload falls back to plain download name when content type has no extension', async () => {
     axios.get.mockResolvedValueOnce({
       data: new Blob(['x']),
@@ -253,6 +278,25 @@ describe('TrainingsDownloadContent.vue', () => {
       expect(closeSpy).not.toHaveBeenCalled()
     }
 
+    Object.defineProperty(window, 'opener', { value: originalOpener, configurable: true })
+    closeSpy.mockRestore()
+  })
+
+  it('handleCloseTab returns false when opener is missing and history indicates navigable tab', () => {
+    const closeSpy = jest.spyOn(window, 'close').mockImplementation(() => {})
+    const originalOpener = window.opener
+    const originalHistory = window.history
+    Object.defineProperty(window, 'history', {
+      value: { length: 3 },
+      configurable: true
+    })
+    Object.defineProperty(window, 'opener', { value: null, configurable: true })
+
+    const result = TrainingsDownloadContent.methods.handleCloseTab()
+    expect(result).toBe(false)
+    expect(closeSpy).not.toHaveBeenCalled()
+
+    Object.defineProperty(window, 'history', { value: originalHistory, configurable: true })
     Object.defineProperty(window, 'opener', { value: originalOpener, configurable: true })
     closeSpy.mockRestore()
   })

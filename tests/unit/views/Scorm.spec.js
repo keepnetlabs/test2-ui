@@ -85,6 +85,17 @@ describe('Scorm.vue', () => {
     expect(ctx.src).toBe('')
   })
 
+  it('callForData handles missing route query safely', () => {
+    const ctx = {
+      src: 'initial',
+      registerFrameChannelForQuestionExtractorProxy: jest.fn(),
+      $route: {}
+    }
+    Scorm.methods.callForData.call(ctx)
+    expect(AwarenessEducatorService.getTrainingUrl).not.toHaveBeenCalled()
+    expect(ctx.src).toBe('initial')
+  })
+
   it('callForData alerts when training url request fails', async () => {
     const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {})
     AwarenessEducatorService.getTrainingUrl.mockRejectedValueOnce({

@@ -1,4 +1,6 @@
 import TrainingLibrary from '@/views/TrainingLibrary.vue'
+import { shallowMount } from '@vue/test-utils'
+import Vuex from 'vuex'
 
 describe('TrainingLibrary.vue', () => {
   it('has correct component name', () => {
@@ -46,5 +48,49 @@ describe('TrainingLibrary.vue', () => {
 
     TrainingLibrary.beforeDestroy.call(ctx)
     expect(ctx.resetState).toHaveBeenCalledTimes(1)
+  })
+
+  it('isListView getter drives rendered card component branch', () => {
+    const createWrapper = (isListView) => {
+      const store = new Vuex.Store({
+        modules: {
+          trainingLibrary: {
+            namespaced: true,
+            getters: {
+              getIsListView: () => isListView
+            },
+            actions: {
+              initDefaultTableSettings: jest.fn(),
+              initDefaultTableFilters: jest.fn(),
+              callForTrainingLibrary: jest.fn(),
+              resetState: jest.fn(),
+              resetAllModals: jest.fn()
+            }
+          },
+          trainingLibraryHelpers: {
+            namespaced: true,
+            actions: { callForTrainingHelpers: jest.fn() }
+          }
+        }
+      })
+      return shallowMount(TrainingLibrary, {
+        store,
+        stubs: {
+          KContainer: true,
+          TrainingLibraryCommonComponents: true,
+          TrainingLibraryFirstCard: true,
+          TrainingLibraryListViewCard: true,
+          TrainingLibraryCardView: true
+        }
+      })
+    }
+
+    const listWrapper = createWrapper(true)
+    expect(listWrapper.vm.isListView).toBe(true)
+    listWrapper.destroy()
+
+    const cardWrapper = createWrapper(false)
+    expect(cardWrapper.vm.isListView).toBe(false)
+    cardWrapper.destroy()
   })
 })

@@ -15,6 +15,17 @@ describe('QuishingSimulator.vue', () => {
     expect(ctx.tab).toBe('emailTemplates')
   })
 
+  it('created keeps default tab when no permission combination matches', () => {
+    const ctx = {
+      tab: 'scenarios',
+      getPhishingScenariosSearchPermissions: false,
+      getEmailTemplatesSearchPermissions: false,
+      getLandingPageTemplatesSearchPermissions: false
+    }
+    QuishingSimulator.created.call(ctx)
+    expect(ctx.tab).toBe('scenarios')
+  })
+
   it('default tab is scenarios', () => {
     const data = QuishingSimulator.data()
     expect(data.tab).toBe('scenarios')
