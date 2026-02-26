@@ -198,6 +198,8 @@ describe('DomainsList.vue', () => {
     const createObjectURLSpy = jest
       .spyOn(globalThis.URL, 'createObjectURL')
       .mockImplementation(() => 'blob:test-url')
+    const initialCreateObjectURLCallCount = createObjectURLSpy.mock.calls.length
+    const initialClickCallCount = click.mock.calls.length
 
     wrapper.vm.exportDomains({
       exportTypes: ['XLS', 'CSV'],
@@ -222,8 +224,8 @@ describe('DomainsList.vue', () => {
         exportType: 'CSV'
       })
     )
-    expect(createObjectURLSpy).toHaveBeenCalledTimes(2)
-    expect(click).toHaveBeenCalledTimes(2)
+    expect(createObjectURLSpy.mock.calls.length - initialCreateObjectURLCallCount).toBe(2)
+    expect(click.mock.calls.length - initialClickCallCount).toBe(2)
 
     createElementSpy.mockRestore()
     createObjectURLSpy.mockRestore()
