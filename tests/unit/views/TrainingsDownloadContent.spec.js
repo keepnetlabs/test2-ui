@@ -9,6 +9,7 @@ jest.mock('axios', () => ({
 }))
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
+const mockBlobData = typeof Blob !== 'undefined' ? new Blob(['x']) : 'mock-blob'
 
 describe('TrainingsDownloadContent.vue', () => {
   beforeEach(() => {
@@ -76,7 +77,7 @@ describe('TrainingsDownloadContent.vue', () => {
 
   it('handleDownload success path triggers download and auto-close setup', async () => {
     axios.get.mockResolvedValueOnce({
-      data: new Blob(['x']),
+      data: mockBlobData,
       headers: {
         'content-disposition': 'attachment; filename="course.pdf"',
         'content-type': 'application/pdf'
@@ -111,7 +112,7 @@ describe('TrainingsDownloadContent.vue', () => {
         responseType: 'blob'
       })
     )
-    expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'course.pdf')
+    expect(triggerDownload).toHaveBeenCalledWith(mockBlobData, 'course.pdf')
     expect(ctx.statusMessage).toBe('Your download should start shortly.')
     expect(ctx.shouldShowCloseButton).toBe(true)
     expect(handleAutoClose).toHaveBeenCalledTimes(1)
@@ -120,7 +121,7 @@ describe('TrainingsDownloadContent.vue', () => {
 
   it('handleDownload uses fallback filename when disposition header is missing', async () => {
     axios.get.mockResolvedValueOnce({
-      data: new Blob(['x']),
+      data: mockBlobData,
       headers: {
         'content-type': 'application/pdf'
       }
@@ -143,7 +144,7 @@ describe('TrainingsDownloadContent.vue', () => {
     await TrainingsDownloadContent.methods.handleDownload.call(ctx)
     await flushPromises()
 
-    expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'download.pdf')
+    expect(triggerDownload).toHaveBeenCalledWith(mockBlobData, 'download.pdf')
   })
 
   it('handleDownload prefers utf8 filename from content-disposition', async () => {
@@ -173,7 +174,7 @@ describe('TrainingsDownloadContent.vue', () => {
 
   it('handleDownload falls back to plain download name when content type has no extension', async () => {
     axios.get.mockResolvedValueOnce({
-      data: new Blob(['x']),
+      data: mockBlobData,
       headers: {
         'content-type': 'application/octet-stream'
       }
@@ -196,7 +197,7 @@ describe('TrainingsDownloadContent.vue', () => {
     await TrainingsDownloadContent.methods.handleDownload.call(ctx)
     await flushPromises()
 
-    expect(triggerDownload).toHaveBeenCalledWith(expect.any(Blob), 'download')
+    expect(triggerDownload).toHaveBeenCalledWith(mockBlobData, 'download')
   })
 
   it('handleDownload failure path sets failed message and close button', async () => {
@@ -309,7 +310,7 @@ describe('TrainingsDownloadContent.vue', () => {
       configurable: true
     })
 
-    TrainingsDownloadContent.methods.triggerDownload(new Blob(['x']), 'a.pdf')
+    TrainingsDownloadContent.methods.triggerDownload(mockBlobData, 'a.pdf')
     expect(msSaveOrOpenBlob).toHaveBeenCalled()
 
     Object.defineProperty(window.navigator, 'msSaveOrOpenBlob', {
@@ -336,7 +337,7 @@ describe('TrainingsDownloadContent.vue', () => {
     const removeSpy = jest.spyOn(Element.prototype, 'remove').mockImplementation(() => {})
     const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
 
-    TrainingsDownloadContent.methods.triggerDownload(new Blob(['x']), 'b.pdf')
+    TrainingsDownloadContent.methods.triggerDownload(mockBlobData, 'b.pdf')
 
     expect(window.URL.createObjectURL).toHaveBeenCalled()
     expect(appendChildSpy).toHaveBeenCalledWith(link)
