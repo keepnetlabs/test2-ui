@@ -333,7 +333,7 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
             this.serverSideProps.pageNumber = pageNumber;
             this.tableData = results.map((item) => {
-              const newItem = JSON.parse(JSON.stringify(item));
+              const newItem = structuredClone(item);
               delete newItem["frequencyCount"];
               newItem.total = Number(item["frequencyCount"]) || 0;
               return newItem;

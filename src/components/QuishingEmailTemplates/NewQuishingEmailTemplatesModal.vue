@@ -392,7 +392,7 @@ export default {
     this.callForMergedTags()
     this.callForLanguages()
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit) {
       QuishingService.getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
@@ -429,7 +429,7 @@ export default {
             }
           ]
         }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
@@ -479,7 +479,7 @@ export default {
               isDeletable: true
             }))
             this.formValues.importedEmailAttachments = attachments
-            this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
+            this.formValues.attachmentFilesFromApi = structuredClone(attachments)
           }
         })
       }

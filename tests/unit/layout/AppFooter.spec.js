@@ -5,18 +5,18 @@ describe('AppFooter.vue', () => {
   const createWrapper = (options = {}) =>
     shallowMount(AppFooter, {
       propsData: {
-        brandName: 'Test Brand',
         ...(options.propsData || {})
       },
       mocks: {
         $store: {
           getters: {
-            'whitelabel/getFooterLinks': {
-              footerPrivacyPolicyUrl: '/privacy',
-              footerTermsAndConditionsUrl: '/terms',
-              footerCookiePolicyUrl: '/cookie',
-              footerEulaUrl: '/eula'
-            }
+            'whitelabel/getFooterLinks':
+              options.footerLinks || {
+                footerPrivacyPolicyUrl: '/privacy',
+                footerTermsAndConditionsUrl: '/terms',
+                footerCookiePolicyUrl: '/cookie',
+                footerEulaUrl: '/eula'
+              }
           }
         }
       }
@@ -36,8 +36,15 @@ describe('AppFooter.vue', () => {
   })
 
   it('renders with brandName prop', () => {
-    const wrapper = createWrapper()
+    const wrapper = createWrapper({
+      propsData: { brandName: 'Test Brand' }
+    })
     expect(wrapper.text()).toContain('Test Brand')
+  })
+
+  it('renders with default brandName when prop is not provided', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.text()).toContain('Keepnet Labs')
   })
 
   it('renders footer links from store getter', () => {
@@ -51,7 +58,9 @@ describe('AppFooter.vue', () => {
   })
 
   it('renders all policy labels and opens links in new tab', () => {
-    const wrapper = createWrapper()
+    const wrapper = createWrapper({
+      propsData: { brandName: 'Test Brand' }
+    })
     const anchors = wrapper.findAll('a')
 
     expect(wrapper.text()).toContain('Privacy Policy')
@@ -66,8 +75,28 @@ describe('AppFooter.vue', () => {
   })
 
   it('shows current year in footer text', () => {
-    const wrapper = createWrapper()
+    const wrapper = createWrapper({
+      propsData: { brandName: 'Test Brand' }
+    })
     const year = String(new Date().getFullYear())
     expect(wrapper.text()).toContain(year)
+  })
+
+  it('binds footer hrefs from overridden store getter payload', () => {
+    const wrapper = createWrapper({
+      propsData: { brandName: 'Another Brand' },
+      footerLinks: {
+        footerPrivacyPolicyUrl: 'https://example.com/privacy',
+        footerTermsAndConditionsUrl: 'https://example.com/terms',
+        footerCookiePolicyUrl: 'https://example.com/cookie',
+        footerEulaUrl: 'https://example.com/eula'
+      }
+    })
+
+    const anchors = wrapper.findAll('a')
+    expect(anchors.at(0).attributes('href')).toBe('https://example.com/privacy')
+    expect(anchors.at(1).attributes('href')).toBe('https://example.com/terms')
+    expect(anchors.at(2).attributes('href')).toBe('https://example.com/cookie')
+    expect(anchors.at(3).attributes('href')).toBe('https://example.com/eula')
   })
 })

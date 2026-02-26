@@ -394,9 +394,7 @@ export default {
             ...item,
             isDeletable: true
           }))
-          this.formValues.attachmentFilesFromApi = JSON.parse(
-            JSON.stringify(this.formValues.attachments)
-          )
+          this.formValues.attachmentFilesFromApi = structuredClone(this.formValues.attachments)
         }
         if (response.data.data.phishingFileName) {
           this.formValues.attachmentFiles = [
@@ -434,9 +432,7 @@ export default {
     },
     handleAttachmentRemove({ item, index }) {
       this.formValues.attachmentFilesToRemove = item.fileName
-      const newAttachmentFilesFromApi = JSON.parse(
-        JSON.stringify(this.formValues.attachmentFilesFromApi)
-      )
+      const newAttachmentFilesFromApi = structuredClone(this.formValues.attachmentFilesFromApi)
       if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length === 1) {
         newAttachmentFilesFromApi.splice(index - 1, 1)
         this.formValues.importedEmailAttachments.splice(index - 1, 1)

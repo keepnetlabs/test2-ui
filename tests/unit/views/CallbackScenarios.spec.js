@@ -49,6 +49,16 @@ describe('CallbackScenarios.vue', () => {
     expect(ctx.languages).toEqual([{ id: 'l-1' }])
   })
 
+  it('callForLanguages falls back to empty list when payload is missing', async () => {
+    CallbackService.getCallbackTemplateLanguages.mockResolvedValueOnce({})
+    const ctx = { languages: [{ id: 'old' }] }
+
+    CallbackScenarios.methods.callForLanguages.call(ctx)
+    await flushPromises()
+
+    expect(ctx.languages).toEqual([])
+  })
+
   it('changeTabStatus and no-template handlers switch tabs and trigger modal openers', () => {
     const ctx = {
       tab: 'scenarios',
@@ -96,6 +106,20 @@ describe('CallbackScenarios.vue', () => {
     expect(next).toHaveBeenCalledWith(false)
 
     next.mockClear()
+    const fastLaunchSubmittedCtx = {
+      $refs: {
+        refScenarios: {
+          isShowFastLaunch: true,
+          $refs: { fastLaunch: { isSubmitted: true } },
+          checkIfCanCloseFastLaunchModal: jest.fn()
+        }
+      }
+    }
+    CallbackScenarios.beforeRouteLeave.call(fastLaunchSubmittedCtx, {}, {}, next)
+    expect(fastLaunchSubmittedCtx.$refs.refScenarios.checkIfCanCloseFastLaunchModal).not.toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith()
+
+    next.mockClear()
     const grapesCtx = {
       $refs: {
         refTemplates: {
@@ -109,8 +133,50 @@ describe('CallbackScenarios.vue', () => {
     expect(next).toHaveBeenCalledWith(false)
 
     next.mockClear()
+    const templateModalCtx = {
+      $refs: {
+        refTemplates: {
+          modalStatus: true,
+          checkIfCanCloseCallbackTemplateModal: jest.fn()
+        }
+      }
+    }
+    CallbackScenarios.beforeRouteLeave.call(templateModalCtx, {}, {}, next)
+    expect(templateModalCtx.$refs.refTemplates.checkIfCanCloseCallbackTemplateModal).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
+    const emailGrapesCtx = {
+      $refs: {
+        refEmailTemplates: {
+          $refs: { newEmailTemplate: { $refs: { refEmailTemplate: { showGrapesModal: true } } } },
+          checkIfCanCloseGrapesJSModal: jest.fn()
+        }
+      }
+    }
+    CallbackScenarios.beforeRouteLeave.call(emailGrapesCtx, {}, {}, next)
+    expect(emailGrapesCtx.$refs.refEmailTemplates.checkIfCanCloseGrapesJSModal).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
     const allowCtx = { $refs: {} }
     CallbackScenarios.beforeRouteLeave.call(allowCtx, {}, {}, next)
     expect(next).toHaveBeenCalledWith()
+  })
+
+  it('created keeps default tab when scenarios permission is available', () => {
+    const callForLanguages = jest.fn()
+    const ctx = {
+      tab: 'scenarios',
+      callForLanguages,
+      getCallbackScenariosSearchPermissions: true,
+      getCallbackTemplatesSearchPermissions: false,
+      getCallbackEmailTemplatesSearchPermissions: false
+    }
+
+    CallbackScenarios.created.call(ctx)
+
+    expect(callForLanguages).toHaveBeenCalled()
+    expect(ctx.tab).toBe('scenarios')
   })
 })

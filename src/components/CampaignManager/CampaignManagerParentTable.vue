@@ -326,7 +326,7 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             this.tableData = results.map((item) => {
-              const newItem = JSON.parse(JSON.stringify(item))
+              const newItem = structuredClone(item)
               delete newItem['instanceCount']
               newItem.targetUsers = Number(newItem.targetUsers) || 0
               newItem.total = Number(item['instanceCount']) || 0

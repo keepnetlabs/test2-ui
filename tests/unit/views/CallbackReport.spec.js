@@ -51,4 +51,66 @@ describe('CallbackReport.vue', () => {
     await Promise.resolve()
     expect(ctx.formDetails).toEqual({ fields: [] })
   })
+
+  it('computed helpers return safe fallbacks when route/store data is missing', () => {
+    expect(CallbackReport.computed.id.call({ $route: {} })).toBeUndefined()
+    expect(CallbackReport.computed.instanceGroup.call({ $route: {} })).toBeUndefined()
+    expect(CallbackReport.computed.getPhishingScenarioName.call({ $store: { state: {} } })).toBe('')
+  })
+
+  it('callForSummary maps response and clears loading in finally', async () => {
+    CallbackService.getCampaignSummary.mockResolvedValueOnce({
+      data: { data: { campaignDurationExpired: true } }
+    })
+    const ctx = {
+      id: 'camp-1',
+      instanceGroup: 'grp-1',
+      apiResponse: null,
+      campaignDurationExpired: false,
+      isLoading: true
+    }
+
+    CallbackReport.methods.callForSummary.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(CallbackService.getCampaignSummary).toHaveBeenCalledWith('camp-1', 'grp-1')
+    expect(ctx.apiResponse).toEqual({ data: { data: { campaignDurationExpired: true } } })
+    expect(ctx.campaignDurationExpired).toBe(true)
+    expect(ctx.isLoading).toBe(false)
+  })
+
+  it('callForSummary keeps campaignDurationExpired false when payload is missing', async () => {
+    CallbackService.getCampaignSummary.mockResolvedValueOnce({})
+    const ctx = {
+      id: 'camp-2',
+      instanceGroup: 'grp-2',
+      apiResponse: null,
+      campaignDurationExpired: true,
+      isLoading: true
+    }
+
+    CallbackReport.methods.callForSummary.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(ctx.campaignDurationExpired).toBe(false)
+    expect(ctx.isLoading).toBe(false)
+  })
+
+  it('created hook calls all data loaders', () => {
+    const ctx = {
+      callForLanguages: jest.fn(),
+      callForSummary: jest.fn(),
+      callForCustomFields: jest.fn(),
+      callForFormDetails: jest.fn()
+    }
+
+    CallbackReport.created.call(ctx)
+
+    expect(ctx.callForLanguages).toHaveBeenCalledTimes(1)
+    expect(ctx.callForSummary).toHaveBeenCalledTimes(1)
+    expect(ctx.callForCustomFields).toHaveBeenCalledTimes(1)
+    expect(ctx.callForFormDetails).toHaveBeenCalledTimes(1)
+  })
 })

@@ -139,6 +139,22 @@ describe('AdvancedReports.vue', () => {
     expect(ctx.tab).toBe('system')
   })
 
+  it('userRole watcher ends on company tab when permission is true even for Root/Reseller', () => {
+    const rootCtx = {
+      tab: 'init',
+      $store: { getters: { 'permissions/getAdvancedReportsSearchPermissions': true } }
+    }
+    AdvancedReports.watch.userRole.handler.call(rootCtx, 'Root')
+    expect(rootCtx.tab).toBe('company')
+
+    const resellerCtx = {
+      tab: 'init',
+      $store: { getters: { 'permissions/getAdvancedReportsSearchPermissions': true } }
+    }
+    AdvancedReports.watch.userRole.handler.call(resellerCtx, 'Reseller')
+    expect(resellerCtx.tab).toBe('company')
+  })
+
   it('callForData handles malformed response and still clears loading', async () => {
     ReportsService.getReports.mockResolvedValueOnce({})
     const setLoading = jest.fn()

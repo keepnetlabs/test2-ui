@@ -20,6 +20,12 @@ describe('Companies.vue', () => {
     expect(ctx.isLoadState).toBe(false)
   })
 
+  it('watch tab keeps isLoadState unchanged for other tabs', () => {
+    const ctx = { isLoadState: true }
+    Companies.watch.tab.call(ctx, 'company-company-groups')
+    expect(ctx.isLoadState).toBe(true)
+  })
+
   it('beforeRouteEnter sets groups tab when navigating back from Company Group Details', () => {
     const next = jest.fn()
     Companies.beforeRouteEnter({ name: 'Companies' }, { name: 'Company Group Details' }, next)
@@ -43,6 +49,18 @@ describe('Companies.vue', () => {
     expect(vm.tab).toBe('company-companies')
   })
 
+  it('beforeRouteEnter keeps current state for other routes', () => {
+    const next = jest.fn()
+    Companies.beforeRouteEnter({ name: 'Companies' }, { name: 'Dashboard' }, next)
+
+    const vm = { tab: 'company-company-groups', isLoadState: false }
+    const callback = next.mock.calls[0][0]
+    callback(vm)
+
+    expect(vm.tab).toBe('company-company-groups')
+    expect(vm.isLoadState).toBe(false)
+  })
+
   it('updated syncs tab from route params and enforces permission fallback', () => {
     const ctx = {
       tab: 'company-companies',
@@ -52,6 +70,17 @@ describe('Companies.vue', () => {
 
     Companies.updated.call(ctx)
     expect(ctx.tab).toBe('company-company-groups')
+  })
+
+  it('updated skips route tab sync when force=true and keeps companies tab with permission', () => {
+    const ctx = {
+      tab: 'company-companies',
+      $route: { params: { tab: 'company-company-groups', force: true } },
+      getCompaniesSearchPermissions: true
+    }
+
+    Companies.updated.call(ctx)
+    expect(ctx.tab).toBe('company-companies')
   })
 
   it('beforeRouteLeave blocks navigation and opens leaving dialog for changed form', () => {
@@ -88,6 +117,23 @@ describe('Companies.vue', () => {
       $refs: {
         refCreateOrEditModal: { isFormDataChanged: jest.fn(() => false) }
       }
+    }
+    const ctx = {
+      $refs: { refCompanyList },
+      $store: { dispatch: jest.fn() }
+    }
+
+    Companies.beforeRouteLeave.call(ctx, {}, {}, next)
+
+    expect(refCompanyList.isShowCreateOrEditModal).toBe(false)
+    expect(next).not.toHaveBeenCalled()
+  })
+
+  it('beforeRouteLeave closes modal when modal ref is missing', () => {
+    const next = jest.fn()
+    const refCompanyList = {
+      isShowCreateOrEditModal: true,
+      $refs: {}
     }
     const ctx = {
       $refs: { refCompanyList },

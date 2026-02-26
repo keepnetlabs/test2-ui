@@ -26,6 +26,24 @@ describe('EmailThreatSimulator.vue', () => {
     expect(ctx.tab).toBe('scans')
   })
 
+  it('created keeps current tab when both permissions are same truthiness', () => {
+    const ctxBothTrue = {
+      tab: 'scans',
+      getEtsQuickScanPermissionSearch: true,
+      getEtsAttackVectorPermissionSearch: true
+    }
+    EmailThreatSimulator.created.call(ctxBothTrue)
+    expect(ctxBothTrue.tab).toBe('scans')
+
+    const ctxBothFalse = {
+      tab: 'scans',
+      getEtsQuickScanPermissionSearch: false,
+      getEtsAttackVectorPermissionSearch: false
+    }
+    EmailThreatSimulator.created.call(ctxBothFalse)
+    expect(ctxBothFalse.tab).toBe('scans')
+  })
+
   it('changeTabStatus updates tab', () => {
     const ctx = { tab: 'scans' }
     EmailThreatSimulator.methods.changeTabStatus.call(ctx, 'attacksVectors')
