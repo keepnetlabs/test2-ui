@@ -15,9 +15,7 @@ jest.mock('@/api/emailThreatSimlator', () => ({
     })
   ),
   getAttackVectorById: jest.fn(),
-  exportAttacksVector: jest.fn(() =>
-    Promise.resolve(global.Blob ? new global.Blob() : { size: 0, type: '' })
-  )
+  exportAttacksVector: jest.fn(() => Promise.resolve({ size: 0, type: '' }))
 }))
 
 describe('AttacksVectors.vue', () => {

@@ -3,7 +3,7 @@ jest.mock('@/api/awarenessEducator', () => ({
     Promise.resolve({ data: { data: { trainingUrl: 'https://cdn/file.pdf' } } })
   ),
   getTraining: jest.fn(() => Promise.resolve({ data: { data: { name: 'Poster Name' } } })),
-  downloadPoster: jest.fn(() => Promise.resolve({ data: new Blob(['pdf']) }))
+  downloadPoster: jest.fn(() => Promise.resolve({ data: { mocked: true } }))
 }))
 
 import PosterPreviewDialog from '@/components/AwarenessEducator/Poster/PosterPreviewDialog.vue'
