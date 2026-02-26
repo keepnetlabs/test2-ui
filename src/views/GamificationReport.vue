@@ -51,7 +51,7 @@
           </div>
         </template>
       </CompanySettingsHeader>
-      <DatatableLoading v-if="isTopPerformersLoading" :loading="isTopPerformersLoading" />
+      <LeaderboardTopPerformerCardSkeleton v-if="isTopPerformersLoading" />
       <div v-else class="gamification-report__top-performers mb-6">
         <div class="gamification-report__top-performers-header">
           Top Performers
@@ -147,7 +147,7 @@ import { getTimeZone, getTimeZoneForMoment, getDefaultAxiosPayload } from '@/uti
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { DATE_PERIOD_ENUMS } from '@/components/ExecutiveReports/ExecutiveReportsWidget/utils'
 import { mapGetters, mapState } from 'vuex'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import LeaderboardTopPerformerCardSkeleton from '@/components/GamificationReport/LeaderboardTopPerformerCardSkeleton'
 import GamificationReportUserDetailsDrawer from '@/components/GamificationReport/GamificationReportUserDetailsDrawer'
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import LeaderboardBadgesColumn from '@/components/GamificationReport/LeaderboardBadgesColumn'
@@ -164,7 +164,7 @@ export default {
     CompanySettingsHeader,
     LeaderboardTopPerformerCard,
     InputDate,
-    DatatableLoading,
+    LeaderboardTopPerformerCardSkeleton,
     GamificationReportUserDetailsDrawer,
     SendWithAIDialog,
     LeaderboardBadgesColumn

@@ -821,4 +821,265 @@ describe('awarenessEducator API', () => {
       )
     })
   })
+
+  describe('additional coverage for report and archive operations', () => {
+    it('should call openedTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.openedTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/opened-emails/search',
+        payload
+      )
+    })
+
+    it('should call clickedTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.clickedTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/clicked-emails/search',
+        payload
+      )
+    })
+
+    it('should call progressTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.progressTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/progress/search',
+        payload
+      )
+    })
+
+    it('should call examTrainingReportResults', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.examTrainingReportResults(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/exam-results/search',
+        payload
+      )
+    })
+
+    it('should call noResponseTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.noResponseTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/no-response/search',
+        payload
+      )
+    })
+
+    it('should call exportTrainingReportUsers', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportTrainingReportUsers(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/users/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportOpenedTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportOpenedTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/opened-emails/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportClickedTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportClickedTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/clicked-emails/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportProgressTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportProgressTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/progress/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportExamTrainingReportResults', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportExamTrainingReportResults(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/exam-results/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportNoResponseReportResults', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportNoResponseReportResults(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/no-response/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call exportSendingReport', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.exportSendingReport(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/sending-report/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call searchSendingReportEnrollmentEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchSendingReportEnrollmentEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/sending-report/search',
+        payload
+      )
+    })
+
+    it('should call searchSendingReportReminderEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchSendingReportReminderEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/reminder-mails/search',
+        payload
+      )
+    })
+
+    it('should call searchSendingReportCertificateEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchSendingReportCertificateEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/enrollments/enroll-1/certificates/search',
+        payload
+      )
+    })
+
+    it('should call getTrainingReportFormDetails', async () => {
+      await awarenessApi.getTrainingReportFormDetails()
+      expect(testRequest.get).toHaveBeenCalledWith('/training-reports/form-details')
+    })
+
+    it('should call getTrainingReportExamResultsDetails', async () => {
+      await awarenessApi.getTrainingReportExamResultsDetails('enroll-1', 'user-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/exam-result-details/user-1'
+      )
+    })
+
+    it('should call getTrainingReportSendingReportDetails', async () => {
+      await awarenessApi.getTrainingReportSendingReportDetails('enroll-1', 'mail-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/email-event/mail-1'
+      )
+    })
+
+    it('should call getTrainingReportReminderEmailDetails', async () => {
+      await awarenessApi.getTrainingReportReminderEmailDetails('enroll-1', 'mail-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/email-event/mail-1/reminder'
+      )
+    })
+
+    it('should call getProgressDetailsTable', async () => {
+      await awarenessApi.getProgressDetailsTable('enroll-1', 'user-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/training-reports/enroll-1/progress-details/user-1'
+      )
+    })
+  })
+
+  describe('additional coverage for training/enrollment mutations', () => {
+    it('should call duplicateTraining', async () => {
+      await awarenessApi.duplicateTraining('training-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/trainings/training-1/duplicate',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteTrainingFile', async () => {
+      await awarenessApi.deleteTrainingFile('training-1', 'en')
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/trainings/training-1/content/en',
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call deleteEnrollment', async () => {
+      await awarenessApi.deleteEnrollment('enroll-1')
+      expect(testRequest.delete).toHaveBeenCalledWith('/enrollments/enroll-1', {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should call searchTrash', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.searchTrash(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/enrollments/archive/search', payload)
+    })
+
+    it('should call deletePermanentlyEnrollment', async () => {
+      await awarenessApi.deletePermanentlyEnrollment('enroll-1')
+      expect(testRequest.delete).toHaveBeenCalledWith('/enrollments/archive/enroll-1', {
+        snackbar: COMMON_SNACKBAR
+      })
+    })
+
+    it('should call getPhoneNumbers', async () => {
+      await awarenessApi.getPhoneNumbers()
+      expect(testRequest.get).toHaveBeenCalledWith('/enrollments/phone-number')
+    })
+
+    it('should call getCertificateHtml', async () => {
+      await awarenessApi.getCertificateHtml('result-1')
+      expect(testRequest.post).toHaveBeenCalledWith('/training-reports/certificate/result-1')
+    })
+
+    it('should call getScormProxyTrainingReportSummary', async () => {
+      await awarenessApi.getScormProxyTrainingReportSummary('enroll-1')
+      expect(testRequest.get).toHaveBeenCalledWith('/training-reports/anonymous/enroll-1/summary')
+    })
+
+    it('should call progressNonTargetUsersTrainingReportEmails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.progressNonTargetUsersTrainingReportEmails(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith('/training-reports/anonymous/enroll-1/progress', payload)
+    })
+
+    it('should call progressNonTargetUsersTrainingReportEmailsDetails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.progressNonTargetUsersTrainingReportEmailsDetails(payload, 'enroll-1', 'result-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/anonymous/enroll-1/progress-detail/result-1',
+        payload
+      )
+    })
+
+    it('should call examTrainingNonTargetUserReportResults', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.examTrainingNonTargetUserReportResults(payload, 'enroll-1')
+      expect(testRequest.post).toHaveBeenCalledWith('/training-reports/anonymous/enroll-1/result', payload)
+    })
+
+    it('should call examTrainingNonTargetUserTrainingDetails', async () => {
+      const payload = { page: 1 }
+      await awarenessApi.examTrainingNonTargetUserTrainingDetails(payload, 'enroll-1', 'result-1')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/training-reports/anonymous/enroll-1/result-detail/result-1',
+        payload
+      )
+    })
+  })
 })

@@ -648,8 +648,7 @@ export default {
           (item) => item.type === EMAIL_DELIVERY_TYPES.SMTP
         );
         if (smtpItems.length) {
-          deliveries.push({ header: "SMTP" });
-          deliveries.push(...smtpItems);
+          deliveries.push({ header: "SMTP" }, ...smtpItems);
         }
         const directEmailItems = results.filter(
           (item) => item.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL

@@ -214,7 +214,7 @@ describe('NewLandingPage.vue', () => {
           methodTypes: [{ value: '2', text: 'Data Submission' }]
         }
       })
-    ).toBe('Data Submission')
+    ).toBe('')
     expect(
       computed.showMakeAvailableFor.call({
         $store: { state: { auth: { userRoleName: 'User' } } }
@@ -560,15 +560,15 @@ describe('NewLandingPage.vue', () => {
     expect(computed.getPathTypes.call({ landingPageData: null })).toEqual([])
   })
 
-  it('clickOnlyMethodText returns empty string when method is not data submission', () => {
+  it('clickOnlyMethodText returns Click Only when method is click only', () => {
     expect(
       computed.clickOnlyMethodText.call({
         formValues: { methodTypeId: '1' },
         landingPageData: {
-          methodTypes: [{ value: '2', text: 'Data Submission' }]
+          methodTypes: [{ value: '1', text: 'Click Only' }]
         }
       })
-    ).toBe('')
+    ).toBe('Click Only')
   })
 
   it('getLanguageObject falls back to resourceId when no sources match', () => {

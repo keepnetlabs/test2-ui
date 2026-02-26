@@ -1452,7 +1452,7 @@ export default {
         exportUserActivityDetails(payload).then((response) => {
           const { data } = response;
           const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          link.href = globalThis.URL.createObjectURL(data);
           if (this.isTargetUser) {
             link.download = `Target-User-Timeline.${
               item.toLocaleLowerCase() === "xls"

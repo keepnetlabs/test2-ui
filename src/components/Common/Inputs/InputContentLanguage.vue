@@ -136,14 +136,14 @@ export default {
       })
     },
     setDefaultValue() {
-      this.$emit('input', [...this.contentLanguageItems.map((item) => item.value)])
+      this.$emit('input', this.contentLanguageItems.map((item) => item.value))
     },
     checkIsItemDisabled(item) {
       if (item.value === labels.All) return false
       return !!this.isAllSelected
     },
     getCheckboxCheckedValue(item) {
-      return !!(this.value.some((languageId) => languageId === item.value) || this.isAllSelected)
+      return !!(this.value.includes(item.value) || this.isAllSelected)
     }
   }
 }

@@ -188,13 +188,13 @@ export default {
         return Math.max(acc, currentMax)
       }, 0)
       const remainder = Math.floor(maxX / 50)
-      if (!remainder) {
-        maxX = 100
-      } else {
+      if (remainder) {
         maxX = remainder * 50 + 50
+      } else {
+        maxX = 100
       }
       const addYLabelItem = (item) => {
-        const index = yLabels.findIndex((v) => v === item.value)
+        const index = yLabels.indexOf(item.value)
         if (index !== -1) return
         let newIndex = 0
         for (let i = 0; i < yLabels.length; i++) {
@@ -230,7 +230,7 @@ export default {
       })
       const stepSize = maxX > 100 ? Math.ceil(maxX / 5 / 2) * 2 : 20
       data[0].widgetDatas.forEach((item) => {
-        const yLabelIndex = yLabels.findIndex((v) => v === Number.parseInt(item.dataObject.ActionRange))
+        const yLabelIndex = yLabels.indexOf(Number.parseInt(item.dataObject.ActionRange))
         item.values.forEach((inner) => {
           if (inner.name === 'Clicked') {
             clickedData[yLabelIndex] = {

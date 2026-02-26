@@ -76,7 +76,7 @@ export default {
         this.$emit(
           'on-confirm',
           text
-            ?.replace(/\n/g, ',')
+            ?.replaceAll('\n', ',')
             ?.split(',')
             ?.filter((item) => item)
         )

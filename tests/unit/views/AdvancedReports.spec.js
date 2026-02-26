@@ -123,4 +123,40 @@ describe('AdvancedReports.vue', () => {
       { id: 'r3', reportGroup: 1 }
     ])
   })
+
+  it('created hook triggers callForData', () => {
+    const ctx = { callForData: jest.fn() }
+    AdvancedReports.created.call(ctx)
+    expect(ctx.callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('userRole watcher keeps current tab for unknown role without permission', () => {
+    const ctx = {
+      tab: 'system',
+      $store: { getters: { 'permissions/getAdvancedReportsSearchPermissions': false } }
+    }
+    AdvancedReports.watch.userRole.handler.call(ctx, 'Unknown')
+    expect(ctx.tab).toBe('system')
+  })
+
+  it('callForData handles malformed response and still clears loading', async () => {
+    ReportsService.getReports.mockResolvedValueOnce({})
+    const setLoading = jest.fn()
+    const ctx = {
+      reports: [{ id: 'old', orderNumber: 9 }],
+      setLoading
+    }
+
+    AdvancedReports.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.reports).toEqual([])
+    expect(setLoading).toHaveBeenCalledWith(true)
+    expect(setLoading).toHaveBeenCalledTimes(2)
+  })
+
+  it('getReportsByGroup returns undefined when reports is missing', () => {
+    const ctx = { reports: null }
+    expect(AdvancedReports.methods.getReportsByGroup.call(ctx, 1)).toBeUndefined()
+  })
 })

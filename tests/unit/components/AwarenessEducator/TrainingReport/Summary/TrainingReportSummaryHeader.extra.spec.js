@@ -62,6 +62,30 @@ describe('TrainingReportSummaryHeader.vue (extra)', () => {
     expect(ctx.isShowResendDialog).toBe(false)
   })
 
+  it('resend confirm closes dialog and resets loading via finally callback', async () => {
+    AwarenessEducatorService.resendTrainingToUsers.mockImplementationOnce(() => ({
+      finally: (cb) => {
+        cb()
+        return Promise.resolve()
+      }
+    }))
+    const ctx = {
+      id: 'tr-101',
+      isActionButtonDisabled: false,
+      isShowResendDialog: true,
+      toggleShowResendDialog: TrainingReportSummaryHeader.methods.toggleShowResendDialog
+    }
+
+    TrainingReportSummaryHeader.methods.handleOnConfirmResend.call(ctx, [2])
+    expect(AwarenessEducatorService.resendTrainingToUsers).toHaveBeenCalledWith(
+      { resendTypes: [2] },
+      'tr-101'
+    )
+    await flushPromises()
+    expect(ctx.isActionButtonDisabled).toBe(false)
+    expect(ctx.isShowResendDialog).toBe(false)
+  })
+
   it('getTitle and getSubtitle return correct values for all training types', () => {
     const { computed } = TrainingReportSummaryHeader
     expect(computed.getTitle.call({ isSurvey: true })).toContain('Survey')
@@ -77,8 +101,21 @@ describe('TrainingReportSummaryHeader.vue (extra)', () => {
   it('getResendButtonText returns correct label for each type', () => {
     const { computed } = TrainingReportSummaryHeader
     expect(computed.getResendButtonText.call({ isSurvey: true })).toBeDefined()
+    expect(
+      computed.getResendButtonText.call({
+        isSurvey: false,
+        trainingType: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+      })
+    ).toBeDefined()
+    expect(
+      computed.getResendButtonText.call({
+        isSurvey: false,
+        trainingType: TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC
+      })
+    ).toBeDefined()
     expect(computed.getResendButtonText.call({ isSurvey: false, trainingType: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH })).toBeDefined()
     expect(computed.getResendButtonText.call({ isSurvey: false, trainingType: TRAINING_LIBRARY_TYPES.LEARNING_PATH })).toBeDefined()
+    expect(computed.getResendButtonText.call({ isSurvey: false, trainingType: 'other' })).toBeDefined()
   })
 
   it('handleDownloadReport status 200 triggers blob download', async () => {
@@ -108,11 +145,69 @@ describe('TrainingReportSummaryHeader.vue (extra)', () => {
     createElementSpy.mockRestore()
   })
 
+  it('handleDownloadReport uses Survey file name when isSurvey is true', async () => {
+    if (!globalThis.URL) globalThis.URL = {}
+    if (!globalThis.URL.createObjectURL) globalThis.URL.createObjectURL = jest.fn()
+    const anchor = { href: '', download: '', click: jest.fn() }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(() => anchor)
+
+    AwarenessEducatorService.exportTrainingReport.mockResolvedValueOnce({
+      status: 200,
+      data: Buffer.from('xlsx')
+    })
+
+    const ctx = {
+      id: 'tr-survey',
+      isSurvey: true,
+      isDownloadReportDisabled: false
+    }
+
+    TrainingReportSummaryHeader.methods.handleDownloadReport.call(ctx)
+    await flushPromises()
+    expect(anchor.download).toBe('Survey-Material.xlsx')
+    createElementSpy.mockRestore()
+  })
+
+  it('handleDownloadReport for unknown status does not dispatch snackbar', async () => {
+    const dispatch = jest.fn()
+    AwarenessEducatorService.exportTrainingReport.mockResolvedValueOnce({
+      status: 204,
+      data: null
+    })
+    const ctx = {
+      id: 'tr-204',
+      isSurvey: false,
+      isDownloadReportDisabled: false,
+      $store: { dispatch }
+    }
+
+    TrainingReportSummaryHeader.methods.handleDownloadReport.call(ctx)
+    await flushPromises()
+    expect(dispatch).not.toHaveBeenCalled()
+    expect(ctx.isDownloadReportDisabled).toBe(false)
+  })
+
   it('isLearningPath computed is true for learning path types', () => {
     expect(
       TrainingReportSummaryHeader.computed.isLearningPath.call({
         trainingType: TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH
       })
     ).toBe(true)
+  })
+
+  it('isLearningPath computed is false for non-learning path types', () => {
+    expect(
+      TrainingReportSummaryHeader.computed.isLearningPath.call({
+        trainingType: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER
+      })
+    ).toBe(false)
+  })
+
+  it('toggleShowResendDialog toggles both directions', () => {
+    const ctx = { isShowResendDialog: false }
+    TrainingReportSummaryHeader.methods.toggleShowResendDialog.call(ctx)
+    expect(ctx.isShowResendDialog).toBe(true)
+    TrainingReportSummaryHeader.methods.toggleShowResendDialog.call(ctx)
+    expect(ctx.isShowResendDialog).toBe(false)
   })
 })

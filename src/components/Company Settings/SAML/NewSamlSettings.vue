@@ -471,7 +471,7 @@ export default {
     }
     this.callForGetDefaultSettings().then(() => {
       this.callForRoles().then(() => {
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     })
   },
@@ -603,7 +603,7 @@ export default {
     handleDomainToAddButtonClick() {
       if (
         this.$refs.refDomainToAddForm.validate() &&
-        !this.dataContainerWithSearchItems.find((item) => item === this.formValues.domainToAdd)
+        !this.dataContainerWithSearchItems.some((item) => item === this.formValues.domainToAdd)
       ) {
         this.dataContainerWithSearchItems.unshift(this.formValues.domainToAdd)
         this.formValues.domainToAdd = ''

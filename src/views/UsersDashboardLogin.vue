@@ -461,7 +461,6 @@ export default {
 
       this.usersDashboardLogin(payload)
         .then((response) => {
-          console.log('response', response)
           // Reset error count on successful login
           this.loginErrorCount = 0
           // Show sign-in methods based on SAML provider

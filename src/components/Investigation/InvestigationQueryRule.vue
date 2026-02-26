@@ -28,7 +28,7 @@
           ref="refTextField"
           :id="`input--query-builder-value-${index}-${getParentIndex}`"
           outlined
-          autocomplete="disabled"
+          autocomplete="off"
           :placeholder="getPlaceholder"
           :rules="getRules"
           :error-messages="getErrorMessages"

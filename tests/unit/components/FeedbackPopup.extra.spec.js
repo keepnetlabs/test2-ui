@@ -81,5 +81,54 @@ describe('FeedbackPopup.vue (extra branch coverage)', () => {
       expect(sendFeedback).toHaveBeenCalledWith({ Text: 'Valid message here' })
       expect(wrapper.vm.saveDisable).toBe(true)
     })
+
+    it('resets saveDisable and closes popup in finally after successful send', async () => {
+      const { sendFeedback } = require('@/api/dashboard')
+      sendFeedback.mockClear().mockResolvedValue({})
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = { feedbackForm: { validate: () => true } }
+      wrapper.setData({ feedbackMessage: 'Final test message' })
+
+      wrapper.vm.onFeedbackSend()
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(wrapper.vm.saveDisable).toBe(false)
+      expect(store.dispatch).toHaveBeenCalledWith('dashboard/changeFeedbackPopup', false)
+    })
+  })
+
+  describe('watch feedbackMessage', () => {
+    it('returns early when ref textarea element is missing', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {}
+      expect(() => wrapper.vm.$options.watch.feedbackMessage.call(wrapper.vm)).not.toThrow()
+    })
+
+    it('returns early when getBoundingClientRect is not a function', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = { refTextArea: { $el: {} } }
+      wrapper.vm.$options.watch.feedbackMessage.call(wrapper.vm)
+      expect(wrapper.vm.textAreaHeight).toBe(156)
+    })
+
+    it('updates textAreaHeight when textarea ref is valid', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {
+        refTextArea: {
+          $el: {
+            getBoundingClientRect: () => ({ height: 212 })
+          }
+        }
+      }
+      wrapper.vm.$options.watch.feedbackMessage.call(wrapper.vm)
+      expect(wrapper.vm.textAreaHeight).toBe(212)
+    })
+  })
+
+  it('onCancelClicked closes feedback popup', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.onCancelClicked()
+    expect(store.dispatch).toHaveBeenCalledWith('dashboard/changeFeedbackPopup', false)
   })
 })

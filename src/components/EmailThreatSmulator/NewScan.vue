@@ -941,7 +941,7 @@ export default {
       }
     },
     nextStep() {
-      const currentStep = JSON.parse(JSON.stringify(this.step))
+      const currentStep = structuredClone(this.step)
       if (currentStep === 1) {
         if (this.$refs.refFormStep1.validate()) {
           this.step += 1

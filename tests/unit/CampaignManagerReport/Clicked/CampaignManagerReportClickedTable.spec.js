@@ -315,4 +315,44 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     CampaignManagerReportClickedTable.mounted.call(mountedCtx)
     expect(mountedCtx.callForData).toHaveBeenCalled()
   })
+
+  it('data() sets details row action disabled by permission getter', () => {
+    const dataWithoutPermission = CampaignManagerReportClickedTable.data.call({
+      $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': false } }
+    })
+    expect(dataWithoutPermission.tableOptions.rowActions[1].disabled).toBe(true)
+
+    const dataWithPermission = CampaignManagerReportClickedTable.data.call({
+      $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': true } }
+    })
+    expect(dataWithPermission.tableOptions.rowActions[1].disabled).toBe(false)
+  })
+
+  it('callForLanguages fallback branch handles empty lookup response', async () => {
+    LookupLocalStorage.getSingle.mockResolvedValueOnce(undefined)
+    const preferredCol = { property: 'preferredLanguage' }
+    const templateLangCol = { property: 'emailTemplateLanguage' }
+    const ctx = {
+      languageOptions: [{ text: 'old', value: 'old' }],
+      tableOptions: { columns: [preferredCol, templateLangCol] },
+      $set: (obj, key, value) => {
+        obj[key] = value
+      },
+      $refs: {}
+    }
+
+    CampaignManagerReportClickedTable.methods.callForLanguages.call(ctx)
+    await flushPromises()
+
+    expect(ctx.languageOptions).toEqual([])
+    expect(preferredCol.filterableItems).toEqual([])
+    expect(templateLangCol.filterableItems).toEqual([])
+  })
+
+  it('handleGroupsClick handles undefined groups as empty list', () => {
+    const ctx = { isGroupsDialogOpen: false, selectedGroups: [] }
+    CampaignManagerReportClickedTable.methods.handleGroupsClick.call(ctx, undefined)
+    expect(ctx.isGroupsDialogOpen).toBe(true)
+    expect(ctx.selectedGroups).toEqual([])
+  })
 })

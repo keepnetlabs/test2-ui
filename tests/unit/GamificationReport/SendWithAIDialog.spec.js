@@ -120,6 +120,15 @@ describe('SendWithAIDialog.vue', () => {
       expect(wrapper.vm.localOptions.phishing).toBe(true)
     })
 
+    it('deep watcher handler handles undefined payload by resetting localOptions object', () => {
+      const wrapper = mountComponent({ options: { training: true, phishing: true } })
+      const watcherHandler = wrapper.vm.$options.watch.options.handler
+
+      watcherHandler.call(wrapper.vm, undefined)
+
+      expect(wrapper.vm.localOptions).toEqual({})
+    })
+
     it('should allow updating individual options properties', () => {
       const wrapper = mountComponent()
       wrapper.vm.localOptions.training = false

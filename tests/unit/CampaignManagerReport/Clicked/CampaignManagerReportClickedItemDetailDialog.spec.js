@@ -256,5 +256,43 @@ describe('CampaignManagerReportClickedItemDetailDialog.vue', () => {
         isChangedActivity: false
       })
     ).toBe('Mark as human activity')
+    expect(
+      CampaignManagerReportClickedItemDetailDialog.methods.getRowActionIcon.call(ctx, {
+        activityType: ACTIVITY_TYPES.BOT,
+        isChangedActivity: false
+      })
+    ).toBe('mdi-account-check')
+  })
+
+  it('toggleShowMarkAsActivityDialog toggles without refresh when forceUpdate=false', () => {
+    const ctx = {
+      selectedRow: null,
+      isShowMarkAsHumanActivityDialog: false,
+      callForData: jest.fn()
+    }
+    CampaignManagerReportClickedItemDetailDialog.methods.toggleShowMarkAsActivityDialog.call(
+      ctx,
+      { resourceId: 'plain' },
+      false
+    )
+    expect(ctx.callForData).not.toHaveBeenCalled()
+    expect(ctx.selectedRow).toEqual({ resourceId: 'plain' })
+    expect(ctx.isShowMarkAsHumanActivityDialog).toBe(true)
+  })
+
+  it('toggleShowMarkAsDialog sends bot rows to human dialog branch', () => {
+    const toggleSandbox = jest.fn()
+    const toggleHuman = jest.fn()
+    const ctx = {
+      toggleShowSandboxActivityDialog: toggleSandbox,
+      toggleShowMarkAsActivityDialog: toggleHuman
+    }
+    CampaignManagerReportClickedItemDetailDialog.methods.toggleShowMarkAsDialog.call(
+      ctx,
+      { isChangedActivity: false, activityType: ACTIVITY_TYPES.BOT },
+      true
+    )
+    expect(toggleSandbox).not.toHaveBeenCalled()
+    expect(toggleHuman).toHaveBeenCalled()
   })
 })

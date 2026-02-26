@@ -109,6 +109,141 @@ describe('KEmailPreview.vue', () => {
     expect(wrapper.vm.height).toBe(300)
   })
 
+  it('handleWindowMessage ignores non-redflag events', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ stopCalculateFrame: true, isInitialResize: false })
+    wrapper.vm.handleWindowMessage({ data: { type: 'other:event' } })
+    expect(wrapper.vm.stopCalculateFrame).toBe(true)
+    expect(wrapper.vm.isInitialResize).toBe(false)
+  })
+
+  it('setDefaultHeight uses body scrollHeight when >200 and no microsoft container', () => {
+    const wrapper = createWrapper()
+    const iframe = {
+      contentWindow: {
+        document: {
+          body: { scrollHeight: 450 },
+          querySelector: jest.fn((q) => (q === 'body' ? {} : null))
+        }
+      }
+    }
+    wrapper.vm.$refs = { iframe }
+
+    const result = wrapper.vm.setDefaultHeight(100)
+    expect(result).toBe(100)
+    expect(wrapper.vm.defaultHeight).toBe(450)
+    expect(wrapper.vm.isInitialResize).toBe(false)
+  })
+
+  it('setDefaultHeight applies +275 when microsoft email container exists', () => {
+    const wrapper = createWrapper()
+    const iframe = {
+      contentWindow: {
+        document: {
+          body: { scrollHeight: 300 },
+          querySelector: jest.fn(() => ({}))
+        }
+      }
+    }
+    wrapper.vm.$refs = { iframe }
+
+    const result = wrapper.vm.setDefaultHeight(150)
+    expect(result).toBe(575)
+    expect(wrapper.vm.defaultHeight).toBe(575)
+  })
+
+  it('setDefaultHeight falls back to getFirstValidHeight when body scrollHeight <=200', () => {
+    const wrapper = createWrapper()
+    const getFirstValidHeight = jest.spyOn(wrapper.vm, 'getFirstValidHeight').mockReturnValue(333)
+    const iframe = {
+      contentWindow: {
+        document: {
+          body: { scrollHeight: 120 }
+        }
+      }
+    }
+    wrapper.vm.$refs = { iframe }
+    wrapper.vm.setDefaultHeight(120)
+    expect(getFirstValidHeight).toHaveBeenCalledWith(150, iframe)
+    expect(wrapper.vm.defaultHeight).toBe(333)
+  })
+
+  it('getFirstValidHeight returns 710 when microsoft container height is NaN', () => {
+    const wrapper = createWrapper()
+    const microsoftEmailContainer = {}
+    const body = {
+      querySelector: jest.fn(() => microsoftEmailContainer),
+      querySelectorAll: jest.fn(() => [])
+    }
+    const iframe = {
+      contentWindow: {
+        document: {
+          querySelector: jest.fn(() => body)
+        }
+      }
+    }
+    const originalGetComputedStyle = global.getComputedStyle
+    global.getComputedStyle = jest.fn((el) => {
+      if (el === microsoftEmailContainer) {
+        return { height: 'auto', marginTop: '10px', marginBottom: '10px' }
+      }
+      return { height: 'auto' }
+    })
+
+    const result = wrapper.vm.getFirstValidHeight(100, iframe)
+    expect(result).toBe(710)
+    global.getComputedStyle = originalGetComputedStyle
+  })
+
+  it('getFirstValidHeight scans child elements and picks first valid greater height', () => {
+    const wrapper = createWrapper()
+    const element1 = { style: { minHeight: '50vh' } }
+    const element2 = { style: {} }
+    const body = {
+      querySelector: jest.fn(() => null),
+      querySelectorAll: jest.fn(() => [element1, element2])
+    }
+    const iframe = {
+      contentWindow: {
+        document: {
+          querySelector: jest.fn(() => body)
+        }
+      }
+    }
+    const originalGetComputedStyle = global.getComputedStyle
+    global.getComputedStyle = jest.fn((el) => {
+      if (el === body) return { height: 'auto' }
+      if (el === element1) return { height: '260px' }
+      return { height: '150px' }
+    })
+
+    const result = wrapper.vm.getFirstValidHeight(120, iframe)
+    expect(result).toBe(260)
+    expect(element1.style.minHeight).toBe('50%')
+    global.getComputedStyle = originalGetComputedStyle
+  })
+
+  it('resizeIframe enforces landing-page minimum height', () => {
+    const wrapper = createWrapper({ isLandingPage: true })
+    wrapper.setData({ isInitialResize: false, stopCalculateFrame: false, numberHeight: 700 })
+    wrapper.vm.getFirstValidHeight = jest.fn(() => 120)
+    const iframe = {
+      contentWindow: {
+        document: {
+          body: { scrollHeight: 100 }
+        }
+      },
+      height: '660px'
+    }
+    const raf = globalThis.requestAnimationFrame
+    globalThis.requestAnimationFrame = jest.fn(() => 1)
+    wrapper.vm.$refs = { iframe }
+
+    wrapper.vm.resizeIframe()
+    expect(wrapper.vm.height).toBe('678px')
+    globalThis.requestAnimationFrame = raf
+  })
+
   it('watches html and updates iframeKey', () => {
     const { createRandomCryptStringNumber } = require('@/utils/functions')
     createRandomCryptStringNumber.mockReturnValueOnce('99999')

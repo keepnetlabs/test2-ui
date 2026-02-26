@@ -1541,7 +1541,7 @@ export default {
                         ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
                         : this.$store.state.auth.logoUrl || ''
                     if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
-                    item.content = item.content.replace(/\{COMPANYLOGO\}/g, logo)
+                    item.content = item.content.replaceAll('{COMPANYLOGO}', logo)
                   }
                 })
               }

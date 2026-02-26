@@ -66,7 +66,7 @@ describe('SelectClickOnlyPageModal.vue', () => {
     wrapper.vm.handleAddTemplate()
 
     expect(wrapper.emitted('add')).toBeTruthy()
-    expect(wrapper.emitted('add')[0]).toEqual(['lp-123'])
+    expect(wrapper.emitted('add')[0]).toEqual(['lp-123', 0])
   })
 
   it('does not emit add when selected resource id is missing', () => {

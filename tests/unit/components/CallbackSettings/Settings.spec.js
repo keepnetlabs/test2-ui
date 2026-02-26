@@ -2,6 +2,7 @@ const mockBlob = {}
 import { shallowMount } from '@vue/test-utils'
 import Vuex from 'vuex'
 import CallbackSettings from '@/components/CallbackSettings/Settings.vue'
+import CallbackService from '@/api/callback'
 
 jest.mock('@/api/callback', () => ({
   getUsedCallbackNumbers: jest.fn().mockResolvedValue({
@@ -113,6 +114,120 @@ describe('CallbackSettings.vue', () => {
       const wrapper = createWrapper()
       wrapper.vm.handleSelectPhoneNumbers()
       expect(wrapper.vm.isShowSelectPhoneNumbersModal).toBe(true)
+    })
+  })
+
+  describe('data and mutation flows', () => {
+    it('callForNumberUsage handles null counts and disables add when no selectable numbers', async () => {
+      CallbackService.getUsedCallbackNumbers.mockResolvedValueOnce({
+        data: { data: { companyCount: null, usedCount: null } }
+      })
+      const ctx = {
+        isLoading: false,
+        selectablePhoneNumberCount: 0,
+        licenseNumberLimit: 0,
+        tableOptions: { addButton: {}, iEmpty: {} },
+        callForData: jest.fn()
+      }
+
+      CallbackSettings.methods.callForNumberUsage.call(ctx)
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(ctx.licenseNumberLimit).toBe(0)
+      expect(ctx.selectablePhoneNumberCount).toBe(0)
+      expect(ctx.tableOptions.addButton.disabled).toBe(true)
+      expect(ctx.tableOptions.iEmpty.disabled).toBe(true)
+      expect(ctx.callForData).toHaveBeenCalled()
+    })
+
+    it('callForNumberUsage catch branch disables add and empty buttons', async () => {
+      CallbackService.getUsedCallbackNumbers.mockRejectedValueOnce(new Error('fail'))
+      const ctx = {
+        isLoading: false,
+        tableOptions: { addButton: {}, iEmpty: {} },
+        callForData: jest.fn()
+      }
+
+      CallbackSettings.methods.callForNumberUsage.call(ctx)
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(ctx.tableOptions.addButton.disabled).toBe(true)
+      expect(ctx.tableOptions.iEmpty.disabled).toBe(true)
+      expect(ctx.callForData).toHaveBeenCalled()
+    })
+
+    it('callForData maps booleans to In Use/Not In Use labels', async () => {
+      CallbackService.searchCallbackSettings.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 2,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [{ isUsing: true }, { isUsing: false }]
+          }
+        }
+      })
+      const ctx = {
+        isLoading: false,
+        axiosPayload: {},
+        serverSideProps: {},
+        tableData: []
+      }
+      CallbackSettings.methods.callForData.call(ctx)
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(ctx.tableData).toEqual([{ isUsing: 'In Use' }, { isUsing: 'Not In Use' }])
+    })
+
+    it('callForData catch sets empty table data', async () => {
+      CallbackService.searchCallbackSettings.mockRejectedValueOnce(new Error('fail'))
+      const ctx = {
+        isLoading: false,
+        axiosPayload: {},
+        serverSideProps: {},
+        tableData: [{ id: 'old' }]
+      }
+      CallbackSettings.methods.callForData.call(ctx)
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(ctx.tableData).toEqual([])
+    })
+
+    it('confirm handlers call API, close modal and reset mutating state', async () => {
+      const wrapper = createWrapper()
+      wrapper.vm.callForData = jest.fn()
+
+      wrapper.vm.selectedRow = { providerNumberId: 'p1' }
+      wrapper.vm.isShowDeselectNumberModal = true
+      wrapper.vm.handleConfirmDeselectPhoneNumber()
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(CallbackService.deselectPhoneNumber).toHaveBeenCalledWith('p1')
+      expect(wrapper.vm.isShowDeselectNumberModal).toBe(false)
+      expect(wrapper.vm.selectedRow).toBeNull()
+      expect(wrapper.vm.isMutating).toBe(false)
+
+      wrapper.vm.selectedRow = { providerNumberId: 'p2' }
+      wrapper.vm.isShowExchangePhoneNumberModal = true
+      wrapper.vm.handleConfirmExchangePhoneNumber('new-1')
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(CallbackService.exchangeCallbackNumbers).toHaveBeenCalledWith('p2', 'new-1')
+      expect(wrapper.vm.isShowExchangePhoneNumberModal).toBe(false)
+      expect(wrapper.vm.selectedRow).toBeNull()
+      expect(wrapper.vm.isMutating).toBe(false)
+
+      wrapper.vm.isShowSelectPhoneNumbersModal = true
+      wrapper.vm.handleConfirmSelectPhoneNumbers(['n1'])
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(CallbackService.mapCallbackNumbers).toHaveBeenCalledWith(['n1'])
+      expect(wrapper.vm.isShowSelectPhoneNumbersModal).toBe(false)
+      expect(wrapper.vm.isMutating).toBe(false)
     })
   })
 })
