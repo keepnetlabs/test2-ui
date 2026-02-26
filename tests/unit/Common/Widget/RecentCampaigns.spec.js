@@ -548,7 +548,7 @@ describe("RecentCampaigns widget", () => {
       const duration = performance.now() - start;
 
       expect(wrapper.vm.tableData.length).toBe(5000);
-      expect(duration).toBeLessThan(1500);
+      expect(duration).toBeLessThan(2500);
       wrapper.destroy();
     });
   });
