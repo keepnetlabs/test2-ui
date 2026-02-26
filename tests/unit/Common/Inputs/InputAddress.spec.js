@@ -368,9 +368,9 @@ describe('InputAddress.vue', () => {
       expect(textarea.attributes('dense')).toBeDefined()
     })
 
-    it('should have autocomplete disabled', () => {
+    it('should have street-address autocomplete', () => {
       const textarea = wrapper.find('v-textarea-stub')
-      expect(textarea.attributes('autocomplete')).toBe('disabled')
+      expect(textarea.attributes('autocomplete')).toBe('street-address')
     })
 
     it('should have no-resize enabled', () => {
