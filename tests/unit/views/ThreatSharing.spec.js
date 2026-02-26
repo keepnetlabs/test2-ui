@@ -13,6 +13,16 @@ describe('ThreatSharing.vue', () => {
     expect(ctx.tab).toBe(1)
   })
 
+  it('created keeps current tab when incident permission exists', () => {
+    const ctx = {
+      tab: 0,
+      getCommunityPostsPermission: true
+    }
+
+    ThreatSharing.created.call(ctx)
+    expect(ctx.tab).toBe(0)
+  })
+
   it('watch tab triggers getSelectedTabData', () => {
     const getSelectedTabData = jest.fn()
     const ctx = { getSelectedTabData }
@@ -71,6 +81,39 @@ describe('ThreatSharing.vue', () => {
     expect(vm.tab).toBe(1)
     expect(subTabSelected).toHaveBeenCalledWith('tab-2')
     jest.useRealTimers()
+  })
+
+  it('beforeRouteEnter restores load state from store when returning from Community', () => {
+    const next = jest.fn()
+    ThreatSharing.beforeRouteEnter(
+      { query: {}, params: {} },
+      { name: 'Community' },
+      next
+    )
+
+    const vm = {
+      tab: 0,
+      isLoadState: false,
+      isTableReload: false,
+      $route: { query: {}, params: {} },
+      $router: { push: jest.fn() },
+      getCommunityPostsPermission: true,
+      getAllCommunitiesPermission: true,
+      $store: {
+        state: {
+          incidents: { incidents: { incidentsData: null } },
+          communities: { communities: { communitiesData: { rows: [1] } } },
+          tableReload: { tableReload: true }
+        }
+      }
+    }
+
+    const callback = next.mock.calls[0][0]
+    callback(vm)
+
+    expect(vm.tab).toBe(1)
+    expect(vm.isLoadState).toBe(true)
+    expect(vm.isTableReload).toBe(true)
   })
 
   it('beforeRouteLeave blocks navigation for open modal states, otherwise allows', () => {
@@ -196,6 +239,47 @@ describe('ThreatSharing.vue', () => {
     expect(communitiesCtx.$refs.tsCommunities.setInitialCommunityValues).toHaveBeenCalledTimes(1)
     expect(communitiesCtx.$refs.tsCommunities.isCommunity).toBe(false)
     expect(setLoadState).toHaveBeenCalledTimes(1)
+    jest.useRealTimers()
+  })
+
+  it('getSelectedTabData early-return branches do not call loaders', () => {
+    jest.useFakeTimers()
+    const setLoadState = jest.fn()
+    const incidentsCtx = {
+      tab: 0,
+      getCommunityPostsPermission: true,
+      getAllCommunitiesPermission: true,
+      isLoadState: true,
+      $refs: {
+        tsIncidents: { getIncidentList: jest.fn(), page: 0, itemsPerPage: 0 }
+      },
+      $store: { state: { communities: { communities: null } } },
+      setLoadState
+    }
+    methods.getSelectedTabData.call(incidentsCtx)
+    jest.advanceTimersByTime(100)
+    expect(incidentsCtx.$refs.tsIncidents.getIncidentList).not.toHaveBeenCalled()
+
+    const communitiesCtx = {
+      tab: 1,
+      page: 0,
+      getCommunityPostsPermission: true,
+      getAllCommunitiesPermission: false,
+      isLoadState: false,
+      $refs: {
+        tsCommunities: {
+          getAllCommunitiesListData: jest.fn(),
+          getInvitationCount: jest.fn(),
+          setInitialCommunityValues: jest.fn(),
+          isCommunity: true
+        }
+      },
+      $store: { state: { communities: { communities: {} } } },
+      setLoadState
+    }
+    methods.getSelectedTabData.call(communitiesCtx)
+    jest.advanceTimersByTime(100)
+    expect(communitiesCtx.$refs.tsCommunities.getAllCommunitiesListData).not.toHaveBeenCalled()
     jest.useRealTimers()
   })
 })

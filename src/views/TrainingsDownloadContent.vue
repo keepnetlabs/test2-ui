@@ -62,10 +62,6 @@ export default {
       }
 
       try {
-        console.log('download-content params', {
-          EnrollmentContentId,
-          TargetUserResourceId
-        })
         const response = await axios.get(
           `${APP_CONFIG.VUE_APP_ROOT_API}/trainings/download-content`,
           {
@@ -77,7 +73,6 @@ export default {
           }
         )
 
-        console.log('download-content headers', response?.headers)
         const fileNameFromHeader = this.getFileNameFromDisposition(
           response?.headers?.['content-disposition']
         )
@@ -85,18 +80,11 @@ export default {
         const fallbackExtension = this.getExtensionFromType(contentType)
         const fileName = fileNameFromHeader || `download${fallbackExtension}`
 
-        console.log('download-content filename', {
-          fileNameFromHeader,
-          contentType,
-          fallbackExtension,
-          fileName
-        })
         this.triggerDownload(response.data, fileName)
         this.statusMessage = 'Your download should start shortly.'
         this.shouldShowCloseButton = true
         this.handleAutoClose()
       } catch (error) {
-        console.log('download-content error', error)
         this.statusMessage = 'Download failed. Please try again later.'
         this.shouldShowCloseButton = true
       } finally {

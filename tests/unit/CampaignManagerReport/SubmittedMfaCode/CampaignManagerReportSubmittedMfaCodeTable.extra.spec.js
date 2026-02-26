@@ -16,6 +16,10 @@ jest.mock('@/helper-classes/lookup-local-storage', () => ({
   getSingle: jest.fn().mockResolvedValue([])
 }))
 
+jest.mock('@/utils/helperFunctions', () => ({
+  createCustomFieldColumns: jest.fn(() => [{ property: 'cfDepartment' }])
+}))
+
 import CampaignManagerReportSubmittedMfaCodeTable from '@/components/CampaignManagerReport/SubmittedMfaCode/CampaignManagerReportSubmittedMfaCodeTable.vue'
 
 describe('CampaignManagerReportSubmittedMfaCodeTable.vue (extra branch coverage)', () => {
@@ -228,6 +232,165 @@ describe('CampaignManagerReportSubmittedMfaCodeTable.vue (extra branch coverage)
         undefined,
         undefined
       )
+    })
+  })
+
+  describe('customFields watcher', () => {
+    it('inserts generated custom fields right after groups column when groups exists', () => {
+      const ctx = {
+        tableOptions: {
+          columns: [{ property: 'firstName' }, { property: 'targetGroups' }, { property: 'email' }]
+        }
+      }
+      CampaignManagerReportSubmittedMfaCodeTable.watch.customFields.handler.call(ctx, [
+        { key: 'x' }
+      ])
+      expect(ctx.tableOptions.columns.map((c) => c.property)).toEqual([
+        'firstName',
+        'targetGroups',
+        'cfDepartment',
+        'email'
+      ])
+    })
+
+    it('falls back to department index when groups column is missing', () => {
+      const ctx = {
+        tableOptions: {
+          columns: [{ property: 'firstName' }, { property: 'department' }, { property: 'email' }]
+        }
+      }
+      CampaignManagerReportSubmittedMfaCodeTable.watch.customFields.handler.call(ctx, [
+        { key: 'x' }
+      ])
+      expect(ctx.tableOptions.columns.map((c) => c.property)).toEqual([
+        'firstName',
+        'department',
+        'cfDepartment',
+        'email'
+      ])
+    })
+
+    it('does not mutate columns when both groups and department are missing', () => {
+      const ctx = {
+        tableOptions: {
+          columns: [{ property: 'firstName' }, { property: 'email' }]
+        }
+      }
+      CampaignManagerReportSubmittedMfaCodeTable.watch.customFields.handler.call(ctx, [
+        { key: 'x' }
+      ])
+      expect(ctx.tableOptions.columns.map((c) => c.property)).toEqual(['firstName', 'email'])
+    })
+  })
+
+  describe('callForLanguages', () => {
+    it('maps language options, sets filter items and rerenders table filters', async () => {
+      const LookupLocalStorage = require('@/helper-classes/lookup-local-storage').default || require('@/helper-classes/lookup-local-storage')
+      LookupLocalStorage.getSingle.mockResolvedValueOnce([
+        { isoFriendlyName: 'EN', name: 'English', resourceId: 'lang-1' }
+      ])
+
+      const preferredLangColumn = { property: 'preferredLanguage' }
+      const templateLangColumn = { property: 'emailTemplateLanguage' }
+      const reRenderFilters = jest.fn()
+      const ctx = {
+        tableOptions: {
+          columns: [preferredLangColumn, templateLangColumn]
+        },
+        languageOptions: [],
+        $refs: { refTable: { reRenderFilters } },
+        $set: (obj, key, value) => {
+          obj[key] = value
+        }
+      }
+
+      CampaignManagerReportSubmittedMfaCodeTable.methods.callForLanguages.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+
+      expect(LookupLocalStorage.getSingle).toHaveBeenCalledWith(21)
+      expect(ctx.languageOptions).toEqual([
+        { text: 'EN', languageTypeName: 'English', value: 'lang-1' }
+      ])
+      expect(preferredLangColumn.filterableItems).toEqual(ctx.languageOptions)
+      expect(templateLangColumn.filterableItems).toEqual([{ text: 'EN', value: 'EN' }])
+      expect(reRenderFilters).toHaveBeenCalledTimes(1)
+    })
+
+    it('falls back to empty list when language response is missing', async () => {
+      const LookupLocalStorage = require('@/helper-classes/lookup-local-storage').default || require('@/helper-classes/lookup-local-storage')
+      LookupLocalStorage.getSingle.mockResolvedValueOnce(undefined)
+
+      const preferredLangColumn = { property: 'preferredLanguage' }
+      const templateLangColumn = { property: 'emailTemplateLanguage' }
+      const ctx = {
+        tableOptions: {
+          columns: [preferredLangColumn, templateLangColumn]
+        },
+        languageOptions: [{ text: 'TR' }],
+        $refs: {},
+        $set: (obj, key, value) => {
+          obj[key] = value
+        }
+      }
+
+      CampaignManagerReportSubmittedMfaCodeTable.methods.callForLanguages.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+
+      expect(ctx.languageOptions).toEqual([])
+      expect(preferredLangColumn.filterableItems).toEqual([])
+      expect(templateLangColumn.filterableItems).toEqual([])
+    })
+  })
+
+  describe('callForData', () => {
+    it('maps server response and converts preferredLanguage using lookup options', async () => {
+      const { searchCampaignJobUserEmailSubmittedMfa } = require('@/api/phishingsimulator')
+      searchCampaignJobUserEmailSubmittedMfa.mockResolvedValueOnce({
+        data: {
+          data: {
+            results: [
+              {
+                resourceId: 'u1',
+                preferredLanguage: 'English',
+                customFieldValues: [{ name: 'Region', value: 'EMEA' }]
+              },
+              {
+                resourceId: 'u2',
+                preferredLanguage: 'German',
+                customFieldValues: []
+              }
+            ],
+            totalNumberOfRecords: 2,
+            totalNumberOfPages: 1,
+            pageNumber: 1
+          }
+        }
+      })
+
+      const ctx = {
+        id: 'job-1',
+        instanceGroup: 'g-1',
+        axiosPayload: { orderBy: 'FirstName', ascending: true, filter: {} },
+        languageOptions: [{ text: 'EN', languageTypeName: 'English', value: 'lang-1' }],
+        tableData: [],
+        serverSideProps: {},
+        setLoading: jest.fn()
+      }
+
+      CampaignManagerReportSubmittedMfaCodeTable.methods.callForData.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+
+      expect(ctx.setLoading).toHaveBeenNthCalledWith(1, true)
+      expect(searchCampaignJobUserEmailSubmittedMfa).toHaveBeenCalledWith(
+        ctx.axiosPayload,
+        'job-1',
+        'g-1'
+      )
+      expect(ctx.tableData[0].Region).toBe('EMEA')
+      expect(ctx.tableData[0].preferredLanguage).toBe('EN')
+      expect(ctx.tableData[1].preferredLanguage).toBe('German')
+      expect(ctx.serverSideProps.totalNumberOfRecords).toBe(2)
+      expect(ctx.setLoading).toHaveBeenLastCalledWith()
     })
   })
 })

@@ -15,7 +15,7 @@
     id="input--target-user-specific-users"
     outlined
     placeholder="Select target users"
-    autocomplete="disabled"
+    autocomplete="off"
     :items="items"
     :rules="rules"
     :no-data-text="isTargetUsersLoading ? 'Loading...' : 'No specific user available'"

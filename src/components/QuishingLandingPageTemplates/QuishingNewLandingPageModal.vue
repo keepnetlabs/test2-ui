@@ -509,10 +509,12 @@ export default {
     }
   },
   methods: {
-    async handleClickOnlyPageAdded(resourceId) {
+    async handleClickOnlyPageAdded(resourceId, pageIndex = 0) {
       this.isSelectClickOnlyPageOpen = false
       const response = await QuishingService.getLandingPageTemplatePreviewContent(resourceId)
-      const templateContent = response?.data?.data?.landingPages?.[0]?.content || ''
+      const landingPages = response?.data?.data?.landingPages || []
+      const templateContent =
+        landingPages[pageIndex]?.content || landingPages[0]?.content || ''
       this.formValues.landingPages.push({
         name: `Page ${this.formValues.landingPages.length + 1}`,
         order: 2,
@@ -684,8 +686,8 @@ export default {
       getCurrentCompany: 'login/getCurrentCompany'
     }),
     clickOnlyMethodText() {
-      if (this.formValues.methodTypeId === '2') {
-        return this.landingPageData?.methodTypes?.find((item) => item.value === '2')?.text || ''
+      if (this.formValues.methodTypeId === '1') {
+        return this.landingPageData?.methodTypes?.find((item) => item.value === '1')?.text || 'Click Only'
       }
       return ''
     },

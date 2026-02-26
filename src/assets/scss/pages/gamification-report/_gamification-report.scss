@@ -22,6 +22,55 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
+  &__top-performer-card-skeleton {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fafafa;
+    border-radius: 8px;
+    padding: 16px;
+    padding-top: 32px;
+
+    &__ribbon {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      translate: -50%;
+
+      .v-skeleton-loader__text {
+        height: 8px;
+        border-radius: 4px;
+      }
+    }
+
+    &__medal {
+      .v-skeleton-loader__avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+      }
+    }
+
+    &__line {
+      width: 100%;
+
+      .v-skeleton-loader__text {
+        height: 14px;
+        border-radius: 4px;
+        margin: 3px auto;
+      }
+    }
+
+    &__chip {
+      .v-skeleton-loader__chip {
+        border-radius: 100px;
+        width: 140px;
+        height: 24px;
+      }
+    }
+  }
+
   &__top-performers-content-empty {
     padding: 16px;
     padding-top: 32px;

@@ -327,4 +327,28 @@ describe('VishingCampaignManager.vue', () => {
 
     expect(() => wrapper.vm.checkIfCanCloseVishingTemplateModal()).not.toThrow()
   })
+
+  it('builds disabled table options when permissions are denied', () => {
+    const wrapper = createWrapper({
+      mocks: {
+        $store: {
+          getters: {
+            'permissions/getVishingCampaignManagerSearchPermissions': true,
+            'permissions/getVishingCampaignManagerLaunchPermissions': false,
+            'permissions/getVishingCampaignManagerPreviewPermissions': false,
+            'permissions/getVishingCampaignManagerEditPermissions': false,
+            'permissions/getVishingCampaignManagerCreatePermissions': false,
+            'permissions/getVishingCampaignManagerDeletePermissions': false,
+            'permissions/getVishingReportsSummaryPermissions': false,
+            'permissions/getVishingCampaignManagerStopPermissions': false,
+            'permissions/getVishingCampaignManagerExportPermissions': false
+          }
+        }
+      }
+    })
+
+    expect(wrapper.vm.tableOptions.rowActions.every((action) => action.disabled)).toBe(true)
+    expect(wrapper.vm.tableOptions.addButton.disabled).toBe(true)
+    expect(wrapper.vm.tableOptions.downloadButton.disabled).toBe(true)
+  })
 })

@@ -119,9 +119,9 @@ export default {
                 const y = maxData._model.y - padding + 2
                 let xComparator = x
                 if (window.innerWidth >= 1280 && window.innerWidth < 1440) {
-                  xComparator = x < 130 ? 130 : x
+                  xComparator = Math.max(130, x)
                 } else if (window.innerWidth >= 1440) {
-                  xComparator = x < 160 ? 160 : x
+                  xComparator = Math.max(160, x)
                 }
                 ctx.fillStyle = '#000'
                 ctx.textAlign = 'start'

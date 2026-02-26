@@ -45,4 +45,30 @@ describe('TrainingLibraryPreview.vue', () => {
     await Promise.resolve()
     expect(ctx.isTemplateLoading).toBe(false)
   })
+
+  it('created keeps activeLanguage undefined when language list is empty', () => {
+    const callForData = jest.fn()
+    const ctx = { languages: [], activeLanguage: 'initial', callForData }
+    TrainingLibraryPreview.created.call(ctx)
+    expect(ctx.activeLanguage).toBeUndefined()
+    expect(callForData).toHaveBeenCalled()
+  })
+
+  it('callForData handles missing loading arg by emitting update:isLoading', async () => {
+    const $emit = jest.fn()
+    const ctx = {
+      trainingId: 't2',
+      activeLanguage: 'tr',
+      iframeKey: 'k1',
+      $emit
+    }
+
+    TrainingLibraryPreview.methods.callForData.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect($emit).toHaveBeenCalledWith('update:isLoading', true)
+    expect($emit).toHaveBeenCalledWith('update:isLoading', false)
+    expect(ctx.activeTemplate).toContain('scoAddress=')
+  })
 })

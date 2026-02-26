@@ -192,7 +192,7 @@ export default {
       enrollments: [],
       showSurveyDialog: false,
       isEmpty: false,
-      windowWidth: typeof globalThis.window !== 'undefined' ? globalThis.window.innerWidth : 1920,
+      windowWidth: globalThis.window !== undefined ? globalThis.window.innerWidth : 1920,
       empty: {
         message: 'No data available for Security Culture Score',
         subMessage: ''

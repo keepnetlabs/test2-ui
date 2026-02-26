@@ -83,7 +83,7 @@ export default {
     },
     getItemId(item = "") {
       const safeItem = typeof item === "string" ? item : String(item || "");
-      return `breadcrumb-link--${safeItem.replace(/\s/g, "")}`;
+      return `breadcrumb-link--${safeItem.replaceAll(/\s/g, "")}`;
     }
   }
 };

@@ -26,16 +26,16 @@ describe('QuishingNewLandingPageModal.vue', () => {
     jest.clearAllMocks()
   })
 
-  it('computed clickOnlyMethodText returns method label only for type 2', () => {
-    expect(
-      computed.clickOnlyMethodText.call({
-        formValues: { methodTypeId: '2' },
-        landingPageData: { methodTypes: [{ value: '2', text: 'Data Submission' }] }
-      })
-    ).toBe('Data Submission')
+  it('computed clickOnlyMethodText returns method label only for type 1 (click only)', () => {
     expect(
       computed.clickOnlyMethodText.call({
         formValues: { methodTypeId: '1' },
+        landingPageData: { methodTypes: [{ value: '1', text: 'Click Only' }] }
+      })
+    ).toBe('Click Only')
+    expect(
+      computed.clickOnlyMethodText.call({
+        formValues: { methodTypeId: '2' },
         landingPageData: { methodTypes: [{ value: '2', text: 'Data Submission' }] }
       })
     ).toBe('')

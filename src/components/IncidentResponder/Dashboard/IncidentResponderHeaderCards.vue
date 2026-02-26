@@ -342,13 +342,16 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.addQuery)
   },
-  methods: {
-    callForData() {
-      this.incidentLoading = true
-      this.$store.dispatch('investigations/getIrSummary').finally(() => {
-        this.incidentLoading = false
-      })
-    },
+    methods: {
+      callForData() {
+        this.incidentLoading = true
+        this.$store
+          .dispatch('investigations/getIrSummary')
+          .catch(() => undefined)
+          .finally(() => {
+            this.incidentLoading = false
+          })
+      },
     addQuery() {
       const navigatorWidth = document.querySelector('nav.page-nav').style.width
       const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))

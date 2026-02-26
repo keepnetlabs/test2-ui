@@ -40,6 +40,92 @@ describe('NavigationDrawerFooter.vue', () => {
     ).toBe(true)
   })
 
+  it('isDocumentationLinkEnabled follows explicit false config', () => {
+    expect(
+      NavigationDrawerFooter.computed.isDocumentationLinkEnabled.call({
+        navigatorMenuProps: { isDocumentationLinkEnabled: false }
+      })
+    ).toBe(false)
+  })
+
+  it('release flags depend on mini mode and props', () => {
+    expect(
+      NavigationDrawerFooter.computed.isReleaseNotes.call({
+        isMini: false,
+        navigatorMenuProps: { isShowReleaseNotes: true }
+      })
+    ).toBe(true)
+    expect(
+      NavigationDrawerFooter.computed.isReleaseNotes.call({
+        isMini: true,
+        navigatorMenuProps: { isShowReleaseNotes: true }
+      })
+    ).toBe(false)
+
+    expect(
+      NavigationDrawerFooter.computed.isReleaseVersion.call({
+        isMini: false,
+        navigatorMenuProps: { isShowReleaseVersionNumber: true }
+      })
+    ).toBe(true)
+    expect(
+      NavigationDrawerFooter.computed.isMiniReleaseVersion.call({
+        isMini: true,
+        navigatorMenuProps: { isShowReleaseVersionNumber: true }
+      })
+    ).toBe(true)
+
+    expect(
+      NavigationDrawerFooter.computed.isReleaseVersion.call({
+        isMini: true,
+        navigatorMenuProps: { isShowReleaseVersionNumber: true }
+      })
+    ).toBe(false)
+    expect(
+      NavigationDrawerFooter.computed.isMiniReleaseVersion.call({
+        isMini: false,
+        navigatorMenuProps: { isShowReleaseVersionNumber: true }
+      })
+    ).toBe(false)
+  })
+
+  it('getReleaseNotesUrl returns configured URL or empty string', () => {
+    expect(
+      NavigationDrawerFooter.computed.getReleaseNotesUrl.call({
+        navigatorMenuProps: { releaseNotesUrl: 'https://example.com/notes' }
+      })
+    ).toBe('https://example.com/notes')
+    expect(
+      NavigationDrawerFooter.computed.getReleaseNotesUrl.call({
+        navigatorMenuProps: {}
+      })
+    ).toBe('')
+  })
+
+  it('handleDocumentationClick creates and clicks anchor', () => {
+    const click = jest.fn()
+    const originalCreateElement = document.createElement.bind(document)
+    const anchor = { click, href: '', target: '' }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation((tag) => {
+      if (tag === 'a') {
+        return anchor
+      }
+      return originalCreateElement(tag)
+    })
+
+    NavigationDrawerFooter.methods.handleDocumentationClick.call({})
+    expect(click).toHaveBeenCalledTimes(1)
+    expect(anchor.href).toBe('https://doc.keepnetlabs.com')
+    expect(anchor.target).toBe('_blank')
+    createElementSpy.mockRestore()
+  })
+
+  it('data() exposes mdi icons', () => {
+    const data = NavigationDrawerFooter.data.call({})
+    expect(data.mdiHelpCircleOutline).toBeDefined()
+    expect(data.mdiMessageAlertOutline).toBeDefined()
+  })
+
   it('handleFeedbackClick dispatches changeFeedbackPopup', () => {
     const dispatch = jest.fn()
     const ctx = { $store: { dispatch } }

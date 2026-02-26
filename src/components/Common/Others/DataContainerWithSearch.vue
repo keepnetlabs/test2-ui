@@ -242,13 +242,13 @@ export default {
     handleInputChange(newVal = '', oldVal = '', index = 0) {
       const item = this.getItems[index]
       item.val = newVal
-      const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
+      const indexOfOldValue = this.value.indexOf(oldVal)
       this.$set(this.value, indexOfOldValue, newVal)
       this.$set(item, 'isEdit', false)
       item.key = createRandomCryptStringNumber()
 
       if (this.removeDuplicates) {
-        const newItems = JSON.parse(JSON.stringify([...new Set(this.value)]))
+        const newItems = structuredClone([...new Set(this.value)])
         this.resetOptions()
         this.setOptions()
         this.$emit('input', newItems)
@@ -293,7 +293,7 @@ export default {
       if (index === -1) return
       this.options.splice(index, 1)
       this.value.splice(
-        this.value.findIndex((val) => val === item),
+        this.value.indexOf(item),
         1
       )
       this.$emit('on-delete', index)

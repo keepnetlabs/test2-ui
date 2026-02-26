@@ -107,13 +107,15 @@ export default {
   },
   methods: {
     callForGetRoiSettings() {
-      getRoiSettings().then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.baseManHour = data.baseManHour
-        this.baseManHourCost = data.baseManHourCost
-      })
+      getRoiSettings()
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.baseManHour = data.baseManHour
+          this.baseManHourCost = data.baseManHourCost
+        })
+        .catch(() => undefined)
     },
     handleClose(forceUpdate = false) {
       this.$emit('on-close', forceUpdate)
@@ -128,6 +130,7 @@ export default {
           .then(() => {
             this.handleClose(true)
           })
+          .catch(() => undefined)
           .finally(() => {
             this.isConfirmButtonDisabled = false
           })

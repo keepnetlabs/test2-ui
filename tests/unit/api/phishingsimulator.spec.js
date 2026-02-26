@@ -1228,6 +1228,97 @@ describe('phishingsimulator API', () => {
         })
       )
     })
+
+    it('should call callForCampaignReports', async () => {
+      const payload = { pageNumber: 2, pageSize: 25 }
+      await phishingApi.callForCampaignReports(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/search',
+        payload
+      )
+    })
+
+    it('should call exportCampaignReports with blob response', async () => {
+      const payload = { filter: { keyword: 'campaign' } }
+      await phishingApi.exportCampaignReports(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/phishing-campaign-job-report/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should omit query parameters when campaignType and instanceGroup are null', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-nullable', {
+        campaignType: null,
+        instanceGroup: null
+      })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-nullable/target-groups'
+      )
+    })
+  })
+
+  describe('campaign report detail operations', () => {
+    it('should call searchCampaignJobUserEmailClickedDetails', async () => {
+      const payload = { page: 1 }
+      const id = 'campaign-321'
+      await phishingApi.searchCampaignJobUserEmailClickedDetails(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/phishing-simulator/phishing-campaign-job-report/search-email-clicked/${id}`,
+        payload
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailOpenedDetails', async () => {
+      const payload = { page: 2 }
+      const id = 'campaign-654'
+      await phishingApi.searchCampaignJobUserEmailOpenedDetails(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/phishing-simulator/phishing-campaign-job-report/search-email-opened/${id}`,
+        payload
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailReportedDetails', async () => {
+      const payload = { page: 3 }
+      const id = 'campaign-987'
+      await phishingApi.searchCampaignJobUserEmailReportedDetails(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/phishing-simulator/phishing-campaign-job-report/search-email-reported/${id}`,
+        payload
+      )
+    })
+
+    it('should call searchCampaignJobUserAttachmentOpenedDetaiils', async () => {
+      const payload = { page: 4 }
+      const id = 'campaign-777'
+      await phishingApi.searchCampaignJobUserAttachmentOpenedDetaiils(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/${id}`,
+        payload
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailSubmittedDetails', async () => {
+      const payload = { page: 5 }
+      const id = 'campaign-888'
+      await phishingApi.searchCampaignJobUserEmailSubmittedDetails(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/phishing-simulator/phishing-campaign-job-report/search-email-submitted/${id}`,
+        payload
+      )
+    })
+
+    it('should call searchCampaignJobUserEmailSubmittedDetailsMfa', async () => {
+      const payload = { page: 6 }
+      const id = 'campaign-999'
+      await phishingApi.searchCampaignJobUserEmailSubmittedDetailsMfa(payload, id)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/phishing-simulator/phishing-campaign-job-report/search-mfa-submitted/${id}`,
+        payload
+      )
+    })
   })
 
   describe('red flag operations', () => {
@@ -1289,6 +1380,30 @@ describe('phishingsimulator API', () => {
       const phishingApiLocal = require('@/api/phishingsimulator')
 
       const payload = { text: 'check-localhost' }
+      await phishingApiLocal.checkRedFlags(payload)
+      expect(axiosLocal.post).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev?method=flag'
+        ),
+        payload,
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+
+      window.location = originalLocation
+    })
+
+    it('should use test worker url for test-ui origin', async () => {
+      const originalLocation = window.location
+      delete window.location
+      window.location = { origin: 'https://test-ui.devkeepnet.com' }
+
+      jest.resetModules()
+      const axiosLocal = require('axios')
+      const phishingApiLocal = require('@/api/phishingsimulator')
+
+      const payload = { text: 'check-test-ui' }
       await phishingApiLocal.checkRedFlags(payload)
       expect(axiosLocal.post).toHaveBeenCalledWith(
         expect.stringContaining(

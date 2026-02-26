@@ -48,7 +48,7 @@ export default {
           const parts = response.split('_')
           if (parts.length > 1) {
             // İlk sayıyı çıkar, geriye kalanları birleştir ve _ yerine boşluk koy
-            return parts.slice(1).join(' ').replace(/_/g, ' ')
+            return parts.slice(1).join(' ').replaceAll(/_/g, ' ')
           }
           return response
         })

@@ -435,7 +435,7 @@ export default {
         disabledDate: this.disabledEndDates
       },
       periodTypeItems,
-      endTypeItems: JSON.parse(JSON.stringify(endTypeItems)),
+      endTypeItems: structuredClone(endTypeItems),
       totalNumberOfPagesOfTrainings: 1,
       trainingPayload: {
         pageNumber: 1,

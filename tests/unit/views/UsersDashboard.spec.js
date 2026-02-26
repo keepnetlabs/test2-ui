@@ -1,6 +1,10 @@
 import UsersDashboard from '@/views/UsersDashboard.vue'
 
 describe('UsersDashboard.vue', () => {
+  it('has correct component name', () => {
+    expect(UsersDashboard.name).toBe('UsersDashboard')
+  })
+
   it('welcomeTitle uses user name when available and falls back to User', () => {
     const withName = {
       labels: { welcomeTitle: jest.fn((name) => `Welcome ${name}`), welcomeDescription: 'Desc' },

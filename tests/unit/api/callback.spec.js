@@ -2,6 +2,7 @@ jest.mock('@/utils/testRequest', () => ({
   get: jest.fn().mockResolvedValue({}),
   post: jest.fn().mockResolvedValue({}),
   put: jest.fn().mockResolvedValue({}),
+  patch: jest.fn().mockResolvedValue({}),
   delete: jest.fn().mockResolvedValue({})
 }))
 
@@ -765,6 +766,219 @@ describe('callback API', () => {
       const error = new Error('Campaign creation failed')
       testRequest.post.mockRejectedValueOnce(error)
       await expect(callbackApi.createCallbackCampaign({})).rejects.toThrow('Campaign creation failed')
+    })
+  })
+
+  describe('campaign and report endpoints additional coverage', () => {
+    it('should call searchCallbackCampaigns', async () => {
+      const payload = { page: 1 }
+      await callbackApi.searchCallbackCampaigns(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/callback-simulator/campaign/search', payload)
+    })
+
+    it('should call exportCallbackCampaigns', async () => {
+      const payload = { page: 1 }
+      await callbackApi.exportCallbackCampaigns(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign/search/export',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getCallbackCampaignPreview', async () => {
+      await callbackApi.getCallbackCampaignPreview('campaign-1')
+      expect(testRequest.get).toHaveBeenCalledWith('/callback-simulator/campaign/preview/campaign-1')
+    })
+
+    it('should call getDefaultCompanySmtpSetting', async () => {
+      await callbackApi.getDefaultCompanySmtpSetting()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/campaign/root-company-shared-smtp-resource-id'
+      )
+    })
+
+    it('should call bulkDeleteCallbackCampaign', async () => {
+      const payload = { ids: ['campaign-1'] }
+      await callbackApi.bulkDeleteCallbackCampaign(payload)
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/callback-simulator/campaign/bulk-delete',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call calculateSendingInfo', async () => {
+      const payload = { users: 10 }
+      await callbackApi.calculateSendingInfo(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign/calculate-sending-info',
+        payload
+      )
+    })
+
+    it('should call calculateScheduleInfo', async () => {
+      const payload = { startDate: '2026-01-01' }
+      await callbackApi.calculateScheduleInfo(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign/calculate-schedule-info',
+        payload
+      )
+    })
+
+    it('should call getEmailDeliverySettings', async () => {
+      await callbackApi.getEmailDeliverySettings()
+      expect(testRequest.get).toHaveBeenCalledWith('/callback-simulator/campaign/email-delivery-settings')
+    })
+
+    it('should call getCallbackCampaignJobFormDetails', async () => {
+      await callbackApi.getCallbackCampaignJobFormDetails()
+      expect(testRequest.get).toHaveBeenCalledWith('/callback-simulator/campaign-job/form-details')
+    })
+
+    it('should call launchCallbackCampaignJob', async () => {
+      const payload = { resourceId: 'campaign-1' }
+      await callbackApi.launchCallbackCampaignJob(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/start',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call startCallbackCampaignJob', async () => {
+      await callbackApi.startCallbackCampaignJob('job-1', 'group-a')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-job/start/job-1/group-a',
+        {},
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call stopCallbackCampaignJob', async () => {
+      await callbackApi.stopCallbackCampaignJob('job-1', 'group-a')
+      expect(testRequest.patch).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/stop/job-1/group-a'
+      )
+    })
+
+    it('should call deleteCallbackJob', async () => {
+      await callbackApi.deleteCallbackJob('job-1', 'group-a')
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/job-1/group-a',
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call searchCallbackJobs', async () => {
+      const payload = { page: 1 }
+      await callbackApi.searchCallbackJobs('campaign-1', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/search/campaign-1',
+        payload
+      )
+    })
+
+    it('should call exportCallbackJobs', async () => {
+      const payload = { page: 1 }
+      await callbackApi.exportCallbackJobs('campaign-1', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/export/campaign-1',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call resendCampaignToUsersList', async () => {
+      const payload = { ids: ['u1'] }
+      await callbackApi.resendCampaignToUsersList('job-1', 'group-a', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/resend/job-1/group-a',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call resendCampaignToUsers', async () => {
+      const payload = { ids: ['u1'] }
+      await callbackApi.resendCampaignToUsers('job-1', 'group-a', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job/resend/users/job-1/group-a',
+        payload,
+        { snackbar: COMMON_SNACKBAR }
+      )
+    })
+
+    it('should call getTargetGroupsForCurrentCompany', async () => {
+      const payload = { page: 1 }
+      await callbackApi.getTargetGroupsForCurrentCompany(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/target-groups/search/current-company', payload)
+    })
+
+    it('should call getCampaignSummary', async () => {
+      await callbackApi.getCampaignSummary('job-1', 'group-a')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/summary/job-1/group-a'
+      )
+    })
+
+    it('should call getCampaignSummaryTargetGroups', async () => {
+      await callbackApi.getCampaignSummaryTargetGroups('job-1', 'group-a')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/summary/target-groups/job-1/group-a'
+      )
+    })
+
+    it('should call exportCampaignReport', async () => {
+      await callbackApi.exportCampaignReport('job-1', 'group-a')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/export/job-1/group-a',
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getCampaignTabUsers', async () => {
+      const payload = { page: 1 }
+      await callbackApi.getCampaignTabUsers('opened', 'job-1', 'group-a', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/opened/search/job-1/group-a',
+        payload
+      )
+    })
+
+    it('should call exportCampaignTabUsers', async () => {
+      const payload = { page: 1 }
+      await callbackApi.exportCampaignTabUsers('opened', 'job-1', 'group-a', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/opened/search/export/job-1/group-a',
+        payload,
+        { responseType: 'blob' }
+      )
+    })
+
+    it('should call getEmailOpenedUserDetails', async () => {
+      const payload = { page: 1 }
+      await callbackApi.getEmailOpenedUserDetails('job-1', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/search-email-opened/job-1',
+        payload
+      )
+    })
+
+    it('should call getReportedUserDetails', async () => {
+      const payload = { page: 1 }
+      await callbackApi.getReportedUserDetails('job-1', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/search-email-reported/job-1',
+        payload
+      )
+    })
+
+    it('should call getUserEmailActivity', async () => {
+      await callbackApi.getUserEmailActivity('job-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/campaign-job-report/search-email-activity/job-1'
+      )
     })
   })
 })
