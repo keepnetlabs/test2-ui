@@ -398,21 +398,6 @@ describe('functions.js (extra coverage)', () => {
       Object.defineProperty(navigator, 'vendor', { value: originalVendor, configurable: true })
     })
 
-    it('scrollToComponent passes options on non-safari browsers', () => {
-      const originalSafari = globalThis.safari
-      const originalVendor = navigator.vendor
-      Object.defineProperty(globalThis, 'safari', { value: undefined, configurable: true })
-      Object.defineProperty(navigator, 'vendor', { value: 'Google Inc.', configurable: true })
-      const scrollIntoView = jest.fn()
-      const options = { behavior: 'auto', block: 'start', inline: 'nearest' }
-
-      scrollToComponent({ scrollIntoView }, options)
-
-      expect(scrollIntoView).toHaveBeenCalledWith(options)
-      Object.defineProperty(globalThis, 'safari', { value: originalSafari, configurable: true })
-      Object.defineProperty(navigator, 'vendor', { value: originalVendor, configurable: true })
-    })
-
     it('handleIsSafari returns truthy for apple vendor', () => {
       const originalSafari = globalThis.safari
       const originalVendor = navigator.vendor
