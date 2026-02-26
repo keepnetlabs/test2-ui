@@ -312,7 +312,7 @@ export default {
         .trim()
         .toLowerCase()
         .replaceAll(/[_-]+/g, " ")
-        .replace(/\s+/g, " ");
+        .replaceAll(/\s+/g, " ");
       const statusMap = {
         "waiting for approval": "Waiting for Approval",
         waitingforapproval: "Waiting for Approval",
@@ -321,14 +321,14 @@ export default {
       };
       if (statusMap[cleaned]) return statusMap[cleaned];
       if (!cleaned) return status;
-      return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
+      return cleaned.replaceAll(/\b\w/g, (char) => char.toUpperCase());
     },
     isWaitingForApproval(row = {}) {
       const normalized = String(row.status || "")
         .trim()
         .toLowerCase()
         .replaceAll(/[_-]+/g, " ")
-        .replace(/\s+/g, " ");
+        .replaceAll(/\s+/g, " ");
       return (
         normalized === "waiting for approval" ||
         normalized === "waitingforapproval"

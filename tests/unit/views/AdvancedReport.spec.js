@@ -137,4 +137,30 @@ describe('AdvancedReport.vue', () => {
 
     window.powerbi = originalPowerbi
   })
+
+  it('callForData keeps route id while handling missing response payload safely', async () => {
+    ReportsService.getReportDetail.mockResolvedValueOnce(null)
+    const embed = jest.fn(() => ({ on: jest.fn() }))
+    const setLoading = jest.fn()
+    const ctx = {
+      $route: { params: { id: 'rep-safe' } },
+      $refs: { reportContainer: { id: 'container-safe' } },
+      setLoading,
+      report: null
+    }
+    const originalPowerbi = window.powerbi
+    window.powerbi = { embed }
+
+    AdvancedReport.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ReportsService.getReportDetail).toHaveBeenCalledWith('rep-safe')
+    expect(embed).toHaveBeenCalledWith(
+      { id: 'container-safe' },
+      expect.objectContaining({ accessToken: undefined, embedUrl: undefined })
+    )
+    expect(setLoading).toHaveBeenCalledWith(true)
+
+    window.powerbi = originalPowerbi
+  })
 })

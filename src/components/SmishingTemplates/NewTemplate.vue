@@ -490,7 +490,7 @@ export default {
     this.setFooterButtonIds()
     this.callForLanguages()
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit) {
       SmishingService.getTextMessageTemplate(this.emailTemplateId).then((response) => {
@@ -503,7 +503,7 @@ export default {
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {

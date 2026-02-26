@@ -166,6 +166,58 @@ describe('GamificationReport.vue (extra)', () => {
     Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
+  it('picker onPick updates datePeriod and formats selected range when both dates exist', () => {
+    const momentMock = () => ({
+      subtract: () => ({ format: () => '2026-01-01 00:00' }),
+      format: () => '2026-02-01 00:00'
+    })
+    const ctx = {
+      $moment: momentMock,
+      axiosPayload: { datePeriod: null },
+      $refs: {
+        refInputDate: {
+          formatToValue: jest.fn(() => ['2026-01-01', '2026-01-31'])
+        }
+      }
+    }
+    const result = data.call(ctx)
+    ctx.axiosPayload = { ...result.axiosPayload }
+
+    result.pickerOptions.onPick({
+      minDate: new Date('2026-01-01'),
+      maxDate: new Date('2026-01-31')
+    })
+
+    expect(ctx.date).toEqual(['2026-01-01', '2026-01-31'])
+    expect(ctx.axiosPayload.datePeriod).toBeTruthy()
+  })
+
+  it('picker onPick still sets custom date period when only one boundary exists', () => {
+    const momentMock = () => ({
+      subtract: () => ({ format: () => '2026-01-01 00:00' }),
+      format: () => '2026-02-01 00:00'
+    })
+    const ctx = {
+      $moment: momentMock,
+      axiosPayload: { datePeriod: null },
+      $refs: {
+        refInputDate: {
+          formatToValue: jest.fn()
+        }
+      }
+    }
+    const result = data.call(ctx)
+    ctx.axiosPayload = { ...result.axiosPayload }
+
+    result.pickerOptions.onPick({
+      minDate: new Date('2026-01-01'),
+      maxDate: null
+    })
+
+    expect(ctx.$refs.refInputDate.formatToValue).not.toHaveBeenCalled()
+    expect(ctx.axiosPayload.datePeriod).toBeTruthy()
+  })
+
   it('callForData returns early when search permission is missing', () => {
     const ctx = {
       getGamificationReportSearchPermissions: false,

@@ -1,4 +1,5 @@
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter.vue'
+import { shallowMount } from '@vue/test-utils'
 
 describe('NavigationDrawerFooter.vue', () => {
   it('isRelaseInformation returns true when release notes or version shown', () => {
@@ -131,5 +132,56 @@ describe('NavigationDrawerFooter.vue', () => {
     const ctx = { $store: { dispatch } }
     NavigationDrawerFooter.methods.handleFeedbackClick.call(ctx)
     expect(dispatch).toHaveBeenCalledWith('dashboard/changeFeedbackPopup', true)
+  })
+
+  it('renders full release version and release notes when mini mode is off', () => {
+    const wrapper = shallowMount(NavigationDrawerFooter, {
+      propsData: {
+        isMini: false,
+        navigatorMenuProps: {
+          isShowReleaseVersionNumber: true,
+          isShowReleaseNotes: true,
+          systemVersion: '12.34.56',
+          releaseNotesUrl: 'https://example.com/release'
+        }
+      },
+      stubs: {
+        VList: true,
+        VListItem: true,
+        VListItemIcon: true,
+        VListItemTitle: true,
+        VIcon: true
+      }
+    })
+
+    expect(wrapper.text()).toContain('Version 12.34.56 -')
+    const releaseLink = wrapper.find('#btn--navigation-drawer-release-notes')
+    expect(releaseLink.exists()).toBe(true)
+    expect(releaseLink.attributes('href')).toBe('https://example.com/release')
+  })
+
+  it('renders mini release version prefix and hides release notes in mini mode', () => {
+    const wrapper = shallowMount(NavigationDrawerFooter, {
+      propsData: {
+        isMini: true,
+        navigatorMenuProps: {
+          isShowReleaseVersionNumber: true,
+          isShowReleaseNotes: true,
+          systemVersion: '12.34.56',
+          releaseNotesUrl: 'https://example.com/release'
+        }
+      },
+      stubs: {
+        VList: true,
+        VListItem: true,
+        VListItemIcon: true,
+        VListItemTitle: true,
+        VIcon: true
+      }
+    })
+
+    expect(wrapper.text()).toContain('12.')
+    expect(wrapper.text()).not.toContain('Version 12.34.56')
+    expect(wrapper.find('#btn--navigation-drawer-release-notes').exists()).toBe(false)
   })
 })

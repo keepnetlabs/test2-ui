@@ -59,28 +59,24 @@ export default {
      * @returns {Promise<string>} Generated or improved description
      */
     async generateAIDescription({ name = '', category = '', role = '', description = '' } = {}) {
-      try {
-        const payload = {
-          name: name.trim(),
-          category: category.trim(),
-          role: role.trim()
-        }
-
-        // Include existing description if we're improving it
-        if (description && description.trim().length > 5) {
-          payload.description = description.trim()
-        }
-
-        const response = await axios.post(AI_DESCRIPTION_WORKER_URL, payload, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-
-        return response.data?.description || ''
-      } catch (error) {
-        throw error
+      const payload = {
+        name: name.trim(),
+        category: category.trim(),
+        role: role.trim()
       }
+
+      // Include existing description if we're improving it
+      if (description && description.trim().length > 5) {
+        payload.description = description.trim()
+      }
+
+      const response = await axios.post(AI_DESCRIPTION_WORKER_URL, payload, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      return response.data?.description || ''
     },
 
     /**

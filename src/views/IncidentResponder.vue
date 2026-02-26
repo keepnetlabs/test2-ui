@@ -2105,7 +2105,7 @@ export default {
 
           const newItems = selections.filter(
             (item) =>
-              !this.extendedViewValue.find(
+              !this.extendedViewValue.some(
                 (extendedViewItem) =>
                   extendedViewItem.resourceId === item.resourceId
               )

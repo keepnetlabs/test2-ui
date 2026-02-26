@@ -531,8 +531,8 @@ export default {
         animation: 200,
         ghostClass: 'ghost'
       },
-      initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
-      formValues: JSON.parse(JSON.stringify(initialFormValues)),
+      initialFormValues: structuredClone(initialFormValues),
+      formValues: structuredClone(initialFormValues),
       addStepItems: [
         {
           value: 'TextToSpeech',

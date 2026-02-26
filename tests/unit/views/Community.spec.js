@@ -115,6 +115,14 @@ describe('Community.vue', () => {
     jest.advanceTimersByTime(60)
     expect(membersCtx.$refs.refMembers.getCommunityDetails).toHaveBeenCalled()
 
+    const blockedMembersCtx = {
+      getThreatSharingGetMembersPermission: false,
+      $refs: { refMembers: { getCommunityDetails: jest.fn() } }
+    }
+    Community.methods.getMembers.call(blockedMembersCtx)
+    jest.advanceTimersByTime(60)
+    expect(blockedMembersCtx.$refs.refMembers.getCommunityDetails).not.toHaveBeenCalled()
+
     jest.useRealTimers()
   })
 
@@ -157,5 +165,106 @@ describe('Community.vue', () => {
     expect(modalCtx.isWantToAddNewCommunity).toBe(false)
 
     jest.useRealTimers()
+  })
+
+  it('route watcher handles postId and routerCount fallback branches', () => {
+    jest.useFakeTimers()
+
+    const push = jest.fn()
+    const getMembers = jest.fn()
+    const getIncidents = jest.fn()
+    const getSharedPost = jest.fn()
+    const ctxPost = {
+      $nextTick: (cb) => cb(),
+      $router: { push },
+      $refs: { refIncidents: { incidentList: ['old'], getSharedPost } },
+      getMembers,
+      getIncidents,
+      tab: 0,
+      routerCount: 0,
+      getThreatSharingEditCommunityPermission: true,
+      getThreatSharingGetIncidentsPermission: true
+    }
+
+    Community.watch.$route.call(ctxPost, { name: 'Community', query: { postId: 'p1' } }, { name: 'Community' })
+    expect(ctxPost.$refs.refIncidents.incidentList).toEqual([])
+    expect(getSharedPost).toHaveBeenCalled()
+
+    const ctxFallback = {
+      $nextTick: (cb) => cb(),
+      $router: { push },
+      $refs: { refIncidents: { incidentList: [], getSharedPost: jest.fn() } },
+      getMembers,
+      getIncidents,
+      tab: 1,
+      routerCount: 1,
+      getThreatSharingEditCommunityPermission: true,
+      getThreatSharingGetIncidentsPermission: true
+    }
+    Community.watch.$route.call(ctxFallback, { name: 'Community', query: {} }, { name: 'Community' })
+    expect(ctxFallback.tab).toBe(0)
+    expect(getIncidents).toHaveBeenCalled()
+    expect(ctxFallback.routerCount).toBe(2)
+    jest.advanceTimersByTime(260)
+    expect(ctxFallback.routerCount).toBe(0)
+
+    jest.useRealTimers()
+  })
+
+  it('route watcher no-op and redirect/member branches execute correctly', () => {
+    const push = jest.fn()
+    const getMembers = jest.fn()
+    const getIncidents = jest.fn()
+    const ctxDifferentRoute = {
+      $nextTick: (cb) => cb(),
+      $router: { push },
+      $refs: { refIncidents: { incidentList: [], getSharedPost: jest.fn() } },
+      getMembers,
+      getIncidents,
+      tab: 0,
+      routerCount: 0,
+      getThreatSharingEditCommunityPermission: true,
+      getThreatSharingGetIncidentsPermission: true
+    }
+    Community.watch.$route.call(
+      ctxDifferentRoute,
+      { name: 'Community', query: {} },
+      { name: 'AnotherPage' }
+    )
+    expect(push).not.toHaveBeenCalled()
+    expect(getMembers).not.toHaveBeenCalled()
+
+    const ctxNoEditNoIncidents = {
+      $nextTick: (cb) => cb(),
+      $router: { push },
+      $refs: { refIncidents: { incidentList: [], getSharedPost: jest.fn() } },
+      getMembers,
+      getIncidents,
+      tab: 0,
+      routerCount: 3,
+      getThreatSharingEditCommunityPermission: false,
+      getThreatSharingGetIncidentsPermission: false
+    }
+    Community.watch.$route.call(
+      ctxNoEditNoIncidents,
+      { name: 'Community', query: {} },
+      { name: 'Community' }
+    )
+    expect(push).toHaveBeenCalledWith('/threat-sharing')
+    expect(ctxNoEditNoIncidents.tab).toBe(1)
+    expect(getMembers).toHaveBeenCalled()
+  })
+
+  it('beforeRouteLeave allows navigation when new community form was submitted', () => {
+    const next = jest.fn()
+    const ctx = {
+      showPostIncident: false,
+      isWantToAddNewCommunity: true,
+      $refs: { refNewCommunity: { isSubmitted: true } }
+    }
+
+    Community.beforeRouteLeave.call(ctx, {}, {}, next)
+
+    expect(next).toHaveBeenCalledWith()
   })
 })

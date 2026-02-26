@@ -222,16 +222,16 @@ const whitelabel = {
       if (!lastShownTime) {
         // İlk kez gösteriliyorsa
         context.commit('SET_SHOW_EXCEED_DIALOG', true)
-        localStorage.setItem(STORAGE_KEY, new Date().getTime().toString())
+        localStorage.setItem(STORAGE_KEY, Date.now().toString())
       } else {
-        const currentTime = new Date().getTime()
+        const currentTime = Date.now()
         const lastShownTimeMs = Number.parseInt(lastShownTime)
         const timeDifference = currentTime - lastShownTimeMs
 
         if (timeDifference > TWENTY_FOUR_HOURS_MS) {
           // 24 saat geçmişse göster
           context.commit('SET_SHOW_EXCEED_DIALOG', true)
-          localStorage.setItem(STORAGE_KEY, new Date().getTime().toString())
+          localStorage.setItem(STORAGE_KEY, Date.now().toString())
         }
         // 24 saat geçmemişse dialog'u açma
       }

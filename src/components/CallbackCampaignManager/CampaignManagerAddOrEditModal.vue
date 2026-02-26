@@ -644,10 +644,9 @@ export default {
                 (pScenario) => pScenario.resourceId
               )
             })
-            this.setActionButtonDisability(false)
             this.scheduleInfoResponse = response?.data?.data
             this.changeStep()
-          } catch (e) {
+          } finally {
             this.setActionButtonDisability(false)
           }
           return

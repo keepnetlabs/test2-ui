@@ -56,6 +56,18 @@ describe('Audit.vue (extra branches)', () => {
     expect(ctx.getDatatableList).toHaveBeenCalledTimes(1)
   })
 
+  it('serverSidePageNumberChanged uses default page number when omitted', () => {
+    const ctx = {
+      bodyData: { pageNumber: 9 },
+      getDatatableList: jest.fn()
+    }
+
+    Audit.methods.serverSidePageNumberChanged.call(ctx)
+
+    expect(ctx.bodyData.pageNumber).toBe(1)
+    expect(ctx.getDatatableList).toHaveBeenCalledTimes(1)
+  })
+
   it('serverSideSizeChanged updates sizes, resets page and fetches', () => {
     const ctx = {
       bodyData: { pageSize: 10, pageNumber: 3 },
@@ -73,6 +85,25 @@ describe('Audit.vue (extra branches)', () => {
     expect(ctx.serverSideProps.pageSize).toBe(25)
     expect(ctx.bodyData.pageNumber).toBe(1)
     expect(ctx.serverSideProps.pageNumber).toBe(1)
+    expect(ctx.getDatatableList).toHaveBeenCalledTimes(1)
+  })
+
+  it('serverSideSizeChanged uses default page size when omitted', () => {
+    const ctx = {
+      bodyData: { pageSize: 55, pageNumber: 3 },
+      serverSideProps: { pageSize: 55, pageNumber: 3 },
+      resetPageNumber: jest.fn(function () {
+        this.bodyData.pageNumber = 1
+        this.serverSideProps.pageNumber = 1
+      }),
+      getDatatableList: jest.fn()
+    }
+
+    Audit.methods.serverSideSizeChanged.call(ctx)
+
+    expect(ctx.bodyData.pageSize).toBe(10)
+    expect(ctx.serverSideProps.pageSize).toBe(10)
+    expect(ctx.bodyData.pageNumber).toBe(1)
     expect(ctx.getDatatableList).toHaveBeenCalledTimes(1)
   })
 
@@ -142,6 +173,19 @@ describe('Audit.vue (extra branches)', () => {
     expect(ctx.bodyData.ascending).toBe(true)
     expect(ctx.bodyData.orderBy).toBe('LogDate')
     expect(ctx.getDatatableList).toHaveBeenCalledTimes(2)
+  })
+
+  it('sortChanged handles missing payload with default values', () => {
+    const ctx = {
+      bodyData: { ascending: true, orderBy: 'LogDate' },
+      getDatatableList: jest.fn()
+    }
+
+    Audit.methods.sortChanged.call(ctx)
+
+    expect(ctx.bodyData.ascending).toBe(false)
+    expect(ctx.bodyData.orderBy).toBeUndefined()
+    expect(ctx.getDatatableList).toHaveBeenCalledTimes(1)
   })
 
   it('columnFilterChanged and columnFilterCleared update filter items and refresh list', () => {
@@ -248,6 +292,51 @@ describe('Audit.vue (extra branches)', () => {
     )
     expect(click).toHaveBeenCalledTimes(2)
     expect(downloads).toEqual(expect.arrayContaining(['Audit Log.xlsx', 'Audit Log.csv']))
+
+    createElementSpy.mockRestore()
+  })
+
+  it('exportAuditLog keeps lowercase xls payload but still downloads xlsx extension', async () => {
+    exportAuditLog.mockResolvedValueOnce({ data: Buffer.from('f2') })
+    const click = jest.fn()
+    const downloads = []
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(() => {
+      const link = { click }
+      Object.defineProperty(link, 'download', {
+        set: (v) => downloads.push(v)
+      })
+      return link
+    })
+    global.URL.createObjectURL = jest.fn(() => 'blob:mock-lower-xls')
+
+    const ctx = {
+      bodyData: {
+        orderBy: 'LogDate',
+        ascending: false,
+        filter: { FilterGroups: [] }
+      }
+    }
+
+    Audit.methods.exportAuditLog.call(ctx, {
+      exportTypes: ['xls'],
+      reportAllPages: false,
+      pageNumber: 2,
+      pageSize: 50
+    })
+
+    await flushPromises()
+    await flushPromises()
+
+    expect(exportAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        exportType: 'xls',
+        reportAllPages: false,
+        pageNumber: 2,
+        pageSize: 50
+      })
+    )
+    expect(click).toHaveBeenCalledTimes(1)
+    expect(downloads).toEqual(['Audit Log.xlsx'])
 
     createElementSpy.mockRestore()
   })

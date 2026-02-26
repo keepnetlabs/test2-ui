@@ -1,7 +1,7 @@
 import InvestigationDetails from '@/views/InvestigationDetails.vue'
 
 describe('InvestigationDetails.vue (extra)', () => {
-  const { computed, methods } = InvestigationDetails
+  const { computed, methods, watch } = InvestigationDetails
 
   it('getInvestigationType returns matching playbook name for auto type', () => {
     const ctx = {
@@ -103,5 +103,136 @@ describe('InvestigationDetails.vue (extra)', () => {
     expect(ctx.totalSelectedItemsCount).toBe(9)
     expect(ctx.isWantToDelete).toBe(true)
     expect(Array.isArray(ctx.deleteValue)).toBe(true)
+  })
+
+  it('isColumnFilterActive checks both filter groups safely', () => {
+    expect(
+      methods.isColumnFilterActive({
+        filter: { FilterGroups: [{ FilterItems: [{}, {}] }, { FilterItems: [] }] }
+      })
+    ).toBe(true)
+    expect(
+      methods.isColumnFilterActive({
+        filter: { FilterGroups: [{ FilterItems: [{}] }, { FilterItems: [{}] }] }
+      })
+    ).toBe(true)
+    expect(
+      methods.isColumnFilterActive({
+        filter: { FilterGroups: [{ FilterItems: [{}] }, { FilterItems: [] }] }
+      })
+    ).toBe(false)
+  })
+
+  it('handleSearchChange and handleSearchChangeForTargetUsers reset and refresh with/without payload', () => {
+    const ctx = {
+      investigationListBodyData: {
+        filter: { FilterGroups: [{ FilterItems: [] }, { FilterItems: [{ old: true }] }] }
+      },
+      investigationTargetUsersListBodyData: {
+        filter: { FilterGroups: [{ FilterItems: [] }, { FilterItems: [{ old: true }] }] }
+      },
+      resetPageNumber: jest.fn(),
+      resetPageNumberForTargetUsers: jest.fn(),
+      calculateInvestigateListFilterActive: jest.fn(),
+      calculateTargetUserListFilterActive: jest.fn(),
+      refreshDatatable: jest.fn()
+    }
+
+    methods.handleSearchChange.call(ctx, {})
+    expect(ctx.investigationListBodyData.filter.FilterGroups[1].FilterItems).toEqual([])
+
+    methods.handleSearchChange.call(ctx, {
+      filter: { FilterGroups: [{ FilterItems: [{ FieldName: 'subject', Value: 'abc' }] }] }
+    })
+    expect(ctx.investigationListBodyData.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'subject', Value: 'abc' }
+    ])
+
+    methods.handleSearchChangeForTargetUsers.call(ctx, {})
+    expect(ctx.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems).toEqual([])
+
+    methods.handleSearchChangeForTargetUsers.call(ctx, {
+      filter: { FilterGroups: [{ FilterItems: [{ FieldName: 'email', Value: 'u@k.com' }] }] }
+    })
+    expect(ctx.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'email', Value: 'u@k.com' }
+    ])
+    expect(ctx.refreshDatatable).toHaveBeenCalled()
+  })
+
+  it('handleClearFilters returns false when disabled and refreshes when enabled', () => {
+    const ctx = {
+      defaultRequestBody: { pageNumber: 9, pageSize: 20 },
+      investigationListBodyData: { pageNumber: 1 },
+      refreshDatatable: jest.fn()
+    }
+
+    expect(methods.handleClearFilters.call(ctx, false)).toBe(false)
+    methods.handleClearFilters.call(ctx, true)
+    expect(ctx.investigationListBodyData).toEqual({ pageNumber: 9, pageSize: 20 })
+    expect(ctx.refreshDatatable).toHaveBeenCalledWith(true)
+  })
+
+  it('getActionStatusOptions covers completed, error, and not-found branches', () => {
+    const completedDelete = methods.getActionStatusOptions({
+      actionType: 'Delete',
+      status: 'Completed',
+      isPermanentDelete: true
+    })
+    expect(completedDelete.icon).toBe('mdi-close-circle')
+    expect(completedDelete.color).toBe('#6d6d6d')
+
+    const completedWithError = methods.getActionStatusOptions({
+      actionType: 'Warning',
+      status: 'CompletedWithError'
+    })
+    expect(completedWithError.icon).toBe('mdi-alert-circle')
+    expect(completedWithError.color).toBe('#f56c6c')
+
+    const itemNotFound = methods.getActionStatusOptions({
+      actionType: 'DeleteAndNotify',
+      status: 'ItemNotFound'
+    })
+    expect(itemNotFound.icon).toBe('mdi-alert-circle')
+    expect(itemNotFound.color).toBe('#f56c6c')
+  })
+
+  it('progress helpers return expected defaults and percentages', () => {
+    expect(
+      methods.getProgressText({ row: { status: 'Completed', progress: 40 } })
+    ).toBe('Completed')
+    expect(
+      methods.getProgressText({ row: { status: 'Running', progress: 75 } })
+    ).toBe('75%')
+
+    expect(
+      methods.getProgressValue({ row: { analyzedMailCount: 0, filteredMailCount: 0 } })
+    ).toBe(100)
+    expect(
+      methods.getProgressValue({ row: { analyzedMailCount: 1, filteredMailCount: 4 } })
+    ).toBe(25)
+
+    expect(methods.hasValidMailProgress({})).toBe(false)
+    expect(methods.hasValidMailProgress({ row: { analyzedMailCount: 'abc' } })).toBe(false)
+    expect(methods.hasValidMailProgress({ row: { analyzedMailCount: '2' } })).toBe(true)
+  })
+
+  it('watch.isAutoRefreshActive starts interval when active and clears when inactive', () => {
+    const setIntervalSpy = jest.spyOn(global, 'setInterval').mockReturnValue(123)
+    const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation(() => {})
+
+    const ctx = {
+      autoRefreshInterval: null,
+      refreshDatatable: jest.fn()
+    }
+    watch.isAutoRefreshActive.handler.call(ctx, true)
+    expect(setIntervalSpy).toHaveBeenCalled()
+    expect(ctx.autoRefreshInterval).toBe(123)
+
+    watch.isAutoRefreshActive.handler.call(ctx, false)
+    expect(clearIntervalSpy).toHaveBeenCalledWith(123)
+
+    setIntervalSpy.mockRestore()
+    clearIntervalSpy.mockRestore()
   })
 })

@@ -263,7 +263,7 @@ export default {
         this.formValues.apiUrl = apiUrl || ''
         this.formValues.isEnableProxy = isEnableProxy || false
         this.formValues.apiKey = apiKey || ''
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       }
     },
     formValues: {
@@ -293,7 +293,7 @@ export default {
       this.formValues.apiUrl =
         APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api'
     }
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.initialFormValues = structuredClone(this.formValues)
     this.$emit('getInitialFormValues', this.formValues)
   },
   methods: {

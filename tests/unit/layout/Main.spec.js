@@ -522,4 +522,80 @@ describe('Main.vue', () => {
     expect(Main.computed.getSelectedCompanyName.call(baseCtx)).toBe('Acme')
     expect(Main.computed.getRolename.call(baseCtx)).toBe('Admin')
   })
+
+  it('openPasswordChange watcher resets showNewPassword only when modal closes', () => {
+    const ctx = { showNewPassword: true }
+
+    Main.watch.openPasswordChange.call(ctx, false)
+    expect(ctx.showNewPassword).toBe(false)
+
+    ctx.showNewPassword = true
+    Main.watch.openPasswordChange.call(ctx, true)
+    expect(ctx.showNewPassword).toBe(true)
+  })
+
+  it('route watcher sets community name only on Community route', () => {
+    const ctx = { communityName: 'old-name' }
+
+    Main.watch.$route.handler.call(ctx, {
+      name: 'Community',
+      params: { communityName: 'new-community' }
+    })
+    expect(ctx.communityName).toBe('new-community')
+
+    Main.watch.$route.handler.call(ctx, {
+      name: 'Dashboard',
+      params: { communityName: 'ignored' }
+    })
+    expect(ctx.communityName).toBe('new-community')
+  })
+
+  it('getNavigationDrawerClasses toggles shadow class based on scroll position', () => {
+    const originalGetElementsByClassName = document.getElementsByClassName
+    const userContent = { className: '' }
+    const content = {
+      getBoundingClientRect: jest.fn(() => ({ top: 150 }))
+    }
+    document.getElementsByClassName = jest.fn((className) => {
+      if (className === 'page-nav__content') return [content]
+      if (className === 'user-wrapper') return [userContent]
+      return []
+    })
+
+    const ctx = {
+      isReturnMainAccountVisible: true,
+      navigationDrawerClass: ''
+    }
+    Main.methods.getNavigationDrawerClasses.call(ctx)
+    expect(ctx.navigationDrawerClass).toContain('user-wrapper__scroll-on')
+    expect(userContent.className).toContain('user-wrapper__scroll-on')
+
+    content.getBoundingClientRect.mockReturnValueOnce({ top: 250 })
+    Main.methods.getNavigationDrawerClasses.call(ctx)
+    expect(ctx.navigationDrawerClass).not.toContain('user-wrapper__scroll-on')
+
+    document.getElementsByClassName = originalGetElementsByClassName
+  })
+
+  it('getDrawer getter returns false by default on small screens', () => {
+    const originalOuterWidth = window.outerWidth
+    Object.defineProperty(window, 'outerWidth', { value: 700, configurable: true })
+
+    const result = Main.computed.getDrawer.get.call({ drawer: null })
+    expect(result).toBe(false)
+
+    Object.defineProperty(window, 'outerWidth', {
+      value: originalOuterWidth,
+      configurable: true
+    })
+  })
+
+  it('companyName falls back to selectedCompanyName then companyName from localStorage', () => {
+    localStorage.setItem('selectedCompanyName', 'Selected Co')
+    localStorage.setItem('companyName', 'Main Co')
+    expect(Main.computed.companyName.call({ brandName: '' })).toBe('Selected Co')
+
+    localStorage.removeItem('selectedCompanyName')
+    expect(Main.computed.companyName.call({ brandName: '' })).toBe('Main Co')
+  })
 })

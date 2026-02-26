@@ -421,7 +421,7 @@ export default {
         .then(() => {
           this.isTestEmailDialogShowing = false
           this.isTestMailSend = true
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.initialFormValues = structuredClone(this.formValues)
         })
         .catch((error) => {
           const { response } = error
@@ -568,7 +568,7 @@ export default {
         this.serviceProviderItems = data
         if (this.isEdit && this.resourceId) {
           if (
-            !this.serviceProviderItems.find((item) => item.code === this.formValues.serviceProvider)
+            !this.serviceProviderItems.some((item) => item.code === this.formValues.serviceProvider)
           ) {
             this.formValues.serviceProvider = this.serviceProviderItems.find(
               (item) => item.name === 'Custom'
@@ -576,7 +576,7 @@ export default {
           }
         }
         this.isTestMailSend = true
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
   }
