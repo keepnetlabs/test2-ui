@@ -42,8 +42,7 @@ const widgetsStore = {
           campaignStatus.push(row['totalSubmittedMFACount'])
         } else if (row.method === 'Multiple Method') {
           campaignStatus.splice(1, 0, row['totalClickedCount'])
-          campaignStatus.push(row['totalSubmittedCount'])
-          campaignStatus.push(row['totalAttachmentOpenedCount'])
+          campaignStatus.push(row['totalSubmittedCount'], row['totalAttachmentOpenedCount'])
         }
         return {
           ...row,

@@ -788,7 +788,7 @@ export default {
         this.formValues.scheduleType = getScheduleType(scheduleType)
         this.formValues.targetGroupResourceIds = targetGroups.map((tGroup) => tGroup.value) || []
         this.formValues.templateResourceId = templateResourceId
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
         this.$nextTick(() => (this.isTargetGroupsValid = true))
         this.selectTableItems(targetGroups)
         this.callForTargetGroups()

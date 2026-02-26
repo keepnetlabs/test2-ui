@@ -59,4 +59,70 @@ describe('useCallForLanguagesForTableFilter hook', () => {
 
     expect(LookupLocalStorage.getSingle).not.toHaveBeenCalled()
   })
+
+  it('sets empty options when lookup response is null', async () => {
+    LookupLocalStorage.getSingle.mockResolvedValueOnce(null)
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: PROPERTY_STORE.LANGUAGE, filterableItems: [{ text: 'old' }] }]
+      },
+      languageFilterOptions: [{ text: 'old' }],
+      $refs: {},
+      $set: (obj, key, val) => {
+        obj[key] = val
+      }
+    }
+
+    useCallForLanguagesForTableFilter.methods.callForLanguages.call(ctx, 'refTable')
+    await flushPromises()
+
+    expect(ctx.languageFilterOptions).toEqual([])
+    expect(ctx.tableOptions.columns[0].filterableItems).toEqual([])
+  })
+
+  it('is safe when table ref is missing', async () => {
+    LookupLocalStorage.getSingle.mockResolvedValueOnce([
+      { isoFriendlyName: 'English', name: 'English', resourceId: 'en' }
+    ])
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: PROPERTY_STORE.LANGUAGE }]
+      },
+      languageFilterOptions: [],
+      $refs: {},
+      $set: (obj, key, val) => {
+        obj[key] = val
+      }
+    }
+
+    expect(() =>
+      useCallForLanguagesForTableFilter.methods.callForLanguages.call(ctx, 'refTable')
+    ).not.toThrow()
+    await flushPromises()
+    expect(ctx.languageFilterOptions).toHaveLength(1)
+  })
+
+  it('updates correct column when language column is not first', async () => {
+    LookupLocalStorage.getSingle.mockResolvedValueOnce([
+      { isoFriendlyName: 'Turkish', name: 'Turkish', resourceId: 'tr' }
+    ])
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: 'name' }, { property: PROPERTY_STORE.LANGUAGE }, { property: 'createdBy' }]
+      },
+      languageFilterOptions: [],
+      $refs: {},
+      $set: (obj, key, val) => {
+        obj[key] = val
+      }
+    }
+
+    useCallForLanguagesForTableFilter.methods.callForLanguages.call(ctx, 'refTable')
+    await flushPromises()
+
+    expect(ctx.tableOptions.columns[0].filterableItems).toBeUndefined()
+    expect(ctx.tableOptions.columns[1].filterableItems).toEqual([
+      { text: 'Turkish', languageName: 'Turkish', value: 'tr' }
+    ])
+  })
 })

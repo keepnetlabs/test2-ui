@@ -314,8 +314,17 @@ export default {
         this.showTooltip = false
         return
       }
-      const target = event.currentTarget || event.target
-      const button = target.querySelector('button') || target
+      const target = event?.currentTarget || event?.target
+      if (!target) {
+        this.showTooltip = false
+        return
+      }
+      const button =
+        (typeof target.querySelector === 'function' && target.querySelector('button')) || target
+      if (typeof button.getBoundingClientRect !== 'function') {
+        this.showTooltip = false
+        return
+      }
       const buttonRect = button.getBoundingClientRect()
 
       this.tooltipContent = tooltipText

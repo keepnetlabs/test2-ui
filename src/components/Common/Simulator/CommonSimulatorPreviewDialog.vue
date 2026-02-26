@@ -1020,8 +1020,8 @@ export default {
       const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
-      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
-      cleanedTemplate = cleanedTemplate.replace(
+      let cleanedTemplate = template.replaceAll(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replaceAll(
         new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
         ''
       )
@@ -1078,7 +1078,7 @@ export default {
     },
 
     _escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
     },
 
     resetRedFlags() {

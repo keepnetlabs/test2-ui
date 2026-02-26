@@ -80,6 +80,13 @@
       @searchChangedEvent="handleSearchChange"
       @on-fast-launch="handleFastLaunch"
     >
+      <template #datatable-custom-column="{ scope }">
+        <LanguagesColumn
+          v-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="preferredLanguageTypes"
+        />
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :id="tableOptions.rowActions[0].id"
@@ -146,10 +153,14 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import NoTextMessageTemplateModal from '@/components/SmishingScenarios/NoTextMessageTemplateModal'
 import NoLandingPageTemplateModal from '@/components/SmishingScenarios/NoLandingPageTemplateModal'
 import CommonSimulatorDeleteScenario from '@/components/Common/Simulator/CommonSimulatorDeleteScenario'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { getScenarioDataDetails } from '@/api/scenarios'
 
 export default {
   name: 'SmishingScenarios',
   components: {
+    LanguagesColumn,
     CommonSimulatorDeleteScenario,
     ScenariosRowActionsEditButton,
     ScenariosRowActionsDeleteButton,
@@ -221,12 +232,12 @@ export default {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,
-            label: labels.LANGUAGE,
+            label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'slot',
             fixed: false,
-            width: 175,
+            width: 248,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'languageTypeResourceId'
@@ -339,6 +350,9 @@ export default {
     }
   },
   computed: {
+    preferredLanguageTypes() {
+      return this.scenarioDetailsLookup?.preferredLanguageTypes || []
+    },
     ...mapGetters({
       getSmishingScenariosSearchPermissions: 'permissions/getSmishingScenariosSearchPermissions'
     })
@@ -351,26 +365,51 @@ export default {
     deleteScenario: SmishingService.deleteSmishingScenario,
     bulkDeleteScenarios: SmishingService.bulkDeleteSmishingScenarios,
     callForScenarioDetails() {
-      SmishingService.getSmishingScenarioFormDetails()
-        .then((response) => {
-          this.scenarioDetailsLookup = response?.data?.data || {
-            methodTypes: [],
-            difficultyTypes: []
-          }
-          this.$set(
-            this.tableOptions.columns[1],
-            'filterableItems',
-            this.scenarioDetailsLookup.methodTypes.map((item) => {
-              return { text: item.text, value: item.text }
-            })
-          )
-          this.$set(
-            this.tableOptions.columns[3],
-            'filterableItems',
-            this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-              return { text: item.text, value: item.text }
-            })
-          )
+      LookupLocalStorage.getSingle(21)
+        .then((languageOptions) => {
+          const options =
+            languageOptions?.map((lang) => ({
+              text: lang.isoFriendlyName || lang.name,
+              value: lang.resourceId
+            })) || []
+          return Promise.all([
+            SmishingService.getSmishingScenarioFormDetails(),
+            getScenarioDataDetails()
+          ]).then(([smishingResponse, phishingResponse]) => {
+            const data = smishingResponse?.data?.data || {
+              methodTypes: [],
+              difficultyTypes: []
+            }
+            const preferredRaw =
+              phishingResponse?.data?.data?.preferredLanguageTypes || []
+            const preferredLanguageTypes = preferredRaw
+              .map((lang) => ({
+                ...lang,
+                text: options.find((opt) => opt.value === lang.value)?.text || lang.text || ''
+              }))
+              .filter((item) => item.text)
+            this.scenarioDetailsLookup = {
+              ...data,
+              preferredLanguageTypes
+            }
+            this.$set(
+              this.tableOptions.columns[1],
+              'filterableItems',
+              (this.scenarioDetailsLookup.methodTypes || []).map((item) => ({
+                text: item.text,
+                value: item.text
+              }))
+            )
+            this.$set(
+              this.tableOptions.columns[4],
+              'filterableItems',
+              (this.scenarioDetailsLookup.difficultyTypes || []).map((item) => ({
+                text: item.text,
+                value: item.text
+              }))
+            )
+            return smishingResponse
+          })
         })
         .finally(() => {
           this.callForData()

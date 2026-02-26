@@ -217,7 +217,7 @@ export default {
     'formData.relativeDNs': 'checkTestConnectionValidityByParam',
     initialFormData(newVal) {
       if (newVal) {
-        const copyOfFormData = JSON.parse(JSON.stringify(newVal))
+        const copyOfFormData = structuredClone(newVal)
         delete copyOfFormData.fieldMappings
         this.formData = {
           url: copyOfFormData.url,
@@ -227,7 +227,7 @@ export default {
           relativeDNs: copyOfFormData?.relativeDN?.join('\n') || '',
           isActive: copyOfFormData.isActive
         }
-        this.copyFormData = JSON.parse(JSON.stringify(this.formData))
+        this.copyFormData = structuredClone(this.formData)
       }
     }
   },
@@ -238,7 +238,7 @@ export default {
       if (!rows.length) return true
       const isInvalid = rows.some((row) => {
         if (!row) return false
-        return !/^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+\s?[^=()\\+, ;<>]+)+(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+\s?[^=()\\+, ;<>]+)+)*$/.test(
+        return !/^([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+(?:\s[^=()\\+, ;<>]+)*)(,([a-zA-Z][a-zA-Z0-9-]*)=([^=()\\+, ;<>]+(?:\s[^=()\\+, ;<>]+)*))*$/.test(
           row
         )
       })
@@ -280,7 +280,7 @@ export default {
           isActive: this.formData.isActive,
           fieldMappings: this.fieldMappings.filter((fMap) => fMap.ldapFieldResourceId)
         })
-        this.copyFormData = JSON.parse(JSON.stringify(this.formData))
+        this.copyFormData = structuredClone(this.formData)
       } else this.handleTestConnection(true)
     }
   }

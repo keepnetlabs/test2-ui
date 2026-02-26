@@ -6,7 +6,7 @@
     outlined
     dense
     no-resize
-    autocomplete="street-address"
+    autocomplete="off"
     :placeholder="placeholder"
     :rules="rules"
     @input="$emit('input', $event)"

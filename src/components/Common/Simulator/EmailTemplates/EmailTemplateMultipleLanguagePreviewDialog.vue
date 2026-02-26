@@ -738,7 +738,7 @@ export default {
           doc.documentElement.appendChild(newBody)
           return doc.documentElement.outerHTML
         }
-      } catch (error) {
+      } catch {
         return `${template}${script}`
       }
     },
@@ -746,8 +746,8 @@ export default {
       const cssToRemove = FLAGGED_AREA_CSS.trim()
       const scriptToRemove = this._getPreventClickScript().trim()
 
-      let cleanedTemplate = template.replace(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
-      cleanedTemplate = cleanedTemplate.replace(
+      let cleanedTemplate = template.replaceAll(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replaceAll(
         new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
         ''
       )

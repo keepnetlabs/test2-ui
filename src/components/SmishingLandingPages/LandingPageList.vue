@@ -104,7 +104,12 @@
       @searchChangedEvent="handleSearchChange"
     >
       <template #datatable-custom-column="{ scope }">
-        <span v-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
+        <LanguagesColumn
+          v-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="preferredLanguageTypes"
+        />
+        <span v-else-if="scope.column.property === 'isInvisibleCaptchaEnabled'">
           {{ scope.row.isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled' }}
         </span>
       </template>
@@ -175,10 +180,14 @@ import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActio
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import { SCENARIO_DELETE_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { getScenarioDataDetails } from '@/api/scenarios'
 
 export default {
   name: 'EmailTemplates',
   components: {
+    LanguagesColumn,
     CommonSimulatorEmailTemplateDeleteDialog,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
@@ -245,12 +254,12 @@ export default {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,
-            label: labels.LANGUAGE,
+            label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'multiText',
+            type: 'slot',
             fixed: false,
-            width: 175,
+            width: 248,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'languageTypeResourceId'
@@ -385,6 +394,9 @@ export default {
     }
   },
   computed: {
+    preferredLanguageTypes() {
+      return this.landingPageData?.preferredLanguageTypes || []
+    },
     ...mapGetters({
       getSmishingLandingPageTemplatesSearchPermissions:
         'permissions/getSmishingLandingPageTemplatesSearchPermissions'
@@ -555,33 +567,57 @@ export default {
       this.showDeleteModal = true
     },
     callForLookups() {
-      SmishingService.getLandingPageTemplateFormDetails().then((response) => {
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          response.data.data.methodTypes.map((item) => item.text)
-        )
-        this.$set(
-          this.tableOptions.columns[4],
-          'filterableItems',
-          response.data.data.difficultyTypes.map((item) => item.text)
-        )
-        this?.$refs?.refLandingPageList?.reRenderFilters()
-        const domainRecords = response?.data?.data?.domainRecords?.map((item) => {
-          return {
+      LookupLocalStorage.getSingle(21)
+        .then((languageOptions) => {
+          const options =
+            languageOptions?.map((lang) => ({
+              text: lang.isoFriendlyName || lang.name,
+              value: lang.resourceId
+            })) || []
+          return Promise.all([
+            SmishingService.getLandingPageTemplateFormDetails(),
+            getScenarioDataDetails()
+          ]).then(([landingResponse, phishingResponse]) => ({
+            landingResponse,
+            phishingResponse,
+            options
+          }))
+        })
+        .then(({ landingResponse, phishingResponse, options }) => {
+          const data = landingResponse?.data?.data || {}
+          this.$set(
+            this.tableOptions.columns[1],
+            'filterableItems',
+            (data.methodTypes || []).map((item) => item.text)
+          )
+          this.$set(
+            this.tableOptions.columns[4],
+            'filterableItems',
+            (data.difficultyTypes || []).map((item) => item.text)
+          )
+          this?.$refs?.refLandingPageList?.reRenderFilters()
+          const domainRecords = (data.domainRecords || []).map((item) => ({
             text: item.domain,
             value: item.id.toString(),
             extraDatas: [
-              {
-                text: item.urlSchemaType,
-                value: item.urlSchemaTypeId.toString()
-              },
+              { text: item.urlSchemaType, value: item.urlSchemaTypeId.toString() },
               { text: item.isStopBotActivity, value: item.isStopBotActivity }
             ]
+          }))
+          const preferredRaw =
+            phishingResponse?.data?.data?.preferredLanguageTypes || []
+          const preferredLanguageTypes = preferredRaw
+            .map((lang) => {
+              const match = options.find((opt) => opt.value === lang.value)
+              return match ? { ...lang, text: match.text } : null
+            })
+            .filter(Boolean)
+          this.landingPageData = {
+            ...data,
+            domainRecords,
+            preferredLanguageTypes
           }
         })
-        this.landingPageData = { ...response.data.data, domainRecords }
-      })
     }
   }
 }

@@ -1010,7 +1010,7 @@ export default {
             payload.executionMode
           );
         }
-      } catch (error) {
+      } catch {
         this.$store.dispatch("common/createSnackBar", {
           message: "Failed to saving settings",
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,

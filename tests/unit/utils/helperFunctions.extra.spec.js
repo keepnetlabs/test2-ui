@@ -75,6 +75,14 @@ describe('helperFunctions.js (extra coverage)', () => {
     it('returns false when filter missing', () => {
       expect(isColumnFilterActive({})).toBe(false)
     })
+    it('returns true when first group missing but second group has items', () => {
+      const payload = {
+        filter: {
+          FilterGroups: [undefined, { FilterItems: [{ FieldName: 'z' }] }]
+        }
+      }
+      expect(isColumnFilterActive(payload)).toBe(true)
+    })
   })
 
   describe('downloadExportedFile', () => {
@@ -221,6 +229,12 @@ describe('helperFunctions.js (extra coverage)', () => {
     it('returns empty when no id/code in object', () => {
       expect(normalizeRoleId({})).toBe('')
     })
+    it('uses targetAudienceId fallback when id fields are absent', () => {
+      expect(normalizeRoleId({ targetAudienceId: 'ta-9' })).toBe('ta-9')
+    })
+    it('uses roleName fallback and strips spaces', () => {
+      expect(normalizeRoleId({ roleName: 'Security Admin' })).toBe('SecurityAdmin')
+    })
   })
 
   describe('getAvailableForValues branch coverage', () => {
@@ -238,6 +252,11 @@ describe('helperFunctions.js (extra coverage)', () => {
       const data = [{ resourceId: 'res-1', type: 'Company', id: 'res-1' }]
       const result = getAvailableForValues(data)
       expect(result[0]).toEqual({ resourceId: 'res-1', type: 'Company' })
+    })
+    it('falls back to null when both resourceId and id are missing', () => {
+      const data = [{ type: 'Company' }]
+      const result = getAvailableForValues(data)
+      expect(result[0]).toEqual({ resourceId: undefined, type: 'Company' })
     })
   })
 
@@ -281,6 +300,40 @@ describe('helperFunctions.js (extra coverage)', () => {
       const payload = JSON.parse(JSON.stringify(basePayload))
       const result = columnFilterChanged(filter, payload)
       expect(result.length).toBeGreaterThanOrEqual(2)
+    })
+    it('keeps unrelated existing filters when replacing one', () => {
+      const payload = JSON.parse(JSON.stringify(basePayload))
+      payload.filter.FilterGroups[0].FilterItems.push({ FieldName: 'Type', Value: 'email' })
+      const result = columnFilterChanged(
+        { FieldName: 'Name', Value: 'new-name' },
+        payload
+      )
+      expect(result.some((f) => f.FieldName === 'Type' && f.Value === 'email')).toBe(true)
+      expect(result.some((f) => f.FieldName === 'Name' && f.Value === 'new-name')).toBe(true)
+    })
+  })
+
+  describe('createCustomFieldColumns extra branches', () => {
+    it('keeps boolean filterableItems even when isFilterable is false', () => {
+      const result = createCustomFieldColumns(
+        [{ name: 'IsActive', fieldDataType: 'Boolean' }],
+        false
+      )
+      expect(result[0].filterableType).toBeUndefined()
+      expect(result[0].filterableItems).toEqual([
+        { text: 'Yes', value: 1 },
+        { text: 'No', value: 0 }
+      ])
+    })
+    it('creates base column without filterableType for unknown data type', () => {
+      const result = createCustomFieldColumns([{ name: 'Meta', fieldDataType: 'Json' }])
+      expect(result[0].property).toBe('Meta')
+      expect(result[0].filterableType).toBeUndefined()
+      expect(result[0].filterable).toBe(true)
+    })
+    it('calculates width using field name length', () => {
+      const result = createCustomFieldColumns([{ name: 'ABCDE', fieldDataType: 'String' }])
+      expect(result[0].width).toBe(80 + 5 * 7)
     })
   })
 })

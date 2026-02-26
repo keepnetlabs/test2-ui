@@ -260,10 +260,10 @@ export default {
     checkAllValid() {
       this.isAllValid = this.value.every((value) => {
         const isEditable = this.getEditability(value)
-        if (!isEditable) {
-          return true
-        } else {
+        if (isEditable) {
           return this.textFieldRules.every((func) => func(value) === true)
+        } else {
+          return true
         }
       })
     },

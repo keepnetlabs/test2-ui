@@ -107,6 +107,46 @@ describe('widgets store (extra coverage)', () => {
       const result = widgetsStore.getters.getRecentCampaignsCard(state)
       expect(result[0].campaignStatus).toEqual([1, 2])
     })
+
+    it('getRecentCampaignsCard keeps row fields and maps multiple rows independently', () => {
+      state.recentCampaignsCard = [
+        {
+          id: 'row-1',
+          method: 'Click-Only',
+          totalNoResponseCount: 1,
+          totalOpenedCount: 2,
+          totalClickedCount: 3
+        },
+        {
+          id: 'row-2',
+          method: 'Attachment',
+          totalNoResponseCount: 4,
+          totalOpenedCount: 5,
+          totalAttachmentOpenedCount: 6
+        }
+      ]
+
+      const result = widgetsStore.getters.getRecentCampaignsCard(state)
+
+      expect(result).toHaveLength(2)
+      expect(result[0]).toEqual(expect.objectContaining({ id: 'row-1', campaignStatus: [1, 3, 2] }))
+      expect(result[1]).toEqual(expect.objectContaining({ id: 'row-2', campaignStatus: [4, 5, 6] }))
+      expect(state.recentCampaignsCard[0]).not.toHaveProperty('campaignStatus')
+      expect(state.recentCampaignsCard[1]).not.toHaveProperty('campaignStatus')
+    })
+
+    it('getRecentCampaignsCard tolerates missing count fields', () => {
+      state.recentCampaignsCard = [
+        {
+          method: 'Data Submission',
+          totalNoResponseCount: 1
+        }
+      ]
+
+      const result = widgetsStore.getters.getRecentCampaignsCard(state)
+
+      expect(result[0].campaignStatus).toEqual([1, undefined, undefined, undefined])
+    })
   })
 
   describe('getters - all cards', () => {
@@ -223,7 +263,7 @@ describe('widgets store (extra coverage)', () => {
       const { getSummary } = require('@/api/widgets')
       await widgetsStore.actions.callForWidgets({ commit })
       expect(commit).toHaveBeenCalledWith('SET_LOADING', true)
-      expect(getSummary).toHaveBeenCalled()
+      expect(getSummary).toHaveBeenCalledWith({}, true)
     })
 
     it('callForWidgets passes undefined loading flag when payload is empty object', async () => {
@@ -231,6 +271,56 @@ describe('widgets store (extra coverage)', () => {
       const { getSummary } = require('@/api/widgets')
       await widgetsStore.actions.callForWidgets({ commit }, {})
       expect(getSummary).toHaveBeenCalledWith({}, undefined)
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
+
+    it('callForWidgets passes undefined loading flag when payload is null', async () => {
+      const commit = jest.fn()
+      const { getSummary } = require('@/api/widgets')
+      await widgetsStore.actions.callForWidgets({ commit }, null)
+      expect(getSummary).toHaveBeenCalledWith({}, undefined)
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
+
+    it('callForWidgets passes explicit isLoading false flag', async () => {
+      const commit = jest.fn()
+      const { getSummary } = require('@/api/widgets')
+      await widgetsStore.actions.callForWidgets({ commit }, { isLoading: false })
+      expect(getSummary).toHaveBeenCalledWith({}, false)
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
+
+    it('callForWidgets resolves with original response', async () => {
+      const { getSummary } = require('@/api/widgets')
+      const mockedResponse = {
+        data: {
+          dashboardSummary: { data: {} },
+          dashboardTopRules: { data: [] },
+          runningInvestigations: { data: [] },
+          topReporters: { data: [] },
+          reportedEmailTrends: { data: [] },
+          recentPhishingCampaigns: { data: [] },
+          mostPhishedUsers: { data: [] },
+          phishingCampaignTrends: { data: [] },
+          mostEngagedCampaigns: { data: [] },
+          topPhishingSimulationReporters: { data: [] }
+        }
+      }
+      getSummary.mockResolvedValueOnce(mockedResponse)
+      const commit = jest.fn()
+
+      const result = await widgetsStore.actions.callForWidgets({ commit })
+
+      expect(result).toBe(mockedResponse)
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
+
+    it('callForWidgets propagates error and still turns loading off in finally', async () => {
+      const { getSummary } = require('@/api/widgets')
+      const commit = jest.fn()
+      getSummary.mockRejectedValueOnce(new Error('widgets-error'))
+
+      await expect(widgetsStore.actions.callForWidgets({ commit })).rejects.toThrow('widgets-error')
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
     it('callForWidgets commits all card mutations from full response', async () => {
@@ -298,6 +388,50 @@ describe('widgets store (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_PHISHING_CAMPAIGN_TRENDS', [])
       expect(commit).toHaveBeenCalledWith('SET_MOST_ENGAGED_CAMPAIGNS', [])
       expect(commit).toHaveBeenCalledWith('SET_TOP_PHISHING_SIMULATION_REPORTERS', [])
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
+
+    it('callForWidgets rejects when dashboardTopRules is missing but still resets loading', async () => {
+      const { getSummary } = require('@/api/widgets')
+      getSummary.mockResolvedValueOnce({
+        data: {
+          dashboardSummary: { data: {} },
+          // dashboardTopRules intentionally missing to hit destructuring failure branch
+          runningInvestigations: { data: [] },
+          topReporters: { data: [] },
+          reportedEmailTrends: { data: [] },
+          recentPhishingCampaigns: { data: [] },
+          mostPhishedUsers: { data: [] },
+          phishingCampaignTrends: { data: [] },
+          mostEngagedCampaigns: { data: [] },
+          topPhishingSimulationReporters: { data: [] }
+        }
+      })
+      const commit = jest.fn()
+
+      await expect(widgetsStore.actions.callForWidgets({ commit })).rejects.toBeDefined()
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
+
+    it('callForWidgets rejects when topReporters is missing but still resets loading', async () => {
+      const { getSummary } = require('@/api/widgets')
+      getSummary.mockResolvedValueOnce({
+        data: {
+          dashboardSummary: { data: {} },
+          dashboardTopRules: { data: [] },
+          runningInvestigations: { data: [] },
+          // topReporters intentionally missing
+          reportedEmailTrends: { data: [] },
+          recentPhishingCampaigns: { data: [] },
+          mostPhishedUsers: { data: [] },
+          phishingCampaignTrends: { data: [] },
+          mostEngagedCampaigns: { data: [] },
+          topPhishingSimulationReporters: { data: [] }
+        }
+      })
+      const commit = jest.fn()
+
+      await expect(widgetsStore.actions.callForWidgets({ commit })).rejects.toBeDefined()
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
   })

@@ -277,6 +277,75 @@ describe('phishingsimulator API', () => {
       expect(formData.get('detailActionType')).toBe('2')
     })
 
+    it('should append additional languages and ccAddresses to formData', async () => {
+      const payload = {
+        name: 'Multi Language Template',
+        description: 'desc',
+        categoryResourceId: 'cat-1',
+        tags: ['tag-1'],
+        difficultyResourceId: 'diff-1',
+        availableForRequests: [{ type: 'Department', resourceId: 'dep-1' }],
+        languages: [
+          {
+            fromAddress: 'first@example.com',
+            fromName: 'First',
+            subject: 'Subject 1',
+            template: '<html>1</html>',
+            languageTypeResourceId: 'lang-1',
+            ccAddresses: ['a@example.com', 'b@example.com']
+          },
+          {
+            fromAddress: 'second@example.com',
+            fromName: 'Second',
+            subject: 'Subject 2',
+            template: '<html>2</html>',
+            languageTypeResourceId: 'lang-2',
+            ccAddresses: ['c@example.com']
+          }
+        ],
+        isAttachmentBasedTemplate: false
+      }
+
+      await phishingApi.createPhishingEmailTemplate(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+
+      expect(formData.get('ccAddresses[0]')).toBe('a@example.com')
+      expect(formData.get('ccAddresses[1]')).toBe('b@example.com')
+      expect(formData.get('languages[0].fromAddress')).toBe('second@example.com')
+      expect(formData.get('languages[0].ccAddresses[0]')).toBe('c@example.com')
+    })
+
+    it('should keep phishingFile null when attachment template has no new file', async () => {
+      const payload = {
+        name: 'Attachment Existing',
+        description: 'Attachment Existing',
+        categoryResourceId: 'cat-1',
+        tags: [],
+        difficultyResourceId: 'diff-1',
+        availableForRequests: [],
+        languages: [
+          {
+            fromAddress: 'test@example.com',
+            fromName: 'Test',
+            subject: 'Attachment Subject',
+            template: '<html>Attachment</html>',
+            languageTypeResourceId: 'lang-1'
+          }
+        ],
+        isAttachmentBasedTemplate: true,
+        isAddedNewPhishingFile: false,
+        isPhishingFileModified: false,
+        phishingFileName: 'existing.pdf',
+        attachmentFiles: [new File(['binary'], 'existing.pdf', { type: 'application/pdf' })]
+      }
+
+      await phishingApi.createPhishingEmailTemplate(payload)
+      const formData = testRequest.post.mock.calls[0][1]
+
+      expect(formData.get('phishingFileType')).toBe('pdf')
+      expect(formData.get('phishingFile')).toBe('null')
+    })
+
     it('should call getEmailTemplatesList', async () => {
       const payload = { page: 1 }
       await phishingApi.getEmailTemplatesList(payload)
@@ -1255,6 +1324,24 @@ describe('phishingsimulator API', () => {
       })
       expect(testRequest.get).toHaveBeenCalledWith(
         '/phishing-simulator/campaign-nullable/target-groups'
+      )
+    })
+
+    it('should include campaignType when campaignType is 0', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-zero', {
+        campaignType: 0
+      })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-zero/target-groups?campaignType=0'
+      )
+    })
+
+    it('should include empty instanceGroup query when instanceGroup is empty string', async () => {
+      await phishingApi.getCampaignTargetGroups('campaign-empty-group', {
+        instanceGroup: ''
+      })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/phishing-simulator/campaign-empty-group/target-groups?instanceGroup='
       )
     })
   })

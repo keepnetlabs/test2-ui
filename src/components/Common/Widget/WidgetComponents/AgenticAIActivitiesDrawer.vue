@@ -311,7 +311,7 @@ export default {
       const cleaned = String(status)
         .trim()
         .toLowerCase()
-        .replace(/[_-]+/g, " ")
+        .replaceAll(/[_-]+/g, " ")
         .replace(/\s+/g, " ");
       const statusMap = {
         "waiting for approval": "Waiting for Approval",
@@ -327,7 +327,7 @@ export default {
       const normalized = String(row.status || "")
         .trim()
         .toLowerCase()
-        .replace(/[_-]+/g, " ")
+        .replaceAll(/[_-]+/g, " ")
         .replace(/\s+/g, " ");
       return (
         normalized === "waiting for approval" ||

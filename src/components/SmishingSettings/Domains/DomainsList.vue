@@ -300,8 +300,9 @@ export default {
       }
     },
     handleSearchChange(searchFilter = {}) {
+      const incomingFilterItems = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || []
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
+        ...incomingFilterItems
       ]
       this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
         (item) => {

@@ -33,7 +33,7 @@ export default {
         return true
       }
 
-      const currentTime = new Date().getTime()
+      const currentTime = Date.now()
       const lastShownTimeMs = Number.parseInt(lastShownTime, 10)
 
       // Guard against corrupted data in localStorage
@@ -51,7 +51,7 @@ export default {
      * @param {string} storageKey - Unique key for the dialog in localStorage
      */
     saveCachableDialogTimestamp(storageKey) {
-      localStorage.setItem(storageKey, new Date().getTime().toString())
+      localStorage.setItem(storageKey, Date.now().toString())
     }
   }
 }

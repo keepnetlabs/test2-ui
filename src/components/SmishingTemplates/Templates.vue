@@ -99,6 +99,13 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
     >
+      <template #datatable-custom-column="{ scope }">
+        <LanguagesColumn
+          v-if="scope.column.property === 'languageTypeName'"
+          :value="scope.row.languageTypeName"
+          :preferred-language-types="preferredLanguageTypes"
+        />
+      </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
           :scope="scope"
@@ -166,9 +173,14 @@ import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTab
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
+import { getScenarioDataDetails } from '@/api/scenarios'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+
 export default {
   name: 'SmishingTemplates',
   components: {
+    LanguagesColumn,
     ScenariosRowActionsDeleteButton,
     ScenariosRowActionsEditButton,
     DefaultMenuRowAction,
@@ -181,6 +193,15 @@ export default {
     AppDialog
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
+  computed: {
+    ...mapGetters({
+      getSmishingTextMessageTemplatesSearchPermissions:
+        'permissions/getSmishingTextMessageTemplatesSearchPermissions'
+    }),
+    getTextMessage() {
+      return this.emailTemplateParams?.template
+    }
+  },
   data() {
     return {
       attachmentName: '',
@@ -247,12 +268,12 @@ export default {
             property: PROPERTY_STORE.LANGUAGE,
             align: 'left',
             editable: false,
-            label: labels.LANGUAGE,
+            label: labels.Languages,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'slot',
             fixed: false,
-            width: 175,
+            width: 248,
             filterableType: 'select',
             filterableItems: [],
             filterableCustomFieldName: 'languageTypeResourceId'
@@ -379,26 +400,46 @@ export default {
       isTemplateDetails: false,
       selectedTemplateHeader: null,
       template: null,
-      templateHTML: null
-    }
-  },
-  computed: {
-    ...mapGetters({
-      getSmishingTextMessageTemplatesSearchPermissions:
-        'permissions/getSmishingTextMessageTemplatesSearchPermissions'
-    }),
-    getTextMessage() {
-      return this.emailTemplateParams?.template
+      templateHTML: null,
+      preferredLanguageTypes: []
     }
   },
   mounted() {
     this.callForLanguages('refEmailTemplatesList')
     this.callForData()
+    this.callForPreferredLanguageTypes()
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    callForPreferredLanguageTypes() {
+      LookupLocalStorage.getSingle(21)
+        .then((languageOptions) => {
+          const options =
+            languageOptions?.map((lang) => ({
+              text: lang.isoFriendlyName || lang.name,
+              value: lang.resourceId
+            })) || []
+          return getScenarioDataDetails().then((response) => ({
+            response,
+            options
+          }))
+        })
+        .then(({ response, options }) => {
+          const preferredRaw =
+            response?.data?.data?.preferredLanguageTypes || []
+          this.preferredLanguageTypes = preferredRaw
+            .map((lang) => ({
+              ...lang,
+              text: options.find((opt) => opt.value === lang.value)?.text || lang.text || ''
+            }))
+            .filter((item) => item.text)
+        })
+        .catch(() => {
+          this.preferredLanguageTypes = []
+        })
+    },
     onShowRenameAttachmentModal() {
       this.isRenameAttachmentModalVisible = true
     },

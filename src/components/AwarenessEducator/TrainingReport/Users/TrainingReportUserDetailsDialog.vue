@@ -596,7 +596,7 @@ export default {
           const lastIndex = this.allSessions.length > 0 ? this.allSessions.length - 1 : null
           this.selectedSessionIndex = lastIndex
           this.responsesData =
-            lastIndex !== null ? this.transformSessionToQuestions(this.allSessions[lastIndex]) : []
+            lastIndex === null ? [] : this.transformSessionToQuestions(this.allSessions[lastIndex])
           this.selectedQuestionIndex = 0
         })
         .catch((error) => {
@@ -676,7 +676,8 @@ export default {
         type
       )
         .then((response) => {
-          this.interactionsTableData = response?.data?.data.map((item) => ({
+          const rows = Array.isArray(response?.data?.data) ? response.data.data : []
+          this.interactionsTableData = rows.map((item) => ({
             interaction: item.interaction,
             eventTime: item.eventTime,
             currentStep: item.currentStep,

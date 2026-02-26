@@ -481,7 +481,7 @@ export function scrollToComponent(
 ) {
   if (!el) return;
 
-  if (window.safari || navigator.vendor.match(/apple/i)) {
+  if (globalThis.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView();
   } else {
     el.scrollIntoView(options);
@@ -494,7 +494,7 @@ export function setSafariClusterFix(obj = {}, param = "") {
   }
 }
 export function handleIsSafari() {
-  return window.safari || navigator.vendor.match(/apple/i);
+  return globalThis.safari || navigator.vendor.match(/apple/i);
 }
 
 export function incidenPostReviewElementBind(url, id, rootId, isReview) {
@@ -696,7 +696,7 @@ export function getDefaultAxiosPayload(props, defaultOrderBy = null) {
   return deepCopyArray({
     pageNumber: 1,
     pageSize: 10,
-    orderBy: defaultOrderBy !== null ? defaultOrderBy : "CreateTime",
+    orderBy: defaultOrderBy === null ? "CreateTime" : defaultOrderBy,
     ascending: false,
     filter: getDefaultFilter().filter,
     ...props
@@ -796,7 +796,7 @@ export function copyToClipboard(textToCopy) {
   try {
     const normalizedText = textToCopy == null ? "" : String(textToCopy);
 
-    if (navigator.clipboard && window.isSecureContext) {
+    if (navigator.clipboard && globalThis.isSecureContext) {
       // navigator clipboard api method
       return navigator.clipboard
         .writeText(normalizedText)
@@ -861,7 +861,7 @@ export const getDifficultyBadgeColor = (text = "") => {
 };
 
 export function createRandomCryptNumber() {
-  const crypto = window.crypto || window.msCrypto;
+  const crypto = globalThis.crypto || globalThis.msCrypto;
   if (!crypto) return Date.now(); // Fallback when crypto API unavailable (legacy browsers)
   const array = new Uint32Array(1);
   return crypto.getRandomValues(array)[0];
@@ -902,7 +902,7 @@ export function fileToBase64(file) {
   const toBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
-      if ("Blob" in window && file instanceof Blob) reader.readAsDataURL(file);
+      if ("Blob" in globalThis && file instanceof Blob) reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
       reader.onerror = reject;
     });
@@ -968,9 +968,9 @@ export function openHtmlInNewWindow(htmlContent) {
 
   // Blob oluştur ve aç
   const blob = new Blob([processedHtml], { type: "text/html;charset=UTF-8" });
-  const url = window.URL.createObjectURL(blob);
-  window.open(url, "_blank");
-  setTimeout(() => window.URL.revokeObjectURL(url), 100);
+  const url = globalThis.URL.createObjectURL(blob);
+  globalThis.open(url, "_blank");
+  setTimeout(() => globalThis.URL.revokeObjectURL(url), 100);
 }
 
 /**

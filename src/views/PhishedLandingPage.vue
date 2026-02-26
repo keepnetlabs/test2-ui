@@ -99,8 +99,8 @@ export default {
     },
     handleStartTrainingByLanguage(obj) {
       if (obj?.enrollmentContentResourceId && obj?.targetUserResourceId)
-        window.open(
-          `${window.location.origin}/training/scorm/watch?EnrollmentContentId=${obj.enrollmentContentResourceId}&TargetUserResourceId=${obj.targetUserResourceId}`
+        globalThis.open(
+          `${globalThis.location.origin}/training/scorm/watch?EnrollmentContentId=${obj.enrollmentContentResourceId}&TargetUserResourceId=${obj.targetUserResourceId}`
         )
     }
   }

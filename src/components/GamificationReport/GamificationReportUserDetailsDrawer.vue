@@ -1285,28 +1285,30 @@ export default {
         value = payload.activeValue.trim();
       } else if (Array.isArray(payload.activeValue)) {
         if (payload.activeOperator === "between") {
-          filterItems.push({
-            FieldName: payload.key,
-            Value: payload.activeValue[0],
-            Operator: ">="
-          });
-          filterItems.push({
-            FieldName: payload.key,
-            Value: payload.activeValue[1],
-            Operator: "<="
-          });
+          filterItems.push(
+            {
+              FieldName: payload.key,
+              Value: payload.activeValue[0],
+              Operator: ">="
+            },
+            {
+              FieldName: payload.key,
+              Value: payload.activeValue[1],
+              Operator: "<="
+            }
+          );
           return;
         }
         value = payload.activeValue.join(",");
       }
-      if (fIndex !== -1) {
-        filterItems[fIndex].Value = value;
-      } else {
+      if (fIndex === -1) {
         filterItems.push({
           FieldName: payload.key,
           Value: value,
           Operator: payload.activeOperator
         });
+      } else {
+        filterItems[fIndex].Value = value;
       }
     },
     removeFilterFromPayload(payload) {

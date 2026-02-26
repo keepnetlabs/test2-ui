@@ -37,6 +37,7 @@ import { TRAINING_LIBRARY_SEARCH_TYPES } from '@/components/TrainingLibrary/util
 const createState = () => JSON.parse(JSON.stringify(trainingLibrary.state))
 
 describe('trainingLibrary store module (real)', () => {
+  const flushPromises = () => new Promise((resolve) => setImmediate(resolve))
   beforeEach(() => {
     jest.clearAllMocks()
     localStorage.clear()
@@ -255,6 +256,52 @@ describe('trainingLibrary store module (real)', () => {
           { name: TRAINING_LIBRARY_TYPES.SURVEY, totalCount: 0 }
         ])
       })
+
+      it('callForTableData keeps loading true when request is aborted (empty response)', async () => {
+        const state = createState()
+        const commit = jest.fn()
+        const rootGetters = { 'trainingLibraryHelpers/getLanguages': [] }
+
+        AwarenessEducatorService.searchTraining.mockResolvedValue({})
+
+        trainingLibrary.actions.callForTableData({ commit, state, rootGetters })
+        await flushPromises()
+
+        expect(commit).toHaveBeenCalledWith('SET_IS_LOADING', true)
+        expect(commit).not.toHaveBeenCalledWith('SET_IS_LOADING', false)
+        expect(commit).not.toHaveBeenCalledWith('SET_TABLE_DATA', expect.anything())
+      })
+
+      it('callForTableData falls back to language code and empty targetAudience', async () => {
+        const state = createState()
+        const commit = jest.fn()
+        const rootGetters = {
+          'trainingLibraryHelpers/getLanguages': [{ code: 'TR', isoFriendlyName: 'Turkish' }]
+        }
+
+        AwarenessEducatorService.searchTraining.mockResolvedValue({
+          data: {
+            data: {
+              results: [{ trainingId: 'x1', languages: ['ZZ', 'TR'] }],
+              totalNumberOfRecords: 1,
+              totalNumberOfPages: 1,
+              pageNumber: 1
+            }
+          }
+        })
+
+        trainingLibrary.actions.callForTableData({ commit, state, rootGetters })
+        await flushPromises()
+
+        expect(commit).toHaveBeenCalledWith('SET_TABLE_DATA', [
+          {
+            trainingId: 'x1',
+            languages: ['ZZ', 'Turkish'],
+            languageCodes: ['ZZ', 'TR'],
+            targetAudience: []
+          }
+        ])
+      })
     })
 
     describe('view and selection actions', () => {
@@ -323,6 +370,109 @@ describe('trainingLibrary store module (real)', () => {
         expect(dispatch).toHaveBeenCalledWith('callForTableData')
         expect(dispatch).toHaveBeenCalledWith('callForSummary', { hideLoader: true })
       })
+
+      it('setListView returns early when value is unchanged', () => {
+        const state = createState()
+        state.isListView = true
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        trainingLibrary.actions.setListView({ commit, dispatch, state }, true)
+
+        expect(commit).not.toHaveBeenCalled()
+        expect(dispatch).not.toHaveBeenCalled()
+      })
+
+      it('setSelectedTrainingContent returns early when selected tab is unchanged', () => {
+        const state = createState()
+        state.selectedTrainingContent = TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        trainingLibrary.actions.setSelectedTrainingContent(
+          { commit, dispatch, state },
+          { name: TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS }
+        )
+
+        expect(commit).not.toHaveBeenCalled()
+        expect(dispatch).not.toHaveBeenCalled()
+      })
+
+      it('setSubSelectedTrainingContent returns early when selected sub tab is unchanged', () => {
+        const state = createState()
+        state.selectedSubTrainingContent = TRAINING_LIBRARY_TYPES.ALL_TYPES
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        trainingLibrary.actions.setSubSelectedTrainingContent(
+          { commit, dispatch, state },
+          { name: TRAINING_LIBRARY_TYPES.ALL_TYPES }
+        )
+
+        expect(commit).not.toHaveBeenCalled()
+        expect(dispatch).not.toHaveBeenCalled()
+      })
+
+      it('setSelectedTrainingContent covers all search type branches', () => {
+        const state = createState()
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+        state.selectedTrainingContent = '__different__'
+
+        trainingLibrary.actions.setSelectedTrainingContent(
+          { commit, dispatch, state },
+          { name: TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS }
+        )
+        expect(commit).toHaveBeenCalledWith(
+          'SET_TRAINING_SEARCH_TYPE',
+          TRAINING_LIBRARY_SEARCH_TYPES.All
+        )
+
+        commit.mockClear()
+        state.selectedTrainingContent = 'Something Else'
+        trainingLibrary.actions.setSelectedTrainingContent(
+          { commit, dispatch, state },
+          { name: TRAINING_LIBRARY_MAIN_TABS.FAVOURITES }
+        )
+        expect(commit).toHaveBeenCalledWith(
+          'SET_TRAINING_SEARCH_TYPE',
+          TRAINING_LIBRARY_SEARCH_TYPES.Favourites
+        )
+
+        commit.mockClear()
+        state.selectedTrainingContent = 'Something Else Again'
+        trainingLibrary.actions.setSelectedTrainingContent(
+          { commit, dispatch, state },
+          { name: 'Created By Me Tab' }
+        )
+        expect(commit).toHaveBeenCalledWith(
+          'SET_TRAINING_SEARCH_TYPE',
+          TRAINING_LIBRARY_SEARCH_TYPES.CreatedByMe
+        )
+      })
+
+      it('setSubSelectedTrainingContent covers remaining type branches', () => {
+        const state = createState()
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+        const cases = [
+          [TRAINING_LIBRARY_TYPES.LEARNING_PATH, TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH],
+          [TRAINING_LIBRARY_TYPES.POSTER, TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER],
+          [TRAINING_LIBRARY_TYPES.INFOGRAPHIC, TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC],
+          [TRAINING_LIBRARY_TYPES.SCREENSAVER, TRAINING_LIBRARY_PAYLOAD_TYPES.SCREENSAVER],
+          [TRAINING_LIBRARY_TYPES.SURVEY, TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY]
+        ]
+
+        cases.forEach(([name, expectedType]) => {
+          state.selectedSubTrainingContent = '__different__'
+          trainingLibrary.actions.setSubSelectedTrainingContent(
+            { commit, dispatch, state },
+            { name }
+          )
+          expect(commit).toHaveBeenCalledWith('SET_TRAINING_TYPE', expectedType)
+          commit.mockClear()
+        })
+      })
     })
 
     describe('filter actions', () => {
@@ -351,6 +501,28 @@ describe('trainingLibrary store module (real)', () => {
           payload,
           { root: true }
         )
+      })
+
+      it('restoreDefaultFilters uses saved filters when localStorage exists', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+        localStorage.setItem('training-library-filters', JSON.stringify({ saved: true }))
+
+        trainingLibrary.actions.restoreDefaultFilters({ commit, dispatch })
+
+        expect(commit).toHaveBeenCalledWith('SET_DEFAULT_TABLE_FILTERS')
+        expect(dispatch).toHaveBeenCalledWith('callForTrainingLibrary')
+      })
+
+      it('restoreDefaultFilters resets filters when localStorage is missing', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+        localStorage.removeItem('training-library-filters')
+
+        trainingLibrary.actions.restoreDefaultFilters({ commit, dispatch })
+
+        expect(commit).toHaveBeenCalledWith('RESET_FILTERS')
+        expect(dispatch).toHaveBeenCalledWith('callForTrainingLibrary')
       })
     })
 

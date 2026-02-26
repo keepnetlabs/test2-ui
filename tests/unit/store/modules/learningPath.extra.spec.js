@@ -436,6 +436,63 @@ describe('learningPath store module (real)', () => {
           training: { trainingId: 't1' }
         })
       })
+
+      it('wrapper actions commit expected mutations', () => {
+        const commit = jest.fn()
+
+        learningPath.actions.setLearningPathFilterItemsShow(
+          { commit },
+          { key: 'vendor', show: true }
+        )
+        expect(commit).toHaveBeenCalledWith('SET_FILTER_ITEMS_SHOW', {
+          key: 'vendor',
+          show: true
+        })
+
+        commit.mockClear()
+        learningPath.actions.setLearningPathModalTrainingPreviewDialog(
+          { commit },
+          { status: true }
+        )
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_MODAL_TRAINING_PREVIEW_DIALOG', {
+          status: true
+        })
+
+        commit.mockClear()
+        learningPath.actions.setLearningPathFilterItems(
+          { commit },
+          { key: 'type', items: [{ text: 'Training', value: 1 }] }
+        )
+        expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_FILTER_ITEMS', {
+          key: 'type',
+          items: [{ text: 'Training', value: 1 }]
+        })
+
+        commit.mockClear()
+        learningPath.actions.setSelectedLearningPathTrainings(
+          { commit },
+          [{ trainingId: 't1', trainingOrder: 1 }]
+        )
+        expect(commit).toHaveBeenCalledWith('SET_SELECTED_LEARNING_PATH_TRAININGS', [
+          { trainingId: 't1', trainingOrder: 1 }
+        ])
+
+        commit.mockClear()
+        learningPath.actions.removeTrainingFromLearningPath(
+          { commit },
+          { training: { trainingId: 't1' }, index: 0 }
+        )
+        expect(commit).toHaveBeenCalledWith('REMOVE_TRAINING_FROM_LEARNING_PATH', {
+          training: { trainingId: 't1' },
+          index: 0
+        })
+      })
+
+      it('orderLearningPathData forwards payload to mutation', () => {
+        const commit = jest.fn()
+        learningPath.actions.orderLearningPathData({ commit }, ['CompanyA'])
+        expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA', ['CompanyA'])
+      })
     })
   })
 })

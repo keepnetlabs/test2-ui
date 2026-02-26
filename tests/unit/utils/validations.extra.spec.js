@@ -217,4 +217,27 @@ describe('validations.js (extra coverage)', () => {
     expect(validations.noDots('nodots')).toBe(true)
     expect(validations.noDots('has.dot', 'no dots')).toBe('no dots')
   })
+
+  it('isEmailSpecialCharacter validates allowed and disallowed sets', () => {
+    expect(validations.isEmailSpecialCharacter('valid.email+tag@domain')).toBe(true)
+    expect(validations.isEmailSpecialCharacter('invalid()email')).toBe(false)
+  })
+
+  it('isEmailChip returns specific message and updates chip style for single invalid item', () => {
+    const chip = { style: { borderColor: '', color: '' } }
+    const getElementsSpy = jest
+      .spyOn(document, 'getElementsByClassName')
+      .mockReturnValue([chip])
+
+    const result = validations.isEmailChip(['invalid-email'])
+
+    expect(result).toBe('invalid-email email address is not valid')
+    expect(chip.style.borderColor).toBe('#ff5252')
+    expect(chip.style.color).toBe('#ff5252')
+    getElementsSpy.mockRestore()
+  })
+
+  it('isEmailChip returns true for empty values array', () => {
+    expect(validations.isEmailChip([])).toBe(true)
+  })
 })

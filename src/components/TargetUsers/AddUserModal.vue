@@ -717,10 +717,10 @@ export default {
         value = true
       } else if (value === 'False') {
         value = false
-      } else if (!value) {
-        value = 'indeterminate'
-      } else {
+      } else if (value) {
         value = !!value
+      } else {
+        value = 'indeterminate'
       }
       return value
     },

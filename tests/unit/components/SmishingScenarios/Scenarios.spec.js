@@ -2,9 +2,22 @@ import { shallowMount } from '@vue/test-utils'
 import Scenarios from '@/components/SmishingScenarios/Scenarios.vue'
 import SmishingService from '@/api/smishing'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { getScenarioDataDetails } from '@/api/scenarios'
 
 jest.mock('@/helper-classes/lookup-local-storage', () => ({
   getSingle: jest.fn(() => Promise.resolve([]))
+}))
+
+jest.mock('@/api/scenarios', () => ({
+  getScenarioDataDetails: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        data: {
+          preferredLanguageTypes: []
+        }
+      }
+    })
+  )
 }))
 
 jest.mock('@/api/smishing', () => ({
@@ -110,6 +123,24 @@ describe('SmishingScenarios Scenarios.vue', () => {
     expect(ctx.loading).toBe(false)
   })
 
+  it('callForData no-ops when search permission is false', async () => {
+    const ctx = {
+      loading: false,
+      getSmishingScenariosSearchPermissions: false,
+      axiosPayload: { filter: { FilterGroups: [] } },
+      serverSideProps: {},
+      languageFilterOptions: [],
+      tableData: [{ resourceId: 'old' }]
+    }
+
+    await Scenarios.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(SmishingService.searchSmishingScenarios).not.toHaveBeenCalled()
+    expect(ctx.tableData).toEqual([{ resourceId: 'old' }])
+    expect(ctx.loading).toBe(true)
+  })
+
   it('changeNewScenarioModalStatus resets state and reloads on restart', () => {
     const wrapper = createWrapper()
     wrapper.vm.callForData = jest.fn()
@@ -163,6 +194,55 @@ describe('SmishingScenarios Scenarios.vue', () => {
     expect(wrapper.vm.isShowFastLaunch).toBe(true)
   })
 
+  it('toggleShowFastLaunch clears selectedRow when modal is already open', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.isShowFastLaunch = true
+    wrapper.vm.selectedRow = { resourceId: 's-1' }
+
+    wrapper.vm.toggleShowFastLaunch()
+
+    expect(wrapper.vm.selectedRow).toBe(null)
+    expect(wrapper.vm.isShowFastLaunch).toBe(false)
+  })
+
+  it('check close handlers are safe when refs are missing and delegate when present', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs = {}
+    expect(() => wrapper.vm.checkIfCanCLoseNewScenarioModal()).not.toThrow()
+    expect(() => wrapper.vm.checkIfCanCloseFastLaunchModal()).not.toThrow()
+
+    const changeNewScenarioModalStatus = jest.fn()
+    const closeOverlay = jest.fn()
+    wrapper.vm.$refs = {
+      newScenarioModal: { changeNewScenarioModalStatus },
+      fastLaunch: { closeOverlay }
+    }
+
+    wrapper.vm.checkIfCanCLoseNewScenarioModal()
+    wrapper.vm.checkIfCanCloseFastLaunchModal()
+    expect(changeNewScenarioModalStatus).toHaveBeenCalled()
+    expect(closeOverlay).toHaveBeenCalled()
+  })
+
+  it('handleSuccess actions close modal and refresh data', () => {
+    const wrapper = createWrapper()
+    const resetSelectableParams = jest.fn()
+    wrapper.vm.$refs = { refScenariosList: { resetSelectableParams } }
+    wrapper.vm.callForData = jest.fn()
+    wrapper.vm.showDeleteModal = true
+
+    wrapper.vm.handleSuccessDeleteAction()
+    expect(resetSelectableParams).toHaveBeenCalled()
+    expect(wrapper.vm.showDeleteModal).toBe(false)
+    expect(wrapper.vm.callForData).toHaveBeenCalledTimes(1)
+
+    wrapper.vm.$refs = {}
+    wrapper.vm.showDeleteModal = true
+    wrapper.vm.handleSuccessMultipleDeleteAction()
+    expect(wrapper.vm.showDeleteModal).toBe(false)
+    expect(wrapper.vm.callForData).toHaveBeenCalledTimes(2)
+  })
+
   it('exportScenario maps XLS to Excel and clicks links', async () => {
     const wrapper = createWrapper()
     const click = jest.fn()
@@ -198,5 +278,76 @@ describe('SmishingScenarios Scenarios.vue', () => {
 
     createElementSpy.mockRestore()
     createObjectURLSpy.mockRestore()
+  })
+
+  it('exportScenario with empty exportTypes does not call API', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.exportScenario({
+      exportTypes: [],
+      reportAllPages: false,
+      pageNumber: 1,
+      pageSize: 10
+    })
+    await flushPromises()
+    expect(SmishingService.exportSmishingScenarios).not.toHaveBeenCalled()
+  })
+
+  it('callForScenarioDetails maps preferred languages and falls back to empty preferred list for missing data', async () => {
+    LookupLocalStorage.getSingle.mockResolvedValueOnce([
+      { resourceId: 'en', isoFriendlyName: 'English' }
+    ])
+    getScenarioDataDetails.mockResolvedValueOnce({
+      data: { data: { preferredLanguageTypes: [{ value: 'en', text: '' }, { value: 'tr', text: '' }] } }
+    })
+    const ctx = {
+      scenarioDetailsLookup: {},
+      tableOptions: { columns: [{}, {}, {}, {}, {}] },
+      $set: jest.fn((obj, key, value) => {
+        obj[key] = value
+      }),
+      callForData: jest.fn()
+    }
+
+    Scenarios.methods.callForScenarioDetails.call(ctx)
+    await flushPromises()
+
+    expect(ctx.scenarioDetailsLookup.preferredLanguageTypes).toEqual([{ value: 'en', text: 'English' }])
+    expect(ctx.callForData).toHaveBeenCalled()
+
+    LookupLocalStorage.getSingle.mockResolvedValueOnce([])
+    getScenarioDataDetails.mockResolvedValueOnce({
+      data: { data: {} }
+    })
+    const fallbackCtx = {
+      scenarioDetailsLookup: {},
+      tableOptions: { columns: [{}, {}, {}, {}, {}] },
+      $set: jest.fn((obj, key, value) => {
+        obj[key] = value
+      }),
+      callForData: jest.fn()
+    }
+    Scenarios.methods.callForScenarioDetails.call(fallbackCtx)
+    await flushPromises()
+    expect(fallbackCtx.scenarioDetailsLookup.preferredLanguageTypes).toEqual([])
+    expect(fallbackCtx.callForData).toHaveBeenCalled()
+  })
+
+  it('no-template modal handlers toggle flags and emit expected events', () => {
+    const wrapper = createWrapper()
+    const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+
+    wrapper.vm.handleShowNoTextMessageModal()
+    expect(wrapper.vm.isShowNoTextMessageTemplateModal).toBe(true)
+    wrapper.vm.handleCloseNoTextMessageModal()
+    expect(wrapper.vm.isShowNoTextMessageTemplateModal).toBe(false)
+    wrapper.vm.handleConfirmNoTextMessage()
+    expect(emitSpy).toHaveBeenCalledWith('handleNoMessageTemplate')
+
+    wrapper.vm.handleShowNoLandingPageTemplateModal()
+    expect(wrapper.vm.isShowNoLandingPageTemplateModal).toBe(true)
+    wrapper.vm.handleCloseNoLandingPageTemplateModal()
+    expect(wrapper.vm.isShowNoLandingPageTemplateModal).toBe(false)
+    wrapper.vm.handleConfirmNoLandingPageTemplate()
+    expect(emitSpy).toHaveBeenCalledWith('handleNoLandingPageTemplate')
   })
 })

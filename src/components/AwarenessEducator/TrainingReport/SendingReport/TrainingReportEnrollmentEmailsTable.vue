@@ -516,11 +516,10 @@ export default {
     },
     handleSearchChange(searchFilter = {}) {
       const customFieldNames = this.customFields?.map?.((field) => field.name) || []
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems.filter(
+      this.axiosPayload.filter.FilterGroups[1].FilterItems =
+        searchFilter.filter.FilterGroups[0].FilterItems.filter(
           (field) => !customFieldNames.includes(field.FieldName)
         )
-      ]
       this.resetPageNumber()
       this.callForData()
     },

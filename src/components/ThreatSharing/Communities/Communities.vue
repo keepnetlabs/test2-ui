@@ -440,12 +440,12 @@ export default {
     },
     filter(newVal, oldVal) {
       if (newVal !== oldVal && !this.isLoadState) {
-        if (!newVal) {
-          this.updateCommunities()
-        } else {
+        if (newVal) {
           this.debounce(() => {
             this.updateCommunities()
           }, 1000)
+        } else {
+          this.updateCommunities()
         }
       }
     }

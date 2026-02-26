@@ -33,6 +33,13 @@
     @searchChangedEvent="handleSearchChange"
     @handleMultipleDelete="handleMultipleDelete"
   >
+    <template #datatable-custom-column="{ scope }">
+      <LanguagesColumn
+        v-if="scope.column.property === 'languageTypeName'"
+        :value="scope.row.languageTypeName"
+        :preferred-language-types="preferredLanguageTypes"
+      />
+    </template>
     <template #datatable-row-actions="{ scope }">
       <DefaultButtonRowAction
         :id="tableOptions.rowActions[2].id"
@@ -104,9 +111,11 @@ import QuishingService from '@/api/quishing'
 import { COMMON_SIMULATOR_COLUMNS } from '@/components/Common/Simulator/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 export default {
   name: 'QuishingScenariosTable',
   components: {
+    LanguagesColumn,
     DefaultMenuRowAction,
     RowActionsMenu,
     ScenariosRowActionsEditButton,
@@ -135,7 +144,7 @@ export default {
           COMMON_SIMULATOR_COLUMNS.NAME,
           COMMON_SIMULATOR_COLUMNS.QUISHING_TYPE,
           COMMON_SIMULATOR_COLUMNS.QUISHING_METHOD,
-          COMMON_SIMULATOR_COLUMNS.LANGUAGE,
+          { ...COMMON_SIMULATOR_COLUMNS.LANGUAGES, type: 'slot' },
           COMMON_SIMULATOR_COLUMNS.TAGS,
           COMMON_SIMULATOR_COLUMNS.DIFFICULTY,
           COMMON_SIMULATOR_COLUMNS.CREATE_TIME,
@@ -213,21 +222,23 @@ export default {
       serverSideProps: new ServerSideProps()
     }
   },
+  computed: {
+    preferredLanguageTypes() {
+      return this.scenarioDetailsLookup?.preferredLanguageTypes || []
+    }
+  },
   watch: {
-    scenarioDetailsLookup() {
+    scenarioDetailsLookup(val) {
+      if (!val) return
       this.$set(
         this.tableOptions.columns[2],
         'filterableItems',
-        this.scenarioDetailsLookup.methodTypes.map((item) => {
-          return { text: item.text, value: item.text }
-        })
+        (val.methodTypes || []).map((item) => ({ text: item.text, value: item.text }))
       )
       this.$set(
-        this.tableOptions.columns[3],
+        this.tableOptions.columns[5],
         'filterableItems',
-        this.scenarioDetailsLookup.difficultyTypes.map((item) => {
-          return { text: item.text, value: item.text }
-        })
+        (val.difficultyTypes || []).map((item) => ({ text: item.text, value: item.text }))
       )
     }
   },
@@ -347,13 +358,13 @@ export default {
     },
     columnFilterChanged(filter) {
       if (filter.FieldName === 'quishingType') {
-        if (!filter.Value)
+        if (filter.Value) {
+          this.activeTemplateTypes = filter.Value.split(',')
+        } else {
           this.activeTemplateTypes = [
             QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
             QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
           ]
-        else {
-          this.activeTemplateTypes = filter.Value.split(',')
         }
       } else {
         this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(

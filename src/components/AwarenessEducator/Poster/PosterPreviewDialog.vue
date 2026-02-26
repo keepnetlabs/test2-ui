@@ -261,14 +261,17 @@ export default {
     }
   },
   created() {
-    this.selectedLanguages = this.selectedRow.languages.reduce((acc, lang) => {
+    const selectedRowLanguages = this.selectedRow?.languages || []
+    this.selectedLanguages = selectedRowLanguages.reduce((acc, lang) => {
       const selectedLanguage = this.languages.find((language) => language.code === lang)
       if (selectedLanguage) acc.push(selectedLanguage)
       return acc
     }, [])
-    this.specification = this.selectedLanguages[0].id
-    this.callForData()
-    this.callForPoster()
+    this.specification = this.selectedLanguages[0]?.id || ''
+    if (this.selectedRow?.trainingId) {
+      this.callForData()
+      this.callForPoster()
+    }
   },
   methods: {
     callForData() {

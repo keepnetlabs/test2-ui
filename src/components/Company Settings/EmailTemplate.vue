@@ -1229,7 +1229,7 @@ export default {
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl || ''
       if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
-      return (html || '').replace(/\{COMPANYLOGO\}/g, logo)
+      return (html || '').replaceAll(/\{COMPANYLOGO\}/g, logo)
     },
     restoreLogo(html = '') {
       let logo =
@@ -1237,8 +1237,8 @@ export default {
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl || ''
       if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
-      const esc = logo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      return (html || '').replace(new RegExp(esc, 'g'), '{COMPANYLOGO}')
+      const esc = logo.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return (html || '').replaceAll(new RegExp(esc, 'g'), '{COMPANYLOGO}')
     },
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$emit('on-custom-head-scripts-change', value, pageIndex)

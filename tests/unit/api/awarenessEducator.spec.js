@@ -366,6 +366,25 @@ describe('awarenessEducator API', () => {
       )
     })
 
+    it('should not inject trainingType when trainingType is 0', async () => {
+      const payload = { page: 2 }
+      await awarenessApi.searchTrainingReportUsers(payload, 'enroll-456', 0)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/enroll-456/users/search`,
+        payload
+      )
+      expect(payload.trainingType).toBeUndefined()
+    })
+
+    it("should inject trainingType when trainingType is string '0'", async () => {
+      const payload = { page: 4 }
+      await awarenessApi.searchTrainingReportUsers(payload, 'enroll-789', '0')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/enroll-789/users/search`,
+        expect.objectContaining({ trainingType: '0' })
+      )
+    })
+
     it('should call getTrainingReportInteractions with interactionType and trainingType', async () => {
       await awarenessApi.getTrainingReportInteractions('enroll-1', 'res-1', 4, 2)
       expect(testRequest.get).toHaveBeenCalledWith(
@@ -418,6 +437,34 @@ describe('awarenessEducator API', () => {
       )
       expect(testRequest.post).toHaveBeenCalledWith(
         `/training-reports/anonymous/enroll-1/user-detail/user-1`,
+        payload
+      )
+    })
+
+    it('should treat interactionType=0 as falsy and omit query parameter', async () => {
+      const payload = { page: 3 }
+      await awarenessApi.getTrainingReportNonTargetUserInteractions(
+        'enroll-2',
+        'user-2',
+        0,
+        payload
+      )
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/anonymous/enroll-2/user-detail/user-2`,
+        payload
+      )
+    })
+
+    it("should treat interactionType='0' as truthy and include query parameter", async () => {
+      const payload = { page: 5 }
+      await awarenessApi.getTrainingReportNonTargetUserInteractions(
+        'enroll-3',
+        'user-3',
+        '0',
+        payload
+      )
+      expect(testRequest.post).toHaveBeenCalledWith(
+        `/training-reports/anonymous/enroll-3/user-detail/user-3?emailEventType=0`,
         payload
       )
     })

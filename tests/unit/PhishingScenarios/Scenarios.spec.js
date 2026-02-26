@@ -39,6 +39,11 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(Scenarios.computed.isAttachmentBasedScenario.call({ selectedRow: { method: 'MFA' } })).toBeUndefined()
   })
 
+  it('computed preferredLanguageTypes returns empty array when lookup is missing', () => {
+    expect(Scenarios.computed.preferredLanguageTypes.call({ scenarioDetailsLookup: null })).toEqual([])
+    expect(Scenarios.computed.preferredLanguageTypes.call({ scenarioDetailsLookup: {} })).toEqual([])
+  })
+
   it('scenarioDetailsLookup watcher updates filter items and rerenders filters', () => {
     const ctx = {
       tableOptions: {
@@ -133,6 +138,30 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     errorSpy.mockRestore()
   })
 
+  it('callForRoles uses empty roles when response payload is missing', async () => {
+    getPhishingScenarioRoles.mockResolvedValueOnce({})
+    const ctx = {
+      tableOptions: {
+        columns: [{ property: 'name' }, { property: 'roles' }]
+      },
+      scenarioRoles: [{ name: 'old' }],
+      roleFilterOptions: [{ text: 'old', value: 'old' }],
+      $set: (obj, key, value) => {
+        obj[key] = value
+      },
+      $nextTick: (cb) => cb(),
+      $refs: { refScenariosList: { reRenderFilters: jest.fn() } }
+    }
+
+    Scenarios.methods.callForRoles.call(ctx)
+    await flushPromises()
+
+    expect(ctx.scenarioRoles).toEqual([])
+    expect(ctx.roleFilterOptions).toEqual([])
+    expect(ctx.tableOptions.columns[1].filterableItems).toEqual([])
+    expect(ctx.$refs.refScenariosList.reRenderFilters).toHaveBeenCalled()
+  })
+
   it('callForData maps language and roles and updates server side props', async () => {
     getScenariosList.mockResolvedValueOnce({
       data: {
@@ -218,6 +247,80 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(ctx.tableData[0].roles).toEqual(['Role A', 'Role B'])
   })
 
+  it('callForData falls back roles to empty array when roles is a non-array truthy value', async () => {
+    getScenariosList.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          results: [
+            {
+              resourceId: 's-r',
+              languageTypeName: 'English',
+              roles: 'Role A'
+            }
+          ]
+        }
+      }
+    })
+    const ctx = {
+      loading: false,
+      getPhishingScenariosSearchPermissions: true,
+      axiosPayload: { pageNumber: 1 },
+      languageFilterOptions: [{ languageName: 'English', text: 'EN' }],
+      serverSideProps: {
+        totalNumberOfRecords: 0,
+        totalNumberOfPages: 0,
+        pageNumber: 0
+      },
+      tableData: []
+    }
+
+    Scenarios.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData[0].languageTypeName).toBe('EN')
+    expect(ctx.tableData[0].roles).toEqual([])
+  })
+
+  it('callForData keeps single unknown language code when no lookup match exists', async () => {
+    getScenariosList.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          results: [
+            {
+              resourceId: 's-u',
+              languageTypeName: 'Elvish',
+              roles: []
+            }
+          ]
+        }
+      }
+    })
+    const ctx = {
+      loading: false,
+      getPhishingScenariosSearchPermissions: true,
+      axiosPayload: { pageNumber: 1 },
+      languageFilterOptions: [{ languageName: 'English', text: 'EN' }],
+      serverSideProps: {
+        totalNumberOfRecords: 0,
+        totalNumberOfPages: 0,
+        pageNumber: 0
+      },
+      tableData: []
+    }
+
+    Scenarios.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData[0].languageTypeName).toBe('Elvish')
+    expect(ctx.tableData[0].roles).toEqual([])
+  })
+
   it('callForData sets empty table on api failure', async () => {
     getScenariosList.mockRejectedValueOnce(new Error('failed'))
     const ctx = {
@@ -258,6 +361,19 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     }
     Scenarios.methods.handleFastLaunch.call(ctx, { resourceId: 's-2' })
     expect(ctx.selectedRow).toEqual({ resourceId: 's-2' })
+    expect(ctx.toggleShowFastLaunch).toHaveBeenCalled()
+    expect(ctx.toggleShowPreviewDialog).not.toHaveBeenCalled()
+  })
+
+  it('handleFastLaunch uses default empty row when argument is omitted', () => {
+    const ctx = {
+      selectedRow: null,
+      isShowPreviewDialog: false,
+      toggleShowFastLaunch: jest.fn(),
+      toggleShowPreviewDialog: jest.fn()
+    }
+    Scenarios.methods.handleFastLaunch.call(ctx)
+    expect(ctx.selectedRow).toEqual({})
     expect(ctx.toggleShowFastLaunch).toHaveBeenCalled()
     expect(ctx.toggleShowPreviewDialog).not.toHaveBeenCalled()
   })
@@ -548,6 +664,29 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(callForData).not.toHaveBeenCalled()
   })
 
+  it('changeNewScenarioModalStatus with status=true and restart=true refreshes data and clears editable form', () => {
+    const callForData = jest.fn()
+    const ctx = {
+      modalStatus: false,
+      scenarioId: 's-open',
+      isEdit: true,
+      isDuplicate: true,
+      selectedRow: { id: 11 },
+      editableFormValues: { a: 1 },
+      callForData
+    }
+
+    Scenarios.methods.changeNewScenarioModalStatus.call(ctx, true, true)
+
+    expect(ctx.modalStatus).toBe(true)
+    expect(ctx.selectedRow).toEqual({ id: 11 })
+    expect(ctx.editableFormValues).toEqual({})
+    expect(ctx.scenarioId).toBeNull()
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(callForData).toHaveBeenCalledTimes(1)
+  })
+
   it('handleMultipleDelete builds payload and opens delete modal', () => {
     const ctx = {
       isMultipleDelete: false,
@@ -643,6 +782,37 @@ describe('PhishingScenarios/Scenarios.vue', () => {
       })
     )
     expect(link.download).toBe('Scenarios.csv')
+    expect(link.click).toHaveBeenCalled()
+
+    createElementSpy.mockRestore()
+    global.URL = oldURL
+  })
+
+  it('exportScenario keeps lowercase xls payload but still downloads xlsx extension', async () => {
+    const link = { click: jest.fn(), href: '', download: '' }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    const oldURL = global.URL
+    global.URL = { ...(oldURL || {}), createObjectURL: jest.fn(() => 'blob:mock-xls-lower') }
+
+    const ctx = {
+      axiosPayload: { filter: { FilterGroups: [{}, {}] } }
+    }
+    Scenarios.methods.exportScenario.call(ctx, {
+      exportTypes: ['xls'],
+      reportAllPages: false,
+      pageNumber: 3,
+      pageSize: 15
+    })
+    await flushPromises()
+
+    expect(exportScenarios).toHaveBeenCalledWith(
+      expect.objectContaining({
+        exportType: 'xls',
+        pageNumber: 3,
+        pageSize: 15
+      })
+    )
+    expect(link.download).toBe('Scenarios.xlsx')
     expect(link.click).toHaveBeenCalled()
 
     createElementSpy.mockRestore()

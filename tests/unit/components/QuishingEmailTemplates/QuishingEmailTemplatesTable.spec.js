@@ -30,6 +30,26 @@ describe('QuishingEmailTemplatesTable.vue', () => {
     jest.useRealTimers()
   })
 
+  it('mounted calls language loader and then restores filter + fetches data in nextTick', () => {
+    const callForLanguages = jest.fn()
+    const restoreQuishingTypeFilter = jest.fn()
+    const callForData = jest.fn()
+    const nextTick = jest.fn((cb) => cb())
+    const ctx = {
+      callForLanguages,
+      restoreQuishingTypeFilter,
+      callForData,
+      $nextTick: nextTick
+    }
+
+    QuishingEmailTemplatesTable.mounted.call(ctx)
+
+    expect(callForLanguages).toHaveBeenCalledWith('refEmailTemplatesList')
+    expect(nextTick).toHaveBeenCalledTimes(1)
+    expect(restoreQuishingTypeFilter).toHaveBeenCalledTimes(1)
+    expect(callForData).toHaveBeenCalledTimes(1)
+  })
+
   it('data() builds permission-aware row actions', () => {
     const data = QuishingEmailTemplatesTable.data.call({
       $store: {
@@ -66,6 +86,34 @@ describe('QuishingEmailTemplatesTable.vue', () => {
     expect(noRefCtx.activeTemplateTypes).toEqual(['email'])
   })
 
+  it('restoreQuishingTypeFilter supports non-string select value arrays', () => {
+    const ctx = {
+      $refs: {
+        refEmailTemplatesList: {
+          filterValues: { quishingType: { selectValue: ['email', '', 'individual'] } }
+        }
+      },
+      activeTemplateTypes: []
+    }
+
+    QuishingEmailTemplatesTable.methods.restoreQuishingTypeFilter.call(ctx)
+    expect(ctx.activeTemplateTypes).toEqual(['email', 'individual'])
+  })
+
+  it('restoreQuishingTypeFilter reads direct filter object when selectValue is missing', () => {
+    const ctx = {
+      $refs: {
+        refEmailTemplatesList: {
+          filterValues: { quishingType: 'email,individual,' }
+        }
+      },
+      activeTemplateTypes: []
+    }
+
+    QuishingEmailTemplatesTable.methods.restoreQuishingTypeFilter.call(ctx)
+    expect(ctx.activeTemplateTypes).toEqual(['email', 'individual'])
+  })
+
   it('checkIsQuishingTypePrintout handles row and null values', () => {
     expect(
       QuishingEmailTemplatesTable.methods.checkIsQuishingTypePrintout.call({}, {
@@ -80,6 +128,14 @@ describe('QuishingEmailTemplatesTable.vue', () => {
     expect(QuishingEmailTemplatesTable.methods.checkIsQuishingTypePrintout.call({}, null)).toBe(
       false
     )
+  })
+
+  it('checkIsQuishingTypePrintout safely returns false when quishingType is missing', () => {
+    expect(
+      QuishingEmailTemplatesTable.methods.checkIsQuishingTypePrintout.call({}, {
+        id: 'row-1'
+      })
+    ).toBe(false)
   })
 
   it('callForData sets loading, maps language names and updates serverSideProps', async () => {
@@ -117,6 +173,33 @@ describe('QuishingEmailTemplatesTable.vue', () => {
     expect(ctx.tableData[0].languageTypeName).toBe('English')
     expect(ctx.tableData[1].languageTypeName).toBe('DE')
     expect(ctx.setLoading).toHaveBeenCalledTimes(2)
+  })
+
+  it('callForData safely handles missing results', async () => {
+    QuishingService.searchQuishingEmailTemplates.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+
+    const ctx = {
+      setLoading: jest.fn(),
+      axiosPayload: { filter: { FilterGroups: [{ FilterItems: [] }] } },
+      activeTemplateTypes: [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL],
+      languageFilterOptions: [],
+      serverSideProps: {},
+      tableData: ['old']
+    }
+
+    QuishingEmailTemplatesTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData).toEqual([])
+    expect(ctx.setLoading).toHaveBeenCalledWith(true)
   })
 
   it('emit handlers route to proper events', () => {
@@ -162,6 +245,31 @@ describe('QuishingEmailTemplatesTable.vue', () => {
     })
   })
 
+  it('handleEmitEmailTemplateModal emits on-edit-or-new for null/default row', () => {
+    const emit = jest.fn()
+    const ctx = {
+      $emit: emit,
+      checkIsQuishingTypePrintout: QuishingEmailTemplatesTable.methods.checkIsQuishingTypePrintout
+    }
+
+    QuishingEmailTemplatesTable.methods.handleEmitEmailTemplateModal.call(ctx, null, false)
+    QuishingEmailTemplatesTable.methods.handleEmitEmailTemplateModal.call(ctx, undefined, false)
+
+    expect(emit).toHaveBeenCalledWith('on-edit-or-new', null, false)
+    expect(emit).toHaveBeenCalledWith('on-edit-or-new', {}, false)
+  })
+
+  it('handlePreview and handleDelete use default empty object', () => {
+    const emit = jest.fn()
+    const ctx = { $emit: emit }
+
+    QuishingEmailTemplatesTable.methods.handlePreview.call(ctx)
+    QuishingEmailTemplatesTable.methods.handleDelete.call(ctx)
+
+    expect(emit).toHaveBeenCalledWith('on-preview', {})
+    expect(emit).toHaveBeenCalledWith('on-delete', {})
+  })
+
   it('handleAddQuishingTemplate emits based on selected item text', () => {
     const emit = jest.fn()
     const ctx = {
@@ -183,6 +291,20 @@ describe('QuishingEmailTemplatesTable.vue', () => {
 
     expect(ctx.handleEmitEmailTemplateModal).toHaveBeenCalledWith(null, false)
     expect(emit).toHaveBeenCalledWith('on-add-individual-printout-template', null, false)
+  })
+
+  it('handleAddQuishingTemplate ignores unknown item text', () => {
+    const emit = jest.fn()
+    const ctx = {
+      $emit: emit,
+      addQuishingItems: [{ text: 'Email Template' }, { text: 'Individual Printout Template' }],
+      handleEmitEmailTemplateModal: jest.fn()
+    }
+
+    QuishingEmailTemplatesTable.methods.handleAddQuishingTemplate.call(ctx, { text: 'Unknown' })
+
+    expect(ctx.handleEmitEmailTemplateModal).not.toHaveBeenCalled()
+    expect(emit).not.toHaveBeenCalled()
   })
 
   it('exportQuishingEmailTemplates exports each selected type and triggers download', async () => {
@@ -218,9 +340,44 @@ describe('QuishingEmailTemplatesTable.vue', () => {
       2,
       expect.objectContaining({ exportType: 'CSV', reportAllPages: true })
     )
+    expect(QuishingService.exportQuishingEmailTemplates).toHaveBeenCalledWith(
+      expect.objectContaining({ templateTypes: [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL] })
+    )
     expect(click).toHaveBeenCalledTimes(2)
     expect(createObjectURLSpy.mock.calls.length - createObjectURLCallCountBefore).toBe(2)
 
+    createObjectURLSpy.mockRestore()
+    createElementSpy.mockRestore()
+  })
+
+  it('exportQuishingEmailTemplates maps XLS extension to xlsx filename', async () => {
+    QuishingService.exportQuishingEmailTemplates.mockResolvedValue({ data: new Blob(['x']) })
+    if (!window.URL.createObjectURL) window.URL.createObjectURL = jest.fn()
+    const createObjectURLSpy = jest
+      .spyOn(window.URL, 'createObjectURL')
+      .mockReturnValue('blob:quishing')
+    const links = []
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(() => {
+      const link = { href: '', download: '', click: jest.fn() }
+      links.push(link)
+      return link
+    })
+
+    const ctx = {
+      axiosPayload: { filter: { FilterGroups: [{ FilterItems: [] }] } },
+      activeTemplateTypes: [QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL]
+    }
+
+    QuishingEmailTemplatesTable.methods.exportQuishingEmailTemplates.call(ctx, {
+      exportTypes: ['XLS'],
+      reportAllPages: false,
+      pageNumber: 2,
+      pageSize: 10
+    })
+    await flushPromises()
+
+    expect(links[0].download).toBe('Quishing-Templates.xlsx')
+    expect(links[0].click).toHaveBeenCalled()
     createObjectURLSpy.mockRestore()
     createElementSpy.mockRestore()
   })
@@ -247,6 +404,28 @@ describe('QuishingEmailTemplatesTable.vue', () => {
     expect(openSpy).toHaveBeenCalledWith('blob:pdf')
     expect(newWindow.document.title).toBe('Quishing PDF Preview')
 
+    openSpy.mockRestore()
+    createObjectURLSpy.mockRestore()
+  })
+
+  it('handlePrintPreview is safe when popup is blocked (window.open returns null)', async () => {
+    QuishingService.getQuishingPdfPreviewContent.mockResolvedValueOnce({
+      data: new Blob(['pdf'])
+    })
+    const openSpy = jest.spyOn(window, 'open').mockReturnValue(null)
+    if (!window.URL.createObjectURL) window.URL.createObjectURL = jest.fn()
+    const createObjectURLSpy = jest
+      .spyOn(window.URL, 'createObjectURL')
+      .mockReturnValue('blob:pdf')
+
+    expect(() =>
+      QuishingEmailTemplatesTable.methods.handlePrintPreview.call({}, { resourceId: 'rid-2' })
+    ).not.toThrow()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(QuishingService.getQuishingPdfPreviewContent).toHaveBeenCalledWith('rid-2')
+    expect(openSpy).toHaveBeenCalledWith('blob:pdf')
     openSpy.mockRestore()
     createObjectURLSpy.mockRestore()
   })

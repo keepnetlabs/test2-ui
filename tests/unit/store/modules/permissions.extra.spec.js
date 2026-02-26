@@ -721,5 +721,114 @@ describe('permissions store module (real)', () => {
       expect(state.callbackCampaignJobPermissions.isOneOfThemPermitted).toBe(false)
       expect(store.getters.getCallbackCampaignJobSearchPermissions(state)).toBe(false)
     })
+
+    it('getCompanySettingsLeftMenuPermissions returns true when any source getter is true', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      const result = store.getters.getCompanySettingsLeftMenuPermissions(state, {
+        getRestApiSearchPermissions: false,
+        getNotificationTemplatesSearchPermissions: false,
+        getWhiteLabelingGetPermissions: false,
+        getSMTPSettingsSearchPermissions: false,
+        getProxySettingsSearchPermissions: false,
+        getSAMLIntegrationSearchPermissions: false,
+        getSCIMSettingsSearchPermissions: false,
+        getSIEMIntegrationSearchPermissions: true
+      })
+
+      expect(result).toBe(true)
+    })
+
+    it('getSIEMIntegrationPermissions composes all SIEM flags from getters', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      const siemPermissions = store.getters.getSIEMIntegrationPermissions(state, {
+        getSIEMIntegrationSearchPermissions: true,
+        getSIEMIntegrationCreatePermissions: false,
+        getSIEMIntegrationUpdatePermissions: true,
+        getSIEMIntegrationDeletePermissions: false,
+        getSIEMIntegrationGetPermissions: true,
+        getSIEMIntegrationExportPermissions: false
+      })
+
+      expect(siemPermissions).toEqual({
+        search: true,
+        create: false,
+        update: true,
+        delete: false,
+        get: true,
+        export: false
+      })
+    })
+
+    it('getMailConfigurationPermissions returns raw mail configuration object', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.mailConfigurationPermissions = { SEARCH: { hasPermission: true } }
+      expect(store.getters.getMailConfigurationPermissions(state)).toEqual({
+        SEARCH: { hasPermission: true }
+      })
+    })
+
+    it('getCompanySettingsLeftMenuPermissions returns false when all source getters are falsy', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      const result = store.getters.getCompanySettingsLeftMenuPermissions(state, {
+        getRestApiSearchPermissions: false,
+        getNotificationTemplatesSearchPermissions: false,
+        getWhiteLabelingGetPermissions: false,
+        getSMTPSettingsSearchPermissions: false,
+        getProxySettingsSearchPermissions: false,
+        getSAMLIntegrationSearchPermissions: false,
+        getSCIMSettingsSearchPermissions: false,
+        getSIEMIntegrationSearchPermissions: false,
+        getDirectEmailCreationSearchPermissions: false,
+        getAccountPrivacyPermission: false,
+        getAIAllySettingsGetPermissions: false,
+        getGoogleUserProvisionGetPermissions: false,
+        getLDAPDetailPermission: false,
+        getAllowListPermissionsSearch: false
+      })
+
+      expect(result).toBe(false)
+    })
+
+    it('getCrossCompanyPermissions returns false when all related permissions are missing', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.incidentResponderListGroupPermissions = {}
+
+      expect(store.getters.getCrossCompanyPermissions(state)).toBe(false)
+    })
+
+    it('getCrossCompanyPermissions returns true when any related permission is granted', () => {
+      const store = loadPermissionsStore()
+      const state = JSON.parse(JSON.stringify(store.state))
+
+      state.incidentResponderListGroupPermissions = {
+        SUMMARY: { hasPermission: false },
+        SEARCH_LOG: { hasPermission: false },
+        SEARCH_STATS: { hasPermission: true },
+        NOTIFY_RESULT: { hasPermission: false }
+      }
+
+      expect(store.getters.getCrossCompanyPermissions(state)).toBe(true)
+    })
+
+    it('setPermissionsList uses default empty payload when omitted', () => {
+      const store = loadPermissionsStore()
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+
+      store.actions.setPermissionsList({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_PERMISSIONS_LIST', [])
+      expect(dispatch).toHaveBeenCalledWith('setAllPermissions')
+    })
   })
 })
