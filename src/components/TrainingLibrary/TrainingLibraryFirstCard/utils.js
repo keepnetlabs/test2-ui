@@ -37,7 +37,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
     show: true
   },
   LEVEL: {
-    label: 'Level',
+    label: 'Training Level',
     property: PROPERTY_STORE.LEVEL,
     show: true
   },
@@ -96,6 +96,16 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   TYPE: {
     label: 'Type',
     property: PROPERTY_STORE.TYPE,
+    show: true
+  },
+  LEVEL: {
+    label: 'Training Level',
+    property: PROPERTY_STORE.LEVEL,
+    show: true
+  },
+  DURATION: {
+    label: 'Duration',
+    property: PROPERTY_STORE.DURATION,
     show: true
   },
   CATEGORY: {

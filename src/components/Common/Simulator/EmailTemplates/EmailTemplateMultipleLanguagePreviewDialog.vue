@@ -802,7 +802,7 @@ export default {
       return '<script>' + method + '<\/script>'
     },
     _escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
     }
   }
 }

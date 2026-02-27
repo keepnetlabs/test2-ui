@@ -187,6 +187,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results || []
         })
+        .catch(() => {})
         .finally(this.setLoading)
     },
     exportEnrollments(downloadTypes) {

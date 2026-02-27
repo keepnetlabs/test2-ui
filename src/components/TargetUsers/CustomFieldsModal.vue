@@ -242,7 +242,7 @@ export default {
           })
           this.sortCustomFields(this.customFields)
           this.sortCustomFields(this.unActiveCustomFields)
-          this.copyOfCustomFields = JSON.parse(JSON.stringify(data.data))
+          this.copyOfCustomFields = structuredClone(data.data)
         })
         .finally(() => (this.loading = false))
     },
@@ -327,7 +327,7 @@ export default {
     },
     handleDeleteTableField(item) {
       this.isWantToDelete = true
-      this.selectedItem = JSON.parse(JSON.stringify(item))
+      this.selectedItem = structuredClone(item)
     }
   },
   created() {

@@ -34,7 +34,7 @@ export function normalizeRoleId(role) {
   const id = role?.id ?? role?.roleId ?? role?.resourceId ?? role?.targetAudienceId
   if (id != null) return String(id)
   const code = role?.code || role?.roleName
-  return code ? code.replace(/\s/g, '') : ''
+  return code ? code.replaceAll(/\s/g, '') : ''
 }
 
 export function getAvailableForValues(data) {

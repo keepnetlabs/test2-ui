@@ -599,11 +599,11 @@ export default {
         ) {
           const companyId = this.getCurrentCompany?.resourceId
           const storageKey = `licenseExceededDialog_${companyId}`
-          if (!this.canShowCachableDialog(storageKey)) {
-            this.callForCreateTargetUser()
-          } else {
+          if (this.canShowCachableDialog(storageKey)) {
             this.showLicenseExceededDialog = true
             this.saveCachableDialogTimestamp(storageKey)
+          } else {
+            this.callForCreateTargetUser()
           }
         } else {
           this.callForCreateTargetUser()

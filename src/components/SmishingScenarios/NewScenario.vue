@@ -700,7 +700,7 @@ export default {
       })
     },
     nextStep() {
-      const currentStep = JSON.parse(JSON.stringify(this.step))
+      const currentStep = structuredClone(this.step)
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
         this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
@@ -943,7 +943,7 @@ export default {
       }
     }
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit) {
       this.isSubmitDisabled = true
@@ -962,7 +962,7 @@ export default {
           const availableForList = response?.data?.data?.availableForList
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.initialFormValues = structuredClone(this.formValues)
           this.isFetched = true
         })
         .finally(() => {

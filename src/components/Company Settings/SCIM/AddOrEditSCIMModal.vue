@@ -359,7 +359,7 @@ export default {
     },
     setDefaultGroupByFields() {
       this.groupByItems = [
-        ...[{ text: 'Department', value: '9fd0afec416c' }],
+        { text: 'Department', value: '9fd0afec416c' },
         ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
           (acc, { customFieldResourceId, scimFieldResourceId }) => {
             if (!customFieldResourceId || !scimFieldResourceId) return acc

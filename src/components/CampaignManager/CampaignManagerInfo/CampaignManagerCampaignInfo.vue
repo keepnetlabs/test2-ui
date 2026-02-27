@@ -271,7 +271,7 @@ export default {
     }
   },
   created() {
-    const initialFormValues = JSON.parse(JSON.stringify(this.formData))
+    const initialFormValues = structuredClone(this.formData)
     this.$emit('initialFormValues', initialFormValues)
     this.callForTargetGroups()
   },
@@ -338,7 +338,7 @@ export default {
     },
     setInitialName(value) {
       this.formData.name = value
-      const initialFormValues = JSON.parse(JSON.stringify(this.formData))
+      const initialFormValues = structuredClone(this.formData)
       this.$emit('initialFormValues', initialFormValues)
     },
     validateForm() {
