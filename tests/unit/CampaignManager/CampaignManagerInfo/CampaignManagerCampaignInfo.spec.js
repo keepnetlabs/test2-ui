@@ -5,7 +5,8 @@ jest.mock('@/utils/functions', () => ({
   scrollToComponent: jest.fn(),
   getDefaultAxiosPayload: jest.fn(val => val),
   getSelectSearchPayload: jest.fn((payload, search) => ({ ...payload, search })),
-  cancellableAxiosRequest: jest.fn((fn) => (...args) => fn(...args))
+  cancellableAxiosRequest: jest.fn((fn) => (...args) => fn(...args)),
+  createRandomCryptStringNumber: jest.fn(() => '1')
 }))
 
 jest.mock('@/api/targetUsers', () => ({
@@ -202,7 +203,7 @@ describe('CampaignManagerCampaignInfo.vue', () => {
       expect(rules.select[0]([])).toBe('Required')
       expect(rules.select[0]([1])).toBe(true)
       
-      expect(rules.select[1](' something')).toBe('Cannot start with space.')
+      expect(rules.select[1](' something')).toBe('Cannot start with space')
       expect(rules.select[1]('something')).toBe(true)
     })
   })

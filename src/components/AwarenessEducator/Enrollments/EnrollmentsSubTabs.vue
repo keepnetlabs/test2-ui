@@ -61,6 +61,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -84,6 +86,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -107,6 +111,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -129,6 +135,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -152,6 +160,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -175,6 +185,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -245,6 +257,14 @@ export default {
       default: () => []
     },
     targetAudiences: {
+      type: Array,
+      default: () => []
+    },
+    levels: {
+      type: Array,
+      default: () => []
+    },
+    durations: {
       type: Array,
       default: () => []
     },

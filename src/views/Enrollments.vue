@@ -8,6 +8,8 @@
           :languages="languages"
           :categories="categories"
           :target-audiences="targetAudiences"
+          :levels="levels"
+          :durations="durations"
         />
       </ElTabPane>
       <ElTabPane label="Trash" name="trash" id="trash-content">
@@ -50,7 +52,9 @@ export default {
     ...mapGetters({
       languages: 'trainingLibraryHelpers/getLanguages',
       categories: 'trainingLibraryHelpers/getCategories',
-      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences'
+      targetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
+      levels: 'trainingLibraryHelpers/getLevels',
+      durations: 'trainingLibraryHelpers/getDurations'
     })
   },
   created() {
@@ -59,13 +63,17 @@ export default {
     this.callForCategories()
     this.callForTargetAudiences()
     this.callForTypes()
+    this.callForLevels()
+    this.callForDurations()
   },
   methods: {
     ...mapActions({
       callForLanguages: 'trainingLibraryHelpers/callForLanguages',
       callForCategories: 'trainingLibraryHelpers/callForCategories',
       callForTargetAudiences: 'trainingLibraryHelpers/callForTargetAudiences',
-      callForTypes: 'trainingLibraryHelpers/callForTypes'
+      callForTypes: 'trainingLibraryHelpers/callForTypes',
+      callForLevels: 'trainingLibraryHelpers/callForLevels',
+      callForDurations: 'trainingLibraryHelpers/callForDurations'
     }),
     callForFormDetails() {
       AwarenessEducatorService.getEnrollmentFormDetails().then((response) => {

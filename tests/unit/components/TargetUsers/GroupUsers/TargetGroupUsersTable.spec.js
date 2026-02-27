@@ -208,6 +208,9 @@ describe('TargetGroupUsersTable.vue', () => {
     if (!globalThis.URL.createObjectURL) globalThis.URL.createObjectURL = jest.fn(() => 'blob:x')
     const createObjectURLSpy = jest.spyOn(globalThis.URL, 'createObjectURL').mockReturnValue('blob:test')
 
+    const initialCreateObjectURLCalls = createObjectURLSpy.mock.calls.length
+    const initialClickCalls = click.mock.calls.length
+
     try {
       wrapper.vm.exportTargetGroupsUserList({
         exportTypes: ['XLS', 'CSV'],
@@ -227,8 +230,8 @@ describe('TargetGroupUsersTable.vue', () => {
         'group-export',
         expect.objectContaining({ exportType: 'CSV' })
       )
-      expect(click).toHaveBeenCalledTimes(2)
-      expect(createObjectURLSpy).toHaveBeenCalledTimes(2)
+      expect(createObjectURLSpy.mock.calls.length - initialCreateObjectURLCalls).toBe(2)
+      expect(click.mock.calls.length - initialClickCalls).toBe(2)
     } finally {
       createElementSpy.mockRestore()
       createObjectURLSpy.mockRestore()

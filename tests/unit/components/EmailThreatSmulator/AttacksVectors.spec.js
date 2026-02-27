@@ -322,6 +322,9 @@ describe('AttacksVectors.vue', () => {
       .spyOn(document, 'createElement')
       .mockReturnValue({ href: '', download: '', click })
 
+    const initialCreateObjectURLCalls = createObjectURLSpy.mock.calls.length
+    const initialClickCalls = click.mock.calls.length
+
     const ctx = {
       axiosPayload: { filter: { FilterGroups: [{ FilterItems: [] }] } }
     }
@@ -335,8 +338,8 @@ describe('AttacksVectors.vue', () => {
     await Promise.resolve()
 
     expect(EmailThreatSimulatorApi.exportAttacksVector).toHaveBeenCalledTimes(2)
-    expect(click).toHaveBeenCalledTimes(1)
-    expect(createObjectURLSpy).toHaveBeenCalledTimes(1)
+    expect(createObjectURLSpy.mock.calls.length - initialCreateObjectURLCalls).toBe(1)
+    expect(click.mock.calls.length - initialClickCalls).toBe(1)
     expect(EmailThreatSimulatorApi.exportAttacksVector).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({ exportType: 'Excel', reportAllPages: true })

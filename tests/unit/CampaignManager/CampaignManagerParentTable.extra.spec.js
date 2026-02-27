@@ -1,4 +1,10 @@
+jest.mock('@/api/phishingsimulator', () => ({
+  exportCampaignManager: jest.fn(() => Promise.resolve({ data: new Blob() })),
+  searchCampaignManager: jest.fn(() => Promise.resolve({ data: { data: {} } }))
+}))
+
 import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable.vue'
+import { exportCampaignManager } from '@/api/phishingsimulator'
 
 describe('CampaignManagerParentTable.vue (extra branch coverage)', () => {
   describe('getMethodDetail', () => {
@@ -85,6 +91,58 @@ describe('CampaignManagerParentTable.vue (extra branch coverage)', () => {
       expect(
         CampaignManagerParentTable.methods.isTargetUsersShowGroups.call(ctx, { status: 'Complete' })
       ).toBe(false)
+    })
+  })
+
+  describe('exportCampaignManagerList', () => {
+    it('calls api and handles Excel conversion', () => {
+      const ctx = {
+        getCampaignManagerParentExportPermissions: true,
+        axiosPayload: { orderBy: 'n', ascending: true, filter: {} }
+      }
+      
+      if (!globalThis.URL.createObjectURL) {
+        globalThis.URL.createObjectURL = jest.fn(() => 'blob')
+      }
+      const click = jest.fn()
+      jest.spyOn(document, 'createElement').mockImplementation(() => ({ click, href: '', download: '' }))
+
+      CampaignManagerParentTable.methods.exportCampaignManagerList.call(ctx, {
+        exportTypes: ['XLS'],
+        pageNumber: 1,
+        pageSize: 10,
+        reportAllPages: true
+      })
+
+      expect(exportCampaignManager).toHaveBeenCalledWith(expect.objectContaining({ exportType: 'Excel' }))
+    })
+  })
+
+  describe('handleSearchChange', () => {
+    it('renames CategoryDistributionType to ScenarioDistribution in filters', () => {
+      const ctx = {
+        axiosPayload: { 
+          filter: { 
+            FilterGroups: [{}, { FilterItems: [] }] 
+          } 
+        },
+        resetPageNumber: jest.fn(),
+        callForData: jest.fn()
+      }
+      const searchFilter = {
+        filter: {
+          FilterGroups: [{
+            FilterItems: [{ FieldName: 'CategoryDistributionType', Value: 'v' }]
+          }]
+        }
+      }
+      
+      CampaignManagerParentTable.methods.handleSearchChange.call(ctx, searchFilter)
+      
+      const item = ctx.axiosPayload.filter.FilterGroups[1].FilterItems[0]
+      expect(item.FieldName).toBe('ScenarioDistribution')
+      expect(ctx.resetPageNumber).toHaveBeenCalled()
+      expect(ctx.callForData).toHaveBeenCalled()
     })
   })
 })

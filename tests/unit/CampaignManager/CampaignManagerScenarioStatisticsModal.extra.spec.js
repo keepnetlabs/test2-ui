@@ -51,4 +51,28 @@ describe('CampaignManagerScenarioStatisticsModal.vue (extra branches)', () => {
     expect(getComp.call({}, 'StatisticsAttackTypeWidget')).toBe(CampaignManagerStatisticsAttackType)
     expect(getComp.call({}, 'StatisticsIndustryWidget')).toBe(CampaignManagerStatisticsIndustry)
   })
+
+  describe('transformStatisticData', () => {
+    it('sorts and handles Unknown/NA and Other grouping (>5 items)', () => {
+      const data = [
+        { name: 'A', percentage: 20, count: 10 },
+        { name: 'B', percentage: 15, count: 8 },
+        { name: 'C', percentage: 12, count: 6 },
+        { name: 'D', percentage: 10, count: 5 },
+        { name: 'E', percentage: 8, count: 4 },
+        { name: 'F', percentage: 5, count: 2 },
+        { name: 'Unknown', percentage: 2, count: 1 },
+        { name: 'N/A', percentage: 3, count: 1.5 }
+      ]
+      const result = CampaignManagerScenarioStatisticsModal.methods.transformStatisticData(data)
+      expect(result.length).toBe(6)
+      expect(result[5].name).toBe('Other')
+      expect(result[5].percentage).toBe('35')
+    })
+    it('returns firstData directly if items <= 5 and no excluded data', () => {
+      const data = [{ name: 'A', percentage: 100, count: 10 }]
+      const result = CampaignManagerScenarioStatisticsModal.methods.transformStatisticData(data)
+      expect(result.length).toBe(1)
+    })
+  })
 })
