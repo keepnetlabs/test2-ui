@@ -106,7 +106,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
-    width: 120,
+    width: 160,
     filterableType: 'select',
     filterableItems: []
   },

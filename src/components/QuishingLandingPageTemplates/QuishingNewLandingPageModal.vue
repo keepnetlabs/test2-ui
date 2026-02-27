@@ -314,7 +314,7 @@
       <SelectClickOnlyPageModal
         :status="isSelectClickOnlyPageOpen"
         :method="clickOnlyMethodText"
-        :scenario-details-lookup="{ difficultyTypes: landingPageData && landingPageData.difficultyTypes || [] }"
+        :scenario-details-lookup="{ difficultyTypes: landingPageData && landingPageData.difficultyTypes || [], methodTypes: landingPageData && landingPageData.methodTypes || [] }"
         :languages="languageOptions"
         :api-funcs="quishingApiFuncs"
         type="Quishing"

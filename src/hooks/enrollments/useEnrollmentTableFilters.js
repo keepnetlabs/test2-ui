@@ -1,6 +1,16 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 export default {
+  props: {
+    levels: {
+      type: Array,
+      default: () => []
+    },
+    durations: {
+      type: Array,
+      default: () => []
+    }
+  },
   watch: {
     enrollmentStatusEnum(val) {
       const filterableItems = val.map((item) => ({
@@ -47,6 +57,24 @@ export default {
           : val
       this.$set(audienceColumn, 'filterableItems', items)
       this?.$refs?.refTable?.reRenderFilters()
+    },
+    levels(val) {
+      const levelColumn = this.tableOptions.columns.find(
+        (col) => col.property === PROPERTY_STORE.LEVEL
+      )
+      if (levelColumn) {
+        this.$set(levelColumn, 'filterableItems', val || [])
+        this?.$refs?.refTable?.reRenderFilters()
+      }
+    },
+    durations(val) {
+      const durationColumn = this.tableOptions.columns.find(
+        (col) => col.property === PROPERTY_STORE.DURATION
+      )
+      if (durationColumn) {
+        this.$set(durationColumn, 'filterableItems', val || [])
+        this?.$refs?.refTable?.reRenderFilters()
+      }
     }
   }
 }

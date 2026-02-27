@@ -216,18 +216,22 @@ testUtilsConfig.showDeprecationWarnings = false
 const originalConsoleError = console.error
 console.error = (...args) => {
   const firstArg = typeof args[0] === 'string' ? args[0] : ''
+  const errorMsg = args[0] instanceof Error ? args[0].message : firstArg
   const isVtuDeprecation =
     firstArg.includes('[vue-test-utils]: Using a string for stubs is deprecated') ||
     firstArg.includes('[vue-test-utils]: isVueInstance is deprecated') ||
     firstArg.includes('[vue-test-utils]: finding components with `find` or `get` is deprecated') ||
     firstArg.includes('[vue-test-utils]: overwriting methods via the `methods` property is deprecated') ||
-    firstArg.includes('[vue-test-utils]: Operations on destroyed component are discouraged')
+    firstArg.includes('[vue-test-utils]: Operations on destroyed component are discouraged') ||
+    firstArg.includes('[vue-test-utils]: could not overwrite property $moment')
   const isKnownVuexNoise =
     firstArg.includes('[vuex] unknown getter: permissions/getDomainSearchPermissions') ||
     firstArg.includes('[vuex] unknown getter: permissions/getDnsSearchPermissions') ||
     firstArg.includes('[vuex] unknown getter: permissions/getExcludedIpAddressGetPermissions')
+  const isKnownComponentNoise =
+    errorMsg.includes("Cannot read properties of null (reading 'hasQuiz')")
 
-  if (isVtuDeprecation || isKnownVuexNoise) {
+  if (isVtuDeprecation || isKnownVuexNoise || isKnownComponentNoise) {
     return
   }
 

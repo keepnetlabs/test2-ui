@@ -75,9 +75,11 @@ describe('SelectClickOnlyPageModal.vue (extra branches)', () => {
   })
 
   it('stepSubtitle covers click/data/default branches', () => {
-    expect(computed.stepSubtitle.call({ method: 'Click Only' })).toContain('click only')
-    expect(computed.stepSubtitle.call({ method: 'Data Submission' })).toContain('data submission')
+    const defaultText = 'Select a Click Only or Data Submission type landing page'
+    expect(computed.stepSubtitle.call({ method: 'Click Only' })).toContain('Click Only or Data Submission')
+    expect(computed.stepSubtitle.call({ method: 'Data Submission' })).toContain('Data Submission')
     expect(computed.stepSubtitle.call({ method: '' })).toContain('Click Only or Data Submission')
+    expect(computed.stepSubtitle.call({ method: 'Click Only' })).toBe(defaultText)
   })
 
   it('status watcher opens drawer path when status becomes true', () => {

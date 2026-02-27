@@ -291,7 +291,7 @@ export default {
     handleConfirmTargetGroupModal(group) {
       this.$emit('smartGroupSelected', group)
       this.isCreateTargetGroupButtonDisabled = true
-      createTargetGroup(group)
+      return createTargetGroup(group)
         .then((response) => {
           this.isTargetGroupModalVisible = false
           this.targetGroupList.unshift({
@@ -316,8 +316,11 @@ export default {
         if (this.targetGroupPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
       }
       this.isTargetGroupsLoading = true
-      searchTargetGroups(this.targetGroupPayload)
-        .then(this.setTargetGroups)
+      return searchTargetGroups(this.targetGroupPayload)
+        .then((response) => {
+          this.setTargetGroups(response)
+          return response
+        })
         .then((data) => {
           this.totalNumberOfPagesOfTargetGroups = data?.data?.totalNumberOfPages || 1
         })
