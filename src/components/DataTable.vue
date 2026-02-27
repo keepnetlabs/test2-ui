@@ -2293,7 +2293,7 @@ export default {
         //setting rendered columns
         if (renderedColumns.length) {
           this.columns.forEach((col) => {
-            if (!renderedColumns.some((property) => property === col.property))
+            if (!renderedColumns.includes(col.property))
               col.show = false;
           });
         } else {

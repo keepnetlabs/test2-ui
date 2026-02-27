@@ -491,7 +491,7 @@ export default {
     this.callForTargetGroups()
     this.callForTargetUsers()
     this.scanTypes = this.investigateData.scanTypes.length
-      ? JSON.parse(JSON.stringify(this.investigateData.scanTypes))
+      ? structuredClone(this.investigateData.scanTypes)
       : this.scanTypes
   },
   methods: {

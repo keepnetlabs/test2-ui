@@ -619,7 +619,7 @@ export default {
       try {
         this.certificateText = await file.text()
         this.isCertificateTextDisabled = true
-      } catch (e) {
+      } catch {
         this.certificateText = ''
       }
     },

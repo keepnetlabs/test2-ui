@@ -370,7 +370,7 @@ export default {
               break
           }
         })
-        this.permissions = sortedPermissions.filter((item) => item)
+        this.permissions = sortedPermissions.filter(Boolean)
         function search_and_delete(obj, search_term) {
           if (obj && obj.children === null) {
             delete obj['children']

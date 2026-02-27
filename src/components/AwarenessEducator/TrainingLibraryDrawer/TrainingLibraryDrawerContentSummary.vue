@@ -553,7 +553,7 @@ export default {
           let filename = this.trainingData.name || this.trainingData.trainingName || 'screensaver'
 
           if (disposition) {
-            const match = /filename\*=UTF-8''([^;]+)|filename=\"?([^;\"]+)/i.exec(disposition)
+            const match = /filename\*=UTF-8''([^;]+)|filename="?([^;"]+)/i.exec(disposition)
             if (match) {
               filename = decodeURIComponent(match[1] || match[2])
             }

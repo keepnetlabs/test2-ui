@@ -98,6 +98,30 @@ export const TRAINING_LIBRARY_COLUMNS = {
     filterableType: 'select',
     filterableItems: []
   },
+  LEVEL: {
+    property: PROPERTY_STORE.LEVEL,
+    align: 'left',
+    editable: false,
+    label: 'Training Level',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 120,
+    filterableType: 'select',
+    filterableItems: []
+  },
+  DURATION: {
+    property: PROPERTY_STORE.DURATION,
+    align: 'left',
+    editable: false,
+    label: labels.Duration,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: []
+  },
   CATEGORY: {
     property: PROPERTY_STORE.CATEGORY,
     align: 'left',

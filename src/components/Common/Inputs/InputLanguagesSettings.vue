@@ -515,7 +515,7 @@ export default {
       }
     },
     computedItems() {
-      const cloned = JSON.parse(JSON.stringify(this.items))
+      const cloned = structuredClone(this.items)
       // SADECE prop'tan gelen initial disabled dilleri disable et (yeni localized diller değil)
       const disabledSet = new Set(this.initialDisabledLanguageIds || [])
 
@@ -530,7 +530,7 @@ export default {
       return cloned
     },
     computedTreeItems() {
-      const clone = JSON.parse(JSON.stringify(this.items))
+      const clone = structuredClone(this.items)
       if (!this.relocalizeConfirmFor) return clone
       clone.forEach((group) => {
         const idx = (group.children || []).findIndex((c) => c.value === this.relocalizeConfirmFor)
@@ -1056,7 +1056,7 @@ export default {
     rebuildItemsForSelection() {
       const translated = new Set(this.translatedLanguageResourceIds || [])
       const selectedSet = new Set((this.selectedLanguages || []).map((l) => l.value))
-      const base = JSON.parse(JSON.stringify(this.languageItems || []))
+      const base = structuredClone(this.languageItems || [])
       const pref = base.find((g) => g && g.text === 'Preferred Languages') || {
         children: []
       }

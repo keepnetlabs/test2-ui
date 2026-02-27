@@ -147,7 +147,7 @@ export default {
     getAbsoluteUrl(url) {
       try {
         return new URL(url, globalThis.location.origin);
-      } catch (e) {
+      } catch {
         return null;
       }
     },
@@ -181,7 +181,7 @@ export default {
           );
         }
         return normalizedUrl;
-      } catch (e) {
+      } catch {
         return url;
       }
     },

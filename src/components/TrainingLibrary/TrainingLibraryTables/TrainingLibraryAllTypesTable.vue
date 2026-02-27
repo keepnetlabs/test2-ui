@@ -170,7 +170,9 @@ export default {
           TRAINING_LIBRARY_COLUMNS.MATERIAL_NAME,
           TRAINING_LIBRARY_COLUMNS.TYPE,
           TRAINING_LIBRARY_COLUMNS.CATEGORY,
+          TRAINING_LIBRARY_COLUMNS.LEVEL,
           TRAINING_LIBRARY_COLUMNS.TARGET_AUDIENCE,
+          TRAINING_LIBRARY_COLUMNS.DURATION,
           TRAINING_LIBRARY_COLUMNS.LANGUAGES,
           TRAINING_LIBRARY_COLUMNS.CREATED_BY,
           TRAINING_LIBRARY_COLUMNS.COMPLIANCE,
@@ -211,7 +213,9 @@ export default {
       getLanguages: 'trainingLibraryHelpers/getLanguages',
       getCompliances: 'trainingLibraryHelpers/getCompliances',
       getTrainingVendors: 'trainingLibraryHelpers/getTrainingVendors',
-      getPreferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes'
+      getPreferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes',
+      getLevels: 'trainingLibraryHelpers/getLevels',
+      getDurations: 'trainingLibraryHelpers/getDurations'
     }),
     getEmptyTableText() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.ALL_MATERIALS)
@@ -311,6 +315,24 @@ export default {
       )
       this.$set(trainingVendorColumn, 'filterableItems', val)
       this.$refs.refTable.reRenderFilters()
+    },
+    getLevels(val) {
+      const levelColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.LEVEL
+      )
+      if (levelColumn) {
+        this.$set(levelColumn, 'filterableItems', val || [])
+        this.$refs.refTable?.reRenderFilters()
+      }
+    },
+    getDurations(val) {
+      const durationColumn = this.tableOptions.columns.find(
+        (column) => column.property === PROPERTY_STORE.DURATION
+      )
+      if (durationColumn) {
+        this.$set(durationColumn, 'filterableItems', val || [])
+        this.$refs.refTable?.reRenderFilters()
+      }
     }
   },
   mounted() {

@@ -161,7 +161,9 @@ export default {
         width: 160
       }
     ]
-    if (!this.interactionType)
+    if (this.interactionType) {
+      columns[columns.length - 1].width = 160
+    } else {
       columns.unshift({
         property: 'interaction',
         align: 'center',
@@ -178,8 +180,6 @@ export default {
         },
         hideSort: true
       })
-    else {
-      columns[columns.length - 1].width = 160
     }
     if (
       this.trainingSummary?.trainingTypeName === TRAINING_LIBRARY_PAYLOAD_TYPES.LEARNING_PATH ||

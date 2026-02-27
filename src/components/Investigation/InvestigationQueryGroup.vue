@@ -156,7 +156,7 @@ export default {
       if (!safeItem.operand && !safeItem.value) return
       let message = ''
       if (
-        this.query.children.find(
+        this.query.children.some(
           ({ query }, itemIndex) =>
             query.value &&
             query.value === safeItem.value &&
