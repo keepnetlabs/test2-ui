@@ -1666,7 +1666,7 @@ export default {
               ?.shadowRoot?.querySelectorAll('[href="' + item.url + '"]')
             return {
               ...item,
-              url: item.url.replaceAll(/amp;/g, ''),
+              url: item.url.replaceAll('amp;', ''),
               name: item.name,
               urlHtml:
                 urlItem && !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,

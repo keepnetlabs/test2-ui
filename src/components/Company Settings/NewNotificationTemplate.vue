@@ -573,9 +573,7 @@ export default {
         );
         if (!isInSelected) {
           this.activeLanguage = val[0].value;
-          this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-            JSON.stringify(this.getSelectedLanguagePayload)
-          );
+          this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
         }
       } else {
         this.activeLanguage = val[0].value;
@@ -756,12 +754,8 @@ export default {
             });
           }
           this.activeLanguage = this.formValues.languageTypeResourceId;
-          this.editedLanguages = JSON.parse(
-            JSON.stringify(this.languagesPayload)
-          );
-          this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-            JSON.stringify(this.getSelectedLanguagePayload)
-          );
+          this.editedLanguages = structuredClone(this.languagesPayload);
+          this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
           // Only set initialDisabledLanguageIds if canRemoveLanguages is false
           if (!this.formValues.canRemoveLanguages) {
             this.initialDisabledLanguageIds = [
@@ -855,9 +849,7 @@ export default {
         this.activeLanguage = companyLanguageTypeResourceId;
         this.$nextTick(() => {
           this.handleSelectedLanguagesChange(this.selectedLanguages);
-          this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-            JSON.stringify(this.getSelectedLanguagePayload)
-          );
+          this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
           const isCompanyLanguageEnglish = findedLanguage?.text
             ?.toLowerCase()
             .includes("english");
@@ -1179,9 +1171,7 @@ export default {
     },
     handleActiveLanguageChange(value) {
       this.activeLanguage = value;
-      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-        JSON.stringify(this.getSelectedLanguagePayload)
-      );
+      this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
     },
     handleCloseEditLanguagesLeavingDialog() {
       this.showEditLanguagesLeavingDialog = false;
@@ -1197,22 +1187,16 @@ export default {
         });
       }
       this.activeLanguage = beforeSaveLanguage;
-      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-        JSON.stringify(this.getSelectedLanguagePayload)
-      );
+      this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
     },
     handleConfirmEditLanguagesLeavingDialog(beforeSaveLanguage) {
       this.showEditLanguagesLeavingDialog = false;
       this.activeLanguage = beforeSaveLanguage;
-      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-        JSON.stringify(this.getSelectedLanguagePayload)
-      );
+      this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
     },
     handleSaveTemplate(template) {
       if (this.getSelectedLanguagePayload.template.trim() !== template.trim()) {
-        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-          JSON.stringify(this.getSelectedLanguagePayload)
-        );
+        this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
         this.getSelectedLanguagePayload.isTranslated = false;
       }
     },

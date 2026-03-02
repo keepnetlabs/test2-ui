@@ -9,7 +9,7 @@ export default {
   methods: {
     setAttachmentFile(file) {
       if (Array.isArray(file) && file.length === 0) return
-      if (file && !file.type) {
+      if (file && !Array.isArray(file) && !file.type) {
         let newFile = null
         let fileExtension = ''
         if (file?.name.includes('.')) {
@@ -30,10 +30,10 @@ export default {
             type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
           })
         }
-        this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
+        this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile]
         this.isAttachmentError = false
       } else {
-        this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
+        this.formValues.attachmentFiles = Array.isArray(file) ? file : [file]
         this.isAttachmentError = false
       }
       this.isPhishingFileModified = true

@@ -1060,7 +1060,7 @@ export default {
             type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
           })
         }
-        this.editData.phishingFile = Array.isArray(newFile) ? newFile : [newFile] || []
+        this.editData.phishingFile = Array.isArray(newFile) ? newFile : [newFile]
         this.isAttachmentError = false
       } else {
         this.editData.phishingFile = Array.isArray(file) ? file : [file] || []

@@ -105,6 +105,11 @@ describe('validations.js (extra coverage)', () => {
     expect(validations.extension('.txt', 'Must not start with dot')).toBe('Must not start with dot')
   })
 
+  it('extension returns true when value does not start with dot', () => {
+    expect(validations.extension('valid.txt')).toBe(true)
+    expect(validations.extension('')).toBe(true)
+  })
+
   it('required and trim branch coverage', () => {
     expect(validations.required('x')).toBe(true)
     expect(validations.required('', 'Required')).toBe('Required')
@@ -173,6 +178,17 @@ describe('validations.js (extra coverage)', () => {
     expect(validations.numberRangeRule('', 1, 10)).toBe('Enter a number between 1 and 10')
   })
 
+  it('numberRangeRule branch coverage', () => {
+    expect(validations.numberRangeRule(5, 1, 10)).toBe(true)
+    expect(validations.numberRangeRule(1, 1, 10)).toBe(true)
+    expect(validations.numberRangeRule(10, 1, 10)).toBe(true)
+    expect(validations.numberRangeRule(0, 1, 10, 'Custom')).toBe('Custom')
+    expect(validations.numberRangeRule(11, 1, 10)).toBe('Enter a number between 1 and 10')
+    expect(validations.numberRangeRule('abc', 1, 10)).toBe('Enter a number between 1 and 10')
+    expect(validations.numberRangeRule('5', 1, 10)).toBe(true)
+    expect(validations.numberRangeRule(null, 1, 10)).toBe('Enter a number between 1 and 10')
+  })
+
   it('isDomainUrl branch coverage', () => {
     expect(validations.isDomainUrl('https://example.com')).toBe(true)
     expect(validations.isDomainUrl('invalid', 'Bad URL')).toBe('Bad URL')
@@ -239,5 +255,23 @@ describe('validations.js (extra coverage)', () => {
 
   it('isEmailChip returns true for empty values array', () => {
     expect(validations.isEmailChip([])).toBe(true)
+  })
+
+  it('ldapConnectionStringUrl accepts ldap and ldaps with hostname', () => {
+    expect(validations.ldapConnectionStringUrl('ldap://server.local:389')).toBe(true)
+    expect(validations.ldapConnectionStringUrl('ldaps://dc.example.com:636')).toBe(true)
+    expect(validations.ldapConnectionStringUrl('10.0.0.1:389')).toBe(true)
+  })
+
+  it('startsOrEndsWithHyphen rejects leading hyphen', () => {
+    expect(validations.startsOrEndsWithHyphen('-bad', 'No hyphen')).toBe('No hyphen')
+  })
+
+  it('startsOrEndsWithHyphen rejects trailing hyphen', () => {
+    expect(validations.startsOrEndsWithHyphen('bad-', 'No hyphen')).toBe('No hyphen')
+  })
+
+  it('controlEmailLength returns true for valid length', () => {
+    expect(validations.controlEmailLength('user@example.com')).toBe(true)
   })
 })

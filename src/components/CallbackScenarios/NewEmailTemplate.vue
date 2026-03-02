@@ -385,9 +385,7 @@ export default {
             ...item,
             isDeletable: true
           }))
-          this.formValues.attachmentFilesFromApi = JSON.parse(
-            JSON.stringify(this.formValues.attachments)
-          )
+          this.formValues.attachmentFilesFromApi = structuredClone(this.formValues.attachments)
         }
         if (response.data.data.phishingFileName) {
           this.formValues.attachmentFiles = [

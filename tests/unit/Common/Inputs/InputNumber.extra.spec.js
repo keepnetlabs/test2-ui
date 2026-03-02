@@ -33,4 +33,24 @@ describe('InputNumber.vue (extra branch coverage)', () => {
     expect(wrapper.vm.$refs.refInputNumber.initialValue).toBeUndefined()
     expect(wrapper.vm.$refs.refInputNumber.lazyValue).toBeUndefined()
   })
+
+  it('handleInputChange emits when value matches pattern', () => {
+    const wrapper = shallowMount(InputNumber, {
+      propsData: { pattern: /^\d+$/ }
+    })
+    wrapper.vm.handleInputChange('123')
+    expect(wrapper.emitted('input')).toBeTruthy()
+    expect(wrapper.emitted('input')[0][0]).toBe('123')
+  })
+
+  it('handleInputChange resets ref when pattern fails with custom pattern', () => {
+    const wrapper = shallowMount(InputNumber, {
+      propsData: { value: '30', pattern: /^\d{1,3}$/ }
+    })
+    wrapper.vm.$refs.refInputNumber = { initialValue: '30', lazyValue: '30' }
+    wrapper.vm.handleInputChange('1234')
+    expect(wrapper.emitted('input')).toBeFalsy()
+    expect(wrapper.vm.$refs.refInputNumber.initialValue).toBe('30')
+    expect(wrapper.vm.$refs.refInputNumber.lazyValue).toBe('30')
+  })
 })

@@ -2,6 +2,7 @@ import {
   getErrorMessage,
   getDifficultyBadgeColor,
   formatSeconds,
+  passwordComplexity,
   createRandomCryptNumber,
   createRandomCryptStringNumber,
   getInvestigationStatusTooltipText,
@@ -29,7 +30,8 @@ import {
   cancellableAxiosRequest,
   fileToBase64,
   openHtmlInNewWindow,
-  copyToClipboard
+  copyToClipboard,
+  logFormData
 } from '@/utils/functions'
 
 describe('functions.js (extra coverage)', () => {
@@ -119,6 +121,24 @@ describe('functions.js (extra coverage)', () => {
     })
   })
 
+  describe('passwordComplexity branch coverage', () => {
+    it('returns undefined when pwd is null', () => {
+      expect(passwordComplexity(null)).toBeUndefined()
+    })
+    it('returns undefined when pwd is undefined', () => {
+      expect(passwordComplexity(undefined)).toBeUndefined()
+    })
+    it('returns undefined when pwd is empty string', () => {
+      expect(passwordComplexity('')).toBeUndefined()
+    })
+    it('returns number 0-100 for valid password', () => {
+      const score = passwordComplexity('Abc123!@')
+      expect(typeof score).toBe('number')
+      expect(score).toBeGreaterThanOrEqual(0)
+      expect(score).toBeLessThanOrEqual(100)
+    })
+  })
+
   describe('getInvestigationStatusTooltipText', () => {
     it('returns tooltip for Queued', () => {
       expect(getInvestigationStatusTooltipText('Queued')).toContain('investigation')
@@ -180,6 +200,22 @@ describe('functions.js (extra coverage)', () => {
     it('converts camelCase with numbers', () => {
       expect(getDataTableFieldLabel('fieldName123')).toBe('field Name123')
     })
+    it('returns fieldMap values for running, n/a, itemnotfound', () => {
+      expect(getDataTableFieldLabel('running')).toBe('Running')
+      expect(getDataTableFieldLabel('n/a')).toBe('N/A')
+      expect(getDataTableFieldLabel('unknown')).toBe('N/A')
+      expect(getDataTableFieldLabel('itemnotfound')).toBe('Item not found')
+    })
+    it('returns fieldMap for not running, not in use, in use', () => {
+      expect(getDataTableFieldLabel('not running')).toBe('Not Running')
+      expect(getDataTableFieldLabel('not in use')).toBe('Not In Use')
+      expect(getDataTableFieldLabel('in use')).toBe('In Use')
+    })
+    it('returns fieldMap for difficulty levels', () => {
+      expect(getDataTableFieldLabel('easy')).toBe('Easy')
+      expect(getDataTableFieldLabel('medium')).toBe('Medium')
+      expect(getDataTableFieldLabel('hard')).toBe('Hard')
+    })
   })
 
   describe('deepCopyArray and filter helpers', () => {
@@ -208,6 +244,12 @@ describe('functions.js (extra coverage)', () => {
     it('getDefaultAxiosPayload uses custom defaultOrderBy', () => {
       const payload = getDefaultAxiosPayload({}, 'CustomOrder')
       expect(payload.orderBy).toBe('CustomOrder')
+    })
+    it('getDefaultAxiosPayload merges props over defaults', () => {
+      const payload = getDefaultAxiosPayload({ pageSize: 25, pageNumber: 2 })
+      expect(payload.pageSize).toBe(25)
+      expect(payload.pageNumber).toBe(2)
+      expect(payload.orderBy).toBe('CreateTime')
     })
     it('getSelectSearchPayload adds search to filter', () => {
       const base = {
@@ -918,6 +960,20 @@ describe('functions.js (extra coverage)', () => {
 
       expect(execCommandMock).toHaveBeenCalledWith('copy')
       expect(result).toBe(false)
+    })
+  })
+
+  describe('logFormData', () => {
+    it('logs each FormData entry', () => {
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
+      const formData = new FormData()
+      formData.append('name', 'test')
+      formData.append('file', new Blob(['data']), 'file.txt')
+
+      logFormData(formData)
+
+      expect(logSpy).toHaveBeenCalled()
+      logSpy.mockRestore()
     })
   })
 })
