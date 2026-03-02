@@ -58,7 +58,7 @@ describe('CampaignManagerReportSummaryCards.vue (extra branch coverage)', () => 
 
   it('method-only branches (2 and 3) map second/third/fourth labels', () => {
     const methodTwo = createWrapper({ method: 2, multipleType: [] })
-    expect(methodTwo.vm.getSecondCardLabel).toBe('Opened Email')
+    expect(methodTwo.vm.getSecondCardLabel).toBe('Phishing Reporters')
     expect(methodTwo.vm.getThirdCardLabel).toBe('Clicked Link')
     expect(methodTwo.vm.getFourthCardLabel).toBe('Submitted Data')
     expect(methodTwo.vm.getFourthCardClass).toBe('campaign-manager-report-summary-info-card--submitted-data')
@@ -70,6 +70,22 @@ describe('CampaignManagerReportSummaryCards.vue (extra branch coverage)', () => 
     expect(methodThree.vm.getFourthCardClass).toBe(
       'campaign-manager-report-summary-info-card--opened-attachment-data'
     )
+  })
+
+  it('click-only+mfa combination shows PhishingReporters in second card', () => {
+    const wrapper = createWrapper({ multipleType: [true, false, false, true] })
+    expect(wrapper.vm.isCampaignClickOnlyAndMfa).toBe(true)
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Clicked Link')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Submitted MFA Code')
+  })
+
+  it('data-submission+mfa combination shows PhishingReporters in second card', () => {
+    const wrapper = createWrapper({ multipleType: [false, true, false, true] })
+    expect(wrapper.vm.isCampaignDataSubmissionAndMfa).toBe(true)
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Submitted Data')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Submitted MFA Code')
   })
 
   it('data getters return empty objects when items is missing', () => {

@@ -60,4 +60,46 @@ describe('InputManager.vue (extra branch coverage)', () => {
     expect(validateSpy).not.toHaveBeenCalled()
     validateSpy.mockRestore()
   })
+
+  it('allFieldsFilled returns true when all three fields filled', () => {
+    const wrapper = shallowMount(InputManager, {
+      propsData: {
+        value: {
+          managerFirstName: 'John',
+          managerLastName: 'Doe',
+          managerEmail: 'j@d.com'
+        }
+      }
+    })
+    expect(wrapper.vm.allFieldsFilled).toBe(true)
+  })
+
+  it('hasPartialFields returns true when only some fields filled', () => {
+    const wrapper = shallowMount(InputManager, {
+      propsData: {
+        value: {
+          managerFirstName: 'John',
+          managerLastName: '',
+          managerEmail: ''
+        }
+      }
+    })
+    expect(wrapper.vm.hasPartialFields).toBe(true)
+  })
+
+  it('emitChange emits input with manager object', () => {
+    const wrapper = shallowMount(InputManager, {
+      propsData: { value: {} }
+    })
+    wrapper.vm.managerFirstName = 'A'
+    wrapper.vm.managerLastName = 'B'
+    wrapper.vm.managerEmail = 'a@b.com'
+    wrapper.vm.emitChange()
+    expect(wrapper.emitted('input')).toBeTruthy()
+    expect(wrapper.emitted('input')[0][0]).toEqual({
+      managerFirstName: 'A',
+      managerLastName: 'B',
+      managerEmail: 'a@b.com'
+    })
+  })
 })

@@ -67,4 +67,26 @@ describe('InputDescription.vue (extra branch coverage)', () => {
     expect(wrapper.vm.rules.length).toBeGreaterThan(0)
     expect(wrapper.vm.requiredProps.hint).toBe(labels.RequiredStar)
   })
+
+  it('created uses initialRules when applyRules true', () => {
+    const customRule = (v) => v === 'ok'
+    const wrapper = shallowMount(InputDescription, {
+      propsData: { applyRules: true, initialRules: [customRule], required: false }
+    })
+    expect(wrapper.vm.rules).toContain(customRule)
+  })
+
+  it('uses custom maxLength when provided', () => {
+    const wrapper = shallowMount(InputDescription, {
+      propsData: { maxLength: 500 }
+    })
+    expect(wrapper.vm.maxLength).toBe(500)
+  })
+
+  it('passes value to v-textarea', () => {
+    const wrapper = shallowMount(InputDescription, {
+      propsData: { value: 'Initial content' }
+    })
+    expect(wrapper.vm.value).toBe('Initial content')
+  })
 })

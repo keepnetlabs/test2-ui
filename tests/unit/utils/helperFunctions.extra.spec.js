@@ -179,6 +179,13 @@ describe('helperFunctions.js (extra coverage)', () => {
     it('returns empty array for empty input', () => {
       expect(createCustomFieldColumns([])).toEqual([])
     })
+    it('handles unknown fieldDataType without filterableType', () => {
+      const fields = [{ name: 'Custom', fieldDataType: 'UnknownType' }]
+      const result = createCustomFieldColumns(fields)
+      expect(result[0].property).toBe('Custom')
+      expect(result[0].filterable).toBe(true)
+      expect(result[0].filterableType).toBeUndefined()
+    })
   })
 
   describe('getAvailableForListFromBackend branch coverage', () => {
@@ -288,6 +295,11 @@ describe('helperFunctions.js (extra coverage)', () => {
       const result = getAvailableForValues(data)
       expect(result[0]).toEqual({ resourceId: undefined, type: 'Company' })
     })
+    it('uses id when resourceId is null for other types', () => {
+      const data = [{ resourceId: null, type: 'Company', id: 'fallback-id' }]
+      const result = getAvailableForValues(data)
+      expect(result[0]).toEqual({ resourceId: 'fallback-id', type: 'Company' })
+    })
   })
 
   describe('getAvailableForValueFromList branch coverage', () => {
@@ -393,6 +405,43 @@ describe('helperFunctions.js (extra coverage)', () => {
       expect(result).toHaveLength(2)
       expect(result.some((f) => f.FieldName === 'Other')).toBe(true)
       expect(result.some((f) => f.FieldName === 'Name' && f.Value === 'new')).toBe(true)
+    })
+    it('array filter excludes items whose FieldName matches filter array', () => {
+      const payload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Value: 'old' },
+                { FieldName: 'Name', Value: 'old' }
+              ]
+            }
+          ]
+        }
+      }
+      const filter = [{ FieldName: 'Name', Value: 'replaced' }]
+      const result = columnFilterChanged(filter, payload)
+      expect(result.some((f) => f.FieldName === 'Status' && f.Value === 'old')).toBe(true)
+      expect(result.some((f) => f.FieldName === 'Name' && f.Value === 'replaced')).toBe(true)
+      expect(result.filter((f) => f.FieldName === 'Name')).toHaveLength(1)
+    })
+  })
+
+  describe('getAvailableForValueFromList edge cases', () => {
+    it('returns default when list has items but getAvailableForListFromBackend returns single item', () => {
+      const list = [{ typeName: 'MyCompanyOnly', targetName: '', targetResourceId: null }]
+      const result = getAvailableForValueFromList(list)
+      expect(result).toHaveLength(1)
+      expect(result[0].type).toBe('MyCompanyOnly')
+    })
+    it('returns multiple items when list has multiple types', () => {
+      const list = [
+        { typeName: 'MyCompanyOnly', targetName: '', targetResourceId: null },
+        { typeName: 'Company', targetName: 'Acme', targetResourceId: 'r1' }
+      ]
+      const result = getAvailableForValueFromList(list)
+      expect(result).toHaveLength(2)
+      expect(result[1].label).toBe('Acme')
     })
   })
 

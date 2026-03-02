@@ -1011,7 +1011,7 @@ export default {
           doc.documentElement.appendChild(newBody)
           return doc.documentElement.outerHTML
         }
-      } catch (error) {
+      } catch {
         return `${template}${script}`
       }
     },

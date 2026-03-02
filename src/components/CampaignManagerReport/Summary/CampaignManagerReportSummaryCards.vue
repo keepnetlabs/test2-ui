@@ -188,7 +188,7 @@ export default {
         return this.getPhishingReporterData
       }
 
-      return this.getOpenedData
+      return this.getPhishingReporterData
     },
     getSecondCardLabel() {
       if (this.isCampaignHasAllTypes) return labels.SubmittedMFACode
@@ -211,7 +211,7 @@ export default {
         return labels.PhishingReporters
       }
 
-      return labels.OpenedEmail
+      return labels.PhishingReporters
     },
     getSecondCardIcon() {
       if (this.isCampaignHasAllTypes) return this.submittedDataIcon
@@ -234,7 +234,7 @@ export default {
         return this.phishingReportersIcon
       }
 
-      return this.openedEmailIcon
+      return this.phishingReportersIcon
     },
     getSecondCardColor() {
       if (this.isCampaignHasAllTypes) return '#B83A3A'
@@ -257,7 +257,7 @@ export default {
         return '#217124'
       }
 
-      return '#B6791D'
+      return '#217124'
     },
     getThirdCardProps() {
       if (

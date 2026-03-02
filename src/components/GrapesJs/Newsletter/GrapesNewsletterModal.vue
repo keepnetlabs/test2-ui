@@ -972,7 +972,7 @@ export default {
               `height:70px;`
             );
             commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-              /height:undefinedpx/g,
+              'height:undefinedpx',
               `height:70px;`
             );
             updatedComponent.components("No Label");

@@ -125,5 +125,64 @@ describe('InputTargetGroup.vue (extra branch coverage)', () => {
       expect(searchTargetGroups).toHaveBeenCalledWith({ pageNumber: 1 })
       expect(ctx.setTargetGroups).toHaveBeenCalled()
     })
+
+    it('returns early when addPage true and pageNumber exceeds total', async () => {
+      const ctx = {
+        axiosPayload: { pageNumber: 2 },
+        totalNumberOfPagesOfTargetGroups: 2,
+        setTargetGroups: jest.fn()
+      }
+
+      InputTargetGroup.methods.callForTargetGroups.call(ctx, true)
+      await flushPromises()
+
+      expect(searchTargetGroups).not.toHaveBeenCalled()
+      expect(ctx.setTargetGroups).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('callForSearchTargetGroups branching', () => {
+    it('calls searchTargetGroups when search is non-empty', async () => {
+      searchTargetGroups.mockResolvedValueOnce({
+        data: { data: { results: [{ resourceId: 's1' }] } }
+      })
+
+      const ctx = {
+        axiosPayload: { pageNumber: 1 },
+        setTargetGroups: jest.fn(),
+        isUserGroupsLoading: false
+      }
+
+      InputTargetGroup.methods.callForSearchTargetGroups.call(ctx, 'query')
+      await flushPromises()
+
+      expect(searchTargetGroups).toHaveBeenCalled()
+      expect(ctx.setTargetGroups).toHaveBeenCalled()
+      expect(ctx.isUserGroupsLoading).toBe(false)
+    })
+
+    it('calls callForTargetGroups when search is empty', async () => {
+      const callForTargetGroupsMock = jest.fn()
+      const ctx = {
+        axiosPayload: { pageNumber: 1 },
+        setTargetGroups: jest.fn(),
+        totalNumberOfPagesOfTargetGroups: 1,
+        isUserGroupsLoading: false,
+        callForTargetGroups: callForTargetGroupsMock
+      }
+
+      InputTargetGroup.methods.callForSearchTargetGroups.call(ctx, '')
+
+      expect(callForTargetGroupsMock).toHaveBeenCalled()
+    })
+  })
+
+  describe('handleInputChange', () => {
+    it('emits input with value', () => {
+      const emit = jest.fn()
+      const ctx = { $emit: emit }
+      InputTargetGroup.methods.handleInputChange.call(ctx, ['g1', 'g2'])
+      expect(emit).toHaveBeenCalledWith('input', ['g1', 'g2'])
+    })
   })
 })

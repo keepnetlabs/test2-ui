@@ -1099,7 +1099,7 @@ export default {
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
-    } catch (e) {
+    } catch {
       setTimeout(() => {
         this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
       }, 20)
@@ -1326,13 +1326,13 @@ export default {
               try {
                 width = pdf?.internal?.pageSize?.width || 297
                 height = pdf?.internal?.pageSize?.height || 841
-              } catch (e) {
+              } catch {
                 width = 297
                 height = 841
               }
               try {
                 pdf.text(`Powered By ${brandName}`, width / 2 - 40, height - 16, {})
-              } catch (e) {}
+              } catch {}
             },
             margin: {
               top: 24,

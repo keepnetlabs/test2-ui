@@ -30,7 +30,7 @@ export default {
       this.$refs.tooltip &&
       this.$refs.tooltip.parentNode === document.body
     ) {
-      document.body.removeChild(this.$refs.tooltip)
+      this.$refs.tooltip.remove()
     }
   }
 }

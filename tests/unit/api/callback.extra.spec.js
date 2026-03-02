@@ -170,4 +170,56 @@ describe('callback API (extra coverage)', () => {
       )
     })
   })
+
+  describe('createEmailTemplate', () => {
+    it('calls testRequest.post with snackbar', async () => {
+      await callbackApi.createEmailTemplate({ name: 'New Template' })
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/email-template',
+        { name: 'New Template' },
+        expect.objectContaining({ snackbar: expect.anything() })
+      )
+    })
+  })
+
+  describe('updateEmailTemplate', () => {
+    it('calls testRequest.put with resourceId', async () => {
+      await callbackApi.updateEmailTemplate('res-1', { name: 'Updated' })
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/callback-simulator/email-template/res-1',
+        { name: 'Updated' },
+        expect.objectContaining({ snackbar: expect.anything() })
+      )
+    })
+  })
+
+  describe('deleteEmailTemplate', () => {
+    it('calls testRequest.delete', async () => {
+      await callbackApi.deleteEmailTemplate('res-2')
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        '/callback-simulator/email-template/res-2',
+        expect.objectContaining({ snackbar: expect.anything() })
+      )
+    })
+  })
+
+  describe('exportCallbackTemplates', () => {
+    it('calls vishingRequest.post with blob responseType', async () => {
+      await callbackApi.exportCallbackTemplates({ filter: {} })
+      expect(vishingRequest.post).toHaveBeenCalledWith(
+        '/callback-simulator/callback-template/search/export',
+        { filter: {} },
+        expect.objectContaining({ responseType: 'blob' })
+      )
+    })
+  })
+
+  describe('getCallbackTemplatePreview', () => {
+    it('calls vishingRequest.get with resourceId', async () => {
+      await callbackApi.getCallbackTemplatePreview('preview-1')
+      expect(vishingRequest.get).toHaveBeenCalledWith(
+        '/callback-simulator/callback-template/preview/preview-1'
+      )
+    })
+  })
 })

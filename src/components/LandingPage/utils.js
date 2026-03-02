@@ -173,9 +173,7 @@ export function processTemplateWithCustomScripts(templateString) {
 
   // Remove custom scripts from template. Use parentNode.removeChild for broad runtime compatibility.
   customScripts.forEach((script) => {
-    if (script && script.parentNode) {
-      script.parentNode.removeChild(script)
-    }
+    script?.parentNode?.removeChild(script)
   })
   const cleanTemplate = tempDiv.innerHTML
 
