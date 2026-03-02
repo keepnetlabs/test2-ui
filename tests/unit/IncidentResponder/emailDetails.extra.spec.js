@@ -233,7 +233,10 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
         value: 'localhost',
         configurable: true
       })
-      expect(computed.showAIAnalyze.call({})).toBe(true)
+      const mockThis = {
+        $store: { state: { auth: { selectedCompanyName: '' } } }
+      }
+      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
       Object.defineProperty(globalThis.location, 'hostname', {
         value: origHostname,
         configurable: true
