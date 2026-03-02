@@ -986,6 +986,10 @@ export const labels = {
   IncidentAnalysis: 'Incident Analysis',
   Progress: 'Progress',
   InvalidEmailAddress: 'Invalid email address',
+  DefenderEmailSameAsInformationEmail:
+    'This email address is already used for Information Email notifications. Please enter a different address.',
+  InformationEmailSameAsDefenderEmail:
+    'This email address is already used for Defender Submission. Please enter a different address.',
   SaveAndDownload: 'Save and Download',
   ManageAndDownload: 'Manage and Download',
   SaveChanges: 'Save Changes',

@@ -19,7 +19,7 @@
         title="Send Us a Copy"
         sub-title="Controls whether reported emails, excluding those sent by the platform, are also sent to the platform for review."
       >
-        <div class="email-settings__information mb-0">
+        <div class="email-settings__information mb-0" style="background-color: #F2F2F2;">
           <div>
             <v-switch
               v-model="formValues.sendUsACopy"
@@ -51,7 +51,70 @@
           </div>
         </div>
       </FormGroup>
-      <FormGroup class="mt-6" title="Information Email">
+      <FormGroup
+        class="mt-6"
+        title="Microsoft 365 Defender Integration"
+        sub-title="Submit reported emails to Microsoft Defender (Submissions → User reported)."
+      >
+        <div class="email-settings__information email-settings__defender-toggle mb-0" style="background-color: #F2F2F2;">
+          <div>
+            <v-switch
+              v-model="formValues.isMicrosoftDefenderIntegrationEnabled"
+              id="input--phishing-reporter-microsoft-defender-integration"
+              color="#2196f3"
+              hide-details
+              style="margin-top: -2px;"
+              :readonly="!showForm"
+            ></v-switch>
+          </div>
+          <div class="email-settings__defender-status d-flex flex-column align-start">
+            <span class="email-settings__defender-status-title">
+              Integration is {{ formValues.isMicrosoftDefenderIntegrationEnabled ? 'enabled' : 'disabled' }}.
+            </span>
+            <span class="email-settings__defender-status-subtitle">
+              {{
+                formValues.isMicrosoftDefenderIntegrationEnabled
+                  ? 'Reported emails are submitted to Microsoft Defender.'
+                  : 'Reported emails are not submitted to Microsoft Defender.'
+              }}
+            </span>
+          </div>
+        </div>
+        <div
+          v-if="formValues.isMicrosoftDefenderIntegrationEnabled"
+          class="email-settings__information mt-2 mb-0"
+          style="background-color: rgba(33, 150, 243, 0.15);"
+        >
+          <div>
+            <VIcon color="#2196f3">mdi-alert-circle</VIcon>
+          </div>
+          <div class="email-settings__information-text flex-column align-start justify-start">
+            To use this integration, configure a mailbox for user-reported submissions in Microsoft
+            Defender and enter that address below.
+          </div>
+        </div>
+        <FormGroup
+          v-if="formValues.isMicrosoftDefenderIntegrationEnabled"
+          class="mt-2 email-settings__defender-email-form"
+          title="Defender Submission Email"
+          :has-hint="isDefenderEmailRequired"
+        >
+          <InputEmail
+            v-model.trim="formValues.defenderReportingEmailAddress"
+            id="input--phishing-reporter-defender-submission-email"
+            placeholder="Enter an email address"
+            :required="isDefenderEmailRequired"
+            :persistent-hint="isDefenderEmailRequired"
+            :hint="defenderEmailHint"
+            :rules="defenderEmailRules"
+            :readonly="!showForm"
+          />
+        </FormGroup>
+      </FormGroup>
+      <FormGroup
+        :class="formValues.isMicrosoftDefenderIntegrationEnabled ? 'mt-2' : 'mt-6'"
+        title="Information Email"
+      >
         <v-checkbox
           v-model="formValues.isSendInformationEmail"
           id="input--phishing-reporter-is-send-email"
@@ -229,7 +292,9 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null,
-        sendUsACopy: true
+        sendUsACopy: true,
+        isMicrosoftDefenderIntegrationEnabled: false,
+        defenderReportingEmailAddress: ''
       },
       initialFormValues: {
         to: '',
@@ -238,7 +303,9 @@ export default {
         subject: '',
         content: '',
         isSendInformationEmail: null,
-        sendUsACopy: true
+        sendUsACopy: true,
+        isMicrosoftDefenderIntegrationEnabled: false,
+        defenderReportingEmailAddress: ''
       }
     }
   },
@@ -262,18 +329,16 @@ export default {
     },
     recipientEmailRules() {
       if (this.showForm) {
-        return this.formValues.isSendInformationEmail
-          ? [
-              (v) => validations.mail(v, labels.InvalidEmailAddress),
-              (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
-              (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
-              (v) => validations.required(v, labels.Required)
-            ]
-          : [
-              (v) => validations.mail(v, labels.InvalidEmailAddress),
-              (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
-              (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
-            ]
+        const baseRules = [
+          (v) => validations.mail(v, labels.InvalidEmailAddress),
+          (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+          (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
+          (v) => this.validateInformationEmailNotSameAsDefenderEmail(v)
+        ]
+        const requiredRules = this.formValues.isSendInformationEmail
+          ? [...baseRules, (v) => validations.required(v, labels.Required)]
+          : baseRules
+        return requiredRules
       }
       return []
     },
@@ -307,17 +372,52 @@ export default {
           : [(v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Message', 256))]
       }
       return []
+    },
+    isDefenderEmailRequired() {
+      return this.showForm ? !!this.formValues.isMicrosoftDefenderIntegrationEnabled : false
+    },
+    defenderEmailHint() {
+      if (this.showForm) return this.formValues.isMicrosoftDefenderIntegrationEnabled ? '*Required' : null
+      return null
+    },
+    defenderEmailRules() {
+      if (this.showForm && this.formValues.isMicrosoftDefenderIntegrationEnabled) {
+        return [
+          (v) => validations.mail(v, labels.InvalidEmailAddress),
+          (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+          (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
+          (v) => validations.required(v, labels.Required),
+          (v) => this.validateDefenderEmailNotSameAsInformationEmail(v)
+        ]
+      }
+      return []
     }
   },
   watch: {
     formData: {
       handler(data) {
-        const { to, cc, bcc, subject, content } = data
+        if (!data) return
+        const {
+          to,
+          cc,
+          bcc,
+          subject,
+          content,
+          isSendInformationEmail,
+          sendUsACopy,
+          isMicrosoftDefenderIntegrationEnabled,
+          defenderReportingEmailAddress
+        } = data
         this.formValues.to = to || ''
         this.formValues.cc = cc || ''
         this.formValues.bcc = bcc || ''
         this.formValues.subject = subject || ''
         this.formValues.content = content || ''
+        if (isSendInformationEmail !== undefined) this.formValues.isSendInformationEmail = isSendInformationEmail
+        if (sendUsACopy !== undefined) this.formValues.sendUsACopy = sendUsACopy
+        if (isMicrosoftDefenderIntegrationEnabled !== undefined)
+          this.formValues.isMicrosoftDefenderIntegrationEnabled = isMicrosoftDefenderIntegrationEnabled
+        this.formValues.defenderReportingEmailAddress = defenderReportingEmailAddress || ''
         this.initialFormValues = structuredClone(this.formValues)
       }
     },
@@ -328,11 +428,26 @@ export default {
         }
       },
       deep: true
+    },
+    'formValues.isMicrosoftDefenderIntegrationEnabled'(enabled) {
+      if (!enabled) {
+        this.formValues.defenderReportingEmailAddress = ''
+      }
     }
   },
   created() {
     if (this.formData) {
-      const { to, cc, bcc, subject, content, isSendInformationEmail, sendUsACopy } = this.formData
+      const {
+        to,
+        cc,
+        bcc,
+        subject,
+        content,
+        isSendInformationEmail,
+        sendUsACopy,
+        isMicrosoftDefenderIntegrationEnabled,
+        defenderReportingEmailAddress
+      } = this.formData
       this.formValues.to = to || ''
       this.formValues.cc = cc || ''
       this.formValues.bcc = bcc || ''
@@ -340,6 +455,9 @@ export default {
       this.formValues.content = content || ''
       this.formValues.isSendInformationEmail = isSendInformationEmail
       this.formValues.sendUsACopy = sendUsACopy
+      this.formValues.isMicrosoftDefenderIntegrationEnabled =
+        isMicrosoftDefenderIntegrationEnabled ?? false
+      this.formValues.defenderReportingEmailAddress = defenderReportingEmailAddress || ''
       this.initialFormValues = structuredClone(this.formValues)
     }
     this.initialFormValues = structuredClone(this.formValues)
@@ -366,6 +484,29 @@ export default {
       } else {
         return false
       }
+    },
+    validateDefenderEmailNotSameAsInformationEmail(value) {
+      const defenderEmail = (value || '').trim().toLowerCase()
+      const infoEmail = (this.formValues.to || '').trim().toLowerCase()
+      if (defenderEmail && infoEmail && defenderEmail === infoEmail) {
+        return labels.DefenderEmailSameAsInformationEmail
+      }
+      return true
+    },
+    validateInformationEmailNotSameAsDefenderEmail(value) {
+      const infoEmail = (value || '').trim().toLowerCase()
+      const defenderEmail = (
+        this.formValues.defenderReportingEmailAddress || ''
+      ).trim().toLowerCase()
+      if (
+        infoEmail &&
+        defenderEmail &&
+        this.formValues.isMicrosoftDefenderIntegrationEnabled &&
+        infoEmail === defenderEmail
+      ) {
+        return labels.InformationEmailSameAsDefenderEmail
+      }
+      return true
     }
   }
 }
