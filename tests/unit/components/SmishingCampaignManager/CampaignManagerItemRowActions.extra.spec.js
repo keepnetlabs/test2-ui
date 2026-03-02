@@ -80,6 +80,30 @@ describe('CampaignManagerItemRowActions.vue (extra branch coverage)', () => {
     })
   })
 
+  describe('isMenuRender branches', () => {
+    it('returns false for COMPLETE, IDLE, DELETE, CANCEL, ERROR', () => {
+      const statuses = [
+        ACTION_STATUSES.COMPLETE,
+        ACTION_STATUSES.IDLE,
+        ACTION_STATUSES.DELETE,
+        ACTION_STATUSES.CANCEL,
+        ACTION_STATUSES.ERROR
+      ]
+      statuses.forEach((status) => {
+        const wrapper = createWrapper({
+          row: { status, instanceGroup: 'ig-1' }
+        })
+        expect(wrapper.vm.isMenuRender).toBe(false)
+      })
+    })
+    it('returns true for Scheduled and Running (menu with actions)', () => {
+      const wrapper = createWrapper({
+        row: { status: 'Scheduled', instanceGroup: 'ig-1' }
+      })
+      expect(wrapper.vm.isMenuRender).toBe(true)
+    })
+  })
+
   describe('handleItemClick branches', () => {
     it('pushes to router for on-view-report', () => {
       const wrapper = createWrapper({
@@ -113,6 +137,23 @@ describe('CampaignManagerItemRowActions.vue (extra branch coverage)', () => {
       })
       wrapper.vm.handleItemClick({ action: ACTION_STATUSES.SCHEDULED })
       expect(wrapper.emitted('on-preview')).toBeTruthy()
+    })
+    it('emits generic action when act.action is not special', () => {
+      const wrapper = createWrapper({
+        row: { status: 'Scheduled', instanceGroup: 'ig-1' }
+      })
+      wrapper.vm.handleItemClick({ action: 'on-delete' })
+      expect(wrapper.emitted('on-delete')).toBeTruthy()
+    })
+  })
+
+  describe('getRowActions for ERROR status', () => {
+    it('prepends ViewReport for ERROR like RUNNING', () => {
+      const wrapper = createWrapper({
+        row: { status: ACTION_STATUSES.ERROR, instanceGroup: 'ig-1' }
+      })
+      const actions = wrapper.vm.getRowActions
+      expect(actions[0].action).toBe('on-view-report')
     })
   })
 })

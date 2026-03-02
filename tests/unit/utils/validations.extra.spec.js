@@ -274,4 +274,27 @@ describe('validations.js (extra coverage)', () => {
   it('controlEmailLength returns true for valid length', () => {
     expect(validations.controlEmailLength('user@example.com')).toBe(true)
   })
+
+  it('controlEmailLength returns empty string when over limit and no message', () => {
+    const longLeft = `${'a'.repeat(65)}@mail.com`
+    expect(validations.controlEmailLength(longLeft)).toBe('')
+  })
+
+  it('controlEmailLength returns true when value has no @', () => {
+    expect(validations.controlEmailLength('nodomain')).toBe(true)
+  })
+
+  it('mail delegates to email', () => {
+    expect(validations.mail('user@test.com')).toBe(true)
+    expect(validations.mail('invalid', 'Bad')).toBe('Bad')
+  })
+
+  it('extension returns message when value starts with dot', () => {
+    expect(validations.extension('.txt', 'No dot')).toBe('No dot')
+  })
+
+  it('isFileExtensionSpecialCharacter returns true for valid extension', () => {
+    expect(validations.isFileExtensionSpecialCharacter('pdf')).toBe(true)
+    expect(validations.isFileExtensionSpecialCharacter('docx')).toBe(true)
+  })
 })
