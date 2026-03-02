@@ -88,6 +88,91 @@ describe('CampaignManagerReportSummaryCards.vue (extra branch coverage)', () => 
     expect(wrapper.vm.getFourthCardLabel).toBe('Submitted MFA Code')
   })
 
+  it('method-4 (pure MFA) shows Clicked Link in third card and MFA in fourth card', () => {
+    const wrapper = createWrapper({ method: 4, multipleType: [] })
+
+    expect(wrapper.vm.getFirstCardTitle).toBe('No Response')
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Clicked Link')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Submitted MFA Code')
+    expect(wrapper.vm.getThirdCardProps).toEqual(baseItems.clickedEmail)
+    expect(wrapper.vm.getFourthCardProps).toEqual(baseItems.mfa)
+    expect(wrapper.vm.getThirdCardColor).toBe('#F56C6C')
+    expect(wrapper.vm.getThirdCardIcon).toBe(wrapper.vm.clickedLinkIcon)
+  })
+
+  it('attachment+data-submission combination shows OpenedAttachment in third card', () => {
+    const wrapper = createWrapper({ multipleType: [false, true, true, false] })
+
+    expect(wrapper.vm.isCampaignHasAttachmentAndDataSubmission).toBe(true)
+    expect(wrapper.vm.getFirstCardTitle).toBe('No Response')
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Opened Attachment')
+    expect(wrapper.vm.getThirdCardProps).toEqual(baseItems.attachmentOpenedEmail)
+    expect(wrapper.vm.getThirdCardColor).toBe('#B83A3A')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Submitted Data')
+    expect(wrapper.vm.getFourthCardProps).toEqual(baseItems.submittedEmail)
+    expect(wrapper.vm.getFourthCardClass).toBe('campaign-manager-report-summary-info-card--opened-attachment-data')
+  })
+
+  it('click-only+attachment combination shows OpenedAttachment in fourth card', () => {
+    const wrapper = createWrapper({ multipleType: [true, false, true, false] })
+
+    expect(wrapper.vm.isCampaignClickOnlyAndAttachment).toBe(true)
+    expect(wrapper.vm.getFirstCardTitle).toBe('No Response')
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Clicked Link')
+    expect(wrapper.vm.getThirdCardProps).toEqual(baseItems.clickedEmail)
+    expect(wrapper.vm.getThirdCardColor).toBe('#F56C6C')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Opened Attachment')
+    expect(wrapper.vm.getFourthCardProps).toEqual(baseItems.attachmentOpenedEmail)
+    expect(wrapper.vm.getFourthCardClass).toBe('campaign-manager-report-summary-info-card--opened-attachment-data')
+  })
+
+  it('mfa+click-only+data-submission combination shows PhishingReporter in first card', () => {
+    const wrapper = createWrapper({ multipleType: [true, true, false, true] })
+
+    expect(wrapper.vm.isCampaignMfaClickOnlyAndDataSubmission).toBe(true)
+    expect(wrapper.vm.getFirstCardTitle).toBe('Phishing Reporter')
+    expect(wrapper.vm.getFirstCardProps).toEqual(baseItems.phishingReporter)
+    expect(wrapper.vm.getSecondCardLabel).toBe('Clicked Link')
+    expect(wrapper.vm.getSecondCardProps).toEqual(baseItems.clickedEmail)
+    expect(wrapper.vm.getThirdCardLabel).toBe('Submitted Data')
+    expect(wrapper.vm.getThirdCardProps).toEqual(baseItems.submittedEmail)
+    expect(wrapper.vm.getThirdCardClass).toBe('campaign-manager-report-summary-info-card--submitted-data')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Submitted MFA Code')
+    expect(wrapper.vm.getFourthCardProps).toEqual(baseItems.mfa)
+    expect(wrapper.vm.getFourthCardClass).toBe('campaign-manager-report-summary-info-card--opened-attachment-data')
+  })
+
+  it('attachment+mfa-only combination shows MFA in third card and OpenedAttachment in fourth card', () => {
+    const wrapper = createWrapper({ multipleType: [false, false, true, true] })
+
+    expect(wrapper.vm.isCampaignAttachmentAndMfaOnly).toBe(true)
+    expect(wrapper.vm.getFirstCardTitle).toBe('No Response')
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Submitted MFA Code')
+    expect(wrapper.vm.getThirdCardProps).toEqual(baseItems.mfa)
+    expect(wrapper.vm.getThirdCardColor).toBe('#B83A3A')
+    expect(wrapper.vm.getThirdCardIcon).toBe(wrapper.vm.mfaIcon)
+    expect(wrapper.vm.getThirdCardClass).toBe('campaign-manager-report-summary-info-card--submitted-data')
+    expect(wrapper.vm.getFourthCardLabel).toBe('Opened Attachment')
+    expect(wrapper.vm.getFourthCardProps).toEqual(baseItems.attachmentOpenedEmail)
+  })
+
+  it('click-only+data-submission combination shows Submitted Data in fourth card', () => {
+    const wrapper = createWrapper({ multipleType: [true, true, false, false] })
+
+    expect(wrapper.vm.isCampaignClickOnlyAndDataSubmission).toBe(true)
+    expect(wrapper.vm.getFirstCardTitle).toBe('No Response')
+    expect(wrapper.vm.getSecondCardLabel).toBe('Phishing Reporters')
+    expect(wrapper.vm.getThirdCardLabel).toBe('Clicked Link')
+    expect(wrapper.vm.getThirdCardProps).toEqual(baseItems.clickedEmail)
+    expect(wrapper.vm.getFourthCardLabel).toBe('Submitted Data')
+    expect(wrapper.vm.getFourthCardProps).toEqual(baseItems.submittedEmail)
+    expect(wrapper.vm.getFourthCardClass).toBe('campaign-manager-report-summary-info-card--clicked-link')
+  })
+
   it('data getters return empty objects when items is missing', () => {
     const wrapper = createWrapper({ items: undefined })
     expect(wrapper.vm.getNoResponseData).toEqual({})

@@ -194,7 +194,7 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'slot',
+    type: 'text',
     width: 160,
     emptyText: 0,
     filterableType: 'number'
