@@ -1579,7 +1579,7 @@ export default {
     },
     handleClearFilters(isAutoTrue) {
       if (!isAutoTrue) return false
-      this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.investigationListBodyData = structuredClone(this.defaultRequestBody)
       this.refreshDatatable(isAutoTrue)
     },
     getUserFriendlyName(activeMenu) {
@@ -1699,7 +1699,7 @@ export default {
           break
       }
       const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.investigationListBodyData.filter)),
+        structuredClone(this.investigationListBodyData.filter),
         this.$refs.refInvestigationListData,
         'ReceivedTime'
       )
@@ -1738,7 +1738,7 @@ export default {
     },
     exportTargetUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.investigationTargetUsersListBodyData.filter)),
+        structuredClone(this.investigationTargetUsersListBodyData.filter),
         this.$refs.investigationDetailsTargetUsersList,
         'Email'
       )
@@ -2550,7 +2550,7 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      const headers = JSON.parse(JSON.stringify(this?.investigationDetailsData?.headers || []))
+      const headers = structuredClone(this?.investigationDetailsData?.headers || [])
       headers.forEach((header) => {
         const ipAddress = header.ip
         const senderName = header.senderName

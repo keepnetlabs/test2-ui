@@ -100,7 +100,9 @@ export default {
           COLUMNS.ENROLLMENT_NAME,
           COLUMNS.TRAINING_NAME_UNFIXED,
           COLUMNS.CATEGORY,
+          COLUMNS.LEVEL,
           ENROLLMENT_AUDIENCE,
+          COLUMNS.DURATION,
           COLUMNS.LANGUAGES,
           COLUMNS.ENROLLMENT_TYPE,
           COLUMNS.ENROLLED_BY,
@@ -187,6 +189,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results || []
         })
+        .catch(() => {})
         .finally(this.setLoading)
     },
     exportEnrollments(downloadTypes) {

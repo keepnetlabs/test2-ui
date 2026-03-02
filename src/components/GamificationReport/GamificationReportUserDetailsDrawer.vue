@@ -1329,8 +1329,8 @@ export default {
         payload.filterType === "search" ||
         payload.filterType === "longTextSearch"
       ) {
-        if (!payload.activeValue.length) filterItems.splice(fIndex, 1);
-        else filterItems[fIndex].Value = payload.activeValue.join(",");
+        if (payload.activeValue.length) filterItems[fIndex].Value = payload.activeValue.join(",");
+        else filterItems.splice(fIndex, 1);
       } else filterItems.splice(fIndex, 1);
       this.axiosPayload.pageNumber = 1;
       this.serverSideProps.pageNumber = 1;

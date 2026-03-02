@@ -204,6 +204,30 @@ export const COLUMNS = {
     filterableType: 'select',
     filterableItems: []
   },
+  LEVEL: {
+    property: PROPERTY_STORE.LEVEL,
+    align: 'left',
+    editable: false,
+    label: 'Training Level',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: []
+  },
+  DURATION: {
+    property: PROPERTY_STORE.DURATION,
+    align: 'left',
+    editable: false,
+    label: labels.Duration,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: []
+  },
   AUDIENCE: {
     property: PROPERTY_STORE.TARGET_AUDIENCE,
     align: 'left',

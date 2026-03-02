@@ -34,11 +34,29 @@
                     prepend-inner-icon="mdi-magnify"
                   />
                 </div>
+                <div style="max-width: 180px;">
+                  <KSelect
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
+                    :items="typeFilterItems"
+                    placeholder="Type"
+                    min-width-type="medium"
+                    item-disabled="disabled"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    persistent-hint
+                    hide-details
+                    class="filter-field-scenarios"
+                    style="padding-right: 4px !important; padding-left: 4px !important;"
+                    @change="onTypeFilterChange"
+                  />
+                </div>
                 <div style="max-width: 160px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
                     :items="scenarioDetailsLookup.difficultyTypes || difficulties"
                     placeholder="Difficulty"
+                    min-width-type="medium"
                     item-disabled="disabled"
                     item-text="text"
                     item-value="text"
@@ -51,10 +69,11 @@
                   />
                 </div>
                 <div style="max-width: 180px;">
-                  <v-select
+                  <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
                     :items="languages"
                     placeholder="Language"
+                    min-width-type="medium"
                     item-disabled="disabled"
                     item-text="text"
                     item-value="value"
@@ -64,8 +83,7 @@
                     class="filter-field-scenarios"
                     style="padding-right: 4px !important; padding-left: 4px !important;"
                     @change="getTemplatesForSearch"
-                  >
-                  </v-select>
+                  />
                 </div>
               </div>
               <div v-if="isPhishing">
@@ -152,7 +170,7 @@
                 "
                 class="pl-5 pt-5"
               >
-                {{ (search.length || bodyData.filter.FilterGroups[0].FilterItems[2].value) ? 'Search criteria has no results' : 'You do not have Landing Page Template' }}
+                {{ emptyStateMessage }}
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
@@ -898,6 +916,7 @@ import ShowMoreTags from '@/components/ShowMoreTags'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import {
   getDefaultLandingPageTemplatePayload,
+  getEmailTemplateMethodItems,
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHODS
 } from '@/components/PhishingScenarios/utils'
@@ -1090,6 +1109,42 @@ export default {
         return 'This template is available in 1 language.'
       }
       return `This template is available in ${languageCount} languages.`
+    },
+    typeFilterItems() {
+      const allowedNames = ['Click Only', 'Data Submission', 'Click-Only']
+      const mapItem = (item) => ({
+        text: item.text || item.name,
+        value: item.text || item.name
+      })
+      const isAllowed = (item) => {
+        const name = (item.text || item.name || '').trim()
+        return allowedNames.some((allowed) =>
+          name.toLowerCase() === allowed.toLowerCase()
+        )
+      }
+      const methodTypes = this.scenarioDetailsLookup?.methodTypes
+      if (methodTypes?.length) {
+        return methodTypes.filter(isAllowed).map(mapItem)
+      }
+      return getEmailTemplateMethodItems()
+        .filter((item) => ['Click Only', 'Data Submission'].includes(item.name))
+        .map((item) => ({ text: item.name, value: item.name }))
+    },
+    filterItems() {
+      return this.bodyData?.filter?.FilterGroups?.[0]?.FilterItems ?? []
+    },
+    hasActiveFilters() {
+      return !!(
+        this.search?.length ||
+        this.filterItems[0]?.value ||
+        this.filterItems[1]?.value ||
+        this.filterItems[2]?.value
+      )
+    },
+    emptyStateMessage() {
+      return this.hasActiveFilters
+        ? 'Search criteria has no results'
+        : 'You do not have Landing Page Template'
     }
   },
   watch: {
@@ -1098,10 +1153,7 @@ export default {
     },
     search(newVal, oldVal) {
       if (!newVal) {
-        if (
-          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
-          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
-        ) {
+        if (this.filterItems[0]?.value || this.filterItems[1]?.value) {
           this.getTemplates(true)
         } else {
           this.listData = [...this.defaultListData].map((item) => ({
@@ -1407,6 +1459,13 @@ export default {
       } else {
         this.getTemplates(true, this.landingPageTemplateResourceId, this.bodyData, true)
       }
+    },
+    onTypeFilterChange() {
+      const methodFilter = this.filterItems[0]
+      if (methodFilter) {
+        methodFilter.Operator = methodFilter.value ? '=' : 'Contains'
+      }
+      this.getTemplatesForSearch()
     },
     checkAndAddResourceIdToPayload(isInitial, bodyData) {
       this.loadingTemplates = true

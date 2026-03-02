@@ -401,9 +401,9 @@ export default {
       if (this.filteredDateValueSelect.value) {
         localStorage.setItem(
           'sandboxDateOption',
-          this.filteredSelectValueDate !== 'between'
-            ? this.filteredDateValue || this.filteredDateValueSelect.value
-            : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+          this.filteredSelectValueDate === 'between'
+            ? [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+            : this.filteredDateValue || this.filteredDateValueSelect.value
         )
       }
     },
@@ -444,9 +444,9 @@ export default {
       this.filteredDateValueSelect = { name: 'All Time', value: '' }
     },
     getFilteredDateValue() {
-      return this.filteredSelectValueDate !== 'between'
-        ? this.filteredDateValue || this.filteredDateValueSelect.value
-        : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      return this.filteredSelectValueDate === 'between'
+        ? [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        : this.filteredDateValue || this.filteredDateValueSelect.value
     },
     handleFilter() {
       let value = this.getFilteredDateValue()
@@ -612,9 +612,9 @@ export default {
         : ''
     },
     getDateFilter() {
-      return this.filteredSelectValueDate !== 'between'
-        ? this.filteredDateValue || this.filteredDateValueSelect.value
-        : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      return this.filteredSelectValueDate === 'between'
+        ? [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        : this.filteredDateValue || this.filteredDateValueSelect.value
     },
     changeCompanyData() {
       this.$set(

@@ -791,7 +791,7 @@ export default {
       return !!this.getSelectedIntegrations() || 'Required'
     },
     openEngineModalFunc() {
-      this.initialAnalysisEngines = JSON.parse(JSON.stringify(this.analysisEngines))
+      this.initialAnalysisEngines = structuredClone(this.analysisEngines)
       this.openEnginesModal = true
     },
     closeEngineModal() {

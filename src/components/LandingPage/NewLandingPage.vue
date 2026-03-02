@@ -1165,7 +1165,7 @@ export default {
       const newPageData = this.formValues.landingPages[lastPageIndex];
       this.languagesPayload.forEach((language) => {
         if (language && language.landingPages) {
-          language.landingPages.push(JSON.parse(JSON.stringify(newPageData)));
+          language.landingPages.push(structuredClone(newPageData));
         }
       });
     },
@@ -1193,7 +1193,7 @@ export default {
       const newPageData = this.formValues.landingPages[lastPageIndex];
       this.languagesPayload.forEach((language) => {
         if (language && language.landingPages) {
-          language.landingPages.push(JSON.parse(JSON.stringify(newPageData)));
+          language.landingPages.push(structuredClone(newPageData));
         }
       });
     },
@@ -1308,7 +1308,7 @@ export default {
         const newPageData = that.formValues.landingPages[lastPageIndex];
         that.languagesPayload.forEach((language) => {
           if (language && language.landingPages) {
-            language.landingPages.push(JSON.parse(JSON.stringify(newPageData)));
+            language.landingPages.push(structuredClone(newPageData));
           }
         });
 
@@ -1588,19 +1588,21 @@ export default {
 
       // NewEmailTemplates'deki gibi her zaman gruplandırılmış yapı oluştur
       const languageItems = [];
-      languageItems.push({
-        value: 1,
-        text: "Preferred Languages",
-        children: preferredLanguageTypes
-      });
-      languageItems.push({
-        value: 5,
-        text: "All Languages",
-        children: languageTypes.filter(
-          (item) =>
-            !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
-        )
-      });
+      languageItems.push(
+        {
+          value: 1,
+          text: "Preferred Languages",
+          children: preferredLanguageTypes
+        },
+        {
+          value: 5,
+          text: "All Languages",
+          children: languageTypes.filter(
+            (item) =>
+              !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
+          )
+        }
+      );
       this.languageItems = languageItems;
 
       if (this.isEdit) return;
@@ -1789,7 +1791,7 @@ export default {
     this.callForMergedTags();
     this.callForLanguages();
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+      this.initialFormValues = structuredClone(this.formValues);
     }
     if (this.isEdit) {
       getLandingPageTemplate(this.emailTemplateId).then((response) => {
@@ -1848,7 +1850,7 @@ export default {
 
         this.languagesPayload.push({
           languageTypeResourceId: data.languageTypeResourceId,
-          landingPages: JSON.parse(JSON.stringify(mainLandingPages)),
+          landingPages: structuredClone(mainLandingPages),
           isTranslated: true
         });
         const mainLanguageObj = this.getLanguageObject(
@@ -1912,7 +1914,7 @@ export default {
           JSON.stringify(this.getSelectedLanguagePayload)
         );
 
-        this.editedLandingPages = JSON.parse(JSON.stringify(data.landingPages));
+        this.editedLandingPages = structuredClone(data.landingPages);
         this.formValues = data;
         this.$set(this.formValues, "phishingLink", phishingLink);
         this.$nextTick(() => {
@@ -1958,7 +1960,7 @@ export default {
           }
         });
 
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+        this.initialFormValues = structuredClone(this.formValues);
       });
     }
     if (!(this.isEdit || this.isDuplicate)) {

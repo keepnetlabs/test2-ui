@@ -488,8 +488,8 @@ export default {
         animation: 200,
         ghostClass: 'ghost'
       },
-      initialFormValues: JSON.parse(JSON.stringify(initialFormValues)),
-      formValues: JSON.parse(JSON.stringify(initialFormValues)),
+      initialFormValues: structuredClone(initialFormValues),
+      formValues: structuredClone(initialFormValues),
       addStepItems: [
         {
           value: 'TextToSpeech',
@@ -628,7 +628,7 @@ export default {
   },
   created() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit || this.isDuplicate) {
       getVishingTemplate(this.templateId).then((response) => {
@@ -688,7 +688,7 @@ export default {
         this.formValues.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     }
   },

@@ -57,7 +57,9 @@ const trainingLibrary = {
     tableColumns: [
       { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE },
       { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY },
+      { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.LEVEL },
       { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.TARGET_AUDIENCE },
+      { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.DURATION },
       { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.LANGUAGES },
       { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.CREATED_BY },
       { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.COMPLIANCE },
@@ -70,8 +72,8 @@ const trainingLibrary = {
       { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE },
       { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY },
       { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE },
-      // { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LEVEL },
-      // { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DURATION },
+      { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LEVEL },
+      { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DURATION },
       { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES },
       { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY },
       { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE },
@@ -231,10 +233,18 @@ const trainingLibrary = {
       const { renderedColumns, firstColFixed, lastColFixed } = JSON.parse(
         tableSettings
       );
+      // Yeni eklenen kolonları (level, duration) eski kayıtlarda yoksa varsayılan olarak ekle
+      const defaultColumns = state.tableColumns.map((col) => col.property);
+      const mergedRenderedColumns = [...(renderedColumns || [])];
+      defaultColumns.forEach((prop) => {
+        if (!mergedRenderedColumns.includes(prop)) {
+          mergedRenderedColumns.push(prop);
+        }
+      });
       state.tableColumns.forEach(
-        (col) => (col.show = renderedColumns.includes(col.property))
+        (col) => (col.show = mergedRenderedColumns.includes(col.property))
       );
-      if (renderedColumns) state.renderedColumns = renderedColumns;
+      if (mergedRenderedColumns.length) state.renderedColumns = mergedRenderedColumns;
       state.firstColFixed = !!firstColFixed;
       state.lastColFixed = !!lastColFixed;
     },
@@ -359,7 +369,7 @@ const trainingLibrary = {
         return;
       }
       const {
-        filters: savedFilters = {},
+        filters: savedFilters = [],
         filterOptionsFilters = [],
         filterType = "Or",
         sortBy = "Date Created - New to old",
@@ -371,8 +381,26 @@ const trainingLibrary = {
         selectedTrainingContent = "All Materials",
         selectedSubTrainingContent = "All Types"
       } = JSON.parse(filters);
-      state.filters = savedFilters;
-      state.filterOptionsFilters = filterOptionsFilters;
+      // Yeni eklenen filtreleri (level, duration) eski kayıtlarda yoksa varsayılan olarak ekle
+      const savedFilterKeys = (savedFilters || []).map((f) => f?.key).filter(Boolean);
+      const mergedFilters = [...(savedFilters || [])];
+      trainingLibraryFilters.forEach((defaultFilter) => {
+        if (!savedFilterKeys.includes(defaultFilter.key)) {
+          mergedFilters.push(JSON.parse(JSON.stringify(defaultFilter)));
+        }
+      });
+      state.filters = mergedFilters;
+      // Yeni eklenen filter options (level, duration) eski kayıtlarda yoksa varsayılan olarak ekle
+      const savedFilterOptionProps = (filterOptionsFilters || []).map(
+        (f) => f?.property
+      ).filter(Boolean);
+      const mergedFilterOptions = [...(filterOptionsFilters || [])];
+      Object.values(TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS).forEach((defaultOpt) => {
+        if (!savedFilterOptionProps.includes(defaultOpt.property)) {
+          mergedFilterOptions.push({ ...defaultOpt });
+        }
+      });
+      state.filterOptionsFilters = mergedFilterOptions;
       state.filterType = filterType;
       state.sortBy = sortBy;
       state.search = search;
@@ -406,7 +434,9 @@ const trainingLibrary = {
       state.tableColumns = [
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.TYPE },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.CATEGORY },
+        { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.LEVEL },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.TARGET_AUDIENCE },
+        { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.DURATION },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.LANGUAGES },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.CREATED_BY },
         { ...TRAINING_LIBRARY_SETTINGS_COLUMNS.COMPLIANCE },
@@ -432,8 +462,8 @@ const trainingLibrary = {
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TARGET_AUDIENCE },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CATEGORY },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.TYPE },
-        // { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LEVEL },
-        // { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DURATION },
+        { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LEVEL },
+        { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.DURATION },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.LANGUAGES },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.CREATED_BY },
         { ...TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS.COMPLIANCE },

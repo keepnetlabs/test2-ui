@@ -80,15 +80,16 @@ describe('trainingLibrary store module (real)', () => {
     describe('table settings mutations', () => {
       it('SET_DEFAULT_TABLE_SETTINGS reads localStorage settings', () => {
         const state = createState()
-        const renderedColumns = [
+        const storedColumns = [
           state.tableColumns[0].property,
           state.tableColumns[1].property
         ]
+        const allColumns = state.tableColumns.map((c) => c.property)
 
         localStorage.setItem(
           'training-library-columns',
           JSON.stringify({
-            renderedColumns,
+            renderedColumns: storedColumns,
             firstColFixed: true,
             lastColFixed: false
           })
@@ -97,8 +98,8 @@ describe('trainingLibrary store module (real)', () => {
         trainingLibrary.mutations.SET_DEFAULT_TABLE_SETTINGS(state)
 
         const visibleCols = state.tableColumns.filter((c) => c.show).map((c) => c.property)
-        expect(visibleCols).toEqual(renderedColumns)
-        expect(state.renderedColumns).toEqual(renderedColumns)
+        expect(visibleCols).toEqual(allColumns)
+        expect(state.renderedColumns).toEqual(allColumns)
         expect(state.firstColFixed).toBe(true)
         expect(state.lastColFixed).toBe(false)
       })
@@ -451,6 +452,26 @@ describe('trainingLibrary store module (real)', () => {
         )
       })
 
+      it('setSortBy commits sort mapping and dispatches table data reload', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        trainingLibrary.actions.setSortBy(
+          { commit, dispatch },
+          {
+            item: { text: 'Name', orderBy: 'name' },
+            sort: { text: 'A-Z', ascending: true }
+          }
+        )
+
+        expect(commit).toHaveBeenNthCalledWith(1, 'SET_SORT_BY', 'Name - A-Z')
+        expect(commit).toHaveBeenNthCalledWith(2, 'SET_SORT_BY_TO_PAYLOAD', {
+          ascending: true,
+          orderBy: 'name'
+        })
+        expect(dispatch).toHaveBeenCalledWith('callForTableData')
+      })
+
       it('setSubSelectedTrainingContent covers remaining type branches', () => {
         const state = createState()
         const commit = jest.fn()
@@ -514,6 +535,25 @@ describe('trainingLibrary store module (real)', () => {
         expect(dispatch).toHaveBeenCalledWith('callForTrainingLibrary')
       })
 
+      it('clearAllFilters resets filters and reloads training library', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        trainingLibrary.actions.clearAllFilters({ commit, dispatch })
+
+        expect(commit).toHaveBeenCalledWith('RESET_FILTERS')
+        expect(dispatch).toHaveBeenCalledWith('callForTrainingLibrary')
+      })
+
+      it('resetState resets table params and filters', () => {
+        const commit = jest.fn()
+
+        trainingLibrary.actions.resetState({ commit })
+
+        expect(commit).toHaveBeenNthCalledWith(1, 'RESET_TABLE_PARAMS')
+        expect(commit).toHaveBeenNthCalledWith(2, 'RESET_FILTERS')
+      })
+
       it('restoreDefaultFilters resets filters when localStorage is missing', () => {
         const commit = jest.fn()
         const dispatch = jest.fn()
@@ -542,6 +582,19 @@ describe('trainingLibrary store module (real)', () => {
           undefined,
           { root: true }
         )
+      })
+
+      it('setNewLearningPathModal does not dispatch reset when status is true', () => {
+        const commit = jest.fn()
+        const dispatch = jest.fn()
+
+        trainingLibrary.actions.setNewLearningPathModal(
+          { commit, dispatch },
+          { status: true }
+        )
+
+        expect(commit).toHaveBeenCalledWith('SET_NEW_LEARNING_PATH_MODAL', { status: true })
+        expect(dispatch).not.toHaveBeenCalled()
       })
 
       it('resetAllModals resets all modal states', () => {

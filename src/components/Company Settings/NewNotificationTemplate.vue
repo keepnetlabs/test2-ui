@@ -584,7 +584,7 @@ export default {
   },
   created() {
     if (!this.selectedItem) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+      this.initialFormValues = structuredClone(this.formValues);
     }
     this.callForCategories();
     this.callForNotificationTemplate();
@@ -705,7 +705,7 @@ export default {
             EMAIL_DELIVERY_TYPES.SMTP;
           if (this.isDuplicate)
             this.formValues.name = this.formValues.name + " - COPY";
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+          this.initialFormValues = structuredClone(this.formValues);
           this.isSelectedNotificationEnrollment = this.isNotificationEnrollmentCategory(
             this.selectedItem.categoryName
           );
@@ -1072,7 +1072,7 @@ export default {
         languagesPayload.forEach((language) => {
           if (language.template && typeof language.template === "string") {
             // Regex ile [data-title="Company Logo"] içeren img src'lerini {COMPANYLOGO} ile değiştir
-            language.template = language.template.replace(
+            language.template = language.template.replaceAll(
               /<img([^>]*data-title=["']Company Logo["'][^>]*)src=["'][^"']*["']/gi,
               '<img$1src="{COMPANYLOGO}"'
             );

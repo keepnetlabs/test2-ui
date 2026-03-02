@@ -102,30 +102,32 @@ describe('SelectClickOnlyPageModal.vue', () => {
   })
 
   it('stepSubtitle returns method based subtitles', () => {
+    const defaultText = 'Select a Click Only or Data Submission type landing page'
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'click only' })
-    ).toBe('Choose your click only type landing page')
+    ).toBe(defaultText)
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'data submission' })
-    ).toBe('Choose your data submission type landing page')
+    ).toBe(defaultText)
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: '' })
-    ).toBe('Select a Click Only or Data Submission type landing page')
+    ).toBe(defaultText)
   })
 
   it('stepSubtitle matches method case-insensitively', () => {
+    const defaultText = 'Select a Click Only or Data Submission type landing page'
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'CLICK ONLY' })
-    ).toBe('Choose your click only type landing page')
+    ).toBe(defaultText)
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'DATA SUBMISSION' })
-    ).toBe('Choose your data submission type landing page')
+    ).toBe(defaultText)
   })
 
   it('stepSubtitle prefers click branch when method contains both click and data', () => {
     expect(
       SelectClickOnlyPageModal.computed.stepSubtitle.call({ method: 'click and data submission' })
-    ).toBe('Choose your click only type landing page')
+    ).toBe('Select a Click Only or Data Submission type landing page')
   })
 
   it('status watcher opens drawer flow when status becomes true', () => {

@@ -124,7 +124,7 @@ export default {
     },
     setFormDataToIpAddresses(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'IP')
-      this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+      this.initialData = structuredClone(this.dataContainerWithSearchItems)
       this.dataWithObjects = getFormDataWithObjects(val, 'IP')
     },
     handleBatchImport(data = []) {

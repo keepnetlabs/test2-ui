@@ -116,7 +116,9 @@ export default {
       behaviours: 'trainingLibraryHelpers/getBehaviours',
       types: 'trainingLibraryHelpers/getTrainingTypes',
       targetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
-      vendors: 'trainingLibraryHelpers/getTrainingVendors'
+      vendors: 'trainingLibraryHelpers/getTrainingVendors',
+      levels: 'trainingLibraryHelpers/getLevels',
+      durations: 'trainingLibraryHelpers/getDurations'
     }),
     PROPERTY_STORE() {
       return PROPERTY_STORE
@@ -170,6 +172,8 @@ export default {
       else if (filter.key === PROPERTY_STORE.TARGET_AUDIENCE)
         return this.getTargetAudienceFilterValue(filterVal)
       else if (filter.key === PROPERTY_STORE.VENDOR) return this.getVendorFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.LEVEL) return this.getLevelFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.DURATION) return this.getDurationFilterValue(filterVal)
       return filterVal
     },
     removeSelectFilter() {
@@ -253,6 +257,22 @@ export default {
             return type
           }
         })?.text || filterVal
+      )
+    },
+    getLevelFilterValue(filterVal) {
+      const val = String(filterVal ?? '')
+      return (
+        this.levels?.find(
+          (item) => String(item?.value ?? '') === val || String(item?.id ?? '') === val
+        )?.text || filterVal
+      )
+    },
+    getDurationFilterValue(filterVal) {
+      const val = String(filterVal ?? '')
+      return (
+        this.durations?.find(
+          (item) => String(item?.value ?? '') === val || String(item?.id ?? '') === val
+        )?.text || filterVal
       )
     },
     getDateFilterValue(filter) {

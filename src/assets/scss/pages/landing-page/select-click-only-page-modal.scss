@@ -43,6 +43,7 @@
 
   .landingPagePreview-content--search {
     flex-shrink: 0;
+    overflow: visible;
   }
 
   // Override fixed 600px — flex:1 controls actual height

@@ -33,7 +33,7 @@
           <LandingPageTemplateListPreview
             ref="templateListPreview"
             :scenario-details-lookup="scenarioDetailsLookup"
-            :method="method"
+            :method="''"
             :languages="languages"
             :type="type"
             v-bind="apiFuncs ? { apiFuncs } : {}"
@@ -114,11 +114,6 @@ export default {
   },
   computed: {
     stepSubtitle() {
-      const m = (this.method || "").toLowerCase();
-      if (m.includes("click"))
-        return "Choose your click only type landing page";
-      if (m.includes("data"))
-        return "Choose your data submission type landing page";
       return "Select a Click Only or Data Submission type landing page";
     }
   },

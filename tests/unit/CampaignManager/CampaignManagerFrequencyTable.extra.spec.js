@@ -90,4 +90,64 @@ describe('CampaignManagerFrequencyTable.vue (extra branch coverage)', () => {
       )
     })
   })
+
+  describe('exportCampaignManagerItemList', () => {
+    it('converts XLS to Excel and handles multiple formats', () => {
+      const { exportCampaignManagerItem } = require('@/api/phishingsimulator')
+      const ctx = {
+        axiosPayload: { orderBy: 'test', ascending: true, filter: {} },
+        item: { frequencyGroup: 'group1' },
+        parentResourceId: 'p1'
+      }
+      
+      if (!globalThis.URL.createObjectURL) {
+        globalThis.URL.createObjectURL = jest.fn(() => 'blob:test')
+      }
+      const click = jest.fn()
+      jest.spyOn(document, 'createElement').mockImplementation(() => ({ click, href: '', download: '' }))
+
+      CampaignManagerFrequencyTable.methods.exportCampaignManagerItemList.call(ctx, {
+        exportTypes: ['XLS', 'PDF'],
+        pageNumber: 1,
+        pageSize: 10,
+        reportAllPages: true
+      })
+
+      expect(exportCampaignManagerItem).toHaveBeenCalledWith(
+        expect.objectContaining({ exportType: 'Excel' }),
+        'p1'
+      )
+      expect(exportCampaignManagerItem).toHaveBeenCalledWith(
+        expect.objectContaining({ exportType: 'PDF' }),
+        'p1'
+      )
+    })
+  })
+
+  describe('statusItems watcher', () => {
+    it('updates column filterable items when val is provided', () => {
+      const wrapper = {
+        $set: jest.fn(),
+        $refs: { refTable: { reRenderFilters: jest.fn() } },
+        tableOptions: {
+          columns: [{ property: 'status' }]
+        }
+      }
+      const val = [{ text: 'Active', value: 1 }]
+      CampaignManagerFrequencyTable.watch.statusItems.handler.call(wrapper, val)
+      
+      expect(wrapper.$set).toHaveBeenCalledWith(
+        wrapper.tableOptions.columns[0],
+        'filterableItems',
+        [{ text: 'Active', value: 'Active' }]
+      )
+      expect(wrapper.$refs.refTable.reRenderFilters).toHaveBeenCalled()
+    })
+
+    it('does nothing if val is empty', () => {
+      const wrapper = { $set: jest.fn() }
+      CampaignManagerFrequencyTable.watch.statusItems.handler.call(wrapper, [])
+      expect(wrapper.$set).not.toHaveBeenCalled()
+    })
+  })
 })
