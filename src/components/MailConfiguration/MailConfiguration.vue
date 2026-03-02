@@ -1138,8 +1138,8 @@ export default {
       this.getTableData()
     },
     testConnectionValues(isSuccess, isSave) {
-      this.formValuesAfterO365Test = JSON.parse(JSON.stringify(this.formValues))
-      this.formValuesAfterEWSTest = JSON.parse(JSON.stringify(this.ewsFormValues))
+      this.formValuesAfterO365Test = structuredClone(this.formValues)
+      this.formValuesAfterEWSTest = structuredClone(this.ewsFormValues)
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         if (isSave && !this.delaySaveFunction) {
@@ -1151,7 +1151,7 @@ export default {
       }
     },
     testConnectionGoogleWorkspaceValues(isSuccess, isSave) {
-      this.formValuesAfterGWSTest = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
+      this.formValuesAfterGWSTest = structuredClone(this.googleWorkSpaceForm)
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         if (isSave && !this.delaySaveFunction) {
@@ -1351,7 +1351,7 @@ export default {
         this.statusGoogleWorkSpace = true
         this.googleWorkSpaceEditData = null
         this.isTestConnectionWorkedBefore = false
-        this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
+        this.googleWorkSpaceInitialValues = structuredClone(this.googleWorkSpaceForm)
         return
       }
       if (item === this.mailConfigurationTypes[1]) {
@@ -1363,7 +1363,7 @@ export default {
           email: null,
           allowedDomains: []
         }
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
         this.editData = null
         this.isTestConnectionWorkedBefore = false
         this.saveButtonDisabled = false
@@ -1383,7 +1383,7 @@ export default {
           TargetGroupResourceIdList: [],
           IsAllTargetGroupsSelected: true
         }
-        this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
+        this.ewsInitialFormValues = structuredClone(this.ewsFormValues)
         this.ewsEditData = null
         this.isTestConnectionWorkedBefore = false
         this.saveButtonDisabled = false
@@ -1408,7 +1408,7 @@ export default {
             ResourceId: selectedRow.resourceId
           }
           this.ewsEditData = this.ewsFormValues
-          this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.ewsInitialFormValues = structuredClone(this.formValues)
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
           this.ewsStatus = true
@@ -1429,7 +1429,7 @@ export default {
             ...this.googleWorkSpaceForm,
             resourceId: selectedRow.resourceId
           }
-          this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
+          this.googleWorkSpaceInitialValues = structuredClone(this.googleWorkSpaceForm)
           this.isGoogleWorkSpaceEdit = true
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
@@ -1450,7 +1450,7 @@ export default {
           }
           this.getDomainList(selectedRow)
           this.editData = this.formValues
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.initialFormValues = structuredClone(this.formValues)
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
           this.status = true

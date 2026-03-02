@@ -110,6 +110,31 @@ describe('EditEnrollmentsModal.vue - Extra Branch Coverage', () => {
       const wrapper = createWrapper({ selectedRow: { status: 'Running' } })
       expect(wrapper.vm.isDateValid).toBe(true)
     })
+
+  })
+
+  describe('handleClose and dialog close handlers', () => {
+    it('handleClose emits with stopped flags', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ isReminderStopped: true })
+      wrapper.vm.handleClose()
+      expect(wrapper.emitted('on-close')).toBeTruthy()
+      expect(wrapper.emitted('on-close')[0][0]).toBe(true)
+    })
+
+    it('handleCloseStopReminderDialog hides dialog', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ isStopReminderDialogVisible: true })
+      wrapper.vm.handleCloseStopReminderDialog()
+      expect(wrapper.vm.isStopReminderDialogVisible).toBe(false)
+    })
+
+    it('handleCloseStopAutoEnrollDialog hides dialog', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ isStopAutoEnrollDialogVisible: true })
+      wrapper.vm.handleCloseStopAutoEnrollDialog()
+      expect(wrapper.vm.isStopAutoEnrollDialogVisible).toBe(false)
+    })
   })
 
   describe('Methods and Stop Actions', () => {

@@ -1086,7 +1086,7 @@ export default {
     },
     callForSearch() {
       this.debounce(() => {
-        const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
+        const copyOfBodyData = structuredClone(this.bodyData)
         copyOfBodyData.pageNumber = 1
         copyOfBodyData.pageSize = 100
         copyOfBodyData.filter.FilterGroups[1].FilterItems[0].value = this.search

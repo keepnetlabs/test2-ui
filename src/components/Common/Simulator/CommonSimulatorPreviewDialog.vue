@@ -410,7 +410,7 @@ export default {
       labels,
       timeoutId: '',
       isIndividualPrintoutButtonDisabled: false,
-      redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
+      redFlags: structuredClone(defaultRedFlags),
       isRedFlagsLoading: false,
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
@@ -751,7 +751,7 @@ export default {
       if (this.languagePreview && this.isShowRedFlags) {
         // Eğer red flags cached varsa, template'i güncelle
         if (this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview].flags = JSON.parse(JSON.stringify(this.redFlags))
+          this.lastRedFlags[this.languagePreview].flags = structuredClone(this.redFlags)
           this.lastRedFlags[this.languagePreview].textfieldValues = {
             fromName: this.emailTemplateParams.fromName,
             fromAddress: this.emailTemplateParams.fromAddress,
@@ -789,7 +789,7 @@ export default {
           this.emailTemplate = this.lastRedFlags[newLanguageId].templates[0]
         }
         // Form alanlarında gösterilmemesi için flags'leri reset et
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.isFlaggedStylesEnabled = false
         this.isShowRedFlags = false
         // Cached template'den highlighting'leri kaldır
@@ -798,7 +798,7 @@ export default {
         })
       } else {
         // Yeni dilde red flags yok, default state
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.isFlaggedStylesEnabled = false
         this.isShowRedFlags = false
         // Template'den highlighting'leri kaldır
@@ -818,7 +818,7 @@ export default {
           this.lastRedFlags[this.languagePreview].flags
         ) {
           // Var olan red flags'leri restore et
-          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.languagePreview].flags))
+          this.redFlags = structuredClone(this.lastRedFlags[this.languagePreview].flags)
           // Cached template'i restore et
           if (
             this.lastRedFlags[this.languagePreview].templates &&
@@ -860,7 +860,7 @@ export default {
             // Update template HTML and store red flags data
             this.emailTemplate = template
             this.lastRedFlags[this.languagePreview] = {
-              flags: JSON.parse(JSON.stringify(redFlags)),
+              flags: structuredClone(redFlags),
               templates: [template],
               textfieldValues: {
                 fromName: this.emailTemplateParams.fromName,
@@ -870,7 +870,7 @@ export default {
               }
             }
 
-            this.redFlags = JSON.parse(JSON.stringify(redFlags))
+            this.redFlags = structuredClone(redFlags)
             this.updateTemplateWithFlaggedStyles()
           })
           .catch((e) => {
@@ -894,7 +894,7 @@ export default {
             })
             this.isShowRedFlags = false
             this.isFlaggedStylesEnabled = false
-            this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+            this.redFlags = structuredClone(defaultRedFlags)
           })
           .finally(() => {
             this.isRedFlagsLoading = false
@@ -905,7 +905,7 @@ export default {
         if (!this.lastRedFlags[this.languagePreview]) {
           this.lastRedFlags[this.languagePreview] = {}
         }
-        this.lastRedFlags[this.languagePreview].flags = JSON.parse(JSON.stringify(this.redFlags))
+        this.lastRedFlags[this.languagePreview].flags = structuredClone(this.redFlags)
         this.lastRedFlags[this.languagePreview].textfieldValues = {
           fromName: this.emailTemplateParams.fromName,
           fromAddress: this.emailTemplateParams.fromAddress,
@@ -913,7 +913,7 @@ export default {
           attachmentFileName: this.emailTemplateParams.attachment?.name
         }
 
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.updateTemplateWithFlaggedStyles()
       }
     },
@@ -1082,7 +1082,7 @@ export default {
     },
 
     resetRedFlags() {
-      this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+      this.redFlags = structuredClone(defaultRedFlags)
       this.isShowRedFlags = false
       this.isFlaggedStylesEnabled = false
       this._removeFlaggedStylesFromTemplate()

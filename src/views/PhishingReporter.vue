@@ -455,7 +455,7 @@ export default {
             }
             this.tab = 'phishing-reporter-settings'
           } else if (response.status === 200) {
-            this.initialFormData = JSON.parse(JSON.stringify(data.data))
+            this.initialFormData = structuredClone(data.data)
             this.tabComponent = {
               name: Settings,
               ref: 'refSettings',

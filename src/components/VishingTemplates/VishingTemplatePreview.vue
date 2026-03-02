@@ -132,13 +132,7 @@ export default {
             }
             this?.templateData?.steps?.splice(invalidDialingNoticeStepIndex, 1)
           }
-          if (!this.isCampaign) {
-            this.templateData = {
-              ...this.templateData,
-              language: this.language,
-              voice: this.voice
-            }
-          } else {
+          if (this.isCampaign) {
             const voiceIndex = this.languages.findIndex(
               (language) => language.resourceId === this.templateData.vishingLanguageResourceId
             )
@@ -152,6 +146,12 @@ export default {
               this.campaignTextToSpeechCompatible = [2, 3].includes(
                 this.languages[voiceIndex].voiceProviderTypeId
               )
+            }
+          } else {
+            this.templateData = {
+              ...this.templateData,
+              language: this.language,
+              voice: this.voice
             }
           }
         })

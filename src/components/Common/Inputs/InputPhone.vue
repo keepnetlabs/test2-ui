@@ -150,7 +150,7 @@ export default {
             return
           }
           this.isPhoneNumberValid = phoneObject.isValid
-        } catch (e) {
+        } catch {
           this.isPhoneNumberValid = false
         }
       })

@@ -1480,7 +1480,7 @@ export default {
       requestBodyReportedEmails: JSON.parse(
         JSON.stringify(this.requestBodyReportedEmails)
       ),
-      clusteredTableAxios: JSON.parse(JSON.stringify(this.clusteredTableAxios)),
+      clusteredTableAxios: structuredClone(this.clusteredTableAxios),
       isShowingClusteredTable: this.isShowingClusteredTable
     };
     this.$store.dispatch("datatable/setTable", {
@@ -1774,12 +1774,12 @@ export default {
       const { columns } = this.emails;
       if (selectedCluster === PROPERTY_STORE.SUBJECT) {
         if (columns[0].property !== PROPERTY_STORE.SUBJECT) {
-          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[2]));
+          const copyOfAttachmentCount = structuredClone(columns[2]);
           const copyOfReportedBy = JSON.parse(
             JSON.stringify(this.emails.reportedByColumn)
           );
           this.$set(this.emails.columns, 0, {
-            ...JSON.parse(JSON.stringify(this.emails.subjectColumn)),
+            ...structuredClone(this.emails.subjectColumn),
             ...this.emails.firstColumnProperties,
             fixed: this.emails.columns[0].fixed
           });
@@ -1788,12 +1788,12 @@ export default {
         }
       } else if (selectedCluster === PROPERTY_STORE.REPORTEDBY) {
         if (columns[0].property !== PROPERTY_STORE.REPORTEDBY) {
-          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[1]));
+          const copyOfAttachmentCount = structuredClone(columns[1]);
           const copyOfSubject = JSON.parse(
             JSON.stringify(this.emails.subjectColumn)
           );
           this.$set(this.emails.columns, 0, {
-            ...JSON.parse(JSON.stringify(this.emails.reportedByColumn)),
+            ...structuredClone(this.emails.reportedByColumn),
             ...this.emails.firstColumnProperties,
             fixed: this.emails.columns[0].fixed
           });
@@ -1856,7 +1856,7 @@ export default {
           expandedRows: [],
           firstColFixed: true,
           filteredDataLength: 0,
-          search: JSON.parse(JSON.stringify(search)),
+          search: structuredClone(search),
           showfilteredData: false,
           tableData: [],
           initialData: [],
@@ -2381,7 +2381,7 @@ export default {
       let selectedFilter = this.isShowingClusteredTable
         ? this.clusteredTableAxios
         : this.requestBodyReportedEmails;
-      selectedFilter = JSON.parse(JSON.stringify(selectedFilter));
+      selectedFilter = structuredClone(selectedFilter);
       if (this.isShowingClusteredTable) {
         if (
           !selectedFilter.filter.FilterGroups[0].FilterItems.some(

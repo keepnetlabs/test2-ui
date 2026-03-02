@@ -1866,7 +1866,7 @@ export default {
       isMultipleEdit: false,
       firstOpenSettingsTimeout: null,
       renderFixedItemsTimeout: null,
-      initialAxiosPayload: JSON.parse(JSON.stringify(this.axiosPayload)),
+      initialAxiosPayload: structuredClone(this.axiosPayload),
       isSearchActive: false
     };
   },
@@ -1960,7 +1960,7 @@ export default {
 
       if (this.groupable && this.clusteredItems.length && this.isServerSide) {
         this.$nextTick(() => {
-          const selections = JSON.parse(JSON.stringify(this.multipleSelection));
+          const selections = structuredClone(this.multipleSelection);
           this.multipleSelection = [];
           this.$refs.elTableRef?.clearSelection?.();
           const allItems = this.getAllItems(this.tableData, [], false, false);
@@ -2238,7 +2238,7 @@ export default {
     },
     //This is a element ui bug it doesnt cache it added to making caching
     getSelectedObjectAndSelectRows(
-      selections = JSON.parse(JSON.stringify(this.multipleSelection))
+      selections = structuredClone(this.multipleSelection)
     ) {
       this.$nextTick(() => {
         this.multipleSelection = [];
@@ -2256,7 +2256,7 @@ export default {
       });
     },
     getSelectedObjectAndSelectRowsByRowKey(
-      selections = JSON.parse(JSON.stringify(this.multipleSelection))
+      selections = structuredClone(this.multipleSelection)
     ) {
       this.$nextTick(() => {
         this.multipleSelection = [];
@@ -3605,7 +3605,7 @@ export default {
       }, []);
       let columnsLength = [];
       let text = "";
-      let selectionsCopy = JSON.parse(JSON.stringify(selections));
+      let selectionsCopy = structuredClone(selections);
       selectionsCopy.forEach((item) => {
         headerKeys.forEach((a, i) => {
           if (!item[a]) item[a] = "Empty";

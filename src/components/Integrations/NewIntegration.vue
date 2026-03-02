@@ -1207,7 +1207,7 @@ export default {
   },
   created() {
     if (!this.integrationId) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     this.getFormOptions()
   },
@@ -1274,7 +1274,7 @@ export default {
         })
         this.addProxyItems(proxies.data.results, true)
         if (response[1]) this.updateModels(response[1])
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.initialFormValues = structuredClone(this.formValues)
       })
     },
     getProxyTestConnection() {
@@ -1315,7 +1315,7 @@ export default {
       })
       this.proxyItems = proxyItems
       if (isDefault) {
-        this.defaultProxyItems = JSON.parse(JSON.stringify(proxyItems))
+        this.defaultProxyItems = structuredClone(proxyItems)
         if (!this.integrationId) {
           const item = proxyItems.find((item) => item.isDefault === 'Yes')
           this.formValues.proxyResourceId = item ? item.resourceId : ''

@@ -4,7 +4,7 @@ import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
 
 jest.mock('@/api/phishingsimulator', () => ({
   deletePhishingCampaignJob: jest.fn(() => Promise.resolve()),
-  exportCampaignManagerItem: jest.fn(() => Promise.resolve({ data: new Blob(['data']) })),
+  exportCampaignManagerItem: jest.fn(() => Promise.resolve({ data: new ArrayBuffer(0) })),
   searchCampaignPhishingJob: jest.fn(() => Promise.resolve({ data: { data: {} } }))
 }))
 

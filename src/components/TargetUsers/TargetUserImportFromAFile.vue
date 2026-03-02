@@ -1213,7 +1213,7 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.responsNumbers = response.data.data
-          _this.tableOptions.columns = JSON.parse(JSON.stringify(_this.tableOptions.backupColumns))
+          _this.tableOptions.columns = structuredClone(_this.tableOptions.backupColumns)
           let data = ({ status } = response.data.data.items.results)
           let customFields
           if (data.length) {
