@@ -1,6 +1,11 @@
 import { shallowMount } from '@vue/test-utils'
 import InputManager from '@/components/Common/Inputs/InputManager.vue'
 
+const textFieldStub = {
+  template: '<div></div>',
+  methods: { validate: () => true }
+}
+
 describe('InputManager.vue (extra branch coverage)', () => {
   it('value watcher does not update when newVal is null', () => {
     const ctx = {
@@ -44,7 +49,8 @@ describe('InputManager.vue (extra branch coverage)', () => {
 
   it('data init uses empty strings when value is undefined', () => {
     const wrapper = shallowMount(InputManager, {
-      propsData: { value: undefined }
+      propsData: { value: undefined },
+      stubs: { 'v-text-field': textFieldStub }
     })
     expect(wrapper.vm.managerFirstName).toBe('')
     expect(wrapper.vm.managerLastName).toBe('')
@@ -53,7 +59,8 @@ describe('InputManager.vue (extra branch coverage)', () => {
 
   it('mounted does not call validateFields when no manager fields filled', () => {
     const wrapper = shallowMount(InputManager, {
-      propsData: { value: {} }
+      propsData: { value: {} },
+      stubs: { 'v-text-field': textFieldStub }
     })
     const validateSpy = jest.spyOn(wrapper.vm, 'validateFields')
     wrapper.vm.$options.mounted[0].call(wrapper.vm)
@@ -69,7 +76,8 @@ describe('InputManager.vue (extra branch coverage)', () => {
           managerLastName: 'Doe',
           managerEmail: 'j@d.com'
         }
-      }
+      },
+      stubs: { 'v-text-field': textFieldStub }
     })
     expect(wrapper.vm.allFieldsFilled).toBe(true)
   })
@@ -82,14 +90,16 @@ describe('InputManager.vue (extra branch coverage)', () => {
           managerLastName: '',
           managerEmail: ''
         }
-      }
+      },
+      stubs: { 'v-text-field': textFieldStub }
     })
     expect(wrapper.vm.hasPartialFields).toBe(true)
   })
 
   it('emitChange emits input with manager object', () => {
     const wrapper = shallowMount(InputManager, {
-      propsData: { value: {} }
+      propsData: { value: {} },
+      stubs: { 'v-text-field': textFieldStub }
     })
     wrapper.vm.managerFirstName = 'A'
     wrapper.vm.managerLastName = 'B'

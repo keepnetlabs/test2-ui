@@ -36,6 +36,7 @@
             :method="''"
             :languages="languages"
             :type="type"
+            show-page-alert
             v-bind="apiFuncs ? { apiFuncs } : {}"
             @selectedLandingPageTemplateResourceId="selectedResourceId = $event"
           />

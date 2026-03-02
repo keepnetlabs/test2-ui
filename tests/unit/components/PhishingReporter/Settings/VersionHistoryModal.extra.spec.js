@@ -2,7 +2,9 @@ jest.mock('@/api/phishingReporter', () => ({
   searchGeneratedApplicationHistory: jest.fn(() =>
     Promise.resolve({ data: { data: { results: [{ version: '1.0' }] } } })
   ),
-  exportPhishingReporterDownloadHistory: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportPhishingReporterDownloadHistory: jest.fn(() =>
+    Promise.resolve({ data: new ArrayBuffer(0) })
+  )
 }))
 
 jest.mock('@/helper-classes/client-table-export-helper', () => {
