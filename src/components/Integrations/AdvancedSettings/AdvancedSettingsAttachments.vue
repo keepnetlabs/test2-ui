@@ -104,7 +104,7 @@ export default {
         if (exclusionType === 'AttacmentExtension') acc.push(attachmentExtensionType)
         return acc
       }, [])
-      this.initialData = JSON.parse(JSON.stringify(this.values))
+      this.initialData = structuredClone(this.values)
     },
     createPayload() {
       return this.values.reduce((acc, item) => {

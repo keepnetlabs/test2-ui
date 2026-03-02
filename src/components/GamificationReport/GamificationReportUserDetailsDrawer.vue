@@ -966,7 +966,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       activeFilter: {},
-      filters: JSON.parse(JSON.stringify(userActivityDetailsFilters)),
+      filters: structuredClone(userActivityDetailsFilters),
       isOnlyShowFailedEvents: false,
       downloadModalTitle: "",
       isShowDownloadModal: false,

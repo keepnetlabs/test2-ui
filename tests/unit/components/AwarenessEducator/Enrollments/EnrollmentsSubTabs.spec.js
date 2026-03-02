@@ -11,7 +11,7 @@ jest.mock('@/api/awarenessEducator', () => ({
   stopReminder: jest.fn(() => Promise.resolve()),
   stopAutoEnroll: jest.fn(() => Promise.resolve()),
   restoreEnrollment: jest.fn(() => Promise.resolve()),
-  downloadEnrollmentPackage: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  downloadEnrollmentPackage: jest.fn(() => Promise.resolve({ data: new ArrayBuffer(0) }))
 }))
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))

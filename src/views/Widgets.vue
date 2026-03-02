@@ -680,7 +680,7 @@ export default {
   watch: {
     editMode(val) {
       if (val) {
-        this.initialLayout = JSON.parse(JSON.stringify(this.layout));
+        this.initialLayout = structuredClone(this.layout);
         this.handleAddShadows();
       }
     }
@@ -842,7 +842,7 @@ export default {
         JSON.stringify(this.initialAvailableWidgets)
       );
       this.editMode = false;
-      this.layout = JSON.parse(JSON.stringify(this.initialLayout));
+      this.layout = structuredClone(this.initialLayout);
     },
     layoutMounted() {
       this.handleDeleteShadows();

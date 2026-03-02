@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     getInitialFormValues(values) {
-      this.initialFormValues = JSON.parse(JSON.stringify({ ...this.formData, ...values }))
+      this.initialFormValues = structuredClone({ ...this.formData, ...values })
     },
     getCurrentFormValues() {
       return {

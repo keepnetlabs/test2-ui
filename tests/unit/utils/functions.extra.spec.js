@@ -3,6 +3,7 @@ import {
   getDifficultyBadgeColor,
   formatSeconds,
   createRandomCryptNumber,
+  createRandomCryptStringNumber,
   getInvestigationStatusTooltipText,
   setSafariClusterFix,
   getDataTableFieldLabel,
@@ -21,6 +22,8 @@ import {
   getTimeZoneForMoment,
   isOwnerOrMember,
   isOwner,
+  isPostedByMe,
+  setGlobalUserData,
   scrollToComponent,
   handleIsSafari,
   cancellableAxiosRequest,
@@ -90,6 +93,16 @@ describe('functions.js (extra coverage)', () => {
       const result = formatSeconds('90')
       expect(result).toMatch(/^\d{2}:\d{2}$/)
     })
+    it('formats number seconds with minutes', () => {
+      expect(formatSeconds(125)).toBe('02:05')
+      expect(formatSeconds(3661)).toBe('61:01')
+    })
+    it('formats zero seconds', () => {
+      expect(formatSeconds(0)).toBe('00:00')
+    })
+    it('formats seconds under 60', () => {
+      expect(formatSeconds(45)).toBe('00:45')
+    })
   })
 
   describe('createRandomCryptNumber fallback', () => {
@@ -155,6 +168,18 @@ describe('functions.js (extra coverage)', () => {
     it('returns field as-is when no match', () => {
       expect(getDataTableFieldLabel('unknown_field')).toBe('unknown_field')
     })
+    it('returns fieldMap value for falsepositive', () => {
+      expect(getDataTableFieldLabel('falsepositive')).toBe('False Positive')
+    })
+    it('returns fieldMap value for completedwitherror', () => {
+      expect(getDataTableFieldLabel('completedwitherror')).toBe('Completed with error')
+    })
+    it('returns fieldMap value for waiting for approval', () => {
+      expect(getDataTableFieldLabel('waiting for approval')).toBe('Waiting for Approval')
+    })
+    it('converts camelCase with numbers', () => {
+      expect(getDataTableFieldLabel('fieldName123')).toBe('field Name123')
+    })
   })
 
   describe('deepCopyArray and filter helpers', () => {
@@ -165,6 +190,11 @@ describe('functions.js (extra coverage)', () => {
       expect(copy).not.toBe(arr)
       copy[0].a = 99
       expect(arr[0].a).toBe(1)
+    })
+    it('deepCopyArray returns empty array for empty input', () => {
+      const copy = deepCopyArray([])
+      expect(copy).toEqual([])
+      expect(copy).not.toBe([])
     })
     it('getDefaultFilter returns filter structure', () => {
       const filter = getDefaultFilter()
@@ -205,6 +235,25 @@ describe('functions.js (extra coverage)', () => {
         expect.arrayContaining(extra)
       )
     })
+    it('getSelectSearchPayload uses custom key for FieldName', () => {
+      const base = {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      }
+      const result = getSelectSearchPayload(base, 'query', 'customField')
+      expect(result.filter.FilterGroups[1].FilterItems[0].FieldName).toBe('customField')
+      expect(result.filter.FilterGroups[1].FilterItems[0].Value).toBe('query')
+    })
+    it('getSelectSearchPayload uses default key "name" when not provided', () => {
+      const base = {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      }
+      const result = getSelectSearchPayload(base, 'search')
+      expect(result.filter.FilterGroups[1].FilterItems[0].FieldName).toBe('name')
+    })
   })
 
   describe('datePrettier and strReverse', () => {
@@ -212,9 +261,19 @@ describe('functions.js (extra coverage)', () => {
       const result = datePrettier('2024-01-15')
       expect(result).toMatch(/\w+,\s+\w+\s+\d+,\s+\d+/)
     })
+    it('datePrettier formats Date object', () => {
+      const result = datePrettier(new Date('2024-06-20'))
+      expect(result).toMatch(/\w+,\s+\w+\s+\d+,\s+\d+/)
+    })
     it('strReverse reverses string', () => {
       expect(strReverse('hello')).toBe('olleh')
       expect(strReverse('')).toBe('')
+    })
+    it('strReverse reverses single character', () => {
+      expect(strReverse('x')).toBe('x')
+    })
+    it('strReverse uses default when no arg', () => {
+      expect(strReverse()).toBe('')
     })
   })
 
@@ -231,6 +290,15 @@ describe('functions.js (extra coverage)', () => {
     })
     it('returns false when objects deeply equal', () => {
       expect(isDifferent({ a: 1 }, { a: 1 })).toBe(false)
+    })
+    it('returns true when key exists in a but not in b', () => {
+      expect(isDifferent({ a: 1, b: 2 }, { a: 1 })).toBe(true)
+    })
+    it('returns true when same key has different values', () => {
+      expect(isDifferent({ a: 1, b: 3 }, { a: 1, b: 4 })).toBe(true)
+    })
+    it('returns false when both have same keys and values', () => {
+      expect(isDifferent({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(false)
     })
   })
 
@@ -263,6 +331,14 @@ describe('functions.js (extra coverage)', () => {
       localStorage.setItem('selectedDateFormat', 'CUSTOM')
       localStorage.setItem('selectedTimeFormat', '24h')
       expect(getTimeValueFormatZone()).toBe('CUSTOM')
+    })
+    it('getTimeValueFormatZone maps MM/DD/YYYY and YYYY/MM/DD', () => {
+      localStorage.setItem('selectedDateFormat', 'MM/DD/YYYY')
+      localStorage.setItem('selectedTimeFormat', '24h')
+      expect(getTimeValueFormatZone()).toContain('MM/dd/yyyy')
+
+      localStorage.setItem('selectedDateFormat', 'YYYY/MM/DD')
+      expect(getTimeValueFormatZone()).toContain('yyyy/MM/dd')
     })
 
     it('getTimeZone maps MM/DD/YYYY and YYYY/MM/DD date branches', () => {
@@ -384,6 +460,24 @@ describe('functions.js (extra coverage)', () => {
       expect(scrollToComponent()).toBeUndefined()
     })
 
+    it('scrollToComponent uses options on non-safari', () => {
+      const originalSafari = globalThis.safari
+      const originalVendor = navigator.vendor
+      Object.defineProperty(globalThis, 'safari', { value: undefined, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: 'Google Inc.', configurable: true })
+      const scrollIntoView = jest.fn()
+
+      scrollToComponent({ scrollIntoView })
+
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+      })
+      Object.defineProperty(globalThis, 'safari', { value: originalSafari, configurable: true })
+      Object.defineProperty(navigator, 'vendor', { value: originalVendor, configurable: true })
+    })
+
     it('scrollToComponent uses direct scrollIntoView on safari', () => {
       const originalSafari = globalThis.safari
       const originalVendor = navigator.vendor
@@ -428,6 +522,78 @@ describe('functions.js (extra coverage)', () => {
 
     it('isOwner returns true for string "1" due to loose equality', () => {
       expect(isOwner('1')).toBe(true)
+    })
+  })
+
+  describe('isPostedByMe', () => {
+    it('returns true when isPostedByMe is true', () => {
+      expect(isPostedByMe(true)).toBe(true)
+    })
+    it('returns false when isPostedByMe is false', () => {
+      expect(isPostedByMe(false)).toBe(false)
+    })
+  })
+
+  describe('createRandomCryptStringNumber', () => {
+    it('returns string representation of random number', () => {
+      const result = createRandomCryptStringNumber()
+      expect(typeof result).toBe('string')
+      expect(result).toMatch(/^\d+$/)
+    })
+  })
+
+  describe('setGlobalUserData', () => {
+    let originalSetItem
+
+    beforeEach(() => {
+      originalSetItem = localStorage.setItem
+      localStorage.setItem = jest.fn()
+    })
+    afterEach(() => {
+      localStorage.setItem = originalSetItem
+    })
+
+    it('builds userData and sets localStorage keys', () => {
+      const userData = {
+        user_company_resourceid: 'comp-1',
+        user_company_name: 'Acme',
+        family_name: 'Doe',
+        email: 'j@acme.com',
+        name: 'John',
+        phone_number: '+123',
+        given_name: 'John',
+        user_company_logopath: '/logo.png',
+        user_company_industry_resourceid: 'ind-1',
+        user_company_parentcompany_resourceid: null,
+        user_dateformat: 'DD/MM/YYYY',
+        user_timeformat: '24h',
+        role: { toString: () => 'Admin' },
+        user_id: 'u-1'
+      }
+      const result = setGlobalUserData(userData)
+      expect(result.userCompany.id).toBe('comp-1')
+      expect(result.userCompany.name).toBe('Acme')
+      expect(localStorage.setItem).toHaveBeenCalledWith('companyId', 'comp-1')
+      expect(localStorage.setItem).toHaveBeenCalledWith('userId', 'comp-1')
+    })
+    it('handles role with optional toString', () => {
+      const userData = {
+        user_company_resourceid: 'c1',
+        user_company_name: 'Acme',
+        family_name: 'D',
+        email: 'e@e.com',
+        name: 'John',
+        phone_number: '',
+        given_name: 'John',
+        user_company_logopath: null,
+        user_company_industry_resourceid: null,
+        user_company_parentcompany_resourceid: null,
+        user_dateformat: null,
+        user_timeformat: null,
+        user_id: 'u1'
+      }
+      const result = setGlobalUserData(userData)
+      expect(result.role.name).toBe('')
     })
   })
 
@@ -536,6 +702,18 @@ describe('functions.js (extra coverage)', () => {
       expect(openSpy).not.toHaveBeenCalled()
       openSpy.mockRestore()
     })
+    it('returns early when html is null', () => {
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      openHtmlInNewWindow(null)
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
+    it('returns early when html is undefined', () => {
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      openHtmlInNewWindow(undefined)
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
 
     it('injects title/meta/script and opens blob url', () => {
       jest.useFakeTimers()
@@ -551,6 +729,48 @@ describe('functions.js (extra coverage)', () => {
       expect(openSpy).toHaveBeenCalledWith('blob:test-url', '_blank')
       jest.advanceTimersByTime(101)
       expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-url')
+
+      openSpy.mockRestore()
+      globalThis.URL.createObjectURL = originalCreateObjectURL
+      globalThis.URL.revokeObjectURL = originalRevokeObjectURL
+      jest.useRealTimers()
+    })
+
+    it('skips charset injection when html already has charset', () => {
+      jest.useFakeTimers()
+      const originalCreateObjectURL = globalThis.URL.createObjectURL
+      const originalRevokeObjectURL = globalThis.URL.revokeObjectURL
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      globalThis.URL.createObjectURL = jest.fn(() => 'blob:test-charset')
+      globalThis.URL.revokeObjectURL = jest.fn()
+
+      const htmlWithCharset = '<html><head><meta charset="UTF-8"></head><body>x</body></html>'
+      openHtmlInNewWindow(htmlWithCharset)
+
+      const blobContent = globalThis.URL.createObjectURL.mock.calls[0][0]
+      expect(blobContent).toBeInstanceOf(Blob)
+      expect(openSpy).toHaveBeenCalledWith('blob:test-charset', '_blank')
+
+      openSpy.mockRestore()
+      globalThis.URL.createObjectURL = originalCreateObjectURL
+      globalThis.URL.revokeObjectURL = originalRevokeObjectURL
+      jest.useRealTimers()
+    })
+
+    it('adds charset when html has <html> but no <head>', () => {
+      jest.useFakeTimers()
+      const originalCreateObjectURL = globalThis.URL.createObjectURL
+      const originalRevokeObjectURL = globalThis.URL.revokeObjectURL
+      const openSpy = jest.spyOn(globalThis, 'open').mockImplementation(() => null)
+      globalThis.URL.createObjectURL = jest.fn(() => 'blob:test-url-3')
+      globalThis.URL.revokeObjectURL = jest.fn()
+
+      openHtmlInNewWindow('<html><body>content</body></html>')
+
+      expect(globalThis.URL.createObjectURL).toHaveBeenCalled()
+      expect(openSpy).toHaveBeenCalledWith('blob:test-url-3', '_blank')
+      jest.advanceTimersByTime(101)
+      expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-url-3')
 
       openSpy.mockRestore()
       globalThis.URL.createObjectURL = originalCreateObjectURL
@@ -651,6 +871,36 @@ describe('functions.js (extra coverage)', () => {
       expect(writeText).toHaveBeenCalledWith('fallback')
       expect(execCommandMock).toHaveBeenCalledWith('copy')
       expect(result).toBe(true)
+    })
+
+    it('normalizes null to empty string before copy', async () => {
+      const writeText = jest.fn().mockResolvedValue(undefined)
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText },
+        configurable: true
+      })
+      Object.defineProperty(globalThis, 'isSecureContext', {
+        value: true,
+        configurable: true
+      })
+
+      await copyToClipboard(null)
+      expect(writeText).toHaveBeenCalledWith('')
+    })
+
+    it('normalizes undefined to empty string before copy', async () => {
+      const writeText = jest.fn().mockResolvedValue(undefined)
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText },
+        configurable: true
+      })
+      Object.defineProperty(globalThis, 'isSecureContext', {
+        value: true,
+        configurable: true
+      })
+
+      await copyToClipboard(undefined)
+      expect(writeText).toHaveBeenCalledWith('')
     })
 
     it('returns false when non-secure fallback copy fails', async () => {

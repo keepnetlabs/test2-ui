@@ -408,10 +408,8 @@ export default {
                 this.setSelectedTemplate(this.listData[index], index, true)
                 this.listData[index].selected = true
               }
-            } else {
-              if (this.listData[0]) {
-                this.setSelectedTemplate(this.listData[0], 0, true)
-              }
+            } else if (this.listData[0]) {
+              this.setSelectedTemplate(this.listData[0], 0, true)
             }
             this.defaultListData = [...this.listData]
           }

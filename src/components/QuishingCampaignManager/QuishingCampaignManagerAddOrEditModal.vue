@@ -611,7 +611,7 @@ export default {
               )
             })
             this.scheduleInfoResponse = response?.data?.data
-          } catch (e) {
+          } catch {
             this.setActionButtonDisability(false)
             return
           }
@@ -641,7 +641,7 @@ export default {
               } else {
                 refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
               }
-            } catch (e) {
+            } catch {
               refCampaignManagerDeliverySettings.toggleShowSmtpErrorDialog()
             }
           } else {

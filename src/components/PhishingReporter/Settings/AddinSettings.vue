@@ -684,7 +684,7 @@ export default {
         warningLabel: 'Suspicious E-mail',
         dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
       },
-      commonSettings: JSON.parse(JSON.stringify(defaultCommonSettings)),
+      commonSettings: structuredClone(defaultCommonSettings),
       initialFormValues: {
         addInName: 'Suspicious email reporter',
         brandName: '',
@@ -692,7 +692,7 @@ export default {
         warningLabel: 'Suspicious E-mail',
         dialogBoxSettings: [{ ...defaultDialogBoxSettings }]
       },
-      initialCommonSettings: JSON.parse(JSON.stringify(defaultCommonSettings)),
+      initialCommonSettings: structuredClone(defaultCommonSettings),
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
       selectedVersionRow: null,
@@ -771,8 +771,8 @@ export default {
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      this.initialCommonSettings = JSON.parse(JSON.stringify(this.commonSettings))
+      this.initialFormValues = structuredClone(this.formValues)
+      this.initialCommonSettings = structuredClone(this.commonSettings)
     },
     formValues: {
       handler(val) {
@@ -830,14 +830,14 @@ export default {
         : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
       this.formValues.dialogBoxSettings = [{ ...defaultDialogBoxSettings }]
-      this.commonSettings = JSON.parse(JSON.stringify(defaultCommonSettings))
+      this.commonSettings = structuredClone(defaultCommonSettings)
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
       })
       this.$emit('getInitialFormValues', this.formValues)
     }
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    this.initialCommonSettings = JSON.parse(JSON.stringify(this.commonSettings))
+    this.initialFormValues = structuredClone(this.formValues)
+    this.initialCommonSettings = structuredClone(this.commonSettings)
   },
   methods: {
     callForLanguages() {

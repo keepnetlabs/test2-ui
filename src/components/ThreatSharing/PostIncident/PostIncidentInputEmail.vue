@@ -114,7 +114,7 @@ export default {
         .then((response) => {
           const { data } = response
           this.listData = data.data.results
-          this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+          this.backupListData = structuredClone(data.data.results)
         })
         .finally(() => {
           this.isFindIncidentLoading = false

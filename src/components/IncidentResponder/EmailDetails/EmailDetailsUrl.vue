@@ -364,7 +364,7 @@ export default {
         : defaultText
     },
     getFirstItemURL(url) {
-      const copyOfUrls = JSON.parse(JSON.stringify(url))
+      const copyOfUrls = structuredClone(url)
       copyOfUrls.redirectUrls = []
       return [copyOfUrls]
     }

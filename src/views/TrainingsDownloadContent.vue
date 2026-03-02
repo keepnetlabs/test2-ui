@@ -98,7 +98,7 @@ export default {
 
       const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i)
       if (utf8Match && utf8Match[1]) {
-        return decodeURIComponent(utf8Match[1].replace(/['"]/g, '').trim())
+        return decodeURIComponent(utf8Match[1].replaceAll(/['"]/g, '').trim())
       }
 
       const fileNameMatch = disposition.match(/filename=([^;]+)/i)

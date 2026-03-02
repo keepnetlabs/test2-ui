@@ -406,7 +406,7 @@ export default {
     }
   },
   data() {
-    let methodItems = JSON.parse(JSON.stringify(getEmailTemplateMethodItems()))
+    let methodItems = structuredClone(getEmailTemplateMethodItems())
     let categoryResourceId = 'WNZt0sCVCWB3'
     if (this.selectedMethodText) {
       if (this.selectedMethodText === 'MFA') {
@@ -481,7 +481,7 @@ export default {
       lastRedFlags: {},
       isRelocalizeOperation: false,
       relocalizeLanguageName: '',
-      redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
+      redFlags: structuredClone(defaultRedFlags),
       isFlaggedStylesEnabled: false
     }
   },
@@ -597,7 +597,7 @@ export default {
     this.callForMergedTags()
     this.callForLanguages()
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
@@ -674,8 +674,8 @@ export default {
           })
         }
         this.activeLanguage = this.formValues.languageTypeResourceId
-        this.editedLanguages = JSON.parse(JSON.stringify(this.languagesPayload))
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.editedLanguages = structuredClone(this.languagesPayload)
+        this.initialFormValues = structuredClone(this.formValues)
         this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
           JSON.stringify(this.getSelectedLanguagePayload)
         )
@@ -701,7 +701,7 @@ export default {
     handleSaveTemplate(template) {
       if (template.trim() !== this.getSelectedLanguagePayload.template.trim()) {
         delete this.lastRedFlags[this.activeLanguage]
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.isShowRedFlags = false
       }
     },
@@ -848,7 +848,7 @@ export default {
             this.$set(
               this.formValues,
               'attachmentFilesFromApi',
-              JSON.parse(JSON.stringify([firstAttachment]))
+              structuredClone([firstAttachment])
             )
             // Keep importedEmailAttachments for backend API
             // Use File object if available, otherwise use original attachment
@@ -859,7 +859,7 @@ export default {
             this.isAddedNewPhishingFile = true
           }
           delete this.lastRedFlags[this.activeLanguage]
-          this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+          this.redFlags = structuredClone(defaultRedFlags)
           this.isShowRedFlags = false
           // Reset the input file so the same file can be uploaded again
           e.target.value = ''
@@ -1315,15 +1315,15 @@ export default {
     handleActiveLanguageChange(value) {
       if (this.isShowRedFlags) {
         if (this.lastRedFlags[value]) {
-          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[value]?.flags))
+          this.redFlags = structuredClone(this.lastRedFlags[value]?.flags)
         } else {
-          this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+          this.redFlags = structuredClone(defaultRedFlags)
           this.isFlaggedStylesEnabled = false
           this.updateTemplateWithFlaggedStyles()
           this.isShowRedFlags = false
         }
       } else {
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.isFlaggedStylesEnabled = false
         this.updateTemplateWithFlaggedStyles()
         this.isShowRedFlags = false
@@ -1403,7 +1403,7 @@ export default {
           (typeof responseFlags === 'object' && Object.keys(responseFlags).length === 0) ||
           (typeof responseFlags === 'boolean' && responseFlags)
         ) {
-          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
+          this.redFlags = structuredClone(this.lastRedFlags[this.activeLanguage].flags)
           this.updateTemplateWithFlaggedStyles()
           return
         }
@@ -1439,7 +1439,7 @@ export default {
                 // Update item template and store red flags data
                 item.template = template
                 this.lastRedFlags[item.languageTypeResourceId] = {
-                  flags: JSON.parse(JSON.stringify(redFlags)),
+                  flags: structuredClone(redFlags),
                   templates: [],
                   textfieldValues: {
                     fromName: item.fromName,
@@ -1476,7 +1476,7 @@ export default {
                 }
                 this.isShowRedFlags = false
                 this.isFlaggedStylesEnabled = false
-                this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+                this.redFlags = structuredClone(defaultRedFlags)
               })
           })
 
@@ -1487,7 +1487,7 @@ export default {
               (result) => result?.languageTypeResourceId === this.activeLanguage
             )
             if (activeLanguageResult) {
-              this.redFlags = JSON.parse(JSON.stringify(activeLanguageResult.redFlags))
+              this.redFlags = structuredClone(activeLanguageResult.redFlags)
             }
 
             this.updateTemplateWithFlaggedStyles()
@@ -1499,7 +1499,7 @@ export default {
       } else {
         // CSS stillerini template'den kaldır
         this.lastRedFlags[this.activeLanguage] = {
-          flags: JSON.parse(JSON.stringify(this.redFlags)),
+          flags: structuredClone(this.redFlags),
           templates: [],
           textfieldValues: {
             fromName: this.getSelectedLanguagePayload.fromName,
@@ -1508,7 +1508,7 @@ export default {
             attachmentFileName: this.activeFileName
           }
         }
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.updateTemplateWithFlaggedStyles()
       }
     },

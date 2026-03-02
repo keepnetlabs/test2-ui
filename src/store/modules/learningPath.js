@@ -59,7 +59,7 @@ const learningPath = {
     learningPathSearch: '',
     learningPathSelectedTrainingContent: 'All Materials',
     learningPathSelectedSubTrainingContent: 'All Types',
-    learningPathFilters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
+    learningPathFilters: structuredClone(trainingLibraryFilters),
     learningPathFilterType: 'Or',
     learningPathSortBy: 'Date Created - New to old',
     learningPathModalTrainingPreviewDialog: emptyLearningPathModalTrainingPreviewDialogObj
@@ -230,14 +230,14 @@ const learningPath = {
       const fIndex = filterItems.findIndex((f) => f.FieldName === 'trainingName')
       state.learningPathServerSideProps.pageNumber = 1
       state.learningPathAxiosPayload.pageNumber = 1
-      if (fIndex !== -1) {
-        filterItems[fIndex].Value = state.learningPathSearch
-      } else {
+      if (fIndex === -1) {
         filterItems.push({
           FieldName: 'trainingName',
           Value: state.learningPathSearch,
           Operator: 'Contains'
         })
+      } else {
+        filterItems[fIndex].Value = state.learningPathSearch
       }
     },
     SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, payload) {
@@ -265,14 +265,14 @@ const learningPath = {
         }
         value = payload.activeValue.join(',')
       }
-      if (fIndex !== -1) {
-        filterItems[fIndex].Value = value
-      } else {
+      if (fIndex === -1) {
         filterItems.push({
           FieldName: payloadKey,
           Value: value,
           Operator: payload.activeOperator
         })
+      } else {
+        filterItems[fIndex].Value = value
       }
     },
     REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, payload) {

@@ -668,7 +668,7 @@ export function getTimeZoneForMoment(fallback) {
 }
 
 export function deepCopyArray(data) {
-  return JSON.parse(JSON.stringify(data));
+  return structuredClone(data);
 }
 
 export function getDefaultFilter() {
@@ -709,7 +709,7 @@ export function getSelectSearchPayload(
   key = "name",
   extraFilterItems = []
 ) {
-  const copyOfPayload = JSON.parse(JSON.stringify(payload));
+  const copyOfPayload = structuredClone(payload);
   copyOfPayload.pageSize = 100;
   copyOfPayload.pageNumber = 1;
   copyOfPayload.filter.FilterGroups[1].FilterItems.push(

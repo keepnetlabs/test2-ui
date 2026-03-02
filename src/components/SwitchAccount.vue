@@ -248,7 +248,7 @@ export default {
     getMyCompanies()
       .then((response) => {
         if (response?.data?.data) {
-          this.defaultOrderedItems = JSON.parse(JSON.stringify(response.data.data))
+          this.defaultOrderedItems = structuredClone(response.data.data)
           this.orderedAccounts = response.data.data
           if (this.searchedCompanyText) {
             this.handleSearchText()
@@ -324,7 +324,7 @@ export default {
     },
     searchItems(changeMenuStatus = true) {
       this.debounce(() => {
-        const defaultOrderedItems = JSON.parse(JSON.stringify(this.defaultOrderedItems))
+        const defaultOrderedItems = structuredClone(this.defaultOrderedItems)
         const excluded = new Set()
         this.isOpenAllMenuItems = !!this.searchedCompanyText
         function getObjectValueByPath(obj, path, fallback) {

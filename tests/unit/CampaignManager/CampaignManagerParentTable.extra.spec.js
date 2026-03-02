@@ -1,5 +1,5 @@
 jest.mock('@/api/phishingsimulator', () => ({
-  exportCampaignManager: jest.fn(() => Promise.resolve({ data: new Blob() })),
+  exportCampaignManager: jest.fn(() => Promise.resolve({ data: new ArrayBuffer(0) })),
   searchCampaignManager: jest.fn(() => Promise.resolve({ data: { data: {} } }))
 }))
 

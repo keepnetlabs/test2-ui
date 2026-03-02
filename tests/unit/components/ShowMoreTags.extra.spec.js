@@ -82,6 +82,10 @@ describe('ShowMoreTags.vue (extra branch coverage)', () => {
     it('returns text as-is when length <= 25', () => {
       expect(ShowMoreTags.methods.getBadgeText('short')).toBe('short')
     })
+    it('returns truncated with ellipsis when length > 25', () => {
+      const long = 'a'.repeat(30)
+      expect(ShowMoreTags.methods.getBadgeText(long)).toBe('a'.repeat(25) + '...')
+    })
     it('returns default empty when no arg', () => {
       expect(ShowMoreTags.methods.getBadgeText()).toBe('')
     })

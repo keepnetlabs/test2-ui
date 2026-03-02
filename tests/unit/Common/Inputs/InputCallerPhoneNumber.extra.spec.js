@@ -10,6 +10,34 @@ jest.mock('awesome-phonenumber', () => {
 })
 
 describe('InputCallerPhoneNumber.vue (extra branch coverage)', () => {
+  it('getPhoneNumberCountry returns empty string when phoneNumber is falsy', () => {
+    const ctx = {
+      isPhishingScenario: false,
+      phoneNumbers: [{ value: 'v1', text: '+123' }]
+    }
+    expect(InputCallerPhoneNumber.methods.getPhoneNumberCountry.call(ctx, null)).toBe('')
+    expect(InputCallerPhoneNumber.methods.getPhoneNumberCountry.call(ctx, '')).toBe('')
+  })
+
+  it('getPhoneNumberCountry returns EN when phishing/smishing/quishing and phoneNumbers empty', () => {
+    const ctx = {
+      isPhishingScenario: true,
+      isSmishing: false,
+      isQuishing: false,
+      phoneNumbers: []
+    }
+    expect(InputCallerPhoneNumber.methods.getPhoneNumberCountry.call(ctx, '+441234567890')).toBe('EN')
+  })
+
+  it('getPhoneNumberItems returns defaultPhoneNumbers when provided', () => {
+    const defaultItems = [{ text: '+111', value: 'd1' }]
+    const ctx = {
+      defaultPhoneNumbers: defaultItems,
+      phoneNumbers: [{ text: '+222', value: 'v1' }]
+    }
+    expect(InputCallerPhoneNumber.computed.getPhoneNumberItems.call(ctx)).toBe(defaultItems)
+  })
+
   it('getPhoneNumberItems returns phoneNumbers when defaultPhoneNumbers is undefined', () => {
     const ctx = {
       defaultPhoneNumbers: undefined,
