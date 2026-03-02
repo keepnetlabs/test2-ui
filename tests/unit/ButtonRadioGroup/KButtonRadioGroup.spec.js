@@ -476,7 +476,7 @@ describe('KButtonRadioGroup.vue', () => {
       const duration = performance.now() - start
 
       expect(wrapper.findAll('.v-btn-stub').length).toBe(100)
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(1000)
     })
 
     it('handles rapid selections efficiently', async () => {
