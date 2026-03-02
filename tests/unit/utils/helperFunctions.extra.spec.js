@@ -467,5 +467,30 @@ describe('helperFunctions.js (extra coverage)', () => {
       const result = createCustomFieldColumns([{ name: 'ABCDE', fieldDataType: 'String' }])
       expect(result[0].width).toBe(80 + 5 * 7)
     })
+    it('handles lowercase fieldDataType', () => {
+      const result = createCustomFieldColumns([{ name: 'Count', fieldDataType: 'number' }])
+      expect(result[0].filterableType).toBe('text')
+    })
+    it('handles datetime lowercase', () => {
+      const result = createCustomFieldColumns([{ name: 'Updated', fieldDataType: 'datetime' }])
+      expect(result[0].filterableType).toBe('date')
+    })
+    it('handles date lowercase', () => {
+      const result = createCustomFieldColumns([{ name: 'Created', fieldDataType: 'date' }])
+      expect(result[0].filterableType).toBe('dateOnly')
+      expect(result[0].type).toBe('date')
+    })
+  })
+
+  describe('columnFilterChanged array filter edge case', () => {
+    it('returns empty when filter array is empty and clears existing items', () => {
+      const payload = {
+        filter: {
+          FilterGroups: [{ FilterItems: [{ FieldName: 'Status', Value: 'x' }] }]
+        }
+      }
+      const result = columnFilterChanged([], payload)
+      expect(result).toHaveLength(0)
+    })
   })
 })

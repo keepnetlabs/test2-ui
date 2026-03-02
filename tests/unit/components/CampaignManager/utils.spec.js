@@ -7,7 +7,8 @@ import {
   STATUS_FILTER_ITEMS,
   getStatusBadgeProps,
   SCENARIO_DISTRIBUTION,
-  SCENARIO_DISTRIBUTION_TEXTS
+  SCENARIO_DISTRIBUTION_TEXTS,
+  COLUMNS
 } from '@/components/CampaignManager/utils'
 
 describe('CampaignManager utils', () => {
@@ -47,6 +48,21 @@ describe('CampaignManager utils', () => {
 
     it('returns undefined for unknown status', () => {
       expect(getStatusBadgeProps('Unknown')).toBeUndefined()
+    })
+  })
+
+  describe('COLUMNS', () => {
+    it('TARGET_USERS_ITEM_TABLE has type text and correct property', () => {
+      // Regression guard: type was 'slot' which caused Users column to render
+      // empty in Instance table and show Status badge in Recurrence/Frequency table.
+      expect(COLUMNS.TARGET_USERS_ITEM_TABLE.type).toBe('text')
+      expect(COLUMNS.TARGET_USERS_ITEM_TABLE.property).toBe('totalTargetUserCount')
+      expect(COLUMNS.TARGET_USERS_ITEM_TABLE.emptyText).toBe(0)
+    })
+
+    it('STATUS column has type slot for custom badge rendering', () => {
+      expect(COLUMNS.STATUS.type).toBe('slot')
+      expect(COLUMNS.STATUS.property).toBeDefined()
     })
   })
 })

@@ -735,10 +735,15 @@ export default {
       return this.mailDetails?.attachments?.length
     },
     showAIAnalyze() {
-      return (
+      const AI_ANALYZE_COMPANIES = ['Bolearis', 'TIP Group', 'Sunexpress', 'ETİ', 'Axa', 'Vodafone']
+      const isDevEnv =
         globalThis.location.hostname.includes('localhost') ||
         globalThis.location.hostname.includes('test-ui.devkeepnet.com')
+      const companyName = this.$store.state.auth.selectedCompanyName || ''
+      const isAllowedCompany = AI_ANALYZE_COMPANIES.some(
+        (name) => name.toLowerCase() === companyName.toLowerCase()
       )
+      return isDevEnv || isAllowedCompany
     }
   },
   watch: {
