@@ -229,7 +229,8 @@ console.error = (...args) => {
     firstArg.includes('[vuex] unknown getter: permissions/getDnsSearchPermissions') ||
     firstArg.includes('[vuex] unknown getter: permissions/getExcludedIpAddressGetPermissions')
   const isKnownComponentNoise =
-    errorMsg.includes("Cannot read properties of null (reading 'hasQuiz')")
+    errorMsg.includes("Cannot read properties of null (reading 'hasQuiz')") ||
+    errorMsg.includes('Not implemented: navigation (except hash changes)')
 
   if (isVtuDeprecation || isKnownVuexNoise || isKnownComponentNoise) {
     return
