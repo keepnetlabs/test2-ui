@@ -475,10 +475,9 @@ export function passwordComplexity(pwd) {
   }
 }
 
-export function scrollToComponent(
-  el,
-  options = { behavior: "smooth", block: "center", inline: "center" }
-) {
+const DEFAULT_SCROLL_OPTIONS = { behavior: "smooth", block: "center", inline: "center" }
+
+export function scrollToComponent(el, options = DEFAULT_SCROLL_OPTIONS) {
   if (!el) return;
 
   if (globalThis.safari || navigator.vendor.match(/apple/i)) {

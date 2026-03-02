@@ -50,4 +50,46 @@ describe('domains API (extra coverage)', () => {
       )
     })
   })
+
+  describe('updateDomain', () => {
+    it('calls PUT with id and loading config', async () => {
+      await domainsApi.updateDomain({ name: 'updated.com' }, 'res-123')
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'phishing-simulator/domain-records/res-123',
+        { name: 'updated.com' },
+        expect.objectContaining({ loading: true, snackbar: expect.anything() })
+      )
+    })
+  })
+
+  describe('deleteEmailTemplate', () => {
+    it('calls DELETE with id', async () => {
+      await domainsApi.deleteEmailTemplate('id-456')
+      expect(testRequest.delete).toHaveBeenCalledWith(
+        'phishing-simulator/domain-records/id-456',
+        expect.objectContaining({ loading: true, snackbar: expect.anything() })
+      )
+    })
+  })
+
+  describe('exportDnsService', () => {
+    it('calls POST export with responseType blob', async () => {
+      await domainsApi.exportDnsService({ filter: {} })
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'phishing-simulator/domain-records/search/export',
+        { filter: {} },
+        expect.objectContaining({ responseType: 'blob' })
+      )
+    })
+  })
+
+  describe('getDomainEditData', () => {
+    it('calls GET with resource id', async () => {
+      await domainsApi.getDomainEditData('edit-res-1')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'phishing-simulator/domain-records/edit-res-1',
+        expect.objectContaining({ loading: true })
+      )
+    })
+  })
 })

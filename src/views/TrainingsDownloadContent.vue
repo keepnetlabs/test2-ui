@@ -103,7 +103,7 @@ export default {
 
       const fileNameMatch = disposition.match(/filename=([^;]+)/i)
       if (fileNameMatch && fileNameMatch[1]) {
-        return fileNameMatch[1].replace(/['"]/g, '').trim()
+        return fileNameMatch[1].replaceAll(/['"]/g, '').trim()
       }
 
       return ''

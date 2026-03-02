@@ -951,7 +951,7 @@ export default {
     getImagePreview() {
       try {
         return this.formValues.file && URL.createObjectURL(this.formValues.file)
-      } catch (e) {
+      } catch {
         return ''
       }
     },

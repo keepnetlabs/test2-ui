@@ -266,19 +266,19 @@ describe('widgets store (extra coverage)', () => {
       expect(getSummary).toHaveBeenCalledWith({}, true)
     })
 
-    it('callForWidgets passes undefined loading flag when payload is empty object', async () => {
+    it('callForWidgets passes default isLoading true when payload is empty object', async () => {
       const commit = jest.fn()
       const { getSummary } = require('@/api/widgets')
       await widgetsStore.actions.callForWidgets({ commit }, {})
-      expect(getSummary).toHaveBeenCalledWith({}, undefined)
+      expect(getSummary).toHaveBeenCalledWith({}, true)
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
 
-    it('callForWidgets passes undefined loading flag when payload is null', async () => {
+    it('callForWidgets handles null payload with default isLoading', async () => {
       const commit = jest.fn()
       const { getSummary } = require('@/api/widgets')
       await widgetsStore.actions.callForWidgets({ commit }, null)
-      expect(getSummary).toHaveBeenCalledWith({}, undefined)
+      expect(getSummary).toHaveBeenCalledWith({}, true)
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
 

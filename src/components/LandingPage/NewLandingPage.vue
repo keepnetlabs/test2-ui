@@ -1358,9 +1358,9 @@ export default {
     handleSaveAsNew() {
       this.isDuplicate = true;
       const name =
-        this.formValues.name !== this.initialFormValues.name
-          ? this.formValues.name
-          : `${this.formValues.name} - Copy`;
+        this.formValues.name === this.initialFormValues.name
+          ? `${this.formValues.name} - Copy`
+          : this.formValues.name;
       this.formValues.name = name;
       this.submit();
     },

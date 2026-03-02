@@ -103,7 +103,7 @@
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                      :type="show2 ? '' : 'password'"
+                      :type="show2 ? 'text' : 'password'"
                       autocomplete="new-password"
                       id="input--security-popup-new-password"
                       persistent-hint
