@@ -853,6 +853,13 @@
                         }}</span>
                       </div>
                     </div>
+                    <AlertBox
+                      v-if="showPageAlert"
+                      class="alert-box--info-custom mt-3 mx-4"
+                      icon-name="mdi-information"
+                      icon-color="#2196f3"
+                      text="The page shown in the preview will be added as the second page."
+                    />
                     <ElTabs
                       v-if="landingPageTemplates.length > 1"
                       v-model="selectedLandingPageTab"
@@ -935,6 +942,7 @@ import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import { isDifferent, handleIsSafari } from '@/utils/functions'
+import AlertBox from '@/components/AlertBox'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 export default {
@@ -954,7 +962,8 @@ export default {
     InputPhishingLink,
     InputEntityName,
     InputLanguagePreview,
-    EmailTemplate
+    EmailTemplate,
+    AlertBox
   },
   directives: {
     'infinite-scroll': InfiniteScroll
@@ -982,6 +991,10 @@ export default {
         list: getLandingPageList,
         content: getLandingPageTemplatePreviewContent
       })
+    },
+    showPageAlert: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
