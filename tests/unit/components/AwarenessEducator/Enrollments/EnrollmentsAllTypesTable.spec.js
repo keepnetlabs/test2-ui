@@ -6,7 +6,7 @@ const localVue = createLocalVue()
 
 jest.mock('@/api/awarenessEducator', () => ({
   searchEnrollments: jest.fn(() => Promise.resolve({ data: { data: { results: [] } } })),
-  exportEnrollments: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  exportEnrollments: jest.fn(() => Promise.resolve({ data: new ArrayBuffer(0) }))
 }))
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))

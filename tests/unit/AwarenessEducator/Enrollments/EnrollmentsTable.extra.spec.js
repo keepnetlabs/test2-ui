@@ -4,7 +4,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 
 jest.mock('@/api/awarenessEducator', () => ({
   searchEnrollments: jest.fn(() => Promise.resolve({ data: { data: {} } })),
-  exportEnrollments: jest.fn(() => Promise.resolve({ data: new Blob(['content']) }))
+  exportEnrollments: jest.fn(() => Promise.resolve({ data: new ArrayBuffer(0) }))
 }))
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))

@@ -118,6 +118,21 @@ describe('helperFunctions.js (extra coverage)', () => {
       downloadExportedFile(blob, 'export', 'csv')
       expect(linkEl.download).toBe('export.csv')
     })
+    it('uses empty extension when type is empty string', () => {
+      const blob = new Blob(['data'])
+      downloadExportedFile(blob, 'file', '')
+      expect(linkEl.download).toBe('file.')
+    })
+    it('uses type as extension for unknown type (e.g. pdf)', () => {
+      const blob = new Blob(['data'])
+      downloadExportedFile(blob, 'report', 'pdf')
+      expect(linkEl.download).toBe('report.pdf')
+    })
+    it('uses lowercase extension for uppercase type', () => {
+      const blob = new Blob(['data'])
+      downloadExportedFile(blob, 'report', 'CSV')
+      expect(linkEl.download).toBe('report.csv')
+    })
   })
 
   describe('createCustomFieldColumns', () => {
@@ -199,6 +214,18 @@ describe('helperFunctions.js (extra coverage)', () => {
         isDisabled: false
       })
     })
+    it('maps other type with empty targetName', () => {
+      const list = [
+        { typeName: 'Company', targetName: '', targetResourceId: 'res-2' }
+      ]
+      const result = getAvailableForListFromBackend(list)
+      expect(result[0]).toMatchObject({
+        id: 'res-2',
+        label: '',
+        resourceId: 'res-2',
+        isDisabled: false
+      })
+    })
     it('returns empty array for empty list', () => {
       expect(getAvailableForListFromBackend([])).toEqual([])
     })
@@ -222,6 +249,9 @@ describe('helperFunctions.js (extra coverage)', () => {
     })
     it('extracts roleId from object', () => {
       expect(normalizeRoleId({ roleId: 'r1' })).toBe('r1')
+    })
+    it('extracts resourceId when id and roleId absent', () => {
+      expect(normalizeRoleId({ resourceId: 'res-99' })).toBe('res-99')
     })
     it('extracts code and removes spaces', () => {
       expect(normalizeRoleId({ code: 'Admin Role' })).toBe('AdminRole')
@@ -274,6 +304,27 @@ describe('helperFunctions.js (extra coverage)', () => {
     })
   })
 
+  describe('columnFilterCleared branch coverage', () => {
+    it('removes matching field and keeps others', () => {
+      const payload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'A', Value: 1 },
+                { FieldName: 'B', Value: 2 },
+                { FieldName: 'C', Value: 3 }
+              ]
+            }
+          ]
+        }
+      }
+      const result = columnFilterCleared('B', payload)
+      expect(result).toHaveLength(2)
+      expect(result.map((f) => f.FieldName)).toEqual(['A', 'C'])
+    })
+  })
+
   describe('columnFilterChanged branch coverage', () => {
     const basePayload = {
       filter: {
@@ -310,6 +361,38 @@ describe('helperFunctions.js (extra coverage)', () => {
       )
       expect(result.some((f) => f.FieldName === 'Type' && f.Value === 'email')).toBe(true)
       expect(result.some((f) => f.FieldName === 'Name' && f.Value === 'new-name')).toBe(true)
+    })
+    it('handles array filter replacing multiple fields', () => {
+      const payload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Value: 'old' },
+                { FieldName: 'Name', Value: 'old' }
+              ]
+            }
+          ]
+        }
+      }
+      const filter = [
+        { FieldName: 'Status', Value: 'active' },
+        { FieldName: 'Name', Value: 'updated' }
+      ]
+      const result = columnFilterChanged(filter, payload)
+      expect(result.some((f) => f.FieldName === 'Status' && f.Value === 'active')).toBe(true)
+      expect(result.some((f) => f.FieldName === 'Name' && f.Value === 'updated')).toBe(true)
+    })
+    it('handles single filter when no existing item matches', () => {
+      const payload = {
+        filter: {
+          FilterGroups: [{ FilterItems: [{ FieldName: 'Other', Value: 'x' }] }]
+        }
+      }
+      const result = columnFilterChanged({ FieldName: 'Name', Value: 'new' }, payload)
+      expect(result).toHaveLength(2)
+      expect(result.some((f) => f.FieldName === 'Other')).toBe(true)
+      expect(result.some((f) => f.FieldName === 'Name' && f.Value === 'new')).toBe(true)
     })
   })
 

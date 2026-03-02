@@ -106,7 +106,7 @@ export default {
       this.isLoading = value
     },
     removeKeysFromData(key) {
-      const copyOfData = JSON.parse(JSON.stringify(this.formData))
+      const copyOfData = structuredClone(this.formData)
       return copyOfData.filter(
         ({ exclusionType, isEditable }) => exclusionType !== key && isEditable
       )

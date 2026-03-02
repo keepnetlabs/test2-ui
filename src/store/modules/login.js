@@ -118,7 +118,7 @@ const login = {
     },
     getWhiteLabelByUrl({ commit }) {
       const formData = new FormData();
-      formData.append("DomainUrl", window.location.origin);
+      formData.append("DomainUrl", globalThis.location.origin);
       getWhiteLabelByUrl(formData).then((response) => {
         if (response?.data?.data) {
           const {

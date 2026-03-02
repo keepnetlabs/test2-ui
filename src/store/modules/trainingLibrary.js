@@ -101,7 +101,7 @@ const trainingLibrary = {
     tableFilterRenderKey: `table-filter-key-${createRandomCryptStringNumber()}`,
     selectedTrainingContent: "All Materials",
     selectedSubTrainingContent: "All Types",
-    filters: JSON.parse(JSON.stringify(trainingLibraryFilters)),
+    filters: structuredClone(trainingLibraryFilters),
     filtersRenderKey: `filters-key-${createRandomCryptStringNumber()}`,
     filterType: "Or",
     sortBy: "Date Created - New to old",
@@ -386,7 +386,7 @@ const trainingLibrary = {
       const mergedFilters = [...(savedFilters || [])];
       trainingLibraryFilters.forEach((defaultFilter) => {
         if (!savedFilterKeys.includes(defaultFilter.key)) {
-          mergedFilters.push(JSON.parse(JSON.stringify(defaultFilter)));
+          mergedFilters.push(structuredClone(defaultFilter));
         }
       });
       state.filters = mergedFilters;
@@ -661,7 +661,7 @@ const trainingLibrary = {
     callForSummary({ commit, state }, payload) {
       if (payload?.hideLoader) commit("SET_TABS_LOADING", false);
       else commit("SET_TABS_LOADING", true);
-      const copyOfPayload = JSON.parse(JSON.stringify(state.axiosPayload));
+      const copyOfPayload = structuredClone(state.axiosPayload);
       copyOfPayload.pageNumber = 1;
       let isAborted = false;
       cancellableSummaryRequest(copyOfPayload)

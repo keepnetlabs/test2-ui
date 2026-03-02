@@ -122,7 +122,7 @@ export default {
     },
     setFormDataToURL(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'URL')
-      this.initialData = JSON.parse(JSON.stringify(this.dataContainerWithSearchItems))
+      this.initialData = structuredClone(this.dataContainerWithSearchItems)
       this.dataWithObjects = getFormDataWithObjects(val, 'URL')
     },
     handleUrlAdd() {

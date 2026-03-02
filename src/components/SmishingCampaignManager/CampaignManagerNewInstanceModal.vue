@@ -134,8 +134,8 @@ export default {
     return {
       DISTRIBUTION_TYPES,
       labels,
-      initialFormValues: JSON.parse(JSON.stringify(defaultFormValues)),
-      formValues: JSON.parse(JSON.stringify(defaultFormValues)),
+      initialFormValues: structuredClone(defaultFormValues),
+      formValues: structuredClone(defaultFormValues),
       totalSendSecond: 77720,
       batchEverySendSecond: 0,
       isTargetGroupSearchLoading: false,
@@ -305,7 +305,7 @@ export default {
   },
   created() {
     this.callForTargetGroups()
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    this.initialFormValues = structuredClone(this.formValues)
   },
   methods: {
     closeOverlay() {

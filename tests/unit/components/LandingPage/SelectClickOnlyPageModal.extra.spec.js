@@ -36,7 +36,29 @@ describe('SelectClickOnlyPageModal.extra.spec.js', () => {
     jest.clearAllTimers()
   })
 
+  describe('handleAddTemplate branching', () => {
+    it('does not emit when selectedResourceId is null', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ selectedResourceId: null })
+      wrapper.vm.handleAddTemplate()
+      expect(wrapper.emitted('add')).toBeFalsy()
+    })
+
+    it('does not emit when selectedResourceId is empty string', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ selectedResourceId: '' })
+      wrapper.vm.handleAddTemplate()
+      expect(wrapper.emitted('add')).toBeFalsy()
+    })
+  })
+
   describe('getSelectedPageIndex branching', () => {
+    it('returns 0 when templateListPreview ref is undefined', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {}
+      expect(wrapper.vm.getSelectedPageIndex()).toBe(0)
+    })
+
     it('returns 0 if tab index results in NaN', () => {
       const wrapper = createWrapper()
       wrapper.vm.$refs.templateListPreview = { selectedLandingPageTab: 'invalid' }
@@ -95,6 +117,22 @@ describe('SelectClickOnlyPageModal.extra.spec.js', () => {
       wrapper.vm.handleClickOutside(event)
       expect(spy).toHaveBeenCalled()
     })
+
+    it('calls handleClose when event target is undefined', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ isJustOpened: false })
+      const spy = jest.spyOn(wrapper.vm, 'handleClose')
+      wrapper.vm.handleClickOutside({ target: undefined })
+      expect(spy).toHaveBeenCalled()
+    })
+
+    it('calls handleClose when event target is null', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({ isJustOpened: false })
+      const spy = jest.spyOn(wrapper.vm, 'handleClose')
+      wrapper.vm.handleClickOutside({ target: null })
+      expect(spy).toHaveBeenCalled()
+    })
   })
 
   describe('closeDrawer branching', () => {
@@ -110,6 +148,16 @@ describe('SelectClickOnlyPageModal.extra.spec.js', () => {
       expect(wrapper.vm.selectedResourceId).toBe(null)
       expect(wrapper.emitted('close')).toBeTruthy()
     })
+
+    it('still closes and emits when querySelector returns null', () => {
+      document.querySelector = jest.fn(() => null)
+      const wrapper = createWrapper()
+      wrapper.setData({ isVisible: true })
+      wrapper.vm.closeDrawer()
+      jest.advanceTimersByTime(250)
+      expect(wrapper.vm.isVisible).toBe(false)
+      expect(wrapper.emitted('close')).toBeTruthy()
+    })
   })
 
   describe('openDrawer branching', () => {
@@ -123,6 +171,12 @@ describe('SelectClickOnlyPageModal.extra.spec.js', () => {
       expect(mockEl.style.right).toBe('-100%')
       jest.advanceTimersByTime(10)
       expect(mockEl.style.right).toBe('0')
+    })
+
+    it('does not throw when querySelector returns null', () => {
+      document.querySelector = jest.fn(() => null)
+      const wrapper = createWrapper()
+      expect(() => wrapper.vm.openDrawer()).not.toThrow()
     })
   })
 

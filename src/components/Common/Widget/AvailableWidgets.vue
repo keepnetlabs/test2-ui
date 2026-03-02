@@ -119,7 +119,7 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        const currentAvailableWidgets = JSON.parse(JSON.stringify(val))
+        const currentAvailableWidgets = structuredClone(val)
         const currentAvailableWidgetKeys = currentAvailableWidgets.map((widget) => widget.key)
         const uniqueWidgetKeys = [...new Set(currentAvailableWidgetKeys)]
         const uniqueWidgets = currentAvailableWidgets
@@ -129,7 +129,7 @@ export default {
             } else return undefined
           })
           .filter(Boolean)
-        this.widgets = JSON.parse(JSON.stringify(uniqueWidgets))
+        this.widgets = structuredClone(uniqueWidgets)
       }
     }
   }

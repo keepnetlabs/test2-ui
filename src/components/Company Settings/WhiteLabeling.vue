@@ -425,8 +425,8 @@ export default {
       isResetToDefaultActionButtonDisabled: false,
       resetToDefaultWhiteLabelingDialogStatus: false,
       acceptedDnsRecordSettingsDomain: '',
-      formValues: JSON.parse(JSON.stringify(formValues)),
-      initialFormValues: JSON.parse(JSON.stringify(formValues)),
+      formValues: structuredClone(formValues),
+      initialFormValues: structuredClone(formValues),
       fileUploadKey: `key-${createRandomCryptStringNumber()}`,
       mainDomainItems: ['https://', 'http://'],
       configureCompanyWhitelabelingResourceId: '',
@@ -530,7 +530,7 @@ export default {
         return labels.InvalidURL
       }
       return value
-        ? /[(w{}.)?A-Z0-9@:%_+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_+.~#?&=\/]*)/gi.test(value) ||
+        ? /[({}.)?A-Z0-9@:%_+~#=]{2,256}\.[a-z]{2,6}\b([-A-Z0-9@:%_+.~#?&=/]*)/gi.test(value) ||
             labels.InvalidURL
         : true
     },
@@ -616,7 +616,7 @@ export default {
           this.toggleWhiteLabelingDialog()
           this.isResetToDefaultActionButtonDisabled = false
           this.callForData()
-          this.formValues = JSON.parse(JSON.stringify(formValues))
+          this.formValues = structuredClone(formValues)
           this.fileUploadKey = `key-${createRandomCryptStringNumber()}`
         })
       }
@@ -637,7 +637,7 @@ export default {
               this.formValues[key] = payload[key]
             }
           }
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.initialFormValues = structuredClone(this.formValues)
         })
         .finally(() => {
           this.isWhiteLabelLoading = false

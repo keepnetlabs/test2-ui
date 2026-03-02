@@ -308,7 +308,7 @@ export default {
       selectedLanguages: [],
       activeLanguage: '',
       templates: [],
-      redFlags: JSON.parse(JSON.stringify(defaultRedFlags)),
+      redFlags: structuredClone(defaultRedFlags),
       lastRedFlags: {},
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
@@ -474,7 +474,7 @@ export default {
           this.lastRedFlags[this.activeLanguage].flags
         ) {
           // Var olan red flags'leri restore et
-          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[this.activeLanguage].flags))
+          this.redFlags = structuredClone(this.lastRedFlags[this.activeLanguage].flags)
           if (
             this.lastRedFlags[this.activeLanguage].templates &&
             this.lastRedFlags[this.activeLanguage].templates[0]
@@ -518,7 +518,7 @@ export default {
             // Update template HTML and store red flags data
             this.templateHTML = template
             this.lastRedFlags[this.activeLanguage] = {
-              flags: JSON.parse(JSON.stringify(redFlags)),
+              flags: structuredClone(redFlags),
               templates: [template],
               textfieldValues: {
                 fromName: this.emailTemplateParams.fromName,
@@ -528,7 +528,7 @@ export default {
               }
             }
 
-            this.redFlags = JSON.parse(JSON.stringify(redFlags))
+            this.redFlags = structuredClone(redFlags)
             this.updateTemplateWithFlaggedStyles()
           })
           .catch((e) => {
@@ -552,7 +552,7 @@ export default {
             })
             this.isShowRedFlags = false
             this.isFlaggedStylesEnabled = false
-            this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+            this.redFlags = structuredClone(defaultRedFlags)
           })
           .finally(() => {
             if (this.$refs.refPreview) {
@@ -563,7 +563,7 @@ export default {
       } else {
         // CSS stillerini template'den kaldır
         this.lastRedFlags[this.activeLanguage] = {
-          flags: JSON.parse(JSON.stringify(this.redFlags)),
+          flags: structuredClone(this.redFlags),
           templates: [],
           textfieldValues: {
             fromName: this.emailTemplateParams.fromName,
@@ -572,7 +572,7 @@ export default {
             attachmentFileName: this.activeFileName
           }
         }
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.updateTemplateWithFlaggedStyles()
       }
     },
@@ -580,7 +580,7 @@ export default {
       // Eski activeLanguage için red flags'leri kaydet
       if (this.activeLanguage && this.isShowRedFlags) {
         this.lastRedFlags[this.activeLanguage] = {
-          flags: JSON.parse(JSON.stringify(this.redFlags)),
+          flags: structuredClone(this.redFlags),
           templates: [this.templateHTML],
           textfieldValues: {
             fromName: this.emailTemplateParams.fromName,
@@ -602,7 +602,7 @@ export default {
       if (this.isShowRedFlags) {
         // Red flags aktif ise, yeni dil için red flags varsa restore et
         if (this.lastRedFlags[val] && this.lastRedFlags[val].flags) {
-          this.redFlags = JSON.parse(JSON.stringify(this.lastRedFlags[val].flags))
+          this.redFlags = structuredClone(this.lastRedFlags[val].flags)
           this.isFlaggedStylesEnabled = true
 
           if (this.lastRedFlags[val].templates && this.lastRedFlags[val].templates[0]) {
@@ -612,13 +612,13 @@ export default {
           this.updateTemplateWithFlaggedStyles()
         } else {
           // Yeni dilde red flags yok, isShowRedFlags'i false yap
-          this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+          this.redFlags = structuredClone(defaultRedFlags)
           this.isFlaggedStylesEnabled = false
           this.isShowRedFlags = false
         }
       } else {
         // Red flags aktif değil, default state
-        this.redFlags = JSON.parse(JSON.stringify(defaultRedFlags))
+        this.redFlags = structuredClone(defaultRedFlags)
         this.isFlaggedStylesEnabled = false
       }
       this.activeLanguage = val
