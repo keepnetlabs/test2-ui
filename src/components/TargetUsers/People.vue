@@ -1030,14 +1030,15 @@ export default {
       const orFilterGroup = this.payload?.filter?.FilterGroups?.[1];
       if (!filterGroup) return;
 
+      const STATUS_FIELD = PROPERTY_STORE.STATUS;
       const clearedItems = (filterGroup.FilterItems || []).filter(
         (item) =>
-          !["IsDeleted", "Status", "MonthlyActiveUser"].includes(item.FieldName)
+          !["IsDeleted", "Status", STATUS_FIELD, "MonthlyActiveUser"].includes(item.FieldName)
       );
       if (orFilterGroup) {
         orFilterGroup.FilterItems = (orFilterGroup.FilterItems || []).filter(
           (item) =>
-            !["IsDeleted", "Status", "MonthlyActiveUser"].includes(
+            !["IsDeleted", "Status", STATUS_FIELD, "MonthlyActiveUser"].includes(
               item.FieldName
             )
         );
@@ -1064,7 +1065,7 @@ export default {
             Operator: "Contains"
           },
           {
-            FieldName: "Status",
+            FieldName: STATUS_FIELD,
             Value: statusValues.join(","),
             Operator: "Include"
           }
@@ -1081,7 +1082,7 @@ export default {
       } else if (statusValues.length) {
         clearedItems.push(
           {
-            FieldName: "Status",
+            FieldName: STATUS_FIELD,
             Value: statusValues.join(","),
             Operator: "Include"
           },
