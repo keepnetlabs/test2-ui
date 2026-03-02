@@ -5,7 +5,9 @@ jest.mock('@/utils/functions', () => ({
 
 jest.mock('@/api/phishingReporter', () => ({
   generateDiagnosticTool: jest.fn(() => Promise.resolve({ data: { data: { resourceId: 'id-1' } } })),
-  downloadDiagnosticTool: jest.fn(() => Promise.resolve({ data: new Blob() }))
+  downloadDiagnosticTool: jest.fn(() =>
+    Promise.resolve({ data: new ArrayBuffer(0) })
+  )
 }))
 
 import { shallowMount } from '@vue/test-utils'
@@ -240,7 +242,7 @@ describe('DiagnosticTool.vue (extra coverage)', () => {
     it('retries on 404', async () => {
       downloadDiagnosticTool
         .mockRejectedValueOnce({ response: { status: 404 } })
-        .mockResolvedValueOnce({ data: new Blob() })
+        .mockResolvedValueOnce({ data: new ArrayBuffer(0) })
       jest.useFakeTimers()
       const wrapper = createWrapper()
       wrapper.vm.callForDownloadDiagnosticTool('id-1')
