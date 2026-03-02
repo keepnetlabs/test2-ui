@@ -131,4 +131,39 @@
       line-height: 21px;
     }
   }
+
+  &__defender-toggle {
+    align-items: center;
+  }
+
+  &__defender-status {
+    text-align: left;
+  }
+
+  &__defender-status-title {
+    color: var(--Black-Black, #383b41) !important;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-style: normal;
+    font-weight: 600 !important;
+    line-height: 21px !important;
+  }
+
+  &__defender-status-subtitle {
+    color: var(--Black-Black, #383b41) !important;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px !important;
+    font-style: normal;
+    font-weight: 400 !important;
+    line-height: 19px !important;
+    margin-top: 4px;
+  }
+
+  &__defender-email-form {
+    .k-form-group__content-hint {
+      margin-bottom: 6px;
+    }
+  }
 }
