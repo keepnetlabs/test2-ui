@@ -49,6 +49,25 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     expect(JSON.stringify(state.tableColumns)).toBe(before)
   })
 
+  it('SET_DEFAULT_TABLE_SETTINGS merges default columns when saved renderedColumns is empty', () => {
+    const state = createState()
+    localStorage.setItem(
+      'training-library-columns',
+      JSON.stringify({
+        renderedColumns: [],
+        firstColFixed: false,
+        lastColFixed: false
+      })
+    )
+    trainingLibrary.mutations.SET_DEFAULT_TABLE_SETTINGS(state)
+    expect(state.renderedColumns.length).toBeGreaterThan(0)
+    expect(state.renderedColumns).toEqual(
+      expect.arrayContaining(state.tableColumns.map((c) => c.property))
+    )
+    expect(state.firstColFixed).toBe(false)
+    expect(state.lastColFixed).toBe(false)
+  })
+
   it('SET_DEFAULT_TABLE_FILTERS sets default OR condition when localStorage is empty', () => {
     const state = createState()
     state.filterType = 'And'
@@ -83,6 +102,29 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     expect(state.sortBy).toBe('Name - A-Z')
     expect(state.search).toBe('abc')
     expect(state.selectedSubTrainingContent).toBe(TRAINING_LIBRARY_TYPES.TRAINING)
+  })
+
+  it('SET_DEFAULT_TABLE_FILTERS merges missing default filters when saved has fewer', () => {
+    const state = createState()
+    const minimalFilters = [{ key: 'type', text: 'Type', items: [] }]
+    localStorage.setItem(
+      'training-library-filters',
+      JSON.stringify({
+        filters: minimalFilters,
+        filterOptionsFilters: [],
+        filterType: 'Or',
+        sortBy: 'Date Created - New to old',
+        search: '',
+        axiosPayload: state.axiosPayload,
+        selectedTrainingContent: 'All Materials',
+        selectedSubTrainingContent: 'All Types'
+      })
+    )
+
+    trainingLibrary.mutations.SET_DEFAULT_TABLE_FILTERS(state)
+
+    expect(state.filters.length).toBeGreaterThan(minimalFilters.length)
+    expect(state.filters.some((f) => f.key === 'type')).toBe(true)
   })
 
   it('SET_FILTER_TO_PAYLOAD maps targetAudience to roles and updates existing filter', () => {
@@ -139,6 +181,59 @@ describe('trainingLibrary store (branch extra coverage)', () => {
       activeValue: []
     })
     expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toHaveLength(0)
+  })
+
+  it('SET_FILTER_TO_PAYLOAD adds between operator filters', () => {
+    const state = createState()
+    trainingLibrary.mutations.SET_FILTER_TO_PAYLOAD(state, {
+      key: 'dateCreated',
+      activeValue: ['2025-01-01', '2025-01-31'],
+      activeOperator: 'between'
+    })
+    const items = state.axiosPayload.filter.FilterGroups[0].FilterItems
+    const betweenItems = items.filter((f) => f.FieldName === 'dateCreated')
+    expect(betweenItems).toHaveLength(2)
+    expect(betweenItems[0].Operator).toBe('>=')
+    expect(betweenItems[1].Operator).toBe('<=')
+  })
+
+  it('REMOVE_FILTER_FROM_PAYLOAD splices non-search filter', () => {
+    const state = createState()
+    state.axiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'category', Value: 'A', Operator: 'Include' }
+    ]
+    trainingLibrary.mutations.REMOVE_FILTER_FROM_PAYLOAD(state, {
+      key: 'category',
+      filterType: 'select',
+      activeValue: 'x'
+    })
+    expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
+  it('SET_FILTER_TYPE_TO_PAYLOAD updates filter condition', () => {
+    const state = createState()
+    state.filterType = 'AND'
+    trainingLibrary.mutations.SET_FILTER_TYPE_TO_PAYLOAD(state)
+    expect(state.axiosPayload.filter.FilterGroups[0].Condition).toBe('AND')
+  })
+
+  it('SET_SORT_BY_TO_PAYLOAD updates ascending and orderBy', () => {
+    const state = createState()
+    trainingLibrary.mutations.SET_SORT_BY_TO_PAYLOAD(state, {
+      ascending: true,
+      orderBy: 'trainingName'
+    })
+    expect(state.axiosPayload.ascending).toBe(true)
+    expect(state.axiosPayload.orderBy).toBe('trainingName')
+  })
+
+  it('RESET_PAGINATION resets page numbers', () => {
+    const state = createState()
+    state.axiosPayload.pageNumber = 5
+    state.serverSideProps.pageNumber = 5
+    trainingLibrary.mutations.RESET_PAGINATION(state)
+    expect(state.axiosPayload.pageNumber).toBe(1)
+    expect(state.serverSideProps.pageNumber).toBe(1)
   })
 
   it('REMOVE_FILTER_FROM_PAYLOAD removes 2 items for date-between filter', () => {
@@ -290,6 +385,28 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     })
 
     expect(JSON.stringify(state.filters)).toBe(before)
+  })
+
+  it('SET_FILTER_ITEMS does not throw when payload is null', () => {
+    const state = createState()
+    expect(() => {
+      trainingLibrary.mutations.SET_FILTER_ITEMS(state, null)
+    }).not.toThrow()
+  })
+
+  it('SET_FILTER_ITEMS does not throw when filters array is empty', () => {
+    const state = createState()
+    state.filters = []
+    expect(() => {
+      trainingLibrary.mutations.SET_FILTER_ITEMS(state, { key: 'type', items: [{ text: 'A' }] })
+    }).not.toThrow()
+  })
+
+  it('SET_FILTER_ITEMS_SHOW does not throw when payload is null', () => {
+    const state = createState()
+    expect(() => {
+      trainingLibrary.mutations.SET_FILTER_ITEMS_SHOW(state, null)
+    }).not.toThrow()
   })
 
   it('callForSummary handles aborted empty response without committing tabs data', async () => {

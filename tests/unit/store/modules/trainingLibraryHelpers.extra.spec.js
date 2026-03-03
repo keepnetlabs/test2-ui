@@ -95,6 +95,20 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
   })
 
   describe('callForTargetAudiences', () => {
+    it('uses empty string for value when id is null', async () => {
+      AwarenessEducatorService.getTargetAudiences.mockResolvedValue({
+        data: {
+          data: [{ displayName: 'NoId Role' }]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForTargetAudiences({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TARGET_AUDIENCES', [
+        { id: undefined, text: 'NoId Role', value: '' }
+      ])
+    })
+
     it('maps target audiences with id/roleId/resourceId/targetAudienceId', async () => {
       AwarenessEducatorService.getTargetAudiences.mockResolvedValue({
         data: {
@@ -236,6 +250,14 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
       ])
     })
 
+    it('callForLevels handles null/undefined response data', async () => {
+      AwarenessEducatorService.getTrainingLevels.mockResolvedValue({ data: {} })
+
+      await trainingLibraryHelpers.actions.callForLevels({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_LEVELS', [])
+    })
+
     it('callForLevels uses levelId fallback and name as text when displayName is missing', async () => {
       AwarenessEducatorService.getTrainingLevels.mockResolvedValue({
         data: {
@@ -248,6 +270,28 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_LEVELS', [
         { id: 9, name: 'Expert-Level', text: 'Expert-Level', value: '' }
       ])
+    })
+
+    it('callForLevels uses empty id and value when level has no id/resourceId/levelId', async () => {
+      AwarenessEducatorService.getTrainingLevels.mockResolvedValue({
+        data: {
+          data: [{ name: 'Orphan' }]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForLevels({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_LEVELS', [
+        { id: '', name: 'Orphan', text: 'Orphan', value: '' }
+      ])
+    })
+
+    it('callForDurations handles null/undefined response data', async () => {
+      AwarenessEducatorService.getTrainingDurations.mockResolvedValue({ data: {} })
+
+      await trainingLibraryHelpers.actions.callForDurations({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_DURATIONS', [])
     })
 
     it('callForDurations uses durationId fallback and name as text when displayName missing', async () => {
@@ -327,6 +371,14 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
   })
 
   describe('callForBehaviours', () => {
+    it('handles null/undefined response data', async () => {
+      AwarenessEducatorService.getBehaviours.mockResolvedValue({ data: {} })
+
+      await trainingLibraryHelpers.actions.callForBehaviours({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_BEHAVIOURS', [])
+    })
+
     it('maps behaviours and dispatches filter items', async () => {
       AwarenessEducatorService.getBehaviours.mockResolvedValue({
         data: {
@@ -528,6 +580,30 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
 
       expect(commit).toHaveBeenCalledWith('SET_TYPES', [])
       expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_TRAINING_TYPES', [])
+    })
+
+    it('handles null/undefined response data', async () => {
+      AwarenessEducatorService.getTrainingTypes.mockResolvedValue({ data: {} })
+
+      await trainingLibraryHelpers.actions.callForTypes({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TYPES', [])
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_TRAINING_TYPES', [])
+    })
+
+    it('handles type with missing id using empty value', async () => {
+      AwarenessEducatorService.getTrainingTypes.mockResolvedValue({
+        data: {
+          data: [{ id: null, displayName: 'Unknown' }, { id: 1, displayName: 'Training' }]
+        }
+      })
+
+      await trainingLibraryHelpers.actions.callForTypes({ commit, dispatch })
+
+      expect(commit).toHaveBeenCalledWith('SET_TYPES', [
+        { text: 'Unknown', value: '' },
+        { text: 'Training', value: '1' }
+      ])
     })
 
     it('keeps all types in learning path list when excluded labels are absent', async () => {

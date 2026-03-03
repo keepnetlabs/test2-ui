@@ -35,6 +35,40 @@ describe('learningPath store module (real)', () => {
     })
   })
 
+  describe('getters', () => {
+    it('getLearningPathFilterType returns filterType', () => {
+      const state = createState()
+      state.learningPathFilterType = 'And'
+      expect(learningPath.getters.getLearningPathFilterType(state)).toBe('And')
+    })
+    it('getLearningPathSortBy returns sortBy', () => {
+      const state = createState()
+      state.learningPathSortBy = 'Name - A-Z'
+      expect(learningPath.getters.getLearningPathSortBy(state)).toBe('Name - A-Z')
+    })
+    it('getLearningPathSearch returns search', () => {
+      const state = createState()
+      state.learningPathSearch = 'test'
+      expect(learningPath.getters.getLearningPathSearch(state)).toBe('test')
+    })
+    it('getLearningPathFilters returns filters array', () => {
+      const state = createState()
+      expect(learningPath.getters.getLearningPathFilters(state)).toEqual(state.learningPathFilters)
+    })
+    it('getLearningPathTrainings returns table data', () => {
+      const state = createState()
+      state.learningPathTableData = [{ trainingId: 't1' }]
+      expect(learningPath.getters.getLearningPathTrainings(state)).toEqual([{ trainingId: 't1' }])
+    })
+    it('getSelectedLearningPathTrainings returns selected', () => {
+      const state = createState()
+      state.selectedLearningPathTrainings = [{ trainingId: 's1' }]
+      expect(learningPath.getters.getSelectedLearningPathTrainings(state)).toEqual([
+        { trainingId: 's1' }
+      ])
+    })
+  })
+
   describe('mutations', () => {
     describe('data ordering and search mutations', () => {
       it('ORDER_LEARNING_PATH_DATA sorts unavailable trainings to the end', () => {
@@ -193,6 +227,42 @@ describe('learningPath store module (real)', () => {
       expect(filter.items).toEqual([{ text: 'Training', value: '1' }])
     })
 
+    it('SET_LEARNING_PATH_FILTER_ITEMS does not throw when filter key is not found', () => {
+      const state = createState()
+      const payload = { key: 'nonExistentFilterKey', items: [{ text: 'Item', value: '1' }] }
+
+      expect(() => {
+        learningPath.mutations.SET_LEARNING_PATH_FILTER_ITEMS(state, payload)
+      }).not.toThrow()
+    })
+
+    it('SET_LEARNING_PATH_FILTER_ITEMS does not throw when payload is null', () => {
+      const state = createState()
+      expect(() => {
+        learningPath.mutations.SET_LEARNING_PATH_FILTER_ITEMS(state, null)
+      }).not.toThrow()
+    })
+
+    it('SET_LEARNING_PATH_FILTER_ITEMS does not throw when learningPathFilters is empty', () => {
+      const state = createState()
+      state.learningPathFilters = []
+      const payload = { key: 'type', items: [{ text: 'Training', value: '1' }] }
+
+      expect(() => {
+        learningPath.mutations.SET_LEARNING_PATH_FILTER_ITEMS(state, payload)
+      }).not.toThrow()
+    })
+
+    it('SET_LEARNING_PATH_FILTER_ITEMS assigns undefined items when payload.items is undefined', () => {
+      const state = createState()
+      const payload = { key: 'type', items: undefined }
+
+      learningPath.mutations.SET_LEARNING_PATH_FILTER_ITEMS(state, payload)
+
+      const filter = state.learningPathFilters.find((f) => f.key === 'type')
+      expect(filter.items).toBeUndefined()
+    })
+
     it('SET_LEARNING_PATH_FILTER_ITEMS_SHOW updates filter show by key', () => {
       const state = createState()
       const payload = { key: 'type', show: true }
@@ -201,6 +271,56 @@ describe('learningPath store module (real)', () => {
 
       const filter = state.learningPathFilters.find((f) => f.key === 'type')
       expect(filter.show).toBe(true)
+    })
+
+    it('SET_LEARNING_PATH_FILTER_ITEMS_SHOW does not throw when filter key is not found', () => {
+      const state = createState()
+      const payload = { key: 'nonExistentFilterKey', show: true }
+
+      expect(() => {
+        learningPath.mutations.SET_LEARNING_PATH_FILTER_ITEMS_SHOW(state, payload)
+      }).not.toThrow()
+    })
+
+    it('SET_LEARNING_PATH_FILTER_ITEMS_SHOW does not throw when payload is null', () => {
+      const state = createState()
+      expect(() => {
+        learningPath.mutations.SET_LEARNING_PATH_FILTER_ITEMS_SHOW(state, null)
+      }).not.toThrow()
+    })
+
+    it('SET_FILTER_ITEMS_SHOW does not throw when filter key is not found', () => {
+      const state = createState()
+      const payload = { key: 'nonExistentFilterKey', show: true }
+
+      expect(() => {
+        learningPath.mutations.SET_FILTER_ITEMS_SHOW(state, payload)
+      }).not.toThrow()
+    })
+
+    it('SET_FILTER_ITEMS_SHOW does not throw when payload is null', () => {
+      const state = createState()
+      expect(() => {
+        learningPath.mutations.SET_FILTER_ITEMS_SHOW(state, null)
+      }).not.toThrow()
+    })
+
+    it('RESET_SELECTED_LEARNING_PATH_TRAININGS clears selected trainings', () => {
+      const state = createState()
+      state.selectedLearningPathTrainings = [{ trainingId: 't1' }]
+
+      learningPath.mutations.RESET_SELECTED_LEARNING_PATH_TRAININGS(state)
+
+      expect(state.selectedLearningPathTrainings).toEqual([])
+    })
+
+    it('RESET_LEARNING_PATH_DATA clears table data', () => {
+      const state = createState()
+      state.learningPathTableData = [{ trainingId: 't1' }]
+
+      learningPath.mutations.RESET_LEARNING_PATH_DATA(state)
+
+      expect(state.learningPathTableData).toEqual([])
     })
 
     it('SET_SELECTED_LEARNING_PATH_TRAININGS sorts by trainingOrder', () => {
@@ -229,6 +349,16 @@ describe('learningPath store module (real)', () => {
       expect(state.selectedLearningPathTrainings).toEqual([{ trainingId: 't2' }])
     })
 
+    it('SELECT_LEARNING_PATH_TRAINING uses default training and index 0 when not provided', () => {
+      const state = createState()
+      state.learningPathTableData = [{ trainingId: 't1' }]
+
+      learningPath.mutations.SELECT_LEARNING_PATH_TRAINING(state, {})
+
+      expect(state.learningPathTableData).toHaveLength(0)
+      expect(state.selectedLearningPathTrainings).toHaveLength(1)
+    })
+
     it('REMOVE_TRAINING_FROM_LEARNING_PATH moves item back to table', () => {
       const state = createState()
       state.learningPathTableData = [{ trainingId: 't1' }]
@@ -241,6 +371,17 @@ describe('learningPath store module (real)', () => {
 
       expect(state.learningPathTableData[0].trainingId).toBe('t2')
       expect(state.selectedLearningPathTrainings).toEqual([])
+    })
+
+    it('REMOVE_TRAINING_FROM_LEARNING_PATH uses default params when not provided', () => {
+      const state = createState()
+      state.learningPathTableData = []
+      state.selectedLearningPathTrainings = [{ trainingId: 't1' }]
+
+      learningPath.mutations.REMOVE_TRAINING_FROM_LEARNING_PATH(state, {})
+
+      expect(state.learningPathTableData).toHaveLength(1)
+      expect(state.selectedLearningPathTrainings).toHaveLength(0)
     })
 
     it('SET_LEARNING_PATH_TABLE_DATA excludes already selected trainings', () => {
@@ -323,11 +464,52 @@ describe('learningPath store module (real)', () => {
       )
 
       expect(commit).toHaveBeenCalledWith('APPEND_LEARNING_PATH_TABLE_DATA', [{ trainingId: 't2' }])
-        expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA')
-      })
+      expect(commit).toHaveBeenCalledWith('ORDER_LEARNING_PATH_DATA')
     })
 
+    it('callForLearningPathTableData uses selectedLearningPathTrainings when no payload trainingIds', async () => {
+      const state = createState()
+      state.selectedLearningPathTrainings = [
+        { trainingId: 't1', trainingOrder: 1 },
+        { detailTrainingId: 't2', trainingOrder: 2 }
+      ]
+      const commit = jest.fn()
+
+      AwarenessEducatorService.searchTraining.mockResolvedValue({
+        data: { data: { results: [], totalNumberOfRecords: 0, totalNumberOfPages: 1, pageNumber: 1 } }
+      })
+
+      await learningPath.actions.callForLearningPathTableData({ commit, state }, {})
+
+      expect(state.learningPathAxiosPayload.trainingIds).toEqual(['t1', 't2'])
+    })
+
+    it('callForLearningPathTableData handles empty or malformed API response', async () => {
+      const state = createState()
+      const commit = jest.fn()
+
+      AwarenessEducatorService.searchTraining.mockResolvedValue({ data: {} })
+
+      await learningPath.actions.callForLearningPathTableData({ commit, state }, {})
+
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_TABLE_DATA', [])
+      expect(commit).toHaveBeenCalledWith('SET_LEARNING_PATH_SERVER_SIDE_PROPS', {
+        totalNumberOfRecords: 0,
+        totalNumberOfPages: 0,
+        pageNumber: 1
+      })
+    })
+  })
+
     describe('search, sort and filter actions', () => {
+      it('callForLearningPathTrainingLibrary dispatches callForLearningPathTableData', () => {
+        const dispatch = jest.fn()
+
+        learningPath.actions.callForLearningPathTrainingLibrary({ dispatch }, { page: 1 })
+
+        expect(dispatch).toHaveBeenCalledWith('callForLearningPathTableData', { page: 1 })
+      })
+
       it('setLearningPathSearch commits search and dispatches reload', () => {
         const commit = jest.fn()
         const dispatch = jest.fn()
@@ -350,6 +532,31 @@ describe('learningPath store module (real)', () => {
 
         expect(state.learningPathAxiosPayload.pageNumber).toBe(2)
         expect(dispatch).toHaveBeenCalledWith('callForLearningPathTrainingLibrary', { isAppend: true })
+      })
+
+      it('getDataAfterValidScroll does not dispatch when already at last page', () => {
+        const state = createState()
+        const dispatch = jest.fn()
+        state.learningPathAxiosPayload.pageNumber = 3
+        state.learningPathServerSideProps.totalNumberOfPages = 3
+        state.learningPathSearch = ''
+
+        learningPath.actions.getDataAfterValidScroll({ state, dispatch })
+
+        expect(dispatch).not.toHaveBeenCalled()
+        expect(state.learningPathAxiosPayload.pageNumber).toBe(3)
+      })
+
+      it('getDataAfterValidScroll does not dispatch when search is active', () => {
+        const state = createState()
+        const dispatch = jest.fn()
+        state.learningPathAxiosPayload.pageNumber = 1
+        state.learningPathServerSideProps.totalNumberOfPages = 3
+        state.learningPathSearch = 'security'
+
+        learningPath.actions.getDataAfterValidScroll({ state, dispatch })
+
+        expect(dispatch).not.toHaveBeenCalled()
       })
 
       it('setLearningPathSortBy commits sort payload and dispatches fetch', () => {

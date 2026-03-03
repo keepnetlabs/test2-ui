@@ -1,8 +1,10 @@
 jest.mock('@/api/smishing', () => ({
-  getTextMessageTemplate: jest.fn(() => Promise.resolve({ data: { data: {} } }))
+  getTextMessageTemplate: jest.fn(() => Promise.resolve({ data: { data: {} } })),
+  checkSmishingTextRisk: jest.fn()
 }))
 
 import NewTemplate from '@/components/SmishingTemplates/NewTemplate.vue'
+import SmishingService from '@/api/smishing'
 
 describe('SmishingTemplates NewTemplate.vue', () => {
   it('getTitle returns New Text Message Template when not edit', () => {
@@ -27,5 +29,33 @@ describe('SmishingTemplates NewTemplate.vue', () => {
     }
     NewTemplate.methods.setFooterButtonIds.call(ctx)
     expect(ctx.footerButtonsIds.cancelButton).toContain('duplicate')
+  })
+
+  it('checkComplianceAndSubmit does not throw when assistantMessage is missing', async () => {
+    SmishingService.checkSmishingTextRisk.mockResolvedValue({
+      data: [{ role: 'user' }]
+    })
+    const ctx = {
+      formValues: { template: 'test' },
+      enhancedCache: {},
+      isSubmitDisabled: false,
+      $set: jest.fn()
+    }
+    NewTemplate.methods.checkComplianceAndSubmit.call(ctx)
+    await Promise.resolve()
+    expect(ctx.isSubmitDisabled).toBe(false)
+  })
+
+  it('checkComplianceAndSubmit does not throw when data is empty', async () => {
+    SmishingService.checkSmishingTextRisk.mockResolvedValue({ data: [] })
+    const ctx = {
+      formValues: { template: 'test' },
+      enhancedCache: {},
+      isSubmitDisabled: false,
+      $set: jest.fn()
+    }
+    NewTemplate.methods.checkComplianceAndSubmit.call(ctx)
+    await Promise.resolve()
+    expect(ctx.isSubmitDisabled).toBe(false)
   })
 })
