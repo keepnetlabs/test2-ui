@@ -309,6 +309,17 @@ describe('plugins/sentry', () => {
     expect(processor(event)).toBeNull()
   })
 
+  it('initializes when router is undefined', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin(undefined)
+
+    expect(sentryMock.init).toHaveBeenCalled()
+    expect(sentryMock.browserTracingIntegration).toHaveBeenCalledWith({ router: undefined })
+  })
+
   it('initializes sentry integrations with router tracing config', () => {
     const { plugin, sentryMock } = loadPlugin({
       sentryStatus: true,
@@ -326,8 +337,64 @@ describe('plugins/sentry', () => {
     expect(sentryMock.init).toHaveBeenCalledWith(
       expect.objectContaining({
         dsn: 'dsn-test',
-        trackComponents: true
+        trackComponents: true,
+        tracesSampleRate: 0.15,
+        replaysSessionSampleRate: 1,
+        replaysOnErrorSampleRate: 1
       })
     )
+  })
+
+  it('passes through non-error non-replay events', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const transactionEvent = { type: 'transaction', transaction: '/reports' }
+    expect(processor(transactionEvent)).toBe(transactionEvent)
+  })
+
+  it('uses fallback user when localStorage has invalid JSON', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: 'invalid-json'
+    })
+    plugin({})
+
+    expect(sentryMock.setUser).toHaveBeenCalledWith({
+      username: 'Company',
+      email: 'Guest Email'
+    })
+    expect(sentryMock.init).toHaveBeenCalled()
+  })
+
+  it('passes through event when level is error but message is undefined', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = { level: 'error', message: undefined }
+    expect(processor(event)).toBe(event)
+  })
+
+  it('passes through event when exception value is undefined', () => {
+    const { plugin, sentryMock } = loadPlugin({
+      sentryStatus: true,
+      userData: JSON.stringify({ name: 'Acme', email: 'a@b.com' })
+    })
+    plugin({})
+
+    const processor = sentryMock.addEventProcessor.mock.calls[0][0]
+    const event = {
+      level: 'error',
+      exception: { values: [{ value: undefined }] }
+    }
+    expect(processor(event)).toBe(event)
   })
 })
