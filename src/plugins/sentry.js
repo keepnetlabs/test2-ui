@@ -131,10 +131,19 @@ const CONSTANTS = {
 }
 export default (router) => {
   if (!sentryStatus) return
-  const userData = JSON.parse(localStorage.getItem('userData')) || {
-    fullName: 'Guest',
-    email: 'Guest Email',
-    name: 'Company'
+  let userData
+  try {
+    userData = JSON.parse(localStorage.getItem('userData')) || {
+      fullName: 'Guest',
+      email: 'Guest Email',
+      name: 'Company'
+    }
+  } catch {
+    userData = {
+      fullName: 'Guest',
+      email: 'Guest Email',
+      name: 'Company'
+    }
   }
   Sentry.setUser({
     username: userData.name || 'Company',
@@ -153,6 +162,7 @@ export default (router) => {
         blockAllMedia: false
       })
     ],
+    tracesSampleRate: 0.15,
     ignoreErrors: [
       'ResizeObserver loop limit exceeded',
       'Maximum call stack size exceeded',
@@ -175,7 +185,6 @@ export default (router) => {
       'timed out while waiting for outgoing message to echo back'
     ],
     trackComponents: true,
-    tracesSampleRate: 1,
     replaysSessionSampleRate: 1,
     replaysOnErrorSampleRate: 1
   })
@@ -187,7 +196,7 @@ export default (router) => {
       }
     }
     if (event?.level === CONSTANTS.ERROR && event?.exception?.values?.[0]) {
-      const message = event.exception.values[0].value
+      const message = event.exception.values[0].value ?? ''
       if (CONSTANTS.GRAPESJS_INTERNAL.some((m) => message.includes(m))) return null
       if (CONSTANTS.VUETIFY_INTERNAL.some((m) => message.includes(m))) return null
       if (CONSTANTS.AXIOS_ERROR.some((m) => message.includes(m))) return null
@@ -215,12 +224,12 @@ export default (router) => {
       if (message.includes(CONSTANTS.NETWORK_ERROR)) return null
     } else if (
       event?.level === CONSTANTS.ERROR &&
-      (event?.message?.includes('Vuetify') ||
-        event?.message?.includes('HTTP/1.1 Overhead') ||
-        event?.message?.includes('[object Event]') ||
-        event?.message?.includes('[object ProgressEvent]') ||
-        event?.message?.includes('Large Render Blocking Asset') ||
-        event?.message?.includes('<unknown>'))
+      ((event?.message ?? '').includes('Vuetify') ||
+        (event?.message ?? '').includes('HTTP/1.1 Overhead') ||
+        (event?.message ?? '').includes('[object Event]') ||
+        (event?.message ?? '').includes('[object ProgressEvent]') ||
+        (event?.message ?? '').includes('Large Render Blocking Asset') ||
+        (event?.message ?? '').includes('<unknown>'))
     ) {
       return null
     }
