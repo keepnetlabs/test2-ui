@@ -634,8 +634,8 @@ const trainingLibrary = {
           const enrichedResults = results.map((item) => {
             return {
               ...item,
-              languageCodes: item.languages, // Orijinal kodları sakla
-              languages: item.languages.map((code) => {
+              languageCodes: item.languages || [], // Orijinal kodları sakla
+              languages: (item.languages || []).map((code) => {
                 const language = languages.find((lang) => lang.code === code);
                 return language?.isoFriendlyName || code;
               }),

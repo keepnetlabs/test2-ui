@@ -42,6 +42,7 @@ jest.mock('@/utils/functions', () => ({
 
 import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi.vue'
 import { createRestApi, updateRestApi, generateClientCredentials, getRestApi } from '@/api/restApi'
+import { getAvailableSystemUsersRole } from '@/api/systemUsers'
 
 describe('NewCustomApi.vue', () => {
   beforeEach(() => {
@@ -129,6 +130,16 @@ describe('NewCustomApi.vue', () => {
     await NewCustomApi.methods.getRoles.call(ctx)
     expect(ctx.roleItems).toEqual([{ name: 'Company Admin', resourceId: 'role1' }])
     expect(ctx.formValues.roleResourceIdList).toBe('role1')
+  })
+
+  it('getRoles does not throw when no CompanyAdmin role exists', async () => {
+    getAvailableSystemUsersRole.mockResolvedValueOnce({
+      data: { data: [{ name: 'Viewer', resourceId: 'viewer1' }] }
+    })
+    const ctx = { roleItems: [], selectedRow: null, formValues: {} }
+    await NewCustomApi.methods.getRoles.call(ctx)
+    expect(ctx.formValues.roleResourceIdList).toBeUndefined()
+    expect(ctx.roleItems).toEqual([{ name: 'Viewer', resourceId: 'viewer1' }])
   })
 
   it('created edit path can fetch existing api detail', async () => {

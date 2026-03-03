@@ -29,6 +29,97 @@ describe('learningPath store (branch extra coverage)', () => {
     jest.clearAllMocks()
   })
 
+  it('ORDER_LEARNING_PATH_DATA does not update availableFor when payload is null', () => {
+    const state = createState()
+    state.availableFor = ['CompanyA']
+    state.learningPathTableData = [
+      { trainingId: 1, availableFor: ['CompanyA'] },
+      { trainingId: 2, availableFor: ['CompanyB'] }
+    ]
+
+    learningPath.mutations.ORDER_LEARNING_PATH_DATA(state, null)
+
+    expect(state.availableFor).toEqual(['CompanyA'])
+  })
+
+  it('ORDER_LEARNING_PATH_DATA keeps available first when both available', () => {
+    const state = createState()
+    state.availableFor = ['MyCompanyOnly']
+    state.learningPathTableData = [
+      { trainingId: 1, availableFor: ['MyCompanyOnly'] },
+      { trainingId: 2, availableFor: ['MyCompanyOnly'] }
+    ]
+
+    learningPath.mutations.ORDER_LEARNING_PATH_DATA(state, ['MyCompanyOnly'])
+
+    expect(state.learningPathTableData[0].trainingId).toBe(1)
+    expect(state.learningPathTableData[1].trainingId).toBe(2)
+  })
+
+  it('ORDER_LEARNING_PATH_DATA sorts unavailable to end', () => {
+    const state = createState()
+    state.availableFor = ['MyCompanyOnly']
+    state.learningPathTableData = [
+      { trainingId: 1, availableFor: ['OtherCompany'] },
+      { trainingId: 2, availableFor: ['MyCompanyOnly'] }
+    ]
+
+    learningPath.mutations.ORDER_LEARNING_PATH_DATA(state, ['MyCompanyOnly'])
+
+    expect(state.learningPathTableData[0].trainingId).toBe(2)
+    expect(state.learningPathTableData[1].trainingId).toBe(1)
+  })
+
+  it('RESET_LEARNING_PATH_PAGINATION resets page numbers', () => {
+    const state = createState()
+    state.learningPathAxiosPayload.pageNumber = 5
+    state.learningPathServerSideProps.pageNumber = 5
+
+    learningPath.mutations.RESET_LEARNING_PATH_PAGINATION(state)
+
+    expect(state.learningPathAxiosPayload.pageNumber).toBe(1)
+    expect(state.learningPathServerSideProps.pageNumber).toBe(1)
+  })
+
+  it('SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD updates axios payload', () => {
+    const state = createState()
+    learningPath.mutations.SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD(state, {
+      ascending: true,
+      orderBy: 'trainingName'
+    })
+    expect(state.learningPathAxiosPayload.ascending).toBe(true)
+    expect(state.learningPathAxiosPayload.orderBy).toBe('trainingName')
+  })
+
+  it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD handles non-string non-array activeValue', () => {
+    const state = createState()
+    learningPath.mutations.SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, {
+      key: 'category',
+      activeValue: 123,
+      activeOperator: '='
+    })
+    const items = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
+    const item = items.find((f) => f.FieldName === 'category')
+    expect(item).toBeDefined()
+    expect(item.Value).toBeUndefined()
+    expect(item.Operator).toBe('=')
+  })
+
+  it('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD removes non-search filter by splice', () => {
+    const state = createState()
+    state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'category', Value: 'A', Operator: 'Include' }
+    ]
+
+    learningPath.mutations.REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, {
+      key: 'category',
+      filterType: 'select',
+      activeValue: 'x'
+    })
+
+    expect(state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
   it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD updates existing value', () => {
     const state = createState()
     state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems = [
@@ -146,6 +237,22 @@ describe('learningPath store (branch extra coverage)', () => {
     expect(state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems).toEqual([
       { FieldName: 'vendor', Value: 'A', Operator: 'Contains' }
     ])
+  })
+
+  it('callForLearningPathTableData uses selected training ids when both payload and selected exist', async () => {
+    const state = createState()
+    state.selectedLearningPathTrainings = [{ trainingId: 'selected-1' }]
+    const commit = jest.fn()
+    AwarenessEducatorService.searchTraining.mockResolvedValue({
+      data: { data: { results: [], totalNumberOfRecords: 0, totalNumberOfPages: 1, pageNumber: 1 } }
+    })
+
+    await learningPath.actions.callForLearningPathTableData(
+      { commit, state },
+      { trainingIds: ['payload-1', 'payload-2'] }
+    )
+
+    expect(state.learningPathAxiosPayload.trainingIds).toEqual(['selected-1'])
   })
 
   it('callForLearningPathTableData uses payload training ids when selected list is empty', async () => {
