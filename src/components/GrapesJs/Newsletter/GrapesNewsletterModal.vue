@@ -162,12 +162,12 @@ export default {
       url: {
         required: (v) =>
           (v && v.length <= 256) || "It must between 1 - 256 characters",
-        format: (v) =>
-          /^(ftp|https?):\/\/[^\s]+$/i.test(v) || "invalid url"
+        format: (v) => /^(ftp|https?):\/\/[^\s]+$/i.test(v) || "invalid url"
       },
       urlMergedTexts: [{ value: "", name: "No Merged Text" }],
       editedCustomHeadScripts: "",
-      customHeadScriptsPlacementValue: this.customHeadScriptsPlacement
+      customHeadScriptsPlacementValue: this.customHeadScriptsPlacement,
+      activeRteEditor: null
     };
   },
   created() {
@@ -186,7 +186,7 @@ export default {
       this.editor.on("component:selected", () => {
         const selected = this?.editor?.getSelected();
         if (selected && selected.is("link")) {
-          document.getElementsByClassName("gjs-pn-btn fa fa-cog")[0].click();
+          document.getElementsByClassName("gjs-pn-btn fa fa-cog")[0]?.click();
           setTimeout(() => {
             if (
               document.querySelector(
@@ -283,6 +283,33 @@ export default {
             }
           });
         }
+
+        // Merge tag DnD iyileştirme: seçili text bileşenine yönlendir
+        if (!droppedComponent || !block) return;
+        const isMergeTag = block.attributes?.class === "merged-text";
+        if (!isMergeTag) return;
+
+        const isImageMergeTag =
+          block.attributes?.type === "image" ||
+          droppedComponent.get("type") === "image";
+        if (isImageMergeTag) return;
+
+        const droppedParent = droppedComponent.parent();
+        const isInsideText =
+          droppedParent?.get("type") === "text" ||
+          droppedParent?.get("type") === "span";
+        if (isInsideText) return;
+
+        const selectedComponent = this.editor.getSelected();
+        if (
+          selectedComponent &&
+          (selectedComponent.get("type") === "text" ||
+            selectedComponent.get("type") === "span")
+        ) {
+          const componentHtml = droppedComponent.toHTML();
+          droppedComponent.remove();
+          selectedComponent.components().add(componentHtml);
+        }
       });
     },
     changeEditorComponentFunction() {
@@ -291,7 +318,10 @@ export default {
           try {
             originalFct(components);
           } catch (ex) {
-            globalThis.alert("Parse error: " + ex);
+            this.$store.dispatch("common/createSnackBar", {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: "Parse error: " + ex
+            });
           }
         };
       })(this.editor.setComponents);
@@ -329,9 +359,10 @@ export default {
           .querySelector('span[title="Preview"]')
           .addEventListener("click", () => {
             const win = window.open("", "_blank");
+            if (!win) return;
             win.document.title = "Mail Preview";
             win.document.body.innerHTML = this.getGrapesEditorContent().replaceAll(
-              '{COMPANYLOGO}',
+              "{COMPANYLOGO}",
               this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ""
             );
           });
@@ -397,25 +428,27 @@ export default {
       styleManager.render();
     },
     callForImages() {
-      getUploadedFiles().then((res) => {
-        const {
-          data: { data }
-        } = res;
-        const assetManager = this.editor.AssetManager;
-        const assets = data.map((img) => {
-          const obj = {
-            src: "",
-            category: "c1",
-            name: img["originalName"],
-            resourceId: img["resourceId"]
-          };
-          obj.src = APP_CONFIG.VUE_APP_APP_API_TEST + img["previewLink"];
-          return obj;
-        });
-        if (assetManager && typeof assetManager.add === "function")
-          assetManager.add(assets);
-        this.renderAssetsToAssetsManager(data);
-      });
+      getUploadedFiles()
+        .then((res) => {
+          const {
+            data: { data }
+          } = res;
+          const assetManager = this.editor.AssetManager;
+          const assets = data.map((img) => {
+            const obj = {
+              src: "",
+              category: "c1",
+              name: img["originalName"],
+              resourceId: img["resourceId"]
+            };
+            obj.src = APP_CONFIG.VUE_APP_APP_API_TEST + img["previewLink"];
+            return obj;
+          });
+          if (assetManager && typeof assetManager.add === "function")
+            assetManager.add(assets);
+          this.renderAssetsToAssetsManager(data);
+        })
+        .catch(() => {});
     },
     renderAssetsToAssetsManager(data = []) {
       if (
@@ -448,9 +481,14 @@ export default {
       }
     },
     setMergedTextsForLinks() {
-      const blockManagerComponents = JSON.parse(
-        JSON.stringify(this.blockManagerComponents)
-      );
+      let blockManagerComponents;
+      try {
+        blockManagerComponents = JSON.parse(
+          JSON.stringify(this.blockManagerComponents)
+        );
+      } catch {
+        return;
+      }
       if (this.isAttachmentBasedTemplate) {
         delete blockManagerComponents["{PHISHINGURL}"];
       }
@@ -710,7 +748,7 @@ export default {
             /fillcolor="([^'"]+)?"/g,
             `fillcolor="${
               buttonStyles["background-color"] || buttonStyles["background"]
-            }}"`
+            }"`
           );
           arrangedComment = arrangedComment.replaceAll(
             /color\:\#?(\w|\s|-)+\;/g,
@@ -737,19 +775,9 @@ export default {
             buttonStyles["width"] === undefined ||
             buttonStyles["width"] === ""
           ) {
-            let width = droppedComponent?.target
-              ?.getEl()
-              ?.getBoundingClientRect()?.width;
-            if (width < 65) {
-              width += 12;
-            } else if (width < 95) {
-              width += 14;
-            } else if (width < 140) {
-              width += 18;
-            } else {
-              width += 22;
-            }
-            width = Math.round(width);
+            const width = this.calculateOutlookWidth(
+              droppedComponent?.target?.getEl()?.getBoundingClientRect()?.width
+            );
             arrangedComment = arrangedComment.replaceAll(
               /width\:\#?(\w|\s|-)+\;/g,
               `width:${width}px;`
@@ -866,26 +894,15 @@ export default {
                 );
                 if (isShowWidth) {
                   setTimeout(() => {
-                    let width = updatedComponent
-                      .parent()
-                      ?.getEl()
-                      ?.getBoundingClientRect()?.width;
-                    if (width < 65) {
-                      width += 12;
-                    } else if (width < 95) {
-                      width += 14;
-                    } else if (width < 140) {
-                      width += 18;
-                    } else {
-                      width += 22;
-                    }
-                    width = Math.round(width);
+                    const width = this.calculateOutlookWidth(
+                      updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+                    );
                     commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                       /width\:\#?(\w|\s|-)+\;/g,
                       `width:${width}px;`
                     );
                     commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-                      'width:undefinedpx;',
+                      "width:undefinedpx;",
                       `width:${width}px;`
                     );
                   }, 500);
@@ -896,7 +913,7 @@ export default {
                       `width:${styleChanges?.to?.value}px;`
                     );
                     commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-                      'width:undefinedpx;',
+                      "width:undefinedpx;",
                       `width:${styleChanges?.to?.value}px;`
                     );
                   }, 500);
@@ -926,27 +943,17 @@ export default {
           } else {
             const commentElement = getCommentElement();
             if (commentElement) {
-              let width = updatedComponent
-                .parent()
-                ?.getEl()
-                ?.getBoundingClientRect()?.width;
-              if (width < 65) {
-                width += 12;
-              } else if (width < 95) {
-                width += 14;
-              } else if (width < 140) {
-                width += 18;
-              } else {
-                width += 22;
-              }
+              const width = this.calculateOutlookWidth(
+                updatedComponent.parent()?.getEl()?.getBoundingClientRect()?.width
+              );
 
               commentElement.attributes.content = commentElement.attributes.content.replaceAll(
                 /width\:\#?(\w|\s|-)+\;/g,
-                `width:${Math.round(width)}px;`
+                `width:${width}px;`
               );
               commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-                'width:undefinedpx',
-                `width:${Math.round(width)}px;`
+                "width:undefinedpx",
+                `width:${width}px;`
               );
             }
           }
@@ -964,7 +971,7 @@ export default {
               `width:180px;`
             );
             commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-              'width:undefinedpx',
+              "width:undefinedpx",
               `width:180px;`
             );
             commentElement.attributes.content = commentElement.attributes.content.replaceAll(
@@ -972,7 +979,7 @@ export default {
               `height:70px;`
             );
             commentElement.attributes.content = commentElement.attributes.content.replaceAll(
-              'height:undefinedpx',
+              "height:undefinedpx",
               `height:70px;`
             );
             updatedComponent.components("No Label");
@@ -1003,9 +1010,14 @@ export default {
       blockManager.add("Submit Phishing Button", submitButton);
       blockManager.add("Outlook Button", outlookButton);
       this.addCustomCSS();
-      const blockManagerComponents = JSON.parse(
-        JSON.stringify(this.blockManagerComponents)
-      );
+      let blockManagerComponents;
+      try {
+        blockManagerComponents = JSON.parse(
+          JSON.stringify(this.blockManagerComponents)
+        );
+      } catch {
+        blockManagerComponents = {};
+      }
       if (this.isAttachmentBasedTemplate) {
         delete blockManagerComponents["{PHISHINGURL}"];
       }
@@ -1028,6 +1040,12 @@ export default {
             );
         }
       }, 1000);
+      this.editor.on("rte:enable", (_view, rte) => {
+        this.activeRteEditor = rte;
+      });
+      this.editor.on("rte:disable", () => {
+        this.activeRteEditor = null;
+      });
       this.setRichTextEditor();
     },
     setRichTextEditor() {
@@ -1049,6 +1067,17 @@ export default {
       };
       rte.get("link").btn.innerHTML =
         "<img height='19' width='20' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAdNJREFUWAntlj1LA0EQhu+M2AgWVhaCf0AIqI2FNha2aVL7GxQt09hG9J/Y29qkEdKIhWAhpLCwEkQQND4v3B6TdTe5iOIpOzDszOx8vDe3X1mWKHUgdSB1IHUgdeBfdyCv8nXD4XAev1V4CZ6LxPTyPB9oDv9lhs2I3yv2B/ga/+eITzUzhZrwOfwCT6K2y4pje5Iz88qp3E0XN9VIYAd+g6vStABdXtXoxMDNhiYI6GI/DMzdY4v9lifjL/nG6FbUclkxhhnkY2ou8MuPjD0s4tiCLT2i7MGL4YjprcpV5FRuS62x2fBswLcm4g5ZG+NHSLlh1XCk2o1oMSa3nSfju/So8zdNFDVVy9FITX8N7pi6fdbEpdFLkUz7KLFjpPTzBB1DZ54tUw3y9bGvFXPCUNb1Aer8cnTlhMAocOWuDczHTJ8AFo6q5QBaDJl2UB0oemH4HRwYtBtG9sWeb6igj4tZN/EWgzEjshbqsEm2RlEZDYD1PmaEFZC1OqiDixOQX7nqDjgyLoqP3GU8lRwg/6pzLifET77qnDcgO7Au8qpUHjsEVHnNuLyqEX0sODzBkcBff24Ff7GPFqD6LfV7sPpAk546kDqQOpA6kDrw9zrwAQ55zcgJtHvUAAAAAElFTkSuQmCC'>";
+      const _self = this;
+      rte.add("insertMergeTag", {
+        icon: `<span style="font-size:10px;font-weight:bold;letter-spacing:-1px;line-height:1">{ }</span>`,
+        attributes: {
+          title: "Insert Merge Tag",
+          id: "gjs-rte-merge-tag-btn"
+        },
+        result(rteEditor) {
+          _self.showMergeTagDropdown(rteEditor);
+        }
+      });
     },
     uploadFile(e) {
       this.msgEmlFile = e;
@@ -1083,7 +1112,7 @@ export default {
       this.editor.getWrapper().addAttributes({
         id: docId
       });
-      this.editor.on("load", () => {
+      this.editor.once("load", () => {
         // this line for clicking style manager tabs
         let el;
         el = document.querySelector(
@@ -1218,7 +1247,8 @@ export default {
               const formData = new FormData();
               formData.append("Files", file);
               uploadFiles(formData);
-            });
+            })
+            .catch(() => {});
         }
       });
       this.editor.on("asset:remove", (props) => {
@@ -1473,6 +1503,140 @@ export default {
       }
 
       return htmlDOM.outerHTML;
+    },
+    calculateOutlookWidth(rawWidth) {
+      let width = rawWidth || 0;
+      if (width < 65) width += 12;
+      else if (width < 95) width += 14;
+      else if (width < 140) width += 18;
+      else width += 22;
+      return Math.round(width);
+    },
+    getMergeTagsForDropdown() {
+      const result = [];
+      const components = this.blockManagerComponents;
+      for (const [key, value] of Object.entries(components)) {
+        if (value?.attributes?.class !== "merged-text") continue;
+        const isImage =
+          value.type === "image" || value.content?.type === "image";
+        if (isImage) continue;
+        result.push({
+          key,
+          label: value.label || key,
+          isUrl: !!value.attributes?.isUrl
+        });
+      }
+      return result.sort((a, b) => a.label.localeCompare(b.label));
+    },
+    showMergeTagDropdown(rteEditor) {
+      const DROPDOWN_ID = "gjs-merge-tag-dropdown";
+      const existing = document.getElementById(DROPDOWN_ID);
+      if (existing) {
+        existing.remove();
+        return;
+      }
+
+      const tags = this.getMergeTagsForDropdown();
+      const dropdown = document.createElement("div");
+      dropdown.id = DROPDOWN_ID;
+      dropdown.style.cssText = [
+        "position:fixed",
+        "background:#2b2b2b",
+        "border:1px solid #555",
+        "border-radius:4px",
+        "max-height:320px",
+        "overflow-y:auto",
+        "z-index:10000",
+        "min-width:210px",
+        "box-shadow:0 4px 16px rgba(0,0,0,0.6)",
+        "font-family:Arial,sans-serif"
+      ].join(";");
+
+      const rteBtn = document.getElementById("gjs-rte-merge-tag-btn");
+      const anchorRect =
+        rteBtn?.getBoundingClientRect() ||
+        rteBtn?.closest(".gjs-toolbar-item")?.getBoundingClientRect();
+      if (anchorRect) {
+        dropdown.style.top = `${anchorRect.bottom + 4}px`;
+        dropdown.style.left = `${anchorRect.left}px`;
+      }
+
+      // Arama kutusu
+      const searchWrapper = document.createElement("div");
+      searchWrapper.style.cssText =
+        "position:sticky;top:0;background:#2b2b2b;border-bottom:1px solid #444;";
+      const searchInput = document.createElement("input");
+      searchInput.placeholder = "Search merge tags...";
+      searchInput.style.cssText = [
+        "width:100%",
+        "box-sizing:border-box",
+        "background:#333",
+        "border:none",
+        "color:#eee",
+        "padding:8px 12px",
+        "font-size:13px",
+        "outline:none"
+      ].join(";");
+      searchWrapper.appendChild(searchInput);
+      dropdown.appendChild(searchWrapper);
+
+      if (tags.length === 0) {
+        const empty = document.createElement("div");
+        empty.textContent = "No merge tags available";
+        empty.style.cssText = "color:#888;padding:10px 12px;font-size:13px;";
+        dropdown.appendChild(empty);
+      }
+
+      const itemElements = [];
+      tags.forEach((tag) => {
+        const item = document.createElement("div");
+        item.textContent = tag.label;
+        item.style.cssText =
+          "color:#eee;padding:7px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #3a3a3a;";
+        item.addEventListener("mouseover", () => {
+          item.style.background = "#3c3c3c";
+        });
+        item.addEventListener("mouseout", () => {
+          item.style.background = "transparent";
+        });
+        // mousedown: contenteditable blur'unu önler, cursor korunur
+        item.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const html = tag.isUrl
+            ? `<a href="${tag.key}">${tag.key}</a>`
+            : `<span>${tag.key}</span>`;
+          if (rteEditor) {
+            rteEditor.insertHTML(html);
+          }
+          dropdown.remove();
+        });
+        itemElements.push(item);
+        dropdown.appendChild(item);
+      });
+
+      // Arama filtresi
+      searchInput.addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase();
+        itemElements.forEach((el, i) => {
+          el.style.display = tags[i].label.toLowerCase().includes(q)
+            ? "block"
+            : "none";
+        });
+      });
+
+      document.body.appendChild(dropdown);
+      setTimeout(() => searchInput.focus(), 50);
+
+      setTimeout(() => {
+        const handler = (e) => {
+          if (!dropdown.contains(e.target)) {
+            dropdown.remove();
+            document.removeEventListener("mousedown", handler);
+          }
+        };
+        document.addEventListener("mousedown", handler);
+      }, 100);
     }
   }
 };
