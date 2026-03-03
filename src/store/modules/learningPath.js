@@ -111,13 +111,17 @@ const learningPath = {
       const learningPathFilter = state.learningPathFilters.find(
         (f) => f && payload && f.key === payload.key
       )
-      learningPathFilter.items = payload.items
+      if (learningPathFilter) {
+        learningPathFilter.items = payload.items
+      }
     },
     SET_LEARNING_PATH_FILTER_ITEMS_SHOW(state, payload) {
       const learningPathFilter = state.learningPathFilters.find(
         (f) => f && payload && f.key === payload.key
       )
-      learningPathFilter.show = payload.show
+      if (learningPathFilter) {
+        learningPathFilter.show = payload.show
+      }
     },
     SET_SELECTED_LEARNING_PATH_TRAININGS(state, payload) {
       payload.sort((a, b) => (a.trainingOrder > b.trainingOrder ? 1 : -1))
@@ -304,7 +308,9 @@ const learningPath = {
     },
     SET_FILTER_ITEMS_SHOW(state, payload) {
       const filter = state.learningPathFilters.find((f) => f && payload && f.key === payload.key)
-      filter.show = payload.show
+      if (filter) {
+        filter.show = payload.show
+      }
     }
   },
   actions: {

@@ -300,11 +300,10 @@ export default {
               }
             })
             if (!this.selectedRow) {
-              this.formValues.roleResourceIdList =
-                availableRoles &&
-                availableRoles.length &&
-                availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
-                  .resourceId
+              const adminRole = availableRoles?.find((role) =>
+                ['CompanyAdmin', 'Company Admin'].includes(role.name)
+              )
+              this.formValues.roleResourceIdList = adminRole?.resourceId
             }
             res()
           })

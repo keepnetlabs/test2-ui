@@ -303,6 +303,35 @@ describe('trainingLibrary store module (real)', () => {
           }
         ])
       })
+
+      it('callForTableData handles item.languages undefined', async () => {
+        const state = createState()
+        const commit = jest.fn()
+        const rootGetters = { 'trainingLibraryHelpers/getLanguages': [] }
+
+        AwarenessEducatorService.searchTraining.mockResolvedValue({
+          data: {
+            data: {
+              results: [{ trainingId: 't2', trainingRoles: [] }],
+              totalNumberOfRecords: 1,
+              totalNumberOfPages: 1,
+              pageNumber: 1
+            }
+          }
+        })
+
+        trainingLibrary.actions.callForTableData({ commit, state, rootGetters })
+        await flushPromises()
+
+        expect(commit).toHaveBeenCalledWith('SET_TABLE_DATA', [
+          expect.objectContaining({
+            trainingId: 't2',
+            languageCodes: [],
+            languages: [],
+            targetAudience: []
+          })
+        ])
+      })
     })
 
     describe('view and selection actions', () => {

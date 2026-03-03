@@ -9,4 +9,22 @@ describe('CampaignManagerReport Summary utils', () => {
       enrollmentId: 'enroll-1'
     })
   })
+
+  it('TrainingReportDialogModel uses default empty strings when no args', () => {
+    const model = new TrainingReportDialogModel()
+    expect(model.getTrainingReportDialogModel()).toEqual({
+      phishingScenarioName: '',
+      trainingName: '',
+      enrollmentId: ''
+    })
+  })
+
+  it('TrainingReportDialogModel accepts partial args', () => {
+    const model = new TrainingReportDialogModel('Scenario Only')
+    expect(model.getTrainingReportDialogModel()).toEqual({
+      phishingScenarioName: 'Scenario Only',
+      trainingName: '',
+      enrollmentId: ''
+    })
+  })
 })

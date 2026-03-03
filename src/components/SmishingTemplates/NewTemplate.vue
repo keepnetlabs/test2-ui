@@ -590,7 +590,11 @@ export default {
       SmishingService.checkSmishingTextRisk(this.formValues.template)
         .then((response) => {
           const { data } = response
-          const assistantMessage = data.find((item) => item.role === 'assistant')
+          const assistantMessage = data?.find((item) => item.role === 'assistant')
+          if (!assistantMessage?.content?.[0]?.text) {
+            this.isSubmitDisabled = false
+            return
+          }
           const { approval, reason } = JSON.parse(assistantMessage.content[0].text)
           if (approval === 'Yes') {
             this.$set(this.enhancedCache, this.formValues.template, true)
