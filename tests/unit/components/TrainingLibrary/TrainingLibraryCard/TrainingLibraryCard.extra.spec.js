@@ -13,7 +13,10 @@ jest.mock('@/api/awarenessEducator', () => ({
 }))
 
 const dispatch = jest.fn()
-const getters = { 'trainingLibrary/getSelectedTrainingContent': 'All Materials' }
+const getters = {
+  'trainingLibrary/getSelectedTrainingContent': 'All Materials',
+  'trainingLibraryHelpers/getPreferredLanguageTypes': []
+}
 
 const baseItem = {
   trainingId: 't1',
@@ -37,6 +40,7 @@ const createWrapper = (propsData = {}, storeOverrides = {}) =>
     stubs: {
       TrainingLibraryNewBadge: true,
       TrainingLibraryFavoriteButton: true,
+      LanguagesPopover: true,
       VTooltip: true,
       VMenu: true
     }

@@ -19,16 +19,16 @@
       </v-icon>
     </div>
     <div class="languages-popover__divider" />
-    <h3
-      v-if="filteredPreferredLanguages.length > 0"
-      class="languages-popover__title mt-2"
-    >
-      Languages your employees prefer
-    </h3>
     <div
       class="languages-popover__list"
       :class="{ 'languages-popover__list--no-title': filteredPreferredLanguages.length === 0 }"
     >
+      <h3
+        v-if="filteredPreferredLanguages.length > 0"
+        class="languages-popover__title mt-2 mb-0"
+      >
+        Languages your employees prefer
+      </h3>
       <div
         v-for="(language, index) in filteredPreferredLanguages"
         :key="`pref-${index}-${language}`"

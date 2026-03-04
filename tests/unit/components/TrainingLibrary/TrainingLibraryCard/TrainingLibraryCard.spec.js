@@ -16,7 +16,8 @@ const flushPromises = () => new Promise((r) => setTimeout(r, 0))
 describe('TrainingLibraryCard.vue', () => {
   const dispatch = jest.fn()
   const getters = {
-    'trainingLibrary/getSelectedTrainingContent': 'All Materials'
+    'trainingLibrary/getSelectedTrainingContent': 'All Materials',
+    'trainingLibraryHelpers/getPreferredLanguageTypes': []
   }
 
   const baseItem = {
@@ -48,6 +49,7 @@ describe('TrainingLibraryCard.vue', () => {
       stubs: {
         TrainingLibraryNewBadge: true,
         TrainingLibraryFavoriteButton: true,
+        LanguagesPopover: true,
         VTooltip: true,
         VMenu: true
       }
