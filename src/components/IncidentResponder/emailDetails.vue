@@ -349,7 +349,9 @@ import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/f
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
+import useIsTestEnvironment from '@/hooks/useIsTestEnvironment'
 export default {
+  mixins: [useIsTestEnvironment],
   components: {
     KEmailPreview,
     EmailDetailsUrl,
@@ -736,9 +738,7 @@ export default {
     },
     showAIAnalyze() {
       const AI_ANALYZE_COMPANIES = ['Bolearis', 'TIP Group', 'Sunexpress', 'ETİ', 'Axa', 'Vodafone']
-      const isDevEnv =
-        globalThis.location.hostname.includes('localhost') ||
-        globalThis.location.hostname.includes('test-ui.devkeepnet.com')
+      const isDevEnv = this.isTestEnvironment
       const companyName = this.$store.state.auth.selectedCompanyName || ''
       const isAllowedCompany = AI_ANALYZE_COMPANIES.some(
         (name) => name.toLowerCase() === companyName.toLowerCase()

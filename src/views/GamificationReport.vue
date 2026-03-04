@@ -152,6 +152,7 @@ import GamificationReportUserDetailsDrawer from '@/components/GamificationReport
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import LeaderboardBadgesColumn from '@/components/GamificationReport/LeaderboardBadgesColumn'
 import labels from '@/model/constants/labels'
+import { isTestEnvironment } from '@/utils/isTestEnvironment'
 import axios from 'axios'
 import AuthenticationService from '@/services/authentication'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -179,10 +180,7 @@ export default {
         action: 'on-details'
       }
     ]
-    if (
-      globalThis.location.hostname.includes('localhost') ||
-      globalThis.location.hostname.includes('test-ui.devkeepnet.com')
-    ) {
+    if (isTestEnvironment()) {
       rowActions.push({
         name: 'Autonomous AI',
         id: 'btn-send-with-ai-gamification-report',

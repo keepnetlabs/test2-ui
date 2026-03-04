@@ -52,6 +52,7 @@
         </div>
       </FormGroup>
       <FormGroup
+        v-if="isTestEnvironment"
         class="mt-6"
         title="Microsoft 365 Defender Integration"
         sub-title="Submit reported emails to Microsoft Defender (Submissions → User reported)."
@@ -112,7 +113,7 @@
         </FormGroup>
       </FormGroup>
       <FormGroup
-        :class="formValues.isMicrosoftDefenderIntegrationEnabled ? 'mt-2' : 'mt-6'"
+        :class="(isTestEnvironment && formValues.isMicrosoftDefenderIntegrationEnabled) ? 'mt-2' : 'mt-6'"
         title="Information Email"
       >
         <v-checkbox
@@ -244,8 +245,10 @@ import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 import { mapGetters } from 'vuex'
+import useIsTestEnvironment from '@/hooks/useIsTestEnvironment'
 export default {
   name: 'EmailSettings',
+  mixins: [useIsTestEnvironment],
   components: {
     FormGroup,
     InputEmail,
