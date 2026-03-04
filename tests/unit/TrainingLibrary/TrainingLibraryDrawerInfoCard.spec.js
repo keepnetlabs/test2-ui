@@ -546,4 +546,259 @@ describe('TrainingLibraryDrawerInfoCard.vue', () => {
       expect(wrapper.vm.$data).toBeDefined()
     })
   })
+
+  describe('popoverItems prop', () => {
+    it('should default popoverItems to empty array', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-home',
+        text: 'Test'
+      })
+      expect(wrapper.vm.popoverItems).toEqual([])
+    })
+
+    it('should accept popoverItems as array', () => {
+      const items = ['GDPR', 'HIPAA', 'PCI-DSS']
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '3 compliance',
+        popoverItems: items
+      })
+      expect(wrapper.vm.popoverItems).toEqual(items)
+    })
+
+    it('should accept single item array', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: 'GDPR',
+        popoverItems: ['GDPR']
+      })
+      expect(wrapper.vm.popoverItems).toEqual(['GDPR'])
+    })
+  })
+
+  describe('hasPopover computed', () => {
+    it('should return false when popoverItems is empty', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-home',
+        text: 'Test'
+      })
+      expect(wrapper.vm.hasPopover).toBe(false)
+    })
+
+    it('should return false when popoverItems has one item', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-home',
+        text: 'Test',
+        popoverItems: ['GDPR']
+      })
+      expect(wrapper.vm.hasPopover).toBe(false)
+    })
+
+    it('should return true when popoverItems has more than one item', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '3 compliance',
+        popoverItems: ['GDPR', 'HIPAA', 'PCI-DSS']
+      })
+      expect(wrapper.vm.hasPopover).toBe(true)
+    })
+  })
+
+  describe('conditional rendering - popover mode', () => {
+    const popoverProps = {
+      icon: 'mdi-shield-check',
+      text: '3 compliance',
+      popoverItems: ['GDPR', 'HIPAA', 'PCI-DSS']
+    }
+
+    it('should render VMenu when hasPopover is true', () => {
+      const wrapper = mountComponent(popoverProps)
+      expect(wrapper.findComponent({ name: 'VMenu' }).exists()).toBe(true)
+    })
+
+    it('should render clickable span with text', () => {
+      const wrapper = mountComponent(popoverProps)
+      const clickable = wrapper.find('.training-library-drawer-info-card__clickable')
+      expect(clickable.exists()).toBe(true)
+      expect(clickable.text()).toContain('3 compliance')
+    })
+
+    it('should render dropdown arrow icon in clickable span', () => {
+      const wrapper = mountComponent(popoverProps)
+      const clickable = wrapper.find('.training-library-drawer-info-card__clickable')
+      expect(clickable.exists()).toBe(true)
+      expect(clickable.html()).toContain('mdi-menu-down')
+    })
+
+    it('should render main icon in content area', () => {
+      const wrapper = mountComponent(popoverProps)
+      expect(wrapper.vm.icon).toBe('mdi-shield-check')
+      expect(wrapper.html()).toContain('mdi-shield-check')
+    })
+
+    it('should not render VTooltip when popover mode is active', () => {
+      const wrapper = mountComponent(popoverProps)
+      expect(wrapper.findComponent({ name: 'VTooltip' }).exists()).toBe(false)
+    })
+
+    it('should render search input when popover is open', async () => {
+      const wrapper = mountComponent(popoverProps)
+      wrapper.vm.isPopoverOpen = true
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent({ name: 'VTextField' }).exists()).toBe(true)
+    })
+
+    it('should render close button when popover is open', async () => {
+      const wrapper = mountComponent(popoverProps)
+      wrapper.vm.isPopoverOpen = true
+      await wrapper.vm.$nextTick()
+      const closeBtn = wrapper.find('.training-library-drawer-info-card__popover-close')
+      expect(closeBtn.exists()).toBe(true)
+    })
+
+    it('should render popover items when open', async () => {
+      const wrapper = mountComponent(popoverProps)
+      wrapper.vm.isPopoverOpen = true
+      await wrapper.vm.$nextTick()
+      const items = wrapper.findAll('.training-library-drawer-info-card__popover-item')
+      expect(items.length).toBe(3)
+      expect(items.at(0).text()).toBe('GDPR')
+      expect(items.at(1).text()).toBe('HIPAA')
+      expect(items.at(2).text()).toBe('PCI-DSS')
+    })
+
+    it('should render divider when popover is open', async () => {
+      const wrapper = mountComponent(popoverProps)
+      wrapper.vm.isPopoverOpen = true
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.training-library-drawer-info-card__popover-divider').exists()).toBe(true)
+    })
+
+    it('should prioritize popover over tooltip when both provided', () => {
+      const wrapper = mountComponent({
+        ...popoverProps,
+        tooltip: 'Some tooltip'
+      })
+      expect(wrapper.findComponent({ name: 'VMenu' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'VTooltip' }).exists()).toBe(false)
+    })
+  })
+
+  describe('popover data and state', () => {
+    it('should initialize isPopoverOpen as false', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '2 compliance',
+        popoverItems: ['GDPR', 'HIPAA']
+      })
+      expect(wrapper.vm.isPopoverOpen).toBe(false)
+    })
+
+    it('should initialize searchQuery as empty string', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '2 compliance',
+        popoverItems: ['GDPR', 'HIPAA']
+      })
+      expect(wrapper.vm.searchQuery).toBe('')
+    })
+  })
+
+  describe('filteredPopoverItems computed', () => {
+    const items = ['GDPR', 'HIPAA', 'PCI-DSS', 'SOC 2']
+
+    it('should return all items when searchQuery is empty', () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      expect(wrapper.vm.filteredPopoverItems).toEqual(items)
+    })
+
+    it('should filter items by search query', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      wrapper.vm.searchQuery = 'gdpr'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.filteredPopoverItems).toEqual(['GDPR'])
+    })
+
+    it('should filter case-insensitively', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      wrapper.vm.searchQuery = 'HIP'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.filteredPopoverItems).toEqual(['HIPAA'])
+    })
+
+    it('should return empty array when no match found', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      wrapper.vm.searchQuery = 'xyz'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.filteredPopoverItems).toEqual([])
+    })
+
+    it('should show "No results found" when filtered list is empty', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      wrapper.vm.isPopoverOpen = true
+      wrapper.vm.searchQuery = 'nonexistent'
+      await wrapper.vm.$nextTick()
+      const emptyMsg = wrapper.find('.training-library-drawer-info-card__popover-empty')
+      expect(emptyMsg.exists()).toBe(true)
+      expect(emptyMsg.text()).toBe('No results found')
+    })
+
+    it('should handle whitespace-only search query', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      wrapper.vm.searchQuery = '   '
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.filteredPopoverItems).toEqual(items)
+    })
+
+    it('should match partial strings', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '4 compliance',
+        popoverItems: items
+      })
+      wrapper.vm.searchQuery = 'pci'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.filteredPopoverItems).toEqual(['PCI-DSS'])
+    })
+  })
+
+  describe('popover close behavior', () => {
+    it('should close popover when close icon is clicked', async () => {
+      const wrapper = mountComponent({
+        icon: 'mdi-shield-check',
+        text: '2 compliance',
+        popoverItems: ['GDPR', 'HIPAA']
+      })
+      wrapper.vm.isPopoverOpen = true
+      await wrapper.vm.$nextTick()
+
+      const closeBtn = wrapper.find('.training-library-drawer-info-card__popover-close')
+      await closeBtn.trigger('click')
+      expect(wrapper.vm.isPopoverOpen).toBe(false)
+    })
+  })
 })
