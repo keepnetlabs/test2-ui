@@ -464,6 +464,13 @@ export default {
   created() {
     this.callForGetTimeZones();
     this.callForLanguages();
+    if (this.excludeGroupUsers) {
+      this.axiosPayload.filter.FilterGroups[0].FilterItems.push({
+        FieldName: 'IsDeleted',
+        Value: false,
+        Operator: 'Contains'
+      })
+    }
     if (this.resourceId) {
       if (this.resourceId !== "7Tna1kvZXAgX") this.callForTargetGroup();
       this.callForGetTargetUserCustomFieldsByCompanyId();
@@ -633,6 +640,7 @@ export default {
             this.serverSideProps.pageNumber = pageNumber;
             const { data: { data: { results = [] } } = {} } = response;
             this.tableData = results.map((item) => {
+              item.status = item.isDeleted ? 'Deleted' : item.status;
               item.preferredLanguage = this.languageFilterOptions.find(
                 (language) => language.name === item.preferredLanguage
               )?.text;
@@ -678,6 +686,7 @@ export default {
             this.serverSideProps.pageNumber = pageNumber;
             const { data: { data: { results = [] } } = {} } = response;
             results.forEach((item) => {
+              item.status = item.isDeleted ? 'Deleted' : item.status;
               item.preferredLanguage = this.languageFilterOptions.find(
                 (language) => language.name === item.preferredLanguage
               )?.text;
