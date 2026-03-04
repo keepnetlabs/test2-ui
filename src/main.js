@@ -12,6 +12,7 @@ import VueMask, { VueMaskDirective } from 'v-mask'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
 import useSentry from './plugins/sentry'
+import { isTestEnvironment } from './utils/isTestEnvironment'
 //widget componentleri
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
@@ -30,7 +31,7 @@ const gtmAuth = APP_CONFIG.VUE_APP_GTM_AUTH
 const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
 const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
 if (isCloud) {
-  if (!globalThis.location.origin.includes('test-ui.devkeepnet.com')) useSentry(router)
+  if (!isTestEnvironment()) useSentry(router)
   //Google Tag Manager
   !!gtmStatus &&
     Vue.use(VueTagManager, {

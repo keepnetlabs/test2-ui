@@ -10,8 +10,8 @@
         <div class="skeleton skeleton--related-image"></div>
         <div class="skeleton skeleton--related-content">
           <div class="skeleton skeleton--related-title"></div>
-          <div class="skeleton skeleton--related-subtitle" style="width: 60%;"></div>
-          <div class="skeleton skeleton--related-subtitle" style="width: 80%;"></div>
+          <div class="skeleton skeleton--related-subtitle" style="width: 60%"></div>
+          <div class="skeleton skeleton--related-subtitle" style="width: 80%"></div>
           <div class="skeleton skeleton--related-button"></div>
         </div>
       </div>
@@ -72,7 +72,11 @@
             <span>{{ card.title }}</span>
           </VTooltip>
           <div class="training-library-drawer-content-related__card-meta">
-            <VTooltip bottom max-width="300" :disabled="!isTrainingRolesTooltipEnabled(card)">
+            <VTooltip
+              bottom
+              max-width="300"
+              :disabled="!isTrainingRolesTooltipEnabled(card)"
+            >
               <template #activator="{ on }">
                 <span v-on="on">{{ getTrainingRolesText(card) }}</span>
               </template>
@@ -88,7 +92,9 @@
               {{ getFirstTwoLanguages(card.languages) }}
               <VTooltip bottom>
                 <template #activator="{ on }">
-                  <span v-on="on" style="cursor: pointer;">, +{{ card.languages.length - 2 }}</span>
+                  <span v-on="on" style="cursor: pointer"
+                    >, +{{ card.languages.length - 2 }}</span
+                  >
                 </template>
                 <span>{{ getRemainingLanguages(card.languages) }}</span>
               </VTooltip>
@@ -114,223 +120,226 @@
 </template>
 
 <script>
-import AwarenessEducatorService from '@/api/awarenessEducator'
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
-import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
-import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import AwarenessEducatorService from "@/api/awarenessEducator";
+import { TRAINING_LIBRARY_TYPES } from "@/components/TrainingLibrary/utils";
+import TrainingLibraryNewBadge from "@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue";
+import TrainingLibraryFavoriteButton from "@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue";
 
 export default {
-  name: 'TrainingLibraryDrawerContentRelated',
+  name: "TrainingLibraryDrawerContentRelated",
   components: {
     TrainingLibraryNewBadge,
-    TrainingLibraryFavoriteButton
+    TrainingLibraryFavoriteButton,
   },
   props: {
     trainingData: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     type: {
       type: String,
-      default: 'Training'
+      default: "Training",
     },
     category: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
   data() {
     return {
       isLoading: true,
       relatedItems: [],
-      allLanguages: []
-    }
+      allLanguages: [],
+    };
   },
   mounted() {
-    this.fetchLanguages()
+    this.fetchLanguages();
   },
   computed: {
     getRelatedTitle() {
-      const base = this.type ? this.type : 'Training'
-      return `Related ${base}`
-    }
+      const base = this.type ? this.type : "Training";
+      return `Related ${base}`;
+    },
   },
   watch: {
     category: {
       immediate: true,
       handler(newVal) {
         if (newVal) {
-          this.fetchRelatedTrainings()
+          this.fetchRelatedTrainings();
         }
-      }
-    }
+      },
+    },
   },
   methods: {
     fetchLanguages() {
       AwarenessEducatorService.getLanguages()
         .then((res) => {
-          this.allLanguages = res?.data?.data || []
+          this.allLanguages = res?.data?.data || [];
         })
         .catch((error) => {
-          console.error('❌ Error fetching languages:', error)
-        })
+          console.error("❌ Error fetching languages:", error);
+        });
     },
     fetchRelatedTrainings() {
       // Prop'tan gelen category'yi kullan
-      const category = this.category
+      const category = this.category;
 
       if (!category) {
-        this.isLoading = false
-        return
+        this.isLoading = false;
+        return;
       }
 
-      this.isLoading = true
+      this.isLoading = true;
 
-      let trainingType = this.type
+      let trainingType = this.type;
       if (this.type === TRAINING_LIBRARY_TYPES.TRAINING) {
-        trainingType = 'SCORM'
+        trainingType = "SCORM";
       } else if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) {
-        trainingType = 'LearningPath'
+        trainingType = "LearningPath";
       }
 
       const payload = {
         pageNumber: 1,
         pageSize: 4, // 4 çek, birini filtrele, 3 kalsın
-        orderBy: 'createTime',
+        orderBy: "createTime",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'Or',
+              Condition: "Or",
               FilterItems: [
                 {
-                  FieldName: 'category',
+                  FieldName: "category",
                   Value: category,
-                  Operator: 'Include'
-                }
+                  Operator: "Include",
+                },
               ],
-              FilterGroups: []
-            }
-          ]
+              FilterGroups: [],
+            },
+          ],
         },
         trainingSearchType: 1,
-        trainingType
-      }
+        trainingType,
+      };
 
       AwarenessEducatorService.searchTraining(payload)
         .then((response) => {
-          const data = response?.data?.data?.results || response?.data?.data || []
+          const data = response?.data?.data?.results || response?.data?.data || [];
 
           // Array kontrolü
           if (!Array.isArray(data)) {
-            this.relatedItems = []
-            return
+            this.relatedItems = [];
+            return;
           }
 
           // Mevcut training'i filtrele
-          const currentTrainingId = this.trainingData.trainingId || this.trainingData.resourceId
+          const currentTrainingId =
+            this.trainingData.trainingId || this.trainingData.resourceId;
           this.relatedItems = data
             .filter((item) => {
-              const itemId = item.trainingId || item.resourceId
-              return itemId !== currentTrainingId
+              const itemId = item.trainingId || item.resourceId;
+              return itemId !== currentTrainingId;
             })
             .slice(0, 3)
             .map((item) => ({
               ...item,
               title: item.name || item.trainingName,
-              targetAudienceDisplay: item.targetAudience || 'All Users',
+              targetAudienceDisplay: item.targetAudience || "All Users",
               category: item.categoryName || item.category,
-              languagesFormatted: this.formatLanguages(item.languageCodes || item.languages),
+              languagesFormatted: this.formatLanguages(
+                item.languageCodes || item.languages
+              ),
               languages: item.languageCodes || item.languages, // Keep original codes for nested drawer
               languageCodes: item.languageCodes || item.languages, // Ensure languageCodes is available
               coverImage: this.getCoverImage(item.coverImage),
-              trainingRoles: item.trainingRoles || []
-            }))
+              trainingRoles: item.trainingRoles || [],
+            }));
         })
         .catch((error) => {
-          console.error('❌ Error fetching related trainings:', error)
+          console.error("❌ Error fetching related trainings:", error);
         })
         .finally(() => {
-          this.isLoading = false
-        })
+          this.isLoading = false;
+        });
     },
     getLanguageNames(languageCodes) {
-      if (!languageCodes || languageCodes.length === 0) return []
+      if (!languageCodes || languageCodes.length === 0) return [];
 
       return languageCodes.map((code) => {
         const lang = this.allLanguages.find(
           (item) => item.shortCode === code || item.code === code || item.id === code
-        )
-        return lang ? lang.isoFriendlyName || lang.name : code
-      })
+        );
+        return lang ? lang.isoFriendlyName || lang.name : code;
+      });
     },
     formatLanguages(languageCodes) {
-      if (!languageCodes || languageCodes.length === 0) return 'No languages'
+      if (!languageCodes || languageCodes.length === 0) return "No languages";
 
-      const languageNames = this.getLanguageNames(languageCodes)
+      const languageNames = this.getLanguageNames(languageCodes);
 
-      if (languageNames.length === 1) return languageNames[0]
-      if (languageNames.length === 2) return languageNames.join(', ')
-      return `${languageNames.slice(0, 2).join(', ')}, +${languageNames.length - 2}`
+      if (languageNames.length === 1) return languageNames[0];
+      if (languageNames.length === 2) return languageNames.join(", ");
+      return `${languageNames.slice(0, 2).join(", ")}, +${languageNames.length - 2}`;
     },
     getFirstTwoLanguages(languageCodes) {
-      const languageNames = this.getLanguageNames(languageCodes)
-      return languageNames.slice(0, 2).join(', ')
+      const languageNames = this.getLanguageNames(languageCodes);
+      return languageNames.slice(0, 2).join(", ");
     },
     getRemainingLanguages(languageCodes) {
-      const languageNames = this.getLanguageNames(languageCodes)
-      return languageNames.slice(2).join(', ')
+      const languageNames = this.getLanguageNames(languageCodes);
+      return languageNames.slice(2).join(", ");
     },
     isTitleOverflowing(title) {
       // Title'ın belirli bir karakter sayısını aşıp aşmadığını kontrol et
       // Daha hassas bir kontrol için DOM'u kullanabilirsin ama performans için basit karakter kontrolü yeterli
-      return title && title.length > 40
+      return title && title.length > 40;
     },
     getCoverImage(coverImage) {
-      if (!coverImage) return null
-      return typeof coverImage === 'string' ? coverImage : coverImage.imageUrl
+      if (!coverImage) return null;
+      return typeof coverImage === "string" ? coverImage : coverImage.imageUrl;
     },
     getCardImageBackground(card) {
-      if (!card?.coverImage) return {}
+      if (!card?.coverImage) return {};
       return {
-        backgroundImage: `url('${card.coverImage}')`
-      }
+        backgroundImage: `url('${card.coverImage}')`,
+      };
     },
     getTrainingRolesText(card) {
-      const roles = card.trainingRoles || []
+      const roles = card.trainingRoles || [];
       // Eğer hiç role yoksa veya trainingRoles gelmediyse targetAudience fallback
       if (!roles || roles.length === 0) {
-        return card.targetAudienceDisplay || card.targetAudience || 'No target audience'
+        return card.targetAudienceDisplay || card.targetAudience || "No target audience";
       }
 
       // Tek role varsa direkt ismini döndür
       if (roles.length === 1) {
-        return roles[0].roleName
+        return roles[0].roleName;
       }
 
       // Birden fazla role varsa: İlk Role + (N-1)
-      const firstRole = roles[0].roleName
-      const remainingCount = roles.length - 1
-      return `${firstRole} +${remainingCount}`
+      const firstRole = roles[0].roleName;
+      const remainingCount = roles.length - 1;
+      return `${firstRole} +${remainingCount}`;
     },
     getTrainingRolesTooltip(card) {
-      const roles = card.trainingRoles || []
-      if (!roles || roles.length <= 1) return ''
-      return roles.map((r) => r.roleName).join(', ')
+      const roles = card.trainingRoles || [];
+      if (!roles || roles.length <= 1) return "";
+      return roles.map((r) => r.roleName).join(", ");
     },
     isTrainingRolesTooltipEnabled(card) {
-      const roles = card.trainingRoles || []
-      return roles.length > 1
+      const roles = card.trainingRoles || [];
+      return roles.length > 1;
     },
     handlePreviewClick(card) {
       // Nested drawer'ı aç
-      this.$store.commit('trainingLibrary/SET_NESTED_DRAWER', {
+      this.$store.commit("trainingLibrary/SET_NESTED_DRAWER", {
         status: true,
         selectedRow: card,
-        type: this.type
-      })
-    }
-  }
-}
+        type: this.type,
+      });
+    },
+  },
+};
 </script>

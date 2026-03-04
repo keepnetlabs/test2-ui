@@ -1131,9 +1131,11 @@ import AppRouterLink from "@/layout/AppRouterLink";
 import InitializeCompanyModal from "@/components/Companies/InitializeCompanyModal";
 import AppDialog from "@/components/AppDialog.vue";
 import ChatPanel from "@/components/layout/ChatPanel.vue";
+import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
 
 export default {
   name: "Main",
+  mixins: [useIsTestEnvironment],
   components: {
     AppDialog,
     InitializeCompanyModal,
@@ -1639,12 +1641,6 @@ export default {
     },
     isAwarenessEducator() {
       return this.$route.path.includes("/awareness-educator");
-    },
-    isTestEnvironment() {
-      return (
-        globalThis.location.hostname.includes("test-ui.devkeepnet.com") ||
-        globalThis.location.hostname.includes("localhost")
-      );
     }
   },
   watch: {

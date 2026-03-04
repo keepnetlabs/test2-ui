@@ -91,6 +91,7 @@ import {
   createRandomCryptStringNumber,
   getTimeZoneForMoment
 } from "@/utils/functions";
+import { isTestEnvironment } from "@/utils/isTestEnvironment";
 import ExecutiveReportsSimulationCoverageBar from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue";
 import ExecutiveReportsTrainingCompletionBar from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue";
 import ExecutiveReportsIndustryPhishingRiskScore from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue";
@@ -115,12 +116,8 @@ export default {
     }
   },
   data() {
-    const isTestEnvironment =
-      globalThis.location.hostname.includes("test-ui.devkeepnet.com") ||
-      globalThis.location.hostname.includes("localhost");
-
     return {
-      isTestEnvironment,
+      isTestEnvironment: isTestEnvironment(),
       activeBreakpoint: "lg",
       initialLayout: [],
       initialAvailableWidgets: [],
