@@ -227,20 +227,28 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
   })
 
   describe('showAIAnalyze', () => {
-    it('returns true when hostname includes localhost', () => {
-      const origHostname = globalThis.location.hostname
-      Object.defineProperty(globalThis.location, 'hostname', {
-        value: 'localhost',
-        configurable: true
-      })
+    it('returns true when isTestEnvironment (localhost) and no allowed company', () => {
       const mockThis = {
+        isTestEnvironment: true,
         $store: { state: { auth: { selectedCompanyName: '' } } }
       }
       expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-      Object.defineProperty(globalThis.location, 'hostname', {
-        value: origHostname,
-        configurable: true
-      })
+    })
+
+    it('returns true when allowed company even without test environment', () => {
+      const mockThis = {
+        isTestEnvironment: false,
+        $store: { state: { auth: { selectedCompanyName: 'Bolearis' } } }
+      }
+      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
+    })
+
+    it('returns false when neither test environment nor allowed company', () => {
+      const mockThis = {
+        isTestEnvironment: false,
+        $store: { state: { auth: { selectedCompanyName: 'Other' } } }
+      }
+      expect(computed.showAIAnalyze.call(mockThis)).toBe(false)
     })
   })
 })

@@ -270,6 +270,28 @@ describe('CommonSimulatorNewScenario.vue (extra branch coverage)', () => {
       expect(closeMock).toHaveBeenCalledTimes(1)
     })
 
+    it('handleClickOutsideNewEmailTemplateModal calls close when event has target but closest returns null for all guards', () => {
+      const closeMock = jest.fn()
+      const ctx = {
+        $store: { state: { common: { isShowLeavingDialog: false } } },
+        $refs: {},
+        handleCloseNewEmailTemplateModal: closeMock
+      }
+      const outsideClickEvent = {
+        target: {
+          closest: jest.fn(() => null)
+        }
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewEmailTemplateModal.call(
+        ctx,
+        outsideClickEvent
+      )
+
+      expect(closeMock).toHaveBeenCalledTimes(1)
+    })
+
+
     it('handleClickOutsideNewLandingPageTemplateModal respects menu-open branch and close branch', () => {
       const closeMock = jest.fn()
       const ctxMenuOpen = {
@@ -345,6 +367,98 @@ describe('CommonSimulatorNewScenario.vue (extra branch coverage)', () => {
       )
 
       expect(closeMock).not.toHaveBeenCalled()
+    })
+
+    it('handleClickOutsideNewLandingPageTemplateModal returns early when click is on AIAllyMini suggestions menu', () => {
+      const closeMock = jest.fn()
+      const ctx = {
+        $store: { state: { common: { isShowLeavingDialog: false } } },
+        $refs: { newLandingPage: { isPageAddMenuOpen: [false, false] } },
+        handleCloseNewLandingPageTemplateModal: closeMock
+      }
+      const suggestionsMenuEvent = {
+        target: {
+          closest: jest.fn((selector) =>
+            selector.includes('.v-menu__content') || selector.includes('.ai-ally-mini__suggestions-wrapper')
+              ? { id: 'suggestions-menu' }
+              : null
+          )
+        }
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewLandingPageTemplateModal.call(
+        ctx,
+        suggestionsMenuEvent
+      )
+
+      expect(closeMock).not.toHaveBeenCalled()
+    })
+
+    it('handleClickOutsideNewLandingPageTemplateModal returns early when click is on ai-ally-mini__suggestions-wrapper only', () => {
+      const closeMock = jest.fn()
+      const ctx = {
+        $store: { state: { common: { isShowLeavingDialog: false } } },
+        $refs: { newLandingPage: { isPageAddMenuOpen: [false, false] } },
+        handleCloseNewLandingPageTemplateModal: closeMock
+      }
+      const event = {
+        target: {
+          closest: jest.fn((selector) =>
+            selector.includes('.ai-ally-mini__suggestions-wrapper') ? { id: 'wrapper' } : null
+          )
+        }
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewLandingPageTemplateModal.call(ctx, event)
+
+      expect(closeMock).not.toHaveBeenCalled()
+    })
+
+    it('handleClickOutsideNewLandingPageTemplateModal calls close when event has target but no guards match', () => {
+      const closeMock = jest.fn()
+      const ctx = {
+        $store: { state: { common: { isShowLeavingDialog: false } } },
+        $refs: {
+          newLandingPage: {
+            isPageAddMenuOpen: [false, false],
+            $refs: { refEmailTemplate: [{ showGrapesModal: false }] }
+          }
+        },
+        handleCloseNewLandingPageTemplateModal: closeMock
+      }
+      const outsideClickEvent = {
+        target: {
+          closest: jest.fn(() => null)
+        }
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewLandingPageTemplateModal.call(
+        ctx,
+        outsideClickEvent
+      )
+
+      expect(closeMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('handleClickOutsideNewLandingPageTemplateModal skips event block when event.target is null', () => {
+      const closeMock = jest.fn()
+      const ctx = {
+        $store: { state: { common: { isShowLeavingDialog: false } } },
+        $refs: {
+          newLandingPage: {
+            isPageAddMenuOpen: [false, false],
+            $refs: { refEmailTemplate: [{ showGrapesModal: false }] }
+          }
+        },
+        handleCloseNewLandingPageTemplateModal: closeMock
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewLandingPageTemplateModal.call(
+        ctx,
+        { target: null }
+      )
+
+      expect(closeMock).toHaveBeenCalledTimes(1)
     })
 
     it('handleClickOutsideNewLandingPageTemplateModal closes landing page grapes modal first', () => {
