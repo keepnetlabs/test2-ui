@@ -55,38 +55,49 @@
         <div v-else ref="refBodyCategory" class="training-library-card__body-sub-category">
           {{ item.category }}
         </div>
-      </div>
-      <div class="training-library-card__body-description">
-        <div class="d-flex gap-2">
-          <div v-if="item.tags.length" class="training-library-card__body-tag">
-            {{ item.tags[0] }}
-          </div>
-          <VTooltip v-if="item.tags.length > 1" bottom>
-            <template #activator="{ on }">
-              <div v-on="on" class="training-library-card__body-tag">
-                + {{ item.tags.length - 1 }}
-              </div>
-            </template>
-            <span>{{ item.tags.slice(1).toString() }}</span>
-          </VTooltip>
-        </div>
-        <div class="training-library-card__body-languages">
-          <VIcon>mdi-web</VIcon>
-          <div v-for="(language, languageIndex) in item.languages.slice(0, 2)" :key="language">
-            {{ language
-            }}<span v-if="item.languages.slice(0, 2).length - 1 > languageIndex" class="ml-1"
-              >|</span
+        <template v-if="languagesList.length">
+          <div class="training-library-card__body-sub-bull"></div>
+          <template v-if="languagesList.length === 1">
+            <span class="training-library-card__body-sub-category">{{ languagesList[0] }}</span>
+          </template>
+          <template v-else>
+            <VMenu
+              v-model="isLanguagePopoverOpen"
+              :min-width="248"
+              offset-y
+              :close-on-content-click="false"
+              content-class="languages-column__popover training-library-card__language-popover"
             >
-          </div>
-          <VTooltip v-if="item.languages.length > 3" bottom>
-            <template #activator="{ on }">
-              <span v-on="on"
-                >| +{{ item.languages.length - item.languages.slice(0, 2).length }}
-              </span>
-            </template>
-            <span>{{ item.languages.slice(2).toString() }}</span>
-          </VTooltip>
+              <template #activator="{ on, attrs }">
+                <span
+                  v-bind="attrs"
+                  v-on="on"
+                  class="training-library-card__body-sub-language"
+                >
+                  {{ languagesList.length }} languages
+                </span>
+              </template>
+              <LanguagesPopover
+                :preferred-languages="preferredLanguages"
+                :non-preferred-languages="nonPreferredLanguages"
+                :on-close="handleCloseLanguagePopover"
+              />
+            </VMenu>
+          </template>
+        </template>
+      </div>
+      <div v-if="item.tags.length" class="d-flex gap-2 mt-4 pb-4" style="border-bottom: 1px solid #e0e0e0">
+        <div class="training-library-card__body-tag">
+          {{ item.tags[0] }}
         </div>
+        <VTooltip v-if="item.tags.length > 1" bottom>
+          <template #activator="{ on }">
+            <div v-on="on" class="training-library-card__body-tag">
+              + {{ item.tags.length - 1 }}
+            </div>
+          </template>
+          <span>{{ item.tags.slice(1).toString() }}</span>
+        </VTooltip>
       </div>
       <div class="training-library-card__footer">
         <div class="training-library-card__footer-left-side">
@@ -150,6 +161,7 @@
 <script>
 import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import LanguagesPopover from '@/components/Common/Simulator/LanguagesColumn/LanguagesPopover.vue'
 import {
   TRAINING_LIBRARY_MAIN_TABS,
   TRAINING_LIBRARY_PAYLOAD_TYPES
@@ -161,7 +173,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 let that = null
 export default {
   name: 'TrainingLibraryCard',
-  components: { TrainingLibraryFavoriteButton, TrainingLibraryNewBadge },
+  components: { TrainingLibraryFavoriteButton, TrainingLibraryNewBadge, LanguagesPopover },
   props: {
     item: {
       type: Object,
@@ -172,12 +184,14 @@ export default {
     return {
       isRenderTitleTooltip: true,
       isRenderCreatedByTooltip: true,
-      isRenderCategoryTooltip: true
+      isRenderCategoryTooltip: true,
+      isLanguagePopoverOpen: false
     }
   },
   computed: {
     ...mapGetters({
-      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent'
+      selectedTrainingContent: 'trainingLibrary/getSelectedTrainingContent',
+      preferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes'
     }),
     getActionsByType() {
       const actions = [
@@ -235,6 +249,29 @@ export default {
       return {
         backgroundImage: `url('${this.getCoverImageUrl}')`
       }
+    },
+    languagesList() {
+      const langs = this.item?.languages
+      if (Array.isArray(langs)) return langs.filter(Boolean)
+      return langs ? [langs] : []
+    },
+    preferredTexts() {
+      const types = this.preferredLanguageTypes || []
+      return types.map((t) => ((t && t.text) || '').trim().toLowerCase()).filter(Boolean)
+    },
+    preferredLanguages() {
+      const preferred = this.preferredTexts
+      return this.languagesList.filter((lang) => {
+        const langLower = (lang || '').trim().toLowerCase()
+        return preferred.some((p) => langLower === p || langLower.startsWith(p + ' '))
+      })
+    },
+    nonPreferredLanguages() {
+      const preferred = this.preferredTexts
+      return this.languagesList.filter((lang) => {
+        const langLower = (lang || '').trim().toLowerCase()
+        return !preferred.some((p) => langLower === p || langLower.startsWith(p + ' '))
+      })
     }
   },
   mounted() {
@@ -278,6 +315,9 @@ export default {
       this.isRenderCategoryTooltip = refBodyCategory
         ? refBodyCategory.offsetWidth < refBodyCategory.scrollWidth
         : false
+    },
+    handleCloseLanguagePopover() {
+      this.isLanguagePopoverOpen = false
     },
     handleFavoriteRemove() {
       if (this.selectedTrainingContent === TRAINING_LIBRARY_MAIN_TABS.FAVOURITES)

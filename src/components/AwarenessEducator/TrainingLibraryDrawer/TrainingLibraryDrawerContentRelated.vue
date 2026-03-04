@@ -80,19 +80,36 @@
             </VTooltip>
             <span class="dot">•</span>
             <span>{{ card.category }}</span>
-          </div>
-          <div class="training-library-drawer-content-related__card-langs">
-            <VIcon small class="mr-1">mdi-web</VIcon>
-            <span v-if="card.languages.length <= 2">{{ card.languagesFormatted }}</span>
-            <span v-else>
-              {{ getFirstTwoLanguages(card.languages) }}
-              <VTooltip bottom>
-                <template #activator="{ on }">
-                  <span v-on="on" style="cursor: pointer;">, +{{ card.languages.length - 2 }}</span>
+            <template v-if="getLanguageNamesList(card.languages).length">
+              <span class="dot">•</span>
+              <VMenu
+                v-if="getLanguageNamesList(card.languages).length > 1"
+                :value="openLanguageMenuIndex === index"
+                :min-width="248"
+                offset-y
+                :close-on-content-click="false"
+                content-class="training-library-card__language-popover"
+                @input="handleLanguageMenuInput(index, $event)"
+              >
+                <template #activator="{ on, attrs }">
+                  <span
+                    v-bind="attrs"
+                    v-on="on"
+                    class="training-library-drawer-content-related__card-language-link"
+                  >
+                    {{ getLanguageNamesList(card.languages).length }} languages
+                  </span>
                 </template>
-                <span>{{ getRemainingLanguages(card.languages) }}</span>
-              </VTooltip>
-            </span>
+                <LanguagesPopover
+                  :preferred-languages="getCardPreferredLanguages(card.languages)"
+                  :non-preferred-languages="getCardNonPreferredLanguages(card.languages)"
+                  :on-close="handleCloseLanguageMenu"
+                />
+              </VMenu>
+              <span v-else>
+                {{ getLanguageNamesList(card.languages)[0] }}
+              </span>
+            </template>
           </div>
           <div class="training-library-drawer-content-related__card-actions">
             <VBtn
@@ -118,12 +135,15 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
+import LanguagesPopover from '@/components/Common/Simulator/LanguagesColumn/LanguagesPopover.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingLibraryDrawerContentRelated',
   components: {
     TrainingLibraryNewBadge,
-    TrainingLibraryFavoriteButton
+    TrainingLibraryFavoriteButton,
+    LanguagesPopover
   },
   props: {
     trainingData: {
@@ -143,13 +163,21 @@ export default {
     return {
       isLoading: true,
       relatedItems: [],
-      allLanguages: []
+      allLanguages: [],
+      openLanguageMenuIndex: null
     }
   },
   mounted() {
     this.fetchLanguages()
   },
   computed: {
+    ...mapGetters({
+      preferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes'
+    }),
+    preferredTexts() {
+      const types = this.preferredLanguageTypes || []
+      return types.map((t) => ((t && t.text) || '').trim().toLowerCase()).filter(Boolean)
+    },
     getRelatedTitle() {
       const base = this.type ? this.type : 'Training'
       return `Related ${base}`
@@ -322,6 +350,31 @@ export default {
     isTrainingRolesTooltipEnabled(card) {
       const roles = card.trainingRoles || []
       return roles.length > 1
+    },
+    handleLanguageMenuInput(index, value) {
+      this.openLanguageMenuIndex = value ? index : null
+    },
+    handleCloseLanguageMenu() {
+      this.openLanguageMenuIndex = null
+    },
+    getLanguageNamesList(languageCodes) {
+      return this.getLanguageNames(languageCodes || [])
+    },
+    getCardPreferredLanguages(languageCodes) {
+      const names = this.getLanguageNamesList(languageCodes)
+      const preferred = this.preferredTexts
+      return names.filter((lang) => {
+        const langLower = (lang || '').trim().toLowerCase()
+        return preferred.some((p) => langLower === p || langLower.startsWith(p + ' '))
+      })
+    },
+    getCardNonPreferredLanguages(languageCodes) {
+      const names = this.getLanguageNamesList(languageCodes)
+      const preferred = this.preferredTexts
+      return names.filter((lang) => {
+        const langLower = (lang || '').trim().toLowerCase()
+        return !preferred.some((p) => langLower === p || langLower.startsWith(p + ' '))
+      })
     },
     handlePreviewClick(card) {
       // Nested drawer'ı aç

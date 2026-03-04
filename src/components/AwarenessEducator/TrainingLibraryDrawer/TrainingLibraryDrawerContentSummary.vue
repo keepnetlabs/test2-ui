@@ -216,7 +216,40 @@
             :icon="card.icon"
             :text="card.text"
             :tooltip="card.tooltip"
+            :popover-items="card.popoverItems || []"
           />
+          <!-- Language Info Card with LanguagesPopover -->
+          <div class="training-library-drawer-info-card">
+            <div class="training-library-drawer-info-card__content">
+              <VIcon color="#757575">mdi-web</VIcon>
+              <VMenu
+                v-if="drawerLanguagesList.length > 1"
+                v-model="isLanguageInfoPopoverOpen"
+                offset-y
+                :min-width="248"
+                :close-on-content-click="false"
+                :attach="true"
+                content-class="training-library-card__language-popover"
+              >
+                <template #activator="{ on, attrs }">
+                  <span
+                    v-bind="attrs"
+                    v-on="on"
+                    class="training-library-drawer-info-card__clickable"
+                  >
+                    {{ getLanguagesText }}
+                    <VIcon size="18" color="#383b41">mdi-menu-down</VIcon>
+                  </span>
+                </template>
+                <LanguagesPopover
+                  :preferred-languages="drawerPreferredLanguages"
+                  :non-preferred-languages="drawerNonPreferredLanguages"
+                  :on-close="handleCloseLanguageInfoPopover"
+                />
+              </VMenu>
+              <span v-else>{{ getLanguagesText }}</span>
+            </div>
+          </div>
         </div>
 
         <!-- Description -->
@@ -240,8 +273,10 @@ import TrainingLibraryDrawerInfoCard from './TrainingLibraryDrawerInfoCard.vue'
 import TrainingLibraryDrawerLanguageMenu from './TrainingLibraryDrawerLanguageMenu.vue'
 import TrainingLibraryDrawerActionsMenu from './TrainingLibraryDrawerActionsMenu.vue'
 import TrainingLibraryDrawerContentSteps from './TrainingLibraryDrawerContentSteps.vue'
+import LanguagesPopover from '@/components/Common/Simulator/LanguagesColumn/LanguagesPopover.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TrainingLibraryDrawerContentSummary',
@@ -249,7 +284,8 @@ export default {
     TrainingLibraryDrawerInfoCard,
     TrainingLibraryDrawerLanguageMenu,
     TrainingLibraryDrawerActionsMenu,
-    TrainingLibraryDrawerContentSteps
+    TrainingLibraryDrawerContentSteps,
+    LanguagesPopover
   },
   props: {
     trainingData: {
@@ -283,7 +319,8 @@ export default {
       isLoadingLanguages: true,
       trainingDetails: null,
       isFavorite: false,
-      learningPathSteps: []
+      learningPathSteps: [],
+      isLanguageInfoPopoverOpen: false
     }
   },
   mounted() {
@@ -312,6 +349,35 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      preferredLanguageTypes: 'trainingLibraryHelpers/getPreferredLanguageTypes'
+    }),
+    drawerLanguagesList() {
+      if (this.availableLanguages && this.availableLanguages.length > 0) {
+        return this.availableLanguages.map((l) => l.text)
+      }
+      const languageCodes = this.trainingData.languages
+      if (Array.isArray(languageCodes)) return languageCodes.filter(Boolean)
+      return languageCodes ? [languageCodes] : []
+    },
+    drawerPreferredTexts() {
+      const types = this.preferredLanguageTypes || []
+      return types.map((t) => ((t && t.text) || '').trim().toLowerCase()).filter(Boolean)
+    },
+    drawerPreferredLanguages() {
+      const preferred = this.drawerPreferredTexts
+      return this.drawerLanguagesList.filter((lang) => {
+        const langLower = (lang || '').trim().toLowerCase()
+        return preferred.some((p) => langLower === p || langLower.startsWith(p + ' '))
+      })
+    },
+    drawerNonPreferredLanguages() {
+      const preferred = this.drawerPreferredTexts
+      return this.drawerLanguagesList.filter((lang) => {
+        const langLower = (lang || '').trim().toLowerCase()
+        return !preferred.some((p) => langLower === p || langLower.startsWith(p + ' '))
+      })
+    },
     isScreensaver() {
       return this.type === TRAINING_LIBRARY_TYPES.SCREENSAVER
     },
@@ -384,12 +450,8 @@ export default {
         {
           icon: 'mdi-shield-check-outline',
           text: this.getComplianceText(data),
-          tooltip: this.getComplianceTooltip(data)
-        },
-        {
-          icon: 'mdi-web',
-          text: this.getLanguagesText,
-          tooltip: this.getLanguagesTooltip()
+          tooltip: this.getComplianceTooltip(data),
+          popoverItems: this.getCompliancePopoverItems(data)
         }
       ]
       const levelText = data.levelDisplayName || data.level
@@ -595,6 +657,18 @@ export default {
       a.click()
       a.remove()
       globalThis.URL.revokeObjectURL(url)
+    },
+    handleCloseLanguageInfoPopover() {
+      this.isLanguageInfoPopoverOpen = false
+    },
+    getCompliancePopoverItems(data) {
+      if (data && Array.isArray(data.complianceNames)) {
+        const filtered = data.complianceNames.filter(
+          (c) => c && typeof c === 'string' && c.trim() !== ''
+        )
+        if (filtered.length > 1) return filtered
+      }
+      return []
     },
     getLanguagesTooltip() {
       if (this.availableLanguages && this.availableLanguages.length > 1) {

@@ -410,6 +410,156 @@ describe('TargetGroupUsersTable.vue', () => {
     expect(wrapper.vm.loading).toBe(false)
   })
 
+  describe('excludeGroupUsers - IsDeleted filter', () => {
+    it('adds IsDeleted=false filter to FilterGroups[0] when excludeGroupUsers is true', () => {
+      const wrapper = createWrapper({
+        propsData: { excludeGroupUsers: true, resourceId: 'g1' }
+      })
+
+      const filterItems = wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems
+      const isDeletedFilter = filterItems.find((item) => item.FieldName === 'IsDeleted')
+
+      expect(isDeletedFilter).toBeDefined()
+      expect(isDeletedFilter.Value).toBe(false)
+      expect(isDeletedFilter.Operator).toBe('Contains')
+    })
+
+    it('does not add IsDeleted filter when excludeGroupUsers is false', () => {
+      const wrapper = createWrapper({
+        propsData: { excludeGroupUsers: false, resourceId: 'g2' }
+      })
+
+      const filterItems = wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems
+      const isDeletedFilter = filterItems.find((item) => item.FieldName === 'IsDeleted')
+
+      expect(isDeletedFilter).toBeUndefined()
+    })
+  })
+
+  describe('isDeleted status mapping - getTargetUsers branch', () => {
+    it('maps status to Deleted when isDeleted is true', async () => {
+      getTargetUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                isDeleted: true,
+                status: true,
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper({
+        propsData: { isCallTargetUserSearch: true }
+      })
+      wrapper.setData({
+        languageFilterOptions: [{ text: 'English', name: 'English', value: 'en-id' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers()
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].status).toBe('Deleted')
+    })
+
+    it('preserves original status when isDeleted is false', async () => {
+      getTargetUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                isDeleted: false,
+                status: true,
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper({
+        propsData: { isCallTargetUserSearch: true }
+      })
+      wrapper.setData({
+        languageFilterOptions: [{ text: 'English', name: 'English', value: 'en-id' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers()
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].status).toBe(true)
+    })
+  })
+
+  describe('isDeleted status mapping - searchTargetGroupUsers branch', () => {
+    it('maps status to Deleted when isDeleted is true', async () => {
+      searchTargetGroupUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                isDeleted: true,
+                status: true,
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper()
+      wrapper.setData({
+        languageFilterOptions: [{ text: 'English', name: 'English', value: 'en-id' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers('group-x')
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].status).toBe('Deleted')
+    })
+
+    it('preserves original status when isDeleted is false', async () => {
+      searchTargetGroupUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                isDeleted: false,
+                status: true,
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper()
+      wrapper.setData({
+        languageFilterOptions: [{ text: 'English', name: 'English', value: 'en-id' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers('group-y')
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].status).toBe(true)
+    })
+  })
+
   it('column and pagination handlers trigger refresh and emit selection', () => {
     const wrapper = createWrapper()
     wrapper.vm.callForGetTargetUserCustomFieldsByCompanyId = jest.fn()

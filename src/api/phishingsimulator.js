@@ -1,5 +1,6 @@
 import axios from 'axios'
 import testRequest from '../utils/testRequest'
+import { isTestEnvironment } from '@/utils/isTestEnvironment'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 /**
  * Convert content to File object if attachment is not already a File
@@ -694,11 +695,10 @@ export const generateEmailTemplateTranslation = (payload) => {
 export const getEmailTemplateTranslation = (payload) => {
   return testRequest.get(`/phishing-simulator/translated-email-templates`, payload)
 }
-const workerUrl =
-  globalThis.location.origin.includes('test-ui.devkeepnet.com') ||
-  globalThis.location.origin.includes('localhost')
-    ? 'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev'
-    : 'https://r-flg.keepnetlabs.com'
+
+const workerUrl = isTestEnvironment()
+  ? 'https://red-flag-test.keepnet-labs-ltd-business-profile4086.workers.dev'
+  : 'https://r-flg.keepnetlabs.com'
 export const checkRedFlags = (payload) => {
   return axios.post(`${workerUrl}?method=flag`, payload, {
     headers: {
