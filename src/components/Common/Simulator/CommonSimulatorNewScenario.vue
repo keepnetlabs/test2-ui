@@ -1312,6 +1312,12 @@ export default {
         if (leavingDialogButton) {
           return
         }
+
+        // AIAllyMini Suggestions menüsüne tıklanırsa ignore et (drawer içinde menü seçimi drawer'ı kapatmasın)
+        const suggestionsMenu = event.target.closest('.v-menu__content, .ai-ally-mini__suggestions-wrapper')
+        if (suggestionsMenu) {
+          return
+        }
       }
 
       if (

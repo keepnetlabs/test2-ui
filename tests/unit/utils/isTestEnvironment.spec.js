@@ -55,4 +55,12 @@ describe('isTestEnvironment', () => {
     })
     expect(isTestEnvironment()).toBe(false)
   })
+
+  it('returns false when hostname is undefined', () => {
+    Object.defineProperty(globalThis, 'location', {
+      value: { origin: 'https://example.com' },
+      configurable: true
+    })
+    expect(isTestEnvironment()).toBe(false)
+  })
 })

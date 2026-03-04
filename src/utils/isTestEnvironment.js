@@ -4,8 +4,9 @@
  * @returns {boolean}
  */
 export function isTestEnvironment() {
+  const hostname = globalThis.location?.hostname
+  if (!hostname || typeof hostname !== 'string') return false
   return (
-    globalThis.location.hostname.includes('test-ui.devkeepnet.com') ||
-    globalThis.location.hostname.includes('localhost')
+    hostname.includes('test-ui.devkeepnet.com') || hostname.includes('localhost')
   )
 }

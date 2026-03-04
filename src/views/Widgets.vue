@@ -382,7 +382,7 @@ export default {
           i: createRandomCryptStringNumber(),
           key: "AgenticAIStatusWidget",
           title: "Agentic AI Status",
-          isAllowed: isTestEnvironment
+          isAllowed: isTestEnvironment()
         },
         TopPhishingSimulationReporters: {
           x: 0,
@@ -664,7 +664,7 @@ export default {
         {
           name: "Agentic AI Status",
           key: "AgenticAIStatusWidget",
-          isAllowed: isTestEnvironment
+          isAllowed: isTestEnvironment()
         }
       ],
       style:

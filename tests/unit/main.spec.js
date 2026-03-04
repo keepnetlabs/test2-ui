@@ -10,8 +10,9 @@ describe('src/main.js', () => {
       VUE_APP_IS_CLOUD: isCloud,
       VUE_APP_GTM_STATUS: gtmStatus
     }
+    const hostname = origin.replace(/^https?:\/\//, '').split('/')[0]
     global.window = Object.assign(global.window || {}, {
-      location: { origin }
+      location: { origin, hostname }
     })
 
     const vmInstance = { _id: 'vm' }
