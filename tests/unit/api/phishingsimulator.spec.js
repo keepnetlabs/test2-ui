@@ -1438,7 +1438,7 @@ describe('phishingsimulator API', () => {
     it('should use prod worker url when origin is not test or localhost', async () => {
       const originalLocation = window.location
       delete window.location
-      window.location = { origin: 'https://app.keepnet.com' }
+      window.location = { origin: 'https://app.keepnet.com', hostname: 'app.keepnet.com' }
 
       jest.resetModules()
       const axiosLocal = require('axios')
@@ -1460,7 +1460,7 @@ describe('phishingsimulator API', () => {
     it('should use test worker url for localhost origin', async () => {
       const originalLocation = window.location
       delete window.location
-      window.location = { origin: 'http://localhost:8080' }
+      window.location = { origin: 'http://localhost:8080', hostname: 'localhost' }
 
       jest.resetModules()
       const axiosLocal = require('axios')
@@ -1484,7 +1484,7 @@ describe('phishingsimulator API', () => {
     it('should use test worker url for test-ui origin', async () => {
       const originalLocation = window.location
       delete window.location
-      window.location = { origin: 'https://test-ui.devkeepnet.com' }
+      window.location = { origin: 'https://test-ui.devkeepnet.com', hostname: 'test-ui.devkeepnet.com' }
 
       jest.resetModules()
       const axiosLocal = require('axios')

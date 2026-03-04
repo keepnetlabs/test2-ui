@@ -3,6 +3,7 @@ jest.mock('@/services/authentication', () => ({
 }))
 
 import Main from '@/layout/Main.vue'
+import { isTestEnvironment } from '@/utils/isTestEnvironment'
 
 describe('Main.vue', () => {
   beforeEach(() => {
@@ -345,25 +346,25 @@ describe('Main.vue', () => {
     expect(Main.computed.getLicenseDialogBody.call({ companyLicense: null })).toBe('')
   })
 
-  it('isTestEnvironment detects localhost and test-ui hosts', () => {
+  it('isTestEnvironment (via useIsTestEnvironment mixin) detects localhost and test-ui hosts', () => {
     const originalLocation = globalThis.location
     Object.defineProperty(globalThis, 'location', {
       value: { hostname: 'localhost' },
       configurable: true
     })
-    expect(Main.computed.isTestEnvironment.call({})).toBe(true)
+    expect(isTestEnvironment()).toBe(true)
 
     Object.defineProperty(globalThis, 'location', {
       value: { hostname: 'test-ui.devkeepnet.com' },
       configurable: true
     })
-    expect(Main.computed.isTestEnvironment.call({})).toBe(true)
+    expect(isTestEnvironment()).toBe(true)
 
     Object.defineProperty(globalThis, 'location', {
       value: { hostname: 'app.keepnetlabs.com' },
       configurable: true
     })
-    expect(Main.computed.isTestEnvironment.call({})).toBe(false)
+    expect(isTestEnvironment()).toBe(false)
 
     Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
