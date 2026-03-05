@@ -260,11 +260,9 @@
                             </span>
                             <v-menu
                               :min-width="128"
-                              :nudge-right="83"
-                              :nudge-bottom="92"
                               :offset-y="true"
+                              bottom
                               id="add-page-menu"
-                              attach="#landing-page-tab-content-quishing"
                               :z-index="10000"
                             >
                               <template #activator="{ on: menu }">
