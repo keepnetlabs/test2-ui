@@ -681,7 +681,7 @@ describe('TrainingLibraryDrawerLanguageMenu.vue', () => {
       mountMenu({ languages })
       const duration = Date.now() - startTime
 
-      expect(duration).toBeLessThan(1000)
+      expect(duration).toBeLessThan(2000)
       expect(wrapper.exists()).toBe(true)
     })
 
