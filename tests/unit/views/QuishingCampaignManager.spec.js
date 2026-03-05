@@ -79,7 +79,7 @@ describe('QuishingCampaignManager.vue', () => {
       resourceId: 'r1',
       total: 1,
       status: 'Running',
-      mostRecentInstanceGroup: 2
+      instanceGroup: 2
     })
     expect(ctx.$router.push).toHaveBeenCalledWith({
       name: 'Quishing Report',

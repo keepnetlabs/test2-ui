@@ -89,7 +89,7 @@ describe('SmishingCampaignManager.vue', () => {
       resourceId: 'r1',
       total: 1,
       status: 'Running',
-      mostRecentInstanceGroup: 3
+      instanceGroup: 3
     })
     expect(ctx.$router.push).toHaveBeenCalledWith({
       name: 'Smishing Report',

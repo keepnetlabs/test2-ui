@@ -93,7 +93,7 @@ describe('CallbackCampaignManager.vue', () => {
       resourceId: 'r1',
       total: 1,
       status: 'Running',
-      mostRecentInstanceGroup: 3
+      instanceGroup: 3
     })
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
       name: 'Callback Report',
