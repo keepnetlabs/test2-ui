@@ -290,7 +290,7 @@ export default {
           name: 'Campaign Report',
           params: {
             id: row.resourceId,
-            instanceGroup: row.instanceGroup
+            instanceGroup: row.instanceGroup ?? 1
           }
         });
         return;

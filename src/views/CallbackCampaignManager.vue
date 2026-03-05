@@ -286,7 +286,7 @@ export default {
           name: 'Callback Report',
           params: {
             id: row.resourceId,
-            instanceGroup: row.mostRecentInstanceGroup ?? 1
+            instanceGroup: row.instanceGroup ?? 1
           }
         })
         return
