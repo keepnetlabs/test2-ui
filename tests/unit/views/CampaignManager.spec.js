@@ -397,7 +397,7 @@ describe('CampaignManager.vue', () => {
       }
     })
 
-    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1 })
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, instanceGroup: 1 })
 
     expect(push).toHaveBeenCalledWith({
       name: 'Campaign Report',
@@ -406,7 +406,7 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.isItemTableShowing).toBe(false)
   })
 
-  it('navigates to campaign report from parent row using mostRecentInstanceGroup when present', () => {
+  it('navigates to campaign report from parent row using instanceGroup when present', () => {
     const push = jest.fn()
     const wrapper = shallowMount(CampaignManager, {
       mocks: {
@@ -435,7 +435,7 @@ describe('CampaignManager.vue', () => {
       }
     })
 
-    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, mostRecentInstanceGroup: 7 })
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, instanceGroup: 7 })
 
     expect(push).toHaveBeenCalledWith({
       name: 'Campaign Report',
@@ -722,6 +722,189 @@ describe('CampaignManager.vue', () => {
 
     expect(wrapper.vm.selectedRow).toEqual(row)
     expect(wrapper.vm.isShowDeleteDialog).toBe(true)
+  })
+
+  it('falls back instanceGroup to 1 when parent row has no instanceGroup', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, status: 'Running' })
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'Campaign Report',
+      params: { id: 'p-1', instanceGroup: 1 }
+    })
+  })
+
+  it('does not navigate to report when parent row status is Idle', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, status: 'Idle', instanceGroup: 3 })
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.vm.selectedParentItem).toEqual({ resourceId: 'p-1', total: 1, status: 'Idle', instanceGroup: 3 })
+    expect(wrapper.vm.isItemTableShowing).toBe(true)
+  })
+
+  it('does not navigate to report when parent row has frequency (recurring campaign)', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.vm.handleOnRecordButtonClick({ resourceId: 'p-1', total: 1, status: 'Running', frequency: 7, instanceGroup: 3 })
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.vm.selectedParentItem).toEqual({ resourceId: 'p-1', total: 1, status: 'Running', frequency: 7, instanceGroup: 3 })
+    expect(wrapper.vm.isItemTableShowing).toBe(true)
+  })
+
+  it('does not navigate to report from item row when parent has frequency (recurring)', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.setData({ selectedParentItem: { resourceId: 'parent-1', frequency: 5 } })
+    wrapper.vm.handleItemTableRecordButtonClick({ total: 1, status: 'Running', instanceGroup: 'ig-1' })
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.vm.selectedInstanceItem).toEqual({ total: 1, status: 'Running', instanceGroup: 'ig-1' })
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(true)
+  })
+
+  it('does not navigate to report from item row when status is Idle', () => {
+    const push = jest.fn()
+    const wrapper = shallowMount(CampaignManager, {
+      mocks: {
+        $store: {
+          getters: {
+            'auth/userGetter': { id: 'u1' },
+            'permissions/getCampaignManagerParentDeletePermissions': true
+          }
+        },
+        $route: { query: {} },
+        $router: { push, replace: jest.fn() }
+      },
+      stubs: {
+        KContainer: true,
+        CampaignManagerParentTable: true,
+        CampaignManagerItemTable: true,
+        CampaignManagerFrequencyTable: true,
+        CampaignManagerAddOrEditModal: true,
+        CampaignManagerNewInstanceModal: true,
+        CampaignManagerTargetGroupsDialog: true,
+        CommonCampaignManagerDeleteDialog: true,
+        CommonCampaignManagerCreateNewInstanceDialog: true,
+        CommonCampaignManagerPreviewDialog: true,
+        CommonCampaignManagerLaunchCampaignDialog: true,
+        CommonCampaignManagerCancelCampaignDialog: true
+      }
+    })
+
+    wrapper.setData({ selectedParentItem: { resourceId: 'parent-1' } })
+    wrapper.vm.handleItemTableRecordButtonClick({ total: 1, status: 'Idle', instanceGroup: 'ig-2' })
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.vm.selectedInstanceItem).toEqual({ total: 1, status: 'Idle', instanceGroup: 'ig-2' })
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(true)
   })
 
   it('toggleAddCampaignManagerModal opens without resetting flags when initially closed', () => {

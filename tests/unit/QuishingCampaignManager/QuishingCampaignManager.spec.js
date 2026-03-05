@@ -64,7 +64,7 @@ describe('QuishingCampaignManager.vue', () => {
       resourceId: 'r1',
       total: 1,
       status: 'Running',
-      mostRecentInstanceGroup: 5
+      instanceGroup: 5
     })
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
       name: 'Quishing Report',

@@ -87,7 +87,7 @@ describe('SmishingCampaignManager.vue', () => {
       resourceId: 'campaign-1',
       total: 1,
       status: 'Running',
-      mostRecentInstanceGroup: 7
+      instanceGroup: 7
     })
 
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
