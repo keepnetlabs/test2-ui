@@ -737,7 +737,7 @@ export default {
       return this.mailDetails?.attachments?.length
     },
     showAIAnalyze() {
-      const AI_ANALYZE_COMPANIES = ['Bolearis', 'TIP Group', 'Sunexpress', 'ETİ', 'Axa', 'Vodafone']
+      const AI_ANALYZE_COMPANIES = ['Bolearis', 'TIP Group', 'Sunexpress', 'ETİ', 'Axa Sigorta', 'Vodafone TR', 'System']
       const isDevEnv = this.isTestEnvironment
       const companyName = this.$store.state.auth.selectedCompanyName || ''
       const isAllowedCompany = AI_ANALYZE_COMPANIES.some(
