@@ -197,6 +197,10 @@
                           @on-edit-mode="handleEditMode"
                           @on-link-change="handleLinkChange"
                           @on-language-removed="handleLanguageRemoved"
+                          :is-show-check-with-a-i-button="isShowEnhanceWithAI"
+                          :is-check-with-a-i-loading="isCheckWithAILoading"
+                          :is-check-with-a-i-done="isCheckWithAIDone"
+                          @on-check-with-ai="handleCheckWithAI"
                         />
                       </div>
 
@@ -355,6 +359,7 @@
                                 .prompt
                             "
                             :is-generate-with-ai="isGenerateWithAi"
+                            :is-enhance-with-ai="isEnhanceWithAi"
                             :custom-head-scripts="
                               customHeadScripts[index] || ''
                             "
@@ -466,6 +471,48 @@
         @close="isSelectClickOnlyPageOpen = false"
         @add="handleClickOnlyPageAdded"
       />
+      <AppDialog
+        :status="showAIChangeLogDialog"
+        icon="mdi-auto-fix"
+        title="AI Enhancement Results"
+        size="maximum"
+        max-height
+        max-height-size="460px"
+        @changeStatus="showAIChangeLogDialog = $event"
+      >
+        <template #app-dialog-body>
+          <div v-if="aiDifficulty" class="d-flex align-center mb-3">
+            <span class="fw-600 mr-2" style="font-size: 13px;">Difficulty:</span>
+            <span
+              :style="{
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontWeight: 600,
+                fontSize: '12px',
+                lineHeight: '16px',
+                color: aiDifficulty === 'DIFFICULTY_HIGH' ? '#F56C6C' : aiDifficulty === 'DIFFICULTY_MEDIUM' ? '#2196F3' : '#217124',
+                border: '1px solid ' + (aiDifficulty === 'DIFFICULTY_HIGH' ? '#F56C6C' : aiDifficulty === 'DIFFICULTY_MEDIUM' ? '#2196F3' : '#217124')
+              }"
+            >
+              {{ aiDifficulty === 'DIFFICULTY_HIGH' ? 'Hard' : aiDifficulty === 'DIFFICULTY_MEDIUM' ? 'Medium' : 'Easy' }}
+            </span>
+          </div>
+          <div v-if="aiTags.length" class="d-flex align-center flex-wrap mb-3" style="gap: 6px;">
+            <span class="fw-600 mr-2" style="font-size: 13px;">Tags:</span>
+            <v-chip v-for="tag in aiTags" :key="tag" small class="ml-0">
+              {{ tag }}
+            </v-chip>
+          </div>
+          <v-divider v-if="aiDifficulty || aiTags.length" class="mb-3" />
+          <div v-for="(item, index) in aiChangeLog" :key="index" class="d-flex align-start mb-3">
+            <v-icon size="18" color="#2196f3" class="mr-2 mt-1" style="flex-shrink: 0;">mdi-check-circle</v-icon>
+            <span style="font-size: 13px; line-height: 1.5;">{{ item }}</span>
+          </div>
+        </template>
+        <template #app-dialog-footer>
+          <AppDialogFooterWithClose @on-close="showAIChangeLogDialog = false" />
+        </template>
+      </AppDialog>
     </template>
     <template #overlay-footer>
       <StepperFooter
@@ -525,7 +572,7 @@ import labels from "@/model/constants/labels";
 import FormGroup from "@/components/SmallComponents/FormGroup";
 import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
 import * as Validations from "@/utils/validations";
-import { getMergedTextForPhishing } from "@/api/phishingsimulator";
+import { getMergedTextForPhishing, fixEmailTemplateWithAI } from "@/api/phishingsimulator";
 import {
   scrollToComponent,
   isDifferent,
@@ -558,9 +605,13 @@ import BackButton from "@/components/Common/Buttons/BackButton";
 import SaveButton from "@/components/Common/Buttons/SaveButton";
 import InputPhishingLinkMini from "@/components/Common/Inputs/InputPhishingLinkMini.vue";
 import AIAllyMini from "@/components/Common/Inputs/AIAllyMini.vue";
+import AppDialog from "@/components/AppDialog";
+import AppDialogFooterWithClose from "@/components/SmallComponents/AppDialogFooterWithClose";
 import "@/styles/landing-page-tabs.css";
+import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
 export default {
   name: "NewLandingPage",
+  mixins: [useIsTestEnvironment],
   components: {
     InputLanguagesSettings,
     InputLanguagePreview,
@@ -576,7 +627,9 @@ export default {
     SaveButton,
     InputPhishingLinkMini,
     AIAllyMini,
-    SelectClickOnlyPageModal
+    SelectClickOnlyPageModal,
+    AppDialog,
+    AppDialogFooterWithClose
   },
   props: {
     status: {
@@ -704,10 +757,26 @@ export default {
       translationTempKey: null,
       timeoutId: null,
       isEverythingLocalized: false,
-      isDefault: false
+      isDefault: false,
+      isCheckWithAILoading: false,
+      isCheckWithAIDone: false,
+      isEnhanceWithAi: false,
+      showAIChangeLogDialog: false,
+      aiChangeLog: [],
+      aiTags: [],
+      aiDifficulty: ""
     };
   },
   watch: {
+    'getSelectedLanguagePayload.landingPages': {
+      deep: true,
+      handler() {
+        if (this.isEnhanceWithAi) return;
+        if (this.isCheckWithAIDone) {
+          this.isCheckWithAIDone = false;
+        }
+      }
+    },
     scenarioDetailsLookup: {
       immediate: true,
       handler(val) {
@@ -775,6 +844,93 @@ export default {
 
       this.tab = "page1";
       this.activeLanguage = languageId;
+    },
+    handleCheckWithAI() {
+      const currentPageIndex =
+        Number.parseInt(this.tab.replace("page", "")) - 1;
+      const landingPage =
+        this.getSelectedLanguagePayload.landingPages?.[currentPageIndex];
+      const template = landingPage?.content;
+      if (!template || !template.trim()) return;
+      this.isCheckWithAILoading = true;
+      this.isEnhanceWithAi = true;
+      if (this.$refs.refEmailTemplate) {
+        this.$refs.refEmailTemplate.forEach((ref) => {
+          if (ref) ref.isEmailGenerating = true;
+        });
+      }
+      fixEmailTemplateWithAI({
+        html: template,
+        type: "landing_page"
+      })
+        .then((response) => {
+          const result = response?.data?.data || response?.data;
+          if (result?.fixed_html && landingPage) {
+            landingPage.content = result.fixed_html;
+          }
+          if (result?.difficulty) {
+            const difficultyMap = {
+              DIFFICULTY_LOW: this.landingPageData.difficultyTypes?.find(
+                (d) => d.text === "Easy"
+              )?.value,
+              DIFFICULTY_MEDIUM: this.landingPageData.difficultyTypes?.find(
+                (d) => d.text === "Medium"
+              )?.value,
+              DIFFICULTY_HIGH: this.landingPageData.difficultyTypes?.find(
+                (d) => d.text === "Hard"
+              )?.value
+            };
+            const mappedDifficulty = difficultyMap[result.difficulty];
+            if (mappedDifficulty) {
+              this.formValues.difficultyTypeId = mappedDifficulty;
+            }
+          }
+          if (result?.domain) {
+            const matchedDomain = this.landingPageData.domainRecords?.find(
+              (d) => d.text === result.domain
+            );
+            if (matchedDomain) {
+              this.formValues.phishingLink.domainRecordId = matchedDomain.value;
+            }
+          }
+          const uniqueTags = [...new Set(result?.tags || [])];
+          if (uniqueTags.length) {
+            this.formValues.tags = uniqueTags;
+          }
+          const changeLog = result?.change_log || [];
+          this.aiTags = uniqueTags;
+          this.aiDifficulty = result?.difficulty || "";
+          this.isCheckWithAIDone = true;
+          if (changeLog.length) {
+            this.aiChangeLog = changeLog;
+            this.showAIChangeLogDialog = true;
+          } else {
+            this.$store.dispatch("common/createSnackBar", {
+              message: "AI enhancement complete. No changes needed.",
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: "mdi-check-circle"
+            });
+          }
+        })
+        .catch((e) => {
+          this.$store.dispatch("common/createSnackBar", {
+            message:
+              e?.response?.data?.detail ||
+              e?.response?.data?.message ||
+              "An error occurred while enhancing the template with AI.",
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: "mdi-alert-circle"
+          });
+        })
+        .finally(() => {
+          this.isCheckWithAILoading = false;
+          this.isEnhanceWithAi = false;
+          if (this.$refs.refEmailTemplate) {
+            this.$refs.refEmailTemplate.forEach((ref) => {
+              if (ref) ref.isEmailGenerating = false;
+            });
+          }
+        });
     },
     handleAIAlly() {
       this.isAIAllyOpen = !this.isAIAllyOpen;
@@ -1682,6 +1838,10 @@ export default {
       emailTemplateLogo: "whitelabel/getEmailTemplateLogoUrl",
       getCurrentCompany: "login/getCurrentCompany"
     }),
+    isShowEnhanceWithAI() {
+      if (this.isTestEnvironment) return true;
+      return this.getCurrentCompany?.name === "System" || this.getCurrentCompany?.companyName === "System";
+    },
     getLandingPageKey() {
       return this.step === 2 ? `key-${createRandomCryptStringNumber()}` : "";
     },

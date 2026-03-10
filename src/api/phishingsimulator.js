@@ -1,6 +1,7 @@
 import axios from 'axios'
 import testRequest from '../utils/testRequest'
 import { isTestEnvironment } from '@/utils/isTestEnvironment'
+import AuthenticationService from '@/services/authentication'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 /**
  * Convert content to File object if attachment is not already a File
@@ -712,6 +713,22 @@ export const translateRedFlagsTexts = (payload) => {
       'Content-Type': 'application/json'
     }
   })
+}
+
+export const fixEmailTemplateWithAI = (payload) => {
+  const isLocalhost = globalThis.location?.hostname?.includes('localhost')
+  const baseUrl = isLocalhost
+    ? 'http://localhost:4111'
+    : 'https://agentic-ai-agent.keepnetlabs.com'
+  return axios.post(
+    `${baseUrl}/phishing/template-fixer`,
+    { ...payload, accessToken: AuthenticationService.getToken() },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  )
 }
 
 export function getPhishingScenarioRoles() {

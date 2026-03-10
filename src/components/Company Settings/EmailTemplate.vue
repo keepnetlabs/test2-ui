@@ -847,7 +847,8 @@ export default {
     'showEditButton',
     'isRedFlagsLoading',
     'isShowRedFlags',
-    'isProtocolHttp'
+    'isProtocolHttp',
+    'isEnhanceWithAi'
   ],
   data() {
     return {
@@ -1087,6 +1088,10 @@ export default {
     getLoaderTitle() {
       if (this.isRedFlagsLoading)
         return 'AI Ally is carefully scanning your email template for Red Flags'
+      if (this.isEnhanceWithAi)
+        return this.templateType === 'landing'
+          ? 'AI Ally is enhancing your Landing Page template'
+          : 'AI Ally is enhancing your Email template'
       if (this.isGenerateWithAi) {
         if (this.isNotificationTemplate)
           return 'The notification template is being localized by AI Ally for the selected language.'
@@ -1103,6 +1108,8 @@ export default {
     getLoaderDescription() {
       if (this.isRedFlagsLoading)
         return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
+      if (this.isEnhanceWithAi)
+        return 'This process may take a few seconds. Please stay on the page while the template is being enhanced.'
       if (this.isGenerateWithAi) {
         if (this.isNotificationTemplate)
           return 'The process may take some time depending on the number of localizations. Please stay on the page.'
