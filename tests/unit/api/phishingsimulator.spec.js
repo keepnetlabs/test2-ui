@@ -11,6 +11,10 @@ jest.mock('axios', () => ({
   post: jest.fn().mockResolvedValue({})
 }))
 
+jest.mock('@/services/authentication', () => ({
+  getToken: jest.fn().mockReturnValue('mock-token')
+}))
+
 import testRequest from '@/utils/testRequest'
 import axios from 'axios'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
@@ -1579,6 +1583,68 @@ describe('phishingsimulator API', () => {
         expect.any(String),
         expect.objectContaining({ snackbar: COMMON_SNACKBAR })
       )
+    })
+  })
+
+  describe('fixEmailTemplateWithAI', () => {
+    it('should call axios.post with correct payload and accessToken in body', async () => {
+      const payload = { html: '<p>test</p>', type: 'email_template' }
+      await phishingApi.fixEmailTemplateWithAI(payload)
+      expect(axios.post).toHaveBeenCalledWith(
+        expect.stringContaining('/phishing/template-fixer'),
+        expect.objectContaining({
+          html: '<p>test</p>',
+          type: 'email_template',
+          accessToken: 'mock-token'
+        }),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+    })
+
+    it('should use localhost URL when hostname is localhost', async () => {
+      const originalHostname = globalThis.location?.hostname
+      Object.defineProperty(globalThis, 'location', {
+        value: { hostname: 'localhost' },
+        writable: true,
+        configurable: true
+      })
+      await phishingApi.fixEmailTemplateWithAI({ html: '<p>test</p>', type: 'email_template' })
+      expect(axios.post).toHaveBeenCalledWith(
+        'http://localhost:4111/phishing/template-fixer',
+        expect.any(Object),
+        expect.any(Object)
+      )
+      Object.defineProperty(globalThis, 'location', {
+        value: { hostname: originalHostname || '' },
+        writable: true,
+        configurable: true
+      })
+    })
+
+    it('should use production URL when hostname is not localhost', async () => {
+      Object.defineProperty(globalThis, 'location', {
+        value: { hostname: 'app.keepnetlabs.com' },
+        writable: true,
+        configurable: true
+      })
+      await phishingApi.fixEmailTemplateWithAI({ html: '<p>test</p>', type: 'landing_page' })
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://agentic-ai-agent.keepnetlabs.com/phishing/template-fixer',
+        expect.any(Object),
+        expect.any(Object)
+      )
+    })
+
+    it('should return a thenable', () => {
+      const result = phishingApi.fixEmailTemplateWithAI({ html: '<p>test</p>', type: 'email_template' })
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('should propagate errors', async () => {
+      axios.post.mockRejectedValueOnce(new Error('API Error'))
+      await expect(phishingApi.fixEmailTemplateWithAI({ html: '<p>test</p>', type: 'email_template' })).rejects.toThrow('API Error')
     })
   })
 })
