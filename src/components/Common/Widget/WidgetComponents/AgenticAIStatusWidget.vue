@@ -126,7 +126,6 @@
       :value="isActivitiesDrawerOpen"
       :columns="activitiesTableColumns"
       :row-actions="activitiesTableRowActions"
-      :table-data="activitiesTableData"
       @on-close="closeActivitiesDrawer"
     />
   </div>
@@ -138,7 +137,8 @@ import ExecutiveWidgetContainer from "@/components/ExecutiveReports/ExecutiveRep
 import ExecutiveWidgetHeader from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetHeader.vue";
 import ExecutiveWidgetBody from "@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue";
 import AgenticAIActivitiesDrawer from "./AgenticAIActivitiesDrawer.vue";
-import { mapGetters } from 'vuex';
+import { getAgenticAIActivitiesStats } from "@/api/company";
+import { mapGetters } from "vuex";
 
 export default {
   name: "AgenticAIStatusWidget",
@@ -152,18 +152,19 @@ export default {
   data() {
     return {
       isActivitiesDrawerOpen: false,
+      statsData: null,
       statCards: [
         {
           title: "Actions Executed",
           subtitle: "Last 30 days",
-          value: 12,
+          value: 0,
           hasMenu: true,
           menuOptions: ["Last 30 days", "Last 7 days", "Last 24 hours"]
         },
         {
           title: "Pending Approvals",
           subtitle: "",
-          value: 3,
+          value: 0,
           hasMenu: false
         }
       ],
@@ -238,7 +239,7 @@ export default {
           align: "center",
           fixed: false,
           filterableType: "select",
-          filterableItems: ["Executed", "Waiting for Approval", "Rejected"],
+          filterableItems: ["Executed", "Waiting for Approval", "Rejected", "Approved", "Error"],
           fullWidth: false,
           props: {
             outlined: false,
@@ -253,7 +254,7 @@ export default {
           property: "startDate",
           type: "text",
           show: true,
-          filterableType: "text",
+          filterableType: "date",
           minWidth: 160,
           width: 160,
           fixed: false
@@ -271,58 +272,6 @@ export default {
           id: "btn-agentic-ai-activity-more",
           icon: "mdi-dots-vertical",
           action: "more"
-        }
-      ],
-      activitiesTableData: [
-        {
-          firstName: "Colleen",
-          lastName: "Hawkins",
-          email: "collen@example.com",
-          department: "Marketing",
-          contentType: "Phishing Simulation",
-          contentCategory: "Cloud Security",
-          status: "Waiting for Approval",
-          startDate: ""
-        },
-        {
-          firstName: "Darrell",
-          lastName: "Warren",
-          email: "darrell@example.com",
-          department: "Accounts",
-          contentType: "Phishing Simulation",
-          contentCategory: "GDPR",
-          status: "Rejected",
-          startDate: ""
-        },
-        {
-          firstName: "Mitchell",
-          lastName: "Edwards",
-          email: "mitchell@example.com",
-          department: "IT",
-          contentType: "Quishing Simulation",
-          contentCategory: "Malware",
-          status: "Executed",
-          startDate: "13/01/2026 14:00"
-        },
-        {
-          firstName: "Arlene",
-          lastName: "Richards",
-          email: "arlene@example.com",
-          department: "Sales",
-          contentType: "Training",
-          contentCategory: "Password Security",
-          status: "Executed",
-          startDate: "13/01/2026 14:00"
-        },
-        {
-          firstName: "Victoria",
-          lastName: "Lane",
-          email: "victoria@example.com",
-          department: "Welding",
-          contentType: "Training",
-          contentCategory: "Cyber Spying",
-          status: "Rejected",
-          startDate: ""
         }
       ]
     };
@@ -363,8 +312,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled',
-      executionModeStore: 'login/getAgenticAIExecutionMode'
+      isAgenticAIEnabledStore: "login/getAgenticAIEnabled",
+      executionModeStore: "login/getAgenticAIExecutionMode"
     }),
     isAgenticAllyActiveComputed() {
       // Use store state if available, otherwise fallback to prop
@@ -372,7 +321,7 @@ export default {
     },
     isAutonomousComputed() {
       // Use store state
-      return this.executionModeStore === 'Autonomous';
+      return this.executionModeStore === "Autonomous";
     },
     currentStatusText() {
       if (!this.isAgenticAllyActiveComputed) {
@@ -474,9 +423,50 @@ export default {
       return titles;
     }
   },
+  created() {
+    this.fetchStats();
+  },
   methods: {
+    async fetchStats() {
+      try {
+        const response = await getAgenticAIActivitiesStats();
+        this.statsData = response.data.data;
+        this.updateStatCards();
+      } catch {
+        // keep default 0 values on error
+      }
+    },
+    updateStatCards() {
+      if (!this.statsData) return;
+
+      const executedCard = this.statCards.find(
+        (c) => c.title === "Actions Executed"
+      );
+      if (executedCard) {
+        const periodKey = this.getPeriodKey(executedCard.subtitle);
+        executedCard.value = this.statsData[periodKey]?.Executed ?? 0;
+      }
+
+      const pendingCard = this.statCards.find(
+        (c) => c.title === "Pending Approvals"
+      );
+      if (pendingCard) {
+        pendingCard.value = this.statsData.last30Days?.WaitingForApproval ?? 0;
+      }
+    },
+    getPeriodKey(subtitle) {
+      const map = {
+        "Last 30 days": "last30Days",
+        "Last 7 days": "last7Days",
+        "Last 24 hours": "last24Hours"
+      };
+      return map[subtitle] || "last30Days";
+    },
     selectSubtitle(card, option) {
       card.subtitle = option;
+      if (card.title === "Actions Executed") {
+        this.updateStatCards();
+      }
     },
     isPendingApprovalsCard(card) {
       return card.title === "Pending Approvals";

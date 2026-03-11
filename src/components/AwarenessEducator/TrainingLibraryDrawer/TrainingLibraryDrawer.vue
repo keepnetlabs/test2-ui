@@ -53,6 +53,27 @@
           @edit-clicked="handleEditClicked"
         />
       </div>
+      <div v-if="showApprovalFooter" class="training-library-drawer__approval-footer">
+        <VBtn
+          outlined
+          rounded
+          color="#757575"
+          class="elevation-0 fw-600"
+          @click="$emit('reject')"
+        >
+          <VIcon left>mdi-close-circle</VIcon>
+          Reject {{ approvalTypeName }}
+        </VBtn>
+        <VBtn
+          rounded
+          color="#2196f3"
+          class="white--text elevation-0 fw-600"
+          @click="$emit('approve')"
+        >
+          <VIcon left>mdi-check-circle</VIcon>
+          Approve {{ approvalTypeName }}
+        </VBtn>
+      </div>
     </VNavigationDrawer>
   </div>
 </template>
@@ -100,6 +121,14 @@ export default {
     shouldControlBodyScroll: {
       type: Boolean,
       default: false
+    },
+    showApprovalFooter: {
+      type: Boolean,
+      default: false
+    },
+    approvalTypeName: {
+      type: String,
+      default: ''
     }
   },
   data() {

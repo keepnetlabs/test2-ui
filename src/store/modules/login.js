@@ -2,7 +2,7 @@ import { resetPassword, twoStepLogin } from "@/api/auth";
 import AuthenticationService from "../../services/authentication";
 import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 import { getWhiteLabelByUrl } from "@/api/whitelabel";
-import { getCompanyByID, getAgenticAIStatus } from "@/api/company";
+import { getCompanyByID, getAgenticAIStatus, getAgenticAISettings } from "@/api/company";
 import { updateFavicon } from "@/utils/favicon";
 const login = {
   namespaced: true,
@@ -149,8 +149,16 @@ const login = {
           const data = response?.data?.data;
           const enabled = !!data?.agenticAIEnabled;
           commit("SET_AGENTIC_AI_ENABLED", enabled);
-          if(data?.executionMode) {
-             commit("SET_AGENTIC_AI_EXECUTION_MODE", data.executionMode);
+          if (enabled) {
+            return getAgenticAISettings()
+              .then((settingsResponse) => {
+                const settingsData = settingsResponse?.data?.data;
+                if (settingsData?.executionMode) {
+                  commit("SET_AGENTIC_AI_EXECUTION_MODE", settingsData.executionMode);
+                }
+                return enabled;
+              })
+              .catch(() => enabled);
           }
           return enabled;
         })

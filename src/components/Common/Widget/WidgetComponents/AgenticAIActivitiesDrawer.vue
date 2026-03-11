@@ -1,25 +1,25 @@
 <template>
-  <VNavigationDrawer
-    v-if="value"
-    v-click-outside="handleDrawerClickOutside"
-    :value="value"
-    class="k-navigation-drawer agentic-ai-activities-drawer"
-    temporary
-    fixed
-    overlay-color="rgba(0, 0, 0, 0.17)"
-    overlay-opacity="1"
-    right
-    stateless
-    width="calc(100% - 72px)"
-    height="100%"
-  >
+  <div v-if="isVisible">
+    <div class="common-simulator-preview-overlay" @click="handleMainOverlayClick"></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="getNavigationDrawerClass"
+      :data-drawer-id="drawerId"
+      class="agentic-ai-activities-drawer"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
     <div class="agentic-ai-activities-drawer__header">
       <span class="agentic-ai-activities-drawer__header-title"
         >View Activities</span
       >
       <VIcon
         class="agentic-ai-activities-drawer__header-close"
-        @click="handleClose"
+        @click="closeDrawer"
       >
         mdi-close
       </VIcon>
@@ -37,9 +37,10 @@
         :loading="isLoading"
         :empty="empty"
         :row-actions="rowActions"
-        :stored-table-settings="storedTableSettings"
-        :saved-table-settings-local-storage-key="savedTableSettingsKey"
-        rowKey="email"
+        :download-button="{ show: false }"
+        :is-settings-popup="false"
+        :axios-payload.sync="axiosPayload"
+        rowKey="resourceId"
         filterable
         options
         is-server-side
@@ -52,38 +53,109 @@
         @server-side-size-changed="handleServerSideSizeChange"
         @sortChangedEvent="handleSortChange"
         @searchChangedEvent="handleSearchChange"
+        @columnFilterChanged="handleColumnFilterChanged"
+        @columnFilterCleared="handleColumnFilterCleared"
         @refreshAction="handleRefresh"
       >
         <template #datatable-row-actions="{ scope }">
+          <span :style="isWaitingForApproval(scope.row) ? { marginRight: '-4px' } : {}">
+            <DefaultButtonRowAction
+              icon="mdi-eye"
+              :id="getViewActionId(scope.$index)"
+              text="View"
+              :scope="scope"
+              @on-click="handleView(scope.row)"
+            />
+          </span>
           <DefaultButtonRowAction
-            icon="mdi-eye"
-            :id="getViewActionId(scope.$index)"
-            text="View"
+            v-if="isExecuted(scope.row)"
+            icon="mdi-text-box"
+            :id="`btn-agentic-ai-activity-report-${scope.$index}`"
+            text="View Report"
             :scope="scope"
-            @on-click="handleView(scope.row)"
+            @on-click="handleViewReport(scope.row)"
           />
-          <RowActionsMenu v-if="isWaitingForApproval(scope.row)">
+          <RowActionsMenu v-if="isWaitingForApproval(scope.row)" :disabled="actionInProgress">
             <DefaultMenuRowAction
               id="btn-agentic-ai-activity-approve"
-              icon="mdi-check-circle-outline"
-              text="Approve"
-              class-name="agentic-ai-activities-drawer__menu-item"
+              icon="mdi-check-circle"
+              :text="`Approve ${scope.row.activityTypeName || ''}`"
               :scope="scope"
+              :disabled="actionInProgress"
               @on-click="handleApprove(scope.row)"
             />
             <DefaultMenuRowAction
               id="btn-agentic-ai-activity-reject"
-              icon="mdi-close-circle-outline"
-              text="Reject"
-              class-name="agentic-ai-activities-drawer__menu-item"
+              icon="mdi-close-circle"
+              :text="`Reject ${scope.row.activityTypeName || ''}`"
               :scope="scope"
+              :disabled="actionInProgress"
               @on-click="handleReject(scope.row)"
             />
           </RowActionsMenu>
         </template>
       </DataTable>
     </div>
-  </VNavigationDrawer>
+    <CommonSimulatorPreviewDialog
+      v-if="previewType === 'Phishing'"
+      :status="previewType === 'Phishing' && !previewClosing"
+      :selected-row="previewSelectedRow"
+      :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
+      read-only
+      :show-approval-footer="isPreviewRowWaitingForApproval"
+      :approval-type-name="previewType"
+      @approve="handlePreviewApprove"
+      @reject="handlePreviewReject"
+      @on-close="onPreviewClosed"
+    />
+    <CommonSimulatorPreviewDialog
+      v-if="previewType === 'Quishing'"
+      :type="PREVIEW_DIALOG_TYPES.QUISHING"
+      :status="previewType === 'Quishing' && !previewClosing"
+      :selected-row="previewSelectedRow"
+      :api-func="getQuishingScenarioLandingPageAndEmailTemplate"
+      read-only
+      :show-approval-footer="isPreviewRowWaitingForApproval"
+      :approval-type-name="previewType"
+      @approve="handlePreviewApprove"
+      @reject="handlePreviewReject"
+      @on-close="onPreviewClosed"
+    />
+    <TrainingLibraryDrawer
+      v-if="previewType === 'Training'"
+      :value="previewType === 'Training' && !previewClosing"
+      :training-data="previewSelectedRow"
+      only-preview
+      is-nested
+      :show-approval-footer="isPreviewRowWaitingForApproval"
+      approval-type-name="Training"
+      @approve="handlePreviewApprove"
+      @reject="handlePreviewReject"
+      @close="onPreviewClosed"
+    />
+    </VNavigationDrawer>
+    <!-- TODO: SmishingScenarioPreview will be re-added after z-index fix -->
+    <AgenticAIConfirmDialog
+      :status="confirmDialog.status"
+      :action="confirmDialog.action"
+      :icon="confirmDialog.icon"
+      :title="confirmDialog.title"
+      :message="confirmDialog.message"
+      :recommendation="confirmDialog.recommendation"
+      :confirm-text="confirmDialog.confirmText"
+      :loading="confirmDialog.loading"
+      @preview-first="handleConfirmPreviewFirst"
+      @cancel="closeConfirmDialog"
+      @confirm="handleConfirmAction"
+    />
+    <TrainingLibraryLightbox :value="getLightbox.status" @input="handleLightboxClose">
+      <TrainingLibraryLightboxContent
+        :preview-data="getLightbox.previewData"
+        :is-loading="getLightbox.isLoading"
+        :type="getLightbox.type"
+      />
+    </TrainingLibraryLightbox>
+  </div>
 </template>
 
 <script>
@@ -92,14 +164,34 @@ import ServerSideProps from "@/helper-classes/server-side-table-props";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
 import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
 import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
+import AgenticAIConfirmDialog from "./AgenticAIConfirmDialog.vue";
+import CommonSimulatorPreviewDialog from "@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue";
+// TODO: SmishingScenarioPreview will be re-added after z-index fix
+// import SmishingScenarioPreview from "@/components/SmishingScenarios/SmishingScenarioPreview.vue";
+import TrainingLibraryDrawer from "@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryDrawer.vue";
+import TrainingLibraryLightbox from "@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightbox.vue";
+import TrainingLibraryLightboxContent from "@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightboxContent.vue";
+import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
+import useDrawerAnimation from "@/hooks/useDrawerAnimation";
+import { searchAgenticAIActivities, approveAgenticAIBatch, rejectAgenticAIActivity } from "@/api/company";
+import { getPhishingScenarioLandingPageAndEmailTemplate } from "@/api/phishingsimulator";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
+import QuishingService from "@/api/quishing";
 
 export default {
   name: "AgenticAIActivitiesDrawer",
+  mixins: [useDrawerAnimation],
   components: {
+    AgenticAIConfirmDialog,
     DataTable,
     DefaultButtonRowAction,
     DefaultMenuRowAction,
-    RowActionsMenu
+    RowActionsMenu,
+    CommonSimulatorPreviewDialog,
+    TrainingLibraryDrawer,
+    TrainingLibraryLightbox,
+    TrainingLibraryLightboxContent
   },
   props: {
     value: {
@@ -110,17 +202,9 @@ export default {
       type: Array,
       default: () => []
     },
-    tableData: {
-      type: Array,
-      default: () => []
-    },
     rowActions: {
       type: Array,
       default: () => []
-    },
-    shouldControlBodyScroll: {
-      type: Boolean,
-      default: true
     },
     empty: {
       type: Object,
@@ -134,108 +218,162 @@ export default {
     return {
       serverSideProps: new ServerSideProps("", false, 5, 1, 0, 0),
       serverSideEvents: { pagination: true, search: true, sort: true },
-      searchText: "",
-      sortProps: null,
+      actionInProgress: false,
+      axiosPayload: getDefaultAxiosPayload({ pageSize: 5, isGroupedByBatch: false }, 'CreateTime'),
       pagedTableData: [],
       isLoading: false,
       latestRequestId: 0,
-      savedTableSettingsKey: "agentic-ai-activities-table",
-      storedTableSettings: {
-        firstColFixed: true,
-        lastColFixed: true,
-        renderedColumns: []
-      }
+      previewSelectedRow: null,
+      previewActivityRow: null,
+      previewType: null,
+      previewClosing: false,
+      confirmDialog: {
+        status: false,
+        action: null,
+        row: null,
+        icon: 'mdi-information',
+        title: '',
+        message: '',
+        recommendation: '',
+        confirmText: '',
+        loading: false
+      },
+      PREVIEW_DIALOG_TYPES,
+      getPhishingScenarioLandingPageAndEmailTemplate,
+      getQuishingScenarioLandingPageAndEmailTemplate: QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
     };
   },
   watch: {
     value(newValue) {
       if (newValue) {
+        this.axiosPayload = getDefaultAxiosPayload(
+          { pageSize: this.serverSideProps.pageSize || 5, isGroupedByBatch: false },
+          'CreateTime'
+        );
+        this.serverSideProps.pageNumber = 1;
         this.$nextTick(this.moveToBody);
-        if (this.shouldControlBodyScroll) {
-          this.disableBodyScroll();
-        }
         this.fetchActivities();
-      } else if (this.shouldControlBodyScroll) {
-        this.enableBodyScroll();
+      }
+    },
+    'getLightbox.status'(isOpen) {
+      const drawerBody = this.$el?.querySelector('.agentic-ai-activities-drawer__body');
+      if (drawerBody) {
+        drawerBody.style.overflowY = isOpen ? 'hidden' : '';
       }
     }
   },
-  mounted() {
-    if (this.value) {
-      this.$nextTick(this.moveToBody);
-      if (this.shouldControlBodyScroll) {
-        this.disableBodyScroll();
-      }
-      this.fetchActivities();
-    }
-  },
-  beforeDestroy() {
-    if (this.shouldControlBodyScroll) {
-      this.enableBodyScroll();
+  computed: {
+    status() {
+      return this.value;
+    },
+    isNested() {
+      return false;
+    },
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true
+      };
+    },
+    getLightbox() {
+      return this.$store.getters['trainingLibrary/getLightbox'] || {};
+    },
+    hasNestedPreview() {
+      return this.previewType !== null;
+    },
+    isPreviewRowWaitingForApproval() {
+      return this.previewActivityRow ? this.isWaitingForApproval(this.previewActivityRow) : false;
     }
   },
   methods: {
-    disableBodyScroll() {
-      const html = document.querySelector("html");
-      if (html) {
-        html.style.overflowY = "hidden";
-      }
-      const body = document.querySelector("body");
-      if (body) {
-        body.style.overflowY = "hidden";
-      }
+    getFilterFieldName(property) {
+      const fieldMap = {
+        firstName: 'targetUserFirstName',
+        lastName: 'targetUserLastName',
+        email: 'targetUserEmail',
+        department: 'targetUserDepartment',
+        contentType: 'activityTypeName',
+        contentCategory: 'contentCategory',
+        status: 'statusName',
+        startDate: 'createTime'
+      };
+      return fieldMap[property] || property;
     },
-    enableBodyScroll() {
-      const html = document.querySelector("html");
-      if (html) {
-        html.style.overflowY = "";
-      }
-      const body = document.querySelector("body");
-      if (body) {
-        body.style.overflowY = "";
-      }
+    getSortFieldName(property) {
+      const fieldMap = {
+        firstName: 'TargetUserFirstName',
+        lastName: 'TargetUserLastName',
+        email: 'TargetUserEmail',
+        department: 'TargetUserDepartment',
+        contentType: 'ActivityType',
+        contentCategory: 'ContentCategory',
+        status: 'Status',
+        startDate: 'CreateTime'
+      };
+      return fieldMap[property] || property || 'CreateTime';
     },
-    mockApiRequest(payload) {
-      return new Promise((resolve) => {
-        globalThis.setTimeout(() => {
-          resolve(payload);
-        }, 350);
-      });
+    normalizeFilterItem(filterItem = {}) {
+      return {
+        ...filterItem,
+        FieldName: this.getFilterFieldName(filterItem.FieldName),
+        Value: filterItem.Value ?? filterItem.value ?? ''
+      };
     },
-    applySearch(data, searchValue) {
-      if (!searchValue) {
-        return data;
-      }
-      const normalized = searchValue.trim().toLowerCase();
-      return data.filter((row) =>
-        this.columns.some((column) => {
-          const value = row?.[column.property];
-          if (value === undefined || value === null) {
-            return false;
-          }
-          return String(value).toLowerCase().includes(normalized);
-        })
-      );
-    },
-    applySort(data, sortProps) {
-      if (!sortProps || !sortProps.prop || !sortProps.order) {
-        return data;
-      }
-      const direction = sortProps.order === "descending" ? -1 : 1;
-      return [...data].sort((a, b) => {
-        const aVal = a?.[sortProps.prop];
-        const bVal = b?.[sortProps.prop];
-        if (aVal === undefined || aVal === null) return -1 * direction;
-        if (bVal === undefined || bVal === null) return 1 * direction;
-        if (typeof aVal === "number" && typeof bVal === "number") {
-          return (aVal - bVal) * direction;
+    buildRequestPayload() {
+      const filterGroups = this.axiosPayload?.filter?.FilterGroups || [];
+      const andGroup = filterGroups[0] || { Condition: 'AND', FilterItems: [], FilterGroups: [] };
+      const orGroup = filterGroups[1] || { Condition: 'OR', FilterItems: [], FilterGroups: [] };
+
+      return {
+        ...this.axiosPayload,
+        pageNumber: this.serverSideProps.pageNumber,
+        pageSize: this.serverSideProps.pageSize,
+        orderBy: this.getSortFieldName(this.axiosPayload.orderBy),
+        filter: {
+          ...this.axiosPayload.filter,
+          FilterGroups: [
+            {
+              ...andGroup,
+              FilterItems: andGroup.FilterItems.map((item) => this.normalizeFilterItem(item))
+            },
+            {
+              ...orGroup,
+              FilterItems: orGroup.FilterItems.map((item) => this.normalizeFilterItem(item))
+            }
+          ]
         }
-        return String(aVal).localeCompare(String(bVal)) * direction;
-      });
+      };
     },
-    applyPagination(data, pageNumber, pageSize) {
-      const startIndex = Math.max(pageNumber - 1, 0) * pageSize;
-      return data.slice(startIndex, startIndex + pageSize);
+    resetPageNumber() {
+      this.axiosPayload.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
+    },
+    mapActivityToRow(activity) {
+      const activityTypeMap = {
+        1: 'Phishing Simulation',
+        2: 'Quishing Simulation',
+        3: 'Smishing Simulation',
+        4: 'Training'
+      };
+
+      return {
+        resourceId: activity.resourceId,
+        batchResourceId: activity.batchResourceId,
+        activityType: activity.activityType,
+        activityTypeName: activity.activityTypeName,
+        scenarioResourceId: activity.scenarioResourceId,
+        scenarioName: activity.scenarioName,
+        trainingResourceId: activity.trainingResourceId,
+        enrollmentResourceId: activity.enrollmentResourceId,
+        campaignResourceId: activity.campaignResourceId,
+        firstName: activity.targetUserFirstName || '',
+        lastName: activity.targetUserLastName || '',
+        email: activity.targetUserEmail || '',
+        department: activity.targetUserDepartment || '',
+        contentType: activityTypeMap[activity.activityType] || activity.activityTypeName || '',
+        contentCategory: activity.contentCategory || '',
+        status: this.normalizeStatus(activity.statusName || ''),
+        startDate: activity.executionTime || activity.createTime || ''
+      };
     },
     async fetchActivities() {
       if (!this.value) {
@@ -244,42 +382,30 @@ export default {
       const requestId = Date.now();
       this.latestRequestId = requestId;
       this.isLoading = true;
-      const sourceData = [...this.tableData];
-      const searchValue = this.searchText;
-      const sortProps = this.sortProps;
-      const pageNumber = this.serverSideProps.pageNumber;
-      const pageSize = this.serverSideProps.pageSize;
-      const filtered = this.applySearch(sourceData, searchValue);
-      const sorted = this.applySort(filtered, sortProps);
-      const totalNumberOfRecords = sorted.length;
-      const totalNumberOfPages = Math.max(
-        Math.ceil(totalNumberOfRecords / pageSize),
-        1
-      );
-      const pagedData = this.applyPagination(sorted, pageNumber, pageSize);
-      const normalizedPagedData = pagedData.map((row) => ({
-        ...row,
-        status: this.normalizeStatus(row.status)
-      }));
-      const response = await this.mockApiRequest({
-        data: normalizedPagedData,
-        totalNumberOfRecords,
-        totalNumberOfPages
-      });
-      if (this.latestRequestId !== requestId) {
-        return;
+
+      try {
+        const payload = this.buildRequestPayload();
+        const response = await searchAgenticAIActivities(payload);
+        const result = response.data.data;
+
+        if (this.latestRequestId !== requestId) {
+          return;
+        }
+
+        const activities = result.results || [];
+        this.pagedTableData = activities.map(a => this.mapActivityToRow(a));
+        this.serverSideProps.totalNumberOfRecords = result.totalNumberOfRecords || activities[0]?.totalRowCount || 0;
+        this.serverSideProps.totalNumberOfPages = result.totalNumberOfPages || 1;
+
+        if (this.serverSideProps.pageNumber > this.serverSideProps.totalNumberOfPages) {
+          this.serverSideProps.pageNumber = 1;
+        }
+      } catch {
+        this.pagedTableData = [];
+      } finally {
+        this.isLoading = false;
+        this.$nextTick(this.refreshTableLayout);
       }
-      this.serverSideProps.totalNumberOfRecords = response.totalNumberOfRecords;
-      this.serverSideProps.totalNumberOfPages = response.totalNumberOfPages;
-      if (this.serverSideProps.pageNumber > response.totalNumberOfPages) {
-        this.serverSideProps.pageNumber = 1;
-      }
-      this.pagedTableData = response.data;
-      this.isLoading = false;
-      this.$nextTick(this.refreshTableLayout);
-    },
-    getDrawerTarget() {
-      return document.querySelector(".v-application") || document.body;
     },
     refreshTableLayout() {
       const tableRef = this.$refs.activitiesTable;
@@ -288,23 +414,49 @@ export default {
       }
     },
     handleServerSidePageChange(pageNumber) {
+      this.axiosPayload.pageNumber = pageNumber;
       this.serverSideProps.pageNumber = pageNumber;
       this.fetchActivities();
     },
     handleServerSideSizeChange(pageSize) {
+      this.axiosPayload.pageSize = pageSize;
       this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
       this.fetchActivities();
     },
-    handleSortChange(sortProps) {
-      this.sortProps = sortProps;
+    handleSortChange({ order, prop } = {}) {
+      this.axiosPayload.ascending = order === 'ascending';
+      this.axiosPayload.orderBy = prop || 'CreateTime';
       this.fetchActivities();
     },
-    handleSearchChange(bodyDataFilter) {
-      this.searchText = bodyDataFilter?.filter?.SearchInputTextValue || "";
-      this.serverSideProps.pageNumber = 1;
+    handleSearchChange(searchFilter = {}) {
+      const filterItems = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || [];
+      this.axiosPayload.filter.SearchInputTextValue =
+        searchFilter?.filter?.SearchInputTextValue || '';
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems];
+      this.resetPageNumber();
       this.fetchActivities();
     },
     handleRefresh() {
+      this.fetchActivities();
+    },
+    handleColumnFilterChanged(filter) {
+      this.resetPageNumber();
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      ).map((item) => ({
+        ...item,
+        Value: item.Value ?? item.value ?? ''
+      }));
+      this.fetchActivities();
+    },
+    handleColumnFilterCleared(fieldName) {
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      );
+      this.resetPageNumber();
       this.fetchActivities();
     },
     normalizeStatus(status = "") {
@@ -317,7 +469,9 @@ export default {
         "waiting for approval": "Waiting for Approval",
         waitingforapproval: "Waiting for Approval",
         executed: "Executed",
-        rejected: "Rejected"
+        rejected: "Rejected",
+        approved: "Approved",
+        error: "Error"
       };
       if (statusMap[cleaned]) return statusMap[cleaned];
       if (!cleaned) return status;
@@ -337,17 +491,180 @@ export default {
     getViewActionId(index) {
       return `btn-agentic-ai-activity-view-${index}`;
     },
-    handleView(row) {
-      this.$emit("on-view", row);
+    async handleView(row) {
+      // TODO: Smishing (3) preview will be re-added after z-index fix
+      const typeMap = { 1: 'Phishing', 2: 'Quishing', 3: 'Smishing', 4: 'Training' };
+      const previewType = typeMap[row.activityType];
+
+      if (!previewType) {
+        return;
+      }
+
+      // Reset previous preview state first to ensure clean re-open
+      this.previewType = null;
+      this.previewSelectedRow = null;
+      this.previewActivityRow = null;
+      this.previewClosing = false;
+
+      // Use double nextTick to ensure Vue fully removes the previous component
+      this.$nextTick(() => {
+        this.$nextTick(() => {
+          this.previewActivityRow = row;
+
+          if (previewType === 'Training') {
+            if (!row.trainingResourceId) return;
+            this.previewSelectedRow = {
+              trainingId: row.trainingResourceId
+            };
+            this.previewType = previewType;
+            return;
+          }
+
+          if (!row.scenarioResourceId) {
+            return;
+          }
+
+          this.previewSelectedRow = {
+            resourceId: row.scenarioResourceId,
+            name: row.scenarioName || ''
+          };
+          this.previewType = previewType;
+        });
+      });
+    },
+    closePreview() {
+      this.previewClosing = true;
+    },
+    onPreviewClosed() {
+      this.previewType = null;
+      this.previewSelectedRow = null;
+      this.previewActivityRow = null;
+      this.previewClosing = false;
+    },
+    handleMainOverlayClick() {
+      if (this.previewClosing) {
+        this.onPreviewClosed();
+        this.closeDrawer();
+        return;
+      }
+      if (this.hasNestedPreview) {
+        this.closePreview();
+        return;
+      }
+      this.closeDrawer();
+    },
+    handleLightboxClose(value) {
+      if (!value) {
+        this.$store.commit('trainingLibrary/SET_LIGHTBOX', {
+          status: false,
+          previewData: null,
+          isLoading: false,
+          type: null
+        });
+      }
+    },
+    isExecuted(row = {}) {
+      return String(row.status || '').toLowerCase() === 'executed';
     },
     handleApprove(row) {
-      this.$emit("on-approve", row);
+      this.confirmDialog = {
+        status: true,
+        action: 'approve',
+        row,
+        icon: 'mdi-information',
+        title: 'Approving Without Preview',
+        message: "You're approving this action without previewing the content.",
+        recommendation: 'Recommended: Preview first to review what will be sent.',
+        confirmText: 'APPROVE ANYWAY'
+      };
     },
     handleReject(row) {
-      this.$emit("on-reject", row);
+      this.confirmDialog = {
+        status: true,
+        action: 'reject',
+        row,
+        icon: 'mdi-information',
+        title: 'Rejecting Without Preview',
+        message: "You're rejecting this action without previewing the content.",
+        recommendation: 'Recommended: Preview first to review the content.',
+        confirmText: 'REJECT ANYWAY'
+      };
+    },
+    closeConfirmDialog() {
+      this.confirmDialog = { ...this.confirmDialog, status: false, row: null, action: null };
+    },
+    handleConfirmPreviewFirst() {
+      const row = this.confirmDialog.row;
+      this.closeConfirmDialog();
+      if (row) {
+        this.handleView(row);
+      }
+    },
+    async handleConfirmAction() {
+      const { action, row } = this.confirmDialog;
+      if (!row) return;
+      this.confirmDialog.loading = true;
+      await this.executeApproveReject(action, row);
+      this.confirmDialog.loading = false;
+      this.closeConfirmDialog();
+    },
+    showSnackbar(message, color = 'green', icon = 'mdi-check-circle') {
+      this.$store.dispatch('common/createSnackBar', { message, color, icon });
+    },
+    async executeApproveReject(action, row) {
+      if (!row || this.actionInProgress) return;
+      this.actionInProgress = true;
+      try {
+        if (action === 'approve') {
+          const response = await approveAgenticAIBatch({ batchResourceId: row.batchResourceId });
+          const data = response.data?.data || {};
+          const approved = data.approvedCount || 0;
+          const errors = data.errorCount || 0;
+          if (errors > 0) {
+            this.showSnackbar(`${approved} approved, ${errors} failed`, 'orange', 'mdi-alert-circle');
+          } else {
+            this.showSnackbar('Action approved and executed successfully.', 'green', 'mdi-check-circle');
+          }
+          this.$emit("on-approve", row);
+        } else if (action === 'reject') {
+          await rejectAgenticAIActivity({ resourceIds: [row.resourceId] });
+          this.showSnackbar('Action rejected and will not be executed.', 'green', 'mdi-close-circle');
+          this.$emit("on-reject", row);
+        }
+        this.fetchActivities();
+      } catch {
+        // error handled by interceptor
+      } finally {
+        this.actionInProgress = false;
+      }
+    },
+    handlePreviewApprove() {
+      const row = this.previewActivityRow;
+      if (!row) return;
+      this.closePreview();
+      this.executeApproveReject('approve', row);
+    },
+    handlePreviewReject() {
+      const row = this.previewActivityRow;
+      if (!row) return;
+      this.closePreview();
+      this.executeApproveReject('reject', row);
+    },
+    handleViewReport(row) {
+      const instanceGroup = row.instanceGroup || 1;
+      const typeRouteMap = {
+        1: { name: 'Campaign Report', params: { id: row.campaignResourceId, instanceGroup } },
+        2: { name: 'Quishing Report', params: { id: row.campaignResourceId, instanceGroup } },
+        3: { name: 'Smishing Report', params: { id: row.campaignResourceId, instanceGroup } },
+        4: { name: 'Training Report', params: { id: row.enrollmentResourceId || row.batchResourceId } }
+      };
+      const routeConfig = typeRouteMap[row.activityType];
+      if (!routeConfig) return;
+      const route = this.$router.resolve(routeConfig);
+      window.open(route.href, '_blank');
     },
     moveToBody() {
-      const target = this.getDrawerTarget();
+      const target = document.querySelector(".v-application") || document.body;
       if (!this.$el || this.$el === target) {
         return;
       }
@@ -355,20 +672,8 @@ export default {
         target.appendChild(this.$el);
       }
       this.$nextTick(this.refreshTableLayout);
-    },
-    handleDrawerClickOutside(event) {
-      const target = event?.target;
-      if (target && target.closest('.v-menu__content')) {
-        return;
-      }
-      this.handleClose();
-    },
-    handleClose() {
-      if (this.shouldControlBodyScroll) {
-        this.enableBodyScroll();
-      }
-      this.$emit("on-close");
     }
   }
 };
 </script>
+

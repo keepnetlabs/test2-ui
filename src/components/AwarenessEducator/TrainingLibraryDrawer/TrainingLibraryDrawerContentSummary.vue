@@ -316,6 +316,7 @@ export default {
   data() {
     return {
       availableLanguages: [],
+      allLanguagesFromApi: [],
       isLoadingLanguages: true,
       trainingDetails: null,
       isFavorite: false,
@@ -732,17 +733,15 @@ export default {
       this.isLoadingLanguages = true
       AwarenessEducatorService.getLanguages()
         .then((res) => {
-          // languageCodes varsa onu kullan (orijinal kodlar), yoksa languages'i dene
+          this.allLanguagesFromApi = res?.data?.data || []
           const languageCodes = this.trainingData.languageCodes || this.trainingData.languages || []
           this.availableLanguages = []
-          // Array kontrolü
           if (!Array.isArray(languageCodes)) {
             this.isLoadingLanguages = false
             return
           }
           languageCodes.forEach((langCode) => {
-            // API'den gelen dillerde shortCode veya code field'ı ile eşleştir
-            const language = res?.data?.data?.find(
+            const language = this.allLanguagesFromApi.find(
               (item) =>
                 item.shortCode === langCode || item.code === langCode || item.id === langCode
             )
@@ -772,12 +771,24 @@ export default {
           const {
             data: { data }
           } = response
+          // If availableLanguages is empty, resolve from trainingContents languageIds
+          if (this.availableLanguages.length === 0 && data.trainingContents?.length && this.allLanguagesFromApi?.length) {
+            const contentLangIds = [...new Set(data.trainingContents.map(c => c.languageId))]
+            contentLangIds.forEach((langId) => {
+              const language = this.allLanguagesFromApi.find((item) => item.id === langId)
+              if (language) {
+                this.availableLanguages.push({
+                  text: language.isoFriendlyName || language.name,
+                  value: language.id
+                })
+              }
+            })
+          }
           this.trainingDetails = {
             ...data,
             category: data.category || this.trainingData.category,
             categoryName: data.categoryName || this.trainingData.categoryName,
             languages: this.availableLanguages.map((lang) => lang.text).join(', '),
-            // Prefer API compliances; fallback to selectedRow.compliances
             compliances: Array.isArray(data.complianceNames)
               ? data.complianceNames
               : this.trainingData.complianceNames || []

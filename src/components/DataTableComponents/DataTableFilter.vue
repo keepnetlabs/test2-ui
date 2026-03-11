@@ -362,7 +362,7 @@ export default {
     return {
       isCloseOnClick: true,
       status: false,
-      zIndex: '202',
+      zIndex: 202,
       menu: null,
       btnKeySafariFix: `btn-key-${createRandomCryptStringNumber()}`,
       isFilterActive:
@@ -439,7 +439,7 @@ export default {
   watch: {
     menu(newVal) {
       if (newVal) {
-        this.zIndex = ['date', 'dateOnly'].includes(this.filterableType) ? '202 !important' : '202'
+        this.zIndex = ['date', 'dateOnly'].includes(this.filterableType) ? 252 : 202
         this.$emit('update:isSettingsOpened', false)
       }
     },

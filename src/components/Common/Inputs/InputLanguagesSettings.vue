@@ -8,6 +8,41 @@
     />
 
     <div class="d-flex gap-4">
+      <VTooltip v-if="isShowCheckWithAIButton && (isCheckWithAILoading || isCheckWithAIDone)" bottom max-width="300">
+        <template #activator="{ on, attrs }">
+          <div v-bind="attrs" v-on="on">
+            <VBtn
+              :ripple="false"
+              class="fw-600"
+              rounded
+              outlined
+              color="#2196f3"
+              style="opacity: 0.5; pointer-events: none;"
+            >
+              <VIcon>mdi-auto-fix</VIcon>
+              <span class="button-new__text ml-1" style="text-transform: none;">Enhance with AI</span>
+            </VBtn>
+          </div>
+        </template>
+        <span>{{ isCheckWithAILoading ? 'AI is enhancing the template...' : 'Template has already been enhanced. Make changes to the template to enhance again.' }}</span>
+      </VTooltip>
+      <VTooltip v-else-if="isShowCheckWithAIButton" bottom max-width="300">
+        <template #activator="{ on, attrs }">
+          <VBtn
+            v-bind="attrs"
+            v-on="on"
+            class="fw-600"
+            rounded
+            outlined
+            color="#2196f3"
+            @click="handleCheckWithAIClick"
+          >
+            <VIcon>mdi-auto-fix</VIcon>
+            <span class="button-new__text ml-1" style="text-transform: none;">Enhance with AI</span>
+          </VBtn>
+        </template>
+        <span>{{ isLandingPage ? 'AI will analyze your landing page and set difficulty, tags, and domain automatically.' : 'AI will analyze and improve your template\'s HTML structure, set difficulty, tags, and sender details automatically.' }}</span>
+      </VTooltip>
       <div v-if="isShowLocalizeButton" class="position-relative">
         <div>
           <VTooltip v-if="!isLocalizeReady || showRedFlags" bottom max-width="260">
@@ -414,6 +449,18 @@ export default {
       default: true
     },
     isAIAllyOpen: {
+      type: Boolean,
+      default: false
+    },
+    isShowCheckWithAIButton: {
+      type: Boolean,
+      default: false
+    },
+    isCheckWithAILoading: {
+      type: Boolean,
+      default: false
+    },
+    isCheckWithAIDone: {
       type: Boolean,
       default: false
     }
@@ -1052,6 +1099,10 @@ export default {
     },
     handleShowRedFlagsClick() {
       this.$emit('on-show-red-flags-click')
+    },
+    handleCheckWithAIClick() {
+      if (this.isCheckWithAILoading || this.isCheckWithAIDone) return
+      this.$emit('on-check-with-ai')
     },
     rebuildItemsForSelection() {
       const translated = new Set(this.translatedLanguageResourceIds || [])

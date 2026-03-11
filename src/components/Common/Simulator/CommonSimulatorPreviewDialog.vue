@@ -38,7 +38,7 @@
           <div>
             <span class="text-primary-color fs-5 fw-600">{{ selectedRow.name }}</span>
           </div>
-          <div class="d-flex align-center gap-2">
+          <div v-if="!readOnly" class="d-flex align-center gap-2">
             <VTooltip v-if="!isQuishing" bottom>
               <template #activator="{ on }">
                 <div v-on="on">
@@ -74,7 +74,7 @@
             name="email"
             :label="getFirstTabLabel"
           >
-            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+            <div :class="['text-primary-color fs-4 fw-600 mb-2', readOnly ? 'mt-1' : 'mt-n4']">
               {{ emailTemplateParams.name }}
               <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
                 <template #activator="{ on }">
@@ -321,17 +321,38 @@
           >
             <TabsWithMfaSettingsMultipleLanguages
               :key="getLandingPageKey"
-              class="mt-n4"
               :type="type"
               :is-method-mfa="isMethodMfa"
               :landing-page-params="landingPageParams"
               :landing-page-templates="landingPageTemplates"
               :languages="languages"
               :phishing-url="landingPageParams.urlTemplate"
+              :read-only="readOnly"
               @on-edit="handleEdit"
             />
           </ElTabPane>
         </ElTabs>
+      </div>
+      <div v-if="showApprovalFooter" class="common-simulator-preview__approval-footer">
+        <VBtn
+          outlined
+          rounded
+          color="#757575"
+          class="elevation-0 fw-600"
+          @click="$emit('reject')"
+        >
+          <VIcon left>mdi-close-circle</VIcon>
+          Reject {{ approvalTypeName }}
+        </VBtn>
+        <VBtn
+          rounded
+          color="#2196f3"
+          class="white--text elevation-0 fw-600"
+          @click="$emit('approve')"
+        >
+          <VIcon left>mdi-check-circle</VIcon>
+          Approve {{ approvalTypeName }}
+        </VBtn>
       </div>
     </VNavigationDrawer>
   </div>
@@ -391,6 +412,18 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
+    },
+    showApprovalFooter: {
+      type: Boolean,
+      default: false
+    },
+    approvalTypeName: {
+      type: String,
+      default: ''
     }
   },
   data() {
