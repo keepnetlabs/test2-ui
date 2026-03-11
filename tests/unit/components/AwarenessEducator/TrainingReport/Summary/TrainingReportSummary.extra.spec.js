@@ -16,6 +16,7 @@ import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/Tra
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
+import labels from '@/model/constants/labels'
 
 describe('TrainingReportSummary.vue (extra branch coverage)', () => {
   it('getAudienceDetailsType returns phishingCampaign when isFromPhishingCampaign is true', () => {
@@ -49,6 +50,51 @@ describe('TrainingReportSummary.vue (extra branch coverage)', () => {
     const data = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
     expect(data['Auto-enroll'].value).toBe('Enroll new users the same day')
     expect(data.Languages.value).toBe('EN')
+    expect(data[labels.Certificates]).toBeUndefined()
+  })
+
+  it('isCertificatesFieldVisible false for Poster type', () => {
+    const ctx = {
+      trainingSummary: {
+        trainingTypeName: TRAINING_LIBRARY_PAYLOAD_TYPES.POSTER,
+        isScormProxy: false
+      }
+    }
+    ctx.getTrainingType = TrainingReportSummary.computed.getTrainingType.call(ctx)
+    ctx.isScormProxy = TrainingReportSummary.computed.isScormProxy.call(ctx)
+    ctx.getIsSurvey = TrainingReportSummary.computed.getIsSurvey.call(ctx)
+    ctx.isTrainingTypeLearningPath = TrainingReportSummary.computed.isTrainingTypeLearningPath.call(ctx)
+    const visible = TrainingReportSummary.computed.isCertificatesFieldVisible.call(ctx)
+    expect(visible).toBe(false)
+  })
+
+  it('isCertificatesFieldVisible true for TRAINING_LIBRARY_TYPES.TRAINING (string)', () => {
+    const ctx = {
+      trainingSummary: {
+        trainingTypeName: TRAINING_LIBRARY_TYPES.TRAINING,
+        isScormProxy: false
+      }
+    }
+    ctx.getTrainingType = TrainingReportSummary.computed.getTrainingType.call(ctx)
+    ctx.isScormProxy = TrainingReportSummary.computed.isScormProxy.call(ctx)
+    ctx.getIsSurvey = TrainingReportSummary.computed.getIsSurvey.call(ctx)
+    ctx.isTrainingTypeLearningPath = TrainingReportSummary.computed.isTrainingTypeLearningPath.call(ctx)
+    const visible = TrainingReportSummary.computed.isCertificatesFieldVisible.call(ctx)
+    expect(visible).toBe(true)
+  })
+
+  it('getCertificatesDisplayValue uses root config when Learning Path has no award step', () => {
+    const ctx = {
+      isTrainingTypeLearningPath: true,
+      trainingSummary: {}
+    }
+    const result = TrainingReportSummary.methods.getCertificatesDisplayValue.call(
+      ctx,
+      true,
+      'SendOnAnyAttempt',
+      [{ stepNumber: 1, awardCertificate: false }]
+    )
+    expect(result).toBe(labels.CertificatesAnyAttempt)
   })
 
   it('toggleIsShowResendDialog clears selectedRow when closing dialog', () => {
