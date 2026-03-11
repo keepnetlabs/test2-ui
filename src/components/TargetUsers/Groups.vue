@@ -28,6 +28,13 @@
       @handleDelete="handleDeleteGroup"
       @handleMultipleDelete="handleDeleteGroupMultiple"
     />
+    <SendWithAIDialog
+      v-if="isSendWithAIDialogOpen"
+      :status="isSendWithAIDialogOpen"
+      :options="sendWithAIOptions"
+      @closeOverlay="handleCloseSendWithAIDialog"
+      @confirm="handleConfirmSendWithAI"
+    />
     <datatable
       v-bind="tableState"
       ref="refGroupsTable"
@@ -127,6 +134,14 @@
             :disabledTooltipText="getAddUsersToGroupButtonTooltipMessage(scope.row, true)"
             @on-click="handleAddGroup(scope.row)"
           />
+          <DefaultMenuRowAction
+            v-if="showSendWithAIAction"
+            id="btn-send-with-ai--target-users-group-row-actions"
+            :scope="scope"
+            icon="mdi-creation"
+            text="Send with Agentic AI"
+            @on-click="handleSendWithAI(scope.row)"
+          />
           <TargetGroupRowActionsDeleteButton
             :id="tableOptions.rowActions[2].id"
             :scope="scope"
@@ -171,6 +186,10 @@ import { mapGetters } from 'vuex'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import AddTargetGroupModal from '@/components/TargetUsers/AddTargetGroupModal.vue'
+import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
+import { isTestEnvironment } from '@/utils/isTestEnvironment'
+import axios from 'axios'
+import AuthenticationService from '@/services/authentication'
 export default {
   name: 'Groups',
   components: {
@@ -182,6 +201,7 @@ export default {
     TargetUserRowActionsEditButton,
     DeleteGroupModal,
     TargetGroupUsersAddUsersModal,
+    SendWithAIDialog,
     datatable: DataTable
   },
   props: {
@@ -196,6 +216,12 @@ export default {
   data() {
     return {
       bulkDeleteErrorMessage: '',
+      isSendWithAIDialogOpen: false,
+      selectedRowForAI: null,
+      sendWithAIOptions: {
+        training: true,
+        phishing: true
+      },
       showAddUsersModal: false,
       isCreateButtonDisabled: false,
       isExtendedViewCancelButtonDisabled: false,
@@ -363,6 +389,9 @@ export default {
     ...mapGetters({
       getTargetGroupsCreatePermissions: 'permissions/getTargetGroupsCreatePermissions'
     }),
+    showSendWithAIAction() {
+      return isTestEnvironment()
+    },
     getGroupName() {
       return this.selectedGroup.name || localStorage.getItem('lastTargetGroupUsers')
     },
@@ -592,6 +621,57 @@ export default {
         })
         .catch((error) => {
           this.bulkDeleteErrorMessage = error?.response?.data?.message
+        })
+    },
+    handleSendWithAI(row) {
+      this.selectedRowForAI = row
+      this.sendWithAIOptions = {
+        training: true,
+        phishing: true
+      }
+      this.isSendWithAIDialogOpen = true
+    },
+    handleCloseSendWithAIDialog() {
+      this.isSendWithAIDialogOpen = false
+      this.selectedRowForAI = null
+      this.sendWithAIOptions = {
+        training: true,
+        phishing: true
+      }
+    },
+    handleConfirmSendWithAI(options) {
+      const token = AuthenticationService.getToken()
+      const { resourceId } = this.selectedRowForAI
+      const actions = []
+
+      if (options.training) {
+        actions.push('training')
+      }
+      if (options.phishing) {
+        actions.push('phishing')
+      }
+
+      const body = {
+        token,
+        targetGroupResourceId: resourceId,
+        actions,
+        sendAfterPhishingSimulation:
+          options.training && options.phishing
+            ? options.sendAfterPhishingSimulation || false
+            : false
+      }
+      const url = 'https://agentic-ai-agent.keepnetlabs.com/batch-autonomous'
+      axios
+        .post(url, body, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(() => {
+          this.handleCloseSendWithAIDialog()
+        })
+        .catch((error) => {
+          console.error('Error sending data to batch-autonomous:', error)
         })
     },
     columnFilterChanged(filter) {
