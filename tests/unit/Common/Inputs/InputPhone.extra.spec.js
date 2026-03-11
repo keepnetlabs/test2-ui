@@ -127,7 +127,7 @@ describe('InputPhone.vue (extra branch coverage)', () => {
     expect(wrapper.emitted('input')[0][0]).toHaveLength(16)
   })
 
-  it('handleTelChange Poland 16-char: setValueSubStr', () => {
+  it('handleTelChange Poland 16-char: passes through (no truncation)', () => {
     const wrapper = shallowMount(InputPhone, {
       propsData: { value: '' }
     })
@@ -145,7 +145,7 @@ describe('InputPhone.vue (extra branch coverage)', () => {
     wrapper.vm.$refs.refTelInput._phone = val16
     wrapper.vm.handleTelChange(val16)
     expect(wrapper.emitted('input')).toBeTruthy()
-    expect(wrapper.emitted('input')[0][0]).toHaveLength(15)
+    expect(wrapper.emitted('input')[0][0]).toHaveLength(16)
   })
 
   it('handleTelChange Sweden 17-char: setValueSubStr', () => {
