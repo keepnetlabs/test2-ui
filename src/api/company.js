@@ -259,6 +259,38 @@ export function saveAgenticAISettings(payload = {}) {
   // Deprecated/Compatibility wrapper if needed, or mapped to update
   return updateAgenticAISettings(payload)
 }
+export function getAgenticAIActivitiesStats() {
+  return testRequest.get('/agentic-ai/activities/stats')
+}
+
+export function searchAgenticAIActivities(payload = {}) {
+  return testRequest.post('/agentic-ai/activities/search', payload)
+}
+
+export function createAgenticAIActivity(payload = {}) {
+  return testRequest.post('/agentic-ai/activities', payload, { snackbar: COMMON_SNACKBAR })
+}
+
+export function getAgenticAIActivity(resourceId) {
+  return testRequest.get(`/agentic-ai/activities/${resourceId}`)
+}
+
+export function rejectAgenticAIActivity(payload = {}) {
+  return testRequest.post('/agentic-ai/activities/reject', payload)
+}
+
+export function getAgenticAIBatch(batchResourceId) {
+  return testRequest.get(`/agentic-ai/batch/${batchResourceId}`)
+}
+
+export function approveAgenticAIBatch(payload = {}) {
+  return testRequest.post('/agentic-ai/batch/approve', payload)
+}
+
+export function rejectAgenticAIBatch(payload = {}) {
+  return testRequest.post('/agentic-ai/batch/reject', payload)
+}
+
 export function generateNotificationTemplateTranslation(payload = {}) {
   return testRequest.post('/companies/email-templates/translate', payload)
 }
