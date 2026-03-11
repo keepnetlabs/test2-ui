@@ -815,6 +815,8 @@ export const labels = {
   Prev: 'PREV',
   Back: 'BACK',
   InvalidPhoneNumber: 'Invalid phone number',
+  PhoneNumberTooShort: 'Phone number is too short for the selected country',
+  PhoneNumberTooLong: 'Phone number is too long for the selected country',
   Email: 'Email Address',
   JustEmail: 'Email',
 
