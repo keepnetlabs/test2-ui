@@ -37,8 +37,9 @@
         :loading="isLoading"
         :empty="empty"
         :row-actions="rowActions"
-        :stored-table-settings="storedTableSettings"
-        :saved-table-settings-local-storage-key="savedTableSettingsKey"
+        :download-button="{ show: false }"
+        :is-settings-popup="false"
+        :axios-payload.sync="axiosPayload"
         rowKey="resourceId"
         filterable
         options
@@ -174,6 +175,8 @@ import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
 import useDrawerAnimation from "@/hooks/useDrawerAnimation";
 import { searchAgenticAIActivities, approveAgenticAIBatch, rejectAgenticAIActivity } from "@/api/company";
 import { getPhishingScenarioLandingPageAndEmailTemplate } from "@/api/phishingsimulator";
+import { getDefaultAxiosPayload } from "@/utils/functions";
+import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import QuishingService from "@/api/quishing";
 
 export default {
@@ -215,19 +218,11 @@ export default {
     return {
       serverSideProps: new ServerSideProps("", false, 5, 1, 0, 0),
       serverSideEvents: { pagination: true, search: true, sort: true },
-      searchText: "",
-      columnFilters: [],
       actionInProgress: false,
-      sortProps: null,
+      axiosPayload: getDefaultAxiosPayload({ pageSize: 5, isGroupedByBatch: false }, 'CreateTime'),
       pagedTableData: [],
       isLoading: false,
       latestRequestId: 0,
-      savedTableSettingsKey: "agentic-ai-activities-table",
-      storedTableSettings: {
-        firstColFixed: true,
-        lastColFixed: true,
-        renderedColumns: []
-      },
       previewSelectedRow: null,
       previewActivityRow: null,
       previewType: null,
@@ -251,9 +246,10 @@ export default {
   watch: {
     value(newValue) {
       if (newValue) {
-        this.searchText = "";
-        this.columnFilters = [];
-        this.sortProps = null;
+        this.axiosPayload = getDefaultAxiosPayload(
+          { pageSize: this.serverSideProps.pageSize || 5, isGroupedByBatch: false },
+          'CreateTime'
+        );
         this.serverSideProps.pageNumber = 1;
         this.$nextTick(this.moveToBody);
         this.fetchActivities();
@@ -289,69 +285,67 @@ export default {
     }
   },
   methods: {
-    getColumnFieldName(property) {
+    getFilterFieldName(property) {
+      const fieldMap = {
+        firstName: 'targetUserFirstName',
+        lastName: 'targetUserLastName',
+        email: 'targetUserEmail',
+        department: 'targetUserDepartment',
+        contentType: 'activityTypeName',
+        contentCategory: 'contentCategory',
+        status: 'statusName',
+        startDate: 'createTime'
+      };
+      return fieldMap[property] || property;
+    },
+    getSortFieldName(property) {
       const fieldMap = {
         firstName: 'TargetUserFirstName',
         lastName: 'TargetUserLastName',
         email: 'TargetUserEmail',
         department: 'TargetUserDepartment',
-        contentType: 'ActivityTypeName',
+        contentType: 'ActivityType',
         contentCategory: 'ContentCategory',
-        status: 'StatusName',
+        status: 'Status',
         startDate: 'CreateTime'
       };
-      return fieldMap[property] || property;
+      return fieldMap[property] || property || 'CreateTime';
     },
-    buildSearchPayload() {
-      const payload = {
+    normalizeFilterItem(filterItem = {}) {
+      return {
+        ...filterItem,
+        FieldName: this.getFilterFieldName(filterItem.FieldName),
+        Value: filterItem.Value ?? filterItem.value ?? ''
+      };
+    },
+    buildRequestPayload() {
+      const filterGroups = this.axiosPayload?.filter?.FilterGroups || [];
+      const andGroup = filterGroups[0] || { Condition: 'AND', FilterItems: [], FilterGroups: [] };
+      const orGroup = filterGroups[1] || { Condition: 'OR', FilterItems: [], FilterGroups: [] };
+
+      return {
+        ...this.axiosPayload,
         pageNumber: this.serverSideProps.pageNumber,
         pageSize: this.serverSideProps.pageSize,
-        orderBy: 'CreateTime',
-        ascending: false,
-        isGroupedByBatch: false
-      };
-
-      if (this.sortProps?.prop) {
-        const sortFieldMap = {
-          firstName: 'TargetUserFirstName',
-          lastName: 'TargetUserLastName',
-          email: 'TargetUserEmail',
-          department: 'TargetUserDepartment',
-          contentType: 'ActivityType',
-          contentCategory: 'ContentCategory',
-          status: 'Status',
-          startDate: 'CreateTime'
-        };
-        payload.orderBy = sortFieldMap[this.sortProps.prop] || 'CreateTime';
-        payload.ascending = this.sortProps.order === 'ascending';
-      }
-
-      const andFilters = [];
-
-      if (this.columnFilters.length) {
-        andFilters.push(...this.columnFilters);
-      }
-
-      if (this.searchText) {
-        andFilters.push({
-          logic: 'or',
-          filters: [
-            { fieldName: 'TargetUserEmail', operator: 'Contains', value: this.searchText },
-            { fieldName: 'TargetUserFirstName', operator: 'Contains', value: this.searchText },
-            { fieldName: 'TargetUserLastName', operator: 'Contains', value: this.searchText },
-            { fieldName: 'ContentCategory', operator: 'Contains', value: this.searchText }
+        orderBy: this.getSortFieldName(this.axiosPayload.orderBy),
+        filter: {
+          ...this.axiosPayload.filter,
+          FilterGroups: [
+            {
+              ...andGroup,
+              FilterItems: andGroup.FilterItems.map((item) => this.normalizeFilterItem(item))
+            },
+            {
+              ...orGroup,
+              FilterItems: orGroup.FilterItems.map((item) => this.normalizeFilterItem(item))
+            }
           ]
-        });
-      }
-
-      if (andFilters.length) {
-        payload.filter = {
-          logic: 'and',
-          filters: andFilters
-        };
-      }
-
-      return payload;
+        }
+      };
+    },
+    resetPageNumber() {
+      this.axiosPayload.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     mapActivityToRow(activity) {
       const activityTypeMap = {
@@ -390,7 +384,7 @@ export default {
       this.isLoading = true;
 
       try {
-        const payload = this.buildSearchPayload();
+        const payload = this.buildRequestPayload();
         const response = await searchAgenticAIActivities(payload);
         const result = response.data.data;
 
@@ -420,43 +414,49 @@ export default {
       }
     },
     handleServerSidePageChange(pageNumber) {
+      this.axiosPayload.pageNumber = pageNumber;
       this.serverSideProps.pageNumber = pageNumber;
       this.fetchActivities();
     },
     handleServerSideSizeChange(pageSize) {
+      this.axiosPayload.pageSize = pageSize;
       this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
       this.fetchActivities();
     },
-    handleSortChange(sortProps) {
-      this.sortProps = sortProps;
+    handleSortChange({ order, prop } = {}) {
+      this.axiosPayload.ascending = order === 'ascending';
+      this.axiosPayload.orderBy = prop || 'CreateTime';
       this.fetchActivities();
     },
-    handleSearchChange(bodyDataFilter) {
-      this.searchText = bodyDataFilter?.filter?.SearchInputTextValue || "";
-      this.serverSideProps.pageNumber = 1;
+    handleSearchChange(searchFilter = {}) {
+      const filterItems = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || [];
+      this.axiosPayload.filter.SearchInputTextValue =
+        searchFilter?.filter?.SearchInputTextValue || '';
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems];
+      this.resetPageNumber();
       this.fetchActivities();
     },
     handleRefresh() {
       this.fetchActivities();
     },
     handleColumnFilterChanged(filter) {
-      const filters = Array.isArray(filter) ? filter : [filter];
-      filters.forEach(f => {
-        const fieldName = this.getColumnFieldName(f.FieldName);
-        this.columnFilters = this.columnFilters.filter(cf => cf.fieldName !== fieldName);
-        this.columnFilters.push({
-          fieldName,
-          operator: f.Operator,
-          value: f.Value
-        });
-      });
-      this.serverSideProps.pageNumber = 1;
+      this.resetPageNumber();
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      ).map((item) => ({
+        ...item,
+        Value: item.Value ?? item.value ?? ''
+      }));
       this.fetchActivities();
     },
     handleColumnFilterCleared(fieldName) {
-      const mappedFieldName = this.getColumnFieldName(fieldName);
-      this.columnFilters = this.columnFilters.filter(cf => cf.fieldName !== mappedFieldName);
-      this.serverSideProps.pageNumber = 1;
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      );
+      this.resetPageNumber();
       this.fetchActivities();
     },
     normalizeStatus(status = "") {

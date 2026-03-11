@@ -254,7 +254,7 @@ export default {
           property: "startDate",
           type: "text",
           show: true,
-          filterableType: "text",
+          filterableType: "date",
           minWidth: 160,
           width: 160,
           fixed: false
