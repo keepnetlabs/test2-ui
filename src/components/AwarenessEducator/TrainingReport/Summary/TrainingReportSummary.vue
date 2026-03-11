@@ -266,7 +266,10 @@ export default {
         autoEnrollDescription = 'No',
         languages = ['EN'],
         targetGroupNames = [],
-        sendTemplatesInPreferredLanguage = false
+        sendTemplatesInPreferredLanguage = false,
+        awardCertificate = false,
+        certificateConfigSendType = 'SendOnFirstAttempt',
+        steps = []
       } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
         languages: ['EN'],
@@ -281,7 +284,7 @@ export default {
         return lang?.isoFriendlyName || lang?.name || langCode
       })
 
-      return {
+      const result = {
         'Target Groups': {
           show: true,
           value: targetGroupNames?.map?.((tg) => ({ name: tg })) || []
@@ -307,6 +310,32 @@ export default {
           value: sendTemplatesInPreferredLanguage ? "User's Preferred Language" : 'Company Language'
         }
       }
+
+      if (this.isCertificatesFieldVisible) {
+        const certificateValue = this.getCertificatesDisplayValue(
+          awardCertificate,
+          certificateConfigSendType,
+          steps
+        )
+        result[labels.Certificates] = {
+          show: true,
+          value: certificateValue
+        }
+      }
+
+      return result
+    },
+    isCertificatesFieldVisible() {
+      const trainingType = this.getTrainingType
+      const isTrainingOnly =
+        !this.isScormProxy &&
+        (trainingType === TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING ||
+          trainingType === TRAINING_LIBRARY_TYPES.TRAINING)
+      return (
+        this.getIsSurvey ||
+        isTrainingOnly ||
+        this.isTrainingTypeLearningPath
+      )
     },
     getSMSSummaryHelperData() {
       const { sentCount } = this?.trainingSummary?.smsSummary || {}
@@ -581,6 +610,23 @@ export default {
     }
   },
   methods: {
+    getCertificatesDisplayValue(awardCertificate, certificateConfigSendType, steps) {
+      let effectiveAwardCertificate = awardCertificate
+      let effectiveCertificateConfigSendType = certificateConfigSendType
+
+      if (this.isTrainingTypeLearningPath && Array.isArray(steps) && steps.length > 0) {
+        const awardStep = steps.find((step) => step.awardCertificate)
+        if (awardStep) {
+          effectiveAwardCertificate = awardStep.awardCertificate
+          effectiveCertificateConfigSendType =
+            awardStep.certificateConfigSendType || 'SendOnFirstAttempt'
+        }
+      }
+
+      if (!effectiveAwardCertificate) return labels.CertificatesNo
+      if (effectiveCertificateConfigSendType === 'SendOnAnyAttempt') return labels.CertificatesAnyAttempt
+      return labels.CertificatesFirstAttemptOnly
+    },
     callForEnrollmentEmail() {
       if (this.getTrainingEmailNotificationTemplateTypeResourceId) {
         getDefaultEmailTemplate(this.getTrainingEmailNotificationTemplateTypeResourceId).then(

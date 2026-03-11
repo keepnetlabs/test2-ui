@@ -15,8 +15,18 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getDefaultEmailTemplate } from '@/api/company'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import labels from '@/model/constants/labels'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+function patchCtxWithCertificatesComputed(ctx) {
+  ctx.getTrainingType = TrainingReportSummary.computed.getTrainingType.call(ctx)
+  ctx.isScormProxy = TrainingReportSummary.computed.isScormProxy.call(ctx)
+  ctx.getIsSurvey = TrainingReportSummary.computed.getIsSurvey.call(ctx)
+  ctx.isTrainingTypeLearningPath = TrainingReportSummary.computed.isTrainingTypeLearningPath.call(ctx)
+  ctx.isCertificatesFieldVisible = TrainingReportSummary.computed.isCertificatesFieldVisible.call(ctx)
+  return ctx
+}
 
 describe('TrainingReportSummary.vue', () => {
   beforeEach(() => {
@@ -84,10 +94,13 @@ describe('TrainingReportSummary.vue', () => {
     })
     expect(TrainingReportSummary.computed.getSMSSummaryHelperData.call(ctx)).toEqual({ sentCount: 3 })
 
+    patchCtxWithCertificatesComputed(ctx)
     const trainingInfoData = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
     expect(trainingInfoData['Target Users'].value).toBe(10)
     expect(trainingInfoData.Languages.value).toBe('English, Turkish')
     expect(trainingInfoData['Preferred Language'].value).toBe("User's Preferred Language")
+    expect(trainingInfoData[labels.Certificates]).toBeDefined()
+    expect(trainingInfoData[labels.Certificates].show).toBe(true)
 
     expect(TrainingReportSummary.computed.getTrainingInfoHelperData.call(ctx)).toEqual({ groupCount: 2 })
     expect(TrainingReportSummary.computed.isTestTraining.call(ctx)).toBe(true)
@@ -133,6 +146,119 @@ describe('TrainingReportSummary.vue', () => {
       languages: ['EN', 'TR'],
       trainingId: 't1',
       trainingName: 'Awareness 1'
+    })
+  })
+
+  describe('Certificates field', () => {
+    it('shows Certificates for Training (SCORM, not ScormProxy)', () => {
+      const ctx = {
+        trainingSummary: {
+          trainingTypeName: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING,
+          isScormProxy: false,
+          awardCertificate: true,
+          certificateConfigSendType: 'SendOnFirstAttempt',
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeDefined()
+      expect(info[labels.Certificates].value).toBe(labels.CertificatesFirstAttemptOnly)
+    })
+
+    it('shows Certificates for Survey', () => {
+      const ctx = {
+        trainingSummary: {
+          trainingDetails: { hasQuiz: true },
+          trainingTypeName: 'Survey',
+          awardCertificate: false,
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeDefined()
+      expect(info[labels.Certificates].value).toBe(labels.CertificatesNo)
+    })
+
+    it('does NOT show Certificates for ScormProxy', () => {
+      const ctx = {
+        trainingSummary: {
+          trainingTypeName: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING,
+          isScormProxy: true,
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeUndefined()
+    })
+
+    it('getCertificatesDisplayValue returns No, First Attempt Only, Any Attempt', () => {
+      const baseCtx = {
+        isTrainingTypeLearningPath: false,
+        trainingSummary: {}
+      }
+      expect(
+        TrainingReportSummary.methods.getCertificatesDisplayValue.call(
+          baseCtx,
+          false,
+          'SendOnFirstAttempt',
+          []
+        )
+      ).toBe(labels.CertificatesNo)
+      expect(
+        TrainingReportSummary.methods.getCertificatesDisplayValue.call(
+          baseCtx,
+          true,
+          'SendOnFirstAttempt',
+          []
+        )
+      ).toBe(labels.CertificatesFirstAttemptOnly)
+      expect(
+        TrainingReportSummary.methods.getCertificatesDisplayValue.call(
+          baseCtx,
+          true,
+          'SendOnAnyAttempt',
+          []
+        )
+      ).toBe(labels.CertificatesAnyAttempt)
+    })
+
+    it('Learning Path uses certificate config from award step', () => {
+      const ctx = {
+        trainingSummary: {
+          trainingTypeName: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+          isScormProxy: false,
+          awardCertificate: false,
+          certificateConfigSendType: 'SendOnFirstAttempt',
+          steps: [
+            { stepNumber: 1, awardCertificate: false },
+            { stepNumber: 2, awardCertificate: true, certificateConfigSendType: 'SendOnAnyAttempt' }
+          ],
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeDefined()
+      expect(info[labels.Certificates].value).toBe(labels.CertificatesAnyAttempt)
     })
   })
 
