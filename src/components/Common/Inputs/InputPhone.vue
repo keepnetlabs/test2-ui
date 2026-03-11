@@ -55,12 +55,19 @@ export default {
     return {
       isPhoneNumberValid: true,
       maxLen: 17,
-      regionCode: 'GB'
+      regionCode: 'GB',
+      phonePossibility: ''
     }
   },
   computed: {
     getErrorText() {
       if (this.value) {
+        if (this.phonePossibility === 'too-short') {
+          return labels.PhoneNumberTooShort
+        }
+        if (this.phonePossibility === 'too-long') {
+          return labels.PhoneNumberTooLong
+        }
         return labels.InvalidPhoneNumber
       }
 
@@ -145,6 +152,7 @@ export default {
             return
           }
           this.regionCode = phoneObject.regionCode
+          this.phonePossibility = phoneObject.possibility || ''
           if (!this.required && !this.value) {
             this.isPhoneNumberValid = true
             return
