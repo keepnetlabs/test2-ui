@@ -100,8 +100,8 @@ export default {
         newVal[4] !== '1'
       ) {
         this.setValueSubStr(16, newVal)
-      } else if (newVal?.length === 16 && this.$refs.refTelInput.phoneObject.regionCode === 'PL') {
-        this.setValueSubStr(15, newVal)
+      } else if (newVal?.length === 17 && this.$refs.refTelInput.phoneObject.regionCode === 'PL') {
+        this.setValueSubStr(16, newVal)
       } else if (newVal?.length === 17 && this.$refs.refTelInput.phoneObject.regionCode === 'SE') {
         this.setValueSubStr(16, newVal)
       } else {
