@@ -1,42 +1,6 @@
 import AgenticAIActivitiesDrawer from '@/components/Common/Widget/WidgetComponents/AgenticAIActivitiesDrawer.vue'
 
 describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
-  describe('applySort', () => {
-    it('returns data when sortProps is null', () => {
-      const ctx = {}
-      const data = [{ a: 1 }]
-      expect(
-        AgenticAIActivitiesDrawer.methods.applySort.call(ctx, data, null)
-      ).toEqual(data)
-    })
-
-    it('returns data when sortProps has no prop', () => {
-      const ctx = {}
-      const data = [{ a: 1 }]
-      expect(
-        AgenticAIActivitiesDrawer.methods.applySort.call(ctx, data, { order: 'ascending' })
-      ).toEqual(data)
-    })
-
-    it('returns data when sortProps has no order', () => {
-      const ctx = {}
-      const data = [{ a: 1 }]
-      expect(
-        AgenticAIActivitiesDrawer.methods.applySort.call(ctx, data, { prop: 'a' })
-      ).toEqual(data)
-    })
-
-    it('sorts string values with localeCompare', () => {
-      const ctx = {}
-      const data = [{ name: 'Charlie' }, { name: 'Alice' }, { name: 'Bob' }]
-      const result = AgenticAIActivitiesDrawer.methods.applySort.call(ctx, data, {
-        prop: 'name',
-        order: 'ascending'
-      })
-      expect(result.map((r) => r.name)).toEqual(['Alice', 'Bob', 'Charlie'])
-    })
-  })
-
   describe('normalizeStatus', () => {
     it('returns capitalized status when not in map and not empty', () => {
       const ctx = {}
@@ -58,69 +22,123 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
     })
   })
 
-  describe('handleDrawerClickOutside', () => {
-    it('returns early when target is inside v-menu', () => {
-      const emit = jest.fn()
-      const ctx = { $emit: emit, shouldControlBodyScroll: false }
-      const mockTarget = {
-        closest: jest.fn(() => true)
-      }
-      AgenticAIActivitiesDrawer.methods.handleDrawerClickOutside.call(ctx, {
-        target: mockTarget
-      })
-      expect(emit).not.toHaveBeenCalled()
+  describe('getFilterFieldName', () => {
+    it('maps known properties to API field names', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'firstName')).toBe('targetUserFirstName')
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'email')).toBe('targetUserEmail')
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'department')).toBe('targetUserDepartment')
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'status')).toBe('statusName')
     })
 
-    it('calls handleClose when target is not inside v-menu', () => {
-      const emit = jest.fn()
-      const ctx = {
-        $emit: emit,
-        shouldControlBodyScroll: false,
-        enableBodyScroll: jest.fn(),
-        handleClose: AgenticAIActivitiesDrawer.methods.handleClose
-      }
-      const mockTarget = {
-        closest: jest.fn(() => null)
-      }
-      AgenticAIActivitiesDrawer.methods.handleDrawerClickOutside.call(ctx, {
-        target: mockTarget
-      })
-      expect(emit).toHaveBeenCalledWith('on-close')
+    it('returns the property as-is when not in map', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'unknownField')).toBe('unknownField')
     })
   })
 
-  describe('handleClose', () => {
-    it('calls enableBodyScroll when shouldControlBodyScroll is true', () => {
-      const enableBodyScroll = jest.fn()
-      const emit = jest.fn()
-      const ctx = {
-        shouldControlBodyScroll: true,
-        enableBodyScroll,
-        $emit: emit
-      }
-      AgenticAIActivitiesDrawer.methods.handleClose.call(ctx)
-      expect(enableBodyScroll).toHaveBeenCalled()
-      expect(emit).toHaveBeenCalledWith('on-close')
+  describe('getSortFieldName', () => {
+    it('maps known properties to API sort field names', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getSortFieldName.call(ctx, 'firstName')).toBe('TargetUserFirstName')
+      expect(AgenticAIActivitiesDrawer.methods.getSortFieldName.call(ctx, 'contentType')).toBe('ActivityType')
+      expect(AgenticAIActivitiesDrawer.methods.getSortFieldName.call(ctx, 'startDate')).toBe('CreateTime')
+    })
+
+    it('returns CreateTime as default when property is falsy', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getSortFieldName.call(ctx, '')).toBe('CreateTime')
+      expect(AgenticAIActivitiesDrawer.methods.getSortFieldName.call(ctx, null)).toBe('CreateTime')
+      expect(AgenticAIActivitiesDrawer.methods.getSortFieldName.call(ctx, undefined)).toBe('CreateTime')
     })
   })
 
-  describe('applySearch', () => {
-    it('excludes rows when value is undefined', () => {
+  describe('normalizeFilterItem', () => {
+    it('normalizes FieldName and uses Value property', () => {
       const ctx = {
-        columns: [{ property: 'name' }]
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
       }
-      const data = [{ name: undefined }, { name: 'Alice' }]
-      const result = AgenticAIActivitiesDrawer.methods.applySearch.call(ctx, data, 'alice')
-      expect(result).toEqual([{ name: 'Alice' }])
+      const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx, {
+        FieldName: 'firstName',
+        Value: 'Alice'
+      })
+      expect(result.FieldName).toBe('targetUserFirstName')
+      expect(result.Value).toBe('Alice')
     })
 
-    it('excludes rows when value is null', () => {
+    it('falls back to value (lowercase) when Value is missing', () => {
       const ctx = {
-        columns: [{ property: 'name' }]
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
       }
-      const data = [{ name: null }, { name: 'Bob' }]
-      const result = AgenticAIActivitiesDrawer.methods.applySearch.call(ctx, data, 'bob')
-      expect(result).toEqual([{ name: 'Bob' }])
+      const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx, {
+        FieldName: 'email',
+        value: 'test@example.com'
+      })
+      expect(result.Value).toBe('test@example.com')
+    })
+
+    it('defaults to empty string when both Value and value are missing', () => {
+      const ctx = {
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
+      }
+      const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx, {
+        FieldName: 'email'
+      })
+      expect(result.Value).toBe('')
+    })
+
+    it('handles empty call with default parameter', () => {
+      const ctx = {
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
+      }
+      const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx)
+      expect(result.Value).toBe('')
+    })
+  })
+
+  describe('resetPageNumber', () => {
+    it('resets both axiosPayload and serverSideProps page numbers to 1', () => {
+      const ctx = {
+        axiosPayload: { pageNumber: 5 },
+        serverSideProps: { pageNumber: 5 }
+      }
+      AgenticAIActivitiesDrawer.methods.resetPageNumber.call(ctx)
+      expect(ctx.axiosPayload.pageNumber).toBe(1)
+      expect(ctx.serverSideProps.pageNumber).toBe(1)
+    })
+  })
+
+  describe('isWaitingForApproval', () => {
+    it('returns true for waiting for approval status', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx, { status: 'Waiting for Approval' })).toBe(true)
+    })
+
+    it('returns false for other statuses', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx, { status: 'Completed' })).toBe(false)
+    })
+
+    it('handles empty row with default parameter', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx)).toBe(false)
+    })
+  })
+
+  describe('isExecuted', () => {
+    it('returns true for Executed status', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx, { status: 'Executed' })).toBe(true)
+    })
+
+    it('returns false for other statuses', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx, { status: 'Pending' })).toBe(false)
+    })
+
+    it('handles empty row with default parameter', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx)).toBe(false)
     })
   })
 })

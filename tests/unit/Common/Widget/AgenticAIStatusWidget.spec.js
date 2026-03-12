@@ -193,9 +193,15 @@ describe("AgenticAIStatusWidget", () => {
       expect(wrapper.vm.currentStatusText).toContain("autonomously");
     });
 
-    it("should display approval-gated status in manual mode", () => {
+    it("should display approval-gated status in manual mode with pending approvals", () => {
       const wrapper = mountFactory({
         "login/getAgenticAIExecutionMode": "Manual"
+      });
+      wrapper.setData({
+        statCards: [
+          { title: "Actions Executed", subtitle: "Last 30 days", value: 5, hasMenu: true, menuOptions: [] },
+          { title: "Pending Approvals", subtitle: "", value: 3, hasMenu: false }
+        ]
       });
       expect(wrapper.vm.currentStatusText).toContain("waiting for your approval");
     });
@@ -375,9 +381,15 @@ describe("AgenticAIStatusWidget", () => {
   });
 
   describe("Manual/Approval Mode", () => {
-    it("should show approval-gated status in manual mode", () => {
+    it("should show approval-gated status in manual mode with pending approvals", () => {
       const wrapper = mountFactory({
         "login/getAgenticAIExecutionMode": "Manual"
+      });
+      wrapper.setData({
+        statCards: [
+          { title: "Actions Executed", subtitle: "Last 30 days", value: 5, hasMenu: true, menuOptions: [] },
+          { title: "Pending Approvals", subtitle: "", value: 3, hasMenu: false }
+        ]
       });
       expect(wrapper.vm.currentStatusText).toContain("waiting for your approval");
     });

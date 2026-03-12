@@ -4,7 +4,8 @@ jest.mock('@/api/auth', () => ({ resetPassword: jest.fn(), twoStepLogin: jest.fn
 jest.mock('@/api/whitelabel', () => ({ getWhiteLabelByUrl: jest.fn() }))
 jest.mock('@/api/company', () => ({
   getCompanyByID: jest.fn(),
-  getAgenticAIStatus: jest.fn()
+  getAgenticAIStatus: jest.fn(),
+  getAgenticAISettings: jest.fn()
 }))
 jest.mock('@/utils/favicon', () => ({ updateFavicon: jest.fn() }))
 jest.mock('@/services/authentication', () => ({
@@ -15,7 +16,7 @@ jest.mock('@/services/authentication', () => ({
 }))
 
 describe('login store (extra coverage)', () => {
-  const { getAgenticAIStatus } = require('@/api/company')
+  const { getAgenticAIStatus, getAgenticAISettings } = require('@/api/company')
   const { getCompanyByID } = require('@/api/company')
   const { getWhiteLabelByUrl } = require('@/api/whitelabel')
   const { updateFavicon } = require('@/utils/favicon')
@@ -97,9 +98,12 @@ describe('login store (extra coverage)', () => {
   })
 
   describe('getAgenticAIEnabled action', () => {
-    it('commits executionMode when response has it', async () => {
+    it('commits executionMode when settings response has it', async () => {
       getAgenticAIStatus.mockResolvedValue({
-        data: { data: { agenticAIEnabled: true, executionMode: 'Autonomous' } }
+        data: { data: { agenticAIEnabled: true } }
+      })
+      getAgenticAISettings.mockResolvedValue({
+        data: { data: { executionMode: 'Autonomous' } }
       })
       const commit = jest.fn()
       const state = { hasAgenticAILicense: true }
@@ -126,6 +130,9 @@ describe('login store (extra coverage)', () => {
     it('does not commit execution mode when executionMode is missing', async () => {
       getAgenticAIStatus.mockResolvedValue({
         data: { data: { agenticAIEnabled: true } }
+      })
+      getAgenticAISettings.mockResolvedValue({
+        data: { data: {} }
       })
       const commit = jest.fn()
       const state = { hasAgenticAILicense: true }
