@@ -93,17 +93,13 @@ export default {
     }
   },
   created() {
-    // Initialize from storage
     this.$store.dispatch('usersDashboard/initializeFromStorage')
-    // Fetch user info (email, department, phoneNumber, preferredLanguage)
     this.$store.dispatch('usersDashboard/fetchUserInfo')
-    // Fetch top performance data (used by OverallPerformance and Leaderboard components)
     this.$store.dispatch('usersDashboard/fetchTopPerformance')
-    // Fetch my learning data (used by YourLearning component)
+    this.$store.dispatch('usersDashboard/fetchTopDepartmentPerformance')
+    this.$store.dispatch('usersDashboard/fetchTopDepartmentUserPerformance')
     this.$store.dispatch('usersDashboard/fetchMyLearning')
-    // Fetch my certificates data (used by YourCertificates component)
     this.$store.dispatch('usersDashboard/fetchMyCertificates')
-    // Fetch my badges data (used by YourBadges component)
     this.$store.dispatch('usersDashboard/fetchMyBadges')
   },
   methods: {

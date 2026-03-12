@@ -149,7 +149,6 @@ export default {
     }
   },
   created() {
-    // Fetch phishing result data
     const targetUserResourceId = '4BCeEWHwAKME' // Static resource ID
     this.$store.dispatch('usersDashboard/fetchPhishingResult', targetUserResourceId)
   }

@@ -1,6 +1,8 @@
 jest.mock('@/api/usersDashboard', () => ({
   login: jest.fn(),
   getTopPerformance: jest.fn(),
+  getTopDepartmentPerformance: jest.fn(),
+  getTopDepartmentUserPerformance: jest.fn(),
   getMyLearning: jest.fn(),
   getPhishingResult: jest.fn(),
   getUserInfo: jest.fn(),
@@ -11,6 +13,8 @@ jest.mock('@/api/usersDashboard', () => ({
 import usersDashboard from '@/store/modules/usersDashboard'
 import {
   getTopPerformance,
+  getTopDepartmentPerformance,
+  getTopDepartmentUserPerformance,
   getMyLearning,
   getMyBadges,
   getMyCertificates,
@@ -182,6 +186,78 @@ describe('usersDashboard store module (extra coverage)', () => {
 
       expect(result).toBeNull()
       expect(commit).not.toHaveBeenCalledWith('SET_USER_INFO', expect.any(Object))
+    })
+  })
+
+  describe('fetchTopDepartmentPerformance', () => {
+    it('commits data on success', async () => {
+      const commit = jest.fn()
+      getTopDepartmentPerformance.mockResolvedValue({
+        data: { data: [{ rank: 1, departmentName: 'IT', numberOfEmployees: 25, performance: 95 }] }
+      })
+
+      await usersDashboard.actions.fetchTopDepartmentPerformance({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_PERFORMANCE_LOADING', true)
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_PERFORMANCE', [
+        { rank: 1, departmentName: 'IT', numberOfEmployees: 25, performance: 95 }
+      ])
+    })
+
+    it('commits empty array when response has no data', async () => {
+      const commit = jest.fn()
+      getTopDepartmentPerformance.mockResolvedValue({ data: {} })
+
+      await usersDashboard.actions.fetchTopDepartmentPerformance({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_PERFORMANCE', [])
+    })
+
+    it('commits empty array and error on catch', async () => {
+      const commit = jest.fn()
+      getTopDepartmentPerformance.mockRejectedValue(new Error('Dept error'))
+
+      const result = await usersDashboard.actions.fetchTopDepartmentPerformance({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_PERFORMANCE', [])
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_PERFORMANCE_ERROR', 'Dept error')
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('fetchTopDepartmentUserPerformance', () => {
+    it('commits data on success', async () => {
+      const commit = jest.fn()
+      getTopDepartmentUserPerformance.mockResolvedValue({
+        data: { data: [{ rank: 1, firstName: 'Maria', lastName: 'V', performance: 95, points: 18300 }] }
+      })
+
+      await usersDashboard.actions.fetchTopDepartmentUserPerformance({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_USER_PERFORMANCE_LOADING', true)
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_USER_PERFORMANCE', [
+        { rank: 1, firstName: 'Maria', lastName: 'V', performance: 95, points: 18300 }
+      ])
+    })
+
+    it('commits empty array when response has no data', async () => {
+      const commit = jest.fn()
+      getTopDepartmentUserPerformance.mockResolvedValue({ data: {} })
+
+      await usersDashboard.actions.fetchTopDepartmentUserPerformance({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_USER_PERFORMANCE', [])
+    })
+
+    it('commits empty array and error on catch', async () => {
+      const commit = jest.fn()
+      getTopDepartmentUserPerformance.mockRejectedValue(new Error('Dept user error'))
+
+      const result = await usersDashboard.actions.fetchTopDepartmentUserPerformance({ commit })
+
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_USER_PERFORMANCE', [])
+      expect(commit).toHaveBeenCalledWith('SET_TOP_DEPARTMENT_USER_PERFORMANCE_ERROR', 'Dept user error')
+      expect(result).toBeNull()
     })
   })
 
@@ -360,6 +436,46 @@ describe('usersDashboard store module (extra coverage)', () => {
   })
 
   describe('mutations', () => {
+    it('SET_TOP_DEPARTMENT_PERFORMANCE sets data and clears loading/error', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_TOP_DEPARTMENT_PERFORMANCE(state, [{ rank: 1 }])
+      expect(state.topDepartmentPerformance.data).toEqual([{ rank: 1 }])
+      expect(state.topDepartmentPerformance.isLoading).toBe(false)
+      expect(state.topDepartmentPerformance.error).toBeNull()
+    })
+
+    it('SET_TOP_DEPARTMENT_PERFORMANCE_LOADING', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_TOP_DEPARTMENT_PERFORMANCE_LOADING(state, true)
+      expect(state.topDepartmentPerformance.isLoading).toBe(true)
+    })
+
+    it('SET_TOP_DEPARTMENT_PERFORMANCE_ERROR', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_TOP_DEPARTMENT_PERFORMANCE_ERROR(state, 'Error')
+      expect(state.topDepartmentPerformance.error).toBe('Error')
+    })
+
+    it('SET_TOP_DEPARTMENT_USER_PERFORMANCE sets data and clears loading/error', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_TOP_DEPARTMENT_USER_PERFORMANCE(state, [{ rank: 1 }])
+      expect(state.topDepartmentUserPerformance.data).toEqual([{ rank: 1 }])
+      expect(state.topDepartmentUserPerformance.isLoading).toBe(false)
+      expect(state.topDepartmentUserPerformance.error).toBeNull()
+    })
+
+    it('SET_TOP_DEPARTMENT_USER_PERFORMANCE_LOADING', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_TOP_DEPARTMENT_USER_PERFORMANCE_LOADING(state, true)
+      expect(state.topDepartmentUserPerformance.isLoading).toBe(true)
+    })
+
+    it('SET_TOP_DEPARTMENT_USER_PERFORMANCE_ERROR', () => {
+      const state = createState()
+      usersDashboard.mutations.SET_TOP_DEPARTMENT_USER_PERFORMANCE_ERROR(state, 'Error')
+      expect(state.topDepartmentUserPerformance.error).toBe('Error')
+    })
+
     it('SET_TOP_PERFORMANCE_LOADING', () => {
       const state = createState()
       usersDashboard.mutations.SET_TOP_PERFORMANCE_LOADING(state, true)
@@ -472,6 +588,42 @@ describe('usersDashboard store module (extra coverage)', () => {
   })
 
   describe('getters', () => {
+    it('getTopDepartmentPerformance returns department performance data', () => {
+      const state = createState()
+      state.topDepartmentPerformance.data = [{ rank: 1, departmentName: 'IT' }]
+      expect(usersDashboard.getters.getTopDepartmentPerformance(state)).toEqual([{ rank: 1, departmentName: 'IT' }])
+    })
+
+    it('getTopDepartmentPerformanceLoading returns loading state', () => {
+      const state = createState()
+      state.topDepartmentPerformance.isLoading = false
+      expect(usersDashboard.getters.getTopDepartmentPerformanceLoading(state)).toBe(false)
+    })
+
+    it('getTopDepartmentPerformanceError returns error', () => {
+      const state = createState()
+      state.topDepartmentPerformance.error = 'err'
+      expect(usersDashboard.getters.getTopDepartmentPerformanceError(state)).toBe('err')
+    })
+
+    it('getTopDepartmentUserPerformance returns department user performance data', () => {
+      const state = createState()
+      state.topDepartmentUserPerformance.data = [{ rank: 1, firstName: 'Maria' }]
+      expect(usersDashboard.getters.getTopDepartmentUserPerformance(state)).toEqual([{ rank: 1, firstName: 'Maria' }])
+    })
+
+    it('getTopDepartmentUserPerformanceLoading returns loading state', () => {
+      const state = createState()
+      state.topDepartmentUserPerformance.isLoading = false
+      expect(usersDashboard.getters.getTopDepartmentUserPerformanceLoading(state)).toBe(false)
+    })
+
+    it('getTopDepartmentUserPerformanceError returns error', () => {
+      const state = createState()
+      state.topDepartmentUserPerformance.error = 'err'
+      expect(usersDashboard.getters.getTopDepartmentUserPerformanceError(state)).toBe('err')
+    })
+
     it('getTopPerformanceError', () => {
       const state = createState()
       state.topPerformance.error = 'err'
