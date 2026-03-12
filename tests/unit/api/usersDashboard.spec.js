@@ -100,6 +100,30 @@ describe('usersDashboard API', () => {
       )
     })
 
+    it('should call getTopDepartmentPerformance', async () => {
+      await usersDashboardApi.getTopDepartmentPerformance()
+      expect(usersDashboardRequest.get).toHaveBeenCalledWith(
+        '/securitygrowthdashboard/top-department-performance',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            accept: 'application/json'
+          })
+        })
+      )
+    })
+
+    it('should call getTopDepartmentUserPerformance', async () => {
+      await usersDashboardApi.getTopDepartmentUserPerformance()
+      expect(usersDashboardRequest.get).toHaveBeenCalledWith(
+        '/securitygrowthdashboard/top-department-user-performance',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            accept: 'application/json'
+          })
+        })
+      )
+    })
+
     it('should call getUserInfo', async () => {
       await usersDashboardApi.getUserInfo()
       expect(usersDashboardRequest.get).toHaveBeenCalledWith(
@@ -339,6 +363,16 @@ describe('usersDashboard API', () => {
       expect(typeof result.then).toBe('function')
     })
 
+    it('getTopDepartmentPerformance should return thenable', () => {
+      const result = usersDashboardApi.getTopDepartmentPerformance()
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('getTopDepartmentUserPerformance should return thenable', () => {
+      const result = usersDashboardApi.getTopDepartmentUserPerformance()
+      expect(typeof result.then).toBe('function')
+    })
+
     it('getUserInfo should return thenable', () => {
       const result = usersDashboardApi.getUserInfo()
       expect(typeof result.then).toBe('function')
@@ -378,6 +412,8 @@ describe('usersDashboard API', () => {
       expect(typeof usersDashboardApi.loginWithMagicLink).toBe('function')
       expect(typeof usersDashboardApi.getPhishingResult).toBe('function')
       expect(typeof usersDashboardApi.getTopPerformance).toBe('function')
+      expect(typeof usersDashboardApi.getTopDepartmentPerformance).toBe('function')
+      expect(typeof usersDashboardApi.getTopDepartmentUserPerformance).toBe('function')
       expect(typeof usersDashboardApi.getUserInfo).toBe('function')
       expect(typeof usersDashboardApi.getMyBadges).toBe('function')
       expect(typeof usersDashboardApi.getMyLearning).toBe('function')
@@ -386,9 +422,9 @@ describe('usersDashboard API', () => {
       expect(typeof usersDashboardApi.getUserTimeline).toBe('function')
     })
 
-    it('should export at least 12 functions', () => {
+    it('should export at least 14 functions', () => {
       const functions = Object.values(usersDashboardApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(12)
+      expect(functions.length).toBeGreaterThanOrEqual(14)
     })
   })
 
@@ -522,6 +558,18 @@ describe('usersDashboard API', () => {
       const error = new Error('Dashboard fetch failed')
       usersDashboardRequest.get.mockRejectedValueOnce(error)
       await expect(usersDashboardApi.getPhishingResult()).rejects.toThrow('Dashboard fetch failed')
+    })
+
+    it('should propagate department performance errors', async () => {
+      const error = new Error('Department fetch failed')
+      usersDashboardRequest.get.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.getTopDepartmentPerformance()).rejects.toThrow('Department fetch failed')
+    })
+
+    it('should propagate department user performance errors', async () => {
+      const error = new Error('Department user fetch failed')
+      usersDashboardRequest.get.mockRejectedValueOnce(error)
+      await expect(usersDashboardApi.getTopDepartmentUserPerformance()).rejects.toThrow('Department user fetch failed')
     })
 
     it('should propagate learning data errors', async () => {

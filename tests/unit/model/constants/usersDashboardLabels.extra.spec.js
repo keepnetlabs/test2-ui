@@ -2,6 +2,7 @@ import usersDashboardLabels, { getUsersDashboardLabel } from '@/model/constants/
 
 function getArgsForSweepKey(key, variant = 'default') {
   if (key === 'welcomeTitle') return ['Alex']
+  if (key === 'leaderboardYourRankIn') return ['IT Department']
   if (key === 'yourBadgesEarnedOn') return ['2026-02-24']
   if (key === 'activityTimelineEnrollmentEmailSentTo') {
     return variant === 'withoutCategory'
@@ -320,6 +321,70 @@ describe('usersDashboardLabels (extra coverage)', () => {
       )
       expect(result).toContain('Campaign B')
       expect(result).toContain('Charlie')
+    })
+  })
+
+  describe('department ranking labels', () => {
+    const languages = ['en-GB', 'en-US', 'tr-TR', 'de-DE', 'fr-FR', 'es-ES']
+
+    it('leaderboardYourRankIn returns string containing department name for all languages', () => {
+      languages.forEach((lang) => {
+        const result = getUsersDashboardLabel(lang, 'leaderboardYourRankIn', 'IT')
+        expect(result).toContain('IT')
+        expect(typeof result).toBe('string')
+      })
+    })
+
+    it('leaderboardNoDepartmentMessage exists for all languages', () => {
+      languages.forEach((lang) => {
+        const result = getUsersDashboardLabel(lang, 'leaderboardNoDepartmentMessage')
+        expect(typeof result).toBe('string')
+        expect(result.length).toBeGreaterThan(0)
+      })
+    })
+
+    it('leaderboardYourRankInYourDepartment exists for all languages', () => {
+      languages.forEach((lang) => {
+        const result = getUsersDashboardLabel(lang, 'leaderboardYourRankInYourDepartment')
+        expect(typeof result).toBe('string')
+        expect(result.length).toBeGreaterThan(0)
+      })
+    })
+
+    it('leaderboardIndividualRanking exists for all languages', () => {
+      languages.forEach((lang) => {
+        expect(usersDashboardLabels[lang].leaderboardIndividualRanking).toBeDefined()
+      })
+    })
+
+    it('leaderboardDepartmentRanking exists for all languages', () => {
+      languages.forEach((lang) => {
+        expect(usersDashboardLabels[lang].leaderboardDepartmentRanking).toBeDefined()
+      })
+    })
+
+    it('leaderboardDepartmentRankingsTitle exists for all languages', () => {
+      languages.forEach((lang) => {
+        expect(usersDashboardLabels[lang].leaderboardDepartmentRankingsTitle).toBeDefined()
+      })
+    })
+
+    it('leaderboardDepartmentName exists for all languages', () => {
+      languages.forEach((lang) => {
+        expect(usersDashboardLabels[lang].leaderboardDepartmentName).toBeDefined()
+      })
+    })
+
+    it('leaderboardNumberOfEmployees exists for all languages', () => {
+      languages.forEach((lang) => {
+        expect(usersDashboardLabels[lang].leaderboardNumberOfEmployees).toBeDefined()
+      })
+    })
+
+    it('leaderboardYourDepartment exists for all languages', () => {
+      languages.forEach((lang) => {
+        expect(usersDashboardLabels[lang].leaderboardYourDepartment).toBeDefined()
+      })
     })
   })
 

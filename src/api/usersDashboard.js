@@ -109,6 +109,30 @@ export const getTopPerformance = () => {
 }
 
 /**
+ * Get top department performance data for security growth dashboard
+ * @returns {Promise} API response with top department performance data
+ */
+export const getTopDepartmentPerformance = () => {
+  return usersDashboardRequest.get(`/securitygrowthdashboard/top-department-performance`, {
+    headers: {
+      accept: 'application/json'
+    }
+  })
+}
+
+/**
+ * Get top department user performance data for security growth dashboard
+ * @returns {Promise} API response with users in the current user's department
+ */
+export const getTopDepartmentUserPerformance = () => {
+  return usersDashboardRequest.get(`/securitygrowthdashboard/top-department-user-performance`, {
+    headers: {
+      accept: 'application/json'
+    }
+  })
+}
+
+/**
  * Get my learning data for security growth dashboard
  * @returns {Promise} API response with learning data
  */
