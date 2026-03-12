@@ -373,6 +373,28 @@ describe('plugins/sentry (extra coverage)', () => {
     expect(processor(event)).toBeNull()
   })
 
+  it('filters VUE_ROUTER NavigationDuplicated errors', () => {
+    const processor = getProcessor()
+    const event = {
+      level: 'error',
+      exception: {
+        values: [{ value: 'NavigationDuplicated: Navigating to current location is not allowed' }]
+      }
+    }
+    expect(processor(event)).toBeNull()
+  })
+
+  it('filters VUE_ROUTER generic redundant navigation', () => {
+    const processor = getProcessor()
+    const event = {
+      level: 'error',
+      exception: {
+        values: [{ value: 'Avoided redundant navigation to current location: "/some-page"' }]
+      }
+    }
+    expect(processor(event)).toBeNull()
+  })
+
   it('filters VUE_ROUTER executive-reports redirect', () => {
     const processor = getProcessor()
     const event = {
