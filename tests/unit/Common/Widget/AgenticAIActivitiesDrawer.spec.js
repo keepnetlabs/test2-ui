@@ -1,6 +1,23 @@
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import AgenticAIActivitiesDrawer from "@/components/Common/Widget/WidgetComponents/AgenticAIActivitiesDrawer.vue";
 import { customVuetify as vuetify } from "../../utils";
+import * as CompanyAPI from "@/api/company";
+
+jest.mock("@/api/company", () => ({
+  searchAgenticAIActivities: jest.fn(),
+  approveAgenticAIBatch: jest.fn(),
+  rejectAgenticAIActivity: jest.fn()
+}));
+
+const mockActivityResponse = (activities = []) => ({
+  data: {
+    data: {
+      results: activities,
+      totalNumberOfRecords: activities.length,
+      totalNumberOfPages: 1
+    }
+  }
+});
 
 describe("AgenticAIActivitiesDrawer", () => {
   const localVue = createLocalVue();
@@ -21,11 +38,20 @@ describe("AgenticAIActivitiesDrawer", () => {
       propsData: {
         value: false,
         columns: baseColumns,
-        tableData: [],
         ...propsData
       },
       methods: {
         ...methodMocks
+      },
+      mocks: {
+        $store: {
+          getters: {
+            "trainingLibrary/getLightbox": {}
+          },
+          commit: jest.fn(),
+          dispatch: jest.fn()
+        },
+        $router: { resolve: jest.fn(() => ({ href: "/" })) }
       },
       stubs: [
         "DataTable",
@@ -38,6 +64,11 @@ describe("AgenticAIActivitiesDrawer", () => {
       ]
     });
   };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse([]));
+  });
 
   it("normalizes waiting for approval status", () => {
     const wrapper = mountFactory();
@@ -73,102 +104,22 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   it("applies normalized status to paged data in fetchActivities", async () => {
-    jest.useFakeTimers();
-    const wrapper = mountFactory(
+    const activities = [
       {
-        value: true,
-        columns: baseColumns,
-        tableData: [{ status: "waiting for approval" }]
-      },
-      {
-        refreshTableLayout: jest.fn()
+        resourceId: "a1",
+        batchResourceId: "b1",
+        activityType: 1,
+        statusName: "waiting for approval",
+        targetUserFirstName: "John",
+        targetUserLastName: "Doe"
       }
-    );
+    ];
+    CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse(activities));
 
-    const fetchPromise = wrapper.vm.fetchActivities();
-    jest.runAllTimers();
-    await fetchPromise;
+    const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+    await wrapper.vm.fetchActivities();
 
     expect(wrapper.vm.pagedTableData[0].status).toBe("Waiting for Approval");
-    jest.useRealTimers();
-  });
-
-  it("filters data by search term across columns", () => {
-    const wrapper = mountFactory({
-      columns: [
-        { property: "name" },
-        { property: "email" }
-      ]
-    });
-    const data = [
-      { name: "Alice", email: "alice@example.com" },
-      { name: "Bob", email: "bob@example.com" }
-    ];
-
-    const result = wrapper.vm.applySearch(data, "alice");
-
-    expect(result).toEqual([{ name: "Alice", email: "alice@example.com" }]);
-  });
-
-  it("sorts data by provided sort props", () => {
-    const wrapper = mountFactory();
-    const data = [{ value: 2 }, { value: 1 }];
-
-    const asc = wrapper.vm.applySort(data, { prop: "value", order: "ascending" });
-    const desc = wrapper.vm.applySort(data, { prop: "value", order: "descending" });
-
-    expect(asc.map((row) => row.value)).toEqual([1, 2]);
-    expect(desc.map((row) => row.value)).toEqual([2, 1]);
-  });
-
-  it("paginates data using page number and size", () => {
-    const wrapper = mountFactory();
-    const data = [1, 2, 3, 4, 5].map((value) => ({ value }));
-
-    const page1 = wrapper.vm.applyPagination(data, 1, 2);
-    const page2 = wrapper.vm.applyPagination(data, 2, 2);
-
-    expect(page1.map((row) => row.value)).toEqual([1, 2]);
-    expect(page2.map((row) => row.value)).toEqual([3, 4]);
-  });
-
-  it("emits on-close when handleClose is called", () => {
-    const wrapper = mountFactory();
-    wrapper.vm.handleClose();
-    expect(wrapper.emitted()["on-close"]).toBeTruthy();
-  });
-
-  it("skips body scroll toggling when shouldControlBodyScroll is false", async () => {
-    const wrapper = mountFactory({ value: true, shouldControlBodyScroll: false });
-    const disableSpy = jest.spyOn(wrapper.vm, "disableBodyScroll");
-    const enableSpy = jest.spyOn(wrapper.vm, "enableBodyScroll");
-
-    await wrapper.setProps({ value: true });
-    await wrapper.setProps({ value: false });
-
-    expect(disableSpy).not.toHaveBeenCalled();
-    expect(enableSpy).not.toHaveBeenCalled();
-  });
-
-  it("returns original data when search value is empty", () => {
-    const wrapper = mountFactory();
-    const data = [{ name: "A" }, { name: "B" }];
-
-    const result = wrapper.vm.applySearch(data, "");
-
-    expect(result).toEqual(data);
-  });
-
-  it("handles sorting when values are null or undefined", () => {
-    const wrapper = mountFactory();
-    const data = [{ value: null }, { value: 2 }, { value: undefined }];
-
-    const result = wrapper.vm.applySort(data, { prop: "value", order: "ascending" });
-
-    expect(result[2].value).toBe(2);
-    expect(result.slice(0, 2).map((row) => row.value)).toEqual(
-      expect.arrayContaining([null, undefined])
-    );
   });
 
   it("resets page number on search change", () => {
@@ -182,417 +133,335 @@ describe("AgenticAIActivitiesDrawer", () => {
     expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
   });
 
-  describe('Component Structure', () => {
-    it('should render component successfully', () => {
+  describe("Component Structure", () => {
+    it("should render component successfully", () => {
       const wrapper = mountFactory();
       expect(wrapper.exists()).toBe(true);
     });
 
-    it('should have navigation drawer', () => {
-      const wrapper = mountFactory();
-      expect(wrapper.find('vnavigationdrawer-stub').exists()).toBe(false);
-    });
-
-    it('should have data table component', () => {
+    it("should have data table component", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm).toBeDefined();
     });
 
-    it('should accept columns prop', () => {
+    it("should accept columns prop", () => {
       const wrapper = mountFactory({ columns: baseColumns });
-      expect(wrapper.props('columns')).toEqual(baseColumns);
-    });
-
-    it('should accept tableData prop', () => {
-      const wrapper = mountFactory({ tableData: [] });
-      expect(wrapper.props('tableData')).toEqual([]);
+      expect(wrapper.props("columns")).toEqual(baseColumns);
     });
   });
 
-  describe('Status Normalization', () => {
-    it('should normalize waiting for approval status', () => {
+  describe("Status Normalization", () => {
+    it("should normalize waiting for approval status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('waiting for approval')).toBe('Waiting for Approval');
+      expect(wrapper.vm.normalizeStatus("waiting for approval")).toBe("Waiting for Approval");
     });
 
-    it('should normalize executed status', () => {
+    it("should normalize executed status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('executed')).toBe('Executed');
+      expect(wrapper.vm.normalizeStatus("executed")).toBe("Executed");
     });
 
-    it('should normalize rejected status', () => {
+    it("should normalize rejected status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('rejected')).toBe('Rejected');
+      expect(wrapper.vm.normalizeStatus("rejected")).toBe("Rejected");
     });
 
-    it('should handle underscore separated status', () => {
+    it("should handle underscore separated status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('waiting_for_approval')).toBe('Waiting for Approval');
+      expect(wrapper.vm.normalizeStatus("waiting_for_approval")).toBe("Waiting for Approval");
     });
 
-    it('should handle hyphen separated status', () => {
+    it("should handle hyphen separated status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('waiting-for-approval')).toBe('Waiting for Approval');
+      expect(wrapper.vm.normalizeStatus("waiting-for-approval")).toBe("Waiting for Approval");
     });
 
-    it('should preserve already normalized status', () => {
+    it("should preserve already normalized status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('Executed')).toBe('Executed');
+      expect(wrapper.vm.normalizeStatus("Executed")).toBe("Executed");
     });
 
-    it('should handle mixed case status', () => {
+    it("should handle mixed case status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus('WAITING FOR APPROVAL')).toBeDefined();
+      expect(wrapper.vm.normalizeStatus("WAITING FOR APPROVAL")).toBeDefined();
     });
 
-    it('should normalize multiple status variations', () => {
+    it("should normalize multiple status variations", () => {
       const wrapper = mountFactory();
-      const statuses = ['pending', 'processing', 'completed'];
-      statuses.forEach(status => {
+      const statuses = ["pending", "processing", "completed"];
+      statuses.forEach((status) => {
         expect(wrapper.vm.normalizeStatus(status)).toBeDefined();
       });
     });
   });
 
-  describe('Activity Status Detection', () => {
-    it('should detect waiting for approval status', () => {
+  describe("Activity Status Detection", () => {
+    it("should detect waiting for approval status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({ status: 'waiting for approval' })).toBe(true);
+      expect(wrapper.vm.isWaitingForApproval({ status: "waiting for approval" })).toBe(true);
     });
 
-    it('should detect waiting for approval with capital letters', () => {
+    it("should detect waiting for approval with capital letters", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({ status: 'Waiting for Approval' })).toBe(true);
+      expect(wrapper.vm.isWaitingForApproval({ status: "Waiting for Approval" })).toBe(true);
     });
 
-    it('should not detect non-approval status', () => {
+    it("should not detect non-approval status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({ status: 'executed' })).toBe(false);
+      expect(wrapper.vm.isWaitingForApproval({ status: "executed" })).toBe(false);
     });
 
-    it('should handle missing status field', () => {
+    it("should handle missing status field", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm.isWaitingForApproval({})).toBeDefined();
     });
 
-    it('should be case-insensitive for approval check', () => {
+    it("should be case-insensitive for approval check", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({ status: 'WAITING FOR APPROVAL' })).toBeDefined();
+      expect(wrapper.vm.isWaitingForApproval({ status: "WAITING FOR APPROVAL" })).toBeDefined();
     });
   });
 
-  describe('Data Fetching', () => {
-    it('should fetch activities', async () => {
-      jest.useFakeTimers();
-      const wrapper = mountFactory(
-        { value: true, tableData: [{ status: 'waiting for approval' }] },
-        { refreshTableLayout: jest.fn() }
-      );
+  describe("Field Mapping", () => {
+    it("should map getFilterFieldName correctly", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getFilterFieldName("firstName")).toBe("targetUserFirstName");
+      expect(wrapper.vm.getFilterFieldName("status")).toBe("statusName");
+      expect(wrapper.vm.getFilterFieldName("unknown")).toBe("unknown");
+    });
 
-      const fetchPromise = wrapper.vm.fetchActivities();
-      jest.runAllTimers();
-      await fetchPromise;
+    it("should map getSortFieldName correctly", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getSortFieldName("firstName")).toBe("TargetUserFirstName");
+      expect(wrapper.vm.getSortFieldName("status")).toBe("Status");
+      expect(wrapper.vm.getSortFieldName("unknown")).toBe("unknown");
+    });
 
+    it("should return CreateTime as default for getSortFieldName", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getSortFieldName(null)).toBe("CreateTime");
+      expect(wrapper.vm.getSortFieldName(undefined)).toBe("CreateTime");
+    });
+
+    it("should normalize filter item with FieldName and Value", () => {
+      const wrapper = mountFactory();
+      const result = wrapper.vm.normalizeFilterItem({
+        FieldName: "firstName",
+        Value: "John"
+      });
+      expect(result.FieldName).toBe("targetUserFirstName");
+      expect(result.Value).toBe("John");
+    });
+  });
+
+  describe("Data Fetching", () => {
+    it("should fetch activities and populate pagedTableData", async () => {
+      const activities = [
+        {
+          resourceId: "a1",
+          batchResourceId: "b1",
+          activityType: 1,
+          statusName: "executed",
+          targetUserFirstName: "Jane",
+          targetUserLastName: "Doe"
+        }
+      ];
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse(activities));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
+
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
       expect(wrapper.vm.pagedTableData).toBeDefined();
-      jest.useRealTimers();
+      expect(wrapper.vm.pagedTableData.length).toBe(1);
+      expect(wrapper.vm.pagedTableData[0].status).toBe("Executed");
     });
 
-    it('should normalize status during fetch', async () => {
-      jest.useFakeTimers();
-      const wrapper = mountFactory(
-        { value: true, tableData: [{ status: 'waiting for approval' }] },
-        { refreshTableLayout: jest.fn() }
-      );
-
-      const fetchPromise = wrapper.vm.fetchActivities();
-      jest.runAllTimers();
-      await fetchPromise;
-
-      expect(wrapper.vm.pagedTableData[0].status).toBe('Waiting for Approval');
-      jest.useRealTimers();
-    });
-
-    it('should populate paged table data', async () => {
-      jest.useFakeTimers();
-      const wrapper = mountFactory(
-        { value: true, tableData: [{ id: 1 }, { id: 2 }] },
-        { refreshTableLayout: jest.fn() }
-      );
-
-      const fetchPromise = wrapper.vm.fetchActivities();
-      jest.runAllTimers();
-      await fetchPromise;
-
-      expect(wrapper.vm.pagedTableData).toEqual(expect.any(Array));
-      jest.useRealTimers();
-    });
-  });
-
-  describe('Data Filtering', () => {
-    it('should filter data by search term', () => {
-      const wrapper = mountFactory({
-        columns: [{ property: 'name' }, { property: 'email' }]
-      });
-      const data = [
-        { name: 'Alice', email: 'alice@example.com' },
-        { name: 'Bob', email: 'bob@example.com' }
+    it("should normalize status during fetch", async () => {
+      const activities = [
+        {
+          resourceId: "a1",
+          batchResourceId: "b1",
+          activityType: 1,
+          statusName: "waiting for approval",
+          targetUserFirstName: "John",
+          targetUserLastName: "Doe"
+        }
       ];
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse(activities));
 
-      const result = wrapper.vm.applySearch(data, 'alice');
-      expect(result).toEqual([{ name: 'Alice', email: 'alice@example.com' }]);
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
+
+      expect(wrapper.vm.pagedTableData[0].status).toBe("Waiting for Approval");
     });
 
-    it('should return all data when search is empty', () => {
-      const wrapper = mountFactory();
-      const data = [{ name: 'A' }, { name: 'B' }];
+    it("should not fetch when value is false", async () => {
+      const wrapper = mountFactory({ value: false });
+      await wrapper.vm.fetchActivities();
 
-      const result = wrapper.vm.applySearch(data, '');
-      expect(result).toEqual(data);
+      expect(CompanyAPI.searchAgenticAIActivities).not.toHaveBeenCalled();
     });
 
-    it('should search across multiple columns', () => {
-      const wrapper = mountFactory({
-        columns: [{ property: 'name' }, { property: 'email' }]
-      });
-      const data = [
-        { name: 'Alice', email: 'alice@example.com' },
-        { name: 'Bob', email: 'bob@example.com' }
-      ];
+    it("should handle API error gracefully", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockRejectedValue(new Error("Network error"));
 
-      const result = wrapper.vm.applySearch(data, 'bob@example');
-      expect(result.length).toBeGreaterThan(0);
-    });
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
 
-    it('should be case-insensitive in search', () => {
-      const wrapper = mountFactory({
-        columns: [{ property: 'name' }]
-      });
-      const data = [{ name: 'Alice' }];
-
-      const result1 = wrapper.vm.applySearch(data, 'alice');
-      const result2 = wrapper.vm.applySearch(data, 'ALICE');
-      expect(result1).toEqual(result2);
-    });
-
-    it('should handle special characters in search', () => {
-      const wrapper = mountFactory({
-        columns: [{ property: 'name' }]
-      });
-      const data = [{ name: 'John@Doe' }];
-
-      const result = wrapper.vm.applySearch(data, '@');
-      expect(result).toEqual(expect.any(Array));
+      expect(wrapper.vm.pagedTableData).toEqual([]);
     });
   });
 
-  describe('Data Sorting', () => {
-    it('should sort ascending', () => {
-      const wrapper = mountFactory();
-      const data = [{ value: 3 }, { value: 1 }, { value: 2 }];
+  describe("Server-Side Events", () => {
+    it("should reset page on search change and call fetchActivities", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.vm.serverSideProps.pageNumber = 5;
 
-      const result = wrapper.vm.applySort(data, { prop: 'value', order: 'ascending' });
-      expect(result.map(r => r.value)).toEqual([1, 2, 3]);
+      wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: "test" } });
+
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+      await wrapper.vm.$nextTick();
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
     });
 
-    it('should sort descending', () => {
-      const wrapper = mountFactory();
-      const data = [{ value: 3 }, { value: 1 }, { value: 2 }];
+    it("should handle sort change and call fetchActivities", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.vm.handleSortChange({ prop: "status", order: "ascending" });
 
-      const result = wrapper.vm.applySort(data, { prop: 'value', order: 'descending' });
-      expect(result.map(r => r.value)).toEqual([3, 2, 1]);
+      expect(wrapper.vm.axiosPayload.orderBy).toBe("status");
+      expect(wrapper.vm.axiosPayload.ascending).toBe(true);
+      await wrapper.vm.$nextTick();
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
     });
 
-    it('should handle null values in sort', () => {
-      const wrapper = mountFactory();
-      const data = [{ value: null }, { value: 2 }, { value: undefined }];
+    it("should handle page change and call fetchActivities", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.vm.handleServerSidePageChange(2);
 
-      const result = wrapper.vm.applySort(data, { prop: 'value', order: 'ascending' });
-      expect(result).toEqual(expect.any(Array));
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(2);
+      expect(wrapper.vm.axiosPayload.pageNumber).toBe(2);
+      await wrapper.vm.$nextTick();
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
     });
 
-    it('should sort string values', () => {
-      const wrapper = mountFactory();
-      const data = [{ name: 'Charlie' }, { name: 'Alice' }, { name: 'Bob' }];
+    it("should handle page size change and reset page number", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.vm.serverSideProps.pageNumber = 3;
+      wrapper.vm.handleServerSideSizeChange(10);
 
-      const result = wrapper.vm.applySort(data, { prop: 'name', order: 'ascending' });
-      expect(result[0].name).toBe('Alice');
+      expect(wrapper.vm.serverSideProps.pageSize).toBe(10);
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+      expect(wrapper.vm.axiosPayload.pageNumber).toBe(1);
     });
 
-    it('should handle missing sort property', () => {
-      const wrapper = mountFactory();
-      const data = [{ value: 2 }, { value: 1 }];
+    it("should call handleRefresh to refetch activities", async () => {
+      const wrapper = mountFactory({ value: true });
+      await wrapper.vm.handleRefresh();
 
-      expect(() => {
-        wrapper.vm.applySort(data, { prop: 'missing', order: 'ascending' });
-      }).not.toThrow();
-    });
-  });
-
-  describe('Data Pagination', () => {
-    it('should paginate first page', () => {
-      const wrapper = mountFactory();
-      const data = [1, 2, 3, 4, 5].map(v => ({ value: v }));
-
-      const result = wrapper.vm.applyPagination(data, 1, 2);
-      expect(result.map(r => r.value)).toEqual([1, 2]);
-    });
-
-    it('should paginate second page', () => {
-      const wrapper = mountFactory();
-      const data = [1, 2, 3, 4, 5].map(v => ({ value: v }));
-
-      const result = wrapper.vm.applyPagination(data, 2, 2);
-      expect(result.map(r => r.value)).toEqual([3, 4]);
-    });
-
-    it('should handle out of range page', () => {
-      const wrapper = mountFactory();
-      const data = [1, 2].map(v => ({ value: v }));
-
-      const result = wrapper.vm.applyPagination(data, 10, 2);
-      expect(result).toEqual(expect.any(Array));
-    });
-
-    it('should handle page size larger than data', () => {
-      const wrapper = mountFactory();
-      const data = [1, 2].map(v => ({ value: v }));
-
-      const result = wrapper.vm.applyPagination(data, 1, 10);
-      expect(result.length).toBeLessThanOrEqual(2);
-    });
-
-    it('should handle zero page number', () => {
-      const wrapper = mountFactory();
-      const data = [1, 2].map(v => ({ value: v }));
-
-      expect(() => {
-        wrapper.vm.applyPagination(data, 0, 2);
-      }).not.toThrow();
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
     });
   });
 
-  describe('Event Handling', () => {
-    it('should emit on-close event', () => {
-      const wrapper = mountFactory();
-      wrapper.vm.handleClose();
-      expect(wrapper.emitted()['on-close']).toBeTruthy();
-    });
+  describe("Drawer Close", () => {
+    it("should emit on-close when closeDrawer is called", (done) => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.vm.closeDrawer();
 
-    it('should reset page on search change', () => {
+      setTimeout(() => {
+        expect(wrapper.emitted()["on-close"]).toBeTruthy();
+        done();
+      }, 300);
+    });
+  });
+
+  describe("Event Handling", () => {
+    it("should reset page on search change", () => {
       const wrapper = mountFactory();
       wrapper.vm.serverSideProps.pageNumber = 5;
 
-      wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: 'test' } });
+      wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: "test" } });
       expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
     });
 
-    it('should accept search change event', () => {
+    it("should accept search change event", () => {
       const wrapper = mountFactory();
       expect(() => {
-        wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: 'test' } });
+        wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: "test" } });
       }).not.toThrow();
     });
 
-    it('should accept sort configuration', () => {
+    it("should support server-side pagination", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm).toBeDefined();
-    });
-
-    it('should support pagination', () => {
-      const wrapper = mountFactory();
-      expect(wrapper.vm.applyPagination).toBeDefined();
+      expect(wrapper.vm.handleServerSidePageChange).toBeDefined();
+      expect(wrapper.vm.handleServerSideSizeChange).toBeDefined();
     });
   });
 
-  describe('Body Scroll Control', () => {
-    it('should control body scroll by default', () => {
+  describe("Props Management", () => {
+    it("should accept value prop", () => {
       const wrapper = mountFactory({ value: true });
-      expect(wrapper.vm).toBeDefined();
+      expect(wrapper.props("value")).toBe(true);
     });
 
-    it('should skip scroll control when flag is false', async () => {
-      const wrapper = mountFactory({ value: true, shouldControlBodyScroll: false });
-      const disableSpy = jest.spyOn(wrapper.vm, 'disableBodyScroll');
-
-      await wrapper.setProps({ value: true });
-      expect(disableSpy).not.toHaveBeenCalled();
-    });
-
-    it('should toggle body scroll on value change', async () => {
-      const wrapper = mountFactory({ value: false });
-      await wrapper.setProps({ value: true });
-      await wrapper.setProps({ value: false });
-      expect(wrapper.exists()).toBe(true);
-    });
-  });
-
-  describe('Props Management', () => {
-    it('should accept value prop', () => {
-      const wrapper = mountFactory({ value: true });
-      expect(wrapper.props('value')).toBe(true);
-    });
-
-    it('should accept columns prop', () => {
+    it("should accept columns prop", () => {
       const wrapper = mountFactory({ columns: baseColumns });
-      expect(wrapper.props('columns')).toEqual(baseColumns);
+      expect(wrapper.props("columns")).toEqual(baseColumns);
     });
 
-    it('should accept tableData prop', () => {
-      const data = [{ id: 1 }, { id: 2 }];
-      const wrapper = mountFactory({ tableData: data });
-      expect(wrapper.props('tableData')).toEqual(data);
-    });
-
-    it('should support dynamic prop updates', async () => {
+    it("should support dynamic prop updates", async () => {
       const wrapper = mountFactory();
       await wrapper.setProps({ value: true });
-      expect(wrapper.props('value')).toBe(true);
+      expect(wrapper.props("value")).toBe(true);
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle empty columns', () => {
+  describe("Edge Cases", () => {
+    it("should handle empty columns", () => {
       const wrapper = mountFactory({ columns: [] });
-      expect(wrapper.props('columns')).toEqual([]);
+      expect(wrapper.props("columns")).toEqual([]);
     });
 
-    it('should handle empty tableData', () => {
-      const wrapper = mountFactory({ tableData: [] });
-      expect(wrapper.vm).toBeDefined();
+    it("should handle empty API response", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse([]));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
+
+      expect(wrapper.vm.pagedTableData).toEqual([]);
     });
 
-    it('should handle very large dataset', () => {
-      const largeData = Array.from({ length: 1000 }, (_, i) => ({ id: i }));
-      const wrapper = mountFactory({ tableData: largeData });
-      expect(wrapper.exists()).toBe(true);
-    });
+    it("should handle API response with totalRowCount fallback", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue({
+        data: {
+          data: {
+            results: [{ resourceId: "a1", totalRowCount: 1 }],
+            totalNumberOfRecords: undefined,
+            totalNumberOfPages: undefined
+          }
+        }
+      });
 
-    it('should handle special characters in data', () => {
-      const data = [{ name: 'Test & Co. <Script>' }];
-      const wrapper = mountFactory({ tableData: data });
-      expect(wrapper.exists()).toBe(true);
-    });
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
 
-    it('should handle null values in data', () => {
-      const data = [{ value: null }, { value: undefined }];
-      const wrapper = mountFactory({ tableData: data });
-      expect(wrapper.exists()).toBe(true);
+      expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(1);
     });
   });
 
-  describe('Multiple Instances', () => {
-    it('should support multiple drawer instances', () => {
+  describe("Multiple Instances", () => {
+    it("should support multiple drawer instances", () => {
       const wrapper1 = mountFactory({ value: true });
       const wrapper2 = mountFactory({ value: false });
 
       expect(wrapper1.vm).not.toBe(wrapper2.vm);
     });
 
-    it('should maintain separate state', () => {
+    it("should maintain separate state", () => {
       const wrapper1 = mountFactory({ value: true });
       const wrapper2 = mountFactory({ value: false });
 
-      expect(wrapper1.props('value')).not.toBe(wrapper2.props('value'));
+      expect(wrapper1.props("value")).not.toBe(wrapper2.props("value"));
     });
   });
 });
