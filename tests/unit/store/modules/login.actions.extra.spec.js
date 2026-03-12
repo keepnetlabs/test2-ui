@@ -2,14 +2,15 @@ import login from '@/store/modules/login'
 import AuthenticationService from '@/services/authentication'
 import { twoStepLogin, resetPassword } from '@/api/auth'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
-import { getAgenticAIStatus, getCompanyByID } from '@/api/company'
+import { getAgenticAIStatus, getAgenticAISettings, getCompanyByID } from '@/api/company'
 import { updateFavicon } from '@/utils/favicon'
 
 jest.mock('@/api/auth', () => ({ resetPassword: jest.fn(), twoStepLogin: jest.fn() }))
 jest.mock('@/api/whitelabel', () => ({ getWhiteLabelByUrl: jest.fn() }))
 jest.mock('@/api/company', () => ({
   getCompanyByID: jest.fn(),
-  getAgenticAIStatus: jest.fn()
+  getAgenticAIStatus: jest.fn(),
+  getAgenticAISettings: jest.fn()
 }))
 jest.mock('@/utils/favicon', () => ({ updateFavicon: jest.fn() }))
 jest.mock('@/services/authentication', () => ({
@@ -162,7 +163,10 @@ describe('login store (actions extra coverage)', () => {
 
   it('getAgenticAIEnabled commits enabled and execution mode on success', async () => {
     getAgenticAIStatus.mockResolvedValue({
-      data: { data: { agenticAIEnabled: true, executionMode: 'FullAuto' } }
+      data: { data: { agenticAIEnabled: true } }
+    })
+    getAgenticAISettings.mockResolvedValue({
+      data: { data: { executionMode: 'FullAuto' } }
     })
     const commit = jest.fn()
     const result = await login.actions.getAgenticAIEnabled({
@@ -177,6 +181,9 @@ describe('login store (actions extra coverage)', () => {
   it('getAgenticAIEnabled keeps execution mode unchanged when backend does not provide it', async () => {
     getAgenticAIStatus.mockResolvedValue({
       data: { data: { agenticAIEnabled: true } }
+    })
+    getAgenticAISettings.mockResolvedValue({
+      data: { data: {} }
     })
     const commit = jest.fn()
     await login.actions.getAgenticAIEnabled({

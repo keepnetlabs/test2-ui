@@ -25,6 +25,7 @@ function patchCtxWithCertificatesComputed(ctx) {
   ctx.getIsSurvey = TrainingReportSummary.computed.getIsSurvey.call(ctx)
   ctx.isTrainingTypeLearningPath = TrainingReportSummary.computed.isTrainingTypeLearningPath.call(ctx)
   ctx.isCertificatesFieldVisible = TrainingReportSummary.computed.isCertificatesFieldVisible.call(ctx)
+  ctx.getCertificatesDisplayValue = TrainingReportSummary.methods.getCertificatesDisplayValue.bind(ctx)
   return ctx
 }
 
