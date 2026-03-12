@@ -403,7 +403,7 @@ describe('DataTableFilter.vue', () => {
     wrapper.vm.menu = true
     await wrapper.vm.$nextTick()
 
-    expect(String(wrapper.vm.zIndex)).toContain('202')
+    expect(String(wrapper.vm.zIndex)).toContain('252')
     expect(wrapper.emitted('update:isSettingsOpened')).toBeTruthy()
     expect(wrapper.emitted('update:isSettingsOpened')[0]).toEqual([false])
   })
