@@ -43,7 +43,9 @@ const CONSTANTS = {
     '[Vuetify] Rules should return a string or boolean'
   ],
   VUE_ROUTER: [
+    'Avoided redundant navigation to current location',
     'Navigation aborted from',
+    'NavigationDuplicated',
     `Redirected when going from "/reports/executive-reports" to "/reports/executive-reports/new" via a navigation guard.`,
     'Redirected when going from "/awareness-educator/enrollments" to "/awareness-educator/enrollments/training-report',
     'Avoided redundant navigation to current location: /threat-sharing',

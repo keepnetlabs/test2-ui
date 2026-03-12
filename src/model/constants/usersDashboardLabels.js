@@ -86,6 +86,22 @@ const usersDashboardLabels = {
     leaderboardTotalPoints: 'Total Points',
     leaderboardEmptyMessage: 'No leaderboard data available.',
     leaderboardYou: 'You',
+    leaderboardIndividualRanking: 'INDIVIDUAL RANKING',
+    leaderboardDepartmentRanking: 'DEPARTMENT RANKING',
+    leaderboardIndividualRankingTitle: 'Your Individual Ranking',
+    leaderboardIndividualRankingSubtitle:
+      'Your ranking within the company based on performance over the last 30 days.',
+    leaderboardYourRankIn: (department) => `Your Rank in ${department}`,
+    leaderboardYourRankInYourDepartment: 'Your Rank in Your Department',
+    leaderboardYourRankInSubtitle:
+      'Departments are ranked within the company based on performance over the last 30 days.',
+    leaderboardNoDepartmentMessage: 'You are not currently assigned to a department. Please contact your administrator for assistance.',
+    leaderboardDepartmentRankingsTitle: 'Department Rankings',
+    leaderboardDepartmentRankingsSubtitle:
+      'Departments are ranked within the company based on the average performance over the last 30 days.',
+    leaderboardDepartmentName: 'Department Name',
+    leaderboardNumberOfEmployees: 'Number of Employees',
+    leaderboardYourDepartment: 'Your Department',
 
     // Activity Timeline
     activityTimelineTitle: 'Your Activity Timeline',
@@ -329,6 +345,22 @@ const usersDashboardLabels = {
     leaderboardTotalPoints: 'Total Points',
     leaderboardEmptyMessage: 'No leaderboard data available.',
     leaderboardYou: 'You',
+    leaderboardIndividualRanking: 'INDIVIDUAL RANKING',
+    leaderboardDepartmentRanking: 'DEPARTMENT RANKING',
+    leaderboardIndividualRankingTitle: 'Your Individual Ranking',
+    leaderboardIndividualRankingSubtitle:
+      'Your ranking within the company based on performance over the last 30 days.',
+    leaderboardYourRankIn: (department) => `Your Rank in ${department}`,
+    leaderboardYourRankInYourDepartment: 'Your Rank in Your Department',
+    leaderboardYourRankInSubtitle:
+      'Departments are ranked within the company based on performance over the last 30 days.',
+    leaderboardNoDepartmentMessage: 'You are not currently assigned to a department. Please contact your administrator for assistance.',
+    leaderboardDepartmentRankingsTitle: 'Department Rankings',
+    leaderboardDepartmentRankingsSubtitle:
+      'Departments are ranked within the company based on the average performance over the last 30 days.',
+    leaderboardDepartmentName: 'Department Name',
+    leaderboardNumberOfEmployees: 'Number of Employees',
+    leaderboardYourDepartment: 'Your Department',
 
     // Activity Timeline
     activityTimelineTitle: 'Your Activity Timeline',
@@ -668,6 +700,22 @@ const usersDashboardLabels = {
     leaderboardTotalPoints: 'Toplam Puan',
     leaderboardEmptyMessage: 'Liderlik tablosu verisi mevcut değil.',
     leaderboardYou: 'Siz', // "Sen" yerine "Siz" daha kurumsal.
+    leaderboardIndividualRanking: 'BİREYSEL SIRALAMA',
+    leaderboardDepartmentRanking: 'DEPARTMAN SIRALAMASI',
+    leaderboardIndividualRankingTitle: 'Bireysel Sıralamanız',
+    leaderboardIndividualRankingSubtitle:
+      'Son 30 gündeki performansa göre şirket içi sıralamanız.',
+    leaderboardYourRankIn: (department) => `${department} Departmanındaki Sıralamanız`,
+    leaderboardYourRankInYourDepartment: 'Departmanınızdaki Sıralamanız',
+    leaderboardYourRankInSubtitle:
+      'Departmanlar son 30 gündeki performansa göre şirket içinde sıralanmıştır.',
+    leaderboardNoDepartmentMessage: 'Şu anda bir departmana atanmış değilsiniz. Lütfen yöneticinizle iletişime geçin.',
+    leaderboardDepartmentRankingsTitle: 'Departman Sıralaması',
+    leaderboardDepartmentRankingsSubtitle:
+      'Departmanlar son 30 gündeki ortalama performansa göre şirket içinde sıralanmıştır.',
+    leaderboardDepartmentName: 'Departman Adı',
+    leaderboardNumberOfEmployees: 'Çalışan Sayısı',
+    leaderboardYourDepartment: 'Departmanınız',
 
     // Activity Timeline
     activityTimelineTitle: 'Aktivite Zaman Çizelgesi',
@@ -1057,6 +1105,22 @@ const usersDashboardLabels = {
     leaderboardTotalPoints: 'Gesamtpunkte',
     leaderboardEmptyMessage: 'Keine Daten für die Bestenliste verfügbar.',
     leaderboardYou: 'Sie',
+    leaderboardIndividualRanking: 'EINZELRANKING',
+    leaderboardDepartmentRanking: 'ABTEILUNGSRANKING',
+    leaderboardIndividualRankingTitle: 'Ihr individuelles Ranking',
+    leaderboardIndividualRankingSubtitle:
+      'Ihr Ranking im Unternehmen basierend auf der Leistung der letzten 30 Tage.',
+    leaderboardYourRankIn: (department) => `Ihr Rang in ${department}`,
+    leaderboardYourRankInYourDepartment: 'Ihr Rang in Ihrer Abteilung',
+    leaderboardYourRankInSubtitle:
+      'Abteilungen werden im Unternehmen basierend auf der Leistung der letzten 30 Tage eingestuft.',
+    leaderboardNoDepartmentMessage: 'Sie sind derzeit keiner Abteilung zugeordnet. Bitte wenden Sie sich an Ihren Administrator.',
+    leaderboardDepartmentRankingsTitle: 'Abteilungsranking',
+    leaderboardDepartmentRankingsSubtitle:
+      'Abteilungen werden im Unternehmen basierend auf der durchschnittlichen Leistung der letzten 30 Tage eingestuft.',
+    leaderboardDepartmentName: 'Abteilungsname',
+    leaderboardNumberOfEmployees: 'Anzahl Mitarbeiter',
+    leaderboardYourDepartment: 'Ihre Abteilung',
 
     // Activity Timeline
     activityTimelineTitle: 'Aktivitätsverlauf',
@@ -1448,6 +1512,22 @@ const usersDashboardLabels = {
     leaderboardTotalPoints: 'Total des points',
     leaderboardEmptyMessage: 'Aucune donnée de classement disponible.',
     leaderboardYou: 'Vous',
+    leaderboardIndividualRanking: 'CLASSEMENT INDIVIDUEL',
+    leaderboardDepartmentRanking: 'CLASSEMENT DÉPARTEMENT',
+    leaderboardIndividualRankingTitle: 'Votre classement individuel',
+    leaderboardIndividualRankingSubtitle:
+      'Votre classement au sein de l\'entreprise basé sur la performance des 30 derniers jours.',
+    leaderboardYourRankIn: (department) => `Votre rang dans ${department}`,
+    leaderboardYourRankInYourDepartment: 'Votre rang dans votre département',
+    leaderboardYourRankInSubtitle:
+      'Les départements sont classés au sein de l\'entreprise en fonction de la performance des 30 derniers jours.',
+    leaderboardNoDepartmentMessage: 'Vous n\'êtes actuellement affecté à aucun département. Veuillez contacter votre administrateur.',
+    leaderboardDepartmentRankingsTitle: 'Classement des départements',
+    leaderboardDepartmentRankingsSubtitle:
+      'Les départements sont classés au sein de l\'entreprise en fonction de la performance moyenne des 30 derniers jours.',
+    leaderboardDepartmentName: 'Nom du département',
+    leaderboardNumberOfEmployees: 'Nombre d\'employés',
+    leaderboardYourDepartment: 'Votre département',
 
     // Activity Timeline
     activityTimelineTitle: 'Historique des Activités', // Plus naturel
@@ -1822,6 +1902,22 @@ const usersDashboardLabels = {
     leaderboardTotalPoints: 'Puntos totales',
     leaderboardEmptyMessage: 'No hay datos de clasificación disponibles.',
     leaderboardYou: 'Usted', // Coherencia con el tono formal
+    leaderboardIndividualRanking: 'CLASIFICACIÓN INDIVIDUAL',
+    leaderboardDepartmentRanking: 'CLASIFICACIÓN DEPARTAMENTO',
+    leaderboardIndividualRankingTitle: 'Su clasificación individual',
+    leaderboardIndividualRankingSubtitle:
+      'Su clasificación dentro de la empresa basada en el rendimiento de los últimos 30 días.',
+    leaderboardYourRankIn: (department) => `Su clasificación en ${department}`,
+    leaderboardYourRankInYourDepartment: 'Su clasificación en su departamento',
+    leaderboardYourRankInSubtitle:
+      'Los departamentos se clasifican dentro de la empresa en función del rendimiento de los últimos 30 días.',
+    leaderboardNoDepartmentMessage: 'Actualmente no está asignado a ningún departamento. Comuníquese con su administrador.',
+    leaderboardDepartmentRankingsTitle: 'Clasificación de departamentos',
+    leaderboardDepartmentRankingsSubtitle:
+      'Los departamentos se clasifican dentro de la empresa en función del rendimiento promedio de los últimos 30 días.',
+    leaderboardDepartmentName: 'Nombre del departamento',
+    leaderboardNumberOfEmployees: 'Número de empleados',
+    leaderboardYourDepartment: 'Su departamento',
 
     // Activity Timeline
     activityTimelineTitle: 'Su Historial de Actividad', // Más natural

@@ -286,7 +286,6 @@ export default {
         })
         .catch((err) => {
           console.error('Error fetching timeline:', err)
-          // For now, use mock data if API fails
           if (!isAppend) {
             this.timeline = []
           }

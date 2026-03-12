@@ -882,9 +882,9 @@ describe('Company API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 52 functions', () => {
+    it('should export 60 functions', () => {
       const functions = Object.values(CompanyAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(52)
+      expect(functions).toHaveLength(60)
     })
   })
 

@@ -2,6 +2,8 @@ import usersDashboardLabels, { getUsersDashboardLabel } from '@/model/constants/
 import {
   login as loginAPI,
   getTopPerformance,
+  getTopDepartmentPerformance,
+  getTopDepartmentUserPerformance,
   getMyLearning,
   getPhishingResult,
   getUserInfo,
@@ -21,7 +23,7 @@ const usersDashboard = {
     loginMethod: null, // 'microsoft', 'google', 'magic-link'
     isAuthenticated: false,
     permissions: [],
-    language: 'en-GB', // Default language
+    language: 'en-GB',
     samlProvider: null, // 'google', 'microsoft', null
     samlRedirectUrl: null,
     userInfo: {
@@ -34,7 +36,17 @@ const usersDashboard = {
     },
     topPerformance: {
       data: [],
-      isLoading: true, // Start as true to show loading initially
+      isLoading: true,
+      error: null
+    },
+    topDepartmentPerformance: {
+      data: [],
+      isLoading: true,
+      error: null
+    },
+    topDepartmentUserPerformance: {
+      data: [],
+      isLoading: true,
       error: null
     },
     myLearning: {
@@ -74,6 +86,12 @@ const usersDashboard = {
     getTopPerformance: (state) => state.topPerformance.data,
     getTopPerformanceLoading: (state) => state.topPerformance.isLoading,
     getTopPerformanceError: (state) => state.topPerformance.error,
+    getTopDepartmentPerformance: (state) => state.topDepartmentPerformance.data,
+    getTopDepartmentPerformanceLoading: (state) => state.topDepartmentPerformance.isLoading,
+    getTopDepartmentPerformanceError: (state) => state.topDepartmentPerformance.error,
+    getTopDepartmentUserPerformance: (state) => state.topDepartmentUserPerformance.data,
+    getTopDepartmentUserPerformanceLoading: (state) => state.topDepartmentUserPerformance.isLoading,
+    getTopDepartmentUserPerformanceError: (state) => state.topDepartmentUserPerformance.error,
     getMyLearning: (state) => state.myLearning.data,
     getMyLearningLoading: (state) => state.myLearningLoading, // Use separate loading state
     getMyLearningError: (state) => state.myLearning.error,
@@ -159,6 +177,28 @@ const usersDashboard = {
       state.topPerformance.error = payload
       // Note: Don't reset isLoading state here, let the SET_TOP_PERFORMANCE mutation handle it
     },
+    SET_TOP_DEPARTMENT_PERFORMANCE(state, payload) {
+      state.topDepartmentPerformance.data = payload || []
+      state.topDepartmentPerformance.isLoading = false
+      state.topDepartmentPerformance.error = null
+    },
+    SET_TOP_DEPARTMENT_PERFORMANCE_LOADING(state, payload) {
+      state.topDepartmentPerformance.isLoading = payload
+    },
+    SET_TOP_DEPARTMENT_PERFORMANCE_ERROR(state, payload) {
+      state.topDepartmentPerformance.error = payload
+    },
+    SET_TOP_DEPARTMENT_USER_PERFORMANCE(state, payload) {
+      state.topDepartmentUserPerformance.data = payload || []
+      state.topDepartmentUserPerformance.isLoading = false
+      state.topDepartmentUserPerformance.error = null
+    },
+    SET_TOP_DEPARTMENT_USER_PERFORMANCE_LOADING(state, payload) {
+      state.topDepartmentUserPerformance.isLoading = payload
+    },
+    SET_TOP_DEPARTMENT_USER_PERFORMANCE_ERROR(state, payload) {
+      state.topDepartmentUserPerformance.error = payload
+    },
     SET_MY_LEARNING(state, payload) {
       state.myLearning.data = payload || []
       state.myLearning.isLoading = false
@@ -235,6 +275,16 @@ const usersDashboard = {
       state.topPerformance = {
         data: [],
         isLoading: true, // Reset to initial loading state
+        error: null
+      }
+      state.topDepartmentPerformance = {
+        data: [],
+        isLoading: true,
+        error: null
+      }
+      state.topDepartmentUserPerformance = {
+        data: [],
+        isLoading: true,
         error: null
       }
       state.myLearning = {
@@ -321,6 +371,50 @@ const usersDashboard = {
         commit('SET_TOP_PERFORMANCE', [])
         commit('SET_TOP_PERFORMANCE_ERROR', error.message || 'Failed to fetch top performance data')
         console.error('Error fetching top performance:', error)
+        return null
+      }
+    },
+    async fetchTopDepartmentPerformance({ commit }) {
+      commit('SET_TOP_DEPARTMENT_PERFORMANCE_LOADING', true)
+      commit('SET_TOP_DEPARTMENT_PERFORMANCE_ERROR', null)
+
+      try {
+        const response = await getTopDepartmentPerformance()
+        if (response?.data?.data) {
+          commit('SET_TOP_DEPARTMENT_PERFORMANCE', response.data.data)
+        } else {
+          commit('SET_TOP_DEPARTMENT_PERFORMANCE', [])
+        }
+        return response
+      } catch (error) {
+        commit('SET_TOP_DEPARTMENT_PERFORMANCE', [])
+        commit(
+          'SET_TOP_DEPARTMENT_PERFORMANCE_ERROR',
+          error.message || 'Failed to fetch top department performance data'
+        )
+        console.error('Error fetching top department performance:', error)
+        return null
+      }
+    },
+    async fetchTopDepartmentUserPerformance({ commit }) {
+      commit('SET_TOP_DEPARTMENT_USER_PERFORMANCE_LOADING', true)
+      commit('SET_TOP_DEPARTMENT_USER_PERFORMANCE_ERROR', null)
+
+      try {
+        const response = await getTopDepartmentUserPerformance()
+        if (response?.data?.data) {
+          commit('SET_TOP_DEPARTMENT_USER_PERFORMANCE', response.data.data)
+        } else {
+          commit('SET_TOP_DEPARTMENT_USER_PERFORMANCE', [])
+        }
+        return response
+      } catch (error) {
+        commit('SET_TOP_DEPARTMENT_USER_PERFORMANCE', [])
+        commit(
+          'SET_TOP_DEPARTMENT_USER_PERFORMANCE_ERROR',
+          error.message || 'Failed to fetch top department user performance data'
+        )
+        console.error('Error fetching top department user performance:', error)
         return null
       }
     },
