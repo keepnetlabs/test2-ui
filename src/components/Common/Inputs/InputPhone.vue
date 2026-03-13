@@ -84,7 +84,9 @@ export default {
     }
   },
   methods: {
-    handleTelChange(newVal) {
+    handleTelChange(inputVal) {
+      const isNC = this.$refs.refTelInput?.phoneObject?.regionCode === 'NC'
+      const newVal = isNC && inputVal && inputVal.includes('.') ? inputVal.replace(/\./g, '') : inputVal
       if (newVal?.split('+')?.length > 2) {
         this.setOldValueBySplitter('+', newVal)
       } else if (this.isRegionGBOrTRAndHasHyphen(newVal)) {

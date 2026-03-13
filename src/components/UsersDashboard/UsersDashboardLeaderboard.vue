@@ -120,7 +120,7 @@
             {{ userDepartment ? labels.leaderboardYourRankIn(userDepartment) : labels.leaderboardYourRankInYourDepartment }}
           </h3>
           <p class="users-dashboard-leaderboard__section-subtitle">
-            {{ labels.leaderboardYourRankInSubtitle }}
+            {{ userDepartment ? labels.leaderboardYourRankInSubtitle : labels.leaderboardYourRankInNoDepartmentSubtitle }}
           </p>
           <!-- No department alert -->
           <v-alert
