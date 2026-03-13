@@ -787,6 +787,37 @@ describe('InputPhone.vue (extra branch coverage)', () => {
       expect(wrapper.emitted('input')).toBeTruthy()
       expect(wrapper.emitted('input')[0][0]).toBe(val)
     })
+
+    // NC: +687 + 6 digits = 10 chars (e.g. +687263412)
+    it('handleTelChange New Caledonia: normal phone emits correctly', () => {
+      const wrapper = createWrapper()
+      const val = '+687263412'
+      mockRef(wrapper, 'NC', val)
+      wrapper.vm.handleTelChange(val)
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe(val)
+    })
+
+    // NC: dot-formatted number from vue-tel-input international format
+    it('handleTelChange New Caledonia: strips dots from formatted number', () => {
+      const wrapper = createWrapper()
+      const formatted = '+687 26.34.12'
+      const expected = '+687 263412'
+      mockRef(wrapper, 'NC', formatted)
+      wrapper.vm.handleTelChange(formatted)
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe(expected)
+    })
+
+    // Non-NC: dots should NOT be stripped
+    it('handleTelChange non-NC country: does not strip dots', () => {
+      const wrapper = createWrapper()
+      const val = '+33 6.12.34.56.78'
+      mockRef(wrapper, 'FR', val)
+      wrapper.vm.handleTelChange(val)
+      expect(wrapper.emitted('input')).toBeTruthy()
+      expect(wrapper.emitted('input')[0][0]).toBe(val)
+    })
   })
 
   describe('phonePossibility per country via validatePhoneNumber', () => {

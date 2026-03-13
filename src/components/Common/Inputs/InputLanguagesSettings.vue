@@ -8,7 +8,7 @@
     />
 
     <div class="d-flex gap-4">
-      <VTooltip v-if="isShowCheckWithAIButton && (isCheckWithAILoading || isCheckWithAIDone)" bottom max-width="300">
+      <VTooltip v-if="isShowCheckWithAIButton && (isCheckWithAILoading || isCheckWithAIDone)" key="enhance-disabled" bottom max-width="300">
         <template #activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on">
             <VBtn
@@ -26,7 +26,7 @@
         </template>
         <span>{{ isCheckWithAILoading ? 'AI is enhancing the template...' : 'Template has already been enhanced. Make changes to the template to enhance again.' }}</span>
       </VTooltip>
-      <VTooltip v-else-if="isShowCheckWithAIButton" bottom max-width="300">
+      <VTooltip v-else-if="isShowCheckWithAIButton" key="enhance-active" bottom max-width="300">
         <template #activator="{ on, attrs }">
           <VBtn
             v-bind="attrs"
