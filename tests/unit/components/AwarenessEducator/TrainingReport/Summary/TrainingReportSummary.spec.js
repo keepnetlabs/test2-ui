@@ -245,7 +245,7 @@ describe('TrainingReportSummary.vue', () => {
           isScormProxy: false,
           awardCertificate: true,
           certificateConfigSendType: 'SendOnFirstAttempt',
-          certificateDeliveryType: 'OnCompletion',
+          certificateDeliveryType: 'On Completion',
           steps: [],
           languages: ['EN'],
           reportDetail: { totalTargetUserCount: 1 },
@@ -271,7 +271,7 @@ describe('TrainingReportSummary.vue', () => {
           true,
           'SendOnFirstAttempt',
           [],
-          'OnCompletion'
+          'On Completion'
         )
       ).toBe(labels.CertificatesFirstAttemptOnly)
     })
