@@ -613,7 +613,7 @@ export default {
   },
   methods: {
     getCertificatesDisplayValue(awardCertificate, certificateConfigSendType, steps, certificateDeliveryType) {
-      if (this.isTrainingTypeLearningPath && certificateDeliveryType === 'OnCompletion') {
+      if (this.isTrainingTypeLearningPath && certificateDeliveryType === 'On Completion') {
         return labels.CertificatesOnCompletion
       }
 
