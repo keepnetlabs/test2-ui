@@ -94,11 +94,13 @@ const usersDashboardLabels = {
     leaderboardYourRankIn: (department) => `Your Rank in ${department}`,
     leaderboardYourRankInYourDepartment: 'Your Rank in Your Department',
     leaderboardYourRankInSubtitle:
+      'Your ranking within the department based on performance over the last 30 days.',
+    leaderboardYourRankInNoDepartmentSubtitle:
       'Departments are ranked within the company based on performance over the last 30 days.',
     leaderboardNoDepartmentMessage: 'You are not currently assigned to a department. Please contact your administrator for assistance.',
     leaderboardDepartmentRankingsTitle: 'Department Rankings',
     leaderboardDepartmentRankingsSubtitle:
-      'Departments are ranked within the company based on the average performance over the last 30 days.',
+      'Your department\'s ranking within the company based on the average performance over the last 30 days.',
     leaderboardDepartmentName: 'Department Name',
     leaderboardNumberOfEmployees: 'Number of Employees',
     leaderboardYourDepartment: 'Your Department',
@@ -353,11 +355,13 @@ const usersDashboardLabels = {
     leaderboardYourRankIn: (department) => `Your Rank in ${department}`,
     leaderboardYourRankInYourDepartment: 'Your Rank in Your Department',
     leaderboardYourRankInSubtitle:
+      'Your ranking within the department based on performance over the last 30 days.',
+    leaderboardYourRankInNoDepartmentSubtitle:
       'Departments are ranked within the company based on performance over the last 30 days.',
     leaderboardNoDepartmentMessage: 'You are not currently assigned to a department. Please contact your administrator for assistance.',
     leaderboardDepartmentRankingsTitle: 'Department Rankings',
     leaderboardDepartmentRankingsSubtitle:
-      'Departments are ranked within the company based on the average performance over the last 30 days.',
+      'Your department\'s ranking within the company based on the average performance over the last 30 days.',
     leaderboardDepartmentName: 'Department Name',
     leaderboardNumberOfEmployees: 'Number of Employees',
     leaderboardYourDepartment: 'Your Department',
@@ -708,11 +712,13 @@ const usersDashboardLabels = {
     leaderboardYourRankIn: (department) => `${department} Departmanındaki Sıralamanız`,
     leaderboardYourRankInYourDepartment: 'Departmanınızdaki Sıralamanız',
     leaderboardYourRankInSubtitle:
+      'Son 30 gündeki performansa göre departman içindeki sıralamanız.',
+    leaderboardYourRankInNoDepartmentSubtitle:
       'Departmanlar son 30 gündeki performansa göre şirket içinde sıralanmıştır.',
     leaderboardNoDepartmentMessage: 'Şu anda bir departmana atanmış değilsiniz. Lütfen yöneticinizle iletişime geçin.',
     leaderboardDepartmentRankingsTitle: 'Departman Sıralaması',
     leaderboardDepartmentRankingsSubtitle:
-      'Departmanlar son 30 gündeki ortalama performansa göre şirket içinde sıralanmıştır.',
+      'Departmanınızın son 30 gündeki ortalama performansa göre şirket içindeki sıralaması.',
     leaderboardDepartmentName: 'Departman Adı',
     leaderboardNumberOfEmployees: 'Çalışan Sayısı',
     leaderboardYourDepartment: 'Departmanınız',
@@ -1113,11 +1119,13 @@ const usersDashboardLabels = {
     leaderboardYourRankIn: (department) => `Ihr Rang in ${department}`,
     leaderboardYourRankInYourDepartment: 'Ihr Rang in Ihrer Abteilung',
     leaderboardYourRankInSubtitle:
+      'Ihr Ranking innerhalb der Abteilung basierend auf der Leistung der letzten 30 Tage.',
+    leaderboardYourRankInNoDepartmentSubtitle:
       'Abteilungen werden im Unternehmen basierend auf der Leistung der letzten 30 Tage eingestuft.',
     leaderboardNoDepartmentMessage: 'Sie sind derzeit keiner Abteilung zugeordnet. Bitte wenden Sie sich an Ihren Administrator.',
     leaderboardDepartmentRankingsTitle: 'Abteilungsranking',
     leaderboardDepartmentRankingsSubtitle:
-      'Abteilungen werden im Unternehmen basierend auf der durchschnittlichen Leistung der letzten 30 Tage eingestuft.',
+      'Das Ranking Ihrer Abteilung im Unternehmen basierend auf der durchschnittlichen Leistung der letzten 30 Tage.',
     leaderboardDepartmentName: 'Abteilungsname',
     leaderboardNumberOfEmployees: 'Anzahl Mitarbeiter',
     leaderboardYourDepartment: 'Ihre Abteilung',
@@ -1520,11 +1528,13 @@ const usersDashboardLabels = {
     leaderboardYourRankIn: (department) => `Votre rang dans ${department}`,
     leaderboardYourRankInYourDepartment: 'Votre rang dans votre département',
     leaderboardYourRankInSubtitle:
+      'Votre classement au sein du département basé sur la performance des 30 derniers jours.',
+    leaderboardYourRankInNoDepartmentSubtitle:
       'Les départements sont classés au sein de l\'entreprise en fonction de la performance des 30 derniers jours.',
     leaderboardNoDepartmentMessage: 'Vous n\'êtes actuellement affecté à aucun département. Veuillez contacter votre administrateur.',
     leaderboardDepartmentRankingsTitle: 'Classement des départements',
     leaderboardDepartmentRankingsSubtitle:
-      'Les départements sont classés au sein de l\'entreprise en fonction de la performance moyenne des 30 derniers jours.',
+      'Le classement de votre département au sein de l\'entreprise basé sur la performance moyenne des 30 derniers jours.',
     leaderboardDepartmentName: 'Nom du département',
     leaderboardNumberOfEmployees: 'Nombre d\'employés',
     leaderboardYourDepartment: 'Votre département',
@@ -1910,11 +1920,13 @@ const usersDashboardLabels = {
     leaderboardYourRankIn: (department) => `Su clasificación en ${department}`,
     leaderboardYourRankInYourDepartment: 'Su clasificación en su departamento',
     leaderboardYourRankInSubtitle:
+      'Su clasificación dentro del departamento según el rendimiento de los últimos 30 días.',
+    leaderboardYourRankInNoDepartmentSubtitle:
       'Los departamentos se clasifican dentro de la empresa en función del rendimiento de los últimos 30 días.',
     leaderboardNoDepartmentMessage: 'Actualmente no está asignado a ningún departamento. Comuníquese con su administrador.',
     leaderboardDepartmentRankingsTitle: 'Clasificación de departamentos',
     leaderboardDepartmentRankingsSubtitle:
-      'Los departamentos se clasifican dentro de la empresa en función del rendimiento promedio de los últimos 30 días.',
+      'La clasificación de su departamento dentro de la empresa según el rendimiento promedio de los últimos 30 días.',
     leaderboardDepartmentName: 'Nombre del departamento',
     leaderboardNumberOfEmployees: 'Número de empleados',
     leaderboardYourDepartment: 'Su departamento',

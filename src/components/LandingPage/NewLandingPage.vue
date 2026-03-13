@@ -761,6 +761,7 @@ export default {
       isCheckWithAILoading: false,
       isCheckWithAIDone: false,
       isEnhanceWithAi: false,
+      isEnhanceWithAiJustFinished: false,
       showAIChangeLogDialog: false,
       aiChangeLog: [],
       aiTags: [],
@@ -771,7 +772,7 @@ export default {
     'getSelectedLanguagePayload.landingPages': {
       deep: true,
       handler() {
-        if (this.isEnhanceWithAi) return;
+        if (this.isEnhanceWithAi || this.isEnhanceWithAiJustFinished) return;
         if (this.isCheckWithAIDone) {
           this.isCheckWithAIDone = false;
         }
@@ -893,7 +894,8 @@ export default {
               this.formValues.phishingLink.domainRecordId = matchedDomain.value;
             }
           }
-          const uniqueTags = [...new Set(result?.tags || [])];
+          const existingTags = this.formValues.tags || [];
+          const uniqueTags = [...new Set([...existingTags, ...(result?.tags || [])])];
           if (uniqueTags.length) {
             this.formValues.tags = uniqueTags;
           }
@@ -924,12 +926,16 @@ export default {
         })
         .finally(() => {
           this.isCheckWithAILoading = false;
-          this.isEnhanceWithAi = false;
+          this.isEnhanceWithAiJustFinished = true;
           if (this.$refs.refEmailTemplate) {
             this.$refs.refEmailTemplate.forEach((ref) => {
               if (ref) ref.isEmailGenerating = false;
             });
           }
+          this.isEnhanceWithAi = false;
+          this.$nextTick(() => {
+            this.isEnhanceWithAiJustFinished = false;
+          });
         });
     },
     handleAIAlly() {

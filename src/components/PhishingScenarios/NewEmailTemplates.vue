@@ -1289,7 +1289,8 @@ export default {
               this.formValues.difficultyResourceId = mappedDifficulty
             }
           }
-          const uniqueTags = [...new Set(result?.tags || [])]
+          const existingTags = this.formValues.tags || []
+          const uniqueTags = [...new Set([...existingTags, ...(result?.tags || [])])]
           if (uniqueTags.length) {
             this.formValues.tags = uniqueTags
           }
