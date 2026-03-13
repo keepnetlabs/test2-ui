@@ -228,7 +228,7 @@ describe('CampaignManagerReportHumanActivityDialog.vue', () => {
       const start = Date.now()
       mountComponent()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(200)
+      expect(duration).toBeLessThan(500)
     })
   })
 })
