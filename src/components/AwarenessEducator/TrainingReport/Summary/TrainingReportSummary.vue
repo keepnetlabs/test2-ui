@@ -269,6 +269,7 @@ export default {
         sendTemplatesInPreferredLanguage = false,
         awardCertificate = false,
         certificateConfigSendType = 'SendOnFirstAttempt',
+        certificateDeliveryType = '',
         steps = []
       } = this.trainingSummary || {
         autoEnrollDescription: 'Enroll new users the same day',
@@ -315,7 +316,8 @@ export default {
         const certificateValue = this.getCertificatesDisplayValue(
           awardCertificate,
           certificateConfigSendType,
-          steps
+          steps,
+          certificateDeliveryType
         )
         result[labels.Certificates] = {
           show: true,
@@ -610,7 +612,11 @@ export default {
     }
   },
   methods: {
-    getCertificatesDisplayValue(awardCertificate, certificateConfigSendType, steps) {
+    getCertificatesDisplayValue(awardCertificate, certificateConfigSendType, steps, certificateDeliveryType) {
+      if (this.isTrainingTypeLearningPath && certificateDeliveryType === 'OnCompletion') {
+        return labels.CertificatesOnCompletion
+      }
+
       let effectiveAwardCertificate = awardCertificate
       let effectiveCertificateConfigSendType = certificateConfigSendType
 

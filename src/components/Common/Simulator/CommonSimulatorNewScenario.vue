@@ -438,7 +438,7 @@
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
-        <div class="k-overlay__footer k-navigation-drawer__footer">
+        <div class="k-overlay__footer">
           <StepperFooter
             :max-step="maxStep"
             :step.sync="step"
