@@ -32,6 +32,7 @@ export const labels = {
   CertificatesNo: 'No',
   CertificatesFirstAttemptOnly: 'First Attempt Only',
   CertificatesAnyAttempt: 'Any Attempt',
+  CertificatesOnCompletion: 'On Completion',
   ScheduleName: 'Schedule Name',
   ReplySent: 'Reply Sent',
   ReplyType: 'Reply Type',
