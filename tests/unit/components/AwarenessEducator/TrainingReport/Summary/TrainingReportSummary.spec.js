@@ -238,6 +238,44 @@ describe('TrainingReportSummary.vue', () => {
       ).toBe(labels.CertificatesAnyAttempt)
     })
 
+    it('Learning Path with certificateDeliveryType OnCompletion returns On Completion', () => {
+      const ctx = {
+        trainingSummary: {
+          trainingTypeName: TRAINING_LIBRARY_TYPES.LEARNING_PATH,
+          isScormProxy: false,
+          awardCertificate: true,
+          certificateConfigSendType: 'SendOnFirstAttempt',
+          certificateDeliveryType: 'OnCompletion',
+          steps: [],
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeDefined()
+      expect(info[labels.Certificates].value).toBe(labels.CertificatesOnCompletion)
+    })
+
+    it('Non-Learning Path ignores certificateDeliveryType OnCompletion', () => {
+      const baseCtx = {
+        isTrainingTypeLearningPath: false,
+        trainingSummary: {}
+      }
+      expect(
+        TrainingReportSummary.methods.getCertificatesDisplayValue.call(
+          baseCtx,
+          true,
+          'SendOnFirstAttempt',
+          [],
+          'OnCompletion'
+        )
+      ).toBe(labels.CertificatesFirstAttemptOnly)
+    })
+
     it('Learning Path uses certificate config from award step', () => {
       const ctx = {
         trainingSummary: {
