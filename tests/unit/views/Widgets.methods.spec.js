@@ -170,6 +170,7 @@ describe('views/Widgets.vue methods', () => {
     const layout = [{ key: 'RecentCampaigns', x: 1, y: 1 }]
     const ctx = {
       isTestEnvironment: true,
+      hasAgenticAILicense: true,
       removeAvailableWidget: jest.fn(),
       availableWidgets: [{ key: 'AgenticAIStatusWidget' }, { key: 'RecentCampaigns' }],
       allWidgets: {
