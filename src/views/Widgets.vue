@@ -98,6 +98,8 @@ import ExecutiveReportsIndustryPhishingRiskScore from "@/components/ExecutiveRep
 import ExecutiveReportsImpactOfPhishingAwarenessTraining from "@/components/ExecutiveReports/ExecutiveReportsImpactOfPhishingAwarenessTraining.vue";
 import ExecutiveReportAvgPhishingSimClickerRate from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportAvgPhishingSimClickerRate.vue";
 import AgenticAIStatusWidget from "@/components/Common/Widget/WidgetComponents/AgenticAIStatusWidget.vue";
+import { mapGetters } from "vuex";
+
 export default {
   name: "Widgets",
   components: {
@@ -114,6 +116,11 @@ export default {
         return {};
       }
     }
+  },
+  computed: {
+    ...mapGetters({
+      hasAgenticAILicense: "login/getHasAgenticAILicense"
+    })
   },
   data() {
     return {
@@ -691,11 +698,15 @@ export default {
         if (settings.length) {
           this.layout = settings.reduce((acc, item) => {
             const widget = { ...this.allWidgets[item.key], ...item };
-            this.removeAvailableWidget(item);
-            if (widget.isAllowed) acc.push(widget);
+            const isAgenticWidgetWithoutLicense =
+              item.key === "AgenticAIStatusWidget" && !this.hasAgenticAILicense;
+            if (widget.isAllowed && !isAgenticWidgetWithoutLicense) {
+              this.removeAvailableWidget(item);
+              acc.push(widget);
+            }
             return acc;
           }, []);
-          if (this.isTestEnvironment) {
+          if (this.isTestEnvironment && this.hasAgenticAILicense) {
             this.ensureAgenticAIWidget(this.layout);
           }
           this.newItemY = this.layout.reduce((acc, item) => {
@@ -931,7 +942,7 @@ export default {
     },
 
     ensureAgenticAIWidget(layoutArray) {
-      if (!this.isTestEnvironment) return;
+      if (!this.isTestEnvironment || !this.hasAgenticAILicense) return;
 
       if (
         !layoutArray.some((widget) => widget.key === "AgenticAIStatusWidget")
@@ -1344,7 +1355,7 @@ export default {
           isDashboardWidget: true
         }
       ];
-      if (this.isTestEnvironment) {
+      if (this.isTestEnvironment && this.hasAgenticAILicense) {
         widgets.unshift({
           x: 8,
           y: 0,
