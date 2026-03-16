@@ -313,7 +313,8 @@ export default {
   computed: {
     ...mapGetters({
       isAgenticAIEnabledStore: "login/getAgenticAIEnabled",
-      executionModeStore: "login/getAgenticAIExecutionMode"
+      executionModeStore: "login/getAgenticAIExecutionMode",
+      hasAgenticAILicense: "login/getHasAgenticAILicense"
     }),
     isAgenticAllyActiveComputed() {
       // Use store state if available, otherwise fallback to prop
@@ -428,6 +429,7 @@ export default {
   },
   methods: {
     async fetchStats() {
+      if (!this.hasAgenticAILicense) return;
       try {
         const response = await getAgenticAIActivitiesStats();
         this.statsData = response.data.data;
