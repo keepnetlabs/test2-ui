@@ -276,6 +276,47 @@ describe('TrainingReportSummary.vue', () => {
       ).toBe(labels.CertificatesFirstAttemptOnly)
     })
 
+    it('does NOT show Certificates when isLearningPath prop is true (step context)', () => {
+      const ctx = {
+        isLearningPath: true,
+        trainingSummary: {
+          trainingTypeName: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING,
+          isScormProxy: false,
+          awardCertificate: true,
+          certificateConfigSendType: 'SendOnFirstAttempt',
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeUndefined()
+    })
+
+    it('shows Certificates when isLearningPath prop is false (non-step context)', () => {
+      const ctx = {
+        isLearningPath: false,
+        trainingSummary: {
+          trainingTypeName: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING,
+          isScormProxy: false,
+          awardCertificate: true,
+          certificateConfigSendType: 'SendOnAnyAttempt',
+          languages: ['EN'],
+          reportDetail: { totalTargetUserCount: 1 },
+          targetGroupNames: [],
+          sendTemplatesInPreferredLanguage: false
+        },
+        languages: [{ code: 'EN', isoFriendlyName: 'English' }]
+      }
+      patchCtxWithCertificatesComputed(ctx)
+      const info = TrainingReportSummary.computed.getTrainingInfoData.call(ctx)
+      expect(info[labels.Certificates]).toBeDefined()
+      expect(info[labels.Certificates].value).toBe(labels.CertificatesAnyAttempt)
+    })
+
     it('Learning Path uses certificate config from award step', () => {
       const ctx = {
         trainingSummary: {

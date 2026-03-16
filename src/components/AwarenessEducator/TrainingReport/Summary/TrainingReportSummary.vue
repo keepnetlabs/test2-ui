@@ -92,7 +92,7 @@
         :training-type="getTrainingType"
       />
       <TrainingReportCertificate
-        v-if="getCertificateEmailNotificationTemplateTypeResourceId"
+        v-if="getCertificateEmailNotificationTemplateTypeResourceId && !isLearningPath"
         :form-data="getCertificateData"
         :isFetchingSummary="isLoading"
         :certificate-email-notification-template-type-resource-id="
@@ -189,6 +189,10 @@ export default {
     },
     isSurvey: {
       type: Boolean
+    },
+    isLearningPath: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -312,7 +316,7 @@ export default {
         }
       }
 
-      if (this.isCertificatesFieldVisible) {
+      if (this.isCertificatesFieldVisible && !this.isLearningPath) {
         const certificateValue = this.getCertificatesDisplayValue(
           awardCertificate,
           certificateConfigSendType,
