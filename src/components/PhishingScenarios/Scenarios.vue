@@ -48,6 +48,7 @@
       :languages="languageFilterOptions"
       @on-close="toggleShowPreviewDialog"
       @on-edit-template="handleEditTemplate"
+      @on-duplicate-template="handleDuplicateTemplate"
       @on-fast-launch="handleFastLaunch"
     />
     <data-table
@@ -498,6 +499,12 @@ export default {
     },
     handleEditTemplate() {
       this.handleEdit(this.selectedPhishingScenario, false)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
+    },
+    handleDuplicateTemplate() {
+      this.handleEdit(this.selectedPhishingScenario, true)
       if (this.isShowPreviewDialog) {
         this.toggleShowPreviewDialog()
       }

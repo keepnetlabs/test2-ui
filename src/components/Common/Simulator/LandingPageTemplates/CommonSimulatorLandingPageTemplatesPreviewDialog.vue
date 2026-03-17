@@ -46,8 +46,10 @@
           :is-nested="isNested"
           :is-quishing-prop="isQuishing"
           :disable-edit="disableEdit"
+          :is-owner="isOwnerProp"
           :is-assisted-by-a-i="landingPageParams.isAssistedByAI"
           @edit="handleEdit"
+          @duplicate="handleDuplicate"
         />
       </div>
     </VNavigationDrawer>
@@ -121,6 +123,9 @@ export default {
         'k-navigation-drawer k-navigation-drawer--landing-page-preview': true,
         'nested-drawer': this.isNested
       }
+    },
+    isOwnerProp() {
+      return this.selectedRow ? this.selectedRow.isOwner : undefined
     }
   },
   created() {
@@ -232,6 +237,10 @@ export default {
     handleEdit() {
       this.isHtmlOverflowControlManuallyDisabled = true
       this.$emit('on-edit', this.selectedRow)
+    },
+    handleDuplicate() {
+      this.isHtmlOverflowControlManuallyDisabled = true
+      this.$emit('on-duplicate', this.selectedRow)
     }
   }
 }

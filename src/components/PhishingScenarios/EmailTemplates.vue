@@ -39,6 +39,7 @@
       :languages="languageFilterOptions"
       @on-close="togglePreviewDialog"
       @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <data-table
       v-if="getEmailTemplatesSearchPermissions"
@@ -491,6 +492,12 @@ export default {
       this.togglePreviewDialog()
       this.$nextTick(() => {
         this.handleEdit(row, false)
+      })
+    },
+    handleDuplicateFromPreview(row) {
+      this.togglePreviewDialog()
+      this.$nextTick(() => {
+        this.handleEdit(row, true)
       })
     },
     checkIfCanCloseGrapesJSModal() {

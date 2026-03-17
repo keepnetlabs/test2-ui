@@ -76,7 +76,7 @@
                   </template>
                   <span>Open in New Tab</span>
                 </VTooltip>
-                <VTooltip v-if="!isNested" bottom>
+                <VTooltip v-if="!isNested && showEditButton" bottom>
                   <template #activator="{ on }">
                     <div v-on="on">
                       <VBtn
@@ -96,6 +96,23 @@
                       ? 'Editing is disabled while the red flag is shown.'
                       : 'Edit Template'
                   }}</span>
+                </VTooltip>
+                <VTooltip v-if="!isNested && showDuplicateButton" bottom>
+                  <template #activator="{ on }">
+                    <div v-on="on">
+                      <VBtn
+                        icon
+                        outlined
+                        color="#2196F3"
+                        small
+                        :style="isShowRedFlags ? { opacity: 0.5, pointerEvents: 'none' } : {}"
+                        @click="handleDuplicate"
+                      >
+                        <VIcon small>mdi-content-copy</VIcon>
+                      </VBtn>
+                    </div>
+                  </template>
+                  <span>Duplicate Template</span>
                 </VTooltip>
               </div>
             </div>
@@ -367,6 +384,12 @@ export default {
     templateLanguageLabel() {
       const count = this.selectedLanguages.length
       return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    showEditButton() {
+      return !this.selectedRow || this.selectedRow.isOwner !== false
+    },
+    showDuplicateButton() {
+      return this.selectedRow && this.selectedRow.isOwner === false
     }
   },
   created() {
@@ -460,6 +483,10 @@ export default {
     handleEdit() {
       this.isHtmlOverflowControlManuallyDisabled = true
       this.$emit('on-edit', this.selectedRow)
+    },
+    handleDuplicate() {
+      this.isHtmlOverflowControlManuallyDisabled = true
+      this.$emit('on-duplicate', this.selectedRow)
     },
     handleExternalLink() {
       openHtmlInNewWindow(this.templateHTML)
