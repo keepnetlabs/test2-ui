@@ -1208,8 +1208,8 @@ export default {
       if (isEditMode && !isSaveAsNew) {
         // Edit mode: Close drawer and keep same template selected
         this.createdEmailTemplateResourceId = null
-        if (document.querySelector('.k-navigation-drawer--email-template'))
-          document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
+        const emailDrawer = document.querySelector('.k-navigation-drawer--email-template')
+        if (emailDrawer) emailDrawer.style.right = '-100%'
         setTimeout(() => {
           this.toggleEmailTemplateDrawer()
         }, 250)
@@ -1217,16 +1217,16 @@ export default {
       }
       // Save As New or Create mode: Close drawer and select new template
       this.createdEmailTemplateResourceId = isSaveAsNew ? null : createdResourceId
-      if (document.querySelector('.k-navigation-drawer--email-template'))
-        document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
+      const emailDrawer = document.querySelector('.k-navigation-drawer--email-template')
+      if (emailDrawer) emailDrawer.style.right = '-100%'
       setTimeout(() => {
         this.toggleEmailTemplateDrawer()
       }, 250)
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
-      if (document.querySelector('.k-navigation-drawer--landing-page'))
-        document.querySelector('.k-navigation-drawer--landing-page').style.right = '-100%'
+      const landingDrawer = document.querySelector('.k-navigation-drawer--landing-page')
+      if (landingDrawer) landingDrawer.style.right = '-100%'
       if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
         this.$refs.refLandingPageTemplateListPreview
           .getTemplates(true, createdResourceId)

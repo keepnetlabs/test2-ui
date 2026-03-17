@@ -56,8 +56,9 @@ export default {
   },
   computed: {
     isDisabled() {
-      const { row } = this.scope
-      if (row.hasOwnProperty('isOwner') && this.checkIsOwnerProperty) {
+      const row = this.scope && this.scope.row
+      if (!row) return true
+      if (Object.prototype.hasOwnProperty.call(row, 'isOwner') && this.checkIsOwnerProperty) {
         return this.disabled || !row.isOwner
       }
       return this.disabled
@@ -68,7 +69,7 @@ export default {
   },
   methods: {
     onClick() {
-      if (this.isDisabled) return
+      if (this.isDisabled || !this.scope) return
       this.$emit('on-click', this.scope)
     }
   }

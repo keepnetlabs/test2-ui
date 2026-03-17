@@ -45,15 +45,17 @@ export default {
   },
   computed: {
     isDisabled() {
-      const { row } = this.scope
-      if (row.hasOwnProperty('isOwner') && this.checkIsOwnerProperty) {
+      const row = this.scope && this.scope.row
+      if (!row) return true
+      if (Object.prototype.hasOwnProperty.call(row, 'isOwner') && this.checkIsOwnerProperty) {
         return !!this.disabled || !row.isOwner
       }
       return !!this.disabled
     },
     tooltipMessage() {
       if (this.isDisabled) {
-        return this.scope.row.isDownloading
+        const row = this.scope && this.scope.row
+        return row && row.isDownloading
           ? 'Downloading PDF. Please wait...'
           : this.disabledTooltipText || this.text
       }
@@ -62,7 +64,7 @@ export default {
   },
   methods: {
     handleClick() {
-      if (!this.isDisabled) {
+      if (!this.isDisabled && this.scope) {
         this.$emit('on-click', this.scope)
       }
     }
