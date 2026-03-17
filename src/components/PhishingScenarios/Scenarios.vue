@@ -48,6 +48,7 @@
       :languages="languageFilterOptions"
       @on-close="toggleShowPreviewDialog"
       @on-edit-template="handleEditTemplate"
+      @on-duplicate-template="handleDuplicateTemplate"
       @on-fast-launch="handleFastLaunch"
     />
     <data-table
@@ -468,7 +469,8 @@ export default {
         this.isShowScenarioStatistics = status
         return
       }
-      document.querySelector('.k-navigation-drawer').style.right = '-100%'
+      const drawer = document.querySelector('.k-navigation-drawer')
+      if (drawer) drawer.style.right = '-100%'
       setTimeout(() => {
         this.isShowScenarioStatistics = status
       }, 250)
@@ -487,7 +489,8 @@ export default {
       this.showDeleteModal = false
       this.callForData()
     },
-    handleFastLaunch(row = {}) {
+    handleFastLaunch(row) {
+      if (row == null || typeof row !== 'object') return
       this.selectedRow = row
       this.toggleShowFastLaunch()
       if (this.isShowPreviewDialog) {
@@ -500,7 +503,14 @@ export default {
         this.toggleShowPreviewDialog()
       }
     },
+    handleDuplicateTemplate() {
+      this.handleEdit(this.selectedPhishingScenario, true)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
+    },
     handlePreview(row) {
+      if (!row || typeof row !== 'object') return
       this.selectedPhishingScenario = row
       this.toggleShowPreviewDialog()
     },
@@ -509,6 +519,7 @@ export default {
       this.isShowFastLaunch = !this.isShowFastLaunch
     },
     handleEdit(row, isDuplicate) {
+      if (!row || typeof row !== 'object') return
       this.selectedRow = row
       this.editableFormValues = row
       this.modalStatus = true
@@ -578,6 +589,7 @@ export default {
       this.showDeleteModal = true
     },
     handleActionDelete(row) {
+      if (!row || typeof row !== 'object') return
       this.isMultipleDelete = false
       this.selectedScenario = row
       this.showDeleteModal = true

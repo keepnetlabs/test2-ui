@@ -49,7 +49,7 @@
               </template>
               <span>Fast Launch</span>
             </VTooltip>
-            <VTooltip bottom>
+            <VTooltip v-if="showEditButton" bottom>
               <template #activator="{ on }">
                 <div v-on="on">
                   <VBtn icon outlined color="#2196F3" small @click="handleEdit">
@@ -58,6 +58,16 @@
                 </div>
               </template>
               <span>Edit</span>
+            </VTooltip>
+            <VTooltip v-if="showDuplicateButton" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleDuplicate">
+                    <VIcon small>mdi-content-copy</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Duplicate</span>
             </VTooltip>
           </div>
         </div>
@@ -518,6 +528,12 @@ export default {
     templateLanguageLabel() {
       const count = this.selectedTemplateLanguages.length
       return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    showEditButton() {
+      return !this.selectedRow || this.selectedRow.isOwner !== false
+    },
+    showDuplicateButton() {
+      return this.selectedRow && this.selectedRow.isOwner === false
     }
   },
   created() {
@@ -775,6 +791,9 @@ export default {
     },
     handleEdit() {
       this.$emit('on-edit-template')
+    },
+    handleDuplicate() {
+      this.$emit('on-duplicate-template')
     },
     handleFastLaunch() {
       this.$emit('on-fast-launch', this.selectedRow)

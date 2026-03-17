@@ -22,6 +22,8 @@
           is-nested
           :should-control-html-overflow="false"
           @on-close="showEmailTemplatePreviewDialog = false"
+          @on-edit="handleEditEmailTemplateFromPreview"
+          @on-duplicate="handleDuplicateEmailTemplateFromPreview"
         />
         <CommonSimulatorEmailTemplatePreviewDialog
           v-if="showEmailTemplatePreviewDialog && isQuishing"
@@ -939,14 +941,18 @@ export default {
         : this.summaryData.landingPageTemplate.landingPages[0].content || ''
     },
     emailTemplatePreviewSelectedRow() {
-      if (!this.summaryData?.emailTemplate) return {}
-      return {
+      if (!this.summaryData || !this.summaryData.emailTemplate) return {}
+      const row = {
         ...this.summaryData.emailTemplate,
         resourceId: this.emailTemplateResourceId || this.summaryData.emailTemplate.resourceId
       }
+      if (this.selectedEmailTemplate && Object.prototype.hasOwnProperty.call(this.selectedEmailTemplate, 'isOwner')) {
+        row.isOwner = this.selectedEmailTemplate.isOwner
+      }
+      return row
     },
     landingPagePreviewSelectedRow() {
-      if (!this.summaryData?.landingPageTemplate) return {}
+      if (!this.summaryData || !this.summaryData.landingPageTemplate) return {}
       return {
         ...this.summaryData.landingPageTemplate,
         resourceId:
@@ -1208,8 +1214,8 @@ export default {
       if (isEditMode && !isSaveAsNew) {
         // Edit mode: Close drawer and keep same template selected
         this.createdEmailTemplateResourceId = null
-        if (document.querySelector('.k-navigation-drawer--email-template'))
-          document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
+        const emailDrawer = document.querySelector('.k-navigation-drawer--email-template')
+        if (emailDrawer) emailDrawer.style.right = '-100%'
         setTimeout(() => {
           this.toggleEmailTemplateDrawer()
         }, 250)
@@ -1217,16 +1223,16 @@ export default {
       }
       // Save As New or Create mode: Close drawer and select new template
       this.createdEmailTemplateResourceId = isSaveAsNew ? null : createdResourceId
-      if (document.querySelector('.k-navigation-drawer--email-template'))
-        document.querySelector('.k-navigation-drawer--email-template').style.right = '-100%'
+      const emailDrawer = document.querySelector('.k-navigation-drawer--email-template')
+      if (emailDrawer) emailDrawer.style.right = '-100%'
       setTimeout(() => {
         this.toggleEmailTemplateDrawer()
       }, 250)
     },
     handleCloseNewLandingPageTemplateModal(_, forceUpdate = false, createdResourceId = '') {
       this.createdLandingPageResourceId = createdResourceId
-      if (document.querySelector('.k-navigation-drawer--landing-page'))
-        document.querySelector('.k-navigation-drawer--landing-page').style.right = '-100%'
+      const landingDrawer = document.querySelector('.k-navigation-drawer--landing-page')
+      if (landingDrawer) landingDrawer.style.right = '-100%'
       if (forceUpdate && this?.$refs?.refLandingPageTemplateListPreview)
         this.$refs.refLandingPageTemplateListPreview
           .getTemplates(true, createdResourceId)
@@ -1252,6 +1258,18 @@ export default {
       if (!this.isOpenEmailTemplateDrawer) {
         this.isOpenEmailTemplateDrawer = true
       }
+    },
+    handleEditEmailTemplateFromPreview(row) {
+      this.showEmailTemplatePreviewDialog = false
+      this.$nextTick(() => {
+        this.handleEditEmailTemplate(row, false)
+      })
+    },
+    handleDuplicateEmailTemplateFromPreview(row) {
+      this.showEmailTemplatePreviewDialog = false
+      this.$nextTick(() => {
+        this.handleEditEmailTemplate(row, true)
+      })
     },
     handleEditLandingPageTemplate(selectedRow, isSystemTemplate = false) {
       this.createdLandingPageResourceId = selectedRow?.resourceId || null

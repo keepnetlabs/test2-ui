@@ -5,7 +5,7 @@
         <v-list-item
           :disabled="getDisabledStatusOfAction"
           :id="id"
-          @click="!getDisabledStatusOfAction && $emit('on-click', scope.row)"
+          @click="onEditClick"
         >
           <v-list-item-title>
             <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">{{ icon }}</v-icon>
@@ -42,12 +42,21 @@ export default {
   },
   computed: {
     getTooltipMessage() {
-      const { row } = this.scope
+      const row = this.scope && this.scope.row
+      if (!row) return this.name
       return row.isOwner ? this.name : 'You are not authorized to edit this template'
     },
     getDisabledStatusOfAction() {
-      const { row } = this.scope
+      const row = this.scope && this.scope.row
+      if (!row) return true
       return !row.isOwner || this.disabled
+    }
+  },
+  methods: {
+    onEditClick() {
+      if (!this.getDisabledStatusOfAction && this.scope && this.scope.row) {
+        this.$emit('on-click', this.scope.row)
+      }
     }
   }
 }

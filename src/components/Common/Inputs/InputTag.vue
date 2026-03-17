@@ -68,6 +68,7 @@ export default {
     },
     value(newVal) {
       this.tags = newVal || []
+      this.setInitialAndLazyValue()
     }
   },
   methods: {
@@ -106,9 +107,10 @@ export default {
     },
     setInitialAndLazyValue() {
       this.$nextTick(() => {
-        if (this.$refs.refTags.$refs.refComponent) {
-          this.$refs.refTags.$refs.refComponent.initialValue = this.tags
-          this.$refs.refTags.$refs.refComponent.lazyValue = this.tags
+        const refComponent = this.$refs.refTags?.$refs?.refComponent
+        if (refComponent) {
+          refComponent.initialValue = this.tags
+          refComponent.lazyValue = this.tags
         }
       })
     }

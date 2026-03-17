@@ -11,6 +11,8 @@
       is-nested
       :should-control-html-overflow="false"
       @on-close="isTemplateDetails = false"
+      @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <CommonSimulatorEmailTemplatePreviewDialog
       v-if="isTemplateDetails && isQuishing"
@@ -778,6 +780,18 @@ export default {
         this.emailTemplatePreviewSelectedRow,
         this.isSystemTemplateForNonSystemUser
       )
+    },
+    handleEditFromPreview(row) {
+      this.isTemplateDetails = false
+      this.$nextTick(() => {
+        this.$emit('on-edit-email-template', row, false)
+      })
+    },
+    handleDuplicateFromPreview(row) {
+      this.isTemplateDetails = false
+      this.$nextTick(() => {
+        this.$emit('on-edit-email-template', row, true)
+      })
     },
     handleSaveTemplate(template) {
       this.editData.template = template

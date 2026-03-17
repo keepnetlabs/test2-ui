@@ -1324,7 +1324,8 @@ export default {
       this.isUserDetailsDrawerOpen = true;
     },
     handleCloseDrawer() {
-      document.querySelector(".k-navigation-drawer").style.right = "-100%";
+      const drawer = document.querySelector(".k-navigation-drawer");
+      if (drawer) drawer.style.right = "-100%";
       setTimeout(() => {
         this.selectedRow = null;
         this.isUserDetailsDrawerOpen = false;
