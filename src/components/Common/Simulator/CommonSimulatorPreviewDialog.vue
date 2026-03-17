@@ -3,7 +3,11 @@
     <div class="common-simulator-preview-overlay" @click="handleOverlayClick"></div>
     <VNavigationDrawer
       :value="isVisible"
-      :class="getNavigationDrawerClass"
+      :class="[
+        getNavigationDrawerClass,
+        'common-simulator-preview-dialog',
+        { 'common-simulator-preview-dialog--with-approval-footer': showApprovalFooter }
+      ]"
       :data-drawer-id="drawerId"
       fixed
       :overlay-color="null"

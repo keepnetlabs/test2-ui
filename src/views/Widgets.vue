@@ -687,6 +687,11 @@ export default {
         this.initialLayout = structuredClone(this.layout);
         this.handleAddShadows();
       }
+    },
+    hasAgenticAILicense(val) {
+      if (val && this.isTestEnvironment && this.layout.length) {
+        this.ensureAgenticAIWidget(this.layout);
+      }
     }
   },
   async created() {
