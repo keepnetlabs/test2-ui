@@ -227,7 +227,8 @@ console.error = (...args) => {
   const isKnownVuexNoise =
     firstArg.includes('[vuex] unknown getter: permissions/getDomainSearchPermissions') ||
     firstArg.includes('[vuex] unknown getter: permissions/getDnsSearchPermissions') ||
-    firstArg.includes('[vuex] unknown getter: permissions/getExcludedIpAddressGetPermissions')
+    firstArg.includes('[vuex] unknown getter: permissions/getExcludedIpAddressGetPermissions') ||
+    firstArg.includes('[vuex] unknown getter: login/getHasAgenticAILicense')
   const isKnownComponentNoise =
     errorMsg.includes("Cannot read properties of null (reading 'hasQuiz')") ||
     errorMsg.includes('Not implemented: navigation (except hash changes)')

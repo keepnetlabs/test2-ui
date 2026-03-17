@@ -7,7 +7,7 @@
           <badge
             v-bind="col.props"
             v-if="shouldRenderBadge"
-            :color="getBtnStatusColor(scope.row[col.property])"
+            :color="getBadgeColor(scope.row[col.property])"
             :full-width="col.fullWidth"
             :text="getBadgeText"
           />
@@ -22,7 +22,7 @@
       <badge
         v-bind="col.props"
         v-if="shouldRenderBadge"
-        :color="getBtnStatusColor(scope.row[col.property])"
+        :color="getBadgeColor(scope.row[col.property])"
         :full-width="col.fullWidth"
         :text="getBadgeText"
       />
@@ -73,6 +73,11 @@ export default {
     }
   },
   methods: {
+    getBadgeColor(type) {
+      const normalizedType = String(type || '').trim().toLowerCase()
+      const customBadgeColors = this.col?.badgeColorMap || {}
+      return customBadgeColors[normalizedType] || getBtnStatusColor(type)
+    },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
     },

@@ -28,7 +28,8 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'firstName')).toBe('targetUserFirstName')
       expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'email')).toBe('targetUserEmail')
       expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'department')).toBe('targetUserDepartment')
-      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'status')).toBe('statusName')
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'contentType')).toBe('ActivityType')
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'status')).toBe('Status')
     })
 
     it('returns the property as-is when not in map', () => {

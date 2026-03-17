@@ -214,7 +214,12 @@ export default {
           property: "contentType",
           type: "text",
           show: true,
-          filterableType: "text",
+          filterableType: "select",
+          filterableItems: [
+            { text: "Phishing Simulation", value: "1" },
+            { text: "Quishing Simulation", value: "2" },
+            { text: "Training", value: "4" }
+          ],
           minWidth: 180,
           width: 180,
           fixed: false
@@ -239,7 +244,20 @@ export default {
           align: "center",
           fixed: false,
           filterableType: "select",
-          filterableItems: ["Executed", "Waiting for Approval", "Rejected", "Approved", "Error"],
+          filterableItems: [
+            { text: "Waiting for Approval", value: "1" },
+            { text: "Approved", value: "2" },
+            { text: "Rejected", value: "3" },
+            { text: "Executed", value: "4" },
+            { text: "Error", value: "5" }
+          ],
+          badgeColorMap: {
+            "waiting for approval": "#2196f3",
+            approved: "#43a047",
+            executed: "#43a047",
+            rejected: "#e53935",
+            error: "#e53935"
+          },
           fullWidth: false,
           props: {
             outlined: false,

@@ -226,7 +226,8 @@ describe("AgenticAIActivitiesDrawer", () => {
     it("should map getFilterFieldName correctly", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm.getFilterFieldName("firstName")).toBe("targetUserFirstName");
-      expect(wrapper.vm.getFilterFieldName("status")).toBe("statusName");
+      expect(wrapper.vm.getFilterFieldName("contentType")).toBe("ActivityType");
+      expect(wrapper.vm.getFilterFieldName("status")).toBe("Status");
       expect(wrapper.vm.getFilterFieldName("unknown")).toBe("unknown");
     });
 
@@ -355,11 +356,17 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.axiosPayload.pageNumber).toBe(1);
     });
 
-    it("should call handleRefresh to refetch activities", async () => {
-      const wrapper = mountFactory({ value: true });
+    it("should call handleRefresh to refetch only activities", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue();
+      const fetchBatches = jest.fn().mockResolvedValue();
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchActivities, fetchBatches }
+      );
       await wrapper.vm.handleRefresh();
 
-      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
+      expect(fetchActivities).toHaveBeenCalledTimes(1);
+      expect(fetchBatches).not.toHaveBeenCalled();
     });
   });
 

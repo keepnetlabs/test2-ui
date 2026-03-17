@@ -1290,12 +1290,13 @@ export default {
             }
           }
           const existingTags = this.formValues.tags || []
-          const uniqueTags = [...new Set([...existingTags, ...(result?.tags || [])])]
-          if (uniqueTags.length) {
-            this.formValues.tags = uniqueTags
+          const existingTagsLower = existingTags.map((t) => t.toLowerCase())
+          const newTags = (result?.tags || []).filter((tag) => !existingTagsLower.includes(tag.toLowerCase()))
+          if (newTags.length) {
+            this.formValues.tags = [...existingTags, ...newTags]
           }
           const changeLog = result?.change_log || []
-          this.aiTags = uniqueTags
+          this.aiTags = newTags
           this.aiDifficulty = result?.difficulty || ''
           this.isCheckWithAIDone = true
           if (changeLog.length) {
