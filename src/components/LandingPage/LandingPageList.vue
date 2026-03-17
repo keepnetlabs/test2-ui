@@ -33,6 +33,7 @@
       :languages="languageFilterOptions"
       @on-close="isTemplateDetails = false"
       @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <data-table
       v-if="getLandingPageTemplatesSearchPermissions"
@@ -492,6 +493,12 @@ export default {
       this.isTemplateDetails = false
       this.$nextTick(() => {
         this.handleEdit(row, false)
+      })
+    },
+    handleDuplicateFromPreview(row) {
+      this.isTemplateDetails = false
+      this.$nextTick(() => {
+        this.handleEdit(row, true)
       })
     },
     checkIfCanCloseGrapesJSModal() {

@@ -32,13 +32,21 @@
             </template>
             <span>Open in New Tab</span>
           </VTooltip>
-          <VTooltip v-if="!isNested && !disableEdit" bottom>
+          <VTooltip v-if="showEditButton" bottom>
             <template #activator="{ on }">
               <v-btn v-on="on" icon outlined color="#2196F3" small @click="handleEdit">
                 <v-icon small>mdi-pencil</v-icon>
               </v-btn>
             </template>
             <span>Edit Template</span>
+          </VTooltip>
+          <VTooltip v-if="showDuplicateButton" bottom>
+            <template #activator="{ on }">
+              <v-btn v-on="on" icon outlined color="#2196F3" small @click="handleDuplicate">
+                <v-icon small>mdi-content-copy</v-icon>
+              </v-btn>
+            </template>
+            <span>Duplicate Template</span>
           </VTooltip>
         </div>
       </div>
@@ -123,6 +131,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isOwner: {
+      type: Boolean,
+      default: undefined
+    },
     isAssistedByAI: {
       type: Boolean,
       default: false
@@ -190,6 +202,12 @@ export default {
     templateLanguageLabel() {
       const count = this.languageItems.length
       return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    showEditButton() {
+      return !this.isNested && !this.disableEdit && this.isOwner !== false
+    },
+    showDuplicateButton() {
+      return !this.isNested && !this.disableEdit && this.isOwner === false
     }
   },
   watch: {
@@ -208,6 +226,9 @@ export default {
     },
     handleEdit() {
       this.$emit('edit')
+    },
+    handleDuplicate() {
+      this.$emit('duplicate')
     }
   }
 }
