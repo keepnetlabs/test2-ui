@@ -365,7 +365,7 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(ctx.toggleShowPreviewDialog).not.toHaveBeenCalled()
   })
 
-  it('handleFastLaunch uses default empty row when argument is omitted', () => {
+  it('handleFastLaunch returns early when argument is omitted (undefined)', () => {
     const ctx = {
       selectedRow: null,
       isShowPreviewDialog: false,
@@ -373,9 +373,8 @@ describe('PhishingScenarios/Scenarios.vue', () => {
       toggleShowPreviewDialog: jest.fn()
     }
     Scenarios.methods.handleFastLaunch.call(ctx)
-    expect(ctx.selectedRow).toEqual({})
-    expect(ctx.toggleShowFastLaunch).toHaveBeenCalled()
-    expect(ctx.toggleShowPreviewDialog).not.toHaveBeenCalled()
+    expect(ctx.selectedRow).toBeNull()
+    expect(ctx.toggleShowFastLaunch).not.toHaveBeenCalled()
   })
 
   it('mounted calls language/role/data loaders', () => {
@@ -523,6 +522,21 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(ctx.isShowScenarioStatistics).toBe(true)
   })
 
+  it('handleStatisticsModalStatusChange does not throw when drawer element is missing', () => {
+    jest.useFakeTimers()
+    const querySelectorSpy = jest.spyOn(document, 'querySelector').mockReturnValue(null)
+    const ctx = { isShowScenarioStatistics: true }
+
+    expect(() => {
+      Scenarios.methods.handleStatisticsModalStatusChange.call(ctx, false)
+    }).not.toThrow()
+    jest.advanceTimersByTime(260)
+    expect(ctx.isShowScenarioStatistics).toBe(false)
+
+    querySelectorSpy.mockRestore()
+    jest.useRealTimers()
+  })
+
   it('toggleShowPreviewDialog toggles and clears selected scenario when closing', () => {
     const ctx = {
       isShowPreviewDialog: false,
@@ -538,15 +552,15 @@ describe('PhishingScenarios/Scenarios.vue', () => {
     expect(ctx.selectedPhishingScenario).toEqual({})
   })
 
-  it('handlePreview accepts null row and still toggles preview dialog', () => {
+  it('handlePreview ignores null row and does not toggle preview dialog', () => {
     const ctx = {
       selectedPhishingScenario: { resourceId: 's-old' },
       toggleShowPreviewDialog: jest.fn()
     }
 
     Scenarios.methods.handlePreview.call(ctx, null)
-    expect(ctx.selectedPhishingScenario).toBeNull()
-    expect(ctx.toggleShowPreviewDialog).toHaveBeenCalled()
+    expect(ctx.selectedPhishingScenario).toEqual({ resourceId: 's-old' })
+    expect(ctx.toggleShowPreviewDialog).not.toHaveBeenCalled()
   })
 
   it('callForData does not call api when search permission is missing', async () => {
