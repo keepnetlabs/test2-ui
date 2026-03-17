@@ -1,131 +1,37 @@
-.agentic-ai-confirm-dialog {
+.agentic-ai-confirm-dialog__overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &__overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.23);
-  }
-
-  &__content {
-    position: relative;
-    z-index: 1;
-    width: 560px;
-    max-width: 90vw;
-  }
-
-  &__message {
-    color: #383B41;
-    font-family: "Open Sans", sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 21px;
-    font-feature-settings: 'liga' off, 'clig' off;
-    margin: 0 !important;
-  }
-
-  &__recommendation {
-    color: #383B41;
-    font-family: "Open Sans", sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 21px;
-    font-feature-settings: 'liga' off, 'clig' off;
-    margin: 0 !important;
-    margin-top: 4px !important;
-  }
-
-  &__footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-top: 1px solid #e0e0e0;
-  }
-
-  &__footer-right {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  &__btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: "Open Sans", sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 24px;
-    text-transform: uppercase;
-    font-feature-settings: 'liga' off, 'clig' off;
-    padding: 8px 16px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-
-    &:disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    &--preview {
-      color: #00BCD4;
-
-      &:hover {
-        background-color: rgba(#00BCD4, 0.08);
-      }
-    }
-
-    &--cancel {
-      color: #e91e63;
-
-      &:hover {
-        background-color: rgba(#e91e63, 0.08);
-      }
-    }
-
-    &--confirm {
-      color: #2196f3;
-
-      &:hover {
-        background-color: rgba(#2196f3, 0.08);
-      }
-    }
-  }
+  inset: 0;
+  background: rgba(0, 0, 0, 0.23);
+  z-index: 1000000 !important;
 }
 
-// Overlay fade
-.agentic-ai-confirm-dialog-fade-enter-active,
-.agentic-ai-confirm-dialog-fade-leave-active {
-  transition: opacity 0.3s ease;
+.v-dialog__content:has(.agentic-ai-confirm-dialog) {
+  z-index: 1000001 !important;
 }
 
-.agentic-ai-confirm-dialog-fade-enter,
-.agentic-ai-confirm-dialog-fade-leave-to {
-  opacity: 0;
+.agentic-ai-confirm-dialog {
+  z-index: 1000001 !important;
 }
 
-// Card scale (same as Vuetify v-dialog)
-.agentic-ai-confirm-dialog-scale-enter-active,
-.agentic-ai-confirm-dialog-scale-leave-active {
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
+.agentic-ai-confirm-dialog__message {
+  color: #383B41;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  font-feature-settings: 'liga' off, 'clig' off;
+  margin: 0 !important;
 }
 
-.agentic-ai-confirm-dialog-scale-enter,
-.agentic-ai-confirm-dialog-scale-leave-to {
-  transform: scale(0.5);
-  opacity: 0;
+.agentic-ai-confirm-dialog__recommendation {
+  color: #383B41;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  font-feature-settings: 'liga' off, 'clig' off;
+  margin: 0 !important;
+  margin-top: 4px !important;
 }

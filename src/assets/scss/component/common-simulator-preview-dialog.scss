@@ -14,6 +14,25 @@
   z-index: 251 !important;
 }
 
+.common-simulator-preview-dialog--with-approval-footer {
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden !important;
+
+  .campaign-manager-scenario-statistics-modal__header--sticky {
+    flex: 0 0 auto;
+  }
+
+  .campaign-manager-scenario-statistics-modal__body.k-navigation-drawer__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0 48px !important;
+    padding: 16px 0 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
 // Common Simulator Email Preview Text Styles
 .common-simulator-preview__text {
   .template-preview__text--title {
@@ -34,8 +53,7 @@
 
 // Approval footer for Agentic AI preview
 .common-simulator-preview__approval-footer {
-  position: sticky;
-  bottom: 0;
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;

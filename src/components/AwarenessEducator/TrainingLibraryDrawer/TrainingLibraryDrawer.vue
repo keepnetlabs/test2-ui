@@ -16,7 +16,10 @@
     ></div>
     <VNavigationDrawer
       :value="isVisible"
-      :class="getNavigationDrawerClass"
+      :class="[
+        getNavigationDrawerClass,
+        { 'training-library-drawer--with-approval-footer': showApprovalFooter }
+      ]"
       :data-drawer-id="drawerId"
       fixed
       :overlay-color="null"

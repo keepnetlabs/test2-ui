@@ -95,3 +95,25 @@
     }
   }
 }
+
+.training-library-drawer--with-approval-footer {
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden !important;
+
+  .training-library-drawer__header {
+    flex: 0 0 auto;
+  }
+
+  .training-library-drawer__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .training-library-drawer__approval-footer {
+    position: static;
+    flex: 0 0 auto;
+  }
+}

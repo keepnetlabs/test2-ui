@@ -1,59 +1,53 @@
 <template>
-  <transition name="agentic-ai-confirm-dialog-fade">
-    <div v-if="status" class="agentic-ai-confirm-dialog">
-      <div class="agentic-ai-confirm-dialog__overlay" @click="$emit('cancel')"></div>
-      <transition name="agentic-ai-confirm-dialog-scale">
-        <div v-if="status" class="agentic-ai-confirm-dialog__content">
-          <v-card class="k-dialog__card" light>
-            <v-form lazy-validation onSubmit="return false;">
-              <v-list-item class="k-dialog__header">
-                <div class="v-btn v-cart-icon-wrapper">
-                  <v-icon color="blue" class="ml-2" left medium>{{ icon }}</v-icon>
-                </div>
-                <div>
-                  <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
-                </div>
-              </v-list-item>
-              <div class="k-dialog__body">
-                <p class="agentic-ai-confirm-dialog__message">{{ message }}</p>
-                <p class="agentic-ai-confirm-dialog__recommendation">{{ recommendation }}</p>
-              </div>
-              <div class="agentic-ai-confirm-dialog__footer">
-                <button
-                  id="btn-confirm-preview-first"
-                  class="agentic-ai-confirm-dialog__btn agentic-ai-confirm-dialog__btn--preview"
-                  type="button"
-                  :disabled="loading"
-                  @click="$emit('preview-first')"
-                >PREVIEW FIRST</button>
-                <div class="agentic-ai-confirm-dialog__footer-right">
-                  <button
-                    id="btn-confirm-cancel"
-                    class="agentic-ai-confirm-dialog__btn agentic-ai-confirm-dialog__btn--cancel"
-                    type="button"
-                    :disabled="loading"
-                    @click="$emit('cancel')"
-                  >CANCEL</button>
-                  <button
-                    :id="`btn-confirm-${action}`"
-                    class="agentic-ai-confirm-dialog__btn agentic-ai-confirm-dialog__btn--confirm"
-                    type="button"
-                    :disabled="loading"
-                    @click="$emit('confirm')"
-                  >{{ loading ? 'Processing...' : confirmText }}</button>
-                </div>
-              </div>
-            </v-form>
-          </v-card>
-        </div>
-      </transition>
-    </div>
-  </transition>
+  <div>
+    <div
+      v-if="status"
+      class="agentic-ai-confirm-dialog__overlay"
+      @click="$emit('cancel')"
+    ></div>
+    <AppDialog
+      :status="status"
+      :icon="icon"
+      :title="title"
+      class-name="agentic-ai-confirm-dialog"
+      custom-size="560"
+      hide-overlay
+      @changeStatus="handleChangeStatus"
+    >
+      <template #app-dialog-body>
+        <p class="agentic-ai-confirm-dialog__message">{{ message }}</p>
+        <p
+          v-if="recommendation"
+          class="agentic-ai-confirm-dialog__recommendation"
+        >
+          {{ recommendation }}
+        </p>
+      </template>
+      <template #app-dialog-footer>
+        <AppDialogFooter
+          cancel-button-id="btn-confirm-cancel"
+          :confirm-button-id="`btn-confirm-${action}`"
+          cancel-button-text="CANCEL"
+          :action-button-text="confirmText"
+          :confirm-button-disabled="loading"
+          @handleClose="$emit('cancel')"
+          @handleConfirm="$emit('confirm')"
+        />
+      </template>
+    </AppDialog>
+  </div>
 </template>
 
 <script>
+import AppDialog from "@/components/AppDialog.vue";
+import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter.vue";
+
 export default {
   name: "AgenticAIConfirmDialog",
+  components: {
+    AppDialog,
+    AppDialogFooter
+  },
   props: {
     status: {
       type: Boolean,
@@ -86,6 +80,13 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    }
+  },
+  methods: {
+    handleChangeStatus(value) {
+      if (!value) {
+        this.$emit("cancel");
+      }
     }
   }
 };
