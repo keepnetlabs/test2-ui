@@ -201,4 +201,112 @@ describe('TargetUsers/People.vue', () => {
     expect(ctx.isMultipleDelete).toBe(false)
     expect(ctx.multipleDeletedUserCount).toBe(0)
   })
+
+  describe('managerFullName fallback in callForTargetUsers', () => {
+    it('sets managerFullName from managerFirstName+managerLastName when managerFullName is missing', async () => {
+      const { getTargetUsers } = require('@/api/targetUsers')
+      getTargetUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                resourceId: 'u-1',
+                email: 'david@example.com',
+                managerFirstName: 'Michael',
+                managerLastName: 'Johnson',
+                managerEmail: 'michael@example.com',
+                preferredLanguage: 'English'
+              }
+            ]
+          }
+        }
+      })
+
+      const ctx = {
+        loading: false,
+        serverSideProps: {},
+        tableData: [],
+        languageFilterOptions: [{ name: 'English', text: 'English' }],
+        getUnverifiedDomains: jest.fn()
+      }
+
+      People.methods.callForTargetUsers.call(ctx)
+      await flushPromises()
+
+      expect(ctx.tableData).toHaveLength(1)
+      expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
+    })
+
+    it('keeps managerFullName when it exists', async () => {
+      const { getTargetUsers } = require('@/api/targetUsers')
+      getTargetUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                resourceId: 'u-1',
+                managerFullName: 'Michael Johnson',
+                managerFirstName: 'Michael',
+                managerLastName: 'Johnson',
+                managerEmail: 'michael@example.com',
+                preferredLanguage: 'English'
+              }
+            ]
+          }
+        }
+      })
+
+      const ctx = {
+        loading: false,
+        serverSideProps: {},
+        tableData: [],
+        languageFilterOptions: [{ name: 'English', text: 'English' }],
+        getUnverifiedDomains: jest.fn()
+      }
+
+      People.methods.callForTargetUsers.call(ctx)
+      await flushPromises()
+
+      expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
+    })
+
+    it('sets empty managerFullName when managerFirstName and managerLastName are both missing', async () => {
+      const { getTargetUsers } = require('@/api/targetUsers')
+      getTargetUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                resourceId: 'u-1',
+                email: 'david@example.com',
+                preferredLanguage: 'English'
+              }
+            ]
+          }
+        }
+      })
+
+      const ctx = {
+        loading: false,
+        serverSideProps: {},
+        tableData: [],
+        languageFilterOptions: [{ name: 'English', text: 'English' }],
+        getUnverifiedDomains: jest.fn()
+      }
+
+      People.methods.callForTargetUsers.call(ctx)
+      await flushPromises()
+
+      expect(ctx.tableData[0].managerFullName).toBe('')
+    })
+  })
 })
