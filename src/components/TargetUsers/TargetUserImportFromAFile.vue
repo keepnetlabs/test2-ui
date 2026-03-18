@@ -723,6 +723,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            width: 180,
             filterableType: 'text',
             dbName: 'FirstName',
             emptyText: 'No Data'
@@ -777,6 +778,32 @@ export default {
             width: 200,
             filterableType: 'text',
             dbName: 'PhoneNumber',
+            emptyText: 'No Data'
+          },
+          {
+            property: 'managerFullName',
+            align: 'left',
+            editable: false,
+            label: 'Manager',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 200,
+            filterableType: 'text',
+            dbName: 'ManagerFullName',
+            emptyText: 'No Data'
+          },
+          {
+            property: 'managerEmail',
+            align: 'left',
+            editable: false,
+            label: 'Manager Email',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 250,
+            filterableType: 'text',
+            dbName: 'ManagerEmail',
             emptyText: 'No Data'
           },
           {
@@ -846,6 +873,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            width: 180,
             filterableType: 'text',
             dbName: 'FirstName',
             emptyText: 'No Data'
@@ -900,6 +928,32 @@ export default {
             width: 200,
             filterableType: 'text',
             dbName: 'PhoneNumber',
+            emptyText: 'No Data'
+          },
+          {
+            property: 'managerFullName',
+            align: 'left',
+            editable: false,
+            label: 'Manager',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 200,
+            filterableType: 'text',
+            dbName: 'ManagerFullName',
+            emptyText: 'No Data'
+          },
+          {
+            property: 'managerEmail',
+            align: 'left',
+            editable: false,
+            label: 'Manager Email',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 250,
+            filterableType: 'text',
+            dbName: 'ManagerEmail',
             emptyText: 'No Data'
           },
           {
@@ -1298,6 +1352,11 @@ export default {
                 }
               }
             })
+            item.managerFullName =
+              item.managerFullName ||
+              (item.managerFirstName || item.managerLastName
+                ? [item.managerFirstName, item.managerLastName].filter(Boolean).join(' ')
+                : '')
             // Map preferredLanguage to friendly name
             if (item.preferredLanguage) {
               if (Array.isArray(item.preferredLanguage)) {
@@ -1548,6 +1607,9 @@ export default {
             null
           if (fieldName === 'First Name') fieldName = 'FirstName'
           if (fieldName === 'Last Name') fieldName = 'LastName'
+          if (fieldName === 'Manager First Name') fieldName = 'ManagerFirstName'
+          if (fieldName === 'Manager Last Name') fieldName = 'ManagerLastName'
+          if (fieldName === 'Manager Email') fieldName = 'ManagerEmail'
           return {
             excelColumnName: excelColumnName,
             fieldName: fieldName
@@ -1697,12 +1759,31 @@ export default {
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           let allColumns = []
-          let mainColumns = _this.columns.filter((item) => !item.isCustomField)
+          let mainColumns = _this.columns
+            .filter((item) => !item.isCustomField)
+            .filter((item) => item.dbName !== 'ManagerFullName')
           let customColumns = _this.columns.filter((item) => item.isCustomField)
           allColumns = mainColumns
           if (customColumns) {
             allColumns = allColumns?.concat(customColumns)
           }
+          const managerMappingColumns = [
+            { label: 'Manager First Name', dbName: 'ManagerFirstName', isCustomField: false },
+            { label: 'Manager Last Name', dbName: 'ManagerLastName', isCustomField: false },
+            { label: 'Manager Email', dbName: 'ManagerEmail', isCustomField: false }
+          ]
+          const hasManagerFirstName = allColumns.some(
+            (c) => c.dbName === 'ManagerFirstName' || c.label === 'Manager First Name'
+          )
+          const hasManagerLastName = allColumns.some(
+            (c) => c.dbName === 'ManagerLastName' || c.label === 'Manager Last Name'
+          )
+          const hasManagerEmail = allColumns.some(
+            (c) => c.dbName === 'ManagerEmail' || c.label === 'Manager Email'
+          )
+          if (!hasManagerFirstName) allColumns.push(managerMappingColumns[0])
+          if (!hasManagerLastName) allColumns.push(managerMappingColumns[1])
+          if (!hasManagerEmail) allColumns.push(managerMappingColumns[2])
           this.allCustomColumns = customColumns
           _this.mappingData.columns = allColumns
             .map((item) => {

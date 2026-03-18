@@ -1,5 +1,23 @@
 jest.mock('@/api/targetUsers', () => ({
-  updateTransactionId: jest.fn(() => Promise.resolve({ data: { data: { transactionId: 'new-tx' } } }))
+  updateTransactionId: jest.fn(() => Promise.resolve({ data: { data: { transactionId: 'new-tx' } } })),
+  createMapping: jest.fn(() => Promise.resolve({ data: { data: { resourceId: 'map-1' } } })),
+  searchTmp: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        data: {
+          items: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: []
+          }
+        }
+      }
+    })
+  ),
+  getTargetUserCustomFieldsByCompanyId: jest.fn(() =>
+    Promise.resolve({ data: { data: [{ name: 'Email', isRequired: true }] } })
+  )
 }))
 
 import TargetUserImportFromAFile from '@/components/TargetUsers/TargetUserImportFromAFile.vue'
@@ -241,5 +259,197 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
       nextAllowed
     )
     expect(nextAllowed).toHaveBeenCalledWith()
+  })
+
+  it('tableOptions backupColumns includes Manager and Manager Email columns', () => {
+    const { tableOptions } = TargetUserImportFromAFile.data()
+    const backupCols = tableOptions.backupColumns
+    const managerFullName = backupCols.find((c) => c.property === 'managerFullName')
+    const managerEmail = backupCols.find((c) => c.property === 'managerEmail')
+
+    expect(managerFullName).toBeDefined()
+    expect(managerFullName.label).toBe('Manager')
+    expect(managerFullName.dbName).toBe('ManagerFullName')
+    expect(managerEmail).toBeDefined()
+    expect(managerEmail.label).toBe('Manager Email')
+    expect(managerEmail.dbName).toBe('ManagerEmail')
+  })
+
+  it('createMapFields maps ManagerFirstName, ManagerLastName and ManagerEmail to correct backend field names', async () => {
+    const { createMapping } = require('@/api/targetUsers')
+    createMapping.mockClear()
+    createMapping.mockResolvedValueOnce({ data: { data: { resourceId: 'map-1' } } })
+
+    const mockHeaders = [
+      {
+        name: 'ManagerFirstName',
+        selectedValue: { name: 'Manager First Name', dbName: 'ManagerFirstName' }
+      },
+      {
+        name: 'ManagerLastName',
+        selectedValue: { name: 'Manager Last Name', dbName: 'ManagerLastName' }
+      },
+      { name: 'ManagerEmail', selectedValue: { name: 'Manager Email', dbName: 'ManagerEmail' } }
+    ]
+
+    const ctx = {
+      excelInfo: { transactionId: 'tx-1' },
+      formData: { groups: ['g1'] },
+      showDatatable: false,
+      mappindgId: null,
+      getMappingStatus: jest.fn(),
+      step3InitialLoading: false,
+      getMapTableData: () => ({ headers: mockHeaders }),
+      $refs: {
+        refMapTable: {
+          getMapTableData: () => ({ headers: mockHeaders })
+        }
+      }
+    }
+
+    await methods.createMapFields.call(ctx)
+
+    expect(createMapping).toHaveBeenCalled()
+    const payload = createMapping.mock.calls[0][0]
+    const fieldMappings = payload.fieldMappings
+
+    expect(fieldMappings).toContainEqual({
+      excelColumnName: 'ManagerFirstName',
+      fieldName: 'ManagerFirstName'
+    })
+    expect(fieldMappings).toContainEqual({
+      excelColumnName: 'ManagerLastName',
+      fieldName: 'ManagerLastName'
+    })
+    expect(fieldMappings).toContainEqual({
+      excelColumnName: 'ManagerEmail',
+      fieldName: 'ManagerEmail'
+    })
+  })
+
+  it('getDatatableList sets managerFullName from managerFirstName+managerLastName when managerFullName is missing', async () => {
+    const { searchTmp } = require('@/api/targetUsers')
+    searchTmp.mockResolvedValueOnce({
+      data: {
+        data: {
+          items: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                status: 'New',
+                email: 'david@example.com',
+                firstName: 'David',
+                lastName: 'Brown',
+                managerFirstName: 'Michael',
+                managerLastName: 'Johnson',
+                managerEmail: 'michael@example.com',
+                customFields: [],
+                preferredLanguage: 'English',
+                validationDetail: []
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const ctx = {
+      columns: [],
+      bodyData: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      excelInfo: { transactionId: 'tx-1' },
+      tableOptions: { backupColumns: [{ property: 'firstName' }, { property: 'lastName' }] },
+      languageFilterOptions: [{ name: 'English', text: 'English' }],
+      serverSideProps: {},
+      tableData: [],
+      step3Loading: false
+    }
+
+    await methods.getDatatableList.call(ctx)
+    await Promise.resolve()
+
+    expect(ctx.tableData).toHaveLength(1)
+    expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
+    expect(ctx.tableData[0].managerFirstName).toBe('Michael')
+    expect(ctx.tableData[0].managerLastName).toBe('Johnson')
+  })
+
+  it('callForGetTargetUserCustomFieldsByCompanyId filters ManagerFullName and adds Manager First Name, Last Name, Email to mapping', async () => {
+    const { getTargetUserCustomFieldsByCompanyId } = require('@/api/targetUsers')
+    getTargetUserCustomFieldsByCompanyId.mockResolvedValueOnce({
+      data: { data: [{ name: 'Email', isRequired: true }] }
+    })
+
+    const ctx = {
+      columns: [
+        { label: 'First Name', dbName: 'FirstName', isCustomField: false },
+        { label: 'Manager', dbName: 'ManagerFullName', isCustomField: false },
+        { label: 'Manager Email', dbName: 'ManagerEmail', isCustomField: false }
+      ],
+      mappingData: { columns: [] },
+      loading: false
+    }
+
+    await methods.callForGetTargetUserCustomFieldsByCompanyId.call(ctx)
+    await Promise.resolve()
+
+    const colNames = ctx.mappingData.columns.map((c) => c.name)
+    expect(colNames).not.toContain('Manager')
+    expect(colNames).toContain('Manager First Name')
+    expect(colNames).toContain('Manager Last Name')
+    expect(colNames).toContain('Manager Email')
+  })
+
+  it('getDatatableList keeps managerFullName when it exists', async () => {
+    const { searchTmp } = require('@/api/targetUsers')
+    searchTmp.mockResolvedValueOnce({
+      data: {
+        data: {
+          items: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                status: 'New',
+                email: 'david@example.com',
+                managerFullName: 'Michael Johnson',
+                managerFirstName: 'Michael',
+                managerLastName: 'Johnson',
+                managerEmail: 'michael@example.com',
+                customFields: [],
+                preferredLanguage: 'English',
+                validationDetail: []
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const ctx = {
+      columns: [],
+      bodyData: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      excelInfo: { transactionId: 'tx-1' },
+      tableOptions: { backupColumns: [] },
+      languageFilterOptions: [],
+      serverSideProps: {},
+      tableData: [],
+      step3Loading: false
+    }
+
+    await methods.getDatatableList.call(ctx)
+    await Promise.resolve()
+
+    expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
   })
 })
