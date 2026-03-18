@@ -232,7 +232,7 @@ describe('CompanyList.vue', () => {
     const reRenderFilters = jest.fn()
     wrapper.vm.$refs.refDataList = { reRenderFilters }
 
-    wrapper.vm.setMonthlyActiveUserFilterItems()
+    wrapper.vm.setMonthlyFilterItems()
     await wrapper.vm.$nextTick()
 
     const col = wrapper.vm.tableOptions.columns.find((x) => x.property === 'monthlyActiveUserCount')
@@ -241,14 +241,14 @@ describe('CompanyList.vue', () => {
     expect(col.filterableItems.some((x) => x.text.includes('(Current)'))).toBe(true)
   })
 
-  it('setMonthlyActiveUserFilterItems is safe when monthly column is missing', async () => {
+  it('setMonthlyFilterItems is safe when monthly column is missing', async () => {
     const wrapper = createWrapper()
     wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
     wrapper.vm.tableOptions.columns = wrapper.vm.tableOptions.columns.filter(
       (x) => x.property !== 'monthlyActiveUserCount'
     )
 
-    expect(() => wrapper.vm.setMonthlyActiveUserFilterItems()).not.toThrow()
+    expect(() => wrapper.vm.setMonthlyFilterItems()).not.toThrow()
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.tableOptions.columns.some((x) => x.property === 'monthlyActiveUserCount')).toBe(false)
   })
