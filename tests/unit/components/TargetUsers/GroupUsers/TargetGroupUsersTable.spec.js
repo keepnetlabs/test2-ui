@@ -582,4 +582,100 @@ describe('TargetGroupUsersTable.vue', () => {
 
     expect(wrapper.vm.callForGetTargetUserCustomFieldsByCompanyId).toHaveBeenCalledTimes(3)
   })
+
+  describe('managerFullName fallback', () => {
+    it('sets managerFullName from managerFirstName+managerLastName when managerFullName is missing (searchTargetGroupUsers)', async () => {
+      searchTargetGroupUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                resourceId: 'u-1',
+                managerFirstName: 'Michael',
+                managerLastName: 'Johnson',
+                managerEmail: 'michael@example.com',
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper()
+      wrapper.setData({
+        languageFilterOptions: [{ name: 'English', text: 'English' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers('group-1')
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].managerFullName).toBe('Michael Johnson')
+    })
+
+    it('keeps managerFullName when it exists (searchTargetGroupUsers)', async () => {
+      searchTargetGroupUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                resourceId: 'u-1',
+                managerFullName: 'Michael Johnson',
+                managerFirstName: 'Michael',
+                managerLastName: 'Johnson',
+                managerEmail: 'michael@example.com',
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper()
+      wrapper.setData({
+        languageFilterOptions: [{ name: 'English', text: 'English' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers('group-1')
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].managerFullName).toBe('Michael Johnson')
+    })
+
+    it('sets managerFullName from managerFirstName+managerLastName when managerFullName is missing (getTargetUsers)', async () => {
+      getTargetUsers.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [
+              {
+                resourceId: 'u-1',
+                managerFirstName: 'Jane',
+                managerLastName: 'Smith',
+                managerEmail: 'jane@example.com',
+                preferredLanguage: 'English',
+                customFieldValues: []
+              }
+            ]
+          }
+        }
+      })
+      const wrapper = createWrapper({ propsData: { isCallTargetUserSearch: true } })
+      wrapper.setData({
+        languageFilterOptions: [{ name: 'English', text: 'English' }]
+      })
+
+      wrapper.vm.callForSearchTargetGroupUsers()
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].managerFullName).toBe('Jane Smith')
+    })
+  })
 })

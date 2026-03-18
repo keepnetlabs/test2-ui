@@ -646,7 +646,7 @@ export default {
             fixed: "left",
             sortable: true,
             show: true,
-            width: 140,
+            width: 180,
             type: "text",
             filterableType: "text",
             dbName: "FirstName"
@@ -659,7 +659,7 @@ export default {
             sortable: true,
             show: true,
             type: "text",
-            width: 150,
+            width: 180,
             filterableType: "text",
             dbName: "LastName"
           },
@@ -1829,8 +1829,14 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
           this.serverSideProps.pageNumber = pageNumber;
           this.tableData = results?.map((item) => {
+            const managerFullName =
+              item.managerFullName ||
+              (item.managerFirstName || item.managerLastName
+                ? [item.managerFirstName, item.managerLastName].filter(Boolean).join(' ')
+                : '');
             return {
               ...item,
+              managerFullName,
               status: item.isDeleted ? "Deleted" : item.status,
               preferredLanguage: this.languageFilterOptions.find(
                 (language) => language.name === item.preferredLanguage

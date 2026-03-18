@@ -138,6 +138,20 @@
     }
   }
 
+  &__defender-email-field {
+    position: relative;
+  }
+
+  &__defender-email-helper {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    color: rgba(0, 0, 0, 0.6);
+    text-align: right;
+    margin-top: -18px;
+    margin-bottom: 8px;
+  }
+
   &__card {
     border: 1px solid #E0E0E0;
     border-radius: 12px;

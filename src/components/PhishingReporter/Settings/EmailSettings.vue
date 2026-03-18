@@ -86,15 +86,12 @@
             Defender and enter that address below.
           </div>
         </div>
-        <FormGroup
-          v-if="formValues.isMicrosoftDefenderIntegrationEnabled"
-          class="mt-2 email-settings__defender-email-form"
-          title="Defender Submission Email"
-          :has-hint="isDefenderEmailRequired"
-        >
+        <div v-if="formValues.isMicrosoftDefenderIntegrationEnabled" class="email-settings__defender-email-field mt-4">
           <InputEmail
             v-model.trim="formValues.defenderReportingEmailAddress"
             id="input--phishing-reporter-defender-submission-email"
+            label="Defender Submission Mailbox"
+            persistent-placeholder
             placeholder="Enter an email address"
             :required="isDefenderEmailRequired"
             :persistent-hint="isDefenderEmailRequired"
@@ -102,7 +99,10 @@
             :rules="defenderEmailRules"
             :readonly="!showForm"
           />
-        </FormGroup>
+          <div class="email-settings__defender-email-helper">
+            Enter the submission mailbox configured in Microsoft 365 Defender.
+          </div>
+        </div>
       </div>
       <!-- Team Alerts -->
       <div :class="['email-settings__card mt-6', { 'email-settings__card--expanded': formValues.isSendInformationEmail }]">
@@ -207,12 +207,10 @@ import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettin
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
-import FormGroup from '@/components/SmallComponents/FormGroup.vue'
 import { mapGetters } from 'vuex'
 export default {
   name: 'EmailSettings',
   components: {
-    FormGroup,
     InputEmail,
     PhishingSettingsFooter
   },

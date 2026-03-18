@@ -205,6 +205,7 @@ export default {
           sortable: true,
           show: true,
           type: "text",
+          width: 180,
           filterableType: "text",
           dbName: "firstName"
         },
@@ -216,6 +217,7 @@ export default {
           sortable: true,
           show: true,
           type: "text",
+          width: 180,
           filterableType: "text",
           dbName: "lastName"
         },
@@ -644,6 +646,11 @@ export default {
               item.preferredLanguage = this.languageFilterOptions.find(
                 (language) => language.name === item.preferredLanguage
               )?.text;
+              item.managerFullName =
+                item.managerFullName ||
+                (item.managerFirstName || item.managerLastName
+                  ? [item.managerFirstName, item.managerLastName].filter(Boolean).join(' ')
+                  : '');
               const { customFieldValues } = item;
               for (let {
                 name,
@@ -690,6 +697,11 @@ export default {
               item.preferredLanguage = this.languageFilterOptions.find(
                 (language) => language.name === item.preferredLanguage
               )?.text;
+              item.managerFullName =
+                item.managerFullName ||
+                (item.managerFirstName || item.managerLastName
+                  ? [item.managerFirstName, item.managerLastName].filter(Boolean).join(' ')
+                  : '');
             });
             this.tableData = results.map((item) => {
               const { customFieldValues } = item;
