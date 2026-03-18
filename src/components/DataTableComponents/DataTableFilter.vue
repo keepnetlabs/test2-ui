@@ -224,6 +224,36 @@
           style="margin-bottom: 12px;"
         />
       </template>
+      <template v-if="filterableType === 'compositeSelect'">
+        <label style="font-size: 13px; font-weight: 600; margin-bottom: 4px; display: block;">Month</label>
+        <v-select
+          v-model="filteredSingleValue"
+          :items="convertedFilterableItems"
+          item-text="text"
+          item-value="value"
+          dense
+          height="40"
+          outlined
+          placeholder="Select a month"
+          :menu-props="{ offsetY: true, contentClass: 'single-select-filter__menu' }"
+          hide-details
+          style="margin-bottom: 12px;"
+        />
+        <label style="font-size: 13px; font-weight: 600; margin-bottom: 4px; display: block;">Status</label>
+        <v-select
+          v-model="compositeSecondValue"
+          :items="compositeSecondItems"
+          item-text="text"
+          item-value="value"
+          dense
+          height="40"
+          outlined
+          placeholder="Select status"
+          :menu-props="{ offsetY: true, contentClass: 'single-select-filter__menu' }"
+          hide-details
+          style="margin-bottom: 12px;"
+        />
+      </template>
       <template v-if="filterableType === 'number' || filterableType === 'negativeNumber'">
         <v-select
           v-model="filteredSelectValueNumber"
@@ -343,6 +373,20 @@ export default {
     filterOptionProps: {
       required: false
     },
+    compositeSecondItems: {
+      type: Array,
+      default: () => []
+    },
+    compositeSecondFieldName: {
+      type: String,
+      default: null
+    },
+    defaultFilterValue: {
+      default: null
+    },
+    defaultCompositeSecondValue: {
+      default: null
+    },
     defaultDate: {
       required: false
     }
@@ -358,7 +402,9 @@ export default {
       filterChecked = this.value.selectValue === '' ? [] : this.value.selectValue.split(',')
     }
     const filteredSingleValue =
-      this.filterableType === 'singleSelect' ? this.value.selectValue || null : null
+      ['singleSelect', 'compositeSelect'].includes(this.filterableType)
+        ? this.value.selectValue || this.defaultFilterValue || null
+        : null
     return {
       isCloseOnClick: true,
       status: false,
@@ -366,7 +412,7 @@ export default {
       menu: null,
       btnKeySafariFix: `btn-key-${createRandomCryptStringNumber()}`,
       isFilterActive:
-        ['select', 'singleSelect'].includes(this.filterableType)
+        ['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)
           ? !!this.value.selectValue
           : !!this.value.textValue,
       filteredSingleValue,
@@ -432,6 +478,7 @@ export default {
           show: this.filterableOptions.between
         }
       ],
+      compositeSecondValue: this.defaultCompositeSecondValue || null,
       pickerOptions: {},
       convertedFilterableItems: []
     }
@@ -445,10 +492,17 @@ export default {
     },
     getFilterButtonDisabled() {
       this.btnKeySafariFix = `btn-key-${createRandomCryptStringNumber()}`
+    },
+    filterableItems(newItems) {
+      if (['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)) {
+        this.convertedFilterableItems = newItems.map((x) =>
+          typeof x === 'string' ? { text: x, value: x } : { text: x.text, value: x.value }
+        )
+      }
     }
   },
   created() {
-    if (['select', 'singleSelect'].includes(this.filterableType)) {
+    if (['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)) {
       this.filterableItems.forEach((x) => {
         this.convertedFilterableItems.push(
           typeof x == 'string' ? { text: x, value: x } : { text: x.text, value: x.value }
@@ -556,6 +610,7 @@ export default {
       this.filteredSelectValueNum = '='
       this.filteredSelectValueNumber = '='
       this.filteredSingleValue = null
+      this.compositeSecondValue = null
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })
@@ -654,6 +709,24 @@ export default {
         })
         this.emitValue(this.filteredSingleValue, this.filteredSingleValue, this.fieldName)
       }
+      if (this.filterableType === 'compositeSelect') {
+        const items = [
+          {
+            Value: this.filteredSingleValue,
+            FieldName: this.fieldName,
+            Operator: '='
+          }
+        ]
+        if (this.compositeSecondValue && this.compositeSecondFieldName) {
+          items.push({
+            Value: this.compositeSecondValue,
+            FieldName: this.compositeSecondFieldName,
+            Operator: 'Include'
+          })
+        }
+        this.$emit('handleFilterColumn', items)
+        this.emitValue(this.filteredSingleValue, this.filteredSingleValue, this.fieldName)
+      }
     }
   },
   computed: {
@@ -693,6 +766,9 @@ export default {
         return !this?.filterChecked?.length
       }
       if (this.filterableType === 'singleSelect') {
+        return !this.filteredSingleValue
+      }
+      if (this.filterableType === 'compositeSelect') {
         return !this.filteredSingleValue
       }
       if (this.filterableType === 'numeric') {
