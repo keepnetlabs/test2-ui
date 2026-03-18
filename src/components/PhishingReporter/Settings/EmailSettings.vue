@@ -9,81 +9,74 @@
           >Email Settings
         </v-list-item-title>
         <v-list-item-subtitle class="email-settings__list-item--text email-settings__sub-header"
-          >Send a copy of reported emails as attachment
+          >Configure how reported emails are processed and shared.
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-form class="email-settings__form" ref="refForm" lazy-validation>
-      <FormGroup
-        class="mt-6"
-        title="Send Us a Copy"
-        sub-title="Controls whether reported emails, excluding those sent by the platform, are also sent to the platform for review."
-      >
-        <div class="email-settings__information mb-0" style="background-color: #F2F2F2;">
+      <!-- Platform Email Analysis -->
+      <div class="email-settings__card mt-6">
+        <div class="email-settings__card-title">Platform Email Analysis</div>
+        <div class="email-settings__card-subtitle">
+          Automatically analyze reported emails with Incident Responder.
+        </div>
+        <div class="email-settings__information mt-4 mb-0">
           <div>
-            <v-switch
-              v-model="formValues.sendUsACopy"
-              id="input--phishing-reporter-is-send-copy"
-              color="#2196f3"
-              hide-details
-              style="margin-top: -2px;"
-              :readonly="!showForm"
-            ></v-switch>
+            <VIcon color="#2196f3">mdi-alert-circle</VIcon>
           </div>
-          <div class="email-settings__information-text fw-600 fs-3-4 d-flex align-center">
-            The platform will
-            {{ formValues.sendUsACopy ? 'receive' : 'not receive' }} copies of reported emails.
+          <div class="email-settings__information-text">
+            Platform emails (simulations, trainings, notifications) are always reportable for metrics.
           </div>
         </div>
-        <div
-          v-if="getIncidentResponderNotifiedEmailPermission"
-          class="email-settings__information mt-2 mb-0"
-          style="background-color: rgba(230, 162, 60, 0.2);"
-        >
-          <div>
-            <VIcon color="#B6791D">mdi-alert</VIcon>
-          </div>
-          <div class="email-settings__information-text flex-column align-start justify-start">
-            <div class="fw-600 fs-3-4">Important Incident Responder Notice</div>
-            <div>
-              {{ getImportantIncidentResponderNoticeText }}
+        <div class="email-settings__switch-row mt-4">
+          <v-tooltip bottom :disabled="getIncidentResponderNotifiedEmailPermission" max-width="290">
+            <template v-slot:activator="{ on, attrs }">
+              <div v-bind="attrs" v-on="on">
+                <v-switch
+                  v-model="sendUsACopyModel"
+                  id="input--phishing-reporter-is-send-copy"
+                  color="#2196f3"
+                  hide-details
+                  :disabled="!getIncidentResponderNotifiedEmailPermission"
+                  :readonly="!showForm"
+                ></v-switch>
+              </div>
+            </template>
+            <span>An Incident Responder license is required. Your company must purchase it to access this feature.</span>
+          </v-tooltip>
+          <div class="email-settings__switch-content">
+            <div class="email-settings__switch-label">
+              Send reported emails to platform for analysis
+            </div>
+            <div class="email-settings__switch-description">
+              Reported emails are analyzed using your configured integrations, rules, and playbooks.
             </div>
           </div>
         </div>
-      </FormGroup>
-      <FormGroup
-        class="mt-6"
-        title="Microsoft 365 Defender Integration"
-        sub-title="Submit reported emails to Microsoft Defender (Submissions → User reported)."
-      >
-        <div class="email-settings__information email-settings__defender-toggle mb-0" style="background-color: #F2F2F2;">
-          <div>
-            <v-switch
-              v-model="formValues.isMicrosoftDefenderIntegrationEnabled"
-              id="input--phishing-reporter-microsoft-defender-integration"
-              color="#2196f3"
-              hide-details
-              style="margin-top: -2px;"
-              :readonly="!showForm"
-            ></v-switch>
-          </div>
-          <div class="email-settings__defender-status d-flex flex-column align-start">
-            <span class="email-settings__defender-status-title">
-              Integration is {{ formValues.isMicrosoftDefenderIntegrationEnabled ? 'enabled' : 'disabled' }}.
-            </span>
-            <span class="email-settings__defender-status-subtitle">
-              {{
-                formValues.isMicrosoftDefenderIntegrationEnabled
-                  ? 'Reported emails are submitted to Microsoft Defender.'
-                  : 'Reported emails are not submitted to Microsoft Defender.'
-              }}
-            </span>
+      </div>
+      <!-- Microsoft 365 Defender Integration -->
+      <div :class="['email-settings__card mt-6', { 'email-settings__card--expanded': formValues.isMicrosoftDefenderIntegrationEnabled }]">
+        <div class="email-settings__card-title">Microsoft 365 Defender Integration</div>
+        <div class="email-settings__card-subtitle">
+          Forward reported emails to Microsoft 365 Defender for additional analysis.
+        </div>
+        <div class="email-settings__switch-row mt-4">
+          <v-switch
+            v-model="formValues.isMicrosoftDefenderIntegrationEnabled"
+            id="input--phishing-reporter-microsoft-defender-integration"
+            color="#2196f3"
+            hide-details
+            :readonly="!showForm"
+          ></v-switch>
+          <div class="email-settings__switch-content">
+            <div class="email-settings__switch-label">
+              Forward reported emails to Microsoft 365 Defender
+            </div>
           </div>
         </div>
         <div
           v-if="formValues.isMicrosoftDefenderIntegrationEnabled"
-          class="email-settings__information mt-2 mb-0"
-          style="background-color: rgba(33, 150, 243, 0.15);"
+          class="email-settings__information mt-4 mb-0"
         >
           <div>
             <VIcon color="#2196f3">mdi-alert-circle</VIcon>
@@ -110,119 +103,91 @@
             :readonly="!showForm"
           />
         </FormGroup>
-      </FormGroup>
-      <FormGroup
-        :class="formValues.isMicrosoftDefenderIntegrationEnabled ? 'mt-2' : 'mt-6'"
-        title="Information Email"
-      >
-        <v-checkbox
-          v-model="formValues.isSendInformationEmail"
-          id="input--phishing-reporter-is-send-email"
-          class="other-settings__checkbox k-checkbox my-2"
-          color="#2196f3"
-          label="Send information email for reported incidents"
-          :readonly="!showForm"
-          hide-details
-        ></v-checkbox>
-      </FormGroup>
-      <div class="email-settings__information">
-        <div>
-          <VIcon color="#2196f3">mdi-alert-circle</VIcon>
-        </div>
-        <div class="email-settings__information-text">
-          System users are notified automatically. Enable the checkbox to notify the addresses
-          below.
-        </div>
       </div>
-      <div v-if="formValues.isSendInformationEmail">
-        <FormGroup title="Recipient Email Address" :has-hint="isRecipientEmailRequired">
-          <InputEmail
-            v-model.trim="formValues.to"
-            id="input--phishing-reporter-recipient-email-address"
-            :required="isRecipientEmailRequired"
-            :persistent-hint="isRecipientEmailRequired"
-            :hint="recipientEmailHint"
-            :rules="recipientEmailRules"
+      <!-- Team Alerts -->
+      <div :class="['email-settings__card mt-6', { 'email-settings__card--expanded': formValues.isSendInformationEmail }]">
+        <div class="email-settings__card-title">Team Alerts</div>
+        <div class="email-settings__card-subtitle">
+          Alert your security teams when phishing is reported so they can investigate and respond.
+        </div>
+        <div class="email-settings__switch-row mt-4">
+          <v-switch
+            v-model="formValues.isSendInformationEmail"
+            id="input--phishing-reporter-is-send-email"
+            color="#2196f3"
+            hide-details
             :readonly="!showForm"
-          />
-        </FormGroup>
-        <v-list-item class="px-0 email-settings__list-item">
-          <v-list-item-content>
-            <label
-              for="input--phishing-reporter-cc-email-address"
-              class="email-settings__list-item--header"
-              >CC</label
-            >
-            <InputEmail
-              v-model.trim="formValues.cc"
-              id="input--phishing-reporter-cc-email-address"
-              class="k-textfield mt-2"
-              :persistent-hint="false"
-              :required="false"
-              :hint="null"
-              :rules="ccEmailRules"
-              :readonly="!showForm"
-            />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0 email-settings__list-item">
-          <v-list-item-content>
-            <label
-              for="input--phishing-reporter-bcc-email-address"
-              class="email-settings__list-item--header"
-              >BCC</label
-            >
-            <InputEmail
-              v-model.trim="formValues.bcc"
-              id="input--phishing-reporter-bcc-email-address"
-              class="k-textfield mt-2"
-              :readonly="!showForm"
-              :persistent-hint="false"
-              :required="false"
-              :hint="null"
-              :rules="ccEmailRules"
-            />
-          </v-list-item-content>
-        </v-list-item>
-        <FormGroup
-          title="Email Subject"
-          sub-title="Define a subject for reported email notifications. Use {SUBJECT} merge tag as a variable for reported emails' subject"
-          :has-hint="isRecipientEmailRequired"
-        >
+          ></v-switch>
+          <div class="email-settings__switch-content">
+            <div class="email-settings__switch-label">
+              Send information email for reported incidents
+            </div>
+          </div>
+        </div>
+        <div v-if="formValues.isSendInformationEmail" class="mt-4">
+        <InputEmail
+          v-model.trim="formValues.to"
+          id="input--phishing-reporter-recipient-email-address"
+          label="Primary Recipient"
+          persistent-placeholder
+          :required="isRecipientEmailRequired"
+          :persistent-hint="isRecipientEmailRequired"
+          :hint="recipientEmailHint"
+          :rules="recipientEmailRules"
+          :readonly="!showForm"
+        />
+        <InputEmail
+          v-model.trim="formValues.cc"
+          id="input--phishing-reporter-cc-email-address"
+          label="CC"
+          persistent-placeholder
+          :persistent-hint="false"
+          :required="false"
+          :hint="null"
+          :rules="ccEmailRules"
+          :readonly="!showForm"
+        />
+        <InputEmail
+          v-model.trim="formValues.bcc"
+          id="input--phishing-reporter-bcc-email-address"
+          label="BCC"
+          persistent-placeholder
+          :readonly="!showForm"
+          :persistent-hint="false"
+          :required="false"
+          :hint="null"
+          :rules="ccEmailRules"
+        />
+        <div class="email-settings__subject-field">
           <InputEmail
             v-model.trim="formValues.subject"
             id="input--phishing-reporter-email-subject"
+            label="Email Subject"
             placeholder="Suspicious Email: {SUBJECT}"
+            persistent-placeholder
             :required="isRecipientEmailRequired"
             :persistent-hint="isRecipientEmailRequired"
             :hint="recipientEmailHint"
             :rules="emailSubjectRules"
             :readonly="!showForm"
           />
-        </FormGroup>
-        <v-list-item class="px-0 email-settings__list-item">
-          <v-list-item-content>
-            <label
-              for="input--phishing-reporter-recipient-email-message"
-              class="email-settings__list-item--header"
-              >Email Message</label
-            >
-            <v-textarea
-              v-model.trim="formValues.content"
-              placeholder="Please investigate the attached email"
-              id="input--phishing-reporter-recipient-email-message"
-              outlined
-              dense
-              no-resize
-              class="mt-2"
-              :required="isRecipientEmailRequired"
-              :persistent-hint="isRecipientEmailRequired"
-              :hint="recipientEmailHint"
-              :rules="emailMessageRules"
-              :readonly="!showForm"
-            ></v-textarea>
-          </v-list-item-content>
-        </v-list-item>
+          <div class="email-settings__subject-helper">
+            Use {SUBJECT} merge tag as a variable for reported emails' subject
+          </div>
+        </div>
+        <InputEmail
+          v-model.trim="formValues.content"
+          placeholder="Please investigate the attached email"
+          id="input--phishing-reporter-recipient-email-message"
+          label="Email Message"
+          persistent-placeholder
+          :required="isRecipientEmailRequired"
+          :persistent-hint="isRecipientEmailRequired"
+          :hint="recipientEmailHint"
+          :rules="emailMessageRules"
+          :readonly="!showForm"
+        />
+      </div>
       </div>
       <phishing-settings-footer
         v-if="showFooter"
@@ -314,12 +279,14 @@ export default {
       getIncidentResponderNotifiedEmailPermission:
         'permissions/getIncidentResponderNotifiedEmailPermission'
     }),
-    getImportantIncidentResponderNoticeText() {
-      return this.formValues.sendUsACopy
-        ? 'This setting is enabled, allowing analysis and response to reported threats.'
-        : 'This setting is disabled, preventing analysis and response to reported threats.'
+    sendUsACopyModel: {
+      get() {
+        return this.getIncidentResponderNotifiedEmailPermission ? this.formValues.sendUsACopy : false
+      },
+      set(val) {
+        this.formValues.sendUsACopy = val
+      }
     },
-
     isRecipientEmailRequired() {
       return this.showForm ? !!this.formValues.isSendInformationEmail : false
     },

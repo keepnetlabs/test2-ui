@@ -27,20 +27,46 @@ describe('EmailSettings.vue (extra coverage)', () => {
       stubs: { FormGroup: true, InputEmail: true, PhishingSettingsFooter: true }
     })
 
-  it('getImportantIncidentResponderNoticeText when sendUsACopy is true', () => {
-    const wrapper = createWrapper()
-    wrapper.setData({
-      formValues: { ...wrapper.vm.formValues, sendUsACopy: true }
+  describe('sendUsACopyModel', () => {
+    it('returns false when permission is false regardless of sendUsACopy value', () => {
+      const wrapper = createWrapper({}, {
+        'permissions/getIncidentResponderNotifiedEmailPermission': false
+      })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, sendUsACopy: true }
+      })
+      expect(wrapper.vm.sendUsACopyModel).toBe(false)
     })
-    expect(wrapper.vm.getImportantIncidentResponderNoticeText).toContain('enabled')
-  })
 
-  it('getImportantIncidentResponderNoticeText when sendUsACopy is false', () => {
-    const wrapper = createWrapper()
-    wrapper.setData({
-      formValues: { ...wrapper.vm.formValues, sendUsACopy: false }
+    it('returns formValues.sendUsACopy when permission is true', () => {
+      const wrapper = createWrapper({}, {
+        'permissions/getIncidentResponderNotifiedEmailPermission': true
+      })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, sendUsACopy: true }
+      })
+      expect(wrapper.vm.sendUsACopyModel).toBe(true)
     })
-    expect(wrapper.vm.getImportantIncidentResponderNoticeText).toContain('disabled')
+
+    it('returns false when permission is true and sendUsACopy is false', () => {
+      const wrapper = createWrapper({}, {
+        'permissions/getIncidentResponderNotifiedEmailPermission': true
+      })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, sendUsACopy: false }
+      })
+      expect(wrapper.vm.sendUsACopyModel).toBe(false)
+    })
+
+    it('setter updates formValues.sendUsACopy', () => {
+      const wrapper = createWrapper({}, {
+        'permissions/getIncidentResponderNotifiedEmailPermission': true
+      })
+      wrapper.vm.sendUsACopyModel = false
+      expect(wrapper.vm.formValues.sendUsACopy).toBe(false)
+      wrapper.vm.sendUsACopyModel = true
+      expect(wrapper.vm.formValues.sendUsACopy).toBe(true)
+    })
   })
 
   it('isRecipientEmailRequired is true when showForm and isSendInformationEmail', () => {
@@ -143,6 +169,39 @@ describe('EmailSettings.vue (extra coverage)', () => {
       expect(wrapper.vm.defenderEmailHint).toBeNull()
     })
 
+    it('defenderEmailHint returns null when showForm is false', () => {
+      const wrapper = createWrapper({ showForm: false })
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          isMicrosoftDefenderIntegrationEnabled: true
+        }
+      })
+      expect(wrapper.vm.defenderEmailHint).toBeNull()
+    })
+
+    it('isDefenderEmailRequired is false when showForm is false', () => {
+      const wrapper = createWrapper({ showForm: false })
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          isMicrosoftDefenderIntegrationEnabled: true
+        }
+      })
+      expect(wrapper.vm.isDefenderEmailRequired).toBe(false)
+    })
+
+    it('defenderEmailRules returns empty when showForm is false', () => {
+      const wrapper = createWrapper({ showForm: false })
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          isMicrosoftDefenderIntegrationEnabled: true
+        }
+      })
+      expect(wrapper.vm.defenderEmailRules).toEqual([])
+    })
+
     it('defenderEmailRules returns rules when integration enabled', () => {
       const wrapper = createWrapper({ showForm: true })
       wrapper.setData({
@@ -204,6 +263,15 @@ describe('EmailSettings.vue (extra coverage)', () => {
       const result = wrapper.vm.validateDefenderEmailNotSameAsInformationEmail('defender@email.com')
       expect(result).toBe(true)
     })
+
+    it('returns true when defender value is null', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, to: 'test@email.com' }
+      })
+      const result = wrapper.vm.validateDefenderEmailNotSameAsInformationEmail(null)
+      expect(result).toBe(true)
+    })
   })
 
   describe('validateInformationEmailNotSameAsDefenderEmail', () => {
@@ -245,6 +313,59 @@ describe('EmailSettings.vue (extra coverage)', () => {
       })
       const result = wrapper.vm.validateInformationEmailNotSameAsDefenderEmail('info@email.com')
       expect(result).toBe(true)
+    })
+
+    it('returns true when defender email is empty', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          defenderReportingEmailAddress: '',
+          isMicrosoftDefenderIntegrationEnabled: true
+        }
+      })
+      const result = wrapper.vm.validateInformationEmailNotSameAsDefenderEmail('info@email.com')
+      expect(result).toBe(true)
+    })
+
+    it('returns true when info value is null', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          defenderReportingEmailAddress: 'defender@email.com',
+          isMicrosoftDefenderIntegrationEnabled: true
+        }
+      })
+      const result = wrapper.vm.validateInformationEmailNotSameAsDefenderEmail(null)
+      expect(result).toBe(true)
+    })
+  })
+
+  describe('recipientEmailRules when showForm is true', () => {
+    it('includes required rule when isSendInformationEmail is true', () => {
+      const wrapper = createWrapper({ showForm: true })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, isSendInformationEmail: true }
+      })
+      const rules = wrapper.vm.recipientEmailRules
+      expect(rules.length).toBe(5)
+    })
+
+    it('excludes required rule when isSendInformationEmail is false', () => {
+      const wrapper = createWrapper({ showForm: true })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, isSendInformationEmail: false }
+      })
+      const rules = wrapper.vm.recipientEmailRules
+      expect(rules.length).toBe(4)
+    })
+  })
+
+  describe('ccEmailRules when showForm is true', () => {
+    it('returns 3 validation rules', () => {
+      const wrapper = createWrapper({ showForm: true })
+      expect(wrapper.vm.ccEmailRules.length).toBe(3)
     })
   })
 
@@ -297,7 +418,16 @@ describe('EmailSettings.vue (extra coverage)', () => {
         formValues: { ...wrapper.vm.formValues, isSendInformationEmail: true }
       })
       const rules = wrapper.vm.emailMessageRules
-      expect(rules.length).toBeGreaterThan(1)
+      expect(rules.length).toBe(2)
+    })
+
+    it('excludes required when isSendInformationEmail is false', () => {
+      const wrapper = createWrapper({ showForm: true })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, isSendInformationEmail: false }
+      })
+      const rules = wrapper.vm.emailMessageRules
+      expect(rules.length).toBe(1)
     })
   })
 
@@ -313,15 +443,26 @@ describe('EmailSettings.vue (extra coverage)', () => {
   })
 
   describe('getIncidentResponderNotifiedEmailPermission', () => {
-    it('getImportantIncidentResponderNoticeText when permission is true', () => {
+    it('sendUsACopyModel reflects sendUsACopy when permission is true', () => {
       const wrapper = createWrapper({}, {
         'permissions/getIncidentResponderNotifiedEmailPermission': true
       })
       wrapper.setData({
         formValues: { ...wrapper.vm.formValues, sendUsACopy: true }
       })
-      expect(wrapper.vm.getImportantIncidentResponderNoticeText).toContain('enabled')
-      expect(wrapper.vm.getImportantIncidentResponderNoticeText).toContain('analysis')
+      expect(wrapper.vm.sendUsACopyModel).toBe(true)
+      expect(wrapper.vm.getIncidentResponderNotifiedEmailPermission).toBe(true)
+    })
+
+    it('sendUsACopyModel is forced false when permission is false', () => {
+      const wrapper = createWrapper({}, {
+        'permissions/getIncidentResponderNotifiedEmailPermission': false
+      })
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, sendUsACopy: true }
+      })
+      expect(wrapper.vm.sendUsACopyModel).toBe(false)
+      expect(wrapper.vm.getIncidentResponderNotifiedEmailPermission).toBe(false)
     })
   })
 
@@ -341,6 +482,50 @@ describe('EmailSettings.vue (extra coverage)', () => {
       const wrapper = createWrapper({ formData })
       expect(wrapper.vm.formValues.isMicrosoftDefenderIntegrationEnabled).toBe(true)
       expect(wrapper.vm.formValues.defenderReportingEmailAddress).toBe('defender@test.com')
+    })
+
+    it('handles nullish formData fields with fallback defaults', () => {
+      const formData = {
+        to: null,
+        cc: null,
+        bcc: null,
+        subject: null,
+        content: null,
+        isSendInformationEmail: false,
+        sendUsACopy: true,
+        isMicrosoftDefenderIntegrationEnabled: undefined,
+        defenderReportingEmailAddress: null
+      }
+      const wrapper = createWrapper({ formData })
+      expect(wrapper.vm.formValues.to).toBe('')
+      expect(wrapper.vm.formValues.cc).toBe('')
+      expect(wrapper.vm.formValues.bcc).toBe('')
+      expect(wrapper.vm.formValues.subject).toBe('')
+      expect(wrapper.vm.formValues.content).toBe('')
+      expect(wrapper.vm.formValues.isMicrosoftDefenderIntegrationEnabled).toBe(false)
+      expect(wrapper.vm.formValues.defenderReportingEmailAddress).toBe('')
+    })
+
+    it('initializes all fields from complete formData', () => {
+      const formData = {
+        to: 'to@test.com',
+        cc: 'cc@test.com',
+        bcc: 'bcc@test.com',
+        subject: 'Test Subject',
+        content: 'Test Content',
+        isSendInformationEmail: true,
+        sendUsACopy: false,
+        isMicrosoftDefenderIntegrationEnabled: true,
+        defenderReportingEmailAddress: 'defender@test.com'
+      }
+      const wrapper = createWrapper({ formData })
+      expect(wrapper.vm.formValues.to).toBe('to@test.com')
+      expect(wrapper.vm.formValues.cc).toBe('cc@test.com')
+      expect(wrapper.vm.formValues.bcc).toBe('bcc@test.com')
+      expect(wrapper.vm.formValues.subject).toBe('Test Subject')
+      expect(wrapper.vm.formValues.content).toBe('Test Content')
+      expect(wrapper.vm.formValues.isSendInformationEmail).toBe(true)
+      expect(wrapper.vm.formValues.sendUsACopy).toBe(false)
     })
   })
 
@@ -427,6 +612,17 @@ describe('EmailSettings.vue (extra coverage)', () => {
       expect(wrapper.emitted('formValuesChanged')[0][0]).toMatchObject({ to: 'changed@test.com' })
     })
 
+    it('does not emit formValuesChanged when values match initialFormValues', async () => {
+      const wrapper = createWrapper()
+      await wrapper.vm.$nextTick()
+      const emittedBefore = (wrapper.emitted('formValuesChanged') || []).length
+      wrapper.setData({
+        formValues: { ...wrapper.vm.initialFormValues }
+      })
+      await wrapper.vm.$nextTick()
+      const emittedAfter = (wrapper.emitted('formValuesChanged') || []).length
+      expect(emittedAfter).toBe(emittedBefore)
+    })
   })
 
   describe('formData watcher', () => {
@@ -458,6 +654,26 @@ describe('EmailSettings.vue (extra coverage)', () => {
       expect(() => {
         wrapper.vm.$options.watch.formData.handler.call(wrapper.vm, null)
       }).not.toThrow()
+    })
+
+    it('handles partial formData with fallback defaults', async () => {
+      const wrapper = createWrapper()
+      const formData = {
+        to: null,
+        cc: undefined,
+        bcc: '',
+        subject: null,
+        content: null,
+        defenderReportingEmailAddress: null
+      }
+      wrapper.setProps({ formData })
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.formValues.to).toBe('')
+      expect(wrapper.vm.formValues.cc).toBe('')
+      expect(wrapper.vm.formValues.bcc).toBe('')
+      expect(wrapper.vm.formValues.subject).toBe('')
+      expect(wrapper.vm.formValues.content).toBe('')
+      expect(wrapper.vm.formValues.defenderReportingEmailAddress).toBe('')
     })
 
     it('clears defenderReportingEmailAddress when integration disabled', async () => {
