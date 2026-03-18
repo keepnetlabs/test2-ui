@@ -558,6 +558,24 @@ describe('DataTableSmallBadge.vue', () => {
     })
   })
 
+  describe('badgeColor support', () => {
+    it('uses default color #2196f3 when badgeColor not set', () => {
+      const wrapper = mountComponent({
+        scope: { row: { tags: ['Tag1'] }, column: { width: 200 } },
+        col: { property: 'tags', label: 'Tags' }
+      })
+      expect(wrapper.vm.col.badgeColor).toBeUndefined()
+    })
+
+    it('accepts custom badgeColor from col prop', () => {
+      const wrapper = mountComponent({
+        scope: { row: { tags: ['Tag1'] }, column: { width: 200 } },
+        col: { property: 'tags', label: 'Tags', badgeColor: '#757575' }
+      })
+      expect(wrapper.vm.col.badgeColor).toBe('#757575')
+    })
+  })
+
   describe('Multiple Instances', () => {
     it('should support multiple badge instances', () => {
       const wrapper1 = mountComponent({
