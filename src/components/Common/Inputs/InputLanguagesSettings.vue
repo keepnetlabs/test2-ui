@@ -287,7 +287,7 @@
         </template>
         <span>Simulation Link</span>
       </VTooltip>
-      <VTooltip v-if="showRedFlags" bottom max-width="142">
+      <VTooltip bottom :max-width="showRedFlags ? 142 : undefined">
         <template #activator="{ on }">
           <div v-on="on">
             <VIcon
@@ -300,20 +300,7 @@
             >
           </div>
         </template>
-        <span>To use this action, first hide the Red Flag.</span>
-      </VTooltip>
-      <VTooltip v-else bottom>
-        <template #activator="{ on }">
-          <VIcon
-            v-on="on"
-            color="#2196f3"
-            class="executive-reports-card__right-btn"
-            small
-            @click="handleEditModeClick"
-            >mdi-pencil</VIcon
-          >
-        </template>
-        <span>Edit</span>
+        <span>{{ showRedFlags ? 'To use this action, first hide the Red Flag.' : 'Edit' }}</span>
       </VTooltip>
       <VMenu
         v-if="!isNotificationTemplate"

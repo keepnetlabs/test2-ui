@@ -429,4 +429,129 @@ describe('DataTableFilter.vue', () => {
 
     expect(clearSpy).toHaveBeenCalled()
   })
+
+  describe('compositeSelect', () => {
+    const mountComposite = (overrides = {}) =>
+      mountComponent({
+        filterableType: 'compositeSelect',
+        column: { property: 'monthlyConsumption' },
+        filterableCustomFieldName: 'TrainingConsumptionMonth',
+        filterableItems: [
+          { text: 'March 2026 (Current)', value: '2026-03' },
+          { text: 'February 2026', value: '2026-02' }
+        ],
+        compositeSecondItems: [
+          { text: 'All Status', value: '1,2' },
+          { text: 'In Progress', value: '2' },
+          { text: 'Completed', value: '1' }
+        ],
+        compositeSecondFieldName: 'TrainingConsumptionStatus',
+        ...overrides
+      })
+
+    it('converts filterableItems on created', () => {
+      const wrapper = mountComposite()
+      expect(wrapper.vm.convertedFilterableItems).toEqual([
+        { text: 'March 2026 (Current)', value: '2026-03' },
+        { text: 'February 2026', value: '2026-02' }
+      ])
+    })
+
+    it('initializes filteredSingleValue from defaultFilterValue', () => {
+      const wrapper = mountComposite({ defaultFilterValue: '2026-03' })
+      expect(wrapper.vm.filteredSingleValue).toBe('2026-03')
+    })
+
+    it('initializes compositeSecondValue from defaultCompositeSecondValue', () => {
+      const wrapper = mountComposite({ defaultCompositeSecondValue: '1,2' })
+      expect(wrapper.vm.compositeSecondValue).toBe('1,2')
+    })
+
+    it('handleFilter emits array with month and status items', () => {
+      const wrapper = mountComposite()
+      wrapper.vm.filteredSingleValue = '2026-03'
+      wrapper.vm.compositeSecondValue = '1'
+
+      wrapper.vm.handleFilter()
+
+      const emitted = wrapper.emitted('handleFilterColumn')[0][0]
+      expect(Array.isArray(emitted)).toBe(true)
+      expect(emitted).toEqual([
+        { Value: '2026-03', FieldName: 'TrainingConsumptionMonth', Operator: '=' },
+        { Value: '1', FieldName: 'TrainingConsumptionStatus', Operator: 'Include' }
+      ])
+    })
+
+    it('handleFilter emits only month when compositeSecondValue is null', () => {
+      const wrapper = mountComposite()
+      wrapper.vm.filteredSingleValue = '2026-03'
+      wrapper.vm.compositeSecondValue = null
+
+      wrapper.vm.handleFilter()
+
+      const emitted = wrapper.emitted('handleFilterColumn')[0][0]
+      expect(emitted).toEqual([
+        { Value: '2026-03', FieldName: 'TrainingConsumptionMonth', Operator: '=' }
+      ])
+    })
+
+    it('getFilterButtonDisabled returns true when filteredSingleValue is null', () => {
+      const wrapper = mountComposite()
+      wrapper.vm.filteredSingleValue = null
+      expect(wrapper.vm.getFilterButtonDisabled).toBe(true)
+    })
+
+    it('getFilterButtonDisabled returns false when filteredSingleValue is set', () => {
+      const wrapper = mountComposite()
+      wrapper.vm.filteredSingleValue = '2026-03'
+      expect(wrapper.vm.getFilterButtonDisabled).toBe(false)
+    })
+
+    it('clearFilter resets compositeSecondValue', () => {
+      const wrapper = mountComposite()
+      wrapper.vm.compositeSecondValue = '1'
+      wrapper.vm.filteredSingleValue = '2026-03'
+
+      wrapper.vm.clearFilter()
+
+      expect(wrapper.vm.compositeSecondValue).toBeNull()
+      expect(wrapper.vm.filteredSingleValue).toBeNull()
+    })
+  })
+
+  describe('filterableItems watcher', () => {
+    it('updates convertedFilterableItems when filterableItems prop changes', async () => {
+      const wrapper = mountComponent({
+        filterableType: 'select',
+        filterableItems: []
+      })
+      expect(wrapper.vm.convertedFilterableItems).toEqual([])
+
+      await wrapper.setProps({
+        filterableItems: [{ text: 'New', value: 'new' }]
+      })
+
+      expect(wrapper.vm.convertedFilterableItems).toEqual([{ text: 'New', value: 'new' }])
+    })
+  })
+
+  describe('defaultFilterValue', () => {
+    it('initializes filteredSingleValue from defaultFilterValue when no saved value', () => {
+      const wrapper = mountComponent({
+        filterableType: 'singleSelect',
+        defaultFilterValue: '2026-03',
+        value: { textValue: '', selectValue: '' }
+      })
+      expect(wrapper.vm.filteredSingleValue).toBe('2026-03')
+    })
+
+    it('saved selectValue takes precedence over defaultFilterValue', () => {
+      const wrapper = mountComponent({
+        filterableType: 'singleSelect',
+        defaultFilterValue: '2026-03',
+        value: { textValue: '', selectValue: '2026-02' }
+      })
+      expect(wrapper.vm.filteredSingleValue).toBe('2026-02')
+    })
+  })
 })
