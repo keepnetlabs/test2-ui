@@ -13,7 +13,7 @@
         v-for="index in (maximumRenderedBadgeCount)"
         v-bind="col.props"
         :key="getKey(index)"
-        :color="'#2196f3'"
+        :color="col.badgeColor || '#2196f3'"
         :full-width="col.fullWidth"
         size="small"
         :text="badges[index - 1]"
@@ -21,7 +21,7 @@
       <v-tooltip bottom v-if="unRenderedBadgeCount > 0" :key="getKey(Math.random())">
         <template v-slot:activator="{ on }">
           <badge
-            :color="'#2196f3'"
+            :color="col.badgeColor || '#2196f3'"
             :full-width="col.fullWidth"
             :listeners="on"
             size="mini"
