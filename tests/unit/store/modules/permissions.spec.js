@@ -153,6 +153,9 @@ describe('permissions.js store module', () => {
         getEmailTemplatesCreatePermissions(state) {
           return state?.emailTemplatesPermissions?.CREATE?.hasPermission
         },
+        getEmailTemplatesAIGenerationOptionsPermissions(state) {
+          return state?.emailTemplatesPermissions?.AI_GENERATION_OPTIONS?.hasPermission
+        },
         getLandingPageTemplatesSearchPermissions(state) {
           return state?.landingPageTemplatesPermissions?.SEARCH?.hasPermission
         },
@@ -188,6 +191,9 @@ describe('permissions.js store module', () => {
         },
         getIntegrationPermissions(state) {
           return state?.integrationPermissions
+        },
+        getGamificationReportFormDetailsPermissions(state) {
+          return state?.gamificationReportPermissions?.FORM_DETAILS?.hasPermission
         }
       },
       mutations: {
@@ -305,6 +311,44 @@ describe('permissions.js store module', () => {
         CREATE: { hasPermission: false }
       }
       expect(permissionsStore.getters.getEmailTemplatesCreatePermissions(state)).toBe(false)
+    })
+
+    it('getEmailTemplatesAIGenerationOptionsPermissions returns true when permitted', () => {
+      state.emailTemplatesPermissions = {
+        AI_GENERATION_OPTIONS: { hasPermission: true }
+      }
+      expect(permissionsStore.getters.getEmailTemplatesAIGenerationOptionsPermissions(state)).toBe(true)
+    })
+
+    it('getEmailTemplatesAIGenerationOptionsPermissions returns false when not permitted', () => {
+      state.emailTemplatesPermissions = {
+        AI_GENERATION_OPTIONS: { hasPermission: false }
+      }
+      expect(permissionsStore.getters.getEmailTemplatesAIGenerationOptionsPermissions(state)).toBe(false)
+    })
+
+    it('getEmailTemplatesAIGenerationOptionsPermissions returns undefined when missing', () => {
+      state.emailTemplatesPermissions = {}
+      expect(permissionsStore.getters.getEmailTemplatesAIGenerationOptionsPermissions(state)).toBeUndefined()
+    })
+
+    it('getGamificationReportFormDetailsPermissions returns true when permitted', () => {
+      state.gamificationReportPermissions = {
+        FORM_DETAILS: { hasPermission: true }
+      }
+      expect(permissionsStore.getters.getGamificationReportFormDetailsPermissions(state)).toBe(true)
+    })
+
+    it('getGamificationReportFormDetailsPermissions returns false when not permitted', () => {
+      state.gamificationReportPermissions = {
+        FORM_DETAILS: { hasPermission: false }
+      }
+      expect(permissionsStore.getters.getGamificationReportFormDetailsPermissions(state)).toBe(false)
+    })
+
+    it('getGamificationReportFormDetailsPermissions returns undefined when missing', () => {
+      state.gamificationReportPermissions = {}
+      expect(permissionsStore.getters.getGamificationReportFormDetailsPermissions(state)).toBeUndefined()
     })
 
     it('getDomainCreatePermissions returns hasPermission', () => {

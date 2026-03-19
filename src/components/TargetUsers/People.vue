@@ -376,17 +376,19 @@
       </template>
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
-          :icon="tableOptions.rowActions[0].icon"
-          :id="tableOptions.rowActions[0].id"
-          :text="tableOptions.rowActions[0].name"
+          :icon="userTimelineAction.icon"
+          :id="userTimelineAction.id"
+          :text="userTimelineAction.name"
           :scope="scope"
           :disabled="
-            tableOptions.rowActions[0].disabled || isRowTypeDeleted(scope.row)
+            userTimelineAction.disabled || isRowTypeDeleted(scope.row)
           "
           :disabledTooltipText="
             isRowTypeDeleted(scope.row)
               ? getDeletedRowActionsTooltipText()
-              : null
+              : userTimelineAction.disabled
+                ? 'You are not authorized to view user activity timeline'
+                : null
           "
           @on-click="handleUserTimeline(scope.row)"
         />
@@ -404,26 +406,26 @@
         <RowActionsMenu v-else>
           <TargetUserMenuActionsEditButton
             :scope="scope"
-            :id="tableOptions.rowActions[1].id"
+            :id="editAction.id"
             @on-click="handleEditTargetUsers"
           />
           <DefaultMenuRowAction
             :scope="scope"
-            :id="tableOptions.rowActions[3].id"
-            :text="tableOptions.rowActions[3].name"
-            :icon="tableOptions.rowActions[3].icon"
+            :id="addUserToGroupAction.id"
+            :text="addUserToGroupAction.name"
+            :icon="addUserToGroupAction.icon"
             @on-click="handleAddUserToGroup(scope.row)"
           />
           <DefaultMenuRowAction
             :scope="scope"
-            :id="tableOptions.rowActions[4].id"
-            :text="tableOptions.rowActions[4].name"
-            :icon="tableOptions.rowActions[4].icon"
+            :id="viewUserGroupsAction.id"
+            :text="viewUserGroupsAction.name"
+            :icon="viewUserGroupsAction.icon"
             @on-click="handleViewUserGroups(scope.row)"
           />
           <TargetUserRowActionsDeleteButton
             :scope="scope"
-            :id="tableOptions.rowActions[2].id"
+            :id="deleteAction.id"
             @on-delete="handleDelete"
           />
         </RowActionsMenu>
@@ -782,7 +784,10 @@ export default {
             icon: "mdi-account-clock",
             action: "userTimeline",
             id: "btn-user-timeline--target-users-people-row-actions",
-            isNotShow: true
+            isNotShow: true,
+            disabled: !this.$store.getters[
+              "permissions/getGamificationReportFormDetailsPermissions"
+            ]
           },
           {
             name: "Edit this row",
@@ -849,8 +854,25 @@ export default {
       getLDAPCreateConfigPermission:
         "permissions/getLDAPCreateConfigPermission",
       getLDAPDetailPermission: "permissions/getLDAPDetailPermission",
-      getTimezones: "common/getTimezones"
+      getTimezones: "common/getTimezones",
+      getGamificationReportFormDetailsPermissions:
+        "permissions/getGamificationReportFormDetailsPermissions"
     }),
+    userTimelineAction() {
+      return this.tableOptions.rowActions[0];
+    },
+    editAction() {
+      return this.tableOptions.rowActions[1];
+    },
+    deleteAction() {
+      return this.tableOptions.rowActions[2];
+    },
+    addUserToGroupAction() {
+      return this.tableOptions.rowActions[3];
+    },
+    viewUserGroupsAction() {
+      return this.tableOptions.rowActions[4];
+    },
     summaryCardItems() {
       const { active, inactive, deleted, monthly } = this.summaryCounts;
       const monthlyOptions = this.monthlyActiveUsers || [];
@@ -1315,6 +1337,7 @@ export default {
       });
     },
     callForFormDetails() {
+      if (!this.getGamificationReportFormDetailsPermissions) return
       getLeaderboardFormDetails().then((res) => {
         this.formDetails = res?.data?.data || [];
       });
