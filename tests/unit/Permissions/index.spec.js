@@ -31,4 +31,20 @@ describe('permissions/index.js', () => {
     expect(permissions.CAMPAIGN_MANAGER_PARENT.SEARCH).toBeDefined()
     expect(permissions.CAMPAIGN_MANAGER_PARENT.CREATE).toBeDefined()
   })
+
+  it('has EMAIL_TEMPLATES_PERMISSIONS with AI_GENERATION_OPTIONS', () => {
+    expect(permissions.EMAIL_TEMPLATES_PERMISSIONS.AI_GENERATION_OPTIONS).toMatchObject({
+      url: 'phishing-simulator/email-templates/ai-generation-options',
+      hasPermission: false,
+      method: expect.any(String)
+    })
+  })
+
+  it('has GAMIFICATION_REPORT_PERMISSIONS with FORM_DETAILS', () => {
+    expect(permissions.GAMIFICATION_REPORT_PERMISSIONS.FORM_DETAILS).toMatchObject({
+      url: 'leaderboard/form-details',
+      hasPermission: false,
+      method: expect.any(String)
+    })
+  })
 })

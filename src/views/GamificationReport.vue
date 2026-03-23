@@ -432,6 +432,8 @@ export default {
       getGamificationReportSearchPermissions: 'permissions/getGamificationReportSearchPermissions',
       getGamificationReportTopPerformersPermissions:
         'permissions/getGamificationReportTopPerformersPermissions',
+      getGamificationReportFormDetailsPermissions:
+        'permissions/getGamificationReportFormDetailsPermissions',
       getBadgesForUser: 'gamificationBadges/getBadgesForUser',
       hasValidBadgesCache: 'gamificationBadges/hasValidCache',
       isBadgesCalculating: 'gamificationBadges/isCalculating',
@@ -467,6 +469,7 @@ export default {
   },
   methods: {
     callForFormDetails() {
+      if (!this.getGamificationReportFormDetailsPermissions) return
       getLeaderboardFormDetails().then((res) => {
         this.formDetails = res?.data?.data || []
       })

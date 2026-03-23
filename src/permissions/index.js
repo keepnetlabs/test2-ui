@@ -296,6 +296,11 @@ export default {
       url: `phishing-simulator/email-templates/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    },
+    AI_GENERATION_OPTIONS: {
+      url: `phishing-simulator/email-templates/ai-generation-options`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   },
   LANDING_PAGE_TEMPLATES_PERMISSIONS: {
@@ -2771,6 +2776,11 @@ export default {
       url: `leaderboard/get-top-performers`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    },
+    FORM_DETAILS: {
+      url: `leaderboard/form-details`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   }
 }

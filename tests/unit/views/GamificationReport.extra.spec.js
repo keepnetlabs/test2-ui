@@ -278,26 +278,37 @@ describe('GamificationReport.vue (extra)', () => {
     expect(showPicker).toHaveBeenCalled()
   })
 
-  it('callForFormDetails maps response data to formDetails', async () => {
+  it('callForFormDetails maps response data to formDetails when permitted', async () => {
     getLeaderboardFormDetails.mockResolvedValueOnce({
       data: { data: { periods: ['LastMonth'] } }
     })
-    const ctx = { formDetails: null }
+    const ctx = { formDetails: null, getGamificationReportFormDetailsPermissions: true }
 
     methods.callForFormDetails.call(ctx)
     await flushPromises()
 
+    expect(getLeaderboardFormDetails).toHaveBeenCalled()
     expect(ctx.formDetails).toEqual({ periods: ['LastMonth'] })
   })
 
   it('callForFormDetails falls back to empty array when response is malformed', async () => {
     getLeaderboardFormDetails.mockResolvedValueOnce({})
-    const ctx = { formDetails: null }
+    const ctx = { formDetails: null, getGamificationReportFormDetailsPermissions: true }
 
     methods.callForFormDetails.call(ctx)
     await flushPromises()
 
     expect(ctx.formDetails).toEqual([])
+  })
+
+  it('callForFormDetails does not call API when permission is missing', async () => {
+    const ctx = { formDetails: null, getGamificationReportFormDetailsPermissions: false }
+
+    methods.callForFormDetails.call(ctx)
+    await flushPromises()
+
+    expect(getLeaderboardFormDetails).not.toHaveBeenCalled()
+    expect(ctx.formDetails).toBeNull()
   })
 
   it('callForTopPerformers maps results and clears loading', async () => {
