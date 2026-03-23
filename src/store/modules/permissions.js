@@ -667,6 +667,9 @@ const store = {
     getEmailTemplatesExportPermissions(state) {
       return state?.emailTemplatesPermissions?.EXPORT?.hasPermission
     },
+    getEmailTemplatesAIGenerationOptionsPermissions(state) {
+      return state?.emailTemplatesPermissions?.AI_GENERATION_OPTIONS?.hasPermission
+    },
     getTrainingReportsSearchPermissions(state) {
       return state?.trainingReportsPermissions?.SEARCH_REPORTS?.hasPermission
     },
@@ -1592,6 +1595,9 @@ const store = {
     },
     getGamificationReportTopPerformersPermissions(state) {
       return state?.gamificationReportPermissions?.TOP_PERFORMERS?.hasPermission
+    },
+    getGamificationReportFormDetailsPermissions(state) {
+      return state?.gamificationReportPermissions?.FORM_DETAILS?.hasPermission
     }
   },
   mutations: {

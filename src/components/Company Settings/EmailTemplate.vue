@@ -1032,7 +1032,8 @@ export default {
   computed: {
     ...mapGetters({
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
-      isFeedbackPopupOpened: 'dashboard/isPopupOpened'
+      isFeedbackPopupOpened: 'dashboard/isPopupOpened',
+      hasAIGenerationOptionsPermission: 'permissions/getEmailTemplatesAIGenerationOptionsPermissions'
     }),
     editorHtml() {
       return this.injectLogo(this.template)
@@ -1221,7 +1222,9 @@ export default {
   },
 
   mounted() {
-    this.getAIGenerationOptions()
+    if (this.isAiAssistant && this.isAIAllyEnabled && this.hasAIGenerationOptionsPermission) {
+      this.getAIGenerationOptions()
+    }
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
     this.setDefaultTemplate()
   },
