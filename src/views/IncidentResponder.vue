@@ -1477,9 +1477,7 @@ export default {
       serverSideClusteredProps: this.serverSideClusteredProps,
       clusteredRow: this.clusteredRow,
       selectedCluster: this.selectedCluster,
-      requestBodyReportedEmails: JSON.parse(
-        JSON.stringify(this.requestBodyReportedEmails)
-      ),
+      requestBodyReportedEmails: structuredClone(this.requestBodyReportedEmails),
       clusteredTableAxios: structuredClone(this.clusteredTableAxios),
       isShowingClusteredTable: this.isShowingClusteredTable
     };
@@ -1775,9 +1773,7 @@ export default {
       if (selectedCluster === PROPERTY_STORE.SUBJECT) {
         if (columns[0].property !== PROPERTY_STORE.SUBJECT) {
           const copyOfAttachmentCount = structuredClone(columns[2]);
-          const copyOfReportedBy = JSON.parse(
-            JSON.stringify(this.emails.reportedByColumn)
-          );
+          const copyOfReportedBy = structuredClone(this.emails.reportedByColumn);
           this.$set(this.emails.columns, 0, {
             ...structuredClone(this.emails.subjectColumn),
             ...this.emails.firstColumnProperties,
@@ -1789,9 +1785,7 @@ export default {
       } else if (selectedCluster === PROPERTY_STORE.REPORTEDBY) {
         if (columns[0].property !== PROPERTY_STORE.REPORTEDBY) {
           const copyOfAttachmentCount = structuredClone(columns[1]);
-          const copyOfSubject = JSON.parse(
-            JSON.stringify(this.emails.subjectColumn)
-          );
+          const copyOfSubject = structuredClone(this.emails.subjectColumn);
           this.$set(this.emails.columns, 0, {
             ...structuredClone(this.emails.reportedByColumn),
             ...this.emails.firstColumnProperties,
@@ -1883,20 +1877,12 @@ export default {
     setClusteredTableFilters() {
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = [
         ...this.clusteredTableAxios.filter.FilterGroups[0].FilterItems,
-        ...JSON.parse(
-          JSON.stringify(
-            this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
-          )
-        )
+        ...structuredClone(this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems)
       ];
 
       this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [
         ...this.clusteredTableAxios.filter.FilterGroups[1].FilterItems,
-        ...JSON.parse(
-          JSON.stringify(
-            this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems
-          )
-        )
+        ...structuredClone(this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems)
       ];
     },
     callForClusteredTable() {

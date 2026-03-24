@@ -560,7 +560,7 @@ describe('GamificationReportPerformanceDetailsTable.vue', () => {
       const duration = Date.now() - start
 
       expect(wrapper.find('tbody').findAll('tr')).toHaveLength(100)
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
   })
 

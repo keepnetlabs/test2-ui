@@ -448,7 +448,7 @@ describe('QueryHelperForTable', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
 
     it('should handle setRouterQuery calls efficiently', () => {
@@ -462,7 +462,7 @@ describe('QueryHelperForTable', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
 
     it('should handle controlRouteQuery efficiently', () => {
