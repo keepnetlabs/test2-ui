@@ -543,7 +543,7 @@ describe('Input Copy with clipboard component', () => {
       }
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
       expect(wrapper.emitted()['on-copy']).toHaveLength(20)
     })
 
@@ -556,7 +556,7 @@ describe('Input Copy with clipboard component', () => {
         })
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
   })
 

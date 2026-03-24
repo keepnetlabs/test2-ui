@@ -53,12 +53,13 @@ export default {
       }
       const { row } = this.scope
       const indent = row.ldapConfigName ? 'LDAP' : 'SCIM'
-      if (!row.isEditable) {
-        if (row.isGoogleGroup) return `Google synced ${this.type} cannot be edited`
-        return `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
-          this.type
-        } cannot be edited`
-      } else return this.getDisabledStatusOfAction ? 'No Permission' : this.name
+      if (row.isEditable) {
+        return this.getDisabledStatusOfAction ? 'No Permission' : this.name
+      }
+      if (row.isGoogleGroup) return `Google synced ${this.type} cannot be edited`
+      return `${indent}(${indent === 'LDAP' ? row.ldapConfigName : row.scimSettingName}) synced ${
+        this.type
+      } cannot be edited`
     },
     getDisabledStatusOfAction() {
       const { row } = this.scope

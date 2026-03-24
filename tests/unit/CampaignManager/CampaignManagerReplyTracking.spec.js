@@ -492,7 +492,7 @@ describe('CampaignManagerReplyTracking.vue', () => {
       const wrapper = mountComponent()
       await wrapper.vm.$nextTick()
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
   })
 })

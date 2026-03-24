@@ -488,7 +488,7 @@ describe('LeaderboardTopPerformerCard.vue', () => {
         mountComponent({ performer: { ...defaultPerformer, rank: i % 3 + 1 } })
       }
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
   })
 })

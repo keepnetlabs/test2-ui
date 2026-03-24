@@ -804,9 +804,7 @@ export default {
           if (!existingLanguage) {
             this.languagesPayload.push({
               languageTypeResourceId: this.activeLanguage,
-              landingPages: JSON.parse(
-                JSON.stringify(this.formValues.landingPages)
-              ),
+              landingPages: structuredClone(this.formValues.landingPages),
               isTranslated: false
             });
           }
@@ -838,9 +836,7 @@ export default {
         (item) => item.languageTypeResourceId === languageId
       );
       if (newLangPayload?.landingPages) {
-        this.formValues.landingPages = JSON.parse(
-          JSON.stringify(newLangPayload.landingPages)
-        );
+        this.formValues.landingPages = structuredClone(newLangPayload.landingPages);
       }
 
       this.tab = "page1";
@@ -1008,16 +1004,12 @@ export default {
         if (item) return item;
         return {
           languageTypeResourceId: language.value,
-          landingPages: JSON.parse(
-            JSON.stringify(this.formValues.landingPages)
-          ),
+          landingPages: structuredClone(this.formValues.landingPages),
           isTranslated: false
         };
       });
       this.selectedLanguages = languages;
-      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-        JSON.stringify(this.getSelectedLanguagePayload)
-      );
+      this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
     },
     handleRelocalizeReplace({ language }) {
       const selectedLanguagePayload = this.getSelectedLanguagePayload;
@@ -1618,12 +1610,8 @@ export default {
           (p) => p.languageTypeResourceId === mainLanguageId
         );
         if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
-          this.formValues.landingPages = JSON.parse(
-            JSON.stringify(newMainLanguagePayload.landingPages)
-          );
-          payload.landingPages = JSON.parse(
-            JSON.stringify(newMainLanguagePayload.landingPages)
-          );
+          this.formValues.landingPages = structuredClone(newMainLanguagePayload.landingPages);
+          payload.landingPages = structuredClone(newMainLanguagePayload.landingPages);
         }
       }
 
@@ -1798,9 +1786,7 @@ export default {
             companyLanguagePayload.isTranslated = true;
           }
         }
-        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-          JSON.stringify(this.getSelectedLanguagePayload)
-        );
+        this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
         this.$refs?.refEmailTemplateContent?.resetValidation();
         // İngilizce değilse ve başka dil varsa çeviri yap
         if (
@@ -2067,18 +2053,14 @@ export default {
         });
 
         this.activeLanguage = data.languageTypeResourceId;
-        this.editedLanguagePayload = JSON.parse(
-          JSON.stringify(this.languagesPayload)
-        );
+        this.editedLanguagePayload = structuredClone(this.languagesPayload);
         if (!this.formValues.canRemoveLanguages) {
           this.initialDisabledLanguageIds = [
             data.languageTypeResourceId,
             ...this.languagesPayload.map((item) => item.languageTypeResourceId)
           ];
         }
-        this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
-          JSON.stringify(this.getSelectedLanguagePayload)
-        );
+        this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload);
 
         this.editedLandingPages = structuredClone(data.landingPages);
         this.formValues = data;

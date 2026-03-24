@@ -1216,9 +1216,7 @@ export default {
                 []
               )
               if (this.defaultFormData) {
-                this.defaultFormData.LicenseModuleResourceIdArray = JSON.parse(
-                  JSON.stringify(this.formData.LicenseModuleResourceIdArray)
-                )
+                this.defaultFormData.LicenseModuleResourceIdArray = structuredClone(this.formData.LicenseModuleResourceIdArray)
               }
             }
             if (!this.formData.PreferredLanguageTypeResourceId) {

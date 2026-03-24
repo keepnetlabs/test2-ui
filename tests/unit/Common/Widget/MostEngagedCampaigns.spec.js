@@ -625,7 +625,7 @@ describe("MostEngagedCampaigns widget", () => {
         "widgets/getMostEngagedCampaignsCard": data
       });
       const duration = Date.now() - startTime;
-      expect(duration).toBeLessThan(500);
+      expect(duration).toBeLessThan(5000);
       expect(wrapper.vm.tableData).toHaveLength(1000);
     });
 

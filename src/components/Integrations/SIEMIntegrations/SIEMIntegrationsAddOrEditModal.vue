@@ -338,8 +338,8 @@ export default {
         port: this.isSyslogIntegration ? this.formData.port : null,
         connectionType: this.isSyslogIntegration ? this.formData.connectionType : null
       }
-      if (!this.selectedItem) {
-        createSIEMIntegration(payload)
+      if (this.selectedItem) {
+        updateSIEMIntegration(this.selectedItem.resourceId, payload)
           .then(() => {
             this.$emit('on-submit')
           })
@@ -347,7 +347,7 @@ export default {
             this.isActionButtonDisabled = false
           })
       } else {
-        updateSIEMIntegration(this.selectedItem.resourceId, payload)
+        createSIEMIntegration(payload)
           .then(() => {
             this.$emit('on-submit')
           })

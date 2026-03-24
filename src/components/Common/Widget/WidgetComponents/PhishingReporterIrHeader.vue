@@ -98,14 +98,13 @@ export default {
   },
   methods: {
     isPhishingEmpty(phishingReporterUserStatusCount) {
-      if (!phishingReporterUserStatusCount) {
-        return true
-      } else
+      if (phishingReporterUserStatusCount) {
         return !(
-          phishingReporterUserStatusCount &&
-          (phishingReporterUserStatusCount['onlineUsersCount'] ||
-            phishingReporterUserStatusCount['offlineUsersCount'])
+          phishingReporterUserStatusCount['onlineUsersCount'] ||
+          phishingReporterUserStatusCount['offlineUsersCount']
         )
+      }
+      return true
     },
     emptyPhishingButtonClick() {
       this.$router.push('/phishing-reporter')

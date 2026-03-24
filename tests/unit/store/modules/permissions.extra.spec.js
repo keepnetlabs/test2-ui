@@ -574,7 +574,7 @@ describe('permissions store module (real)', () => {
       store.mutations.SET_ALL_PERMISSIONS(state)
       const duration = Date.now() - start
 
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
   })
 

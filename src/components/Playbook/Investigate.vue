@@ -549,21 +549,18 @@ export default {
     },
     setTargetUsers(response) {
       const { data: { data = [] } = [] } = response
-      if (
-        !this.isTargetUsersInitialized &&
-        this.investigateData.targetUsersForAutocomplete?.length
-      ) {
+      if (this.isTargetUsersInitialized) {
+        this.specificUserItems = [...this.specificUserItems, ...data.results]
+      } else if (this.investigateData.targetUsersForAutocomplete?.length) {
         const mappedTargetUsers = this.investigateData.targetUsersForAutocomplete.map((user) => ({
           ...user,
           email: user.name
         }))
         this.specificUserItems = [...mappedTargetUsers, ...this.specificUserItems, ...data.results]
         this.isTargetUsersInitialized = true
-      } else if (!this.isTargetUsersInitialized) {
-        this.specificUserItems = [...this.specificUserItems, ...data.results]
-        this.isTargetUsersInitialized = true
       } else {
         this.specificUserItems = [...this.specificUserItems, ...data.results]
+        this.isTargetUsersInitialized = true
       }
     },
     handleAutoDetectFiltersChange(value) {

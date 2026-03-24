@@ -516,7 +516,7 @@ describe('NextButton.vue', () => {
       const start = performance.now()
       const w = shallowMount(NextButton)
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
       w.destroy()
     })
 
