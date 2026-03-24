@@ -56,6 +56,33 @@
             :rules="[(v) => Validations.required(v, labels.Required)]"
             @input="handleChangeDomainRecord($event)"
           ></KSelect>
+          <div v-if="blacklistWarning" class="blacklist-hint">
+            <span
+              class="blacklist-hint__text"
+              :style="{ color: blacklistWarning.status === 'malicious' ? '#f44336' : '#ff9800' }"
+            >
+              {{ blacklistWarning.reason }}
+              <a
+                class="blacklist-hint__link"
+                :class="{ 'blacklist-hint__link--loading': isSuggestionsLoading }"
+                @click.prevent="handleSwitchDomain"
+              >{{ isSuggestionsLoading ? 'Loading...' : 'Suggest clean domain' }}</a>
+            </span>
+            <div v-if="cleanSuggestions.length > 0" class="blacklist-hint__suggestions">
+              <v-btn
+                v-for="suggestion in cleanSuggestions.slice(0, 5)"
+                :key="suggestion.domain"
+                outlined
+                x-small
+                color="#217124"
+                class="blacklist-hint__suggestion-btn"
+                @click="selectCleanDomain(suggestion.domain)"
+              >
+                <VIcon x-small class="mr-1">mdi-swap-horizontal</VIcon>
+                {{ suggestion.domain }}
+              </v-btn>
+            </div>
+          </div>
         </div>
 
         <div
@@ -161,6 +188,7 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import { getDomainBlacklistStatus, getCleanDomainSuggestions } from '@/api/domainBlacklist'
 export default {
   name: 'InputPhishingLinkMini',
   components: { KSelect },
@@ -225,6 +253,9 @@ export default {
       labels,
       urlSchemaTypesModified: [],
       disabledLabel: '',
+      blacklistWarning: null,
+      cleanSuggestions: [],
+      isSuggestionsLoading: false,
       subdomainRules: [],
       httpRules: [
         (v) => Validations.required(v, labels.Required),
@@ -293,6 +324,7 @@ export default {
     if (!this.isEdit) this.setDefaultValue()
     if (this.isEdit && this.value?.domainRecordId) {
       this.checkSchemaTypes(this.value.domainRecordId, false)
+      this.checkDomainBlacklist(this.value.domainRecordId)
     }
   },
   methods: {
@@ -343,6 +375,42 @@ export default {
       this.handleInputChange(value, 'domainRecordId')
       this.checkSchemaTypes(value, true)
       this.changeDisabledLabel()
+      this.checkDomainBlacklist(value)
+    },
+    checkDomainBlacklist(domainRecordId) {
+      this.blacklistWarning = null
+      this.cleanSuggestions = []
+      const domainRecord = this.domainRecords.find((item) => item.value === domainRecordId)
+      if (!domainRecord) return
+      const domainName = domainRecord.text
+      getDomainBlacklistStatus(domainName)
+        .then((response) => {
+          const data = response.data
+          if (data.status === 'malicious' || data.status === 'suspicious') {
+            this.blacklistWarning = { status: data.status, reason: data.reason }
+          }
+        })
+        .catch(() => {})
+    },
+    handleSwitchDomain() {
+      this.isSuggestionsLoading = true
+      getCleanDomainSuggestions()
+        .then((response) => {
+          const suggestions = response.data.suggestions || []
+          this.cleanSuggestions = suggestions.filter((s) =>
+            this.domainRecords.some((d) =>
+              d.text === s.domain || d.text?.includes(s.domain) || s.domain?.includes(d.text)
+            )
+          )
+        })
+        .catch(() => {})
+        .finally(() => { this.isSuggestionsLoading = false })
+    },
+    selectCleanDomain(domain) {
+      const match = this.domainRecords.find((d) => d.text === domain)
+      if (match) {
+        this.handleChangeDomainRecord(match.value)
+      }
     },
     checkSchemaTypes(value, isDomainChange = false) {
       this.$nextTick(() => {
@@ -379,3 +447,41 @@ export default {
 }
 </script>
 
+<style scoped>
+.blacklist-hint {
+  padding: 0 12px;
+  margin-top: 2px;
+}
+.blacklist-hint__text {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.blacklist-hint__link {
+  font-size: 12px;
+  color: #2196F3;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 2px;
+}
+.blacklist-hint__link--loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+.blacklist-hint__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  align-items: center;
+}
+.blacklist-hint__suggestion-btn {
+  cursor: pointer !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+}
+.blacklist-hint__suggestion-btn:hover {
+  background: #e8f5e9 !important;
+}
+</style>

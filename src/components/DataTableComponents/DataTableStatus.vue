@@ -1,7 +1,10 @@
 <template>
   <div v-if="col.type === 'status'">
     <v-btn style="display: none;"> </v-btn>
-    <v-tooltip v-if="shouldRenderTooltip" bottom opacity="1" max-width="200px">
+    <div v-if="isSkeletonLoading" class="blacklist-skeleton-wrapper">
+      <div class="blacklist-skeleton-badge" />
+    </div>
+    <v-tooltip v-else-if="shouldRenderTooltip" bottom opacity="1" max-width="200px">
       <template v-slot:activator="{ on }">
         <div v-on="on">
           <badge
@@ -54,6 +57,10 @@ export default {
     }
   },
   computed: {
+    isSkeletonLoading() {
+      const value = String(this.scope.row[this.col.property] || '').trim().toLowerCase()
+      return value === 'loading' && this.col.badgeColorMap && 'loading' in this.col.badgeColorMap
+    },
     shouldRenderBadge() {
       const { scope } = this.$props
       return (
@@ -92,3 +99,27 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.blacklist-skeleton-wrapper {
+  display: flex;
+  justify-content: center;
+}
+.blacklist-skeleton-badge {
+  width: 90px;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e0e0e0 25%, #eeeeee 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite ease-in-out;
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+</style>
+
