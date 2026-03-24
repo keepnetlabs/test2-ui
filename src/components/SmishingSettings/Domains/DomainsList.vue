@@ -84,6 +84,7 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import SmishingService from '@/api/smishing'
+import { getAllDomainBlacklistStatuses } from '@/api/domainBlacklist'
 import DeleteServiceModal from '@/components/SmishingSettings/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/SmishingSettings/Domains/NewEditDomain'
 import { mapGetters } from 'vuex'
@@ -177,6 +178,28 @@ export default {
               { text: 'Success', value: 0 }
             ],
             width: 150
+          },
+          {
+            property: 'blacklistStatus',
+            align: 'center',
+            editable: false,
+            label: 'Blacklist Status',
+            fixed: false,
+            sortable: false,
+            hideSort: true,
+            show: true,
+            type: 'status',
+            tooltipKey: 'blacklistDetail',
+            badgeColorMap: {
+              loading: '#bdbdbd',
+              clean: '#217124',
+              malicious: '#b83a3a',
+              suspicious: '#e67e22',
+              pending: '#9e9e9e',
+              error: '#9e9e9e',
+              partial: '#e67e22'
+            },
+            width: 220
           },
           {
             property: 'createdBy',
@@ -279,13 +302,40 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results
+            this.tableData = results.map((row) => ({ ...row, blacklistStatus: 'loading' }))
+            this.enrichWithBlacklistStatus(results)
           })
           .catch(() => {
             this.tableData = []
           })
           .finally(() => (this.loading = false))
       }
+    },
+    enrichWithBlacklistStatus(results) {
+      getAllDomainBlacklistStatuses()
+        .then((response) => {
+          const blacklistDomains = response.data.domains || []
+          const blacklistMap = {}
+          blacklistDomains.forEach((d) => {
+            blacklistMap[d.domain] = d
+          })
+          this.tableData = results.map((row) => {
+            const match = blacklistMap[row.domain]
+            if (match) {
+              return {
+                ...row,
+                blacklistStatus: match.status,
+                blacklistDetail: match.reason || null
+              }
+            }
+            return {
+              ...row,
+              blacklistStatus: 'pending',
+              blacklistDetail: null
+            }
+          })
+        })
+        .catch(() => {})
     },
     checkIfCanCloseDomainModal() {
       if (this.$refs.newEditDomainModal) {

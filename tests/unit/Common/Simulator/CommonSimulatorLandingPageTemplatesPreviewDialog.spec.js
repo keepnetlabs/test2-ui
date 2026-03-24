@@ -120,6 +120,84 @@ describe('CommonSimulatorLandingPageTemplatesPreviewDialog.vue', () => {
     setTimeoutSpy.mockRestore()
   })
 
+  it('callForData passes urlTemplate to landingPageParams for blacklist check in child', async () => {
+    const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
+      fn()
+      return 1
+    })
+
+    const ctx = {
+      type: PREVIEW_DIALOG_TYPES.PHISHING,
+      selectedRow: { resourceId: 'lp-bl' },
+      languages: [{ text: 'English', value: 'lang-en' }],
+      landingPageParams: { languages: [] },
+      landingPageTemplates: null,
+      selectedTemplateHeader: '',
+      templateHTML: null,
+      setLoading: jest.fn(),
+      apiFunc: jest.fn(() =>
+        Promise.resolve({
+          data: {
+            data: {
+              urlTemplate: 'https://www.blacklisted-domain.com/login.php',
+              name: 'Blacklisted LP',
+              languageTypeResourceId: 'lang-en',
+              languageTypeName: 'English',
+              landingPages: [
+                { name: 'Page 1', order: 1, content: '<div>test</div>', languages: [] }
+              ]
+            }
+          }
+        })
+      )
+    }
+
+    CommonSimulatorLandingPageTemplatesPreviewDialog.methods.callForData.call(ctx)
+    await flushPromises()
+    await flushPromises()
+
+    expect(ctx.landingPageParams.urlTemplate).toBe('https://www.blacklisted-domain.com/login.php')
+    // This urlTemplate is passed as :phishing-url to LandingPageTemplateModalPreview
+    // which then runs checkDomainBlacklist internally
+
+    setTimeoutSpy.mockRestore()
+  })
+
+  it('handleDuplicate emits on-duplicate and disables html overflow control', () => {
+    const emit = jest.fn()
+    const ctx = {
+      isHtmlOverflowControlManuallyDisabled: false,
+      selectedRow: { resourceId: 'lp-dup', name: 'Landing Dup' },
+      $emit: emit
+    }
+
+    CommonSimulatorLandingPageTemplatesPreviewDialog.methods.handleDuplicate.call(ctx)
+
+    expect(ctx.isHtmlOverflowControlManuallyDisabled).toBe(true)
+    expect(emit).toHaveBeenCalledWith('on-duplicate', { resourceId: 'lp-dup', name: 'Landing Dup' })
+  })
+
+  it('isOwnerProp returns undefined when selectedRow is null', () => {
+    expect(
+      CommonSimulatorLandingPageTemplatesPreviewDialog.computed.isOwnerProp.call({
+        selectedRow: null
+      })
+    ).toBeUndefined()
+  })
+
+  it('isOwnerProp returns isOwner from selectedRow', () => {
+    expect(
+      CommonSimulatorLandingPageTemplatesPreviewDialog.computed.isOwnerProp.call({
+        selectedRow: { isOwner: true }
+      })
+    ).toBe(true)
+    expect(
+      CommonSimulatorLandingPageTemplatesPreviewDialog.computed.isOwnerProp.call({
+        selectedRow: { isOwner: false }
+      })
+    ).toBe(false)
+  })
+
   it('callForData keeps non-phishing templates as-is and filters main language', async () => {
     const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
       fn()

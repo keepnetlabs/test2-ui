@@ -91,6 +91,10 @@
               :page-index="Number.parseInt(landingPageTab) - 1"
               :show-toolbar="!!getCurrentLandingPageTemplate"
             />
+            <div v-if="blacklistWarning" class="blacklist-preview-bar" :class="'blacklist-preview-bar--' + blacklistWarning.status">
+              <VIcon x-small :color="blacklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
+              <span class="blacklist-preview-bar__text">{{ blacklistWarning.reason }}</span>
+            </div>
             <KEmailPreview
               v-if="!!getCurrentPageTemplate(template)"
               is-landing-page
@@ -171,6 +175,7 @@ import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePrevie
 import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { openHtmlInNewWindow } from '@/utils/functions'
+import { getDomainBlacklistStatus } from '@/api/domainBlacklist'
 export default {
   name: 'TabsWithMfaSettingsMultipleLanguages',
   components: { KEmailPreview, InputLanguagePreview, BrowserToolbar },
@@ -219,7 +224,8 @@ export default {
   data() {
     return {
       landingPageTab: '1',
-      languagePreview: ''
+      languagePreview: '',
+      blacklistWarning: null
     }
   },
   computed: {
@@ -276,6 +282,10 @@ export default {
         this.languagePreview = newVal[0].value || newVal[0].id || newVal[0].languageTypeResourceId
       }
     },
+    phishingUrl() {
+      this.blacklistWarning = null
+      this.checkDomainBlacklist()
+    },
     landingPageParams: {
       handler() {
         this.$nextTick(() => {
@@ -287,6 +297,7 @@ export default {
   },
   mounted() {
     this.initializeLanguagePreview()
+    this.checkDomainBlacklist()
   },
   methods: {
     initializeLanguagePreview() {
@@ -325,6 +336,27 @@ export default {
     },
     handleLanguageChange(languageId) {
       this.languagePreview = languageId
+    },
+    extractDomain(url) {
+      if (!url) return null
+      try {
+        const fullUrl = url.startsWith('http') ? url : 'https://' + url
+        return new URL(fullUrl).hostname.replace(/^www\./, '')
+      } catch {
+        return null
+      }
+    },
+    checkDomainBlacklist() {
+      const domain = this.extractDomain(this.phishingUrl)
+      if (!domain) return
+      getDomainBlacklistStatus(domain)
+        .then((response) => {
+          const data = response.data
+          if (data.status === 'malicious' || data.status === 'suspicious') {
+            this.blacklistWarning = { status: data.status, reason: data.reason }
+          }
+        })
+        .catch(() => {})
     }
   }
 }

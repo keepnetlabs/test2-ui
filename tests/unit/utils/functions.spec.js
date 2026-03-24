@@ -230,6 +230,30 @@ describe('Utils Functions', () => {
       const result = getDataTableFieldLabel('waiting for approval')
       expect(result).toMatch(/waiting\s+for\s+approval/i)
     })
+
+    it('should return "Checking..." for loading status', () => {
+      expect(getDataTableFieldLabel('loading')).toBe('Checking...')
+    })
+
+    it('should return "Clean" for clean status', () => {
+      expect(getDataTableFieldLabel('clean')).toBe('Clean')
+    })
+
+    it('should return "Blacklisted" for malicious status', () => {
+      expect(getDataTableFieldLabel('malicious')).toBe('Blacklisted')
+    })
+
+    it('should return "Suspicious" for suspicious status', () => {
+      expect(getDataTableFieldLabel('suspicious')).toBe('Suspicious')
+    })
+
+    it('should return "Pending" for pending status', () => {
+      expect(getDataTableFieldLabel('pending')).toBe('Pending')
+    })
+
+    it('should return "Partial" for partial status', () => {
+      expect(getDataTableFieldLabel('partial')).toBe('Partial')
+    })
   })
 
   describe('isOwnerOrMember', () => {
