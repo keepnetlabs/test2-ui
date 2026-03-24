@@ -216,6 +216,14 @@ describe('functions.js (extra coverage)', () => {
       expect(getDataTableFieldLabel('medium')).toBe('Medium')
       expect(getDataTableFieldLabel('hard')).toBe('Hard')
     })
+    it('returns fieldMap for blacklist domain statuses', () => {
+      expect(getDataTableFieldLabel('loading')).toBe('Checking...')
+      expect(getDataTableFieldLabel('clean')).toBe('Clean')
+      expect(getDataTableFieldLabel('malicious')).toBe('Blacklisted')
+      expect(getDataTableFieldLabel('suspicious')).toBe('Suspicious')
+      expect(getDataTableFieldLabel('pending')).toBe('Pending')
+      expect(getDataTableFieldLabel('partial')).toBe('Partial')
+    })
   })
 
   describe('deepCopyArray and filter helpers', () => {

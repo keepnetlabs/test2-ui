@@ -435,6 +435,193 @@ describe('DataTableStatus.vue', () => {
     })
   })
 
+  describe('Blacklist Skeleton Loading', () => {
+    it('shows skeleton when value is loading and badgeColorMap has loading key', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'loading' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          badgeColorMap: { loading: '#bdbdbd', clean: '#217124' }
+        }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(true)
+      expect(wrapper.find('.blacklist-skeleton-badge').exists()).toBe(true)
+    })
+
+    it('does not show skeleton when value is loading but no badgeColorMap', () => {
+      const wrapper = mountComponent({
+        scope: { row: { status: 'loading' } },
+        col: { property: 'status', type: 'status' }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBeFalsy()
+    })
+
+    it('does not show skeleton when value is not loading', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'clean' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          badgeColorMap: { loading: '#bdbdbd', clean: '#217124' }
+        }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(false)
+      expect(wrapper.find('.blacklist-skeleton-badge').exists()).toBe(false)
+    })
+
+    it('shows badge after loading completes', async () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'loading' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          badgeColorMap: { loading: '#bdbdbd', clean: '#217124', malicious: '#b83a3a' }
+        }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(true)
+
+      await wrapper.setProps({
+        scope: { row: { blacklistStatus: 'clean' } }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(false)
+      expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
+    })
+
+    it('uses custom badgeColorMap for blacklist statuses', () => {
+      const badgeColorMap = {
+        clean: '#217124',
+        malicious: '#b83a3a',
+        suspicious: '#e67e22'
+      }
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'malicious' } },
+        col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+      })
+      expect(wrapper.vm.getBadgeColor('malicious')).toBe('#b83a3a')
+      expect(wrapper.vm.getBadgeColor('clean')).toBe('#217124')
+      expect(wrapper.vm.getBadgeColor('suspicious')).toBe('#e67e22')
+    })
+
+    it('shows tooltip from blacklistDetail via tooltipKey', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'malicious', blacklistDetail: 'Blocked by 3 vendors' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          tooltipKey: 'blacklistDetail',
+          badgeColorMap: { malicious: '#b83a3a' }
+        }
+      })
+      expect(wrapper.vm.shouldRenderTooltip).toBe(true)
+      expect(wrapper.vm.getStatusTooltipText('malicious')).toBe('Blocked by 3 vendors')
+    })
+
+    it('does not show tooltip when reason is null (clean domain)', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'clean', blacklistDetail: null } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          tooltipKey: 'blacklistDetail',
+          badgeColorMap: { clean: '#217124' }
+        }
+      })
+      expect(wrapper.vm.shouldRenderTooltip).toBe(false)
+    })
+
+    it('renders badge for all blacklist status values', () => {
+      const statuses = ['clean', 'malicious', 'suspicious', 'pending', 'error', 'partial']
+      const badgeColorMap = {
+        clean: '#217124',
+        malicious: '#b83a3a',
+        suspicious: '#e67e22',
+        pending: '#9e9e9e',
+        error: '#9e9e9e',
+        partial: '#e67e22'
+      }
+      statuses.forEach((status) => {
+        const wrapper = mountComponent({
+          scope: { row: { blacklistStatus: status } },
+          col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+        })
+        expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
+        expect(wrapper.vm.getBadgeColor(status)).toBe(badgeColorMap[status])
+      })
+    })
+
+    it('skeleton has correct CSS class', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'loading' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          badgeColorMap: { loading: '#bdbdbd' }
+        }
+      })
+      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(true)
+    })
+
+    it('does not show skeleton for non-blacklist status columns with loading value', () => {
+      const wrapper = mountComponent({
+        scope: { row: { healthStatus: 'loading' } },
+        col: { property: 'healthStatus', type: 'status' }
+      })
+      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(false)
+    })
+
+    it('skeleton is not rendered when value changes from loading to actual status', async () => {
+      const badgeColorMap = { loading: '#bdbdbd', clean: '#217124' }
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'clean' } },
+        col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(false)
+      expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
+    })
+
+    it('handles loading value case-insensitively', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'Loading' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          badgeColorMap: { loading: '#bdbdbd' }
+        }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(true)
+    })
+
+    it('handles loading value with whitespace', () => {
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: '  loading  ' } },
+        col: {
+          property: 'blacklistStatus',
+          type: 'status',
+          badgeColorMap: { loading: '#bdbdbd' }
+        }
+      })
+      expect(wrapper.vm.isSkeletonLoading).toBe(true)
+    })
+
+    it('transitions from skeleton to badge on props change', async () => {
+      const badgeColorMap = { loading: '#bdbdbd', malicious: '#b83a3a' }
+      const wrapper = mountComponent({
+        scope: { row: { blacklistStatus: 'loading' } },
+        col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+      })
+      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(true)
+      expect(wrapper.find('.badge-stub').exists()).toBe(false)
+
+      await wrapper.setProps({
+        scope: { row: { blacklistStatus: 'malicious', blacklistDetail: 'Blocked' } }
+      })
+      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(false)
+      expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
+      expect(wrapper.vm.getBadgeColor('malicious')).toBe('#b83a3a')
+    })
+  })
+
   describe('Multiple Instances', () => {
     it('supports multiple independent instances', () => {
       const wrapper1 = mountComponent({ scope: { row: { status: 'Active' } } })
