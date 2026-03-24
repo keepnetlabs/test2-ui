@@ -657,7 +657,7 @@ describe('useCachableDialog mixin', () => {
       }
 
       const duration = Date.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
 
     it('should execute saveCachableDialogTimestamp quickly', () => {

@@ -452,9 +452,7 @@ export default {
     },
     handleAttachmentRemove({ item, index }) {
       this.formValues.attachmentFilesToRemove = item.fileName
-      const newAttachmentFilesFromApi = JSON.parse(
-        JSON.stringify(this.formValues.attachmentFilesFromApi)
-      )
+      const newAttachmentFilesFromApi = structuredClone(this.formValues.attachmentFilesFromApi)
       if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length === 1) {
         newAttachmentFilesFromApi.splice(index - 1, 1)
         this.formValues.importedEmailAttachments.splice(index - 1, 1)

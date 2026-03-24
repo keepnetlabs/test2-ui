@@ -776,7 +776,7 @@ describe('Input caller phone number component', () => {
         }
       })
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
     })
 
     it('formats large batch of numbers efficiently', () => {

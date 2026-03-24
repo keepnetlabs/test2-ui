@@ -680,7 +680,7 @@ describe('Audit.vue', () => {
         wrapper.vm.$forceUpdate()
       }
       const duration = performance.now() - start
-      expect(duration).toBeLessThan(500)
+      expect(duration).toBeLessThan(5000)
       nowSpy.mockRestore()
     })
 

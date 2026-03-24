@@ -2181,27 +2181,23 @@ export default {
       if (this.isReportWithExam) {
         this.$emit(
           "update:axios-payload",
-          JSON.parse(
-            JSON.stringify({
-              ...this.initialAxiosPayload,
-              pageSize: this.isServerSide
-                ? this.serverSideProps.pageSize
-                : this.rowCount,
-              showByExamStatus: "FirstAttempt"
-            })
-          )
+          structuredClone({
+            ...this.initialAxiosPayload,
+            pageSize: this.isServerSide
+              ? this.serverSideProps.pageSize
+              : this.rowCount,
+            showByExamStatus: "FirstAttempt"
+          })
         );
       } else {
         this.$emit(
           "update:axios-payload",
-          JSON.parse(
-            JSON.stringify({
-              ...this.initialAxiosPayload,
-              pageSize: this.isServerSide
-                ? this.serverSideProps.pageSize
-                : this.rowCount
-            })
-          )
+          structuredClone({
+            ...this.initialAxiosPayload,
+            pageSize: this.isServerSide
+              ? this.serverSideProps.pageSize
+              : this.rowCount
+          })
         );
       }
       this.handleRefresh();
