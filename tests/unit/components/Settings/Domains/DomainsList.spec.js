@@ -1,6 +1,20 @@
 import { shallowMount } from '@vue/test-utils'
 import DomainsList from '@/components/Settings/Domains/DomainsList.vue'
 import { deleteEmailTemplate, exportDnsService, getDomainData, getDomainsList } from '@/api/domains'
+import { getAllDomainBlacklistStatuses } from '@/api/domainBlacklist'
+
+jest.mock('@/api/domainBlacklist', () => ({
+  getAllDomainBlacklistStatuses: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        domains: [
+          { domain: 'a.test', status: 'clean', reason: null },
+          { domain: 'bad.test', status: 'malicious', reason: 'Blocked by browsers' }
+        ]
+      }
+    })
+  )
+}))
 
 jest.mock('@/api/domains', () => ({
   getDomainData: jest.fn(() => Promise.resolve({ data: { data: { dns: ['Cloudflare'] } } })),
@@ -59,7 +73,9 @@ describe('Settings DomainsList.vue', () => {
     expect(getDomainData).toHaveBeenCalled()
     expect(getDomainsList).toHaveBeenCalled()
     expect(wrapper.vm.domainData).toEqual({ dns: ['Cloudflare'] })
-    expect(wrapper.vm.tableData).toEqual([{ resourceId: 'domain-1', domain: 'a.test' }])
+    expect(wrapper.vm.tableData).toEqual([
+      expect.objectContaining({ resourceId: 'domain-1', domain: 'a.test' })
+    ])
   })
 
   it('skips created data load when details permission is missing', async () => {
@@ -80,7 +96,9 @@ describe('Settings DomainsList.vue', () => {
     expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(2)
     expect(wrapper.vm.serverSideProps.totalNumberOfPages).toBe(1)
     expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
-    expect(wrapper.vm.tableData).toEqual([{ resourceId: 'domain-1', domain: 'a.test' }])
+    expect(wrapper.vm.tableData).toEqual([
+      expect.objectContaining({ resourceId: 'domain-1', domain: 'a.test' })
+    ])
     expect(wrapper.vm.loading).toBe(false)
   })
 
@@ -201,6 +219,143 @@ describe('Settings DomainsList.vue', () => {
 
     createElementSpy.mockRestore()
     createObjectURLSpy.mockRestore()
+  })
+
+  describe('Blacklist Enrichment', () => {
+    it('callForData sets initial loading state on tableData', async () => {
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      await wrapper.vm.callForData()
+      await flushPromises()
+
+      // After callForData, enrichWithBlacklistStatus is called
+      // tableData should have blacklistStatus field
+      expect(getAllDomainBlacklistStatuses).toHaveBeenCalled()
+    })
+
+    it('enrichWithBlacklistStatus merges blacklist data into table rows', async () => {
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      const results = [
+        { resourceId: 'd1', domain: 'a.test' },
+        { resourceId: 'd2', domain: 'bad.test' },
+        { resourceId: 'd3', domain: 'unknown.test' }
+      ]
+
+      await wrapper.vm.enrichWithBlacklistStatus(results)
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].blacklistStatus).toBe('clean')
+      expect(wrapper.vm.tableData[0].blacklistDetail).toBeNull()
+      expect(wrapper.vm.tableData[1].blacklistStatus).toBe('malicious')
+      expect(wrapper.vm.tableData[1].blacklistDetail).toBe('Blocked by browsers')
+      expect(wrapper.vm.tableData[2].blacklistStatus).toBe('pending')
+      expect(wrapper.vm.tableData[2].blacklistDetail).toBeNull()
+    })
+
+    it('enrichWithBlacklistStatus handles API error without affecting table', async () => {
+      getAllDomainBlacklistStatuses.mockRejectedValueOnce(new Error('API down'))
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      const results = [{ resourceId: 'd1', domain: 'a.test' }]
+      wrapper.vm.tableData = results
+
+      await wrapper.vm.enrichWithBlacklistStatus(results)
+      await flushPromises()
+
+      // tableData should remain unchanged on error
+      expect(wrapper.vm.tableData).toEqual(results)
+    })
+
+    it('callForData sets blacklistStatus loading on initial tableData', async () => {
+      getDomainsList.mockResolvedValueOnce({
+        data: {
+          data: {
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1,
+            results: [{ resourceId: 'd1', domain: 'test.com' }]
+          }
+        }
+      })
+      getAllDomainBlacklistStatuses.mockImplementationOnce(
+        () => new Promise(() => {}) // never resolves — simulates pending
+      )
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      await wrapper.vm.callForData()
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].blacklistStatus).toBe('loading')
+    })
+
+    it('enrichWithBlacklistStatus uses reason from API response', async () => {
+      getAllDomainBlacklistStatuses.mockResolvedValueOnce({
+        data: {
+          domains: [
+            { domain: 'warned.test', status: 'suspicious', reason: 'Flagged by 2 vendors' }
+          ]
+        }
+      })
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      await wrapper.vm.enrichWithBlacklistStatus([
+        { resourceId: 'd1', domain: 'warned.test' }
+      ])
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].blacklistStatus).toBe('suspicious')
+      expect(wrapper.vm.tableData[0].blacklistDetail).toBe('Flagged by 2 vendors')
+    })
+
+    it('enrichWithBlacklistStatus sets null detail for clean domains', async () => {
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      await wrapper.vm.enrichWithBlacklistStatus([
+        { resourceId: 'd1', domain: 'a.test' }
+      ])
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].blacklistDetail).toBeNull()
+    })
+
+    it('enrichWithBlacklistStatus preserves original row fields', async () => {
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      await wrapper.vm.enrichWithBlacklistStatus([
+        { resourceId: 'd1', domain: 'a.test', healthStatus: 0, dnsRecord: 'A' }
+      ])
+      await flushPromises()
+
+      expect(wrapper.vm.tableData[0].resourceId).toBe('d1')
+      expect(wrapper.vm.tableData[0].healthStatus).toBe(0)
+      expect(wrapper.vm.tableData[0].dnsRecord).toBe('A')
+      expect(wrapper.vm.tableData[0].blacklistStatus).toBe('clean')
+    })
+
+    it('blacklistStatus column exists in table options', () => {
+      const wrapper = createWrapper({
+        'permissions/getDomainFormDetailsPermissions': false
+      })
+      const blacklistCol = wrapper.vm.tableOptions.columns.find(
+        (c) => c.property === 'blacklistStatus'
+      )
+      expect(blacklistCol).toBeDefined()
+      expect(blacklistCol.type).toBe('status')
+      expect(blacklistCol.hideSort).toBe(true)
+      expect(blacklistCol.sortable).toBe(false)
+      expect(blacklistCol.badgeColorMap).toBeDefined()
+      expect(blacklistCol.badgeColorMap.malicious).toBe('#b83a3a')
+      expect(blacklistCol.badgeColorMap.clean).toBe('#217124')
+      expect(blacklistCol.tooltipKey).toBe('blacklistDetail')
+    })
   })
 
   it('handleActionDelete and handleSuccessDeleteAction update modal flow', () => {

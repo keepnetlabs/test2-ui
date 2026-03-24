@@ -4,6 +4,11 @@ jest.mock('@/utils/functions', () => ({
   createRandomCryptStringNumber: jest.fn(() => 'rnd999')
 }))
 
+jest.mock('@/api/domainBlacklist', () => ({
+  getDomainBlacklistStatus: jest.fn().mockResolvedValue({ data: {} }),
+  getCleanDomainSuggestions: jest.fn().mockResolvedValue({ data: { suggestions: [] } })
+}))
+
 describe('InputPhishingLinkMini.vue (extra)', () => {
   const { methods, computed, watch, mounted } = InputPhishingLinkMini
 
@@ -56,21 +61,25 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     const createModeCtx = createCtx({
       isEdit: false,
       setDefaultValue: jest.fn(),
-      checkSchemaTypes: jest.fn()
+      checkSchemaTypes: jest.fn(),
+      checkDomainBlacklist: jest.fn()
     })
     mounted.call(createModeCtx)
     expect(createModeCtx.setDefaultValue).toHaveBeenCalledTimes(1)
     expect(createModeCtx.checkSchemaTypes).not.toHaveBeenCalled()
+    expect(createModeCtx.checkDomainBlacklist).not.toHaveBeenCalled()
 
     const editModeCtx = createCtx({
       isEdit: true,
       value: { domainRecordId: 'd1' },
       setDefaultValue: jest.fn(),
-      checkSchemaTypes: jest.fn()
+      checkSchemaTypes: jest.fn(),
+      checkDomainBlacklist: jest.fn()
     })
     mounted.call(editModeCtx)
     expect(editModeCtx.setDefaultValue).not.toHaveBeenCalled()
     expect(editModeCtx.checkSchemaTypes).toHaveBeenCalledWith('d1', false)
+    expect(editModeCtx.checkDomainBlacklist).toHaveBeenCalledWith('d1')
   })
 
   it('mounted in edit mode does not call schema check when domainRecordId is missing', () => {
@@ -78,20 +87,23 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
       isEdit: true,
       value: { domainRecordId: '' },
       setDefaultValue: jest.fn(),
-      checkSchemaTypes: jest.fn()
+      checkSchemaTypes: jest.fn(),
+      checkDomainBlacklist: jest.fn()
     })
 
     mounted.call(editModeCtx)
 
     expect(editModeCtx.setDefaultValue).not.toHaveBeenCalled()
     expect(editModeCtx.checkSchemaTypes).not.toHaveBeenCalled()
+    expect(editModeCtx.checkDomainBlacklist).not.toHaveBeenCalled()
   })
 
-  it('handleChangeDomainRecord calls input change, schema check and relabel', () => {
+  it('handleChangeDomainRecord calls input change, schema check, relabel and blacklist check', () => {
     const ctx = createCtx({
       handleInputChange: jest.fn(),
       checkSchemaTypes: jest.fn(),
-      changeDisabledLabel: jest.fn()
+      changeDisabledLabel: jest.fn(),
+      checkDomainBlacklist: jest.fn()
     })
 
     methods.handleChangeDomainRecord.call(ctx, 'd1')
@@ -99,6 +111,7 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     expect(ctx.handleInputChange).toHaveBeenCalledWith('d1', 'domainRecordId')
     expect(ctx.checkSchemaTypes).toHaveBeenCalledWith('d1', true)
     expect(ctx.changeDisabledLabel).toHaveBeenCalled()
+    expect(ctx.checkDomainBlacklist).toHaveBeenCalledWith('d1')
   })
 
   it('value watcher triggers label refresh and ref validation', () => {
@@ -392,6 +405,152 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     methods.changeDisabledLabel.call(ctx)
 
     expect(ctx.disabledLabel).toBe('http://portal.example.com/login.html?id=rnd999')
+  })
+
+  describe('Blacklist Domain Check (extra)', () => {
+    const { getDomainBlacklistStatus, getCleanDomainSuggestions } = require('@/api/domainBlacklist')
+
+    beforeEach(() => jest.clearAllMocks())
+
+    it('checkDomainBlacklist resets blacklistWarning and cleanSuggestions before API call', () => {
+      const ctx = createCtx({
+        blacklistWarning: { status: 'malicious', reason: 'old' },
+        cleanSuggestions: [{ domain: 'stale.com' }]
+      })
+      methods.checkDomainBlacklist.call(ctx, 'd1')
+      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.cleanSuggestions).toEqual([])
+    })
+
+    it('checkDomainBlacklist resolves domain text from domainRecords', () => {
+      const ctx = createCtx({
+        blacklistWarning: null,
+        cleanSuggestions: [],
+        domainRecords: [
+          { text: 'special-domain.co', value: 'sd1', extraDatas: [{ value: '2' }, { value: true }] }
+        ]
+      })
+      methods.checkDomainBlacklist.call(ctx, 'sd1')
+      expect(getDomainBlacklistStatus).toHaveBeenCalledWith('special-domain.co')
+    })
+
+    it('checkDomainBlacklist sets warning only for malicious or suspicious', async () => {
+      const ignoredStatuses = ['clean', 'pending', 'error', 'partial']
+      for (const status of ignoredStatuses) {
+        getDomainBlacklistStatus.mockResolvedValueOnce({
+          data: { status, reason: status === 'clean' ? null : 'Some reason' }
+        })
+        const ctx = createCtx({ blacklistWarning: null, cleanSuggestions: [] })
+        methods.checkDomainBlacklist.call(ctx, 'd1')
+        await new Promise((r) => setTimeout(r, 0))
+        expect(ctx.blacklistWarning).toBeNull()
+      }
+    })
+
+    it('handleSwitchDomain sets loading true then false on success', async () => {
+      getCleanDomainSuggestions.mockResolvedValueOnce({
+        data: { suggestions: [] }
+      })
+      const ctx = createCtx({ isSuggestionsLoading: false, cleanSuggestions: [] })
+      methods.handleSwitchDomain.call(ctx)
+      expect(ctx.isSuggestionsLoading).toBe(true)
+      await new Promise((r) => setTimeout(r, 0))
+      expect(ctx.isSuggestionsLoading).toBe(false)
+    })
+
+    it('handleSwitchDomain sets loading false on error', async () => {
+      getCleanDomainSuggestions.mockRejectedValueOnce(new Error('fail'))
+      const ctx = createCtx({ isSuggestionsLoading: false, cleanSuggestions: [] })
+      methods.handleSwitchDomain.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+      expect(ctx.isSuggestionsLoading).toBe(false)
+      expect(ctx.cleanSuggestions).toEqual([])
+    })
+
+    it('handleSwitchDomain filters with includes matching', async () => {
+      getCleanDomainSuggestions.mockResolvedValueOnce({
+        data: {
+          suggestions: [
+            { domain: 'example.com' },
+            { domain: 'example.com.tr' },
+            { domain: 'totally-different.net' }
+          ]
+        }
+      })
+      const ctx = createCtx({
+        isSuggestionsLoading: false,
+        cleanSuggestions: [],
+        domainRecords: [
+          { text: 'example.com', value: 'd1', extraDatas: [{ value: '2' }, { value: true }] }
+        ]
+      })
+      methods.handleSwitchDomain.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+      // exact match + includes match for .com.tr
+      expect(ctx.cleanSuggestions).toHaveLength(2)
+      expect(ctx.cleanSuggestions.map((s) => s.domain)).toContain('example.com')
+      expect(ctx.cleanSuggestions.map((s) => s.domain)).toContain('example.com.tr')
+    })
+
+    it('selectCleanDomain triggers handleChangeDomainRecord with matched value', () => {
+      const ctx = createCtx({
+        handleChangeDomainRecord: jest.fn()
+      })
+      methods.selectCleanDomain.call(ctx, 'example.com')
+      expect(ctx.handleChangeDomainRecord).toHaveBeenCalledWith('d1')
+    })
+
+    it('selectCleanDomain does nothing when domain is not in records', () => {
+      const ctx = createCtx({
+        handleChangeDomainRecord: jest.fn()
+      })
+      methods.selectCleanDomain.call(ctx, 'ghost-domain.xyz')
+      expect(ctx.handleChangeDomainRecord).not.toHaveBeenCalled()
+    })
+
+    it('handleSwitchDomain handles empty suggestions array from API', async () => {
+      getCleanDomainSuggestions.mockResolvedValueOnce({
+        data: { suggestions: [] }
+      })
+      const ctx = createCtx({ isSuggestionsLoading: false, cleanSuggestions: [] })
+      methods.handleSwitchDomain.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+      expect(ctx.cleanSuggestions).toEqual([])
+    })
+
+    it('handleSwitchDomain handles missing suggestions field', async () => {
+      getCleanDomainSuggestions.mockResolvedValueOnce({
+        data: {}
+      })
+      const ctx = createCtx({ isSuggestionsLoading: false, cleanSuggestions: [] })
+      methods.handleSwitchDomain.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+      expect(ctx.cleanSuggestions).toEqual([])
+    })
+
+    it('multiple domain records: only matching suggestions are returned', async () => {
+      getCleanDomainSuggestions.mockResolvedValueOnce({
+        data: {
+          suggestions: [
+            { domain: 'example.com' },
+            { domain: 'second.com' },
+            { domain: 'third.com' }
+          ]
+        }
+      })
+      const ctx = createCtx({
+        isSuggestionsLoading: false,
+        cleanSuggestions: [],
+        domainRecords: [
+          { text: 'example.com', value: 'd1', extraDatas: [{ value: '2' }, { value: true }] },
+          { text: 'second.com', value: 'd2', extraDatas: [{ value: '2' }, { value: true }] }
+        ]
+      })
+      methods.handleSwitchDomain.call(ctx)
+      await new Promise((r) => setTimeout(r, 0))
+      expect(ctx.cleanSuggestions).toHaveLength(2)
+      expect(ctx.cleanSuggestions.map((s) => s.domain)).toEqual(['example.com', 'second.com'])
+    })
   })
 
   it('handleInputChange converts non-string values to empty string', () => {

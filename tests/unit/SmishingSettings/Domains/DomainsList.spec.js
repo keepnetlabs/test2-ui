@@ -1,6 +1,20 @@
 import { shallowMount } from '@vue/test-utils'
 import DomainsList from '@/components/SmishingSettings/Domains/DomainsList.vue'
 import SmishingService from '@/api/smishing'
+import { getAllDomainBlacklistStatuses } from '@/api/domainBlacklist'
+
+jest.mock('@/api/domainBlacklist', () => ({
+  getAllDomainBlacklistStatuses: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        domains: [
+          { domain: 'a.test', status: 'clean', reason: null },
+          { domain: 'bad.test', status: 'malicious', reason: 'Blocked by browsers' }
+        ]
+      }
+    })
+  )
+}))
 
 jest.mock('@/api/smishing', () => ({
   getDomainData: jest.fn(() => Promise.resolve({ data: { data: { dns: ['Cloudflare'] } } })),
@@ -65,7 +79,9 @@ describe('DomainsList.vue', () => {
     expect(SmishingService.getDomainData).toHaveBeenCalled()
     expect(SmishingService.getDomainsList).toHaveBeenCalled()
     expect(wrapper.vm.domainData).toEqual({ dns: ['Cloudflare'] })
-    expect(wrapper.vm.tableData).toEqual([{ resourceId: 'domain-1', domain: 'a.test' }])
+    expect(wrapper.vm.tableData).toEqual([
+      expect.objectContaining({ resourceId: 'domain-1', domain: 'a.test' })
+    ])
   })
 
   it('skips created data load when details permission is missing', async () => {
@@ -88,7 +104,9 @@ describe('DomainsList.vue', () => {
     expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(2)
     expect(wrapper.vm.serverSideProps.totalNumberOfPages).toBe(1)
     expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
-    expect(wrapper.vm.tableData).toEqual([{ resourceId: 'domain-1', domain: 'a.test' }])
+    expect(wrapper.vm.tableData).toEqual([
+      expect.objectContaining({ resourceId: 'domain-1', domain: 'a.test' })
+    ])
     expect(wrapper.vm.loading).toBe(false)
   })
 
@@ -392,6 +410,42 @@ describe('DomainsList.vue', () => {
 
     expect(wrapper.vm.tableData).toEqual([])
     expect(wrapper.vm.loading).toBe(false)
+  })
+
+  describe('Blacklist Enrichment', () => {
+    it('enrichWithBlacklistStatus merges blacklist data into table rows', async () => {
+      const wrapper = createWrapper({ 'permissions/getSmishingDomainFormDetailsPermissions': false })
+      await wrapper.vm.enrichWithBlacklistStatus([
+        { resourceId: 'd1', domain: 'a.test' },
+        { resourceId: 'd2', domain: 'bad.test' },
+        { resourceId: 'd3', domain: 'unknown.test' }
+      ])
+      await flushPromises()
+      expect(wrapper.vm.tableData[0].blacklistStatus).toBe('clean')
+      expect(wrapper.vm.tableData[1].blacklistStatus).toBe('malicious')
+      expect(wrapper.vm.tableData[1].blacklistDetail).toBe('Blocked by browsers')
+      expect(wrapper.vm.tableData[2].blacklistStatus).toBe('pending')
+    })
+
+    it('enrichWithBlacklistStatus handles API error without affecting table', async () => {
+      getAllDomainBlacklistStatuses.mockRejectedValueOnce(new Error('API down'))
+      const wrapper = createWrapper({ 'permissions/getSmishingDomainFormDetailsPermissions': false })
+      const results = [{ resourceId: 'd1', domain: 'a.test' }]
+      wrapper.vm.tableData = results
+      await wrapper.vm.enrichWithBlacklistStatus(results)
+      await flushPromises()
+      expect(wrapper.vm.tableData).toEqual(results)
+    })
+
+    it('blacklistStatus column exists in table options', () => {
+      const wrapper = createWrapper({ 'permissions/getSmishingDomainFormDetailsPermissions': false })
+      const col = wrapper.vm.tableOptions.columns.find((c) => c.property === 'blacklistStatus')
+      expect(col).toBeDefined()
+      expect(col.type).toBe('status')
+      expect(col.hideSort).toBe(true)
+      expect(col.badgeColorMap.malicious).toBe('#b83a3a')
+      expect(col.tooltipKey).toBe('blacklistDetail')
+    })
   })
 
   it('handleActionDelete and handleSuccessDeleteAction update modal flow', () => {

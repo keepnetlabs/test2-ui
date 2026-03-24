@@ -215,7 +215,6 @@
             {{ scope.row["targetUserCount"] }}
           </span>
         </template>
-        <!-- Re-enable with Content Vendor / Monthly Enrolled / Monthly Consumption columns
         <template v-else-if="scope.column.property === 'monthlyEnrolled'">
           <span>{{ scope.row.monthlyEnrolled || 0 }}</span>
           <VTooltip v-if="scope.row.enrolledVendorNamesDistribution" bottom>
@@ -234,7 +233,6 @@
             </div>
           </VTooltip>
         </template>
-        -->
       </template>
       <template #extended-custom-view-slot>
         <company-list-extend
@@ -301,7 +299,7 @@ import {
   searchCompanies,
   bulkDeleteCompanies
 } from "@/api/company";
-// import AwarenessEducatorService from "@/api/awarenessEducator"; // with loadTrainingVendorFilterItems + Content Vendor column
+import AwarenessEducatorService from "@/api/awarenessEducator";
 import DeleteModal from "./DeleteModal";
 import labels from "@/model/constants/labels";
 import {
@@ -546,9 +544,8 @@ export default {
             filterableType: "date",
             type: "date",
             width: 180
-          }
-          /* Temporarily hidden — restore with template slot + AwarenessEducatorService.getVendors
-          ,{
+          },
+          {
             property: "enrolledVendorNames",
             align: "left",
             editable: false,
@@ -604,7 +601,6 @@ export default {
             ],
             defaultCompositeSecondValue: "1,2"
           }
-          */
         ],
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.COMPANY_LIST,
@@ -694,7 +690,7 @@ export default {
   created() {
     this.getLookUpDatas();
     this.setMonthlyFilterItems();
-    // this.loadTrainingVendorFilterItems();
+    this.loadTrainingVendorFilterItems();
     if (handleIsSafari()) {
       this.bindPropsIsSafari["handleSetCellClass"] = (obj) => {
         return setSafariClusterFix(obj, "companyName");
@@ -835,9 +831,9 @@ export default {
       const now = new Date();
       const currentMonthValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
       const columnProperties = [
-        "monthlyActiveUserCount"
-        // "monthlyEnrolled",
-        // "monthlyConsumption"
+        "monthlyActiveUserCount",
+        "monthlyEnrolled",
+        "monthlyConsumption"
       ];
       columnProperties.forEach((property) => {
         const col = this.tableOptions.columns.find(
@@ -850,7 +846,7 @@ export default {
       });
       this.$nextTick(() => this?.$refs?.refDataList?.reRenderFilters());
     },
-    /* loadTrainingVendorFilterItems() {
+    loadTrainingVendorFilterItems() {
       AwarenessEducatorService.getVendors()
         .then((response) => {
           const raw = response?.data?.data || response?.data || [];
@@ -868,7 +864,7 @@ export default {
           }
         })
         .catch(() => {});
-    }, */
+    },
     getLookUpDatas() {
       LookupLocalStorage.getMultiple([2, 3])
         .then((response) => {
@@ -944,9 +940,9 @@ export default {
         if (isChild) {
           item.isChild = true;
         }
-        /* if (item.enrolledVendorNames && typeof item.enrolledVendorNames === "string") {
+        if (item.enrolledVendorNames && typeof item.enrolledVendorNames === "string") {
           item.enrolledVendorNames = item.enrolledVendorNames.split(" , ").map((s) => s.trim()).filter(Boolean);
-        } */
+        }
         if (item.children) {
           this.getManipulatedTableData(item.children, true);
         }
@@ -1129,9 +1125,9 @@ export default {
     },
     normalizeFilterForBackend(filter) {
       const singleSelectFields = [
-        "MonthlyActiveUser"
-        // "TrainingEnrolledMonth",
-        // "TrainingConsumptionMonth"
+        "MonthlyActiveUser",
+        "TrainingEnrolledMonth",
+        "TrainingConsumptionMonth"
       ];
       const setOperator = (item) =>
         singleSelectFields.includes(item?.FieldName)
@@ -1146,12 +1142,12 @@ export default {
         fieldName,
         this.payload
       );
-      /* if (fieldName === "TrainingConsumptionMonth") {
+      if (fieldName === "TrainingConsumptionMonth") {
         this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
           "TrainingConsumptionStatus",
           this.payload
         );
-      } */
+      }
       this.getTableData();
     }
   }

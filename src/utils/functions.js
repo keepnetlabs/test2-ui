@@ -162,7 +162,13 @@ export function getDataTableFieldLabel(field = "") {
     hard: "Hard",
     "not in use": "Not In Use",
     "in use": "In Use",
-    "waiting for approval": "Waiting for Approval"
+    "waiting for approval": "Waiting for Approval",
+    loading: "Checking...",
+    clean: "Clean",
+    malicious: "Blacklisted",
+    suspicious: "Suspicious",
+    pending: "Pending",
+    partial: "Partial",
   };
   if (fieldMap[normalizedField]) {
     return fieldMap[normalizedField];
