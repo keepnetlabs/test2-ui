@@ -600,7 +600,7 @@ export default {
               { text: "Completed", value: "1" }
             ],
             defaultCompositeSecondValue: "1,2"
-          },
+          }
         ],
         savedFiltersLocalStorageKey: DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
         savedTableSettingsLocalStorageKey: TABLE_SETTINGS_KEYS.COMPANY_LIST,
