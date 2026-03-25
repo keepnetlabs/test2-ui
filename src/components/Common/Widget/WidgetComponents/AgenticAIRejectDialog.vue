@@ -7,8 +7,8 @@
     ></div>
     <AppDialog
       :status="status"
-      icon="mdi-close"
-      title="Why are you rejecting this action?"
+      :icon="action === 'retry' ? 'mdi-refresh' : 'mdi-close'"
+      :title="action === 'retry' ? 'Why are you retrying this action?' : 'Why are you rejecting this action?'"
       class-name="agentic-ai-confirm-dialog"
       custom-size="560"
       hide-overlay
@@ -36,8 +36,8 @@
           cancel-button-id="btn-reject-dialog-cancel"
           confirm-button-id="btn-reject-dialog-confirm"
           cancel-button-text="CANCEL"
-          action-button-text="REJECT"
-          action-button-color="#f56c6c"
+          :action-button-text="confirmButtonText"
+          :action-button-color="action === 'retry' ? '#2196F3' : '#f56c6c'"
           cancel-button-color="#383b41"
           :confirm-button-disabled="!isValid || loading"
           @handleClose="$emit('cancel')"
@@ -66,6 +66,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    action: {
+      type: String,
+      default: "reject"
     }
   },
   data() {
@@ -80,6 +84,9 @@ export default {
     };
   },
   computed: {
+    confirmButtonText() {
+      return this.action === "retry" ? "RETRY" : "REJECT";
+    },
     isValid() {
       return this.reason.trim().length >= MIN_LENGTH;
     }
