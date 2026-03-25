@@ -1340,6 +1340,7 @@ export default {
       await this.executeApproveReject(action, row, rejectingReason);
       this.rejectDialog.loading = false;
       this.closeRejectDialog();
+      if (this.previewType) this.closePreview();
     },
     closeConfirmDialog() {
       this.confirmDialog = {
@@ -1430,7 +1431,6 @@ export default {
     handlePreviewRetry() {
       const row = this.previewActivityRow;
       if (!row) return;
-      this.closePreview();
       this.handleRetry(row);
     },
     handleViewReport(row) {
