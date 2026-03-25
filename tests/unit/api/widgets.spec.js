@@ -6,6 +6,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as widgetsApi from '@/api/widgets'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('widgets API', () => {
   beforeEach(() => {
@@ -115,9 +116,8 @@ describe('widgets API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 2 functions', () => {
-      const functions = Object.values(widgetsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBe(2)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(widgetsApi)
     })
 
     it('should export specific functions', () => {

@@ -8,4 +8,12 @@ describe('structuredClonePolyfill', () => {
     expect(globalThis.structuredClone({ a: 1, b: [2] })).toEqual({ a: 1, b: [2] })
     expect(globalThis.structuredClone(undefined)).toBeUndefined()
   })
+
+  it('handles null and nested plain objects like native structuredClone', () => {
+    expect(globalThis.structuredClone(null)).toBeNull()
+    expect(globalThis.structuredClone({ nested: { x: 1 }, arr: [1, 2] })).toEqual({
+      nested: { x: 1 },
+      arr: [1, 2]
+    })
+  })
 })

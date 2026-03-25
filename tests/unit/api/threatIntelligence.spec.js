@@ -4,6 +4,7 @@ jest.mock('@/utils/threatIntelligenceRequest', () => ({
 
 import threatIntelligenceRequest from '@/utils/threatIntelligenceRequest'
 import * as threatIntelligenceApi from '@/api/threatIntelligence'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 // Mock APP_CONFIG and localStorage
 global.APP_CONFIG = { VUE_APP_API_KEY: 'test-api-key' }
@@ -181,9 +182,8 @@ describe('threatIntelligence API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 2 functions', () => {
-      const functions = Object.values(threatIntelligenceApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(2)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(threatIntelligenceApi)
     })
 
     it('should have all threat intelligence functions', () => {

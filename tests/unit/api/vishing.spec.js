@@ -8,6 +8,7 @@ jest.mock('@/utils/vishingRequest', () => ({
 import vishingRequest from '@/utils/vishingRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as vishingApi from '@/api/vishing'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('vishing API', () => {
   beforeEach(() => {
@@ -408,9 +409,8 @@ describe('vishing API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 33 functions', () => {
-      const functions = Object.values(vishingApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThan(30)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(vishingApi)
     })
   })
 

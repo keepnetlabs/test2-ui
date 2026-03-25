@@ -5,6 +5,7 @@ jest.mock('@/utils/testRequest', () => ({
 
 import testRequest from '@/utils/testRequest'
 import * as notifiedEmailApi from '@/api/notifiedEmail'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('notifiedEmail API', () => {
   beforeEach(() => {
@@ -200,9 +201,8 @@ describe('notifiedEmail API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 5 functions', () => {
-      const functions = Object.values(notifiedEmailApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(5)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(notifiedEmailApi)
     })
 
     it('should have all notified email functions', () => {

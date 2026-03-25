@@ -6,6 +6,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as settingsApi from '@/api/settings'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('settings API', () => {
   beforeEach(() => {
@@ -107,9 +108,8 @@ describe('settings API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 3 functions', () => {
-      const functions = Object.values(settingsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBe(3)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(settingsApi)
     })
 
     it('should export specific functions', () => {

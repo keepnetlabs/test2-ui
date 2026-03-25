@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as whitelabelApi from '@/api/whitelabel'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('whitelabel API', () => {
   beforeEach(() => {
@@ -321,9 +322,8 @@ describe('whitelabel API', () => {
       expect(typeof whitelabelApi.callForSystemInfoSummary).toBe('function')
     })
 
-    it('should export at least 8 functions', () => {
-      const functions = Object.values(whitelabelApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(8)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(whitelabelApi)
     })
   })
 

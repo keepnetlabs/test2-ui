@@ -1,5 +1,6 @@
 import * as CommonAPI from '@/api/common'
 import testRequest from '@/utils/testRequest'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 jest.mock('@/utils/testRequest', () => ({
   post: jest.fn().mockResolvedValue({ data: { data: [] }, headers: {} }),
@@ -222,9 +223,8 @@ describe('Common API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 6 functions', () => {
-      const functions = Object.values(CommonAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(6)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(CommonAPI)
     })
 
     it('should have getTimezones', () => {

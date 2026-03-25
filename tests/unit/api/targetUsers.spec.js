@@ -13,6 +13,7 @@ import testRequest from '@/utils/testRequest'
 import uploadRequest from '@/utils/uploadRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as targetUsersApi from '@/api/targetUsers'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('targetUsers API', () => {
   beforeEach(() => {
@@ -529,9 +530,8 @@ describe('targetUsers API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 37+ functions', () => {
-      const functions = Object.values(targetUsersApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThan(35)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(targetUsersApi)
     })
   })
 

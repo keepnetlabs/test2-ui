@@ -444,14 +444,17 @@ export default {
       );
       if (executedCard) {
         const periodKey = this.getPeriodKey(executedCard.subtitle);
-        executedCard.value = this.statsData[periodKey]?.Approved ?? 0;
+        const periodData = this.statsData[periodKey];
+        executedCard.value = this.isAutonomousComputed
+          ? (periodData?.autonomous?.Approved ?? 0)
+          : (periodData?.approvalGated?.Approved ?? 0);
       }
 
       const pendingCard = this.statCards.find(
         (c) => c.title === "Pending Approvals"
       );
       if (pendingCard) {
-        pendingCard.value = this.statsData.last30Days?.Pending ?? 0;
+        pendingCard.value = this.statsData.last30Days?.approvalGated?.Pending ?? 0;
       }
     },
     getPeriodKey(subtitle) {

@@ -1,5 +1,6 @@
 import * as CompanyAPI from '@/api/company'
 import testRequest from '@/utils/testRequest'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 jest.mock('@/utils/testRequest', () => ({
@@ -882,9 +883,8 @@ describe('Company API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 60 functions', () => {
-      const functions = Object.values(CompanyAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(60)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(CompanyAPI)
     })
   })
 
