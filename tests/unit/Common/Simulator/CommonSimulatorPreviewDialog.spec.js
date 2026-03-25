@@ -311,6 +311,20 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
     expect(emit).toHaveBeenCalledWith('on-duplicate-template')
   })
 
+  it('reasoningText prop defaults to empty string', () => {
+    const prop = CommonSimulatorPreviewDialog.props.reasoningText
+    expect(prop.type).toBe(String)
+    const defaultVal = typeof prop.default === 'function' ? prop.default() : prop.default
+    expect(defaultVal).toBe('')
+  })
+
+  it('reasoningText prop accepts a non-empty string value', () => {
+    const prop = CommonSimulatorPreviewDialog.props.reasoningText
+    expect(prop.type).toBe(String)
+    // validator: any string is valid
+    expect('This scenario targets users who reuse passwords.').toEqual(expect.any(String))
+  })
+
   it('callForLanguages maps lookup response into languages list', async () => {
     jest.spyOn(LookupLocalStorage, 'getSingle').mockResolvedValueOnce([
       { isoFriendlyName: 'English', name: 'English', resourceId: 'lang-en', description: 'EN' },

@@ -464,10 +464,12 @@ describe('whitelabel.js store module', () => {
       expect(commit).toHaveBeenCalledWith('SET_COUNTRY_NAME', 'USA')
     })
 
-    it('resetState commits RESET_STATE with initial state', () => {
+    it('resetState commits RESET_STATE with deep-cloned initial state (not initialState ref)', () => {
       const commit = jest.fn()
       whitelabelStore.actions.resetState({ commit })
-      expect(commit).toHaveBeenCalledWith('RESET_STATE', expect.any(Object))
+      const payload = commit.mock.calls[0][1]
+      expect(payload).toEqual(initialState)
+      expect(payload).not.toBe(initialState)
     })
 
     it('setState commits SET_DATA mutation', () => {
@@ -1008,10 +1010,12 @@ describe('whitelabel.js store module', () => {
       expect(commit).toHaveBeenCalledWith('SET_DATA', payload)
     })
 
-    it('resetState commits RESET_STATE with initialState', () => {
+    it('resetState commits RESET_STATE matching initialState (deep clone)', () => {
       const commit = jest.fn()
       whitelabelStore.actions.resetState({ commit })
-      expect(commit).toHaveBeenCalledWith('RESET_STATE', expect.any(Object))
+      const payload = commit.mock.calls[0][1]
+      expect(payload).toEqual(initialState)
+      expect(payload).not.toBe(initialState)
     })
 
     it('callForSystemVersion commits correct mutation', async () => {

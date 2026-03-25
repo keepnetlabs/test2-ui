@@ -27,6 +27,17 @@
         </div>
 
         <div class="agentic-ai-activities-drawer__workspace">
+          <div
+            v-if="!batchListLoading && !filteredBatchList.length && !leftSearch && !leftTypeFilter && !leftStatusFilter"
+            class="agentic-ai-activities-drawer__empty-state"
+          >
+            <h2 class="agentic-ai-activities-drawer__empty-state-title">No activities yet</h2>
+            <p class="agentic-ai-activities-drawer__empty-state-subtitle">
+              Agentic AI hasn't taken any actions yet. Activities will appear here once the AI starts executing tasks.
+            </p>
+          </div>
+
+          <template v-else>
           <div class="agentic-ai-activities-drawer__workspace-filters">
             <div class="agentic-ai-activities-drawer__list-filter-row">
               <div
@@ -82,9 +93,20 @@
               <div class="agentic-ai-activities-drawer__list">
                 <div
                   v-if="batchListLoading"
-                  class="agentic-ai-activities-drawer__list-placeholder"
+                  class="agentic-ai-activities-drawer__skeleton-list"
                 >
-                  Loading activities...
+                  <div
+                    v-for="i in 5"
+                    :key="i"
+                    class="agentic-ai-activities-drawer__skeleton-card"
+                  >
+                    <div class="agentic-ai-activities-drawer__skeleton-line agentic-ai-activities-drawer__skeleton-line--title" />
+                    <div class="agentic-ai-activities-drawer__skeleton-meta">
+                      <div class="agentic-ai-activities-drawer__skeleton-line agentic-ai-activities-drawer__skeleton-line--badge" />
+                      <div class="agentic-ai-activities-drawer__skeleton-line agentic-ai-activities-drawer__skeleton-line--date" />
+                    </div>
+                    <div class="agentic-ai-activities-drawer__skeleton-line agentic-ai-activities-drawer__skeleton-line--bar" />
+                  </div>
                 </div>
                 <div
                   v-else-if="!filteredBatchList.length"
@@ -102,7 +124,6 @@
                     'agentic-ai-activities-drawer__batch-card--selected':
                       batch.batchResourceId === selectedBatchId
                   }"
-                  :style="getBatchCardStyle(batch)"
                   @click="handleBatchSelect(batch)"
                 >
                   <div class="agentic-ai-activities-drawer__batch-card-title-row">
@@ -114,19 +135,22 @@
                     </span>
                   </div>
 
-                  <div class="agentic-ai-activities-drawer__batch-card-subtitle">
-                    {{ batch.subtitle || "Activity" }}
+                  <div class="agentic-ai-activities-drawer__batch-card-meta-row">
+                    <Badge
+                      :text="batch.subtitle || 'Activity'"
+                      :color="getTypeBadgeColor(batch.subtitle)"
+                      size="small"
+                      :full-width="false"
+                    />
+                    <span
+                      v-if="batch.createTime"
+                      class="agentic-ai-activities-drawer__batch-card-date"
+                    >
+                      {{ formatBatchDate(batch.createTime) }}
+                    </span>
                   </div>
 
                   <div class="agentic-ai-activities-drawer__batch-card-footer">
-                    <Badge
-                      :text="batch.status || 'Unknown'"
-                      :color="getStatusBadgeColor(batch.status)"
-                      size="small"
-                      :full-width="false"
-                      class-name="agentic-ai-activities-drawer__status-badge"
-                    />
-
                     <span
                       v-if="batch.userCount !== null && batch.userCount !== undefined"
                       class="agentic-ai-activities-drawer__batch-card-meta"
@@ -134,6 +158,27 @@
                       <VIcon size="14" color="#667085">mdi-account-multiple</VIcon>
                       {{ getUserCountText(batch.userCount) }}
                     </span>
+                    <span
+                      v-if="batch.waitingCount > 0"
+                      class="agentic-ai-activities-drawer__batch-card-pending"
+                    >
+                      {{ batch.waitingCount }} pending
+                    </span>
+                  </div>
+
+                  <div class="agentic-ai-activities-drawer__batch-card-progress">
+                    <div
+                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--approved"
+                      :style="{ width: getBatchSegmentWidth(batch, 'approved') }"
+                    />
+                    <div
+                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--pending"
+                      :style="{ width: getBatchSegmentWidth(batch, 'pending') }"
+                    />
+                    <div
+                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--declined"
+                      :style="{ width: getBatchSegmentWidth(batch, 'declined') }"
+                    />
                   </div>
                 </button>
               </div>
@@ -173,8 +218,18 @@
                     :disabled="actionInProgress"
                     @click="handleApprove(selectedBatch)"
                   >
-                    <VIcon left size="16" color="#2196f3">mdi-check</VIcon>
-                    Approve All Users
+                    <VIcon size="16" color="#2196f3">mdi-check</VIcon>
+                    Approve All
+                  </VBtn>
+                  <VBtn
+                    color="#ffffff"
+                    class="agentic-ai-activities-drawer__approval-button"
+                    rounded
+                    :disabled="actionInProgress"
+                    @click="handleDeclineAll(selectedBatch)"
+                  >
+                    <VIcon size="16" color="#e53935">mdi-close</VIcon>
+                    Decline All
                   </VBtn>
                 </div>
 
@@ -213,24 +268,40 @@
                         :id="getViewActionId(scope.$index)"
                         text="View"
                         :scope="scope"
+                        :check-is-owner-property="false"
                         @on-click="handleView(scope.row)"
                       />
-                      <DefaultButtonRowAction
-                        v-if="isExecuted(scope.row)"
-                        icon="mdi-text-box"
-                        :id="`btn-agentic-ai-activity-report-${scope.$index}`"
-                        text="View Report"
-                        :scope="scope"
-                        @on-click="handleViewReport(scope.row)"
-                      />
-                      <DefaultButtonRowAction
-                        v-if="isWaitingForApproval(scope.row)"
-                        icon="mdi-close"
-                        :id="`btn-agentic-ai-activity-reject-${scope.$index}`"
-                        text="Reject"
-                        :scope="scope"
-                        @on-click="handleReject(scope.row)"
-                      />
+                      <RowActionsMenu
+                        v-if="isExecuted(scope.row) || isWaitingForApproval(scope.row)"
+                      >
+                        <DefaultMenuRowAction
+                          v-if="isExecuted(scope.row)"
+                          icon="mdi-text-box"
+                          :id="`btn-agentic-ai-activity-report-${scope.$index}`"
+                          text="View Report"
+                          :scope="scope"
+                          :check-is-owner-property="false"
+                          @on-click="handleViewReport(scope.row)"
+                        />
+                        <DefaultMenuRowAction
+                          v-if="isWaitingForApproval(scope.row) && scope.row.activityType !== 4"
+                          icon="mdi-check"
+                          :id="`btn-agentic-ai-activity-approve-${scope.$index}`"
+                          text="Approve"
+                          :scope="scope"
+                          :check-is-owner-property="false"
+                          @on-click="handleApproveRow(scope.row)"
+                        />
+                        <DefaultMenuRowAction
+                          v-if="isWaitingForApproval(scope.row)"
+                          icon="mdi-close"
+                          :id="`btn-agentic-ai-activity-reject-${scope.$index}`"
+                          text="Reject"
+                          :scope="scope"
+                          :check-is-owner-property="false"
+                          @on-click="handleReject(scope.row)"
+                        />
+                      </RowActionsMenu>
                     </template>
                   </DataTable>
                 </div>
@@ -244,6 +315,7 @@
               </div>
             </div>
           </multipane>
+          </template>
         </div>
       </div>
 
@@ -254,9 +326,12 @@
         :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
         read-only
         :show-approval-footer="isPreviewRowWaitingForApproval"
+        :show-retry-button="isPreviewRowError"
         :approval-type-name="previewType"
+        :reasoning-text="previewReasoningText"
         @approve="handlePreviewApprove"
         @reject="handlePreviewReject"
+        @retry="handlePreviewRetry"
         @on-close="onPreviewClosed"
       />
       <CommonSimulatorPreviewDialog
@@ -267,9 +342,12 @@
         :api-func="getQuishingScenarioLandingPageAndEmailTemplate"
         read-only
         :show-approval-footer="isPreviewRowWaitingForApproval"
+        :show-retry-button="isPreviewRowError"
         :approval-type-name="previewType"
+        :reasoning-text="previewReasoningText"
         @approve="handlePreviewApprove"
         @reject="handlePreviewReject"
+        @retry="handlePreviewRetry"
         @on-close="onPreviewClosed"
       />
       <TrainingLibraryDrawer
@@ -279,9 +357,12 @@
         only-preview
         is-nested
         :show-approval-footer="isPreviewRowWaitingForApproval"
+        :show-retry-button="isPreviewRowError"
         approval-type-name="Training"
+        :reasoning-text="previewReasoningText"
         @approve="handlePreviewApprove"
         @reject="handlePreviewReject"
+        @retry="handlePreviewRetry"
         @close="onPreviewClosed"
       />
     </VNavigationDrawer>
@@ -316,6 +397,8 @@ import KSelect from "@/components/Common/Inputs/KSelect.vue";
 import DataTable from "@/components/DataTable";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
+import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu.vue";
+import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue";
 import AgenticAIConfirmDialog from "./AgenticAIConfirmDialog.vue";
 import CommonSimulatorPreviewDialog from "@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue";
 // TODO: SmishingScenarioPreview will be re-added after z-index fix
@@ -325,7 +408,7 @@ import TrainingLibraryLightbox from "@/components/AwarenessEducator/TrainingLibr
 import TrainingLibraryLightboxContent from "@/components/AwarenessEducator/TrainingLibraryDrawer/TrainingLibraryLightboxContent.vue";
 import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
 import useDrawerAnimation from "@/hooks/useDrawerAnimation";
-import { searchAgenticAIActivities, approveAgenticAIBatch, rejectAgenticAIActivity } from "@/api/company";
+import { searchAgenticAIActivities, approveAgenticAIBatch, approveAgenticAIActivity, rejectAgenticAIActivity, rejectAgenticAIBatch } from "@/api/company";
 import { getPhishingScenarioLandingPageAndEmailTemplate } from "@/api/phishingsimulator";
 import { getDefaultAxiosPayload } from "@/utils/functions";
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
@@ -352,6 +435,8 @@ export default {
     Badge,
     DataTable,
     DefaultButtonRowAction,
+    DefaultMenuRowAction,
+    RowActionsMenu,
     CommonSimulatorPreviewDialog,
     KSelect,
     TrainingLibraryDrawer,
@@ -458,6 +543,13 @@ export default {
     isPreviewRowWaitingForApproval() {
       return this.previewActivityRow ? this.isWaitingForApproval(this.previewActivityRow) : false;
     },
+    isPreviewRowError() {
+      const s = String(this.previewActivityRow?.status || "").toLowerCase();
+      return s === "error";
+    },
+    previewReasoningText() {
+      return this.previewActivityRow?.explanationJson?.reasoningText || "";
+    },
     batchTypeFilterItems() {
       return this.getStableFilterItems(this.batchTypeFilterOptions, this.leftTypeFilter);
     },
@@ -473,40 +565,16 @@ export default {
       );
       const statusColumnIndex = clonedColumns.findIndex((column) => column.property === "status");
 
-      const scenarioColumn =
-        scenarioColumnIndex > -1
-          ? {
-              ...clonedColumns.splice(scenarioColumnIndex, 1)[0],
-              label: "Scenario Name",
-              filterableType: "text",
-              fixed: "right"
-            }
-          : {
-              label: "Scenario Name",
-              property: "scenarioName",
-              type: "text",
-              show: true,
-              filterableType: "text",
-              minWidth: 180,
-              width: 180,
-              fixed: "right"
-            };
-
       const statusColumn =
         statusColumnIndex > -1
           ? {
-              ...clonedColumns.splice(
-                scenarioColumnIndex > -1 && statusColumnIndex > scenarioColumnIndex
-                  ? statusColumnIndex - 1
-                  : statusColumnIndex,
-                1
-              )[0],
+              ...clonedColumns.splice(statusColumnIndex, 1)[0],
               label: "Approval Status",
               fixed: "right"
             }
           : null;
 
-      return [...clonedColumns, scenarioColumn, ...(statusColumn ? [statusColumn] : [])];
+      return [...clonedColumns, ...(statusColumn ? [statusColumn] : [])];
     },
     filteredBatchList() {
       return this.batchList;
@@ -577,19 +645,15 @@ export default {
     getStatusFilterValueForApi(value = "") {
       const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
 
-      if (normalizedValue === "waitingforapproval") {
+      if (normalizedValue === "pending" || normalizedValue === "waitingforapproval") {
         return "1";
       }
 
-      if (normalizedValue === "approved") {
-        return "2";
-      }
-
-      if (normalizedValue === "rejected") {
+      if (normalizedValue === "declined" || normalizedValue === "rejected") {
         return "3";
       }
 
-      if (normalizedValue === "executed") {
+      if (normalizedValue === "approved" || normalizedValue === "executed") {
         return "4";
       }
 
@@ -618,9 +682,9 @@ export default {
 
       if (this.leftStatusFilter) {
         payload.filter.FilterGroups[0].FilterItems.push({
-          FieldName: "Status",
-          Operator: "Include",
-          Value: this.getStatusFilterValueForApi(this.leftStatusFilter)
+          FieldName: "BatchStatusName",
+          Operator: "=",
+          Value: this.leftStatusFilter
         });
       }
 
@@ -771,6 +835,8 @@ export default {
     },
     getBatchWaitingCount(statusCounts = {}) {
       return (
+        statusCounts.Pending ??
+        statusCounts.pending ??
         statusCounts.WaitingForApproval ??
         statusCounts["Waiting For Approval"] ??
         statusCounts.waitingForApproval ??
@@ -782,19 +848,27 @@ export default {
       const cleaned = String(status)
         .trim()
         .toLowerCase()
-        .replaceAll(/[_-]+/g, " ")
-        .replaceAll(/\s+/g, " ");
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ");
       const statusMap = {
-        "waiting for approval": "Waiting for Approval",
-        waitingforapproval: "Waiting for Approval",
-        executed: "Executed",
-        rejected: "Rejected",
+        pending: "Pending",
+        "waiting for approval": "Pending",
+        waitingforapproval: "Pending",
+        declined: "Declined",
+        rejected: "Declined",
         approved: "Approved",
+        executed: "Approved",
+        "awaiting approval": "Awaiting Approval",
+        awaitingapproval: "Awaiting Approval",
+        "all approved": "All Approved",
+        allapproved: "All Approved",
+        "all declined": "All Declined",
+        alldeclined: "All Declined",
         error: "Error"
       };
       if (statusMap[cleaned]) return statusMap[cleaned];
       if (!cleaned) return status;
-      return cleaned.replaceAll(/\b\w/g, (char) => char.toUpperCase());
+      return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
     },
     mapActivityToBatch(activity = {}) {
       const firstActivity = activity.activities?.[0] || {};
@@ -849,7 +923,8 @@ export default {
         contentCategory: activity.contentCategory || "",
         status: this.normalizeStatus(activity.statusName || activity.status || ""),
         startDate: activity.executionTime || activity.createTime || "",
-        instanceGroup: activity.instanceGroup
+        instanceGroup: activity.instanceGroup,
+        explanationJson: activity.explanationJson || null
       };
     },
     async fetchBatches({ preserveSelection = true } = {}) {
@@ -1028,12 +1103,13 @@ export default {
       const normalized = String(row.status || "")
         .trim()
         .toLowerCase()
-        .replaceAll(/[_-]+/g, " ")
-        .replaceAll(/\s+/g, " ");
-      return normalized === "waiting for approval" || normalized === "waitingforapproval";
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ");
+      return normalized === "pending" || normalized === "waiting for approval" || normalized === "waitingforapproval";
     },
     isExecuted(row = {}) {
-      return String(row.status || "").toLowerCase() === "executed";
+      const s = String(row.status || "").toLowerCase();
+      return s === "approved" || s === "executed";
     },
     getViewActionId(index) {
       return `btn-agentic-ai-activity-view-${index}`;
@@ -1041,14 +1117,22 @@ export default {
     getUserCountText(count = 0) {
       return String(count);
     },
-    getBatchCardStyle(batch = {}) {
-      if (batch.batchResourceId !== this.selectedBatchId) {
-        return {};
-      }
-
-      return {
-        backgroundColor: "#f1f8fe"
-      };
+    getTypeBadgeColor() {
+      return "#667085";
+    },
+    formatBatchDate(dateStr = "") {
+      return dateStr || "";
+    },
+    getBatchSegmentWidth(batch = {}, type = "pending") {
+      const total = batch.userCount || 0;
+      if (!total) return "0%";
+      const counts = batch.statusCounts || {};
+      const approved = counts.Approved ?? counts.approved ?? counts.Executed ?? counts.executed ?? 0;
+      const declined = counts.Declined ?? counts.declined ?? counts.Rejected ?? counts.rejected ?? 0;
+      const pending = counts.Pending ?? counts.pending ?? counts.WaitingForApproval ?? 0;
+      const map = { approved, pending, declined };
+      const pct = Math.round(((map[type] || 0) / total) * 100);
+      return `${pct}%`;
     },
     getBatchCardTitleStyle(batch = {}) {
       if (batch.batchResourceId !== this.selectedBatchId) {
@@ -1062,15 +1146,15 @@ export default {
     getStatusBadgeColor(status = "") {
       const normalized = this.normalizeStatus(status).toLowerCase();
 
-      if (normalized === "waiting for approval") {
+      if (normalized === "pending" || normalized === "waiting for approval") {
         return "#2196f3";
       }
 
-      if (normalized === "executed" || normalized === "approved") {
+      if (normalized === "approved" || normalized === "executed") {
         return "#43a047";
       }
 
-      if (normalized === "rejected" || normalized === "error") {
+      if (normalized === "declined" || normalized === "rejected" || normalized === "error") {
         return "#e53935";
       }
 
@@ -1176,6 +1260,33 @@ export default {
         loading: false
       };
     },
+    handleDeclineAll(row) {
+      const count = this.getApprovalCountForDialog(row);
+      this.confirmDialog = {
+        status: true,
+        action: "declineAll",
+        row,
+        icon: "mdi-close",
+        title: "Confirm Decline",
+        message: `${count || 0} approval${count === 1 ? "" : "s"} will be declined. This action cannot be undone.`,
+        recommendation: "",
+        confirmText: "DECLINE ALL",
+        loading: false
+      };
+    },
+    handleApproveRow(row) {
+      this.confirmDialog = {
+        status: true,
+        action: "approveActivity",
+        row,
+        icon: "mdi-check",
+        title: "Confirm Approval",
+        message: "This action will be approved and executed. This action cannot be undone.",
+        recommendation: "",
+        confirmText: "APPROVE",
+        loading: false
+      };
+    },
     handleReject(row) {
       const rejectDisplayName = this.getRejectDisplayName(row);
       this.confirmDialog = {
@@ -1225,10 +1336,29 @@ export default {
             this.showSnackbar("Action approved and executed successfully.", "green", "mdi-check-circle");
           }
           this.$emit("on-approve", row);
+        } else if (action === "approveActivity") {
+          const response = await approveAgenticAIActivity({ resourceIds: [row.resourceId] });
+          const data = response.data?.data || {};
+          const errors = data.errorCount || 0;
+          if (errors > 0) {
+            this.showSnackbar("Approval failed. Please try again.", "orange", "mdi-alert-circle");
+          } else {
+            this.showSnackbar("Action approved and executed successfully.", "green", "mdi-check-circle");
+          }
+          this.$emit("on-approve", row);
+        } else if (action === "declineAll") {
+          await rejectAgenticAIBatch({ batchResourceId: row.batchResourceId });
+          this.showSnackbar("All pending actions declined.", "green", "mdi-close-circle");
+          this.$emit("on-reject", row);
         } else if (action === "reject") {
           await rejectAgenticAIActivity({ resourceIds: [row.resourceId] });
           this.showSnackbar("Action rejected and will not be executed.", "green", "mdi-close-circle");
           this.$emit("on-reject", row);
+        } else if (action === "retry") {
+          await rejectAgenticAIActivity({ resourceIds: [row.resourceId] });
+          // TODO: call AI endpoint after decline — endpoint TBD
+          this.showSnackbar("Action declined for retry.", "green", "mdi-refresh");
+          this.$emit("on-retry", row);
         }
         await this.fetchBatches();
         this.fetchActivities();
@@ -1242,13 +1372,20 @@ export default {
       const row = this.previewActivityRow;
       if (!row) return;
       this.closePreview();
-      this.executeApproveReject("approve", row);
+      const action = row.activityType === 4 ? "approve" : "approveActivity";
+      this.executeApproveReject(action, row);
     },
     handlePreviewReject() {
       const row = this.previewActivityRow;
       if (!row) return;
       this.closePreview();
       this.executeApproveReject("reject", row);
+    },
+    handlePreviewRetry() {
+      const row = this.previewActivityRow;
+      if (!row) return;
+      this.closePreview();
+      this.executeApproveReject("retry", row);
     },
     handleViewReport(row) {
       const instanceGroup = row.instanceGroup || 1;

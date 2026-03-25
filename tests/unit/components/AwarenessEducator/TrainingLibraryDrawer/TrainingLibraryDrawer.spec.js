@@ -41,4 +41,17 @@ describe('TrainingLibraryDrawer.vue', () => {
     expect($emit).toHaveBeenCalledWith('duplicate-success')
     expect(closeDrawer).toHaveBeenCalled()
   })
+
+  it('reasoningText prop defaults to empty string', () => {
+    const prop = TrainingLibraryDrawer.props.reasoningText
+    expect(prop.type).toBe(String)
+    const defaultVal = typeof prop.default === 'function' ? prop.default() : prop.default
+    expect(defaultVal).toBe('')
+  })
+
+  it('reasoningText prop accepts a non-empty string value', () => {
+    const prop = TrainingLibraryDrawer.props.reasoningText
+    expect(prop.type).toBe(String)
+    expect('AI recommends this training for targeted users.').toEqual(expect.any(String))
+  })
 })

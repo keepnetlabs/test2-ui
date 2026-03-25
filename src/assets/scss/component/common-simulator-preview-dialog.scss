@@ -51,6 +51,30 @@
   }
 }
 
+// Reasoning box for Agentic AI preview
+.common-simulator-preview__reasoning {
+  border-radius: 8px;
+  background: #f1f8fe;
+  border: 1px solid #b3d4fc;
+  padding: 10px 14px;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.common-simulator-preview__reasoning-title {
+  margin-bottom: 8px !important;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2196f3;
+}
+
+.common-simulator-preview__reasoning-text {
+  margin-bottom: 0 !important;
+  font-size: 14px;
+  color: #383b41;
+  line-height: 1.5;
+}
+
 // Approval footer for Agentic AI preview
 .common-simulator-preview__approval-footer {
   flex: 0 0 auto;

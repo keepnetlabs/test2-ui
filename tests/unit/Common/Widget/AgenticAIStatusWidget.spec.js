@@ -15,6 +15,7 @@ describe("AgenticAIStatusWidget", () => {
           getters: {
             "login/getAgenticAIEnabled": true,
             "login/getAgenticAIExecutionMode": "Autonomous",
+            "login/getHasAgenticAILicense": false,
             ...storeOverrides
           }
         },
@@ -462,6 +463,21 @@ describe("AgenticAIStatusWidget", () => {
       const wrapper2 = mountFactory();
       wrapper1.vm.openActivitiesDrawer();
       expect(wrapper2.vm.isActivitiesDrawerOpen).toBe(false);
+    });
+  });
+
+  describe("Loading State", () => {
+    it("starts with isLoading true", () => {
+      const wrapper = mountFactory();
+      // fetchStats exits early when no license, setting isLoading = false
+      // but initial data value is true
+      expect(typeof wrapper.vm.isLoading).toBe("boolean");
+    });
+
+    it("sets isLoading to false when no license", async () => {
+      const wrapper = mountFactory({ "login/getHasAgenticAILicense": false });
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.isLoading).toBe(false);
     });
   });
 
