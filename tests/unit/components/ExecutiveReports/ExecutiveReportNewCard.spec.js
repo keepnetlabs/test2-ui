@@ -43,6 +43,26 @@ describe('ExecutiveReportNewCard.vue', () => {
     expect(ctx.isShowDownloadModal).toBe(true)
   })
 
+  it('editMode watcher deep-clones layout into initialLayout (JSON-safe)', () => {
+    const layout = [{ i: 'a', x: 0 }]
+    const ctx = {
+      layout,
+      initialLayout: null
+    }
+    ExecutiveReportNewCard.watch.editMode.call(ctx, true)
+    expect(ctx.initialLayout).toEqual(layout)
+    expect(ctx.initialLayout).not.toBe(layout)
+  })
+
+  it('editMode watcher does not set initialLayout when editMode becomes false', () => {
+    const ctx = {
+      layout: [{ i: 'b' }],
+      initialLayout: null
+    }
+    ExecutiveReportNewCard.watch.editMode.call(ctx, false)
+    expect(ctx.initialLayout).toBeNull()
+  })
+
   it('routeToExecutiveReports routes scheduled and default flows', () => {
     const scheduledCtx = {
       $route: { params: { isFromScheduledReport: true } },
