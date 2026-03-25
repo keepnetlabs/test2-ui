@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as smtpSettingsApi from '@/api/smtpSettings'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('smtpSettings API', () => {
   const URL = '/companies/smtp-settings'
@@ -353,9 +354,8 @@ describe('smtpSettings API', () => {
       expect(typeof smtpSettingsApi.searchAvailableFor).toBe('function')
     })
 
-    it('should export at least 9 functions', () => {
-      const functions = Object.values(smtpSettingsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(9)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(smtpSettingsApi)
     })
   })
 

@@ -31,6 +31,8 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import reportsApi from '@/api/reports'
+import * as reportsNamespace from '@/api/reports'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('reports API', () => {
   beforeEach(() => {
@@ -528,9 +530,8 @@ describe('reports API', () => {
       expect(typeof reportsApi.getLeaderboardFormDetails).toBe('function')
     })
 
-    it('should export at least 25 functions', () => {
-      const functions = Object.values(reportsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(25)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(reportsNamespace)
     })
   })
 

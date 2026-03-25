@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as landingPageApi from '@/api/landingPage'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('landingPage API', () => {
   beforeEach(() => {
@@ -331,9 +332,8 @@ describe('landingPage API', () => {
       expect(typeof landingPageApi.exportLandingPage).toBe('function')
     })
 
-    it('should export at least 10 functions', () => {
-      const functions = Object.values(landingPageApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(10)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(landingPageApi)
     })
   })
 

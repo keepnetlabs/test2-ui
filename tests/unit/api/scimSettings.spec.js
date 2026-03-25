@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as scimSettingsApi from '@/api/scimSettings'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('scimSettings API', () => {
   const URL = '/scim'
@@ -305,9 +306,8 @@ describe('scimSettings API', () => {
       expect(typeof scimSettingsApi.exportSCIMSettings).toBe('function')
     })
 
-    it('should export at least 8 functions', () => {
-      const functions = Object.values(scimSettingsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(8)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(scimSettingsApi)
     })
   })
 

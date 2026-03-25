@@ -7,6 +7,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as incidentResponderApi from '@/api/incidentResponder'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('incidentResponder API', () => {
   beforeEach(() => {
@@ -311,9 +312,8 @@ describe('incidentResponder API', () => {
       expect(typeof incidentResponderApi.updateRoiSettings).toBe('function')
     })
 
-    it('should export at least 11 functions', () => {
-      const functions = Object.values(incidentResponderApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(11)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(incidentResponderApi)
     })
   })
 

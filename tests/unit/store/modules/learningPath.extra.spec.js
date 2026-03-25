@@ -33,6 +33,12 @@ describe('learningPath store module (real)', () => {
     it('should have state defined', () => {
       expect(learningPath.state).toBeDefined()
     })
+
+    it('learningPathFilters is deep-cloned from trainingLibraryFilters (not shared ref)', () => {
+      const { trainingLibraryFilters } = require('@/components/TrainingLibrary/TrainingLibraryFilters/utils')
+      expect(learningPath.state.learningPathFilters).toEqual(trainingLibraryFilters)
+      expect(learningPath.state.learningPathFilters).not.toBe(trainingLibraryFilters)
+    })
   })
 
   describe('getters', () => {

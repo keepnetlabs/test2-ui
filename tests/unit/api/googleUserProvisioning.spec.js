@@ -7,6 +7,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as googleUserProvisioningApi from '@/api/googleUserProvisioning'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('googleUserProvisioning API', () => {
   beforeEach(() => {
@@ -237,9 +238,8 @@ describe('googleUserProvisioning API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 9 functions', () => {
-      const functions = Object.values(googleUserProvisioningApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(9)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(googleUserProvisioningApi)
     })
 
     it('should have all Google provisioning functions', () => {

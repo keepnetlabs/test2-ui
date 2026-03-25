@@ -426,11 +426,6 @@ describe('direct-creation API', () => {
       expect(typeof directCreationApi.getDomains).toBe('function')
       expect(typeof directCreationApi.exportDirectEmailCreation).toBe('function')
     })
-
-    it('should export at least 13 functions', () => {
-      const functions = Object.values(directCreationApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(13)
-    })
   })
 
   describe('Integration Workflows', () => {

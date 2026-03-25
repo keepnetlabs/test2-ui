@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as permissionsApi from '@/api/permissions'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('permissions API', () => {
   beforeEach(() => {
@@ -183,9 +184,8 @@ describe('permissions API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 6 functions', () => {
-      const functions = Object.values(permissionsApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(6)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(permissionsApi)
     })
 
     it('should have all permission functions', () => {

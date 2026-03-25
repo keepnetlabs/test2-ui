@@ -47,6 +47,14 @@ describe('NewPermissions.vue', () => {
       }
     })
 
+  it('stores initialFormValues as deep clone of formValues in create mode', () => {
+    const wrapper = createWrapper({ isEdit: false })
+    const { formValues, initialFormValues } = wrapper.vm
+    expect(initialFormValues).toEqual(formValues)
+    expect(initialFormValues).not.toBe(formValues)
+    expect(initialFormValues.permissionResourceIdList).not.toBe(formValues.permissionResourceIdList)
+  })
+
   it('computes title for create and edit modes', () => {
     const createWrapperVm = createWrapper()
     expect(createWrapperVm.vm.getTitle).toBe('New System User Role')

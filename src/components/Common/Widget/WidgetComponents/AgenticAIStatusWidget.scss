@@ -707,3 +707,20 @@
   gap: 12px;
   color: #6b7280;
 }
+
+.agentic-ai-activities-drawer__row-action-btn {
+  .v-btn.v-btn--icon {
+    border: 1px solid #e0e0e0 !important;
+    background: #ffffff !important;
+    width: 30px !important;
+    height: 30px !important;
+
+    .v-icon {
+      font-size: 16px !important;
+    }
+  }
+
+  &--approve .v-btn.v-btn--icon .v-icon { color: #43a047 !important; }
+  &--reject  .v-btn.v-btn--icon .v-icon { color: #f56c6c !important; }
+  &--retry   .v-btn.v-btn--icon .v-icon { color: #ff9800 !important; }
+}

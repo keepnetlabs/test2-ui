@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as mailConfigurationApi from '@/api/mailConfiguration'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('mailConfiguration API', () => {
   beforeEach(() => {
@@ -592,9 +593,8 @@ describe('mailConfiguration API', () => {
       expect(typeof mailConfigurationApi.exportMailConfiguration).toBe('function')
     })
 
-    it('should export at least 15 functions', () => {
-      const functions = Object.values(mailConfigurationApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(15)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(mailConfigurationApi)
     })
   })
 

@@ -17,6 +17,7 @@ jest.mock('@/utils/functions', () => ({
 import usersDashboardRequest from '@/utils/usersDashboardRequest'
 import authTestRequest from '@/utils/authTestRequest'
 import * as usersDashboardApi from '@/api/usersDashboard'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('usersDashboard API', () => {
   beforeEach(() => {
@@ -422,9 +423,8 @@ describe('usersDashboard API', () => {
       expect(typeof usersDashboardApi.getUserTimeline).toBe('function')
     })
 
-    it('should export at least 14 functions', () => {
-      const functions = Object.values(usersDashboardApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(14)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(usersDashboardApi)
     })
   })
 

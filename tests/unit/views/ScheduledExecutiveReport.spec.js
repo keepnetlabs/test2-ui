@@ -60,6 +60,29 @@ describe('ScheduledExecutiveReport.vue', () => {
     expect(getExecutiveReportLogo).not.toHaveBeenCalled()
   })
 
+  it('created does not fetch logo when token or companyResourceId is empty string', () => {
+    const { getExecutiveReportLogo } = require('@/api/reports')
+    const ctxEmptyToken = {
+      $route: {
+        params: { id: 'rep-1' },
+        query: { token: '', companyResourceId: 'c1' }
+      },
+      defaultCompanyLogo: null
+    }
+    ScheduledExecutiveReport.created.call(ctxEmptyToken)
+    expect(getExecutiveReportLogo).not.toHaveBeenCalled()
+
+    const ctxEmptyCompany = {
+      $route: {
+        params: { id: 'rep-1' },
+        query: { token: 't1', companyResourceId: '' }
+      },
+      defaultCompanyLogo: null
+    }
+    ScheduledExecutiveReport.created.call(ctxEmptyCompany)
+    expect(getExecutiveReportLogo).not.toHaveBeenCalled()
+  })
+
   it('created sets defaultCompanyLogo as File when logo resolves', async () => {
     const { getExecutiveReportLogo } = require('@/api/reports')
     const bytes = new Uint8Array([137, 80])

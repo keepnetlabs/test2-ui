@@ -230,19 +230,48 @@ describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
       expect(AgenticAIStatusWidget.methods.isPendingApprovalsCard.call(ctx, { title: 'Actions Executed' })).toBe(false)
     })
 
-    it('updateStatCards updates executed and pending card values from statsData', () => {
+    it('updateStatCards uses autonomous.Approved in autonomous mode', () => {
       const statCards = [
         { title: 'Actions Executed', subtitle: 'Last 30 days', value: 0 },
         { title: 'Pending Approvals', subtitle: '', value: 0 }
       ]
       const ctx = {
-        statsData: { last30Days: { Approved: 12, Pending: 5 } },
+        isAutonomousComputed: true,
+        statsData: {
+          last30Days: {
+            autonomous: { Approved: 2, Pending: 0 },
+            approvalGated: { Approved: 423, Pending: 96 },
+            total: { Approved: 425, Pending: 96 }
+          }
+        },
         statCards,
         getPeriodKey: AgenticAIStatusWidget.methods.getPeriodKey
       }
       AgenticAIStatusWidget.methods.updateStatCards.call(ctx)
-      expect(statCards[0].value).toBe(12)
-      expect(statCards[1].value).toBe(5)
+      expect(statCards[0].value).toBe(2)
+      expect(statCards[1].value).toBe(96)
+    })
+
+    it('updateStatCards uses approvalGated.Approved in manual mode', () => {
+      const statCards = [
+        { title: 'Actions Executed', subtitle: 'Last 30 days', value: 0 },
+        { title: 'Pending Approvals', subtitle: '', value: 0 }
+      ]
+      const ctx = {
+        isAutonomousComputed: false,
+        statsData: {
+          last30Days: {
+            autonomous: { Approved: 2, Pending: 0 },
+            approvalGated: { Approved: 423, Pending: 96 },
+            total: { Approved: 425, Pending: 96 }
+          }
+        },
+        statCards,
+        getPeriodKey: AgenticAIStatusWidget.methods.getPeriodKey
+      }
+      AgenticAIStatusWidget.methods.updateStatCards.call(ctx)
+      expect(statCards[0].value).toBe(423)
+      expect(statCards[1].value).toBe(96)
     })
 
     it('updateStatCards does nothing when statsData is null', () => {

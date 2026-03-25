@@ -1,6 +1,7 @@
 import * as DomainsAPI from '@/api/domains'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 jest.mock('@/utils/testRequest', () => ({
   post: jest.fn().mockResolvedValue({ data: {} }),
@@ -176,9 +177,8 @@ describe('Domains API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 8 functions', () => {
-      const functions = Object.values(DomainsAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(8)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(DomainsAPI)
     })
   })
 

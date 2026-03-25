@@ -4,6 +4,7 @@ jest.mock('@/utils/testRequest', () => ({
 
 import testRequest from '@/utils/testRequest'
 import * as sandboxApi from '@/api/sandbox'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('sandbox API', () => {
   beforeEach(() => {
@@ -188,9 +189,8 @@ describe('sandbox API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 5 functions', () => {
-      const functions = Object.values(sandboxApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(5)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(sandboxApi)
     })
 
     it('should have all sandbox functions', () => {

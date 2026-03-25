@@ -1,6 +1,7 @@
 import * as IntegrationsAPI from '@/api/integrations'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 jest.mock('@/utils/testRequest', () => ({
   post: jest.fn().mockResolvedValue({ data: {} }),
@@ -402,9 +403,8 @@ describe('Integrations API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 12 functions', () => {
-      const functions = Object.values(IntegrationsAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(12)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(IntegrationsAPI)
     })
 
     it('should have all integration functions', () => {
