@@ -1,6 +1,6 @@
 <template>
   <div>
-    <WidgetLoading :loading="false">
+    <WidgetLoading :loading="isLoading">
       <template #skeleton-content>
         <ExecutiveWidgetContainer class="agentic-ai-widget">
           <div class="agentic-ai-widget__header-wrapper">
@@ -152,6 +152,7 @@ export default {
   data() {
     return {
       isActivitiesDrawerOpen: false,
+      isLoading: true,
       statsData: null,
       statCards: [
         {
@@ -177,7 +178,7 @@ export default {
           filterableType: "text",
           minWidth: 140,
           width: 140,
-          fixed: false
+          fixed: "left"
         },
         {
           label: "Last Name",
@@ -210,28 +211,13 @@ export default {
           fixed: false
         },
         {
-          label: "Content Type",
-          property: "contentType",
-          type: "text",
-          show: true,
-          filterableType: "select",
-          filterableItems: [
-            { text: "Phishing Simulation", value: "1" },
-            { text: "Quishing Simulation", value: "2" },
-            { text: "Training", value: "4" }
-          ],
-          minWidth: 180,
-          width: 180,
-          fixed: false
-        },
-        {
-          label: "Content Category",
-          property: "contentCategory",
+          label: "Assigned Scenario",
+          property: "scenarioName",
           type: "text",
           show: true,
           filterableType: "text",
-          minWidth: 180,
-          width: 180,
+          minWidth: 200,
+          width: 200,
           fixed: false
         },
         {
@@ -239,23 +225,21 @@ export default {
           property: "status",
           type: "status",
           show: true,
-          minWidth: 280,
-          width: 280,
+          minWidth: 200,
+          width: 200,
           align: "center",
           fixed: false,
           filterableType: "select",
           filterableItems: [
-            { text: "Waiting for Approval", value: "1" },
-            { text: "Approved", value: "2" },
-            { text: "Rejected", value: "3" },
-            { text: "Executed", value: "4" },
+            { text: "Pending", value: "1" },
+            { text: "Declined", value: "3" },
+            { text: "Approved", value: "4" },
             { text: "Error", value: "5" }
           ],
           badgeColorMap: {
-            "waiting for approval": "#2196f3",
+            pending: "#2196f3",
             approved: "#43a047",
-            executed: "#43a047",
-            rejected: "#e53935",
+            declined: "#e53935",
             error: "#e53935"
           },
           fullWidth: false,
@@ -266,16 +250,6 @@ export default {
               color: "#ffffff"
             }
           }
-        },
-        {
-          label: "Start Date",
-          property: "startDate",
-          type: "text",
-          show: true,
-          filterableType: "date",
-          minWidth: 160,
-          width: 160,
-          fixed: false
         }
       ],
       activitiesTableRowActions: [
@@ -289,7 +263,8 @@ export default {
           name: "More",
           id: "btn-agentic-ai-activity-more",
           icon: "mdi-dots-vertical",
-          action: "more"
+          action: "more",
+          subActions: []
         }
       ]
     };
@@ -447,13 +422,18 @@ export default {
   },
   methods: {
     async fetchStats() {
-      if (!this.hasAgenticAILicense) return;
+      if (!this.hasAgenticAILicense) {
+        this.isLoading = false;
+        return;
+      }
       try {
         const response = await getAgenticAIActivitiesStats();
         this.statsData = response.data.data;
         this.updateStatCards();
       } catch {
         // keep default 0 values on error
+      } finally {
+        this.isLoading = false;
       }
     },
     updateStatCards() {
@@ -464,14 +444,14 @@ export default {
       );
       if (executedCard) {
         const periodKey = this.getPeriodKey(executedCard.subtitle);
-        executedCard.value = this.statsData[periodKey]?.Executed ?? 0;
+        executedCard.value = this.statsData[periodKey]?.Approved ?? 0;
       }
 
       const pendingCard = this.statCards.find(
         (c) => c.title === "Pending Approvals"
       );
       if (pendingCard) {
-        pendingCard.value = this.statsData.last30Days?.WaitingForApproval ?? 0;
+        pendingCard.value = this.statsData.last30Days?.Pending ?? 0;
       }
     },
     getPeriodKey(subtitle) {

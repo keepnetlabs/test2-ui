@@ -1,10 +1,8 @@
 require('regenerator-runtime')
 require('jest-canvas-mock')
 
-// Polyfill structuredClone for Node < 17 (Jest)
-if (typeof global.structuredClone === 'undefined') {
-  global.structuredClone = (obj) => JSON.parse(JSON.stringify(obj))
-}
+// Same polyfill as src/main.js (globalThis + undefined handling)
+require('@/utils/structuredClonePolyfill')
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import ElementUI from 'element-ui'

@@ -75,6 +75,10 @@
             </VTooltip>
           </div>
         </div>
+        <div v-if="reasoningText" class="common-simulator-preview__reasoning">
+          <p class="common-simulator-preview__reasoning-title">WHY THIS RECOMMENDATION?</p>
+          <p class="common-simulator-preview__reasoning-text">{{ reasoningText }}</p>
+        </div>
         <EmailTemplatePreviewSkeleton v-if="isLoading" />
         <EmailTemplatesAILoader
           v-if="isRedFlagsLoading"
@@ -358,15 +362,27 @@
           <VIcon left>mdi-close-circle</VIcon>
           Reject {{ approvalTypeName }}
         </VBtn>
-        <VBtn
-          rounded
-          color="#2196f3"
-          class="white--text elevation-0 fw-600"
-          @click="$emit('approve')"
-        >
-          <VIcon left>mdi-check-circle</VIcon>
-          Approve {{ approvalTypeName }}
-        </VBtn>
+        <div style="display: flex; gap: 8px;">
+          <VBtn
+            outlined
+            rounded
+            color="#2196f3"
+            class="elevation-0 fw-600"
+            @click="$emit('retry')"
+          >
+            <VIcon left>mdi-refresh</VIcon>
+            Retry
+          </VBtn>
+          <VBtn
+            rounded
+            color="#2196f3"
+            class="white--text elevation-0 fw-600"
+            @click="$emit('approve')"
+          >
+            <VIcon left>mdi-check-circle</VIcon>
+            Approve {{ approvalTypeName }}
+          </VBtn>
+        </div>
       </div>
     </VNavigationDrawer>
   </div>
@@ -435,7 +451,15 @@ export default {
       type: Boolean,
       default: false
     },
+    showRetryButton: {
+      type: Boolean,
+      default: false
+    },
     approvalTypeName: {
+      type: String,
+      default: ''
+    },
+    reasoningText: {
       type: String,
       default: ''
     }

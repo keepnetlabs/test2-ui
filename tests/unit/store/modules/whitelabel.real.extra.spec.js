@@ -126,10 +126,20 @@ describe('whitelabel store module (real)', () => {
       await whitelabel.actions.callForSystemInfoSummary({ commit })
       expect(commit).not.toHaveBeenCalled()
     })
-    it('resetState commits RESET_STATE', () => {
+    it('resetState commits RESET_STATE with a fresh clone (not store state reference)', () => {
       const commit = jest.fn()
       whitelabel.actions.resetState({ commit })
       expect(commit).toHaveBeenCalledWith('RESET_STATE', expect.any(Object))
+      const payload = commit.mock.calls[0][1]
+      expect(payload).not.toBe(whitelabel.state)
+      expect(payload.brandName).toBe('')
+      expect(payload.loading).toBe(true)
+    })
+    it('resetState payload matches pristine module state snapshot (JSON round-trip)', () => {
+      const commit = jest.fn()
+      whitelabel.actions.resetState({ commit })
+      const payload = commit.mock.calls[0][1]
+      expect(payload).toEqual(createState())
     })
     it('setState commits SET_DATA', () => {
       const commit = jest.fn()

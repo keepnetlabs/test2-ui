@@ -42,6 +42,18 @@ describe('NewExecutiveReportCommonContainer.vue', () => {
     expect(result[0].widgets[0].name).toBe('Risk Widget')
   })
 
+  it('filteredCards does not mutate original visibleCards (deep clone)', () => {
+    const w1 = { name: 'Risk Widget' }
+    const w2 = { name: 'Other Widget' }
+    const visibleCards = [{ widgets: [w1, w2] }]
+    const ctx = {
+      search: 'risk',
+      visibleCards
+    }
+    NewExecutiveReportCommonContainer.computed.filteredCards.call(ctx)
+    expect(visibleCards[0].widgets).toHaveLength(2)
+  })
+
   it('hasManagerMetricAdded and hasNonManagerMetricAdded compute flags', () => {
     const cards = [{ widgets: [{ isSupportManager: true, isAdded: true }] }]
     expect(

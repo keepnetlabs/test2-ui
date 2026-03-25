@@ -1,3 +1,4 @@
+import './utils/structuredClonePolyfill'
 import 'babel-polyfill'
 import Vue from 'vue'
 import VueBrowserUpdate from '@sum.cumo/vue-browserupdate'

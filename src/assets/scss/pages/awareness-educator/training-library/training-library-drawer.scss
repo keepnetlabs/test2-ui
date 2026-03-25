@@ -73,6 +73,28 @@
     }
   }
 
+  &__reasoning {
+    border-radius: 8px;
+    background: #f1f8fe;
+    border: 1px solid #b3d4fc;
+    padding: 10px 14px;
+    margin: 16px 24px 0;
+  }
+
+  &__reasoning-title {
+    margin: 0 0 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2196f3;
+  }
+
+  &__reasoning-text {
+    margin: 0;
+    font-size: 14px;
+    color: #383b41;
+    line-height: 1.5;
+  }
+
   &__content {
     height: calc(100% - 77px);
     overflow-y: auto;
