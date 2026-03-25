@@ -205,7 +205,7 @@ const defaultState = {
   gamificationReportPermissions: GAMIFICATION_REPORT_PERMISSIONS
 }
 let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
-state = JSON.parse(JSON.stringify(state))
+state = structuredClone(state)
 const store = {
   namespaced: true,
   state,

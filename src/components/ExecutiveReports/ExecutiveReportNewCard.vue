@@ -987,7 +987,7 @@ export default {
   watch: {
     editMode(val) {
       if (val) {
-        this.initialLayout = JSON.parse(JSON.stringify(this.layout))
+        this.initialLayout = structuredClone(this.layout)
       }
     },
     defaultCompanyLogo(file) {

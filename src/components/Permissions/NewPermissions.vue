@@ -145,7 +145,7 @@ export default {
   computed: {
     getPrivilegesItems() {
       return this.search
-        ? this.getSearchedItems(JSON.parse(JSON.stringify(this.permissions)))
+        ? this.getSearchedItems(structuredClone(this.permissions))
         : this.permissions
     },
     getTitle() {
@@ -287,7 +287,7 @@ export default {
   },
   mounted() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
     if (this.isEdit && this.resourceId) {
       this.formValues = this.permissionEditData
@@ -323,7 +323,7 @@ export default {
         }
         this.availableForKey = 'updatedKey'
       })
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      this.initialFormValues = structuredClone(this.formValues)
     }
   }
 }

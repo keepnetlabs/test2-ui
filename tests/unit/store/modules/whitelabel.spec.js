@@ -464,7 +464,7 @@ describe('whitelabel.js store module', () => {
       expect(commit).toHaveBeenCalledWith('SET_COUNTRY_NAME', 'USA')
     })
 
-    it('resetState commits RESET_STATE with JSON-cloned initial state (not initialState ref)', () => {
+    it('resetState commits RESET_STATE with deep-cloned initial state (not initialState ref)', () => {
       const commit = jest.fn()
       whitelabelStore.actions.resetState({ commit })
       const payload = commit.mock.calls[0][1]

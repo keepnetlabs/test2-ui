@@ -43,7 +43,7 @@ describe('ExecutiveReportNewCard.vue', () => {
     expect(ctx.isShowDownloadModal).toBe(true)
   })
 
-  it('editMode watcher deep-clones layout into initialLayout (JSON-safe)', () => {
+  it('editMode watcher deep-clones layout into initialLayout', () => {
     const layout = [{ i: 'a', x: 0 }]
     const ctx = {
       layout,

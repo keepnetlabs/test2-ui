@@ -1,4 +1,4 @@
-﻿jest.mock('@/api/permissions', () => ({
+jest.mock('@/api/permissions', () => ({
   createPermissionRoles: jest.fn(() => Promise.resolve()),
   updatePermissionRoles: jest.fn(() => Promise.resolve())
 }))
@@ -74,6 +74,24 @@ describe('NewPermissions.vue methods', () => {
 
     expect(result).toBe(permissions)
     expect(ctx.getSearchedItems).not.toHaveBeenCalled()
+  })
+
+  it('computed getPrivilegesItems deep-clones when search is active so permissions tree is not mutated', () => {
+    const permissions = [
+      {
+        permissionResourceId: 'p1',
+        moduleName: 'X',
+        children: [{ permissionResourceId: 'c1', groupName: 'findme', children: [] }]
+      }
+    ]
+    const ctx = {
+      search: 'find',
+      permissions,
+      getSearchedItems: NewPermissions.methods.getSearchedItems
+    }
+    const snapshot = JSON.stringify(permissions)
+    NewPermissions.computed.getPrivilegesItems.call(ctx)
+    expect(JSON.stringify(permissions)).toBe(snapshot)
   })
 
   it('getSearchedItems keeps parent item when child matches search', () => {

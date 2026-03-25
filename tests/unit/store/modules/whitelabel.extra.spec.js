@@ -209,7 +209,7 @@ describe('whitelabel store (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_SYSTEM_VERSION', '3.0.0')
     })
 
-    it('resetState commits RESET_STATE with JSON clone (not live state reference)', () => {
+    it('resetState commits RESET_STATE with deep clone (not live state reference)', () => {
       const commit = jest.fn()
       whitelabel.actions.resetState({ commit })
       const payload = commit.mock.calls[0][1]
