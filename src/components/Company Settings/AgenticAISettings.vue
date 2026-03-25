@@ -34,7 +34,7 @@
       </div>
 
       <FormGroup
-        v-if="false"
+        v-if="agenticAISettings.isAgenticAIEnabled"
         class-name="agentic-ai-settings__execution-mode-form-group mb-4"
       >
         <template #title>
@@ -76,7 +76,7 @@
       </FormGroup>
 
       <FormGroup
-        v-if="false"
+        v-if="agenticAISettings.isAgenticAIEnabled"
         class-name="agentic-ai-settings__safeguards-form-group mt-6"
       >
         <template #title>
@@ -90,7 +90,7 @@
       </FormGroup>
 
       <FormGroup
-        v-if="false"
+        v-if="agenticAISettings.isAgenticAIEnabled"
         class-name="agentic-ai-settings__behavioral-policies-form-group mt-6"
       >
         <template #title>
