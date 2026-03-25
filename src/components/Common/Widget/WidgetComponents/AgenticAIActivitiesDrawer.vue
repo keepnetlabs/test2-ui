@@ -271,37 +271,45 @@
                         :check-is-owner-property="false"
                         @on-click="handleView(scope.row)"
                       />
-                      <RowActionsMenu
-                        v-if="isExecuted(scope.row) || isWaitingForApproval(scope.row)"
-                      >
-                        <DefaultMenuRowAction
-                          v-if="isExecuted(scope.row)"
-                          icon="mdi-text-box"
-                          :id="`btn-agentic-ai-activity-report-${scope.$index}`"
-                          text="View Report"
-                          :scope="scope"
-                          :check-is-owner-property="false"
-                          @on-click="handleViewReport(scope.row)"
-                        />
-                        <DefaultMenuRowAction
-                          v-if="isWaitingForApproval(scope.row) && scope.row.activityType !== 4"
-                          icon="mdi-check"
-                          :id="`btn-agentic-ai-activity-approve-${scope.$index}`"
-                          text="Approve"
-                          :scope="scope"
-                          :check-is-owner-property="false"
-                          @on-click="handleApproveRow(scope.row)"
-                        />
-                        <DefaultMenuRowAction
-                          v-if="isWaitingForApproval(scope.row)"
-                          icon="mdi-close"
-                          :id="`btn-agentic-ai-activity-reject-${scope.$index}`"
-                          text="Reject"
-                          :scope="scope"
-                          :check-is-owner-property="false"
-                          @on-click="handleReject(scope.row)"
-                        />
-                      </RowActionsMenu>
+                      <DefaultButtonRowAction
+                        v-if="isExecuted(scope.row)"
+                        icon="mdi-text-box"
+                        :id="`btn-agentic-ai-activity-report-${scope.$index}`"
+                        text="View Report"
+                        :scope="scope"
+                        :check-is-owner-property="false"
+                        @on-click="handleViewReport(scope.row)"
+                      />
+                      <DefaultButtonRowAction
+                        v-if="isWaitingForApproval(scope.row) && scope.row.activityType !== 4"
+                        icon="mdi-check"
+                        :id="`btn-agentic-ai-activity-approve-${scope.$index}`"
+                        text="Approve"
+                        :scope="scope"
+                        :check-is-owner-property="false"
+                        class="agentic-ai-activities-drawer__row-action-btn agentic-ai-activities-drawer__row-action-btn--approve"
+                        @on-click="handleApproveRow(scope.row)"
+                      />
+                      <DefaultButtonRowAction
+                        v-if="isWaitingForApproval(scope.row)"
+                        icon="mdi-close"
+                        :id="`btn-agentic-ai-activity-reject-${scope.$index}`"
+                        text="Reject"
+                        :scope="scope"
+                        :check-is-owner-property="false"
+                        class="agentic-ai-activities-drawer__row-action-btn agentic-ai-activities-drawer__row-action-btn--reject"
+                        @on-click="handleReject(scope.row)"
+                      />
+                      <DefaultButtonRowAction
+                        v-if="isRowError(scope.row)"
+                        icon="mdi-refresh"
+                        :id="`btn-agentic-ai-activity-retry-${scope.$index}`"
+                        text="Retry"
+                        :scope="scope"
+                        :check-is-owner-property="false"
+                        class="agentic-ai-activities-drawer__row-action-btn agentic-ai-activities-drawer__row-action-btn--retry"
+                        @on-click="handleRetry(scope.row)"
+                      />
                     </template>
                   </DataTable>
                 </div>
@@ -380,6 +388,12 @@
       @cancel="closeConfirmDialog"
       @confirm="handleConfirmAction"
     />
+    <AgenticAIRejectDialog
+      :status="rejectDialog.status"
+      :loading="rejectDialog.loading"
+      @cancel="closeRejectDialog"
+      @confirm="handleRejectConfirm"
+    />
     <TrainingLibraryLightbox :value="getLightbox.status" @input="handleLightboxClose">
       <TrainingLibraryLightboxContent
         :preview-data="getLightbox.previewData"
@@ -397,9 +411,8 @@ import KSelect from "@/components/Common/Inputs/KSelect.vue";
 import DataTable from "@/components/DataTable";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
-import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu.vue";
-import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue";
 import AgenticAIConfirmDialog from "./AgenticAIConfirmDialog.vue";
+import AgenticAIRejectDialog from "./AgenticAIRejectDialog.vue";
 import CommonSimulatorPreviewDialog from "@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue";
 // TODO: SmishingScenarioPreview will be re-added after z-index fix
 // import SmishingScenarioPreview from "@/components/SmishingScenarios/SmishingScenarioPreview.vue";
@@ -432,11 +445,10 @@ export default {
   mixins: [useDrawerAnimation],
   components: {
     AgenticAIConfirmDialog,
+    AgenticAIRejectDialog,
     Badge,
     DataTable,
     DefaultButtonRowAction,
-    DefaultMenuRowAction,
-    RowActionsMenu,
     CommonSimulatorPreviewDialog,
     KSelect,
     TrainingLibraryDrawer,
@@ -498,6 +510,12 @@ export default {
         message: "",
         recommendation: "",
         confirmText: "",
+        loading: false
+      },
+      rejectDialog: {
+        status: false,
+        action: null,
+        row: null,
         loading: false
       },
       PREVIEW_DIALOG_TYPES,
@@ -1301,6 +1319,22 @@ export default {
         loading: false
       };
     },
+    closeRejectDialog() {
+      this.rejectDialog = {
+        status: false,
+        action: null,
+        row: null,
+        loading: false
+      };
+    },
+    async handleRejectConfirm(rejectingReason) {
+      const { action, row } = this.rejectDialog;
+      if (!row) return;
+      this.rejectDialog.loading = true;
+      await this.executeApproveReject(action, row, rejectingReason);
+      this.rejectDialog.loading = false;
+      this.closeRejectDialog();
+    },
     closeConfirmDialog() {
       this.confirmDialog = {
         ...this.confirmDialog,
@@ -1321,7 +1355,7 @@ export default {
     showSnackbar(message, color = "green", icon = "mdi-check-circle") {
       this.$store.dispatch("common/createSnackBar", { message, color, icon });
     },
-    async executeApproveReject(action, row) {
+    async executeApproveReject(action, row, rejectingReason) {
       if (!row || this.actionInProgress) return;
       this.actionInProgress = true;
       try {
@@ -1355,7 +1389,7 @@ export default {
           this.showSnackbar("Action rejected and will not be executed.", "green", "mdi-close-circle");
           this.$emit("on-reject", row);
         } else if (action === "retry") {
-          await rejectAgenticAIActivity({ resourceIds: [row.resourceId] });
+          await rejectAgenticAIActivity({ resourceIds: [row.resourceId], batchResourceId: row.batchResourceId, rejectingReason });
           // TODO: call AI endpoint after decline — endpoint TBD
           this.showSnackbar("Action declined for retry.", "green", "mdi-refresh");
           this.$emit("on-retry", row);
@@ -1381,11 +1415,27 @@ export default {
       this.closePreview();
       this.executeApproveReject("reject", row);
     },
+    isRowError(row) {
+      return String(row?.status || "").toLowerCase() === "error";
+    },
+    handleRetry(row) {
+      this.rejectDialog = {
+        status: true,
+        action: "retry",
+        row,
+        loading: false
+      };
+    },
     handlePreviewRetry() {
       const row = this.previewActivityRow;
       if (!row) return;
       this.closePreview();
-      this.executeApproveReject("retry", row);
+      this.rejectDialog = {
+        status: true,
+        action: "retry",
+        row,
+        loading: false
+      };
     },
     handleViewReport(row) {
       const instanceGroup = row.instanceGroup || 1;

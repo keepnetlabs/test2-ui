@@ -13,6 +13,7 @@ import emailThreatSimulatorRequest from '@/utils/emailThreatSimulatorRequest'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as emailThreatSimulatorApi from '@/api/emailThreatSimlator'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 // Mock APP_CONFIG and localStorage
 global.APP_CONFIG = { VUE_APP_API_KEY: 'test-api-key' }
@@ -438,9 +439,8 @@ describe('emailThreatSimulator API', () => {
       expect(typeof emailThreatSimulatorApi.getLookupNameList).toBe('function')
     })
 
-    it('should export at least 20 functions', () => {
-      const functions = Object.values(emailThreatSimulatorApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(20)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(emailThreatSimulatorApi)
     })
   })
 

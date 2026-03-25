@@ -1,5 +1,6 @@
 import * as AllowListAPI from '@/api/allowList'
 import testRequest from '@/utils/testRequest'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 jest.mock('@/utils/testRequest', () => ({
   post: jest.fn().mockResolvedValue({ data: {} }),
@@ -226,9 +227,8 @@ describe('AllowList API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 9 functions', () => {
-      const functions = Object.values(AllowListAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(9)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(AllowListAPI)
     })
 
     it('should have all expected functions', () => {

@@ -45,6 +45,7 @@ import authTestRequest from '@/utils/authTestRequest'
 import request from '@/utils/request'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as authApi from '@/api/auth'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('auth API', () => {
   beforeEach(() => {
@@ -525,9 +526,8 @@ describe('auth API', () => {
       expect(typeof authApi.getAgentLoginUrl).toBe('function')
     })
 
-    it('should export at least 16 functions', () => {
-      const functions = Object.values(authApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(16)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(authApi)
     })
   })
 

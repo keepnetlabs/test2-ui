@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as samlSettingsApi from '@/api/samlSettings'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('samlSettings API', () => {
   const BASE_URL = '/companies/saml-settings'
@@ -379,9 +380,8 @@ describe('samlSettings API', () => {
       expect(typeof samlSettingsApi.exportSamlSettings).toBe('function')
     })
 
-    it('should export at least 9 functions', () => {
-      const functions = Object.values(samlSettingsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(9)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(samlSettingsApi)
     })
   })
 

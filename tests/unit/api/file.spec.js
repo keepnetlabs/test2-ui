@@ -1,5 +1,6 @@
 import * as FileAPI from '@/api/file'
 import testRequest from '@/utils/testRequest'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 jest.mock('@/utils/testRequest', () => ({
   get: jest.fn().mockResolvedValue({ data: [] }),
@@ -216,9 +217,8 @@ describe('File API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 4 functions', () => {
-      const functions = Object.values(FileAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(4)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(FileAPI)
     })
 
     it('should have getUploadedFiles', () => {

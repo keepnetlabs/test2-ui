@@ -13,6 +13,7 @@ import testRequest from '@/utils/testRequest'
 import uploadRequest from '@/utils/uploadRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as threatSharingApi from '@/api/threatSharing'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 // Mock localStorage
 Object.defineProperty(global, 'localStorage', {
@@ -514,9 +515,8 @@ describe('threatSharing API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 44+ functions', () => {
-      const functions = Object.values(threatSharingApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThan(40)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(threatSharingApi)
     })
   })
 

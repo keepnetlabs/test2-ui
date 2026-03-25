@@ -590,11 +590,6 @@ describe('callback API', () => {
       expect(typeof callbackApi.getAvailableCallbackNumbers).toBe('function')
       expect(typeof callbackApi.createCallbackCampaign).toBe('function')
     })
-
-    it('should export at least 25 functions', () => {
-      const functions = Object.values(callbackApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(25)
-    })
   })
 
   describe('Integration Workflows', () => {

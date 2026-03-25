@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as siemIntegrationsApi from '@/api/siemIntegrations'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('siemIntegrations API', () => {
   beforeEach(() => {
@@ -361,9 +362,8 @@ describe('siemIntegrations API', () => {
       expect(typeof siemIntegrationsApi.exportSIEMIntegrations).toBe('function')
     })
 
-    it('should export at least 7 functions', () => {
-      const functions = Object.values(siemIntegrationsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(7)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(siemIntegrationsApi)
     })
   })
 

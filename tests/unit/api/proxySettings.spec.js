@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as proxySettingsApi from '@/api/proxySettings'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('proxySettings API', () => {
   const URL = '/companies/proxy-settings'
@@ -292,9 +293,8 @@ describe('proxySettings API', () => {
       expect(typeof proxySettingsApi.exportProxySettings).toBe('function')
     })
 
-    it('should export at least 7 functions', () => {
-      const functions = Object.values(proxySettingsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(7)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(proxySettingsApi)
     })
   })
 

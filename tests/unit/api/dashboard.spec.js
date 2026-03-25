@@ -1,6 +1,7 @@
 import * as DashboardAPI from '@/api/dashboard'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 jest.mock('@/utils/testRequest', () => ({
   post: jest.fn().mockResolvedValue({ data: {} }),
@@ -243,9 +244,8 @@ describe('Dashboard API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 6 functions', () => {
-      const functions = Object.values(DashboardAPI).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(6)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(DashboardAPI)
     })
 
     it('should have selectCompany', () => {

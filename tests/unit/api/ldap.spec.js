@@ -7,7 +7,9 @@ jest.mock('@/utils/testRequest', () => ({
 
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import * as ldapNamespace from '@/api/ldap'
 import ldapApi from '@/api/ldap'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('ldap API', () => {
   beforeEach(() => {
@@ -310,9 +312,8 @@ describe('ldap API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 16 items (15 named functions + default)', () => {
-      const functions = Object.keys(ldapApi).filter(key => typeof ldapApi[key] === 'function')
-      expect(functions).toHaveLength(16)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(ldapNamespace)
     })
 
     it('should have all LDAP functions', () => {

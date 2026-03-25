@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as systemUsersApi from '@/api/systemUsers'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('systemUsers API', () => {
   beforeEach(() => {
@@ -251,9 +252,8 @@ describe('systemUsers API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 9 functions', () => {
-      const functions = Object.values(systemUsersApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(9)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(systemUsersApi)
     })
 
     it('should have all system user management functions', () => {

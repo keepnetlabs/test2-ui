@@ -26,6 +26,8 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import microsoftTeamsSettingsApi from '@/api/microsoftTeamsSettings'
+import * as microsoftTeamsNamespace from '@/api/microsoftTeamsSettings'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('microsoftTeamsSettings API', () => {
   beforeEach(() => {
@@ -307,9 +309,8 @@ describe('microsoftTeamsSettings API', () => {
       expect(typeof microsoftTeamsSettingsApi.sendTestMessage).toBe('function')
     })
 
-    it('should export at least 9 functions', () => {
-      const functions = Object.values(microsoftTeamsSettingsApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(9)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(microsoftTeamsNamespace)
     })
   })
 

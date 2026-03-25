@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as dnsServicesApi from '@/api/dnsServices'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('dnsServices API', () => {
   beforeEach(() => {
@@ -238,9 +239,8 @@ describe('dnsServices API', () => {
   })
 
   describe('All Exported Functions', () => {
-    it('should export 7 functions', () => {
-      const functions = Object.values(dnsServicesApi).filter(x => typeof x === 'function')
-      expect(functions).toHaveLength(7)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(dnsServicesApi)
     })
 
     it('should have all DNS service functions', () => {

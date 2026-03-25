@@ -59,6 +59,12 @@ describe('trainingLibrary store module (real)', () => {
     it('should have getters defined', () => {
       expect(trainingLibrary.getters).toBeDefined()
     })
+
+    it('initial filters are deep-cloned from trainingLibraryFilters (not shared ref)', () => {
+      const { trainingLibraryFilters } = require('@/components/TrainingLibrary/TrainingLibraryFilters/utils')
+      expect(trainingLibrary.state.filters).toEqual(trainingLibraryFilters)
+      expect(trainingLibrary.state.filters).not.toBe(trainingLibraryFilters)
+    })
   })
 
   describe('mutations', () => {
@@ -182,6 +188,47 @@ describe('trainingLibrary store module (real)', () => {
         expect(state.filterType).toBe('Or')
         expect(state.axiosPayload.filter.FilterGroups[0].Condition).toBe('Or')
       })
+
+      it('SET_DEFAULT_TABLE_FILTERS merges missing filter keys from defaults (keeps saved rows)', () => {
+        const { trainingLibraryFilters } = require('@/components/TrainingLibrary/TrainingLibraryFilters/utils')
+        const { PROPERTY_STORE } = require('@/model/constants/commonConstants')
+
+        const snapshot = createState()
+        localStorage.setItem(
+          'training-library-filters',
+          JSON.stringify({
+            filters: [
+              {
+                key: PROPERTY_STORE.BEHAVIOURS,
+                text: 'Legacy only',
+                show: false
+              }
+            ],
+            filterOptionsFilters: snapshot.filterOptionsFilters,
+            filterType: 'Or',
+            sortBy: snapshot.sortBy,
+            search: '',
+            axiosPayload: snapshot.axiosPayload,
+            selectedTrainingContent: snapshot.selectedTrainingContent,
+            selectedSubTrainingContent: snapshot.selectedSubTrainingContent
+          })
+        )
+
+        const state = createState()
+        trainingLibrary.mutations.SET_DEFAULT_TABLE_FILTERS(state)
+
+        expect(state.filters.length).toBe(trainingLibraryFilters.length)
+        const keys = new Set(state.filters.map((f) => f.key).filter(Boolean))
+        expect(trainingLibraryFilters.every((df) => keys.has(df.key))).toBe(true)
+
+        const legacyBehaviours = state.filters.find((f) => f.key === PROPERTY_STORE.BEHAVIOURS)
+        expect(legacyBehaviours.text).toBe('Legacy only')
+        expect(legacyBehaviours.show).toBe(false)
+
+        const defaultType = trainingLibraryFilters.find((f) => f.key === PROPERTY_STORE.TYPE)
+        const mergedType = state.filters.find((f) => f.key === PROPERTY_STORE.TYPE)
+        expect(mergedType.text).toBe(defaultType.text)
+      })
     })
   })
 
@@ -256,6 +303,25 @@ describe('trainingLibrary store module (real)', () => {
           { name: TRAINING_LIBRARY_TYPES.SCREENSAVER, totalCount: 0 },
           { name: TRAINING_LIBRARY_TYPES.SURVEY, totalCount: 0 }
         ])
+      })
+
+      it('callForSummary leaves state.axiosPayload unchanged (clone used for request)', async () => {
+        const state = createState()
+        state.axiosPayload.pageNumber = 7
+        const commit = jest.fn()
+
+        AwarenessEducatorService.getTrainingTypeCount.mockResolvedValue({
+          data: {
+            data: [{ trainingType: TRAINING_LIBRARY_PAYLOAD_TYPES.TRAINING, trainingCount: 1 }]
+          }
+        })
+
+        await trainingLibrary.actions.callForSummary({ commit, state })
+
+        expect(state.axiosPayload.pageNumber).toBe(7)
+        expect(AwarenessEducatorService.getTrainingTypeCount).toHaveBeenCalledWith(
+          expect.objectContaining({ pageNumber: 1 })
+        )
       })
 
       it('callForTableData keeps loading true when request is aborted (empty response)', async () => {

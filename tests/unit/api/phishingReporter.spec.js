@@ -8,6 +8,7 @@ jest.mock('@/utils/testRequest', () => ({
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import * as phishingReporterApi from '@/api/phishingReporter'
+import { expectNamespaceExportsOnlyFunctions } from '../helpers/expectNamespaceExportsOnlyFunctions'
 
 describe('phishingReporter API', () => {
   beforeEach(() => {
@@ -419,9 +420,8 @@ describe('phishingReporter API', () => {
       expect(typeof phishingReporterApi.deleteGraphAccount).toBe('function')
     })
 
-    it('should export at least 22 functions', () => {
-      const functions = Object.values(phishingReporterApi).filter(x => typeof x === 'function')
-      expect(functions.length).toBeGreaterThanOrEqual(22)
+    it('exports only request functions', () => {
+      expectNamespaceExportsOnlyFunctions(phishingReporterApi)
     })
   })
 
