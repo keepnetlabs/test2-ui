@@ -70,40 +70,54 @@ describe("AgenticAIActivitiesDrawer", () => {
     CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse([]));
   });
 
-  it("normalizes waiting for approval status", () => {
+  it("normalizes waiting for approval status to Pending", () => {
     const wrapper = mountFactory();
-    expect(wrapper.vm.normalizeStatus("waiting for approval")).toBe(
-      "Waiting for Approval"
-    );
+    expect(wrapper.vm.normalizeStatus("waiting for approval")).toBe("Pending");
   });
 
-  it("normalizes executed and rejected statuses", () => {
+  it("normalizes executed to Approved and rejected to Declined", () => {
     const wrapper = mountFactory();
-    expect(wrapper.vm.normalizeStatus("executed")).toBe("Executed");
-    expect(wrapper.vm.normalizeStatus("rejected")).toBe("Rejected");
+    expect(wrapper.vm.normalizeStatus("executed")).toBe("Approved");
+    expect(wrapper.vm.normalizeStatus("rejected")).toBe("Declined");
   });
 
-  it("normalizes statuses with underscores or hyphens", () => {
+  it("normalizes statuses with underscores or hyphens to Pending", () => {
     const wrapper = mountFactory();
-    expect(wrapper.vm.normalizeStatus("waiting_for_approval")).toBe(
-      "Waiting for Approval"
-    );
-    expect(wrapper.vm.normalizeStatus("waiting-for-approval")).toBe(
-      "Waiting for Approval"
-    );
+    expect(wrapper.vm.normalizeStatus("waiting_for_approval")).toBe("Pending");
+    expect(wrapper.vm.normalizeStatus("waiting-for-approval")).toBe("Pending");
   });
 
   it("treats waiting for approval status as actionable regardless of case", () => {
     const wrapper = mountFactory();
-    expect(wrapper.vm.isWaitingForApproval({ status: "waiting for approval" })).toBe(
-      true
-    );
-    expect(wrapper.vm.isWaitingForApproval({ status: "Waiting for Approval" })).toBe(
-      true
-    );
+    expect(wrapper.vm.isWaitingForApproval({ status: "waiting for approval" })).toBe(true);
+    expect(wrapper.vm.isWaitingForApproval({ status: "Waiting for Approval" })).toBe(true);
   });
 
-  it("applies normalized status to paged data in fetchActivities", async () => {
+  it("treats Pending status as waiting for approval", () => {
+    const wrapper = mountFactory();
+    expect(wrapper.vm.isWaitingForApproval({ status: "Pending" })).toBe(true);
+  });
+
+  it("applies Approved status to paged data when statusName is executed", async () => {
+    const activities = [
+      {
+        resourceId: "a1",
+        batchResourceId: "b1",
+        activityType: 1,
+        statusName: "executed",
+        targetUserFirstName: "Jane",
+        targetUserLastName: "Doe"
+      }
+    ];
+    CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse(activities));
+
+    const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+    await wrapper.vm.fetchActivities();
+
+    expect(wrapper.vm.pagedTableData[0].status).toBe("Approved");
+  });
+
+  it("applies Pending status to paged data when statusName is waiting for approval", async () => {
     const activities = [
       {
         resourceId: "a1",
@@ -119,7 +133,7 @@ describe("AgenticAIActivitiesDrawer", () => {
     const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
     await wrapper.vm.fetchActivities();
 
-    expect(wrapper.vm.pagedTableData[0].status).toBe("Waiting for Approval");
+    expect(wrapper.vm.pagedTableData[0].status).toBe("Pending");
   });
 
   it("resets page number on search change", () => {
@@ -131,6 +145,99 @@ describe("AgenticAIActivitiesDrawer", () => {
     });
 
     expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+  });
+
+  describe("mapActivityToRow", () => {
+    it("includes explanationJson in mapped row", () => {
+      const wrapper = mountFactory();
+      const activity = {
+        resourceId: "r1",
+        activityType: 1,
+        statusName: "executed",
+        explanationJson: { reasoningText: "User has low score." }
+      };
+      const row = wrapper.vm.mapActivityToRow(activity);
+      expect(row.explanationJson).toEqual({ reasoningText: "User has low score." });
+    });
+
+    it("sets explanationJson to null when not provided", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({ resourceId: "r1" });
+      expect(row.explanationJson).toBeNull();
+    });
+  });
+
+  describe("getBatchSegmentWidth", () => {
+    it("returns 0% when userCount is zero", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBatchSegmentWidth({ userCount: 0 }, "approved")).toBe("0%");
+    });
+
+    it("calculates approved segment correctly", () => {
+      const wrapper = mountFactory();
+      const batch = { userCount: 4, statusCounts: { Approved: 2, Pending: 1, Declined: 1 } };
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "approved")).toBe("50%");
+    });
+
+    it("calculates pending segment correctly", () => {
+      const wrapper = mountFactory();
+      const batch = { userCount: 4, statusCounts: { Approved: 2, Pending: 1, Declined: 1 } };
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "pending")).toBe("25%");
+    });
+
+    it("calculates declined segment correctly", () => {
+      const wrapper = mountFactory();
+      const batch = { userCount: 4, statusCounts: { Approved: 2, Pending: 1, Declined: 1 } };
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "declined")).toBe("25%");
+    });
+
+    it("handles missing statusCounts gracefully", () => {
+      const wrapper = mountFactory();
+      const batch = { userCount: 2, statusCounts: {} };
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "approved")).toBe("0%");
+    });
+  });
+
+  describe("formatBatchDate", () => {
+    it("returns the date string as-is from backend", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.formatBatchDate("03/25/2026 07:49")).toBe("03/25/2026 07:49");
+    });
+
+    it("returns empty string for empty input", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.formatBatchDate("")).toBe("");
+    });
+
+    it("returns empty string when no argument given", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.formatBatchDate()).toBe("");
+    });
+  });
+
+  describe("previewReasoningText computed", () => {
+    it("returns reasoningText from previewActivityRow explanationJson", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        previewActivityRow: {
+          status: "Pending",
+          explanationJson: { reasoningText: "Finance scenario selected." }
+        }
+      });
+      expect(wrapper.vm.previewReasoningText).toBe("Finance scenario selected.");
+    });
+
+    it("returns empty string when previewActivityRow is null", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({ previewActivityRow: null });
+      expect(wrapper.vm.previewReasoningText).toBe("");
+    });
+
+    it("returns empty string when explanationJson is missing", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({ previewActivityRow: { status: "Pending", explanationJson: null } });
+      expect(wrapper.vm.previewReasoningText).toBe("");
+    });
   });
 
   describe("Component Structure", () => {
@@ -151,47 +258,44 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Status Normalization", () => {
-    it("should normalize waiting for approval status", () => {
+    it("should normalize pending status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("waiting for approval")).toBe("Waiting for Approval");
+      expect(wrapper.vm.normalizeStatus("pending")).toBe("Pending");
     });
 
-    it("should normalize executed status", () => {
+    it("should normalize waiting for approval to Pending", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("executed")).toBe("Executed");
+      expect(wrapper.vm.normalizeStatus("waiting for approval")).toBe("Pending");
     });
 
-    it("should normalize rejected status", () => {
+    it("should normalize executed to Approved", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("rejected")).toBe("Rejected");
+      expect(wrapper.vm.normalizeStatus("executed")).toBe("Approved");
+    });
+
+    it("should normalize rejected to Declined", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeStatus("rejected")).toBe("Declined");
+    });
+
+    it("should normalize declined", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeStatus("declined")).toBe("Declined");
     });
 
     it("should handle underscore separated status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("waiting_for_approval")).toBe("Waiting for Approval");
+      expect(wrapper.vm.normalizeStatus("waiting_for_approval")).toBe("Pending");
     });
 
     it("should handle hyphen separated status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("waiting-for-approval")).toBe("Waiting for Approval");
+      expect(wrapper.vm.normalizeStatus("waiting-for-approval")).toBe("Pending");
     });
 
-    it("should preserve already normalized status", () => {
+    it("should normalize error status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("Executed")).toBe("Executed");
-    });
-
-    it("should handle mixed case status", () => {
-      const wrapper = mountFactory();
-      expect(wrapper.vm.normalizeStatus("WAITING FOR APPROVAL")).toBeDefined();
-    });
-
-    it("should normalize multiple status variations", () => {
-      const wrapper = mountFactory();
-      const statuses = ["pending", "processing", "completed"];
-      statuses.forEach((status) => {
-        expect(wrapper.vm.normalizeStatus(status)).toBeDefined();
-      });
+      expect(wrapper.vm.normalizeStatus("error")).toBe("Error");
     });
   });
 
@@ -201,24 +305,31 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.isWaitingForApproval({ status: "waiting for approval" })).toBe(true);
     });
 
-    it("should detect waiting for approval with capital letters", () => {
+    it("should detect Pending as waiting for approval", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({ status: "Waiting for Approval" })).toBe(true);
+      expect(wrapper.vm.isWaitingForApproval({ status: "Pending" })).toBe(true);
     });
 
-    it("should not detect non-approval status", () => {
+    it("should not detect approved/executed as waiting for approval", () => {
       const wrapper = mountFactory();
+      expect(wrapper.vm.isWaitingForApproval({ status: "Approved" })).toBe(false);
       expect(wrapper.vm.isWaitingForApproval({ status: "executed" })).toBe(false);
     });
 
     it("should handle missing status field", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({})).toBeDefined();
+      expect(wrapper.vm.isWaitingForApproval({})).toBe(false);
     });
 
-    it("should be case-insensitive for approval check", () => {
+    it("isExecuted returns true for approved or executed status", () => {
       const wrapper = mountFactory();
-      expect(wrapper.vm.isWaitingForApproval({ status: "WAITING FOR APPROVAL" })).toBeDefined();
+      expect(wrapper.vm.isExecuted({ status: "Approved" })).toBe(true);
+      expect(wrapper.vm.isExecuted({ status: "executed" })).toBe(true);
+    });
+
+    it("isExecuted returns false for other statuses", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isExecuted({ status: "Pending" })).toBe(false);
     });
   });
 
@@ -256,7 +367,7 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Data Fetching", () => {
-    it("should fetch activities and populate pagedTableData", async () => {
+    it("should fetch activities and populate pagedTableData with Approved status", async () => {
       const activities = [
         {
           resourceId: "a1",
@@ -273,12 +384,11 @@ describe("AgenticAIActivitiesDrawer", () => {
       await wrapper.vm.fetchActivities();
 
       expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalled();
-      expect(wrapper.vm.pagedTableData).toBeDefined();
       expect(wrapper.vm.pagedTableData.length).toBe(1);
-      expect(wrapper.vm.pagedTableData[0].status).toBe("Executed");
+      expect(wrapper.vm.pagedTableData[0].status).toBe("Approved");
     });
 
-    it("should normalize status during fetch", async () => {
+    it("should normalize to Pending when statusName is waiting for approval", async () => {
       const activities = [
         {
           resourceId: "a1",
@@ -294,7 +404,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
       await wrapper.vm.fetchActivities();
 
-      expect(wrapper.vm.pagedTableData[0].status).toBe("Waiting for Approval");
+      expect(wrapper.vm.pagedTableData[0].status).toBe("Pending");
     });
 
     it("should not fetch when value is false", async () => {
@@ -311,6 +421,24 @@ describe("AgenticAIActivitiesDrawer", () => {
       await wrapper.vm.fetchActivities();
 
       expect(wrapper.vm.pagedTableData).toEqual([]);
+    });
+
+    it("maps explanationJson from API response", async () => {
+      const activities = [
+        {
+          resourceId: "a1",
+          batchResourceId: "b1",
+          activityType: 1,
+          statusName: "executed",
+          explanationJson: { reasoningText: "Low score user." }
+        }
+      ];
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse(activities));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
+
+      expect(wrapper.vm.pagedTableData[0].explanationJson).toEqual({ reasoningText: "Low score user." });
     });
   });
 
@@ -379,29 +507,6 @@ describe("AgenticAIActivitiesDrawer", () => {
         expect(wrapper.emitted()["on-close"]).toBeTruthy();
         done();
       }, 300);
-    });
-  });
-
-  describe("Event Handling", () => {
-    it("should reset page on search change", () => {
-      const wrapper = mountFactory();
-      wrapper.vm.serverSideProps.pageNumber = 5;
-
-      wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: "test" } });
-      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
-    });
-
-    it("should accept search change event", () => {
-      const wrapper = mountFactory();
-      expect(() => {
-        wrapper.vm.handleSearchChange({ filter: { SearchInputTextValue: "test" } });
-      }).not.toThrow();
-    });
-
-    it("should support server-side pagination", () => {
-      const wrapper = mountFactory();
-      expect(wrapper.vm.handleServerSidePageChange).toBeDefined();
-      expect(wrapper.vm.handleServerSideSizeChange).toBeDefined();
     });
   });
 

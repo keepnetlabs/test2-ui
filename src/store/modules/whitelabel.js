@@ -35,7 +35,7 @@ const initialState = {
 
 const whitelabel = {
   namespaced: true,
-  state: structuredClone(initialState),
+  state: JSON.parse(JSON.stringify(initialState)),
   getters: {
     getShowLicenseDialog(state) {
       return state.showLicenseExceededDialog
@@ -196,7 +196,7 @@ const whitelabel = {
         })
     },
     resetState(context = {}) {
-      context.commit('RESET_STATE', structuredClone(initialState))
+      context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))
     },
     setState(context, payload) {
       context.commit('SET_DATA', payload)

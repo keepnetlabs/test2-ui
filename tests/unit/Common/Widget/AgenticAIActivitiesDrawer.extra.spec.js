@@ -2,11 +2,29 @@ import AgenticAIActivitiesDrawer from '@/components/Common/Widget/WidgetComponen
 
 describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
   describe('normalizeStatus', () => {
-    it('returns capitalized status when not in map and not empty', () => {
+    it('maps pending to Pending', () => {
       const ctx = {}
-      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'pending')).toBe(
-        'Pending'
-      )
+      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'pending')).toBe('Pending')
+    })
+
+    it('maps waiting for approval to Pending', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'waiting for approval')).toBe('Pending')
+    })
+
+    it('maps waitingforapproval to Pending', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'waitingforapproval')).toBe('Pending')
+    })
+
+    it('maps executed to Approved', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'executed')).toBe('Approved')
+    })
+
+    it('maps rejected to Declined', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'rejected')).toBe('Declined')
     })
 
     it('returns status when empty string', () => {
@@ -14,11 +32,9 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, '')).toBe('')
     })
 
-    it('handles waitingforapproval without spaces', () => {
+    it('capitalizes unknown status', () => {
       const ctx = {}
-      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'waitingforapproval')).toBe(
-        'Waiting for Approval'
-      )
+      expect(AgenticAIActivitiesDrawer.methods.normalizeStatus.call(ctx, 'custom status')).toBe('Custom Status')
     })
   })
 
@@ -110,6 +126,11 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
   })
 
   describe('isWaitingForApproval', () => {
+    it('returns true for pending status', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx, { status: 'Pending' })).toBe(true)
+    })
+
     it('returns true for waiting for approval status', () => {
       const ctx = {}
       expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx, { status: 'Waiting for Approval' })).toBe(true)
@@ -117,7 +138,7 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
 
     it('returns false for other statuses', () => {
       const ctx = {}
-      expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx, { status: 'Completed' })).toBe(false)
+      expect(AgenticAIActivitiesDrawer.methods.isWaitingForApproval.call(ctx, { status: 'Approved' })).toBe(false)
     })
 
     it('handles empty row with default parameter', () => {
@@ -127,9 +148,14 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
   })
 
   describe('isExecuted', () => {
-    it('returns true for Executed status', () => {
+    it('returns true for Approved status', () => {
       const ctx = {}
-      expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx, { status: 'Executed' })).toBe(true)
+      expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx, { status: 'Approved' })).toBe(true)
+    })
+
+    it('returns true for executed status (lowercase)', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx, { status: 'executed' })).toBe(true)
     })
 
     it('returns false for other statuses', () => {
@@ -140,6 +166,44 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
     it('handles empty row with default parameter', () => {
       const ctx = {}
       expect(AgenticAIActivitiesDrawer.methods.isExecuted.call(ctx)).toBe(false)
+    })
+  })
+
+  describe('formatBatchDate', () => {
+    it('returns the date string unchanged', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.formatBatchDate.call(ctx, '03/25/2026 07:49')).toBe('03/25/2026 07:49')
+    })
+
+    it('returns empty string for falsy input', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.formatBatchDate.call(ctx, '')).toBe('')
+      expect(AgenticAIActivitiesDrawer.methods.formatBatchDate.call(ctx)).toBe('')
+    })
+  })
+
+  describe('getBatchSegmentWidth', () => {
+    it('returns 0% when total is 0', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, {}, 'approved')).toBe('0%')
+    })
+
+    it('calculates correct percentage for approved', () => {
+      const ctx = {}
+      const batch = { userCount: 10, statusCounts: { Approved: 5 } }
+      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, batch, 'approved')).toBe('50%')
+    })
+
+    it('calculates correct percentage for pending', () => {
+      const ctx = {}
+      const batch = { userCount: 10, statusCounts: { Pending: 3 } }
+      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, batch, 'pending')).toBe('30%')
+    })
+
+    it('calculates correct percentage for declined', () => {
+      const ctx = {}
+      const batch = { userCount: 10, statusCounts: { Declined: 2 } }
+      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, batch, 'declined')).toBe('20%')
     })
   })
 })

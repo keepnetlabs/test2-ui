@@ -279,6 +279,10 @@ export function rejectAgenticAIActivity(payload = {}) {
   return testRequest.post('/agentic-ai/activities/reject', payload)
 }
 
+export function approveAgenticAIActivity(payload = {}) {
+  return testRequest.post('/agentic-ai/activities/approve', payload)
+}
+
 export function getAgenticAIBatch(batchResourceId) {
   return testRequest.get(`/agentic-ai/batch/${batchResourceId}`)
 }

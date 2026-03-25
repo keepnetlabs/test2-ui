@@ -97,7 +97,7 @@ export default {
       return this.search ? this.filteredCards : this.visibleCards
     },
     filteredCards() {
-      let copyOfCards = structuredClone(this.visibleCards)
+      let copyOfCards = JSON.parse(JSON.stringify(this.visibleCards))
       return copyOfCards.filter((card) => {
         card.widgets = card.widgets.filter((chart) => {
           const isChartNameIncludes = chart.name.toLowerCase().includes(this.search.toLowerCase())
