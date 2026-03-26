@@ -188,8 +188,7 @@ import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMe
 import AddTargetGroupModal from '@/components/TargetUsers/AddTargetGroupModal.vue'
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import { isTestEnvironment } from '@/utils/isTestEnvironment'
-import axios from 'axios'
-import AuthenticationService from '@/services/authentication'
+import { sendBatchAutonomous } from '@/api/agenticAIService'
 export default {
   name: 'Groups',
   components: {
@@ -640,7 +639,6 @@ export default {
       }
     },
     handleConfirmSendWithAI(options) {
-      const token = AuthenticationService.getToken()
       const { resourceId } = this.selectedRowForAI
       const actions = []
 
@@ -651,22 +649,14 @@ export default {
         actions.push('phishing')
       }
 
-      const body = {
-        token,
+      sendBatchAutonomous({
         targetGroupResourceId: resourceId,
         actions,
         sendAfterPhishingSimulation:
           options.training && options.phishing
             ? options.sendAfterPhishingSimulation || false
             : false
-      }
-      const url = 'https://agentic-ai-agent.keepnetlabs.com/batch-autonomous'
-      axios
-        .post(url, body, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
+      })
         .then(() => {
           this.handleCloseSendWithAIDialog()
         })
