@@ -430,6 +430,7 @@ import { getPhishingScenarioLandingPageAndEmailTemplate } from "@/api/phishingsi
 import { getDefaultAxiosPayload } from "@/utils/functions";
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import QuishingService from "@/api/quishing";
+import { retryAutonomous } from "@/api/agenticAIService";
 
 const ACTIVITY_TYPE_MAP = {
   1: "Phishing Simulation",
@@ -939,6 +940,8 @@ export default {
         trainingResourceId: activity.trainingResourceId,
         enrollmentResourceId: activity.enrollmentResourceId,
         campaignResourceId: activity.campaignResourceId,
+        targetUserResourceId: activity.targetUserResourceId || "",
+        preferredLanguage: activity.preferredLanguage || "",
         firstName: activity.targetUserFirstName || "",
         lastName: activity.targetUserLastName || "",
         email: activity.targetUserEmail || "",
@@ -1397,8 +1400,20 @@ export default {
           this.$emit("on-reject", row);
         } else if (action === "retry") {
           await rejectAgenticAIActivity({ resourceIds: [row.resourceId], batchResourceId: row.batchResourceId, rejectingReason });
-          // TODO: call AI endpoint after decline — endpoint TBD
-          this.showSnackbar("Action declined for retry.", "green", "mdi-refresh");
+          const activityTypeActionMap = { 1: "phishing", 2: "phishing", 3: "phishing", 4: "training" };
+          const actionName = activityTypeActionMap[row.activityType] || "phishing";
+          retryAutonomous({
+            targetUserResourceId: row.targetUserResourceId,
+            firstName: row.firstName,
+            lastName: row.lastName,
+            departmentName: row.department,
+            actions: [actionName],
+            preferredLanguage: row.preferredLanguage,
+            batchResourceId: row.batchResourceId,
+            rejectingReason,
+            rejectedScenarioResourceId: row.scenarioResourceId
+          }).catch(() => {});
+          this.showSnackbar("Autonomous AI has been triggered. This may take 3–5 minutes. A new entry will appear in the table.", "green", "mdi-refresh");
           this.$emit("on-retry", row);
         }
         await this.fetchBatches();
