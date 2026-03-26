@@ -34,7 +34,7 @@
       </div>
 
       <FormGroup
-        v-if="agenticAISettings.isAgenticAIEnabled"
+        v-if="showSettingsForm"
         class-name="agentic-ai-settings__execution-mode-form-group mb-4"
       >
         <template #title>
@@ -76,7 +76,7 @@
       </FormGroup>
 
       <FormGroup
-        v-if="agenticAISettings.isAgenticAIEnabled"
+        v-if="showSettingsForm"
         class-name="agentic-ai-settings__safeguards-form-group mt-6"
       >
         <template #title>
@@ -90,7 +90,7 @@
       </FormGroup>
 
       <FormGroup
-        v-if="agenticAISettings.isAgenticAIEnabled"
+        v-if="showSettingsForm"
         class-name="agentic-ai-settings__behavioral-policies-form-group mt-6"
       >
         <template #title>
@@ -119,6 +119,7 @@ import {
 import DatatableLoading from "@/components/SkeletonLoading/DatatableLoading.vue";
 import FormGroup from "@/components/SmallComponents/FormGroup.vue";
 import AccordionGroup from "@/components/SmallComponents/AccordionGroup.vue";
+import { isTestEnvironment } from "@/utils/isTestEnvironment";
 
 export default {
   name: "AgenticAISettings",
@@ -188,6 +189,9 @@ export default {
     };
   },
   computed: {
+    showSettingsForm() {
+      return this.agenticAISettings.isAgenticAIEnabled && isTestEnvironment();
+    },
     hasAgenticAILicense() {
       return this.$store.getters["login/getHasAgenticAILicense"];
     },
