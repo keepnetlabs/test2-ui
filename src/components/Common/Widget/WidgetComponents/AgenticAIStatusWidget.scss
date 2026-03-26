@@ -178,6 +178,12 @@
   font-family: "Open Sans", sans-serif;
   background: #ffffff;
 
+  .v-navigation-drawer__content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
   .agentic-ai-activities-drawer__header {
     display: flex;
     align-items: center;
@@ -201,6 +207,9 @@
     flex-direction: column;
     gap: 16px;
     padding: 16px 24px 24px;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
   }
 
   .agentic-ai-activities-drawer__intro {
@@ -226,6 +235,7 @@
     border-radius: 16px;
     background: #ffffff;
     box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
+    flex: 1 0 auto;
   }
 
   .agentic-ai-activities-drawer__empty-state {
@@ -262,7 +272,7 @@
   }
 
   .agentic-ai-activities-drawer__panes {
-    flex: 1 1 auto;
+    flex: 1 0 auto;
   }
 
   .agentic-ai-activities-drawer__panes > .multipane-resizer {
@@ -294,6 +304,11 @@
     background: #fbfdff;
     border-right: 1px solid rgba(229, 231, 235, 0.65);
     overflow-anchor: none;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: calc(100vh - 200px);
   }
 
   .agentic-ai-activities-drawer__pane--list-initial {
