@@ -153,8 +153,7 @@ import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import LeaderboardBadgesColumn from '@/components/GamificationReport/LeaderboardBadgesColumn'
 import labels from '@/model/constants/labels'
 import { isTestEnvironment } from '@/utils/isTestEnvironment'
-import axios from 'axios'
-import AuthenticationService from '@/services/authentication'
+import { sendAutonomous } from '@/api/agenticAIService'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'GamificationReport',
@@ -678,7 +677,6 @@ export default {
       }
     },
     handleConfirmSendWithAI(options) {
-      const token = AuthenticationService.getToken()
       const { preferredLanguage, targetUserResourceId, department } = this.selectedRowForAI
       const actions = []
 
@@ -689,8 +687,7 @@ export default {
         actions.push('phishing')
       }
 
-      const body = {
-        token,
+      sendAutonomous({
         preferredLanguage,
         targetUserResourceId,
         departmentName: department,
@@ -699,18 +696,8 @@ export default {
           options.training && options.phishing
             ? options.sendAfterPhishingSimulation || false
             : false
-      }
-      const isLocalhost = globalThis.location.hostname.includes('localhost')
-      const url = isLocalhost
-        ? 'http://localhost:4111/autonomous'
-        : 'https://agentic-ai-agent.keepnetlabs.com/autonomous'
-      axios
-        .post(url, body, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then((response) => {
+      })
+        .then(() => {
           this.handleCloseSendWithAIDialog()
         })
         .catch((error) => {
