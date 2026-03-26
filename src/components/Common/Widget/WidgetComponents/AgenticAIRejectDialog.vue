@@ -24,7 +24,7 @@
           dense
           no-resize
           rows="5"
-          placeholder="e.g. This user already completed this training last month."
+          :placeholder="action === 'retry' ? 'e.g. The previous attempt failed due to a temporary issue.' : 'e.g. This user already completed this training last month.'"
           class="agentic-ai-reject-dialog__textarea mt-2"
           :counter="maxLength"
           :rules="[rules.minLength]"
