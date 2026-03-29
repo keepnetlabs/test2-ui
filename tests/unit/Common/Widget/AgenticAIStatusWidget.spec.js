@@ -164,6 +164,18 @@ describe("AgenticAIStatusWidget", () => {
     expect(disabledWrapper.vm.statusIconColor).toBe("#6b7280");
   });
 
+  it("uses neutral status badge styling in activities table", () => {
+    const wrapper = mountFactory();
+    const statusColumn = wrapper.vm.activitiesTableColumns.find((column) => column.property === "status");
+
+    expect(statusColumn.badgeColorMap.pending).toBe("#2196f3");
+    expect(statusColumn.badgeColorMap.approved).toBe("#43a047");
+    expect(statusColumn.badgeColorMap.declined).toBe("#757575");
+    expect(statusColumn.badgeColorMap.error).toBe("#e53935");
+    expect(statusColumn.props.outlined).toBe(false);
+    expect(statusColumn.props.style.color).toBe("#ffffff");
+  });
+
   describe("Component Structure", () => {
     it("should render component successfully", () => {
       const wrapper = mountFactory();

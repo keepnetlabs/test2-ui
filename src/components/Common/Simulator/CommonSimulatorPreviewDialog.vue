@@ -366,8 +366,8 @@
           <VBtn
             outlined
             rounded
-            color="#2196f3"
             class="elevation-0 fw-600"
+            style="background-color: #fff7e8; border-color: #f4c84f !important; color: #a45716 !important;"
             @click="$emit('retry')"
           >
             <VIcon left>mdi-refresh</VIcon>
