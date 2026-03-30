@@ -46,6 +46,7 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     $emit: jest.fn(),
     changeDisabledLabel: jest.fn(),
     checkSchemaTypes: jest.fn(),
+    checkDomainBlacklist: jest.fn(),
     handleInputChange: jest.fn(),
     getUrlSchemaTypesModified: computed.getUrlSchemaTypesModified.call({
       urlSchemaTypesModified: [],

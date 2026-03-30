@@ -12,9 +12,14 @@ jest.mock('@/helper-classes/lookup-local-storage', () => ({
   }
 }))
 
+jest.mock('@/api/agenticAIService', () => ({
+  sendAutonomous: jest.fn(() => Promise.resolve({ data: {} }))
+}))
+
 import GamificationReport from '@/views/GamificationReport.vue'
 import { getLeaderboardData, getTopPerformersData, getLeaderboardFormDetails } from '@/api/reports'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { sendAutonomous } from '@/api/agenticAIService'
 import axios from 'axios'
 import AuthenticationService from '@/services/authentication'
 
@@ -819,9 +824,8 @@ describe('GamificationReport.vue (extra)', () => {
     createElementSpy.mockRestore()
   })
 
-  it('handleConfirmSendWithAI catches axios errors and logs them', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-x')
-    const postSpy = jest.spyOn(axios, 'post').mockRejectedValue(new Error('fail'))
+  it('handleConfirmSendWithAI catches errors and logs them', async () => {
+    sendAutonomous.mockRejectedValueOnce(new Error('fail'))
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
     const ctx = {
@@ -837,18 +841,14 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    expect(postSpy).toHaveBeenCalled()
+    expect(sendAutonomous).toHaveBeenCalled()
     expect(consoleSpy).toHaveBeenCalled()
     expect(ctx.handleCloseSendWithAIDialog).not.toHaveBeenCalled()
 
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
     consoleSpy.mockRestore()
   })
 
   it('handleConfirmSendWithAI builds empty actions when both options are false', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-y')
-    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'tr',
@@ -862,18 +862,16 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    const [, body] = postSpy.mock.calls[0]
-    expect(body.actions).toEqual([])
-    expect(body.sendAfterPhishingSimulation).toBe(false)
+    expect(sendAutonomous).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actions: [],
+        sendAfterPhishingSimulation: false
+      })
+    )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
-
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
   })
 
   it('handleConfirmSendWithAI sends single action when only training is selected', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-single')
-    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
@@ -887,18 +885,16 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    const [, body] = postSpy.mock.calls[0]
-    expect(body.actions).toEqual(['training'])
-    expect(body.sendAfterPhishingSimulation).toBe(false)
+    expect(sendAutonomous).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actions: ['training'],
+        sendAfterPhishingSimulation: false
+      })
+    )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
-
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
   })
 
   it('handleConfirmSendWithAI sends single action when only phishing is selected', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-phishing')
-    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
@@ -912,18 +908,16 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    const [, body] = postSpy.mock.calls[0]
-    expect(body.actions).toEqual(['phishing'])
-    expect(body.sendAfterPhishingSimulation).toBe(false)
+    expect(sendAutonomous).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actions: ['phishing'],
+        sendAfterPhishingSimulation: false
+      })
+    )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
-
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
   })
 
   it('handleConfirmSendWithAI defaults sendAfterPhishingSimulation to false when missing in dual mode', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-z')
-    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
@@ -937,23 +931,15 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    const [, body] = postSpy.mock.calls[0]
-    expect(body.actions).toEqual(['training', 'phishing'])
-    expect(body.sendAfterPhishingSimulation).toBe(false)
-
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
+    expect(sendAutonomous).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actions: ['training', 'phishing'],
+        sendAfterPhishingSimulation: false
+      })
+    )
   })
 
-  it('handleConfirmSendWithAI uses production autonomous endpoint when hostname is not localhost', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-prod')
-    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'app.keepnetlabs.com' },
-      configurable: true
-    })
-
+  it('handleConfirmSendWithAI passes correct params including departmentName', async () => {
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
@@ -967,26 +953,16 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    expect(postSpy).toHaveBeenCalledWith(
-      'https://agentic-ai-agent.keepnetlabs.com/autonomous',
-      expect.any(Object),
-      expect.any(Object)
-    )
-
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
+    expect(sendAutonomous).toHaveBeenCalledWith({
+      preferredLanguage: 'en',
+      targetUserResourceId: 'u4',
+      departmentName: 'Ops',
+      actions: ['phishing'],
+      sendAfterPhishingSimulation: false
+    })
   })
 
-  it('handleConfirmSendWithAI uses localhost endpoint and keeps explicit sendAfterPhishingSimulation', async () => {
-    const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-local')
-    const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'localhost' },
-      configurable: true
-    })
-
+  it('handleConfirmSendWithAI keeps explicit sendAfterPhishingSimulation in dual mode', async () => {
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
@@ -1004,19 +980,13 @@ describe('GamificationReport.vue (extra)', () => {
     await flushPromises()
     await flushPromises()
 
-    expect(postSpy).toHaveBeenCalledWith(
-      'http://localhost:4111/autonomous',
+    expect(sendAutonomous).toHaveBeenCalledWith(
       expect.objectContaining({
         actions: ['training', 'phishing'],
         sendAfterPhishingSimulation: true
-      }),
-      expect.any(Object)
+      })
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
-
-    tokenSpy.mockRestore()
-    postSpy.mockRestore()
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
   it('isBadgesLoadingForRow returns false when not loading even without cache', () => {
