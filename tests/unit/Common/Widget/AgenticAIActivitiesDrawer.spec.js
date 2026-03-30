@@ -148,6 +148,16 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("mapActivityToRow", () => {
+    it("uses UI-friendly activity type labels without Simulation suffix", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({
+        resourceId: "r1",
+        activityType: 1,
+        activityTypeName: "Phishing Simulation"
+      });
+      expect(row.contentType).toBe("Phishing");
+    });
+
     it("includes explanationJson in mapped row", () => {
       const wrapper = mountFactory();
       const activity = {

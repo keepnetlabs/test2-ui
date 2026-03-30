@@ -239,7 +239,7 @@ export default {
           badgeColorMap: {
             pending: "#2196f3",
             approved: "#43a047",
-            declined: "#e53935",
+            declined: "#757575",
             error: "#e53935"
           },
           fullWidth: false,

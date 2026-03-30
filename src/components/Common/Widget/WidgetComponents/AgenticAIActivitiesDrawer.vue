@@ -218,7 +218,7 @@
                     :disabled="actionInProgress"
                     @click="handleApprove(selectedBatch)"
                   >
-                    <VIcon size="16" color="#2196f3">mdi-check</VIcon>
+                    <VIcon size="16" color="#43a047">mdi-check</VIcon>
                     Approve All
                   </VBtn>
                   <VBtn
@@ -228,7 +228,7 @@
                     :disabled="actionInProgress"
                     @click="handleDeclineAll(selectedBatch)"
                   >
-                    <VIcon size="16" color="#e53935">mdi-close</VIcon>
+                    <VIcon size="16" color="#757575">mdi-close</VIcon>
                     Decline All
                   </VBtn>
                 </div>
@@ -433,15 +433,15 @@ import QuishingService from "@/api/quishing";
 import { retryAutonomous } from "@/api/agenticAIService";
 
 const ACTIVITY_TYPE_MAP = {
-  1: "Phishing Simulation",
-  2: "Quishing Simulation",
-  3: "Smishing Simulation",
+  1: "Phishing",
+  2: "Quishing",
+  3: "Smishing",
   4: "Training"
 };
 
 const DEFAULT_BATCH_PRODUCT_FILTER_OPTIONS = [
-  "Phishing Simulation",
-  "Quishing Simulation",
+  "Phishing",
+  "Quishing",
   "Training"
 ];
 
@@ -626,29 +626,38 @@ export default {
     }
   },
   methods: {
-    createDefaultPayload(pageSize = 5, isGroupedByBatch = false) {
-      return getDefaultAxiosPayload({ pageSize, isGroupedByBatch }, "CreateTime");
-    },
-    normalizeBatchTypeFilterLabel(value = "") {
+    formatActivityTypeDisplay(value = "") {
       const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
 
       if (normalizedValue === "phishing" || normalizedValue === "phishingsimulation") {
-        return "Phishing Simulation";
+        return "Phishing";
       }
 
       if (normalizedValue === "quishing" || normalizedValue === "quishingsimulation") {
-        return "Quishing Simulation";
+        return "Quishing";
+      }
+
+      if (normalizedValue === "smishing" || normalizedValue === "smishingsimulation") {
+        return "Smishing";
       }
 
       if (normalizedValue === "training") {
         return "Training";
       }
 
+      return value;
+    },
+    createDefaultPayload(pageSize = 5, isGroupedByBatch = false) {
+      return getDefaultAxiosPayload({ pageSize, isGroupedByBatch }, "CreateTime");
+    },
+    normalizeBatchTypeFilterLabel(value = "") {
+      const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
+
       if (normalizedValue === "smishing" || normalizedValue === "smishingsimulation") {
         return "";
       }
 
-      return value;
+      return this.formatActivityTypeDisplay(value);
     },
     getBatchTypeFilterValueForApi(value = "") {
       const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
@@ -856,7 +865,9 @@ export default {
       this.serverSideProps.pageNumber = 1;
     },
     getActivityTypeName(activity = {}) {
-      return ACTIVITY_TYPE_MAP[activity.activityType] || activity.activityTypeName || "";
+      return this.formatActivityTypeDisplay(
+        ACTIVITY_TYPE_MAP[activity.activityType] || activity.activityTypeName || ""
+      );
     },
     getBatchWaitingCount(statusCounts = {}) {
       return (
@@ -898,6 +909,7 @@ export default {
     mapActivityToBatch(activity = {}) {
       const firstActivity = activity.activities?.[0] || {};
       const contentType = this.getActivityTypeName(firstActivity);
+      const activityTypeName = this.formatActivityTypeDisplay(firstActivity.activityTypeName || contentType);
       const statusCounts = activity.statusCounts || {};
 
       return {
@@ -908,9 +920,9 @@ export default {
           activity.campaignName ||
           firstActivity.campaignName ||
           "Untitled activity",
-        subtitle: contentType || firstActivity.activityTypeName || "Activity",
-        contentType: contentType || firstActivity.activityTypeName || "",
-        activityTypeName: firstActivity.activityTypeName || contentType || "",
+        subtitle: contentType || activityTypeName || "Activity",
+        contentType: contentType || activityTypeName || "",
+        activityTypeName: activityTypeName || contentType || "",
         contentCategory: firstActivity.contentCategory || "",
         status: this.normalizeStatus(activity.batchStatus || activity.statusName || firstActivity.statusName || ""),
         userCount:
