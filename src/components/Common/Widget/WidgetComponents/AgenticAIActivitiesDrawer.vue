@@ -1193,7 +1193,11 @@ export default {
         return "#43a047";
       }
 
-      if (normalized === "declined" || normalized === "rejected" || normalized === "error") {
+      if (normalized === "declined" || normalized === "rejected") {
+        return "#757575";
+      }
+
+      if (normalized === "error") {
         return "#e53935";
       }
 

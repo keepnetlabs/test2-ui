@@ -156,7 +156,7 @@ export default {
       return this.selectedSuggestedReasonKey === reasonKey;
     },
     getSuggestedReasonColor(reasonKey) {
-      return this.isSuggestedReasonSelected(reasonKey) ? "#0D47A1" : "#D0D5DD";
+      return this.isSuggestedReasonSelected(reasonKey) ? "#a45716" : "#D0D5DD";
     },
     getSuggestedReasonTextColor(reasonKey) {
       return this.isSuggestedReasonSelected(reasonKey) ? "#FFFFFF" : "#475467";
@@ -164,7 +164,6 @@ export default {
     handleSuggestedReasonClick(reasonOption) {
       if (!reasonOption) return;
 
-      this.selectedSuggestedReasonKey = reasonOption.key;
       this.reason = reasonOption.template;
     },
     handleChangeStatus(value) {
