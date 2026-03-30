@@ -1,5 +1,5 @@
 <template>
-  <div class="company-list">
+  <div class="company-list" :class="{ 'is-clustered': isClustered }">
     <ConfigureNewCompanyModal
       v-if="isShowConfigureCompanyModal"
       :status="isShowConfigureCompanyModal"
@@ -86,7 +86,9 @@
       options
       row-key="companyName"
       is-server-side
-      is-server-side-selection
+      :is-server-side-selection="!isClustered"
+      hide-parent-row-actions
+      :get-row-is-selectable="handleRowIsSelectable"
       :loading="loading"
       :table="tableData"
       :server-side-props="serverSideProps"
@@ -95,7 +97,7 @@
       :empty="tableOptions.iEmpty"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :selectEvent="tableOptions.selectEvent"
-      :clusterItems="[{ name: 'Company Name' }]"
+      :clusterItems="[{ name: 'Reseller Name' }]"
       :rowActions="tableOptions.rowActions"
       :axios-payload.sync="payload"
       :saved-filters-local-storage-key="
@@ -130,6 +132,7 @@
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
       @handleMultipleDelete="handleMultipleDeleteOfCompanies"
+      @handleSelectionChange="onSelectionChange"
     >
       <template #datatable-row-actions="{ scope }">
         <DefaultButtonRowAction
@@ -188,14 +191,17 @@
         </RowActionsMenu>
       </template>
       <template #datatable-custom-column="{ scope }">
-        <span
-          v-if="scope.column.property === 'companyName'"
-          :id="`text--company-name-${scope.$index}`"
-          class="datatable-link"
-          @click="handleCompanyNameClick(scope.row)"
-        >
-          {{ scope.row.companyName }}
-        </span>
+        <template v-if="scope.column.property === 'companyName'">
+          <span v-if="scope.row.children && scope.row.children.length" :id="`text--company-name-${scope.$index}`" class="cluster-parent-label">{{ scope.row.companyName }} <span class="cluster-parent-count">{{ scope.row.children.length }} {{ scope.row.children.length === 1 ? 'company' : 'companies' }}</span></span>
+          <span
+            v-else
+            :id="`text--company-name-${scope.$index}`"
+            class="datatable-link"
+            @click="handleCompanyNameClick(scope.row)"
+          >
+            {{ scope.row.companyName }}
+          </span>
+        </template>
         <template v-else-if="scope.column.property === 'targetUserCount'">
           <span v-if="isNumberOfUsersExceed(scope.row)">
             <span>{{ scope.row["targetUserCount"] }}</span>
@@ -347,6 +353,7 @@ export default {
   },
   data() {
     return {
+      isClusterAllSelected: false,
       isDeleting: false,
       isExceedingLimitFilterDisabled: false,
       loading: true,
@@ -688,6 +695,7 @@ export default {
     }
   },
   created() {
+    this._selectingChildren = false;
     this.getLookUpDatas();
     this.setMonthlyFilterItems();
     this.loadTrainingVendorFilterItems();
@@ -757,6 +765,7 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber;
+      this.isClusterAllSelected = false;
       this.getTableData();
     },
     sortChanged({ order, prop } = {}) {
@@ -949,14 +958,90 @@ export default {
       });
       return data;
     },
+    handleRowIsSelectable(row) {
+      if (!this.isClustered) return true;
+      return !(row.children && row.children.length > 0);
+    },
+    onSelectionChange(selection) {
+      if (!this.isClustered || this._selectingChildren) return;
+      const rootLeaves = this.tableData.filter(
+        item => !item.children || !item.children.length
+      );
+      const allRootLeavesSelected = rootLeaves.length > 0 && rootLeaves.every(
+        leaf => selection.some(s => s.companyResourceId === leaf.companyResourceId)
+      );
+      if (allRootLeavesSelected && !this.isClusterAllSelected) {
+        this.isClusterAllSelected = true;
+        this._selectingChildren = true;
+        const elTable = this.$refs.refDataList?.$refs?.elTableRef;
+        if (elTable) {
+          this.selectMissingChildren(this.tableData, selection, elTable);
+        }
+        this.$nextTick(() => {
+          this._selectingChildren = false;
+        });
+      } else if (!allRootLeavesSelected) {
+        if (this.isClusterAllSelected) {
+          const noRootLeafSelected = rootLeaves.every(
+            leaf => !selection.some(s => s.companyResourceId === leaf.companyResourceId)
+          );
+          if (noRootLeafSelected) {
+            const elTable = this.$refs.refDataList?.$refs?.elTableRef;
+            if (elTable) elTable.clearSelection();
+          }
+        }
+        this.isClusterAllSelected = false;
+      }
+    },
+    selectMissingChildren(items, selection, elTable) {
+      items.forEach(item => {
+        if (item.children && item.children.length) {
+          item.children.forEach(child => {
+            if (child.children && child.children.length) {
+              this.selectMissingChildren([child], selection, elTable);
+            } else {
+              const isSelected = selection.some(
+                s => s.companyResourceId === child.companyResourceId
+              );
+              if (!isSelected) {
+                elTable.toggleRowSelection(child, true);
+              }
+            }
+          });
+        }
+      });
+    },
+    updateClusterColumnHeaders() {
+      const companyCol = this.tableOptions.columns.find(c => c.property === PROPERTY_STORE.COMPANYNAME);
+      const resellerCol = this.tableOptions.columns.find(c => c.property === PROPERTY_STORE.RESELLERNAME);
+      if (companyCol && resellerCol) {
+        if (this.isClustered) {
+          companyCol.label = "Reseller Name";
+          companyCol.width = 450;
+          companyCol.overrideWidth = true;
+          resellerCol.label = getStoreValue(PROPERTY_STORE.COMPANYNAME);
+        } else {
+          companyCol.label = getStoreValue(PROPERTY_STORE.COMPANYNAME);
+          companyCol.width = 180;
+          companyCol.overrideWidth = false;
+          resellerCol.label = "Reseller Name";
+        }
+      }
+    },
     clusterChanged() {
       this.isClustered = true;
+      this.isClusterAllSelected = false;
+      this.updateClusterColumnHeaders();
+      this.$refs?.refDataList?.resetSelectableParams();
       this.resetPageNumber();
       this.resetTableFilters();
       this.getTableData();
     },
     handleListBulletedClick() {
       this.isClustered = false;
+      this.isClusterAllSelected = false;
+      this.updateClusterColumnHeaders();
+      this.$refs?.refDataList?.resetSelectableParams();
       this.resetPageNumber();
       this.resetTableFilters();
       this.getTableData();
@@ -1153,3 +1238,102 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.company-list.is-clustered #companies-data-table {
+  // Hide checkbox on ALL parent rows (any nesting level)
+  .el-table__row .el-table-column--selection .el-checkbox.is-disabled {
+    visibility: hidden;
+  }
+
+  // Expand icon left-aligned for ALL parent levels
+  .el-table__row .el-table__expand-icon {
+    float: none !important;
+    position: static !important;
+    flex-shrink: 0;
+    margin: 0 6px 0 0;
+    transform: rotate(90deg);
+  }
+
+  .el-table__row .el-table__expand-icon.el-table__expand-icon--expanded {
+    transform: rotate(-90deg) !important;
+  }
+
+  // Flex layout only on parent cells (cells containing expand icon)
+  .el-table__row td:nth-child(2) .cell:has(.el-table__expand-icon) {
+    display: flex !important;
+    align-items: center;
+    overflow: visible !important;
+    white-space: nowrap !important;
+  }
+
+  // Level-0 parent: background + shift left into selection area + hide other columns
+  .el-table__row.el-table__row--level-0 {
+    background-color: #F7FAFE !important;
+
+    td {
+      background-color: #F7FAFE !important;
+    }
+
+    td:nth-child(2) .cell {
+      margin-left: -44px;
+      padding-left: 8px !important;
+    }
+
+    td:nth-child(n+3) .cell {
+      visibility: hidden;
+    }
+  }
+
+  // Reduce nesting indentation (global uses 32px per level, too wide)
+  @for $i from 1 through 3 {
+    .el-table__row.el-table__row--level-#{$i} {
+      td:not(:last-child) {
+        padding-left: #{20 * $i}px !important;
+      }
+
+      .el-table-column--selection {
+        padding-left: #{11 + ($i * 20)}px !important;
+      }
+    }
+  }
+
+  // Nested parents (level-1+): align icon with own level's checkbox, hide other columns
+  .el-table__row[class*="level-"]:not(.el-table__row--level-0):has(.el-table__expand-icon) {
+    td {
+      background-color: #FAFCFF !important;
+    }
+
+    td:nth-child(2) .cell:has(.el-table__expand-icon) {
+      margin-left: -45px;
+      padding-left: 8px !important;
+    }
+
+    td:nth-child(n+3) .cell {
+      visibility: hidden;
+    }
+  }
+}
+
+.cluster-parent-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #383b41;
+
+  .el-table__row[class*="level-"]:not(.el-table__row--level-0) & {
+    gap: 12px;
+  }
+}
+
+.cluster-parent-count {
+  font-family: "Open Sans", sans-serif;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--Black-Black, #383B41);
+  font-feature-settings: 'liga' off, 'clig' off;
+}
+</style>

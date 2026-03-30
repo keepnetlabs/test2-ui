@@ -348,6 +348,7 @@ export default {
       this.$emit('invisible-captcha', !this.domainRecords[0]?.extraDatas[1]?.value)
       this.$emit('captcha-default-value', this.domainRecords[0]?.extraDatas[1]?.value)
       this.checkSchemaTypes(this.domainRecords[0]?.value)
+      this.checkDomainBlacklist(this.domainRecords[0]?.value)
     },
     changeDisabledLabel() {
       this.disabledLabel = `${

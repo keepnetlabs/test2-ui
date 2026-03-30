@@ -1,6 +1,19 @@
 import AgenticAIActivitiesDrawer from '@/components/Common/Widget/WidgetComponents/AgenticAIActivitiesDrawer.vue'
 
 describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
+  describe('formatActivityTypeDisplay', () => {
+    it('removes Simulation suffix for phishing and quishing labels', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay.call(ctx, 'Phishing Simulation')).toBe('Phishing')
+      expect(AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay.call(ctx, 'Quishing Simulation')).toBe('Quishing')
+    })
+
+    it('keeps training label unchanged', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay.call(ctx, 'Training')).toBe('Training')
+    })
+  })
+
   describe('normalizeStatus', () => {
     it('maps pending to Pending', () => {
       const ctx = {}
