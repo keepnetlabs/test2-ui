@@ -981,6 +981,15 @@ export default {
           this._selectingChildren = false;
         });
       } else if (!allRootLeavesSelected) {
+        if (this.isClusterAllSelected) {
+          const noRootLeafSelected = rootLeaves.every(
+            leaf => !selection.some(s => s.companyResourceId === leaf.companyResourceId)
+          );
+          if (noRootLeafSelected) {
+            const elTable = this.$refs.refDataList?.$refs?.elTableRef;
+            if (elTable) elTable.clearSelection();
+          }
+        }
         this.isClusterAllSelected = false;
       }
     },

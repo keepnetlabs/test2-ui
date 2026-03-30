@@ -481,6 +481,238 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.isClustered).toBe(false)
   })
 
+  describe('Cluster mode features', () => {
+    it('handleRowIsSelectable returns true for all rows when not clustered', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = false
+      expect(wrapper.vm.handleRowIsSelectable({ children: [{ id: 1 }] })).toBe(true)
+      expect(wrapper.vm.handleRowIsSelectable({})).toBe(true)
+    })
+
+    it('handleRowIsSelectable returns false for parent rows when clustered', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = true
+      expect(wrapper.vm.handleRowIsSelectable({ children: [{ id: 1 }] })).toBe(false)
+      expect(wrapper.vm.handleRowIsSelectable({ children: [] })).toBe(true)
+      expect(wrapper.vm.handleRowIsSelectable({})).toBe(true)
+    })
+
+    it('clusterChanged resets isClusterAllSelected and calls resetSelectableParams', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.getTableData = jest.fn()
+      wrapper.vm.resetPageNumber = jest.fn()
+      wrapper.vm.resetTableFilters = jest.fn()
+      wrapper.vm.$refs.refDataList = { resetSelectableParams: jest.fn(), reRenderFilters: jest.fn() }
+      wrapper.vm.isClusterAllSelected = true
+
+      wrapper.vm.clusterChanged()
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+      expect(wrapper.vm.$refs.refDataList.resetSelectableParams).toHaveBeenCalled()
+    })
+
+    it('handleListBulletedClick resets isClusterAllSelected and calls resetSelectableParams', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.getTableData = jest.fn()
+      wrapper.vm.resetPageNumber = jest.fn()
+      wrapper.vm.resetTableFilters = jest.fn()
+      wrapper.vm.$refs.refDataList = { resetSelectableParams: jest.fn(), reRenderFilters: jest.fn() }
+      wrapper.vm.isClusterAllSelected = true
+
+      wrapper.vm.handleListBulletedClick()
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+      expect(wrapper.vm.isClustered).toBe(false)
+      expect(wrapper.vm.$refs.refDataList.resetSelectableParams).toHaveBeenCalled()
+    })
+
+    it('serverSidePageNumberChanged resets isClusterAllSelected', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.getTableData = jest.fn()
+      wrapper.vm.isClusterAllSelected = true
+
+      wrapper.vm.serverSidePageNumberChanged(2)
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+      expect(wrapper.vm.payload.pageNumber).toBe(2)
+    })
+
+    it('updateClusterColumnHeaders swaps labels and widths when clustered', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = true
+      wrapper.vm.updateClusterColumnHeaders()
+
+      const companyCol = wrapper.vm.tableOptions.columns.find(c => c.property === 'companyName')
+      expect(companyCol.label).toBe('Reseller Name')
+      expect(companyCol.width).toBe(450)
+      expect(companyCol.overrideWidth).toBe(true)
+    })
+
+    it('updateClusterColumnHeaders reverts labels and widths when not clustered', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = true
+      wrapper.vm.updateClusterColumnHeaders()
+      wrapper.vm.isClustered = false
+      wrapper.vm.updateClusterColumnHeaders()
+
+      const companyCol = wrapper.vm.tableOptions.columns.find(c => c.property === 'companyName')
+      expect(companyCol.width).toBe(180)
+      expect(companyCol.overrideWidth).toBe(false)
+    })
+
+    it('onSelectionChange does nothing when not clustered', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = false
+      wrapper.vm.isClusterAllSelected = false
+
+      wrapper.vm.onSelectionChange([{ companyResourceId: 'c-1' }])
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+    })
+
+    it('onSelectionChange does nothing when _selectingChildren is true', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = true
+      wrapper.vm._selectingChildren = true
+      wrapper.vm.isClusterAllSelected = false
+
+      wrapper.vm.onSelectionChange([{ companyResourceId: 'c-1' }])
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+    })
+
+    it('onSelectionChange selects missing children when all root leaves are selected', async () => {
+      const wrapper = createWrapper()
+      const toggleRowSelection = jest.fn()
+      wrapper.vm.$refs.refDataList = {
+        $refs: { elTableRef: { toggleRowSelection, clearSelection: jest.fn() } },
+        reRenderFilters: jest.fn()
+      }
+      wrapper.vm.isClustered = true
+      wrapper.vm.isClusterAllSelected = false
+      wrapper.vm.tableData = [
+        { companyResourceId: 'c-1', companyName: 'Leaf1' },
+        {
+          companyResourceId: 'c-2',
+          companyName: 'Parent',
+          children: [{ companyResourceId: 'c-3', companyName: 'Child1' }]
+        }
+      ]
+
+      wrapper.vm.onSelectionChange([{ companyResourceId: 'c-1' }])
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(true)
+      expect(toggleRowSelection).toHaveBeenCalledWith(
+        { companyResourceId: 'c-3', companyName: 'Child1' },
+        true
+      )
+    })
+
+    it('onSelectionChange skips nested parents and only selects leaf children', async () => {
+      const wrapper = createWrapper()
+      const toggleRowSelection = jest.fn()
+      wrapper.vm.$refs.refDataList = {
+        $refs: { elTableRef: { toggleRowSelection, clearSelection: jest.fn() } },
+        reRenderFilters: jest.fn()
+      }
+      wrapper.vm.isClustered = true
+      wrapper.vm.isClusterAllSelected = false
+      wrapper.vm.tableData = [
+        { companyResourceId: 'c-1', companyName: 'Leaf1' },
+        {
+          companyResourceId: 'p-1',
+          companyName: 'Parent',
+          children: [
+            {
+              companyResourceId: 'p-2',
+              companyName: 'NestedParent',
+              children: [{ companyResourceId: 'c-4', companyName: 'DeepChild' }]
+            }
+          ]
+        }
+      ]
+
+      wrapper.vm.onSelectionChange([{ companyResourceId: 'c-1' }])
+      await wrapper.vm.$nextTick()
+
+      expect(toggleRowSelection).toHaveBeenCalledWith(
+        { companyResourceId: 'c-4', companyName: 'DeepChild' },
+        true
+      )
+      expect(toggleRowSelection).not.toHaveBeenCalledWith(
+        expect.objectContaining({ companyResourceId: 'p-2' }),
+        true
+      )
+    })
+
+    it('onSelectionChange does not re-select children when isClusterAllSelected is already true', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.isClustered = true
+      wrapper.vm.isClusterAllSelected = true
+      wrapper.vm.tableData = [{ companyResourceId: 'c-1', companyName: 'Leaf1' }]
+
+      wrapper.vm.onSelectionChange([{ companyResourceId: 'c-1' }])
+
+      expect(wrapper.vm.isClusterAllSelected).toBe(true)
+    })
+
+    it('onSelectionChange clears all selections on header deselect', () => {
+      const wrapper = createWrapper()
+      const clearSelection = jest.fn()
+      wrapper.vm.$refs.refDataList = {
+        $refs: { elTableRef: { clearSelection } },
+        reRenderFilters: jest.fn()
+      }
+      wrapper.vm.isClustered = true
+      wrapper.vm.isClusterAllSelected = true
+      wrapper.vm.tableData = [
+        { companyResourceId: 'c-1', companyName: 'Leaf1' },
+        { companyResourceId: 'c-2', companyName: 'Leaf2' }
+      ]
+
+      wrapper.vm.onSelectionChange([])
+
+      expect(clearSelection).toHaveBeenCalled()
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+    })
+
+    it('onSelectionChange does not clear when single item is deselected', () => {
+      const wrapper = createWrapper()
+      const clearSelection = jest.fn()
+      wrapper.vm.$refs.refDataList = {
+        $refs: { elTableRef: { clearSelection } },
+        reRenderFilters: jest.fn()
+      }
+      wrapper.vm.isClustered = true
+      wrapper.vm.isClusterAllSelected = true
+      wrapper.vm.tableData = [
+        { companyResourceId: 'c-1', companyName: 'Leaf1' },
+        { companyResourceId: 'c-2', companyName: 'Leaf2' }
+      ]
+
+      wrapper.vm.onSelectionChange([{ companyResourceId: 'c-1' }])
+
+      expect(clearSelection).not.toHaveBeenCalled()
+      expect(wrapper.vm.isClusterAllSelected).toBe(false)
+    })
+
+    it('selectMissingChildren does not select already selected items', () => {
+      const wrapper = createWrapper()
+      const toggleRowSelection = jest.fn()
+      const elTable = { toggleRowSelection }
+      const selection = [{ companyResourceId: 'c-3' }]
+
+      wrapper.vm.selectMissingChildren(
+        [{ companyResourceId: 'p-1', children: [{ companyResourceId: 'c-3' }] }],
+        selection,
+        elTable
+      )
+
+      expect(toggleRowSelection).not.toHaveBeenCalled()
+    })
+  })
+
   it('updates search payload and handles cell click for companyName', () => {
     const wrapper = createWrapper()
     wrapper.vm.getTableData = jest.fn()
