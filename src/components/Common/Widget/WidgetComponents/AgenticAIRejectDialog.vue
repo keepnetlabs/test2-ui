@@ -8,7 +8,7 @@
     <AppDialog
       :status="status"
       :icon="action === 'retry' ? 'mdi-refresh' : 'mdi-close'"
-      :title="action === 'retry' ? 'Why are you retrying this action?' : 'Why are you rejecting this action?'"
+      :title="action === 'retry' ? 'Why are you retrying this action?' : 'Why are you declining this action?'"
       class-name="agentic-ai-confirm-dialog"
       custom-size="560"
       hide-overlay
@@ -42,7 +42,7 @@
           dense
           no-resize
           rows="5"
-          :placeholder="action === 'retry' ? 'e.g. The previous attempt failed due to a temporary issue.' : 'e.g. This user already completed this training last month.'"
+          :placeholder="action === 'retry' ? 'e.g. The previous attempt failed due to a temporary issue.' : 'e.g. This user already completed this training last month'"
           class="agentic-ai-reject-dialog__textarea mt-2"
           :counter="maxLength"
           :rules="[rules.minLength]"
@@ -130,7 +130,7 @@ export default {
   },
   computed: {
     confirmButtonText() {
-      return this.action === "retry" ? "RETRY" : "REJECT";
+      return this.action === "retry" ? "RETRY" : "DECLINE";
     },
     suggestedReasons() {
       return this.action === "retry" ? RETRY_SUGGESTED_REASONS : [];
@@ -156,7 +156,7 @@ export default {
       return this.selectedSuggestedReasonKey === reasonKey;
     },
     getSuggestedReasonColor(reasonKey) {
-      return this.isSuggestedReasonSelected(reasonKey) ? "#0D47A1" : "#D0D5DD";
+      return this.isSuggestedReasonSelected(reasonKey) ? "#a45716" : "#D0D5DD";
     },
     getSuggestedReasonTextColor(reasonKey) {
       return this.isSuggestedReasonSelected(reasonKey) ? "#FFFFFF" : "#475467";
@@ -164,7 +164,6 @@ export default {
     handleSuggestedReasonClick(reasonOption) {
       if (!reasonOption) return;
 
-      this.selectedSuggestedReasonKey = reasonOption.key;
       this.reason = reasonOption.template;
     },
     handleChangeStatus(value) {

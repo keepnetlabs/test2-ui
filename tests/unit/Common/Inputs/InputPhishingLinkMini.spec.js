@@ -42,6 +42,7 @@ describe('InputPhishingLinkMini.vue', () => {
     $emit: jest.fn(),
     disabledLabel: '',
     checkSchemaTypes: jest.fn(),
+    checkDomainBlacklist: jest.fn(),
     handleInputChange: methods.handleInputChange,
     ...overrides
   })

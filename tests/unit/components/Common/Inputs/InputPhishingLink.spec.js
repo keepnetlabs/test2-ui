@@ -53,7 +53,8 @@ describe('InputPhishingLink.vue', () => {
       pathTypes: [{ value: 'p1' }],
       extensionTypes: [{ value: 'e1' }],
       parameterTypes: [{ value: 'q1' }],
-      checkSchemaTypes: jest.fn()
+      checkSchemaTypes: jest.fn(),
+      checkDomainBlacklist: jest.fn()
     }
     InputPhishingLink.methods.setDefaultValue.call(ctx)
     expect($emit).toHaveBeenCalledWith(
