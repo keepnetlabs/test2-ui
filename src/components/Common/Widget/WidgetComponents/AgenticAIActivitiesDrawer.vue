@@ -191,46 +191,43 @@
               :style="{ flexGrow: 1 }"
             >
               <template v-if="selectedBatch || pagedTableData.length || isLoading">
-                <div class="agentic-ai-activities-drawer__detail-header">
-                  <div>
-                    <div class="agentic-ai-activities-drawer__detail-title">
-                      <span class="agentic-ai-activities-drawer__detail-title-label">
-                        Campaign Name:
-                      </span>
-                      <span class="agentic-ai-activities-drawer__detail-title-value">
-                        {{ selectedBatchTitle }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
                 <div
                   v-if="showApproveAllBanner"
-                  class="agentic-ai-activities-drawer__approval-banner"
+                  class="agentic-ai-activities-drawer__detail-header"
                 >
-                  <span class="agentic-ai-activities-drawer__approval-text">
-                    {{ pendingApprovalText }}
-                  </span>
-                  <VBtn
-                    color="#ffffff"
-                    class="agentic-ai-activities-drawer__approval-button"
-                    rounded
-                    :disabled="actionInProgress"
-                    @click="handleApprove(selectedBatch)"
+                  <div class="agentic-ai-activities-drawer__detail-header-actions">
+                    <VBtn
+                      class="agentic-ai-activities-drawer__approval-button agentic-ai-activities-drawer__approval-button--approve"
+                      rounded
+                      small
+                      :disabled="actionInProgress"
+                      @click="handleApprove(selectedBatch)"
+                    >
+                      <VIcon size="14" class="mr-1">mdi-check</VIcon>
+                      Approve All
+                    </VBtn>
+                    <VBtn
+                      class="agentic-ai-activities-drawer__approval-button agentic-ai-activities-drawer__approval-button--decline"
+                      rounded
+                      small
+                      outlined
+                      :disabled="actionInProgress"
+                      @click="handleDeclineAll(selectedBatch)"
+                    >
+                      <VIcon size="14" class="mr-1">mdi-close</VIcon>
+                      Decline All
+                    </VBtn>
+                  </div>
+                  <v-chip
+                    outlined
+                    small
+                    label
+                    color="#2196f3"
+                    text-color="#2196f3"
+                    style="font-weight: 600"
                   >
-                    <VIcon size="16" color="#43a047">mdi-check</VIcon>
-                    Approve All
-                  </VBtn>
-                  <VBtn
-                    color="#ffffff"
-                    class="agentic-ai-activities-drawer__approval-button"
-                    rounded
-                    :disabled="actionInProgress"
-                    @click="handleDeclineAll(selectedBatch)"
-                  >
-                    <VIcon size="16" color="#757575">mdi-close</VIcon>
-                    Decline All
-                  </VBtn>
+                    {{ selectedBatchPendingCount }} pending
+                  </v-chip>
                 </div>
 
                 <div class="agentic-ai-activities-drawer__table-wrapper">
@@ -296,7 +293,7 @@
                           v-if="isWaitingForApproval(scope.row)"
                           icon="mdi-close-circle"
                           :id="`btn-agentic-ai-activity-reject-${scope.$index}`"
-                          text="Reject"
+                          text="Decline"
                           :scope="scope"
                           :check-is-owner-property="false"
                           @on-click="handleReject(scope.row)"
@@ -1173,14 +1170,8 @@ export default {
       const pct = Math.round(((map[type] || 0) / total) * 100);
       return `${pct}%`;
     },
-    getBatchCardTitleStyle(batch = {}) {
-      if (batch.batchResourceId !== this.selectedBatchId) {
-        return {};
-      }
-
-      return {
-        color: "#2196f3"
-      };
+    getBatchCardTitleStyle() {
+      return {};
     },
     getStatusBadgeColor(status = "") {
       const normalized = this.normalizeStatus(status).toLowerCase();
@@ -1193,7 +1184,11 @@ export default {
         return "#43a047";
       }
 
-      if (normalized === "declined" || normalized === "rejected" || normalized === "error") {
+      if (normalized === "declined" || normalized === "rejected") {
+        return "#757575";
+      }
+
+      if (normalized === "error") {
         return "#e53935";
       }
 
@@ -1333,10 +1328,10 @@ export default {
         action: "reject",
         row,
         icon: "mdi-close",
-        title: "Confirm Rejection",
-        message: `${rejectDisplayName}'s approval will be rejected. This action cannot be undone.`,
+        title: "Confirm Decline",
+        message: `${rejectDisplayName}'s approval will be declined. This action cannot be undone.`,
         recommendation: "",
-        confirmText: "REJECT USER",
+        confirmText: "DECLINE USER",
         loading: false
       };
     },
@@ -1408,7 +1403,7 @@ export default {
           this.$emit("on-reject", row);
         } else if (action === "reject") {
           await rejectAgenticAIActivity({ resourceIds: [row.resourceId] });
-          this.showSnackbar("Action rejected and will not be executed.", "green", "mdi-close-circle");
+          this.showSnackbar("Action declined and will not be executed.", "green", "mdi-close-circle");
           this.$emit("on-reject", row);
         } else if (action === "retry") {
           await rejectAgenticAIActivity({ resourceIds: [row.resourceId], batchResourceId: row.batchResourceId, rejectingReason });
