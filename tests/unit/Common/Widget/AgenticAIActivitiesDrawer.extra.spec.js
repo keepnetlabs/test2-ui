@@ -196,27 +196,35 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
   })
 
   describe('getBatchSegmentWidth', () => {
+    const ctxWithCounts = {
+      getBatchStatusCounts: AgenticAIActivitiesDrawer.methods.getBatchStatusCounts
+    }
+
     it('returns 0% when total is 0', () => {
-      const ctx = {}
-      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, {}, 'approved')).toBe('0%')
+      expect(
+        AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctxWithCounts, {}, 'approved')
+      ).toBe('0%')
     })
 
     it('calculates correct percentage for approved', () => {
-      const ctx = {}
       const batch = { userCount: 10, statusCounts: { Approved: 5 } }
-      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, batch, 'approved')).toBe('50%')
+      expect(
+        AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctxWithCounts, batch, 'approved')
+      ).toBe('50%')
     })
 
     it('calculates correct percentage for pending', () => {
-      const ctx = {}
       const batch = { userCount: 10, statusCounts: { Pending: 3 } }
-      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, batch, 'pending')).toBe('30%')
+      expect(
+        AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctxWithCounts, batch, 'pending')
+      ).toBe('30%')
     })
 
     it('calculates correct percentage for declined', () => {
-      const ctx = {}
       const batch = { userCount: 10, statusCounts: { Declined: 2 } }
-      expect(AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctx, batch, 'declined')).toBe('20%')
+      expect(
+        AgenticAIActivitiesDrawer.methods.getBatchSegmentWidth.call(ctxWithCounts, batch, 'declined')
+      ).toBe('20%')
     })
   })
 })
