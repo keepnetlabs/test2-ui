@@ -127,30 +127,12 @@
                   @click="handleBatchSelect(batch)"
                 >
                   <div class="agentic-ai-activities-drawer__batch-card-title-row">
-                    <span
-                      class="agentic-ai-activities-drawer__batch-card-title"
-                      :style="getBatchCardTitleStyle(batch)"
-                    >
+                    <span class="agentic-ai-activities-drawer__batch-card-title">
                       {{ batch.title }}
                     </span>
                   </div>
 
-                  <div class="agentic-ai-activities-drawer__batch-card-meta-row">
-                    <Badge
-                      :text="batch.subtitle || 'Activity'"
-                      :color="getTypeBadgeColor(batch.subtitle)"
-                      size="small"
-                      :full-width="false"
-                    />
-                    <span
-                      v-if="batch.createTime"
-                      class="agentic-ai-activities-drawer__batch-card-date"
-                    >
-                      {{ formatBatchDate(batch.createTime) }}
-                    </span>
-                  </div>
-
-                  <div class="agentic-ai-activities-drawer__batch-card-footer">
+                  <div class="agentic-ai-activities-drawer__batch-card-meta-main">
                     <span
                       v-if="batch.userCount !== null && batch.userCount !== undefined"
                       class="agentic-ai-activities-drawer__batch-card-meta"
@@ -158,12 +140,46 @@
                       <VIcon size="14" color="#667085">mdi-account-multiple</VIcon>
                       {{ getUserCountText(batch.userCount) }}
                     </span>
-                    <span
-                      v-if="batch.waitingCount > 0"
-                      class="agentic-ai-activities-drawer__batch-card-pending"
+                    <template v-if="batch.subtitle">
+                      <span class="agentic-ai-activities-drawer__batch-card-meta-sep">·</span>
+                      <span class="agentic-ai-activities-drawer__batch-card-type">{{
+                        batch.subtitle
+                      }}</span>
+                    </template>
+                    <template v-if="batch.createTime">
+                      <span class="agentic-ai-activities-drawer__batch-card-meta-sep">·</span>
+                      <span class="agentic-ai-activities-drawer__batch-card-date">{{
+                        formatBatchDate(batch.createTime)
+                      }}</span>
+                    </template>
+                  </div>
+
+                  <div class="agentic-ai-activities-drawer__batch-card-chips">
+                    <v-chip
+                      small
+                      label
+                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--approved"
+                      outlined
                     >
-                      {{ batch.waitingCount }} pending
-                    </span>
+                      <VIcon size="14">mdi-check</VIcon>
+                      {{ getBatchStatusCounts(batch).approved }}
+                    </v-chip>
+                    <v-chip
+                      small
+                      label
+                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--pending"
+                      outlined
+                    >
+                      {{ getBatchStatusCounts(batch).pending }} pending
+                    </v-chip>
+                    <v-chip
+                      small
+                      label
+                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--declined"
+                      outlined
+                    >
+                      {{ getBatchStatusCounts(batch).declined }} declined
+                    </v-chip>
                   </div>
 
                   <div class="agentic-ai-activities-drawer__batch-card-progress">
@@ -407,7 +423,6 @@
 
 <script>
 import { Multipane, MultipaneResizer } from "vue-multipane";
-import Badge from "@/components/Badge.vue";
 import KSelect from "@/components/Common/Inputs/KSelect.vue";
 import DataTable from "@/components/DataTable";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
@@ -450,7 +465,6 @@ export default {
   components: {
     AgenticAIConfirmDialog,
     AgenticAIRejectDialog,
-    Badge,
     DataTable,
     DefaultButtonRowAction,
     DefaultMenuRowAction,
@@ -1167,25 +1181,23 @@ export default {
     getUserCountText(count = 0) {
       return String(count);
     },
-    getTypeBadgeColor() {
-      return "#667085";
-    },
     formatBatchDate(dateStr = "") {
       return dateStr || "";
     },
-    getBatchSegmentWidth(batch = {}, type = "pending") {
-      const total = batch.userCount || 0;
-      if (!total) return "0%";
+    getBatchStatusCounts(batch = {}) {
       const counts = batch.statusCounts || {};
       const approved = counts.Approved ?? counts.approved ?? counts.Executed ?? counts.executed ?? 0;
       const declined = counts.Declined ?? counts.declined ?? counts.Rejected ?? counts.rejected ?? 0;
       const pending = counts.Pending ?? counts.pending ?? counts.WaitingForApproval ?? 0;
+      return { approved, pending, declined };
+    },
+    getBatchSegmentWidth(batch = {}, type = "pending") {
+      const total = batch.userCount || 0;
+      if (!total) return "0%";
+      const { approved, pending, declined } = this.getBatchStatusCounts(batch);
       const map = { approved, pending, declined };
       const pct = Math.round(((map[type] || 0) / total) * 100);
       return `${pct}%`;
-    },
-    getBatchCardTitleStyle() {
-      return {};
     },
     getStatusBadgeColor(status = "") {
       const normalized = this.normalizeStatus(status).toLowerCase();
