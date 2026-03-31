@@ -248,7 +248,10 @@ export default {
     },
     'value.domainRecordId'(val) {
       this.changeDisabledLabel()
-      if (val) this.checkSchemaTypes(val)
+      if (val) {
+        this.checkSchemaTypes(val)
+        if (this.isEdit) this.checkDomainBlacklist(val)
+      }
     },
     'value.parameterTypeId'() {
       this.changeDisabledLabel()
@@ -258,6 +261,18 @@ export default {
     },
     'value.pathTypeId'() {
       this.changeDisabledLabel()
+    },
+    domainRecords(newVal, oldVal) {
+      if (!newVal?.length) return
+      const wasEmpty = !oldVal?.length
+      if (!wasEmpty) return
+      if (!this.isEdit && !this.value.domainRecordId) {
+        this.setDefaultValue()
+        return
+      }
+      if (this.value.domainRecordId) {
+        this.checkDomainBlacklist(this.value.domainRecordId)
+      }
     }
   },
   mounted() {
@@ -320,7 +335,9 @@ export default {
     checkDomainBlacklist(domainRecordId) {
       this.blacklistWarning = null
       this.cleanSuggestions = []
-      const domainRecord = this.domainRecords.find((item) => item.value === domainRecordId)
+      const domainRecord = this.domainRecords.find(
+        (item) => String(item.value) === String(domainRecordId)
+      )
       if (!domainRecord) return
       const domainName = domainRecord.text
       getDomainBlacklistStatus(domainName)
