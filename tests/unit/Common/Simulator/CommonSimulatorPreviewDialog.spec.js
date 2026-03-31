@@ -124,9 +124,17 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
 
   it('computes navigation class, subtitle and current landing page template', () => {
     expect(
-      CommonSimulatorPreviewDialog.computed.getNavigationDrawerClass.call({})
+      CommonSimulatorPreviewDialog.computed.getNavigationDrawerClass.call({ isNested: false })
     ).toEqual({
-      'k-navigation-drawer k-navigation-drawer--preview-dialog': true
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': false
+    })
+
+    expect(
+      CommonSimulatorPreviewDialog.computed.getNavigationDrawerClass.call({ isNested: true })
+    ).toEqual({
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': true
     })
 
     expect(
@@ -291,7 +299,7 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
     ).toBeFalsy()
   })
 
-  it('isPhishing and isSmishing computed correctly', () => {
+  it('isPhishing and isQuishing computed correctly', () => {
     expect(
       CommonSimulatorPreviewDialog.computed.isPhishing.call({
         type: PREVIEW_DIALOG_TYPES.PHISHING
@@ -302,6 +310,21 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
         type: PREVIEW_DIALOG_TYPES.QUISHING
       })
     ).toBe(false)
+    expect(
+      CommonSimulatorPreviewDialog.computed.isQuishing.call({
+        type: PREVIEW_DIALOG_TYPES.QUISHING
+      })
+    ).toBe(true)
+    expect(
+      CommonSimulatorPreviewDialog.computed.isQuishing.call({
+        type: PREVIEW_DIALOG_TYPES.PHISHING
+      })
+    ).toBe(false)
+  })
+
+  it('getLoaderTitle and getLoaderDescription return AI red-flag scan copy', () => {
+    expect(CommonSimulatorPreviewDialog.computed.getLoaderTitle.call({})).toContain('red flags')
+    expect(CommonSimulatorPreviewDialog.computed.getLoaderDescription.call({})).toContain('localization')
   })
 
   it('handleDuplicate emits on-duplicate-template', () => {
@@ -323,6 +346,22 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
     expect(prop.type).toBe(String)
     // validator: any string is valid
     expect('This scenario targets users who reuse passwords.').toEqual(expect.any(String))
+  })
+
+  it('isNested prop defaults to false (standalone preview controls html scroll)', () => {
+    const prop = CommonSimulatorPreviewDialog.props.isNested
+    expect(prop.type).toBe(Boolean)
+    const defaultVal = typeof prop.default === 'function' ? prop.default() : prop.default
+    expect(defaultVal).toBe(false)
+  })
+
+  it('getNavigationDrawerClass treats undefined isNested like false', () => {
+    expect(
+      CommonSimulatorPreviewDialog.computed.getNavigationDrawerClass.call({})
+    ).toEqual({
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': undefined
+    })
   })
 
   it('callForLanguages maps lookup response into languages list', async () => {

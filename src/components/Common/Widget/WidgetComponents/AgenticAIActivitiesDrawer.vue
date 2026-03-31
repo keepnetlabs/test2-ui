@@ -330,6 +330,7 @@
         :status="previewType === 'Phishing' && !previewClosing"
         :selected-row="previewSelectedRow"
         :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
+        is-nested
         read-only
         :show-approval-footer="isPreviewRowWaitingForApproval"
         :show-retry-button="isPreviewRowError"
@@ -346,6 +347,7 @@
         :status="previewType === 'Quishing' && !previewClosing"
         :selected-row="previewSelectedRow"
         :api-func="getQuishingScenarioLandingPageAndEmailTemplate"
+        is-nested
         read-only
         :show-approval-footer="isPreviewRowWaitingForApproval"
         :show-retry-button="isPreviewRowError"

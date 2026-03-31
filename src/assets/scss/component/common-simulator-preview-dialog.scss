@@ -14,7 +14,9 @@
   z-index: 251 !important;
 }
 
-.common-simulator-preview-dialog--with-approval-footer {
+// Flex + scrollable body: only when needed (Agentic `read-only` and/or approval footer).
+// Scenario / Quishing list previews keep the default drawer layout (no global override).
+.common-simulator-preview-dialog--scrollable-body {
   display: flex !important;
   flex-direction: column;
   overflow: hidden !important;
