@@ -46,6 +46,7 @@
           :languages="languageOptions"
           :api-func="getLandingPageApiFuncs.content"
           is-nested
+          :is-smishing="type === SCENARIO_TYPES.SMISHING"
           :should-control-html-overflow="false"
           @on-close="showLandingPagePreviewDialog = false"
         />

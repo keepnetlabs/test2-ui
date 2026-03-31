@@ -1,6 +1,10 @@
 <template>
   <div v-if="isVisible">
-    <div class="common-campaign-manager-preview-overlay" @click="handleOverlayClick"></div>
+    <div
+      class="common-campaign-manager-preview-overlay"
+      :class="{ 'nested-overlay': isNested }"
+      @click="handleOverlayClick"
+    ></div>
     <VNavigationDrawer
       :value="isVisible"
       :class="getNavigationDrawerClass"
@@ -244,6 +248,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
+import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
@@ -255,13 +260,17 @@ export default {
     KEmailPreview,
     EmailTemplatePreviewSkeleton
   },
-  mixins: [useDrawerAnimation],
+  mixins: [useDrawerAnimation, useHtmlOverflowControl],
   props: {
     status: {
       type: Boolean
     },
     selectedRow: {
       type: Object
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     },
     apiFunc: {
       type: Function,
@@ -301,7 +310,8 @@ export default {
   computed: {
     getNavigationDrawerClass() {
       return {
-        'k-navigation-drawer k-navigation-drawer--campaign-manager-preview': true
+        'k-navigation-drawer k-navigation-drawer--campaign-manager-preview': true,
+        'nested-drawer': this.isNested
       }
     },
     getEmailTemplatePreviewLanguageHint() {

@@ -47,6 +47,7 @@
       :status="isShowPreviewDialog"
       :selectedRow="selectedRow"
       @on-close="toggleShowPreviewDialog"
+      @on-edit-campaign="handleEditCampaignFromPreview"
     />
     <NoScenarioModal
       v-if="isNoScenarioModalVisible"
@@ -307,6 +308,13 @@ export default {
     handleItemOnEdit(row) {
       this.selectedRow = row
       this.isEdit = true
+      this.toggleAddCampaignManagerModal()
+    },
+    handleEditCampaignFromPreview(row) {
+      this.toggleShowPreviewDialog()
+      this.selectedRow = row
+      this.isEdit = true
+      this.isDuplicate = false
       this.toggleAddCampaignManagerModal()
     },
     handleItemOnPreview(row) {

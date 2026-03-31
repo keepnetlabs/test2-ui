@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils'
-import LandingPageTemplateModalPreview from '@/components/SmishingLandingPages/LandingPageTemplateModalPreview.vue'
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview.vue'
 
-describe('SmishingLandingPages LandingPageTemplateModalPreview.vue', () => {
+describe('SmishingLandingPages uses LandingPage/LandingPageTemplateModalPreview', () => {
   const createWrapper = (propsData = {}) => {
     return shallowMount(LandingPageTemplateModalPreview, {
       propsData: {
@@ -10,7 +10,7 @@ describe('SmishingLandingPages LandingPageTemplateModalPreview.vue', () => {
         phishingUrl: 'https://example.com',
         ...propsData
       },
-      stubs: { KEmailPreview: true }
+      stubs: { KEmailPreview: true, BrowserToolbar: true, InputLanguagePreview: true }
     })
   }
 
@@ -40,60 +40,6 @@ describe('SmishingLandingPages LandingPageTemplateModalPreview.vue', () => {
       expect(wrapper.vm.getCurrentLandingPageTemplate).toBe('page1')
       wrapper.vm.selectedLandingPageIndex = 1
       expect(wrapper.vm.getCurrentLandingPageTemplate).toBe('page2')
-    })
-  })
-
-  describe('hasNextTemplate', () => {
-    it('returns false when at last template', () => {
-      const wrapper = createWrapper({
-        landingPageTemplates: [{ content: 'a' }]
-      })
-      expect(wrapper.vm.hasNextTemplate).toBe(false)
-    })
-
-    it('returns true when more templates exist', () => {
-      const wrapper = createWrapper({
-        landingPageTemplates: [{ content: 'a' }, { content: 'b' }]
-      })
-      expect(wrapper.vm.hasNextTemplate).toBe(true)
-    })
-  })
-
-  describe('hasPreviousTemplate', () => {
-    it('returns false when at index 0', () => {
-      const wrapper = createWrapper({
-        landingPageTemplates: [{ content: 'a' }]
-      })
-      expect(wrapper.vm.hasPreviousTemplate).toBe(false)
-    })
-
-    it('returns true when index > 0', () => {
-      const wrapper = createWrapper({
-        landingPageTemplates: [{ content: 'a' }, { content: 'b' }]
-      })
-      wrapper.vm.selectedLandingPageIndex = 1
-      expect(wrapper.vm.hasPreviousTemplate).toBe(true)
-    })
-  })
-
-  describe('handlePreviousTemplate', () => {
-    it('decrements selectedLandingPageIndex', () => {
-      const wrapper = createWrapper({
-        landingPageTemplates: [{ content: 'a' }, { content: 'b' }]
-      })
-      wrapper.vm.selectedLandingPageIndex = 1
-      wrapper.vm.handlePreviousTemplate()
-      expect(wrapper.vm.selectedLandingPageIndex).toBe(0)
-    })
-  })
-
-  describe('handleNextTemplate', () => {
-    it('increments selectedLandingPageIndex', () => {
-      const wrapper = createWrapper({
-        landingPageTemplates: [{ content: 'a' }, { content: 'b' }]
-      })
-      wrapper.vm.handleNextTemplate()
-      expect(wrapper.vm.selectedLandingPageIndex).toBe(1)
     })
   })
 })

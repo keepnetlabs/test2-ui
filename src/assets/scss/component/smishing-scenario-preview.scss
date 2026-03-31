@@ -1,0 +1,32 @@
+// SmishingScenarioPreview.vue — drawer slot (global, imported via _all.scss)
+
+.smishing-scenario-preview {
+  &__skeleton {
+    margin-top: 8px;
+  }
+
+  // Same as .smishing-campaign-preview — tight gap template name → bordered box (8px vs global 16px)
+  .email-template-preview .email-template-preview__container {
+    margin-top: 8px;
+  }
+
+  // Only the outer ElTabs (Text Message / Landing Page). Descendant selectors were
+  // hitting the nested k-sub-tab inside Landing Page and broke its tab row padding.
+  &__main-tabs {
+    > .el-tabs__content {
+      padding-top: 0;
+    }
+
+    /* Tighter gap under Text Message / Landing Page strip (Phishing drawer feels closer) */
+    > .el-tabs__header {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Wizard / templates list — text-only drawer (no scenario tabs above title)
+.smishing-text-template-drawer.email-template-preview {
+  .email-template-preview__container {
+    margin-top: 8px;
+  }
+}

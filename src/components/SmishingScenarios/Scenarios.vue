@@ -29,6 +29,7 @@
       :status="isShowPreviewDialog"
       :selected-row="selectedPhishingScenario"
       @on-close="toggleShowPreviewDialog"
+      @on-edit="handlePreviewEdit"
     />
     <NoTextMessageTemplateModal
       v-if="isShowNoTextMessageTemplateModal"
@@ -436,6 +437,14 @@ export default {
     handlePreview(row) {
       this.selectedPhishingScenario = row
       this.toggleShowPreviewDialog()
+    },
+    handlePreviewEdit() {
+      const row = this.selectedPhishingScenario
+      if (!row?.resourceId) return
+      this.toggleShowPreviewDialog()
+      this.$nextTick(() => {
+        this.handleEdit(row, false)
+      })
     },
     toggleShowFastLaunch() {
       if (this.isShowFastLaunch) this.selectedRow = null

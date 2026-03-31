@@ -1,56 +1,148 @@
 <template>
-  <div class="ml-2">
-    <div class="template-preview__text mb-4">
-      <div>
-        <span
-          class="template-preview__text--title"
-          :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '600' } : {}"
-          >Template Name:
-        </span>
-        <span
-          class="template-preview__text--body text-primary-color"
-          :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '400' } : {}"
-          >{{ landingPageParams.name }}
-          <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>
-            <template #activator="{ on }">
-              <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
-            </template>
-            <span>This template was generated with AI</span>
-          </VTooltip>
-        </span>
-      </div>
-      <div
-        v-if="selectedLanguages && selectedLanguages.length > 1"
-        style="background: rgb(224, 224, 224); height: 1px; max-width: 554px;"
-      ></div>
-      <div
-        v-if="selectedLanguages && selectedLanguages.length > 1"
-        style="max-width: 554px; margin-top: 8px;"
-      >
-        <InputLanguagePreview
-          v-model="languagePreview"
-          persistent-hint
-          class="max-w-554 tabs-with-mfa-settings__language-preview"
-          :hint="templateLanguageHint"
-          :items="selectedLanguages"
-          :hide-details="false"
-          @input="handleLanguageChange"
-        />
-      </div>
-      <div>
-        <span
-          class="template-preview__text--title"
-          :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '600' } : {}"
-          >{{ getUrlTitle }}:
-        </span>
-        <span
-          class="template-preview__text--body"
-          :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '400' } : {}"
-          >{{ landingPageParams.urlTemplate }}
-        </span>
-      </div>
+  <div :class="rootWrapperClass">
+    <!-- Same vertical rhythm as TabsWithMfaSettingsMultipleLanguages when !readOnly: mb-2 + mt-n4 -->
+    <div v-if="usePhishingLandingLayout" :class="['mb-2', 'mt-n4']">
+      <span class="template-preview__text--body text-primary-color fs-4 fw-600">
+        {{ landingPageParams.name }}
+        <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>
+          <template #activator="{ on }">
+            <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+          </template>
+          <span>This template was generated with AI</span>
+        </VTooltip>
+      </span>
     </div>
-    <ElTabs v-model="landingPageTab" :class="[isSubTab ? 'k-sub-tab' : '', 'mt-4']">
+    <!--
+      usePhishingLandingLayout: card = optional open + hr + k-sub-tab; URL bar is BrowserToolbar inside each Page tab (MultipleLanguages parity).
+    -->
+    <div
+      :style="
+        usePhishingLandingLayout
+          ? 'border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;'
+          : 'display: contents;'
+      "
+    >
+      <div
+        v-if="!usePhishingLandingLayout"
+        class="template-preview__text"
+        :class="templateMetaBottomClass"
+      >
+        <div>
+          <span
+            class="template-preview__text--title"
+            :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '600' } : {}"
+            >Template Name:
+          </span>
+          <span
+            class="template-preview__text--body text-primary-color"
+            :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '400' } : {}"
+            >{{ landingPageParams.name }}
+            <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>
+              <template #activator="{ on }">
+                <VIcon v-on="on" color="#2196F3" small>mdi-creation</VIcon>
+              </template>
+              <span>This template was generated with AI</span>
+            </VTooltip>
+          </span>
+        </div>
+        <div
+          v-if="showTemplateLanguageSwitcher"
+          style="background: rgb(224, 224, 224); height: 1px; max-width: 554px;"
+        ></div>
+        <div
+          v-if="showTemplateLanguageSwitcher"
+          style="max-width: 554px; margin-top: 8px;"
+        >
+          <InputLanguagePreview
+            v-model="languagePreview"
+            persistent-hint
+            class="max-w-554 tabs-with-mfa-settings__language-preview"
+            :hint="templateLanguageHint"
+            :items="selectedLanguages"
+            :hide-details="false"
+            @input="handleLanguageChange"
+          />
+        </div>
+        <div
+          class="d-flex align-start justify-space-between gap-2 tabs-with-mfa-settings__url-row"
+        >
+          <div class="flex-grow-1" style="min-width: 0;">
+            <span
+              class="template-preview__text--title"
+              :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '600' } : {}"
+              >{{ getUrlTitle }}:
+            </span>
+            <span
+              class="template-preview__text--body"
+              :style="isPhishingScenario ? { 'font-size': '16px', 'font-weight': '400' } : {}"
+              >{{ landingPageParams.urlTemplate }}
+            </span>
+          </div>
+          <VTooltip v-if="showLandingUrlOpenButton && landingPageUrlForOpen" bottom>
+            <template #activator="{ on }">
+              <div v-on="on" class="flex-shrink-0">
+                <VBtn
+                  icon
+                  outlined
+                  color="#2196F3"
+                  small
+                  aria-label="Open in new tab"
+                  @click="openLandingUrlInNewTab"
+                >
+                  <VIcon small>mdi-open-in-new</VIcon>
+                </VBtn>
+              </div>
+            </template>
+            <span>Open in New Tab</span>
+          </VTooltip>
+        </div>
+      </div>
+      <div v-else class="template-preview__text mb-0">
+        <div
+          v-if="showTemplateLanguageSwitcher"
+          style="background: rgb(224, 224, 224); height: 1px; max-width: 554px;"
+        ></div>
+        <div
+          v-if="showTemplateLanguageSwitcher"
+          style="max-width: 554px; margin-top: 8px;"
+        >
+          <InputLanguagePreview
+            v-model="languagePreview"
+            persistent-hint
+            class="max-w-554 tabs-with-mfa-settings__language-preview"
+            :hint="templateLanguageHint"
+            :items="selectedLanguages"
+            :hide-details="false"
+            @input="handleLanguageChange"
+          />
+        </div>
+        <div
+          v-if="showLandingUrlOpenButton && landingPageUrlForOpen"
+          class="email-template-preview__header d-flex align-center justify-end mb-2"
+        >
+          <div class="email-template-preview__actions d-flex align-center gap-2">
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn
+                    icon
+                    outlined
+                    color="#2196F3"
+                    small
+                    aria-label="Open in new tab"
+                    @click="openLandingUrlInNewTab"
+                  >
+                    <VIcon small>mdi-open-in-new</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Open in New Tab</span>
+            </VTooltip>
+          </div>
+        </div>
+        <hr class="mb-3 ml-n4 mr-n4" />
+      </div>
+      <ElTabs v-model="landingPageTab" :class="innerElTabsClasses">
       <ElTabPane
         v-for="(template, index) in landingPageTemplates"
         :key="index"
@@ -58,7 +150,16 @@
         :name="`${index + 1}`"
       >
         <div class="template-preview mt-4 pt-0">
-          <hr class="mt-4" v-if="!!getCurrentPageTemplate(template)" />
+          <hr
+            v-if="!!getCurrentPageTemplate(template)"
+            :class="usePhishingLandingLayout ? 'mt-4 ml-n4 mr-n4' : 'mt-4'"
+          />
+          <BrowserToolbar
+            v-if="usePhishingLandingLayout && !!getCurrentPageTemplate(template)"
+            :url="landingPageParams.urlTemplate || ''"
+            :page-index="Number.parseInt(landingPageTab, 10) - 1"
+            :show-toolbar="!!getCurrentPageTemplate(template)"
+          />
           <KEmailPreview
             v-if="!!getCurrentPageTemplate(template)"
             is-landing-page
@@ -128,17 +229,19 @@
           </div>
         </div>
       </ElTabPane>
-    </ElTabs>
+      </ElTabs>
+    </div>
   </div>
 </template>
 
 <script>
 import KEmailPreview from '@/components/KEmailPreview'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
+import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 export default {
   name: 'TabsWithMfaSettings',
-  components: { KEmailPreview, InputLanguagePreview },
+  components: { KEmailPreview, InputLanguagePreview, BrowserToolbar },
   props: {
     landingPageTemplates: {
       type: Array,
@@ -164,6 +267,25 @@ export default {
       type: Boolean,
       default: false
     },
+    /** Smishing/CommonSimulator-style drawer: align with parent ElTabs */
+    flushDrawerAlign: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Opt-in only: Smishing scenario/campaign preview matches CommonSimulator (MultipleLanguages + BrowserToolbar).
+     * Phishing list preview uses TabsWithMfaSettingsMultipleLanguages elsewhere — do not set this on Phishing/Quishing campaign UIs.
+     */
+    previewLayout: {
+      type: String,
+      default: 'default',
+      validator: (v) => ['default', 'simulator'].includes(v)
+    },
+    /** Smishing scenario preview drawer: show mdi-open-in-new next to landing URL (parity with CommonSimulator landing tab) */
+    showLandingUrlOpenButton: {
+      type: Boolean,
+      default: false
+    },
     type: {
       type: String,
       default: PREVIEW_DIALOG_TYPES.PHISHING
@@ -184,7 +306,36 @@ export default {
     }
   },
   computed: {
+    /** Smishing-only: must pass preview-layout="simulator". Never true for PhishingScenarioPreview / campaign wizards (default layout). */
+    usePhishingLandingLayout() {
+      return this.previewLayout === 'simulator'
+    },
+    /** Drawer margin alignment: Smishing passes flush + simulator together; unrelated screens stay ml-2. */
+    rootWrapperClass() {
+      const drawerFlush =
+        this.flushDrawerAlign === true || this.previewLayout === 'simulator'
+      return drawerFlush ? 'tabs-with-mfa-settings--drawer-flush' : 'ml-2'
+    },
+    templateMetaBottomClass() {
+      return this.usePhishingLandingLayout ? 'mb-0' : 'mb-4'
+    },
+    /** Hidden for Smishing until multi-language UX is ready (same intent as Quishing in modal preview). */
+    showTemplateLanguageSwitcher() {
+      return (
+        this.selectedLanguages &&
+        this.selectedLanguages.length > 1 &&
+        !this.isSmishing
+      )
+    },
+    innerElTabsClasses() {
+      const classes = []
+      if (this.isSubTab) classes.push('k-sub-tab')
+      // Match TabsWithMfaSettingsMultipleLanguages (mt-4 on k-sub-tab)
+      classes.push('mt-4')
+      return classes
+    },
     getUrlTitle() {
+      if (this.isSmishing) return 'Smishing URL'
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING ? 'Phishing URL' : 'Quishing URL'
     },
     getTextOfScenariosPage() {
@@ -201,6 +352,10 @@ export default {
     },
     currentLanguagePreview() {
       return this.languagePreview || this.internalLanguagePreview
+    },
+    landingPageUrlForOpen() {
+      const u = this.landingPageParams?.urlTemplate
+      return typeof u === 'string' && u.trim() ? u.trim() : ''
     }
   },
   watch: {
@@ -256,6 +411,15 @@ export default {
     handleLanguageChange(languageId) {
       this.internalLanguagePreview = languageId
       this.$emit('language-change', languageId)
+    },
+    openLandingUrlInNewTab() {
+      const url = this.landingPageUrlForOpen
+      if (!url) return
+      try {
+        window.open(url, '_blank', 'noopener,noreferrer')
+      } catch {
+        window.open(url, '_blank')
+      }
     }
   }
 }

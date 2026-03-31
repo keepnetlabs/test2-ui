@@ -57,8 +57,6 @@
     </ElTabs>
     <CampaignManagerReportSummaryTextTemplate
       :form-data="getTextTemplateData"
-      :difficulties="difficulties"
-      :methods="methods"
       :isFetchingSummary="isLoading"
     />
     <CampaignManagerReportSummaryLandingPage
