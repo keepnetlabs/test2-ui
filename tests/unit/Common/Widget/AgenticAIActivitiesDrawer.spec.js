@@ -207,6 +207,29 @@ describe("AgenticAIActivitiesDrawer", () => {
     });
   });
 
+  describe("getBatchStatusCounts", () => {
+    it("maps statusCounts keys to approved, pending, declined", () => {
+      const wrapper = mountFactory();
+      const batch = {
+        statusCounts: { Approved: 2, Pending: 3, Declined: 1 }
+      };
+      expect(wrapper.vm.getBatchStatusCounts(batch)).toEqual({
+        approved: 2,
+        pending: 3,
+        declined: 1
+      });
+    });
+
+    it("returns zeros when statusCounts is missing", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getBatchStatusCounts({})).toEqual({
+        approved: 0,
+        pending: 0,
+        declined: 0
+      });
+    });
+  });
+
   describe("getBatchSegmentWidth", () => {
     it("returns 0% when userCount is zero", () => {
       const wrapper = mountFactory();

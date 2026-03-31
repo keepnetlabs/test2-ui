@@ -1,13 +1,17 @@
 <template>
   <div v-if="isVisible">
-    <div class="common-simulator-preview-overlay" @click="handleOverlayClick"></div>
+    <div
+      class="common-simulator-preview-overlay"
+      @click="handleOverlayClick"
+    ></div>
     <VNavigationDrawer
       :value="isVisible"
       :class="[
         getNavigationDrawerClass,
         'common-simulator-preview-dialog',
         {
-          'common-simulator-preview-dialog--scrollable-body': showApprovalFooter || readOnly
+          'common-simulator-preview-dialog--scrollable-body':
+            showApprovalFooter || readOnly
         }
       ]"
       :data-drawer-id="drawerId"
@@ -19,7 +23,9 @@
       height="100%"
     >
       <div class="campaign-manager-scenario-statistics-modal__header--sticky">
-        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
+        <div
+          class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header"
+        >
           <div>
             <VListItem>
               <VListItemContent>
@@ -36,19 +42,29 @@
           </div>
         </div>
       </div>
-      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+      <div
+        class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body"
+      >
         <div
           class="d-flex align-center justify-space-between mt-4 mb-1"
           style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
         >
           <div>
-            <span class="text-primary-color fs-5 fw-600">{{ selectedRow.name }}</span>
+            <span class="text-primary-color fs-5 fw-600">{{
+              selectedRow.name
+            }}</span>
           </div>
           <div v-if="!readOnly" class="d-flex align-center gap-2">
             <VTooltip v-if="!isQuishing" bottom>
               <template #activator="{ on }">
                 <div v-on="on">
-                  <VBtn icon outlined color="#2196F3" small @click="handleFastLaunch">
+                  <VBtn
+                    icon
+                    outlined
+                    color="#2196F3"
+                    small
+                    @click="handleFastLaunch"
+                  >
                     <VIcon small>mdi-send</VIcon>
                   </VBtn>
                 </div>
@@ -68,7 +84,13 @@
             <VTooltip v-if="showDuplicateButton" bottom>
               <template #activator="{ on }">
                 <div v-on="on">
-                  <VBtn icon outlined color="#2196F3" small @click="handleDuplicate">
+                  <VBtn
+                    icon
+                    outlined
+                    color="#2196F3"
+                    small
+                    @click="handleDuplicate"
+                  >
                     <VIcon small>mdi-content-copy</VIcon>
                   </VBtn>
                 </div>
@@ -78,8 +100,12 @@
           </div>
         </div>
         <div v-if="reasoningText" class="common-simulator-preview__reasoning">
-          <p class="common-simulator-preview__reasoning-title">WHY THIS RECOMMENDATION?</p>
-          <p class="common-simulator-preview__reasoning-text">{{ reasoningText }}</p>
+          <p class="common-simulator-preview__reasoning-title">
+            WHY THIS RECOMMENDATION?
+          </p>
+          <p class="common-simulator-preview__reasoning-text">
+            {{ reasoningText }}
+          </p>
         </div>
         <EmailTemplatePreviewSkeleton v-if="isLoading" />
         <EmailTemplatesAILoader
@@ -94,7 +120,12 @@
             name="email"
             :label="getFirstTabLabel"
           >
-            <div :class="['text-primary-color fs-4 fw-600 mb-2', readOnly ? 'mt-1' : 'mt-n4']">
+            <div
+              :class="[
+                'text-primary-color fs-4 fw-600 mb-2',
+                readOnly ? 'mt-2' : 'mt-n4'
+              ]"
+            >
               {{ emailTemplateParams.name }}
               <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
                 <template #activator="{ on }">
@@ -107,16 +138,22 @@
             </div>
             <div
               class="template-preview"
-              style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+              style="
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 16px;
+              "
             >
               <div
                 class="common-simulator-preview__text"
                 v-if="!!emailTemplate && !isRedFlagsLoading"
               >
                 <div v-if="isQuishing">
-                  <span class="template-preview__text--title">Quishing Type: </span>
+                  <span class="template-preview__text--title"
+                    >Quishing Type:
+                  </span>
                   <span class="template-preview__text--body">{{
-                    emailTemplateParams.type || 'Email'
+                    emailTemplateParams.type || "Email"
                   }}</span>
                 </div>
                 <div
@@ -133,11 +170,19 @@
                     hide-details
                     @input="handleEmailTemplatePreviewLanguageChange"
                   />
-                  <div class="email-template-preview__actions d-flex align-center gap-2">
+                  <div
+                    class="email-template-preview__actions d-flex align-center gap-2"
+                  >
                     <VTooltip bottom>
                       <template #activator="{ on }">
                         <div v-on="on">
-                          <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                          <VBtn
+                            icon
+                            outlined
+                            color="#2196F3"
+                            small
+                            @click="handleExternalLink"
+                          >
                             <VIcon small>mdi-open-in-new</VIcon>
                           </VBtn>
                         </div>
@@ -147,7 +192,13 @@
                     <VTooltip v-if="false" bottom>
                       <template #activator="{ on }">
                         <div v-on="on">
-                          <VBtn icon outlined color="#2196F3" small @click="handleEdit">
+                          <VBtn
+                            icon
+                            outlined
+                            color="#2196F3"
+                            small
+                            @click="handleEdit"
+                          >
                             <VIcon small>mdi-pencil</VIcon>
                           </VBtn>
                         </div>
@@ -156,7 +207,10 @@
                     </VTooltip>
                   </div>
                 </div>
-                <hr class="ml-n4 mb-3 mr-n4" v-if="!!emailTemplate && isPhishing" />
+                <hr
+                  class="ml-n4 mb-3 mr-n4"
+                  v-if="!!emailTemplate && isPhishing"
+                />
                 <div
                   class="d-flex align-start justify-space-between"
                   :style="{
@@ -164,28 +218,43 @@
                     'margin-bottom': isShowRedFlags ? '2px' : '0'
                   }"
                 >
-                  <div v-if="!isQuishingTypeIndividualPrintOut" style="width: calc(100% - 200px);">
+                  <div
+                    v-if="!isQuishingTypeIndividualPrintOut"
+                    style="width: calc(100% - 200px);"
+                  >
                     <div
                       :class="
-                        redFlags && redFlags.subject && redFlags.subject.isRedFlagged
+                        redFlags &&
+                        redFlags.subject &&
+                        redFlags.subject.isRedFlagged
                           ? 'red-flag-preview-active'
                           : ''
                       "
                     >
                       <VIcon
-                        v-if="redFlags && redFlags.subject && redFlags.subject.isRedFlagged"
+                        v-if="
+                          redFlags &&
+                          redFlags.subject &&
+                          redFlags.subject.isRedFlagged
+                        "
                         color="#f56c6c"
                         style="font-size: 16px;"
                         >mdi-flag</VIcon
                       >
-                      <span class="template-preview__text--title text-primary-color"
+                      <span
+                        class="template-preview__text--title text-primary-color"
                         >Subject:
                       </span>
-                      <span class="template-preview__text--body text-primary-color">{{
-                        emailTemplateParams.subject
-                      }}</span>
+                      <span
+                        class="template-preview__text--body text-primary-color"
+                        >{{ emailTemplateParams.subject }}</span
+                      >
                       <RedFlagTooltip
-                        v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
+                        v-if="
+                          redFlags &&
+                          redFlags.subject &&
+                          redFlags.subject.tooltipMessage
+                        "
                         :tooltipContent="redFlags.subject.tooltipMessage"
                       />
                     </div>
@@ -202,9 +271,11 @@
                     :loading="isRedFlagsLoading"
                   >
                     <VIcon>mdi-flag</VIcon>
-                    <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
-                      redFlagsText
-                    }}</span>
+                    <span
+                      class="button-new__text fw-600 ml-1"
+                      style="text-transform: none;"
+                      >{{ redFlagsText }}</span
+                    >
                   </VBtn>
                 </div>
 
@@ -215,25 +286,37 @@
                       'margin-bottom': isShowRedFlags ? '2px' : '0'
                     }"
                     :class="
-                      redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged
+                      redFlags &&
+                      redFlags.fromName &&
+                      redFlags.fromName.isRedFlagged
                         ? 'red-flag-preview-active'
                         : ''
                     "
                   >
                     <VIcon
-                      v-if="redFlags && redFlags.fromName && redFlags.fromName.isRedFlagged"
+                      v-if="
+                        redFlags &&
+                        redFlags.fromName &&
+                        redFlags.fromName.isRedFlagged
+                      "
                       color="#f56c6c"
                       style="font-size: 16px;"
                       >mdi-flag</VIcon
                     >
-                    <span class="template-preview__text--title text-primary-color"
+                    <span
+                      class="template-preview__text--title text-primary-color"
                       >From Name:
                     </span>
-                    <span class="template-preview__text--body text-primary-color">{{
-                      emailTemplateParams.fromName
-                    }}</span>
+                    <span
+                      class="template-preview__text--body text-primary-color"
+                      >{{ emailTemplateParams.fromName }}</span
+                    >
                     <RedFlagTooltip
-                      v-if="redFlags && redFlags.fromName && redFlags.fromName.tooltipMessage"
+                      v-if="
+                        redFlags &&
+                        redFlags.fromName &&
+                        redFlags.fromName.tooltipMessage
+                      "
                       :tooltipContent="redFlags.fromName.tooltipMessage"
                     />
                   </div>
@@ -243,50 +326,80 @@
                   <div
                     style="width: calc(100% - 200px);"
                     :class="
-                      redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged
+                      redFlags &&
+                      redFlags.fromAddress &&
+                      redFlags.fromAddress.isRedFlagged
                         ? 'red-flag-preview-active'
                         : ''
                     "
                   >
                     <VIcon
-                      v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.isRedFlagged"
+                      v-if="
+                        redFlags &&
+                        redFlags.fromAddress &&
+                        redFlags.fromAddress.isRedFlagged
+                      "
                       color="#f56c6c"
                       style="font-size: 16px;"
                       >mdi-flag</VIcon
                     >
-                    <span class="template-preview__text--title text-primary-color"
+                    <span
+                      class="template-preview__text--title text-primary-color"
                       >From Email:
                     </span>
-                    <span class="template-preview__text--body text-primary-color">{{
-                      emailTemplateParams.fromAddress
-                    }}</span>
+                    <span
+                      class="template-preview__text--body text-primary-color"
+                      >{{ emailTemplateParams.fromAddress }}</span
+                    >
                     <RedFlagTooltip
-                      v-if="redFlags && redFlags.fromAddress && redFlags.fromAddress.tooltipMessage"
+                      v-if="
+                        redFlags &&
+                        redFlags.fromAddress &&
+                        redFlags.fromAddress.tooltipMessage
+                      "
                       :tooltipContent="redFlags.fromAddress.tooltipMessage"
                     />
                   </div>
                 </div>
-                <div v-if="isPhishing && emailTemplateParams.ccAddresses.length > 0">
+                <div
+                  v-if="
+                    isPhishing && emailTemplateParams.ccAddresses.length > 0
+                  "
+                >
                   <div
                     style="width: calc(100% - 200px);"
                     :class="
-                      redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged
+                      redFlags &&
+                      redFlags.ccAddresses &&
+                      redFlags.ccAddresses.isRedFlagged
                         ? 'red-flag-preview-active'
                         : ''
                     "
                   >
                     <VIcon
-                      v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.isRedFlagged"
+                      v-if="
+                        redFlags &&
+                        redFlags.ccAddresses &&
+                        redFlags.ccAddresses.isRedFlagged
+                      "
                       color="#f56c6c"
                       style="font-size: 16px;"
                       >mdi-flag</VIcon
                     >
-                    <span class="template-preview__text--title text-primary-color">CC: </span>
-                    <span class="template-preview__text--body text-primary-color">{{
-                      emailTemplateParams.ccAddresses.join(', ')
-                    }}</span>
+                    <span
+                      class="template-preview__text--title text-primary-color"
+                      >CC:
+                    </span>
+                    <span
+                      class="template-preview__text--body text-primary-color"
+                      >{{ emailTemplateParams.ccAddresses.join(", ") }}</span
+                    >
                     <RedFlagTooltip
-                      v-if="redFlags && redFlags.ccAddresses && redFlags.ccAddresses.tooltipMessage"
+                      v-if="
+                        redFlags &&
+                        redFlags.ccAddresses &&
+                        redFlags.ccAddresses.tooltipMessage
+                      "
                       :tooltipContent="redFlags.ccAddresses.tooltipMessage"
                     />
                   </div>
@@ -353,7 +466,10 @@
           </ElTabPane>
         </ElTabs>
       </div>
-      <div v-if="showApprovalFooter" class="common-simulator-preview__approval-footer">
+      <div
+        v-if="showApprovalFooter"
+        class="common-simulator-preview__approval-footer"
+      >
         <VBtn
           outlined
           rounded
@@ -369,7 +485,11 @@
             outlined
             rounded
             class="elevation-0 fw-600"
-            style="background-color: #fff7e8; border-color: #f4c84f !important; color: #a45716 !important;"
+            style="
+              background-color: #fff7e8;
+              border-color: #f4c84f !important;
+              color: #a45716 !important;
+            "
             @click="$emit('retry')"
           >
             <VIcon left>mdi-refresh</VIcon>
@@ -391,31 +511,34 @@
 </template>
 
 <script>
-import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
-import KEmailPreview from '@/components/KEmailPreview.vue'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
-import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
-import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
-import useDrawerAnimation from '@/hooks/useDrawerAnimation'
-import labels from '@/model/constants/labels'
-import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
-import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
-import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import { defaultRedFlags } from '@/components/PhishingScenarios/utils'
-import QuishingService from '@/api/quishing'
-import { checkRedFlags } from '@/api/phishingsimulator'
+import EmailTemplatePreviewSkeleton from "@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue";
+import KEmailPreview from "@/components/KEmailPreview.vue";
+import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue";
+import RedFlagTooltip from "@/components/Common/Others/RedFlagTooltip.vue";
+import EmailTemplatesAILoader from "@/components/EmailTemplates/EmailTemplatesAILoader.vue";
+import useDrawerAnimation from "@/hooks/useDrawerAnimation";
+import labels from "@/model/constants/labels";
+import {
+  difficulties,
+  methods
+} from "@/components/CampaignManager/CampaignManagerInfo/utils";
+import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
+import { qrCodeString } from "@/components/GrapesJs/Newsletter/mergedTexts/qrCode";
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplates/utils";
+import { defaultRedFlags } from "@/components/PhishingScenarios/utils";
+import QuishingService from "@/api/quishing";
+import { checkRedFlags } from "@/api/phishingsimulator";
 import {
   createRandomCryptStringNumber,
   FLAGGED_AREA_CSS,
   openHtmlInNewWindow
-} from '@/utils/functions'
-import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
+} from "@/utils/functions";
+import InputLanguagePreview from "@/components/Common/Inputs/InputLanguagePreview.vue";
+import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
+import TabsWithMfaSettingsMultipleLanguages from "@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue";
 export default {
-  name: 'CommonSimulatorPreviewDialog',
+  name: "CommonSimulatorPreviewDialog",
   components: {
     InputLanguagePreview,
     AttachmentsPreview,
@@ -459,11 +582,11 @@ export default {
     },
     approvalTypeName: {
       type: String,
-      default: ''
+      default: ""
     },
     reasoningText: {
       type: String,
-      default: ''
+      default: ""
     },
     isNested: {
       type: Boolean,
@@ -475,123 +598,132 @@ export default {
       emailTemplate: null,
       landingPageTemplates: [],
       isMethodMfa: false,
-      languagePreview: '',
+      languagePreview: "",
       selectedTemplateLanguages: [],
       phishingEmailTemplates: [],
       selectedLandingPageIndex: 0,
       emailTemplateParams: {},
       landingPageParams: {},
-      category: '',
-      tab: 'email',
+      category: "",
+      tab: "email",
       isLoading: false,
       labels,
-      timeoutId: '',
+      timeoutId: "",
       isIndividualPrintoutButtonDisabled: false,
       redFlags: structuredClone(defaultRedFlags),
       isRedFlagsLoading: false,
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
       lastRedFlags: {}
-    }
+    };
   },
   computed: {
     getNavigationDrawerClass() {
       return {
-        'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
-        'nested-drawer': this.isNested
-      }
+        "k-navigation-drawer k-navigation-drawer--preview-dialog": true,
+        "nested-drawer": this.isNested
+      };
     },
     redFlagsText() {
-      return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
+      return this.isShowRedFlags ? "Hide Red Flags" : "Show Red Flags";
     },
     getLoaderTitle() {
-      return 'AI Ally is analyzing your email template for red flags'
+      return "AI Ally is analyzing your email template for red flags";
     },
     getLoaderDescription() {
-      return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
+      return "The scan may take some time depending on the localization. Please stay on the page while the scan is completed.";
     },
     getEmailTemplatePreviewLanguageHint() {
-      return `This template is available in ${this.selectedTemplateLanguages.length} language${
-        this.selectedTemplateLanguages.length > 1 ? 's' : ''
-      }.`
+      return `This template is available in ${
+        this.selectedTemplateLanguages.length
+      } language${this.selectedTemplateLanguages.length > 1 ? "s" : ""}.`;
     },
     getFirstTabLabel() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
         ? labels.EmailTemplate
-        : labels.QuishingTemplate
+        : labels.QuishingTemplate;
     },
     getIndividualPrintoutStyle() {
       const style = {
-        textTransform: 'capitalize'
-      }
+        textTransform: "capitalize"
+      };
       if (this.isIndividualPrintoutButtonDisabled) {
-        style.cursor = 'default'
-        style.opacity = 0.5
+        style.cursor = "default";
+        style.opacity = 0.5;
       }
-      return style
+      return style;
     },
     isQuishing() {
-      return this.type === PREVIEW_DIALOG_TYPES.QUISHING
+      return this.type === PREVIEW_DIALOG_TYPES.QUISHING;
     },
     isPhishing() {
-      return this.type === PREVIEW_DIALOG_TYPES.PHISHING
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING;
     },
     isQuishingTypeIndividualPrintOut() {
-      if (!this.isQuishing) return false
+      if (!this.isQuishing) return false;
       return (
         this?.emailTemplateParams?.type?.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
-      )
+      );
     },
     isAttachmentBasedScenario() {
-      return this.selectedRow?.method ? this.selectedRow?.method === 'Attachment' : false
+      return this.selectedRow?.method
+        ? this.selectedRow?.method === "Attachment"
+        : false;
     },
     getTitle() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING
         ? labels.PhishingScenarioPreview
-        : labels.QuishingScenarioPreview
+        : labels.QuishingScenarioPreview;
     },
     getSubtitle() {
-      return this.selectedRow?.name || ''
+      return this.selectedRow?.name || "";
     },
     getCurrentLandingPageTemplate() {
-      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content
+      return this.landingPageTemplates[this.selectedLandingPageIndex]?.content;
     },
     getLandingPageKey() {
-      return this.tab === 'landing-page' ? `key-${createRandomCryptStringNumber()}` : ''
+      return this.tab === "landing-page"
+        ? `key-${createRandomCryptStringNumber()}`
+        : "";
     },
     templateLanguageLabel() {
-      const count = this.selectedTemplateLanguages.length
-      return `Template Language${count > 1 ? 's' : ''} (${count})`
+      const count = this.selectedTemplateLanguages.length;
+      return `Template Language${count > 1 ? "s" : ""} (${count})`;
     },
     showEditButton() {
-      return !this.selectedRow || this.selectedRow.isOwner !== false
+      return !this.selectedRow || this.selectedRow.isOwner !== false;
     },
     showDuplicateButton() {
-      return this.selectedRow && this.selectedRow.isOwner === false
+      return this.selectedRow && this.selectedRow.isOwner === false;
     }
   },
   created() {
     if (!this.languages || this.languages.length === 0) {
-      this.callForLanguages()
+      this.callForLanguages();
     }
-    this.callForData()
+    this.callForData();
   },
   beforeDestroy() {
-    clearTimeout(this.timeoutId)
+    clearTimeout(this.timeoutId);
   },
   methods: {
     callForData() {
-      this.setLoading(true)
-      const params = [this.selectedRow.resourceId]
+      this.setLoading(true);
+      const params = [this.selectedRow.resourceId];
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
-        params.push((this.selectedRow.quishingType || 'email').toLowerCase())
+        params.push((this.selectedRow.quishingType || "email").toLowerCase());
       this.apiFunc(...params)
         .then((response) => {
-          const { data: { data = {} } = {} } = response
-          let { emailTemplate, landingPageTemplate, quishingTemplate, category = '' } = data
-          if (!emailTemplate) emailTemplate = quishingTemplate
-          this.category = category
+          const { data: { data = {} } = {} } = response;
+          let {
+            emailTemplate,
+            landingPageTemplate,
+            quishingTemplate,
+            category = ""
+          } = data;
+          if (!emailTemplate) emailTemplate = quishingTemplate;
+          this.category = category;
           let {
             template,
             fromName,
@@ -606,7 +738,7 @@ export default {
             isAssistedByAI = false,
             languageTypeResourceId,
             languageTypeName
-          } = emailTemplate || {}
+          } = emailTemplate || {};
 
           this.emailTemplateParams = {
             resourceId,
@@ -615,7 +747,9 @@ export default {
             ccAddresses,
             name,
             subject,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+            difficulty: difficulties.find(
+              (item) => item.value === difficultyResourceId
+            )?.text,
             attachment: phishingFileName
               ? {
                   name: phishingFileName
@@ -625,7 +759,7 @@ export default {
             isAssistedByAI,
             languageTypeResourceId,
             languageTypeName
-          }
+          };
           if (this.isPhishing) {
             this.phishingEmailTemplates.push({
               fromName,
@@ -634,17 +768,19 @@ export default {
               template,
               languageTypeResourceId,
               languageTypeName:
-                this.languages.find((item) => item.value === languageTypeResourceId)?.text ||
-                languageTypeName,
+                this.languages.find(
+                  (item) => item.value === languageTypeResourceId
+                )?.text || languageTypeName,
               ccAddresses
-            })
+            });
             this.selectedTemplateLanguages.push({
               value: languageTypeResourceId,
               text:
-                this.languages.find((item) => item.value === languageTypeResourceId)?.text ||
-                languageTypeName
-            })
-            this.languagePreview = languageTypeResourceId
+                this.languages.find(
+                  (item) => item.value === languageTypeResourceId
+                )?.text || languageTypeName
+            });
+            this.languagePreview = languageTypeResourceId;
             if (emailTemplate?.languages?.length) {
               emailTemplate?.languages?.forEach((item) => {
                 this.phishingEmailTemplates.push({
@@ -655,21 +791,23 @@ export default {
                   template: item.template,
                   languageTypeResourceId: item.languageTypeResourceId,
                   languageTypeName:
-                    this.languages.find((lang) => lang.value === item.languageTypeResourceId)
-                      ?.text || item.languageTypeName
-                })
+                    this.languages.find(
+                      (lang) => lang.value === item.languageTypeResourceId
+                    )?.text || item.languageTypeName
+                });
                 this.selectedTemplateLanguages.push({
                   value: item.languageTypeResourceId,
                   text:
-                    this.languages.find((lang) => lang.value === item.languageTypeResourceId)
-                      ?.text || item.languageTypeName
-                })
-              })
+                    this.languages.find(
+                      (lang) => lang.value === item.languageTypeResourceId
+                    )?.text || item.languageTypeName
+                });
+              });
             }
           }
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
-            template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
-          this.emailTemplate = template
+            template = template?.replaceAll("{QRCODEURLIMAGE}", qrCodeString);
+          this.emailTemplate = template;
 
           const {
             name: landingPageName,
@@ -681,26 +819,27 @@ export default {
             isAssistedByAI: isLandingPageAi = false,
             isAssistedbyAI: isLandingPageAi2 = false,
             languageTypeResourceId: landingPageLanguageTypeResourceId
-          } = landingPageTemplate || []
+          } = landingPageTemplate || [];
 
           // Phishing durumunda backend'den gelen yapı farklı - languages array'i içinde
           if (this.isPhishing) {
             // Tüm dilleri topla (ana dil + diğer diller)
-            const allLanguagesMap = new Map()
+            const allLanguagesMap = new Map();
 
             // Ana dili ekle
             if (landingPageLanguageTypeResourceId) {
               const mainLanguageObj = this.languages.find(
                 (lang) =>
                   lang.value === landingPageLanguageTypeResourceId ||
-                  lang.value?.toString() === landingPageLanguageTypeResourceId?.toString()
-              )
+                  lang.value?.toString() ===
+                    landingPageLanguageTypeResourceId?.toString()
+              );
               if (mainLanguageObj) {
                 allLanguagesMap.set(landingPageLanguageTypeResourceId, {
                   text: mainLanguageObj.text || mainLanguageObj.name,
                   value: landingPageLanguageTypeResourceId,
                   languageTypeName: mainLanguageObj.text
-                })
+                });
               }
             }
 
@@ -712,7 +851,7 @@ export default {
                     if (!allLanguagesMap.has(langPage.languageTypeResourceId)) {
                       const langObj = this.languages.find(
                         (lang) => lang.value === langPage.languageTypeResourceId
-                      )
+                      );
                       allLanguagesMap.set(langPage.languageTypeResourceId, {
                         text:
                           langObj?.text ||
@@ -720,11 +859,11 @@ export default {
                           langPage.languageTypeResourceId,
                         value: langPage.languageTypeResourceId,
                         languageTypeName: langPage.languageTypeName
-                      })
+                      });
                     }
-                  })
+                  });
                 }
-              })
+              });
             }
 
             // landingPages'i dönüştür - her sayfa için tüm dilleri içeren yapı
@@ -736,125 +875,131 @@ export default {
                 content: page.content, // Ana dilin content'i
                 languageTypeResourceId: landingPageLanguageTypeResourceId, // Ana dil
                 languages: {} // Her dil için content saklanacak
-              }
+              };
 
               // Ana dilin content'ini languages objesine ekle
               if (landingPageLanguageTypeResourceId) {
-                transformedPage.languages[landingPageLanguageTypeResourceId] = page.content
+                transformedPage.languages[landingPageLanguageTypeResourceId] =
+                  page.content;
               }
 
               // Diğer dillerin content'lerini ekle
               if (Array.isArray(page.languages)) {
                 page.languages.forEach((langPage) => {
-                  transformedPage.languages[langPage.languageTypeResourceId] = langPage.content
-                })
+                  transformedPage.languages[langPage.languageTypeResourceId] =
+                    langPage.content;
+                });
               }
 
-              return transformedPage
-            })
+              return transformedPage;
+            });
 
             this.landingPageParams = {
               name: landingPageName,
               isAssistedByAI: isLandingPageAi || isLandingPageAi2,
               description,
               urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-              method: methods[methodTypeId - 1]?.text || '',
+              difficulty: difficulties[difficultyTypeId - 1]?.text || "",
+              method: methods[methodTypeId - 1]?.text || "",
               isAttachmentBasedTemplate: methodTypeId === 3,
               mfaTextTemplate: data.mfaTextTemplate,
               mfaSmsSenderNumber: data.mfaSmsSenderNumber,
               languages: Array.from(allLanguagesMap.values())
-            }
+            };
           } else {
             // Diğer durumlar için eski mantık (Quishing, Smishing vb.)
-            this.landingPageTemplates = landingPages
+            this.landingPageTemplates = landingPages;
 
             this.landingPageParams = {
               name: landingPageName,
               isAssistedByAI: isLandingPageAi || isLandingPageAi2,
               description,
               urlTemplate,
-              difficulty: difficulties[difficultyTypeId - 1]?.text || '',
-              method: methods[methodTypeId - 1]?.text || '',
+              difficulty: difficulties[difficultyTypeId - 1]?.text || "",
+              method: methods[methodTypeId - 1]?.text || "",
               isAttachmentBasedTemplate: methodTypeId === 3,
               mfaTextTemplate: data.mfaTextTemplate,
               mfaSmsSenderNumber: data.mfaSmsSenderNumber,
               languages:
                 this.languages.filter((lang) => {
-                  return lang.value === landingPageLanguageTypeResourceId
+                  return lang.value === landingPageLanguageTypeResourceId;
                 }) || []
-            }
+            };
           }
-          this.isMethodMfa = data.methodTypeId === 4
+          this.isMethodMfa = data.methodTypeId === 4;
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
-            this.setLoading()
-          }, 500)
-        })
+            this.setLoading();
+          }, 500);
+        });
     },
     setLoading(flag = false) {
-      this.isLoading = flag
+      this.isLoading = flag;
     },
     handleOverlayClick() {
-      this.closeDrawer()
+      this.closeDrawer();
     },
     handleClose() {
-      this.closeDrawer()
+      this.closeDrawer();
     },
     handlePreviewIndividualPrintout() {
-      this.isIndividualPrintoutButtonDisabled = true
-      QuishingService.getQuishingPdfPreviewContent(this.emailTemplateParams.resourceId)
+      this.isIndividualPrintoutButtonDisabled = true;
+      QuishingService.getQuishingPdfPreviewContent(
+        this.emailTemplateParams.resourceId
+      )
         .then((response) => {
-          const file = new File([response.data], 'Quishing PDF Preview', {
-            type: 'application/pdf'
-          })
-          const fileURL = URL.createObjectURL(file)
-          const newWindow = window.open(fileURL)
+          const file = new File([response.data], "Quishing PDF Preview", {
+            type: "application/pdf"
+          });
+          const fileURL = URL.createObjectURL(file);
+          const newWindow = window.open(fileURL);
           newWindow.onload = function () {
             setTimeout(() => {
-              newWindow.document.title = 'Quishing PDF Preview'
-            }, 250)
-          }
+              newWindow.document.title = "Quishing PDF Preview";
+            }, 250);
+          };
         })
         .finally(() => {
-          this.isIndividualPrintoutButtonDisabled = false
-        })
+          this.isIndividualPrintoutButtonDisabled = false;
+        });
     },
     handleExternalLink() {
-      openHtmlInNewWindow(this.emailTemplate)
+      openHtmlInNewWindow(this.emailTemplate);
     },
     handleEdit() {
-      this.$emit('on-edit-template')
+      this.$emit("on-edit-template");
     },
     handleDuplicate() {
-      this.$emit('on-duplicate-template')
+      this.$emit("on-duplicate-template");
     },
     handleFastLaunch() {
-      this.$emit('on-fast-launch', this.selectedRow)
+      this.$emit("on-fast-launch", this.selectedRow);
     },
     handleEmailTemplatePreviewLanguageChange(newLanguageId) {
       // Eski languagePreview için red flags'leri kaydet (sadece red flags aktif ise)
       if (this.languagePreview && this.isShowRedFlags) {
         // Eğer red flags cached varsa, template'i güncelle
         if (this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview].flags = structuredClone(this.redFlags)
+          this.lastRedFlags[this.languagePreview].flags = structuredClone(
+            this.redFlags
+          );
           this.lastRedFlags[this.languagePreview].textfieldValues = {
             fromName: this.emailTemplateParams.fromName,
             fromAddress: this.emailTemplateParams.fromAddress,
             subject: this.emailTemplateParams.subject,
             attachmentFileName: this.emailTemplateParams.attachment?.name
-          }
+          };
         }
       }
 
       // Yeni dili set et
-      this.languagePreview = newLanguageId
+      this.languagePreview = newLanguageId;
 
       const findedTemplate = this.phishingEmailTemplates.find(
         (item) => item.languageTypeResourceId === newLanguageId
-      )
-      if (!findedTemplate) return
+      );
+      if (!findedTemplate) return;
       this.emailTemplateParams = {
         ...this.emailTemplateParams,
         ccAddresses: findedTemplate.ccAddresses,
@@ -862,42 +1007,45 @@ export default {
         fromAddress: findedTemplate.fromAddress,
         subject: findedTemplate.subject,
         template: findedTemplate.template
-      }
-      this.emailTemplate = findedTemplate.template
+      };
+      this.emailTemplate = findedTemplate.template;
 
       // Yeni dil için red flags durumunu kontrol et
-      if (this.lastRedFlags[newLanguageId] && this.lastRedFlags[newLanguageId].flags) {
+      if (
+        this.lastRedFlags[newLanguageId] &&
+        this.lastRedFlags[newLanguageId].flags
+      ) {
         // Yeni dilde red flags cached varsa template'i restore et ama form alanlarındaki flags'leri reset et
         // Cached template'i restore et
         if (
           this.lastRedFlags[newLanguageId].templates &&
           this.lastRedFlags[newLanguageId].templates[0]
         ) {
-          this.emailTemplate = this.lastRedFlags[newLanguageId].templates[0]
+          this.emailTemplate = this.lastRedFlags[newLanguageId].templates[0];
         }
         // Form alanlarında gösterilmemesi için flags'leri reset et
-        this.redFlags = structuredClone(defaultRedFlags)
-        this.isFlaggedStylesEnabled = false
-        this.isShowRedFlags = false
+        this.redFlags = structuredClone(defaultRedFlags);
+        this.isFlaggedStylesEnabled = false;
+        this.isShowRedFlags = false;
         // Cached template'den highlighting'leri kaldır
         this.$nextTick(() => {
-          this.updateTemplateWithFlaggedStyles()
-        })
+          this.updateTemplateWithFlaggedStyles();
+        });
       } else {
         // Yeni dilde red flags yok, default state
-        this.redFlags = structuredClone(defaultRedFlags)
-        this.isFlaggedStylesEnabled = false
-        this.isShowRedFlags = false
+        this.redFlags = structuredClone(defaultRedFlags);
+        this.isFlaggedStylesEnabled = false;
+        this.isShowRedFlags = false;
         // Template'den highlighting'leri kaldır
         this.$nextTick(() => {
-          this.updateTemplateWithFlaggedStyles()
-        })
+          this.updateTemplateWithFlaggedStyles();
+        });
       }
     },
 
     handleShowRedFlagsClick() {
-      this.isShowRedFlags = !this.isShowRedFlags
-      this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
+      this.isShowRedFlags = !this.isShowRedFlags;
+      this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled;
       if (this.isShowRedFlags) {
         // Bu dil için red flags daha önce çağrıldı mı kontrol et
         if (
@@ -905,47 +1053,57 @@ export default {
           this.lastRedFlags[this.languagePreview].flags
         ) {
           // Var olan red flags'leri restore et
-          this.redFlags = structuredClone(this.lastRedFlags[this.languagePreview].flags)
+          this.redFlags = structuredClone(
+            this.lastRedFlags[this.languagePreview].flags
+          );
           // Cached template'i restore et
           if (
             this.lastRedFlags[this.languagePreview].templates &&
             this.lastRedFlags[this.languagePreview].templates[0]
           ) {
-            this.emailTemplate = this.lastRedFlags[this.languagePreview].templates[0]
+            this.emailTemplate = this.lastRedFlags[
+              this.languagePreview
+            ].templates[0];
           }
-          this.updateTemplateWithFlaggedStyles()
-          return
+          this.updateTemplateWithFlaggedStyles();
+          return;
         }
 
         // İlk kez red flags çağrılıyor
-        this.isRedFlagsLoading = true
+        this.isRedFlagsLoading = true;
         const currentLanguageData = this.selectedTemplateLanguages.find(
           (lang) => lang.value === this.languagePreview
-        )
+        );
         const payload = {
-          template: this.emailTemplate || '',
-          subject: this.emailTemplateParams.subject || '',
-          fromName: this.emailTemplateParams.fromName || '',
-          fromEmail: this.emailTemplateParams.fromAddress || '',
+          template: this.emailTemplate || "",
+          subject: this.emailTemplateParams.subject || "",
+          fromName: this.emailTemplateParams.fromName || "",
+          fromEmail: this.emailTemplateParams.fromAddress || "",
           cc: this.emailTemplateParams.ccAddresses || [],
-          attachmentFileName: this.emailTemplateParams.attachment?.name || '',
-          language: currentLanguageData?.text || ''
-        }
+          attachmentFileName: this.emailTemplateParams.attachment?.name || "",
+          language: currentLanguageData?.text || ""
+        };
 
         this.checkRedFlagsWithRetry(payload)
           .then((res) => {
-            const { cc, fromEmail, fromName, subject, template, attachmentFileName } =
-              res?.data ?? {}
+            const {
+              cc,
+              fromEmail,
+              fromName,
+              subject,
+              template,
+              attachmentFileName
+            } = res?.data ?? {};
             const redFlags = {
               ccAddresses: cc,
               fromAddress: fromEmail,
               fromName: fromName,
               subject: subject,
               attachmentFileName: attachmentFileName
-            }
+            };
 
             // Update template HTML and store red flags data
-            this.emailTemplate = template
+            this.emailTemplate = template;
             this.lastRedFlags[this.languagePreview] = {
               flags: structuredClone(redFlags),
               templates: [template],
@@ -955,21 +1113,21 @@ export default {
                 subject: this.emailTemplateParams.subject,
                 attachmentFileName: this.emailTemplateParams.attachment?.name
               }
-            }
+            };
 
-            this.redFlags = structuredClone(redFlags)
-            this.updateTemplateWithFlaggedStyles()
+            this.redFlags = structuredClone(redFlags);
+            this.updateTemplateWithFlaggedStyles();
           })
           .catch((e) => {
             if (!e?.response || e?.response?.status === 0) {
-              this.$store.dispatch('common/createSnackBar', {
+              this.$store.dispatch("common/createSnackBar", {
                 message: `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: 0`,
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                icon: 'mdi-alert-circle'
-              })
-              return
+                icon: "mdi-alert-circle"
+              });
+              return;
             }
-            this.$store.dispatch('common/createSnackBar', {
+            this.$store.dispatch("common/createSnackBar", {
               message:
                 e?.response?.data?.detail ||
                 e?.response?.data?.message ||
@@ -977,143 +1135,169 @@ export default {
                   e?.response?.status || e?.response?.data?.status || 0
                 }`,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
-            this.isShowRedFlags = false
-            this.isFlaggedStylesEnabled = false
-            this.redFlags = structuredClone(defaultRedFlags)
+              icon: "mdi-alert-circle"
+            });
+            this.isShowRedFlags = false;
+            this.isFlaggedStylesEnabled = false;
+            this.redFlags = structuredClone(defaultRedFlags);
           })
           .finally(() => {
-            this.isRedFlagsLoading = false
-          })
+            this.isRedFlagsLoading = false;
+          });
       } else {
         // CSS stillerini template'den kaldır
         // Önce bu dil için red flags'leri templates array'ine kaydet
         if (!this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview] = {}
+          this.lastRedFlags[this.languagePreview] = {};
         }
-        this.lastRedFlags[this.languagePreview].flags = structuredClone(this.redFlags)
+        this.lastRedFlags[this.languagePreview].flags = structuredClone(
+          this.redFlags
+        );
         this.lastRedFlags[this.languagePreview].textfieldValues = {
           fromName: this.emailTemplateParams.fromName,
           fromAddress: this.emailTemplateParams.fromAddress,
           subject: this.emailTemplateParams.subject,
           attachmentFileName: this.emailTemplateParams.attachment?.name
-        }
+        };
 
-        this.redFlags = structuredClone(defaultRedFlags)
-        this.updateTemplateWithFlaggedStyles()
+        this.redFlags = structuredClone(defaultRedFlags);
+        this.updateTemplateWithFlaggedStyles();
       }
     },
 
-    checkRedFlagsWithRetry(payload, maxRetries = 5, delay = 5000, currentAttempt = 1) {
+    checkRedFlagsWithRetry(
+      payload,
+      maxRetries = 5,
+      delay = 5000,
+      currentAttempt = 1
+    ) {
       return new Promise((resolve, reject) => {
         checkRedFlags(payload)
           .then((response) => {
-            resolve(response)
+            resolve(response);
           })
           .catch((error) => {
             if (currentAttempt >= maxRetries) {
-              reject(error)
-              return
+              reject(error);
+              return;
             }
             setTimeout(() => {
-              this.checkRedFlagsWithRetry(payload, maxRetries, delay, currentAttempt + 1)
+              this.checkRedFlagsWithRetry(
+                payload,
+                maxRetries,
+                delay,
+                currentAttempt + 1
+              )
                 .then(resolve)
-                .catch(reject)
-            }, delay)
-          })
-      })
+                .catch(reject);
+            }, delay);
+          });
+      });
     },
 
     updateTemplateWithFlaggedStyles() {
-      if (!this.emailTemplate) return
+      if (!this.emailTemplate) return;
 
       if (this.isFlaggedStylesEnabled) {
-        this.emailTemplate = this._addFlaggedStylesToTemplate(this.emailTemplate)
+        this.emailTemplate = this._addFlaggedStylesToTemplate(
+          this.emailTemplate
+        );
       } else {
-        this.emailTemplate = this._removeFlaggedStylesFromTemplate(this.emailTemplate)
+        this.emailTemplate = this._removeFlaggedStylesFromTemplate(
+          this.emailTemplate
+        );
         if (this.lastRedFlags[this.languagePreview]) {
           this.lastRedFlags[this.languagePreview].templates =
-            this.lastRedFlags[this.languagePreview].templates || []
+            this.lastRedFlags[this.languagePreview].templates || [];
         }
       }
     },
 
     _isValidLanguagePayload(payload) {
-      return payload && typeof payload.template === 'string' && payload.template.trim()
+      return (
+        payload &&
+        typeof payload.template === "string" &&
+        payload.template.trim()
+      );
     },
 
     _isFullHtmlTemplate(template) {
-      const htmlRegex = /<html[\s\S]*?>|<head[\s\S]*?>/i
-      return htmlRegex.test(template)
+      const htmlRegex = /<html[\s\S]*?>|<head[\s\S]*?>/i;
+      return htmlRegex.test(template);
     },
 
     _hasHeadTag(template) {
-      return /<head[\s\S]*?>/i.test(template)
+      return /<head[\s\S]*?>/i.test(template);
     },
 
     _addFlaggedStylesToTemplate(template) {
       if (template.includes(FLAGGED_AREA_CSS.trim())) {
-        return template
+        return template;
       }
 
       if (this._isFullHtmlTemplate(template)) {
-        return this._injectCssIntoHead(template)
+        return this._injectCssIntoHead(template);
       } else {
-        return this._prependCssToBodyContent(template)
+        return this._prependCssToBodyContent(template);
       }
     },
 
     _injectCssIntoHead(template) {
       if (this._hasHeadTag(template)) {
-        let templateWithCss = template.replace(/<\/head>/i, `${FLAGGED_AREA_CSS}</head>`)
-        return this._injectScriptIntoBody(templateWithCss)
+        let templateWithCss = template.replace(
+          /<\/head>/i,
+          `${FLAGGED_AREA_CSS}</head>`
+        );
+        return this._injectScriptIntoBody(templateWithCss);
       }
       let templateWithCss = template.replace(
         /<html[\s\S]*?>/i,
         `$&<head>${FLAGGED_AREA_CSS}</head>`
-      )
-      return this._injectScriptIntoBody(templateWithCss)
+      );
+      return this._injectScriptIntoBody(templateWithCss);
     },
 
     _prependCssToBodyContent(template) {
-      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`
-      return this._injectScriptIntoBody(templateWithCss)
+      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`;
+      return this._injectScriptIntoBody(templateWithCss);
     },
 
     _injectScriptIntoBody(template) {
-      const script = this._getPreventClickScript()
+      const script = this._getPreventClickScript();
       try {
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(template, 'text/html')
-        const body = doc.querySelector('body')
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(template, "text/html");
+        const body = doc.querySelector("body");
 
         if (body) {
-          body.insertAdjacentHTML('beforeend', script)
-          return doc.documentElement.outerHTML
+          body.insertAdjacentHTML("beforeend", script);
+          return doc.documentElement.outerHTML;
         } else {
-          const newBody = doc.createElement('body')
-          newBody.innerHTML = template
-          newBody.insertAdjacentHTML('beforeend', script)
-          doc.documentElement.appendChild(newBody)
-          return doc.documentElement.outerHTML
+          const newBody = doc.createElement("body");
+          newBody.innerHTML = template;
+          newBody.insertAdjacentHTML("beforeend", script);
+          doc.documentElement.appendChild(newBody);
+          return doc.documentElement.outerHTML;
         }
       } catch {
-        return `${template}${script}`
+        return `${template}${script}`;
       }
     },
 
     _removeFlaggedStylesFromTemplate(template) {
-      const cssToRemove = FLAGGED_AREA_CSS.trim()
-      const scriptToRemove = this._getPreventClickScript().trim()
+      const cssToRemove = FLAGGED_AREA_CSS.trim();
+      const scriptToRemove = this._getPreventClickScript().trim();
 
-      let cleanedTemplate = template.replaceAll(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      let cleanedTemplate = template.replaceAll(
+        new RegExp(this._escapeRegExp(cssToRemove), "g"),
+        ""
+      );
       cleanedTemplate = cleanedTemplate.replaceAll(
-        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
-        ''
-      )
+        new RegExp(this._escapeRegExp(scriptToRemove), "g"),
+        ""
+      );
 
-      return cleanedTemplate
+      return cleanedTemplate;
     },
 
     _getPreventClickScript() {
@@ -1158,21 +1342,21 @@ export default {
               // DOM zaten hazırsa hemen çalıştır
               initializeEventPrevention();
             }
-          })();`
+          })();`;
       //@ts-ignore
       //eslint-disable-next-line no-use-before-define
-      return '<script>' + method + '<\/script>'
+      return "<script>" + method + "<\/script>";
     },
 
     _escapeRegExp(string) {
-      return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return string.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
     },
 
     resetRedFlags() {
-      this.redFlags = structuredClone(defaultRedFlags)
-      this.isShowRedFlags = false
-      this.isFlaggedStylesEnabled = false
-      this._removeFlaggedStylesFromTemplate()
+      this.redFlags = structuredClone(defaultRedFlags);
+      this.isShowRedFlags = false;
+      this.isFlaggedStylesEnabled = false;
+      this._removeFlaggedStylesFromTemplate();
     },
 
     callForLanguages() {
@@ -1183,9 +1367,9 @@ export default {
             languageTypeName: language.name,
             value: language.resourceId,
             description: language.description
-          })) || []
-      })
+          })) || [];
+      });
     }
   }
-}
+};
 </script>
