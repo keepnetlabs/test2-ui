@@ -182,6 +182,29 @@ describe("AgenticAIActivitiesDrawer", () => {
       const row = wrapper.vm.mapActivityToRow({ resourceId: "r1" });
       expect(row.explanationJson).toBeNull();
     });
+
+    it("uses contentCategory for Training rows when scenarioName is absent", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({
+        resourceId: "fsHFsdxklGhr",
+        activityType: 4,
+        activityTypeName: "Training",
+        contentCategory: "Training | Link Inspection Basics",
+        statusName: "Pending"
+      });
+      expect(row.scenarioName).toBe("Training | Link Inspection Basics");
+    });
+
+    it("prefers scenarioName over contentCategory for Training when both exist", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({
+        resourceId: "r1",
+        activityType: 4,
+        scenarioName: "Named module",
+        contentCategory: "Training | Other"
+      });
+      expect(row.scenarioName).toBe("Named module");
+    });
   });
 
   describe("getBatchSegmentWidth", () => {
@@ -961,6 +984,30 @@ describe("AgenticAIActivitiesDrawer", () => {
       const statusCol = cols.find((c) => c.property === "status");
       expect(statusCol.label).toBe("Approval Status");
       expect(statusCol.fixed).toBe("right");
+    });
+
+    it("drawerColumns hides Assigned Scenario column when batch is Training", () => {
+      const wrapper = mountFactory({
+        columns: [
+          { property: "scenarioName", label: "Assigned Scenario" },
+          { property: "status", label: "Status" }
+        ]
+      });
+      wrapper.setData({
+        batchList: [
+          {
+            batchResourceId: "b1",
+            title: "Training batch",
+            contentType: "Training",
+            activities: [{ activityType: 4 }]
+          }
+        ],
+        selectedBatchId: "b1"
+      });
+      expect(wrapper.vm.drawerColumns.some((c) => c.property === "scenarioName")).toBe(false);
+      expect(wrapper.vm.drawerColumns.find((c) => c.property === "status")?.label).toBe(
+        "Approval Status"
+      );
     });
   });
 
