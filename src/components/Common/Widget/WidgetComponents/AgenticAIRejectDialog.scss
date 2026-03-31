@@ -31,4 +31,15 @@
 .agentic-ai-reject-dialog__chip {
   font-family: "Open Sans", sans-serif;
   font-weight: 600;
+  color: #475467 !important;
+  background-color: transparent !important;
+  border-color: #d0d5dd !important;
+
+  &:hover {
+    background-color: transparent !important;
+  }
+
+  &--selected {
+    border-color: #98a2b3 !important;
+  }
 }
