@@ -1673,6 +1673,10 @@ export default {
     getRowIsSelectable: {
       type: Function
     },
+    selectAllIncludeChildren: {
+      type: Boolean,
+      default: false
+    },
     isReportWithExam: {
       type: Boolean,
       default: false
@@ -2734,10 +2738,18 @@ export default {
           this.clusteredItems = [];
         }
 
-        for (let item of selection) {
-          this.selectChildren(item, selection);
-          if (this.groupable) {
-            this.handleToggleOrLazyWhenCheckboxSelected(item);
+        if (this.selectAllIncludeChildren && selection.length === 0 && this.multipleSelection.length === 0) {
+          for (let item of this.tableData) {
+            if (item.children) {
+              this.selectChildren(item, selection);
+            }
+          }
+        } else {
+          for (let item of selection) {
+            this.selectChildren(item, selection);
+            if (this.groupable) {
+              this.handleToggleOrLazyWhenCheckboxSelected(item);
+            }
           }
         }
 

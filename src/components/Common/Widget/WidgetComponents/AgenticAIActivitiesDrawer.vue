@@ -292,11 +292,11 @@
                         <DefaultMenuRowAction
                           v-if="isWaitingForApproval(scope.row)"
                           icon="mdi-close-circle"
-                          :id="`btn-agentic-ai-activity-reject-${scope.$index}`"
+                          :id="`btn-agentic-ai-activity-decline-${scope.$index}`"
                           text="Decline"
                           :scope="scope"
                           :check-is-owner-property="false"
-                          @on-click="handleReject(scope.row)"
+                          @on-click="handleDecline(scope.row)"
                         />
                         <DefaultMenuRowAction
                           v-if="isWaitingForApproval(scope.row) || isRowError(scope.row)"
@@ -336,7 +336,7 @@
         :approval-type-name="previewType"
         :reasoning-text="previewReasoningText"
         @approve="handlePreviewApprove"
-        @reject="handlePreviewReject"
+        @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
         @on-close="onPreviewClosed"
       />
@@ -352,7 +352,7 @@
         :approval-type-name="previewType"
         :reasoning-text="previewReasoningText"
         @approve="handlePreviewApprove"
-        @reject="handlePreviewReject"
+        @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
         @on-close="onPreviewClosed"
       />
@@ -367,7 +367,7 @@
         approval-type-name="Training"
         :reasoning-text="previewReasoningText"
         @approve="handlePreviewApprove"
-        @reject="handlePreviewReject"
+        @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
         @close="onPreviewClosed"
       />
@@ -752,6 +752,8 @@ export default {
       return payload;
     },
     initializeDrawerData() {
+      this.closeConfirmDialog();
+      this.closeRejectDialog();
       this.serverSideProps = new ServerSideProps("", false, 5, 1, 0, 0);
       this.axiosPayload = this.createDefaultPayload(5, false);
       this.pagedTableData = [];
@@ -1274,11 +1276,8 @@ export default {
       }
       return this.isWaitingForApproval(row) ? 1 : 0;
     },
-    getRejectDisplayName(row = {}) {
-      const fullName = [row.firstName, row.lastName].filter(Boolean).join(" ").trim();
-      return fullName || row.email || "This user";
-    },
     handleApprove(row) {
+      this.closeRejectDialog();
       const approvalCount = this.getApprovalCountForDialog(row);
       this.confirmDialog = {
         status: true,
@@ -1295,6 +1294,7 @@ export default {
       };
     },
     handleDeclineAll(row) {
+      this.closeRejectDialog();
       const count = this.getApprovalCountForDialog(row);
       this.confirmDialog = {
         status: true,
@@ -1309,6 +1309,7 @@ export default {
       };
     },
     handleApproveRow(row) {
+      this.closeRejectDialog();
       this.confirmDialog = {
         status: true,
         action: "approveActivity",
@@ -1321,17 +1322,18 @@ export default {
         loading: false
       };
     },
-    handleReject(row) {
-      const rejectDisplayName = this.getRejectDisplayName(row);
+    handleDecline(row) {
+      this.closeRejectDialog();
       this.confirmDialog = {
         status: true,
-        action: "reject",
+        action: "decline",
         row,
         icon: "mdi-close",
         title: "Confirm Decline",
-        message: `${rejectDisplayName}'s approval will be declined. This action cannot be undone.`,
+        message:
+          "This action will be declined and will not be executed. This action cannot be undone.",
         recommendation: "",
-        confirmText: "DECLINE USER",
+        confirmText: "DECLINE",
         loading: false
       };
     },
@@ -1368,6 +1370,7 @@ export default {
       await this.executeApproveReject(action, row);
       this.confirmDialog.loading = false;
       this.closeConfirmDialog();
+      if (this.previewType) this.closePreview();
     },
     showSnackbar(message, color = "green", icon = "mdi-check-circle") {
       this.$store.dispatch("common/createSnackBar", { message, color, icon });
@@ -1400,11 +1403,14 @@ export default {
         } else if (action === "declineAll") {
           await rejectAgenticAIBatch({ batchResourceId: row.batchResourceId });
           this.showSnackbar("All pending actions declined.", "green", "mdi-close-circle");
-          this.$emit("on-reject", row);
-        } else if (action === "reject") {
-          await rejectAgenticAIActivity({ resourceIds: [row.resourceId] });
+          this.$emit("on-decline", row);
+        } else if (action === "decline") {
+          await rejectAgenticAIActivity({
+            resourceIds: [row.resourceId],
+            ...(rejectingReason ? { rejectingReason } : {})
+          });
           this.showSnackbar("Action declined and will not be executed.", "green", "mdi-close-circle");
-          this.$emit("on-reject", row);
+          this.$emit("on-decline", row);
         } else if (action === "retry") {
           await rejectAgenticAIActivity({ resourceIds: [row.resourceId], batchResourceId: row.batchResourceId, rejectingReason });
           const activityTypeActionMap = { 1: "phishing", 2: "phishing", 3: "phishing", 4: "training" };
@@ -1438,16 +1444,28 @@ export default {
       const action = row.activityType === 4 ? "approve" : "approveActivity";
       this.executeApproveReject(action, row);
     },
-    handlePreviewReject() {
+    handlePreviewDecline() {
       const row = this.previewActivityRow;
       if (!row) return;
-      this.closePreview();
-      this.executeApproveReject("reject", row);
+      this.closeRejectDialog();
+      this.confirmDialog = {
+        status: true,
+        action: "decline",
+        row,
+        icon: "mdi-close",
+        title: "Confirm Decline",
+        message:
+          "This action will be declined and will not be executed. This action cannot be undone.",
+        recommendation: "",
+        confirmText: "DECLINE",
+        loading: false
+      };
     },
     isRowError(row = {}) {
       return String(row.status || "").toLowerCase() === "error";
     },
     handleRetry(row) {
+      this.closeConfirmDialog();
       this.rejectDialog = { status: true, action: "retry", row, loading: false };
     },
     handlePreviewRetry() {
