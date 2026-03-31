@@ -699,8 +699,8 @@ export default {
       try {
         const response = await this.$store.dispatch("widgets/callForWidgets");
         const settings =
-          response.data["dashboardWidgetsOrdering"].data.settings;
-        if (settings.length) {
+          response?.data?.["dashboardWidgetsOrdering"]?.data?.settings;
+        if (settings && settings.length) {
           this.layout = settings.reduce((acc, item) => {
             const widget = { ...this.allWidgets[item.key], ...item };
             const isAgenticWidgetWithoutLicense =

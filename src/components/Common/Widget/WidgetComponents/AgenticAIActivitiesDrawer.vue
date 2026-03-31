@@ -156,15 +156,7 @@
 
                   <div class="agentic-ai-activities-drawer__batch-card-chips">
                     <v-chip
-                      small
-                      label
-                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--approved"
-                      outlined
-                    >
-                      <VIcon size="14">mdi-check</VIcon>
-                      {{ getBatchStatusCounts(batch).approved }}
-                    </v-chip>
-                    <v-chip
+                      v-if="getBatchStatusCounts(batch).pending > 0"
                       small
                       label
                       class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--pending"
@@ -173,6 +165,16 @@
                       {{ getBatchStatusCounts(batch).pending }} pending
                     </v-chip>
                     <v-chip
+                      v-if="getBatchStatusCounts(batch).approved > 0"
+                      small
+                      label
+                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--approved"
+                      outlined
+                    >
+                      {{ getBatchStatusCounts(batch).approved }} approved
+                    </v-chip>
+                    <v-chip
+                      v-if="getBatchStatusCounts(batch).declined > 0"
                       small
                       label
                       class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--declined"
