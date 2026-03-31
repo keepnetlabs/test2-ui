@@ -2,40 +2,35 @@ import AgenticAIRejectDialog from "@/components/Common/Widget/WidgetComponents/A
 
 describe("AgenticAIRejectDialog", () => {
   describe("computed", () => {
-    it("returns retry suggestions for retry action", () => {
-      const suggestions = AgenticAIRejectDialog.computed.suggestedReasons.call({ action: "retry" });
+    it("returns four retry suggestion options", () => {
+      const suggestions = AgenticAIRejectDialog.computed.suggestedReasons.call({});
 
       expect(suggestions).toHaveLength(4);
-      expect(suggestions[0].label).toBe("Temporary issue");
-    });
-
-    it("returns no suggestions for reject action", () => {
-      const suggestions = AgenticAIRejectDialog.computed.suggestedReasons.call({ action: "reject" });
-
-      expect(suggestions).toEqual([]);
+      expect(suggestions[0].label).toBe("Delivery / technical issue");
+      expect(suggestions[0].key).toBe("delivery-or-technical");
     });
   });
 
   describe("methods", () => {
-    it("fills textarea when a suggestion is selected", () => {
+    it("fills textarea and records selection when a suggestion is selected", () => {
       const ctx = {
         reason: "",
         selectedSuggestedReasonKey: null
       };
 
       AgenticAIRejectDialog.methods.handleSuggestedReasonClick.call(ctx, {
-        key: "temporary-issue",
-        template: "Please retry this action because the previous attempt failed."
+        key: "delivery-or-technical",
+        template: "The previous attempt failed to deliver or render correctly."
       });
 
-      expect(ctx.selectedSuggestedReasonKey).toBe("temporary-issue");
-      expect(ctx.reason).toBe("Please retry this action because the previous attempt failed.");
+      expect(ctx.selectedSuggestedReasonKey).toBe("delivery-or-technical");
+      expect(ctx.reason).toBe("The previous attempt failed to deliver or render correctly.");
     });
 
     it("resets reason and selection together", () => {
       const ctx = {
         reason: "Some reason",
-        selectedSuggestedReasonKey: "temporary-issue"
+        selectedSuggestedReasonKey: "delivery-or-technical"
       };
 
       AgenticAIRejectDialog.methods.resetDialogState.call(ctx);
@@ -47,14 +42,14 @@ describe("AgenticAIRejectDialog", () => {
     it("emits trimmed reason on confirm", () => {
       const $emit = jest.fn();
       const ctx = {
-        reason: "  Valid rejection reason  ",
+        reason: "  Valid retry reason with enough length  ",
         isValid: true,
         $emit
       };
 
       AgenticAIRejectDialog.methods.handleConfirm.call(ctx);
 
-      expect($emit).toHaveBeenCalledWith("confirm", "Valid rejection reason");
+      expect($emit).toHaveBeenCalledWith("confirm", "Valid retry reason with enough length");
     });
 
     it("does not emit confirm when invalid", () => {
