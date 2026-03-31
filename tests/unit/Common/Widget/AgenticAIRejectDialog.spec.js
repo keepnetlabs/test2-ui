@@ -42,25 +42,6 @@ describe("AgenticAIRejectDialog", () => {
       expect(ctx.reason).toBe("The previous attempt failed to deliver or render correctly.");
     });
 
-    it("uses neutral gray chip colors (not orange) for selected and unselected states", () => {
-      const selectedCtx = {
-        selectedSuggestedReasonKey: "delivery-or-technical",
-        isSuggestedReasonSelected: AgenticAIRejectDialog.methods.isSuggestedReasonSelected
-      };
-      const unselectedCtx = {
-        selectedSuggestedReasonKey: null,
-        isSuggestedReasonSelected: AgenticAIRejectDialog.methods.isSuggestedReasonSelected
-      };
-
-      expect(
-        AgenticAIRejectDialog.methods.getSuggestedReasonColor.call(selectedCtx, "delivery-or-technical")
-      ).toBe("#98A2B3");
-      expect(
-        AgenticAIRejectDialog.methods.getSuggestedReasonColor.call(unselectedCtx, "delivery-or-technical")
-      ).toBe("#D0D5DD");
-      expect(AgenticAIRejectDialog.methods.getSuggestedReasonTextColor.call(selectedCtx)).toBe("#475467");
-    });
-
     it("resets reason and selection together", () => {
       const ctx = {
         reason: "Some reason",
@@ -138,9 +119,6 @@ describe("AgenticAIRejectDialog", () => {
       ).toBe(false);
     });
 
-    it("getSuggestedReasonTextColor returns a single neutral text color", () => {
-      expect(AgenticAIRejectDialog.methods.getSuggestedReasonTextColor.call({})).toBe("#475467");
-    });
   });
 
   describe("props", () => {

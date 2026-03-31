@@ -24,12 +24,13 @@
             <v-chip
               v-for="reasonOption in suggestedReasons"
               :key="reasonOption.key"
-              :outlined="!isSuggestedReasonSelected(reasonOption.key)"
+              outlined
               small
               label
               class="agentic-ai-reject-dialog__chip"
-              :color="getSuggestedReasonColor(reasonOption.key)"
-              :text-color="getSuggestedReasonTextColor()"
+              :class="{
+                'agentic-ai-reject-dialog__chip--selected': isSuggestedReasonSelected(reasonOption.key)
+              }"
               @click="handleSuggestedReasonClick(reasonOption)"
             >
               {{ reasonOption.label }}
@@ -155,12 +156,6 @@ export default {
     },
     isSuggestedReasonSelected(reasonKey) {
       return this.selectedSuggestedReasonKey === reasonKey;
-    },
-    getSuggestedReasonColor(reasonKey) {
-      return this.isSuggestedReasonSelected(reasonKey) ? "#98A2B3" : "#D0D5DD";
-    },
-    getSuggestedReasonTextColor() {
-      return "#475467";
     },
     handleSuggestedReasonClick(reasonOption) {
       if (!reasonOption) return;
