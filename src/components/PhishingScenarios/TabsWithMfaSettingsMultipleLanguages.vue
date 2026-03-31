@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :class="['mb-2', readOnly ? 'mt-1' : 'mt-n4']">
+    <div :class="['mb-2', readOnly ? 'mt-2' : 'mt-n4']">
       <span class="template-preview__text--body text-primary-color fs-4 fw-600"
         >{{ landingPageParams.name }}
         <VTooltip v-if="landingPageParams.isAssistedByAI" bottom>

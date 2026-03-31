@@ -437,24 +437,24 @@
 
   .agentic-ai-activities-drawer__batch-card:hover {
     background: #f1f8fe;
+  }
 
-    .agentic-ai-activities-drawer__batch-card-title {
-      color: #2196f3;
-    }
+  .agentic-ai-activities-drawer__batch-card:hover .agentic-ai-activities-drawer__batch-card-title {
+    color: #2196f3;
   }
 
   .agentic-ai-activities-drawer__batch-card--selected {
-    background: #f5f5f5;
+    background: #e8f4fd;
     box-shadow: none;
   }
 
-  .agentic-ai-activities-drawer__batch-card--selected .agentic-ai-activities-drawer__batch-card-title {
-    font-weight: 600 !important;
+  .agentic-ai-activities-drawer__batch-card--selected:hover {
+    background: #dceefd;
   }
 
-  .agentic-ai-activities-drawer__batch-card-title--selected {
+  .agentic-ai-activities-drawer__batch-card--selected .agentic-ai-activities-drawer__batch-card-title {
     color: #2196f3 !important;
-    font-weight: 600 !important;
+    font-weight: 600;
   }
 
   .agentic-ai-activities-drawer__batch-card-title-row,
@@ -503,6 +503,85 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+  }
+
+  .agentic-ai-activities-drawer__batch-card-meta-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+    color: #667085;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .agentic-ai-activities-drawer__batch-card-meta-sep {
+    color: #98a2b3;
+    user-select: none;
+  }
+
+  .agentic-ai-activities-drawer__batch-card-type {
+    color: #667085;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .agentic-ai-activities-drawer__batch-card-info-trigger {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    cursor: default;
+  }
+
+  .agentic-ai-activities-drawer__batch-card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .agentic-ai-activities-drawer__batch-card-chip {
+    margin: 0 !important;
+    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+
+    &.v-chip--outlined {
+      border-width: 1px !important;
+    }
+
+    &--approved {
+      min-width: 0 !important;
+      width: auto !important;
+      padding: 0 6px !important;
+      background: #edf7ed !important;
+      border-color: #a5d6a7 !important;
+      color: #2e7d32 !important;
+
+      .v-icon {
+        margin-right: 2px !important;
+      }
+    }
+
+    &--pending {
+      background: #e3f2fd !important;
+      border-color: #2196f3 !important;
+      color: #2196f3 !important;
+    }
+
+    &--declined {
+      background: #eceff1 !important;
+      border-color: #757575 !important;
+      color: #757575 !important;
+    }
   }
 
   .agentic-ai-activities-drawer__batch-card-date {

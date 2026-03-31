@@ -193,7 +193,7 @@
       </template>
       <template #datatable-custom-column="{ scope }">
         <template v-if="scope.column.property === 'companyName'">
-          <span v-if="scope.row.children && scope.row.children.length" :id="`text--company-name-${scope.$index}`" class="cluster-parent-label">{{ scope.row.companyName }} <span class="cluster-parent-count">{{ scope.row.children.length }} {{ scope.row.children.length === 1 ? 'company' : 'companies' }}</span></span>
+          <span v-if="scope.row.children && scope.row.children.length" :id="`text--company-name-${scope.$index}`" class="cluster-parent-label">{{ scope.row.companyName }} <span v-if="false" class="cluster-parent-count">{{ scope.row.children.length }} {{ scope.row.children.length === 1 ? 'company' : 'companies' }}</span></span>
           <span
             v-else
             :id="`text--company-name-${scope.$index}`"
