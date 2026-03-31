@@ -89,6 +89,7 @@
       :is-server-side-selection="!isClustered"
       hide-parent-row-actions
       :get-row-is-selectable="handleRowIsSelectable"
+      :select-all-include-children="isClustered"
       :loading="loading"
       :table="tableData"
       :server-side-props="serverSideProps"

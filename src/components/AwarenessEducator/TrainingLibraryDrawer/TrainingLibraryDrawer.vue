@@ -66,10 +66,10 @@
           rounded
           color="#757575"
           class="elevation-0 fw-600"
-          @click="$emit('reject')"
+          @click="$emit('decline')"
         >
           <VIcon left>mdi-close-circle</VIcon>
-          Reject {{ approvalTypeName }}
+          Decline {{ approvalTypeName }}
         </VBtn>
         <div style="display: flex; gap: 8px;">
           <VBtn

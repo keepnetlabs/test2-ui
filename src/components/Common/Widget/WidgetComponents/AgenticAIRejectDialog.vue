@@ -7,8 +7,8 @@
     ></div>
     <AppDialog
       :status="status"
-      :icon="action === 'retry' ? 'mdi-refresh' : 'mdi-close'"
-      :title="action === 'retry' ? 'Why are you retrying this action?' : 'Why are you declining this action?'"
+      icon="mdi-refresh"
+      title="Why are you retrying?"
       class-name="agentic-ai-confirm-dialog"
       custom-size="560"
       hide-overlay
@@ -16,10 +16,10 @@
     >
       <template #app-dialog-body>
         <p class="agentic-ai-reject-dialog__description">
-          Please explain in 1–2 sentences. Your feedback helps improve AI recommendations.
+          Please explain in 1–2 sentences what went wrong. Your feedback helps improve AI recommendations.
         </p>
-        <div v-if="action === 'retry'" class="agentic-ai-reject-dialog__suggestions">
-          <div class="agentic-ai-reject-dialog__suggestions-label">Quick reasons</div>
+        <div class="agentic-ai-reject-dialog__suggestions">
+          <div class="agentic-ai-reject-dialog__suggestions-label">Suggested reasons</div>
           <div class="agentic-ai-reject-dialog__chips">
             <v-chip
               v-for="reasonOption in suggestedReasons"
@@ -42,7 +42,7 @@
           dense
           no-resize
           rows="5"
-          :placeholder="action === 'retry' ? 'e.g. The previous attempt failed due to a temporary issue.' : 'e.g. This user already completed this training last month'"
+          placeholder="e.g. The scenario did not match this user’s department, or the content failed to load in preview."
           class="agentic-ai-reject-dialog__textarea mt-2"
           :counter="maxLength"
           :rules="[rules.minLength]"
@@ -51,11 +51,11 @@
       </template>
       <template #app-dialog-footer>
         <AppDialogFooter
-          cancel-button-id="btn-reject-dialog-cancel"
-          confirm-button-id="btn-reject-dialog-confirm"
+          cancel-button-id="btn-retry-feedback-dialog-cancel"
+          confirm-button-id="btn-retry-feedback-dialog-confirm"
           cancel-button-text="CANCEL"
-          :action-button-text="confirmButtonText"
-          :action-button-color="action === 'retry' ? '#a45716' : '#f56c6c'"
+          action-button-text="RETRY"
+          action-button-color="#a45716"
           cancel-button-color="#383b41"
           :confirm-button-disabled="!isValid || loading"
           @handleClose="$emit('cancel')"
@@ -72,30 +72,32 @@ import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter.vue";
 
 const MIN_LENGTH = 15;
 const MAX_LENGTH = 500;
+
+/** Short labels + full sentences sent as feedback when retrying an Agentic AI recommendation. */
 const RETRY_SUGGESTED_REASONS = [
   {
-    key: "temporary-issue",
-    label: "Temporary issue",
+    key: "delivery-or-technical",
+    label: "Delivery / technical issue",
     template:
-      "Please retry this action because the previous attempt appears to have failed due to a temporary issue."
+      "The previous attempt failed to deliver or render correctly (for example the message or landing page did not load). Please retry with a fresh run."
   },
   {
-    key: "wrong-language",
-    label: "Wrong language",
+    key: "language-or-locale",
+    label: "Language or locale mismatch",
     template:
-      "Please retry this action with the correct language because the previous version did not match the user's preferred language."
+      "The recommended content did not match this user’s preferred language or regional settings. Please regenerate with the correct localization."
   },
   {
-    key: "scenario-mismatch",
-    label: "Scenario mismatch",
+    key: "audience-or-risk-fit",
+    label: "Wrong fit for user or risk level",
     template:
-      "Please retry this action with a more suitable scenario because the previous recommendation did not match the user's context."
+      "The scenario or training was not appropriate for this user’s role, department, or risk profile. Please retry with a better-matched recommendation."
   },
   {
-    key: "needs-regeneration",
-    label: "Needs regeneration",
+    key: "regenerate-quality",
+    label: "Regenerate (quality or tone)",
     template:
-      "Please retry this action and generate a fresh recommendation because the previous output was not suitable."
+      "The previous output was not suitable in quality, tone, or alignment with our standards. Please generate a new recommendation for this user."
   }
 ];
 
@@ -111,9 +113,10 @@ export default {
       type: Boolean,
       default: false
     },
+    /** Kept for compatibility; this dialog is only used for the retry flow. */
     action: {
       type: String,
-      default: "reject"
+      default: "retry"
     }
   },
   data() {
@@ -129,11 +132,8 @@ export default {
     };
   },
   computed: {
-    confirmButtonText() {
-      return this.action === "retry" ? "RETRY" : "DECLINE";
-    },
     suggestedReasons() {
-      return this.action === "retry" ? RETRY_SUGGESTED_REASONS : [];
+      return RETRY_SUGGESTED_REASONS;
     },
     isValid() {
       return this.reason.trim().length >= MIN_LENGTH;
@@ -156,14 +156,14 @@ export default {
       return this.selectedSuggestedReasonKey === reasonKey;
     },
     getSuggestedReasonColor(reasonKey) {
-      return this.isSuggestedReasonSelected(reasonKey) ? "#a45716" : "#D0D5DD";
+      return this.isSuggestedReasonSelected(reasonKey) ? "#98A2B3" : "#D0D5DD";
     },
-    getSuggestedReasonTextColor(reasonKey) {
-      return this.isSuggestedReasonSelected(reasonKey) ? "#FFFFFF" : "#475467";
+    getSuggestedReasonTextColor() {
+      return "#475467";
     },
     handleSuggestedReasonClick(reasonOption) {
       if (!reasonOption) return;
-
+      this.selectedSuggestedReasonKey = reasonOption.key;
       this.reason = reasonOption.template;
     },
     handleChangeStatus(value) {
