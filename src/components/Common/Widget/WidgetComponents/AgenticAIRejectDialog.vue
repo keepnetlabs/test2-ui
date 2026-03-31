@@ -29,7 +29,7 @@
               label
               class="agentic-ai-reject-dialog__chip"
               :color="getSuggestedReasonColor(reasonOption.key)"
-              :text-color="getSuggestedReasonTextColor(reasonOption.key)"
+              :text-color="getSuggestedReasonTextColor()"
               @click="handleSuggestedReasonClick(reasonOption)"
             >
               {{ reasonOption.label }}
@@ -73,7 +73,6 @@ import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter.vue";
 const MIN_LENGTH = 15;
 const MAX_LENGTH = 500;
 
-/** Short labels + full sentences sent as feedback when retrying an Agentic AI recommendation. */
 const RETRY_SUGGESTED_REASONS = [
   {
     key: "delivery-or-technical",
@@ -103,7 +102,10 @@ const RETRY_SUGGESTED_REASONS = [
 
 export default {
   name: "AgenticAIRejectDialog",
-  components: { AppDialog, AppDialogFooter },
+  components: {
+    AppDialog,
+    AppDialogFooter
+  },
   props: {
     status: {
       type: Boolean,
@@ -113,7 +115,6 @@ export default {
       type: Boolean,
       default: false
     },
-    /** Kept for compatibility; this dialog is only used for the retry flow. */
     action: {
       type: String,
       default: "retry"
@@ -176,31 +177,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.agentic-ai-reject-dialog__description {
-  margin-bottom: 0;
-}
-
-.agentic-ai-reject-dialog__suggestions {
-  margin-top: 16px;
-}
-
-.agentic-ai-reject-dialog__suggestions-label {
-  margin-bottom: 10px;
-  color: #344054;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 20px;
-}
-
-.agentic-ai-reject-dialog__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.agentic-ai-reject-dialog__chip {
-  font-weight: 600;
-}
-</style>

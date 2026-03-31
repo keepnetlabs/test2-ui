@@ -6,7 +6,9 @@
       :class="[
         getNavigationDrawerClass,
         'common-simulator-preview-dialog',
-        { 'common-simulator-preview-dialog--with-approval-footer': showApprovalFooter }
+        {
+          'common-simulator-preview-dialog--scrollable-body': showApprovalFooter || readOnly
+        }
       ]"
       :data-drawer-id="drawerId"
       fixed
@@ -462,6 +464,10 @@ export default {
     reasoningText: {
       type: String,
       default: ''
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -491,7 +497,8 @@ export default {
   computed: {
     getNavigationDrawerClass() {
       return {
-        'k-navigation-drawer k-navigation-drawer--preview-dialog': true
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+        'nested-drawer': this.isNested
       }
     },
     redFlagsText() {
