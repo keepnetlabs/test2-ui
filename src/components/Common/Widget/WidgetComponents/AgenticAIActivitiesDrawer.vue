@@ -330,6 +330,7 @@
         :status="previewType === 'Phishing' && !previewClosing"
         :selected-row="previewSelectedRow"
         :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
+        is-nested
         read-only
         :show-approval-footer="isPreviewRowWaitingForApproval"
         :show-retry-button="isPreviewRowError"
@@ -346,6 +347,7 @@
         :status="previewType === 'Quishing' && !previewClosing"
         :selected-row="previewSelectedRow"
         :api-func="getQuishingScenarioLandingPageAndEmailTemplate"
+        is-nested
         read-only
         :show-approval-footer="isPreviewRowWaitingForApproval"
         :show-retry-button="isPreviewRowError"
@@ -578,13 +580,20 @@ export default {
     batchStatusFilterItems() {
       return this.getStableFilterItems(this.batchStatusFilterOptions, this.leftStatusFilter);
     },
+    isCurrentBatchTraining() {
+      if (!this.selectedBatch) return false;
+      const first = this.selectedBatch.activities?.[0];
+      if (first?.activityType === 4) return true;
+      const raw = this.selectedBatch.contentType || this.selectedBatch.subtitle || "";
+      return this.formatActivityTypeDisplay(String(raw)) === "Training";
+    },
     drawerColumns() {
-      const clonedColumns = (this.columns || []).map((column) => ({
+      let clonedColumns = (this.columns || []).map((column) => ({
         ...column
       }));
-      const scenarioColumnIndex = clonedColumns.findIndex(
-        (column) => column.property === "scenarioName"
-      );
+      if (this.isCurrentBatchTraining) {
+        clonedColumns = clonedColumns.filter((column) => column.property !== "scenarioName");
+      }
       const statusColumnIndex = clonedColumns.findIndex((column) => column.property === "status");
 
       const statusColumn =
@@ -947,7 +956,10 @@ export default {
         activityType: activity.activityType,
         activityTypeName: activity.activityTypeName,
         scenarioResourceId: activity.scenarioResourceId,
-        scenarioName: activity.scenarioName,
+        scenarioName:
+          activity.activityType === 4
+            ? (activity.scenarioName || activity.contentCategory || "").trim()
+            : activity.scenarioName,
         trainingResourceId: activity.trainingResourceId,
         enrollmentResourceId: activity.enrollmentResourceId,
         campaignResourceId: activity.campaignResourceId,
