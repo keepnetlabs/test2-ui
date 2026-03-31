@@ -3,7 +3,14 @@ jest.mock('@/utils/functions', () => ({
   createRandomCryptStringNumber: jest.fn(() => 'RND123')
 }))
 
+jest.mock('@/api/domainBlacklist', () => ({
+  getDomainBlacklistStatus: jest.fn().mockResolvedValue({ data: {} })
+}))
+
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
+import { getDomainBlacklistStatus } from '@/api/domainBlacklist'
+
+const { watch } = InputPhishingLink
 
 describe('InputPhishingLink.vue', () => {
   it('has correct component name', () => {
@@ -91,5 +98,69 @@ describe('InputPhishingLink.vue', () => {
     expect(urlSchemaTypesModified[0].disabled).toBe(false)
     expect(urlSchemaTypesModified[1].disabled).toBe(true)
     expect(ctx.handleInputChange).toHaveBeenCalledWith('1', 'urlSchemaTypeId')
+  })
+
+  describe('domainRecords watcher (late-loaded domain list)', () => {
+    const records = [
+      { text: 'late.example.com', value: 'late-1', extraDatas: [{ value: '2' }, { value: true }] }
+    ]
+
+    it('create mode: [] -> items calls setDefaultValue when domainRecordId is empty', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = {
+        isEdit: false,
+        value: { domainRecordId: '' },
+        setDefaultValue,
+        checkDomainBlacklist
+      }
+      watch.domainRecords.call(ctx, records, [])
+      expect(setDefaultValue).toHaveBeenCalledTimes(1)
+      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+    })
+
+    it('edit mode: [] -> items calls checkDomainBlacklist when domainRecordId is set', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = {
+        isEdit: true,
+        value: { domainRecordId: 'd1' },
+        setDefaultValue,
+        checkDomainBlacklist
+      }
+      watch.domainRecords.call(ctx, records, [])
+      expect(setDefaultValue).not.toHaveBeenCalled()
+      expect(checkDomainBlacklist).toHaveBeenCalledWith('d1')
+    })
+
+    it('returns early when new list is empty', () => {
+      const setDefaultValue = jest.fn()
+      const ctx = { setDefaultValue, checkDomainBlacklist: jest.fn() }
+      watch.domainRecords.call(ctx, [], [])
+      expect(setDefaultValue).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when list was already non-empty', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = { setDefaultValue, checkDomainBlacklist }
+      watch.domainRecords.call(ctx, records, records)
+      expect(setDefaultValue).not.toHaveBeenCalled()
+      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+    })
+  })
+
+  it('checkDomainBlacklist matches numeric id to string id via String coercion', async () => {
+    jest.clearAllMocks()
+    const ctx = {
+      blacklistWarning: null,
+      cleanSuggestions: [],
+      domainRecords: [
+        { text: 'coerce.test', value: 99, extraDatas: [{ value: '2' }, { value: true }] }
+      ]
+    }
+    InputPhishingLink.methods.checkDomainBlacklist.call(ctx, '99')
+    await new Promise((r) => setTimeout(r, 0))
+    expect(getDomainBlacklistStatus).toHaveBeenCalledWith('coerce.test')
   })
 })

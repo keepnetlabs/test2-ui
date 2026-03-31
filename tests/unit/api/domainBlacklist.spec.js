@@ -56,6 +56,15 @@ describe('Domain Blacklist API', () => {
   })
 
   describe('getDomainBlacklistStatus', () => {
+    it('should always delegate to the worker API (no client-side static override)', async () => {
+      mockClient.get.mockResolvedValueOnce({
+        data: { status: 'malicious', reason: 'This domain is blocked by major browsers.' }
+      })
+      await BlacklistAPI.getDomainBlacklistStatus('sirketiciduyuruonline.com')
+      expect(mockClient.get).toHaveBeenCalledTimes(1)
+      expect(mockClient.get).toHaveBeenCalledWith('/domains/sirketiciduyuruonline.com')
+    })
+
     it('should call GET /domains/{domain}', async () => {
       await BlacklistAPI.getDomainBlacklistStatus('example.com')
       expect(mockClient.get).toHaveBeenCalledWith('/domains/example.com')
