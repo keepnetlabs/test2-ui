@@ -12,17 +12,35 @@ function getBaseApiUrl() {
   return url.replace(/\/api\/?$/, "");
 }
 
+function getActiveCompanyId() {
+  if (typeof localStorage === "undefined") return "";
+  return (
+    localStorage.getItem("companyRequestId") ||
+    localStorage.getItem("companyResourceId") ||
+    localStorage.getItem("companyId") ||
+    ""
+  );
+}
+
 /**
  * Send autonomous AI action for a single user.
  */
-export function sendAutonomous({ preferredLanguage, targetUserResourceId, departmentName, actions, sendAfterPhishingSimulation = false }) {
+export function sendAutonomous({
+  preferredLanguage,
+  targetUserResourceId,
+  departmentName,
+  actions,
+  sendAfterPhishingSimulation = false,
+  companyId = getActiveCompanyId()
+}) {
   const body = {
     token: AuthenticationService.getToken(),
     preferredLanguage,
     targetUserResourceId,
     departmentName,
     actions,
-    sendAfterPhishingSimulation
+    sendAfterPhishingSimulation,
+    companyId
   };
   return axios.post(`${BASE_URL}/autonomous`, body, { headers });
 }
@@ -30,12 +48,18 @@ export function sendAutonomous({ preferredLanguage, targetUserResourceId, depart
 /**
  * Send batch autonomous AI action for a group.
  */
-export function sendBatchAutonomous({ targetGroupResourceId, actions, sendAfterPhishingSimulation = false }) {
+export function sendBatchAutonomous({
+  targetGroupResourceId,
+  actions,
+  sendAfterPhishingSimulation = false,
+  companyId = getActiveCompanyId()
+}) {
   const body = {
     token: AuthenticationService.getToken(),
     targetGroupResourceId,
     actions,
-    sendAfterPhishingSimulation
+    sendAfterPhishingSimulation,
+    companyId
   };
   return axios.post(`${BASE_URL}/batch-autonomous`, body, { headers });
 }
@@ -53,7 +77,8 @@ export function retryAutonomous({
   preferredLanguage,
   batchResourceId,
   rejectingReason,
-  rejectedScenarioResourceId
+  rejectedScenarioResourceId,
+  companyId = getActiveCompanyId()
 }) {
   const body = {
     token: AuthenticationService.getToken(),
@@ -67,7 +92,8 @@ export function retryAutonomous({
     preferredLanguage,
     batchResourceId,
     rejectingReason,
-    rejectedScenarioResourceId
+    rejectedScenarioResourceId,
+    companyId
   };
   return axios.post(`${BASE_URL}/autonomous`, body, { headers });
 }

@@ -17,7 +17,14 @@ jest.mock('@/api/targetUsers', () => ({
   exportTargetGroups: jest.fn(() => Promise.resolve())
 }))
 
+jest.mock('@/api/agenticAIService', () => ({
+  sendBatchAutonomous: jest.fn(() => Promise.resolve({ data: {} }))
+}))
+
 import Groups from '@/components/TargetUsers/Groups.vue'
+import { sendBatchAutonomous } from '@/api/agenticAIService'
+
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('TargetUsers Groups.vue', () => {
   const { computed } = Groups
@@ -138,5 +145,106 @@ describe('TargetUsers Groups.vue', () => {
       })
     ).toBe(false)
     Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
+  })
+
+  it('agenticAIDialogMode returns approval for approval-gated execution', () => {
+    expect(
+      computed.agenticAIDialogMode.call({
+        executionModeStore: 'ApprovalGated'
+      })
+    ).toBe('approval')
+  })
+
+  it('isSendWithAIActionDisabled returns true when add users and delete are both disabled', () => {
+    const ctx = {
+      isTooltipRenderable: Groups.methods.isTooltipRenderable
+    }
+
+    expect(Groups.methods.isSendWithAIActionDisabled.call(ctx, { name: 'Repeat Offenders' })).toBe(true)
+  })
+
+  it('isSendWithAIActionDisabled returns false when only add users is disabled', () => {
+    const ctx = {
+      isTooltipRenderable: Groups.methods.isTooltipRenderable
+    }
+
+    expect(
+      Groups.methods.isSendWithAIActionDisabled.call(ctx, { name: 'Custom Group', isScimGroup: true })
+    ).toBe(false)
+  })
+
+  it('getSendWithAIButtonTooltipMessage returns AI-disabled tooltip only when AI action is disabled', () => {
+    const ctx = {
+      isSendWithAIActionDisabled: Groups.methods.isSendWithAIActionDisabled,
+      isTooltipRenderable: Groups.methods.isTooltipRenderable
+    }
+
+    expect(Groups.methods.getSendWithAIButtonTooltipMessage.call(ctx, { name: 'Untrained Users' })).toBe(
+      'Agentic AI actions cannot be run for this group.'
+    )
+    expect(
+      Groups.methods.getSendWithAIButtonTooltipMessage.call(ctx, { name: 'Custom Group' })
+    ).toBe('')
+  })
+
+  it('handleConfirmSendWithAI closes dialog and dispatches success snackbar on success', async () => {
+    const dispatch = jest.fn()
+    const ctx = {
+      selectedRowForAI: { resourceId: 'g-1' },
+      agenticAIDialogMode: 'approval',
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: Groups.methods.getSendWithAISuccessMessage,
+      $store: { dispatch }
+    }
+
+    await Groups.methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: true,
+      sendAfterPhishingSimulation: true
+    })
+    await flushPromises()
+
+    expect(sendBatchAutonomous).toHaveBeenCalledWith({
+      targetGroupResourceId: 'g-1',
+      actions: ['training', 'phishing'],
+      sendAfterPhishingSimulation: true
+    })
+    expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({
+        message:
+          'Agentic AI actions were sent for approval. No emails will be sent to users in the selected group until the request is approved.'
+      })
+    )
+  })
+
+  it('handleConfirmSendWithAI keeps dialog open and dispatches error snackbar on failure', async () => {
+    sendBatchAutonomous.mockRejectedValueOnce(new Error('fail'))
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const dispatch = jest.fn()
+    const ctx = {
+      selectedRowForAI: { resourceId: 'g-2' },
+      agenticAIDialogMode: 'autonomous',
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAIErrorMessage: Groups.methods.getSendWithAIErrorMessage,
+      $store: { dispatch }
+    }
+
+    await Groups.methods.handleConfirmSendWithAI.call(ctx, {
+      training: false,
+      phishing: true
+    })
+    await flushPromises()
+
+    expect(ctx.handleCloseSendWithAIDialog).not.toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({
+        message: 'Failed to start the Agentic AI process. Please try again.'
+      })
+    )
+
+    consoleSpy.mockRestore()
   })
 })

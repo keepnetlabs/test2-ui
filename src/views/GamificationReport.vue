@@ -12,6 +12,8 @@
       v-if="isSendWithAIDialogOpen"
       :status="isSendWithAIDialogOpen"
       :options="sendWithAIOptions"
+      :mode="agenticAIDialogMode"
+      target-type="user"
       @closeOverlay="handleCloseSendWithAIDialog"
       @confirm="handleConfirmSendWithAI"
     />
@@ -139,7 +141,8 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
+  TABLE_SETTINGS_KEYS,
+  COMMON_CONSTANTS
 } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import LeaderboardTopPerformerCard from '@/components/GamificationReport/LeaderboardTopPerformerCard'
@@ -421,9 +424,13 @@ export default {
       isBadgesCalculating: 'gamificationBadges/isCalculating',
       isBadgesFetching: 'gamificationBadges/isFetching',
       hasAgenticAILicense: 'login/getHasAgenticAILicense',
-      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled'
+      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled',
+      executionModeStore: 'login/getAgenticAIExecutionMode'
     }),
     ...mapState('gamificationBadges', ['badgesByUserId']),
+    agenticAIDialogMode() {
+      return this.executionModeStore === 'ApprovalGated' ? 'approval' : 'autonomous'
+    },
     getDatePayload() {
       return {
         datePeriod: this.axiosPayload.datePeriod,
@@ -453,7 +460,7 @@ export default {
         this.isAgenticAIEnabledStore
       ) {
         actions.push({
-          name: 'Autonomous AI',
+          name: this.executionModeStore === 'ApprovalGated' ? 'Send with AI for Approval' : 'Run with AI',
           id: 'btn-send-with-ai-gamification-report',
           icon: 'mdi-creation',
           action: 'on-send-with-ai'
@@ -684,7 +691,17 @@ export default {
         phishing: true
       }
     },
-    handleConfirmSendWithAI(options) {
+    getSendWithAISuccessMessage() {
+      return this.agenticAIDialogMode === 'approval'
+        ? 'Agentic AI actions were sent for approval. No emails will be sent to the selected user until the request is approved.'
+        : 'Agentic AI process started. The selected user will receive emails within 3-5 minutes.'
+    },
+    getSendWithAIErrorMessage() {
+      return this.agenticAIDialogMode === 'approval'
+        ? 'Failed to send Agentic AI actions for approval. Please try again.'
+        : 'Failed to start the Agentic AI process. Please try again.'
+    },
+    async handleConfirmSendWithAI(options) {
       const { preferredLanguage, targetUserResourceId, department } = this.selectedRowForAI
       const actions = []
 
@@ -695,22 +712,31 @@ export default {
         actions.push('phishing')
       }
 
-      sendAutonomous({
-        preferredLanguage,
-        targetUserResourceId,
-        departmentName: department,
-        actions,
-        sendAfterPhishingSimulation:
-          options.training && options.phishing
-            ? options.sendAfterPhishingSimulation || false
-            : false
-      })
-        .then(() => {
-          this.handleCloseSendWithAIDialog()
+      try {
+        await sendAutonomous({
+          preferredLanguage,
+          targetUserResourceId,
+          departmentName: department,
+          actions,
+          sendAfterPhishingSimulation:
+            options.training && options.phishing
+              ? options.sendAfterPhishingSimulation || false
+              : false
         })
-        .catch((error) => {
-          console.error('Error sending data to autonomous:', error)
+        this.handleCloseSendWithAIDialog()
+        this.$store.dispatch('common/createSnackBar', {
+          message: this.getSendWithAISuccessMessage(),
+          icon: 'mdi-check-circle',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
         })
+      } catch (error) {
+        console.error('Error sending data to autonomous:', error)
+        this.$store.dispatch('common/createSnackBar', {
+          message: this.getSendWithAIErrorMessage(),
+          icon: 'mdi-alert-circle',
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+        })
+      }
     }
   }
 }
