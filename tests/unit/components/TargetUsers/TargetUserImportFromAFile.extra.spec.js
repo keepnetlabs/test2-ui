@@ -25,8 +25,6 @@ import labels from '@/model/constants/labels'
 import { LABEL_STORE } from '@/model/constants/commonConstants'
 import { updateTransactionId, searchTmp } from '@/api/targetUsers'
 
-const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0))
-
 describe('TargetUserImportFromAFile.vue (extra branches)', () => {
   const { computed, methods } = TargetUserImportFromAFile
   const defaultFilterBody = {
@@ -342,7 +340,7 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
 
   it('getDatatableList sets managerFullName from managerFirstName+managerLastName when managerFullName is missing', async () => {
     const { searchTmp } = require('@/api/targetUsers')
-    searchTmp.mockResolvedValueOnce({
+    const response = {
       data: {
         data: {
           items: {
@@ -366,10 +364,12 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
           }
         }
       }
-    })
+    }
+    searchTmp.mockImplementationOnce(() => Promise.resolve(response))
 
     const ctx = {
       columns: [],
+      mappingData: { columns: [] },
       bodyData: {
         filter: {
           FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
@@ -384,7 +384,10 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
     }
 
     methods.getDatatableList.call(ctx)
-    await flushAsync()
+    expect(searchTmp).toHaveBeenCalled()
+    await searchTmp.mock.results[0].value
+    await Promise.resolve()
+    await Promise.resolve()
 
     expect(ctx.tableData).toHaveLength(1)
     expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
@@ -420,7 +423,7 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
 
   it('getDatatableList keeps managerFullName when it exists', async () => {
     const { searchTmp } = require('@/api/targetUsers')
-    searchTmp.mockResolvedValueOnce({
+    const response = {
       data: {
         data: {
           items: {
@@ -443,10 +446,12 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
           }
         }
       }
-    })
+    }
+    searchTmp.mockImplementationOnce(() => Promise.resolve(response))
 
     const ctx = {
       columns: [],
+      mappingData: { columns: [] },
       bodyData: {
         filter: {
           FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
@@ -461,7 +466,10 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
     }
 
     methods.getDatatableList.call(ctx)
-    await flushAsync()
+    expect(searchTmp).toHaveBeenCalled()
+    await searchTmp.mock.results[0].value
+    await Promise.resolve()
+    await Promise.resolve()
 
     expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
   })
