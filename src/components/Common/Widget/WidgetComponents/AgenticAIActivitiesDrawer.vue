@@ -1584,7 +1584,11 @@ export default {
             rejectingReason,
             rejectedScenarioResourceId: row.scenarioResourceId
           }).catch(() => {});
-          this.showSnackbar("Autonomous AI has been triggered. This may take 3–5 minutes. A new entry will appear in the table.", "green", "mdi-refresh");
+          this.showSnackbar(
+            "Agentic AI request submitted. This may take 3-5 minutes. A new entry will appear in the table.",
+            "green",
+            "mdi-refresh"
+          );
           this.$emit("on-retry", row);
         }
         await this.fetchBatches();

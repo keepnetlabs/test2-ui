@@ -63,22 +63,15 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
     })
   })
 
-  it('handleConfirm triggers closeOverlay and snackbar dispatch even when both options are false', async () => {
+  it('handleConfirm does not close or dispatch snackbar directly even when both options are false', async () => {
     const wrapper = mountComponent({ options: { training: false, phishing: false } })
     wrapper.vm.localOptions = { training: false, phishing: false }
 
     wrapper.vm.handleConfirm()
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.emitted('closeOverlay')).toBeTruthy()
-    expect(wrapper.emitted('closeOverlay').pop()).toEqual([false])
-    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
-      'common/createSnackBar',
-      expect.objectContaining({
-        icon: 'mdi-check-circle',
-        color: '#4caf50'
-      })
-    )
+    expect(wrapper.emitted('closeOverlay')).toBeFalsy()
+    expect(wrapper.vm.$store.dispatch).not.toHaveBeenCalled()
   })
 
   it('footer confirm-button-disabled becomes true only when both options are false', async () => {
@@ -111,7 +104,7 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
       training: false,
       sendAfterPhishingSimulation: false
     })
-    expect(wrapper.emitted('closeOverlay').pop()).toEqual([false])
+    expect(wrapper.emitted('closeOverlay')).toBeFalsy()
   })
 
   it('options watcher handles null payload by resetting to empty object', () => {
@@ -121,18 +114,15 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
     expect(wrapper.vm.localOptions).toEqual({})
   })
 
-  it('handleConfirm emits confirm and close first, then dispatches snackbar on nextTick', async () => {
+  it('handleConfirm emits confirm only and leaves feedback to parent flow', async () => {
     const wrapper = mountComponent({ options: { training: true, phishing: false } })
     wrapper.vm.localOptions = { training: true, phishing: false }
 
     wrapper.vm.handleConfirm()
 
     expect(wrapper.emitted('confirm')).toBeTruthy()
-    expect(wrapper.emitted('closeOverlay')).toBeTruthy()
+    expect(wrapper.emitted('closeOverlay')).toBeFalsy()
     expect(wrapper.vm.$store.dispatch).not.toHaveBeenCalled()
-
-    await wrapper.vm.$nextTick()
-    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledTimes(1)
   })
 
   it('handleConfirm emits sendAfterPhishingSimulation=true when switch is enabled', async () => {
@@ -141,18 +131,42 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
     wrapper.vm.sendAfterPhishingSimulation = true
 
     wrapper.vm.handleConfirm()
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('confirm')[0][0]).toEqual({
       training: true,
       phishing: true,
       sendAfterPhishingSimulation: true
     })
-    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
-      'common/createSnackBar',
-      expect.objectContaining({
-        message: expect.stringContaining('Autonomous AI process started')
-      })
-    )
+    expect(wrapper.vm.$store.dispatch).not.toHaveBeenCalled()
+  })
+
+  it('computes approval-specific title and action button copy', () => {
+    const wrapper = mountComponent({ mode: 'approval', targetType: 'group' })
+
+    expect(wrapper.vm.dialogTitle).toBe('Send with AI for Approval')
+    expect(wrapper.vm.confirmButtonText).toBe('Send with AI for Approval')
+    expect(wrapper.vm.dialogDescription).toContain('approval for this group')
+    expect(wrapper.vm.dialogDescription).toContain("each user's individual risk signals")
+  })
+
+  it('computes group-aware autonomous description', () => {
+    const wrapper = mountComponent({ targetType: 'group' })
+
+    expect(wrapper.vm.dialogDescription).toContain('Select the actions to generate for this group')
+    expect(wrapper.vm.dialogDescription).toContain("each user's individual risk signals")
+  })
+
+  it('computes personalized autonomous description for a single user', () => {
+    const wrapper = mountComponent({ mode: 'autonomous', targetType: 'user' })
+
+    expect(wrapper.vm.dialogDescription).toContain('Select the actions to generate for this user')
+    expect(wrapper.vm.dialogDescription).toContain("the user's risk signals, behavior, and weaknesses")
+  })
+
+  it('computes quishing-capable simulation option description', () => {
+    const wrapper = mountComponent()
+
+    expect(wrapper.vm.simulationOptionDescription).toContain('phishing or quishing')
+    expect(wrapper.vm.simulationOptionDescription).toContain('personalized')
   })
 })

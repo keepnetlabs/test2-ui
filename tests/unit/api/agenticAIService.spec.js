@@ -29,6 +29,9 @@ const retryParams = {
 describe('agenticAIService', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    localStorage.clear()
+    localStorage.setItem('companyRequestId', 'company-request-1')
+    localStorage.setItem('companyId', 'company-fallback-1')
   })
 
   describe('sendAutonomous', () => {
@@ -51,7 +54,8 @@ describe('agenticAIService', () => {
           targetUserResourceId: 'usr-123',
           departmentName: 'Finance',
           actions: ['phishing', 'training'],
-          sendAfterPhishingSimulation: true
+          sendAfterPhishingSimulation: true,
+          companyId: 'company-request-1'
         },
         { headers }
       )
@@ -67,7 +71,10 @@ describe('agenticAIService', () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         `${BASE_URL}/autonomous`,
-        expect.objectContaining({ sendAfterPhishingSimulation: false }),
+        expect.objectContaining({
+          sendAfterPhishingSimulation: false,
+          companyId: 'company-request-1'
+        }),
         { headers }
       )
     })
@@ -146,6 +153,7 @@ describe('agenticAIService', () => {
       const payload = axios.post.mock.calls[0][1]
       expect(payload.actions).toEqual(['phishing', 'training'])
       expect(payload.sendAfterPhishingSimulation).toBe(true)
+      expect(payload.companyId).toBe('company-request-1')
     })
 
     it('should always use POST method', async () => {
@@ -212,7 +220,8 @@ describe('agenticAIService', () => {
           token: 'mock-token',
           targetGroupResourceId: 'grp-123',
           actions: ['training', 'phishing'],
-          sendAfterPhishingSimulation: true
+          sendAfterPhishingSimulation: true,
+          companyId: 'company-request-1'
         },
         { headers }
       )
@@ -226,7 +235,10 @@ describe('agenticAIService', () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         `${BASE_URL}/batch-autonomous`,
-        expect.objectContaining({ sendAfterPhishingSimulation: false }),
+        expect.objectContaining({
+          sendAfterPhishingSimulation: false,
+          companyId: 'company-request-1'
+        }),
         { headers }
       )
     })
@@ -298,6 +310,33 @@ describe('agenticAIService', () => {
       const payload = axios.post.mock.calls[0][1]
       expect(payload.actions).toEqual(['phishing', 'training'])
       expect(payload.sendAfterPhishingSimulation).toBe(true)
+      expect(payload.companyId).toBe('company-request-1')
+    })
+
+    it('should fallback to companyId when companyRequestId is missing', async () => {
+      localStorage.removeItem('companyRequestId')
+      localStorage.removeItem('companyResourceId')
+
+      await sendBatchAutonomous({
+        targetGroupResourceId: 'grp-fallback',
+        actions: ['training']
+      })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.companyId).toBe('company-fallback-1')
+    })
+
+    it('should fallback to companyResourceId before companyId', async () => {
+      localStorage.removeItem('companyRequestId')
+      localStorage.setItem('companyResourceId', 'company-resource-1')
+
+      await sendBatchAutonomous({
+        targetGroupResourceId: 'grp-resource',
+        actions: ['training']
+      })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.companyId).toBe('company-resource-1')
     })
   })
 
@@ -319,7 +358,8 @@ describe('agenticAIService', () => {
           preferredLanguage: 'tr',
           batchResourceId: 'batch-001',
           rejectingReason: 'Scenario too aggressive',
-          rejectedScenarioResourceId: 'scn-789'
+          rejectedScenarioResourceId: 'scn-789',
+          companyId: 'company-request-1'
         },
         { headers }
       )
@@ -345,7 +385,10 @@ describe('agenticAIService', () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         `${BASE_URL}/autonomous`,
-        expect.objectContaining({ sendAfterPhishingSimulation: false }),
+        expect.objectContaining({
+          sendAfterPhishingSimulation: false,
+          companyId: 'company-request-1'
+        }),
         { headers }
       )
     })
@@ -410,6 +453,7 @@ describe('agenticAIService', () => {
       expect(payload).toHaveProperty('batchResourceId', 'batch-001')
       expect(payload).toHaveProperty('rejectingReason', 'Scenario too aggressive')
       expect(payload).toHaveProperty('rejectedScenarioResourceId', 'scn-789')
+      expect(payload).toHaveProperty('companyId', 'company-request-1')
     })
 
     it('should pass rejectingReason with special characters', async () => {

@@ -43,11 +43,13 @@ describe('GamificationReport.vue', () => {
     })
     const base = {
       hasAgenticAILicense: true,
-      isAgenticAIEnabledStore: true
+      isAgenticAIEnabledStore: true,
+      executionModeStore: 'Autonomous'
     }
     const rowActions = computed.leaderboardRowActions.call(base)
     expect(rowActions.some((a) => a.action === 'on-details')).toBe(true)
     expect(rowActions.some((a) => a.action === 'on-send-with-ai')).toBe(true)
+    expect(rowActions.find((a) => a.action === 'on-send-with-ai').name).toBe('Run with AI')
     expect(
       computed.leaderboardRowActions.call({ ...base, isAgenticAIEnabledStore: false }).some(
         (a) => a.action === 'on-send-with-ai'
@@ -228,6 +230,8 @@ describe('GamificationReport.vue', () => {
   it('handleConfirmSendWithAI posts expected payload for localhost', async () => {
     const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-abc')
     const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
+    localStorage.setItem('companyRequestId', 'company-123')
+    const dispatch = jest.fn()
     const originalWindow = global.window
     Object.defineProperty(global, 'window', {
       value: { location: { hostname: 'localhost' } },
@@ -239,7 +243,9 @@ describe('GamificationReport.vue', () => {
         targetUserResourceId: 'user-1',
         department: 'SOC'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     await methods.handleConfirmSendWithAI.call(ctx, {
@@ -256,7 +262,8 @@ describe('GamificationReport.vue', () => {
         targetUserResourceId: 'user-1',
         departmentName: 'SOC',
         actions: ['training', 'phishing'],
-        sendAfterPhishingSimulation: true
+        sendAfterPhishingSimulation: true,
+        companyId: 'company-123'
       },
       {
         headers: {
@@ -265,6 +272,7 @@ describe('GamificationReport.vue', () => {
       }
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith('common/createSnackBar', expect.objectContaining({ message: 'success message' }))
 
     tokenSpy.mockRestore()
     postSpy.mockRestore()
@@ -274,6 +282,8 @@ describe('GamificationReport.vue', () => {
   it('handleConfirmSendWithAI keeps sendAfter flag false when single action', async () => {
     const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-prod')
     const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
+    localStorage.setItem('companyRequestId', 'company-456')
+    const dispatch = jest.fn()
     const originalWindow = global.window
     Object.defineProperty(global, 'window', {
       value: { location: { hostname: 'app.keepnetlabs.com' } },
@@ -285,7 +295,9 @@ describe('GamificationReport.vue', () => {
         targetUserResourceId: 'user-2',
         department: 'IT'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     await methods.handleConfirmSendWithAI.call(ctx, {
@@ -305,10 +317,12 @@ describe('GamificationReport.vue', () => {
       expect.objectContaining({
         token: 'token-prod',
         actions: ['training'],
-        sendAfterPhishingSimulation: false
+        sendAfterPhishingSimulation: false,
+        companyId: 'company-456'
       })
     )
     expect(calledConfig).toEqual(expect.any(Object))
+    expect(dispatch).toHaveBeenCalledWith('common/createSnackBar', expect.objectContaining({ message: 'success message' }))
 
     tokenSpy.mockRestore()
     postSpy.mockRestore()

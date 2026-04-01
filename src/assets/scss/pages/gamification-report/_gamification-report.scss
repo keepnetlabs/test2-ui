@@ -514,3 +514,144 @@
     line-height: 21px;
   }
 }
+
+.send-with-ai-dialog-popup {
+  .k-dialog__title,
+  .k-dialog__body,
+  .k-dialog__footer,
+  .v-label,
+  .v-btn__content {
+    font-family: 'Open Sans', sans-serif !important;
+  }
+
+  .k-dialog__body {
+    padding: 20px 24px 16px 24px;
+  }
+
+  .k-dialog__footer {
+    padding: 8px 20px 10px 20px;
+  }
+}
+
+.send-with-ai-dialog {
+  p {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__text {
+    font-size: 14px;
+    color: #383b41;
+    margin: 0 0 8px !important;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: normal;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+  }
+
+  &__option-item {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    column-gap: 8px;
+    row-gap: 0;
+    align-items: start;
+  }
+
+  &__option-content {
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__option-label {
+    margin: 0 0 4px !important;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 400;
+    color: #383b41;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  &__checkbox {
+    margin: 0;
+    width: 28px;
+    align-self: start;
+    padding-top: 0;
+
+    .v-input--selection-controls {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .v-input__slot {
+      margin-bottom: 0;
+    }
+
+    .v-messages {
+      display: none;
+      min-height: 0;
+    }
+
+    .v-label {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: #383b41 !important;
+      font-family: 'Open Sans', sans-serif !important;
+    }
+  }
+
+  &__option-description {
+    font-size: 13px;
+    color: #666d75;
+    margin: 0 !important;
+    line-height: 18px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  &__switch-container {
+    margin-top: 0;
+    margin-left: 0;
+    padding-top: 12px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  &__switch {
+    margin: 0;
+    max-width: 100%;
+
+    .v-input--selection-controls__input {
+      margin-right: 8px;
+    }
+
+    .v-input__slot {
+      margin-bottom: 0;
+    }
+
+    .v-label {
+      font-size: 14px;
+      line-height: 20px;
+      color: #383b41 !important;
+      font-family: 'Open Sans', sans-serif !important;
+    }
+
+    .v-messages {
+      display: none;
+    }
+  }
+}
