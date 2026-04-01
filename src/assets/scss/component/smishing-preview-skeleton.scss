@@ -53,8 +53,27 @@
   &__tab-row {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     padding-left: 2px;
+  }
+
+  // Parent already shows the real scenario name strip — only tab + text placeholders; extra air vs. double bar + negative title margin
+  &--scenario-inline {
+    .smishing-preview-skeleton__tab-row {
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    .smishing-preview-skeleton__text-tab.email-template-preview {
+      .email-template-preview__title {
+        margin-top: 8px;
+      }
+
+      .email-template-preview__container {
+        margin-top: 12px;
+        min-height: 140px;
+      }
+    }
   }
 
   &__preview-block {

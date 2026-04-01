@@ -39,6 +39,7 @@
       <SmishingPreviewSkeleton
         v-if="isLoading"
         variant="scenario"
+        hide-scenario-name-bar
         class="smishing-scenario-preview__skeleton"
       />
       <ElTabs v-else v-model="tab" class="smishing-scenario-preview__main-tabs">

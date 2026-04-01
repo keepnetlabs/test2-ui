@@ -1,8 +1,16 @@
 <template>
-  <div class="smishing-preview-skeleton">
+  <div
+    :class="[
+      'smishing-preview-skeleton',
+      {
+        'smishing-preview-skeleton--scenario-inline':
+          hideScenarioNameBar && variant === 'scenario'
+      }
+    ]"
+  >
     <!-- Scenario preview: name bar + Text/Message|Landing tabs + text tab (matches SmishingScenarioPreview loaded layout) -->
     <template v-if="variant === 'scenario'">
-      <div class="smishing-preview-skeleton__scenario-bar">
+      <div v-if="!hideScenarioNameBar" class="smishing-preview-skeleton__scenario-bar">
         <v-skeleton-loader type="text" width="220" height="22" />
         <v-skeleton-loader type="avatar" width="36" height="36" />
       </div>
@@ -15,10 +23,10 @@
           <v-skeleton-loader type="text" width="220" height="22" />
         </div>
         <div class="email-template-preview__container">
-          <v-skeleton-loader type="text" width="72" height="14" class="mb-1" />
-          <v-skeleton-loader type="text" width="100%" class="mb-2" />
-          <v-skeleton-loader type="text" width="95%" class="mb-2" />
-          <v-skeleton-loader type="text" width="88%" class="mb-2" />
+          <v-skeleton-loader type="text" width="72" height="14" class="mb-2" />
+          <v-skeleton-loader type="text" width="100%" class="mb-3" />
+          <v-skeleton-loader type="text" width="95%" class="mb-3" />
+          <v-skeleton-loader type="text" width="88%" class="mb-3" />
           <v-skeleton-loader type="text" width="72%" />
         </div>
       </div>
@@ -43,10 +51,10 @@
           <v-skeleton-loader type="text" width="220" height="22" />
         </div>
         <div class="email-template-preview__container">
-          <v-skeleton-loader type="text" width="72" height="14" class="mb-1" />
-          <v-skeleton-loader type="text" width="100%" class="mb-2" />
-          <v-skeleton-loader type="text" width="95%" class="mb-2" />
-          <v-skeleton-loader type="text" width="88%" class="mb-2" />
+          <v-skeleton-loader type="text" width="72" height="14" class="mb-2" />
+          <v-skeleton-loader type="text" width="100%" class="mb-3" />
+          <v-skeleton-loader type="text" width="95%" class="mb-3" />
+          <v-skeleton-loader type="text" width="88%" class="mb-3" />
           <v-skeleton-loader type="text" width="72%" />
         </div>
       </div>
@@ -59,10 +67,10 @@
           <v-skeleton-loader type="text" width="220" height="22" />
         </div>
         <div class="email-template-preview__container">
-          <v-skeleton-loader type="text" width="72" height="14" class="mb-1" />
-          <v-skeleton-loader type="text" width="100%" class="mb-2" />
-          <v-skeleton-loader type="text" width="95%" class="mb-2" />
-          <v-skeleton-loader type="text" width="88%" class="mb-2" />
+          <v-skeleton-loader type="text" width="72" height="14" class="mb-2" />
+          <v-skeleton-loader type="text" width="100%" class="mb-3" />
+          <v-skeleton-loader type="text" width="95%" class="mb-3" />
+          <v-skeleton-loader type="text" width="88%" class="mb-3" />
           <v-skeleton-loader type="text" width="72%" />
         </div>
       </div>
@@ -98,6 +106,11 @@ export default {
       type: String,
       default: 'scenario',
       validator: (v) => ['scenario', 'text', 'landing', 'campaign'].includes(v)
+    },
+    /** When true (scenario variant), skip the fake name bar — use when the parent already shows the real scenario strip (e.g. SmishingScenarioPreview). */
+    hideScenarioNameBar: {
+      type: Boolean,
+      default: false
     }
   }
 }
