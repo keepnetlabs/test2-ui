@@ -417,12 +417,23 @@ export default {
       return titles;
     }
   },
+  watch: {
+    isAgenticAIEnabledStore(val) {
+      if (val && this.hasAgenticAILicense) {
+        this.fetchStats();
+      }
+    }
+  },
   created() {
     this.fetchStats();
   },
   methods: {
     async fetchStats() {
       if (!this.hasAgenticAILicense) {
+        this.isLoading = false;
+        return;
+      }
+      if (!this.isAgenticAIEnabledStore) {
         this.isLoading = false;
         return;
       }

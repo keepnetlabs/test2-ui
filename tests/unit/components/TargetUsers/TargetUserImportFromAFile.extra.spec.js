@@ -22,10 +22,23 @@ jest.mock('@/api/targetUsers', () => ({
 
 import TargetUserImportFromAFile from '@/components/TargetUsers/TargetUserImportFromAFile.vue'
 import labels from '@/model/constants/labels'
-import { updateTransactionId } from '@/api/targetUsers'
+import { LABEL_STORE } from '@/model/constants/commonConstants'
+import { updateTransactionId, searchTmp } from '@/api/targetUsers'
+
+const flushMacrotask = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('TargetUserImportFromAFile.vue (extra branches)', () => {
   const { computed, methods } = TargetUserImportFromAFile
+  const defaultFilterBody = {
+    filter: {
+      FilterGroups: [
+        {
+          FilterItems: [{ FieldName: 'Status', Operator: 'Include', Value: 'New,Exists,Error,SCIM' }]
+        },
+        { FilterItems: [] }
+      ]
+    }
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -329,7 +342,7 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
 
   it('getDatatableList sets managerFullName from managerFirstName+managerLastName when managerFullName is missing', async () => {
     const { searchTmp } = require('@/api/targetUsers')
-    searchTmp.mockResolvedValueOnce({
+    const response = {
       data: {
         data: {
           items: {
@@ -353,10 +366,13 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
           }
         }
       }
-    })
+    }
+    searchTmp.mockReset()
+    searchTmp.mockResolvedValue(response)
 
     const ctx = {
       columns: [],
+      mappingData: { columns: [] },
       bodyData: {
         filter: {
           FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
@@ -370,8 +386,10 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
       step3Loading: false
     }
 
-    await methods.getDatatableList.call(ctx)
-    await Promise.resolve()
+    methods.getDatatableList.call(ctx)
+    expect(searchTmp).toHaveBeenCalled()
+    await searchTmp.mock.results[0].value
+    await flushMacrotask()
 
     expect(ctx.tableData).toHaveLength(1)
     expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
@@ -407,7 +425,7 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
 
   it('getDatatableList keeps managerFullName when it exists', async () => {
     const { searchTmp } = require('@/api/targetUsers')
-    searchTmp.mockResolvedValueOnce({
+    const response = {
       data: {
         data: {
           items: {
@@ -430,10 +448,13 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
           }
         }
       }
-    })
+    }
+    searchTmp.mockReset()
+    searchTmp.mockResolvedValue(response)
 
     const ctx = {
       columns: [],
+      mappingData: { columns: [] },
       bodyData: {
         filter: {
           FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
@@ -447,9 +468,390 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
       step3Loading: false
     }
 
-    await methods.getDatatableList.call(ctx)
-    await Promise.resolve()
+    methods.getDatatableList.call(ctx)
+    expect(searchTmp).toHaveBeenCalled()
+    await searchTmp.mock.results[0].value
+    await flushMacrotask()
 
     expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
+  })
+
+  it('validate step empty uses NO_DATA for default no-rows state (search message comes from DataTable slot when filter active)', () => {
+    const { tableOptions } = TargetUserImportFromAFile.data()
+    expect(tableOptions.empty.message).toBe(LABEL_STORE.NO_DATA)
+  })
+
+  it('importValidateDatatableFilterActive is false for default Status-only filter and true for search or non-default Status', () => {
+    expect(
+      computed.importValidateDatatableFilterActive.call({ bodyData: defaultFilterBody })
+    ).toBe(false)
+
+    expect(
+      computed.importValidateDatatableFilterActive.call({
+        bodyData: {
+          filter: {
+            FilterGroups: [
+              {
+                FilterItems: [
+                  { FieldName: 'Status', Operator: 'Include', Value: 'New,Exists,Error,SCIM' }
+                ]
+              },
+              {
+                FilterItems: [{ FieldName: 'Email', Operator: 'Contains', Value: 'a' }]
+              }
+            ]
+          }
+        }
+      })
+    ).toBe(true)
+
+    expect(
+      computed.importValidateDatatableFilterActive.call({
+        bodyData: {
+          filter: {
+            FilterGroups: [
+              {
+                FilterItems: [{ FieldName: 'Status', Operator: 'Include', Value: 'Error' }]
+              },
+              { FilterItems: [] }
+            ]
+          }
+        }
+      })
+    ).toBe(true)
+
+    expect(
+      computed.importValidateDatatableFilterActive.call({
+        bodyData: {
+          filter: {
+            FilterGroups: [
+              {
+                FilterItems: [
+                  { FieldName: 'Status', Operator: 'Include', Value: 'New,Exists,Error,SCIM' },
+                  { FieldName: 'Email', Operator: 'Contains', Value: 'x' }
+                ]
+              },
+              { FilterItems: [] }
+            ]
+          }
+        }
+      })
+    ).toBe(true)
+  })
+
+  it('filterStatusChange toggles Status filter to Error-only and refetches', () => {
+    const getDatatableList = jest.fn()
+    const ctx = {
+      isShowInvalid: false,
+      bodyData: {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Operator: 'Include', Value: 'New,Exists,Error,SCIM' }
+              ]
+            },
+            { FilterItems: [] }
+          ]
+        }
+      },
+      mappingStatus: { totalRowCount: 100, invalidUserCount: 3 },
+      step3Loading: false,
+      getDatatableList
+    }
+
+    methods.filterStatusChange.call(ctx)
+
+    expect(ctx.isShowInvalid).toBe(true)
+    expect(ctx.bodyData.filter.FilterGroups[0].FilterItems[0].Value).toBe('Error')
+    expect(ctx.step3Loading).toBe(true)
+    expect(getDatatableList).toHaveBeenCalled()
+  })
+
+  it('setTableOption SHOW ALL: preview count (all statuses + search) wins; else file total or current API hits', () => {
+    expect(
+      methods.setTableOption.call({
+        isShowInvalid: false,
+        mappingStatus: { totalRowCount: 10, invalidUserCount: 2 }
+      })
+    ).toBe('ONLY SHOW INVALID (2)')
+
+    const invalidNoSearch = {
+      isShowInvalid: true,
+      mappingStatus: { totalRowCount: 10, invalidUserCount: 2 },
+      bodyData: defaultFilterBody,
+      serverSideProps: { totalNumberOfRecords: 3 },
+      step3Loading: false
+    }
+    expect(methods.setTableOption.call(invalidNoSearch)).toBe('SHOW ALL 10')
+
+    const invalidWithSearch = {
+      ...invalidNoSearch,
+      bodyData: {
+        filter: {
+          FilterGroups: [
+            defaultFilterBody.filter.FilterGroups[0],
+            {
+              FilterItems: [{ FieldName: 'Email', Operator: 'Contains', Value: 'r' }]
+            }
+          ]
+        }
+      },
+      serverSideProps: { totalNumberOfRecords: 0 }
+    }
+    expect(methods.setTableOption.call({ ...invalidWithSearch, showAllPreviewCount: 1 })).toBe(
+      'SHOW ALL 1'
+    )
+
+    expect(methods.setTableOption.call({ ...invalidWithSearch, showAllPreviewCount: 0 })).toBe(
+      'SHOW ALL 0'
+    )
+
+    expect(methods.setTableOption.call(invalidWithSearch)).toBe('SHOW ALL 10')
+
+    expect(
+      methods.setTableOption.call({
+        ...invalidWithSearch,
+        serverSideProps: { totalNumberOfRecords: 1 },
+        showAllPreviewCount: null
+      })
+    ).toBe('SHOW ALL 1')
+
+    expect(
+      methods.setTableOption.call({
+        ...invalidWithSearch,
+        step3Loading: true,
+        serverSideProps: { totalNumberOfRecords: 1 },
+        showAllPreviewCount: null
+      })
+    ).toBe('SHOW ALL 10')
+  })
+
+  it('validate step table marks tmp-unsupported columns as unSearchable for global search', () => {
+    const { tableOptions } = TargetUserImportFromAFile.data()
+    const langCol = tableOptions.columns.find((c) => c.property === 'preferredLanguage')
+    const tzCol = tableOptions.columns.find((c) => c.property === 'timeZone')
+    const priCol = tableOptions.columns.find((c) => c.property === 'priority')
+    const ctCol = tableOptions.columns.find((c) => c.property === 'createTime')
+    expect(langCol.unSearchable).toBe(true)
+    expect(tzCol.unSearchable).toBe(true)
+    expect(priCol.unSearchable).toBe(true)
+    expect(ctCol.unSearchable).toBe(true)
+  })
+
+  it('searchChangedEvent strips tmp global-search fields not supported by SearchTmp API', () => {
+    const resetPageNumber = jest.fn()
+    const callForGetTargetUserCustomFieldsByCompanyId = jest.fn()
+    const getDatatableList = jest.fn()
+    const searchFilter = {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [
+              { FieldName: 'FirstName', Operator: 'Contains', Value: 'riley' },
+              { FieldName: 'PreferredLanguage', Operator: 'Contains', Value: 'riley' },
+              { FieldName: 'TimeZone', Operator: 'Contains', Value: 'riley' },
+              { FieldName: 'Priority', Operator: 'Contains', Value: 'riley' },
+              { FieldName: 'CreateTime', Operator: 'Contains', Value: 'riley' },
+              { FieldName: 'Status', Operator: 'Contains', Value: 'riley' },
+              { FieldName: 'Email', Operator: 'Contains', Value: 'riley' }
+            ]
+          }
+        ]
+      }
+    }
+    const ctx = {
+      bodyData: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      resetPageNumber,
+      callForGetTargetUserCustomFieldsByCompanyId,
+      getDatatableList
+    }
+
+    methods.searchChangedEvent.call(ctx, searchFilter)
+
+    expect(ctx.bodyData.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'FirstName', Operator: 'Contains', Value: 'riley' },
+      { FieldName: 'Email', Operator: 'Contains', Value: 'riley' }
+    ])
+    expect(resetPageNumber).toHaveBeenCalled()
+    expect(callForGetTargetUserCustomFieldsByCompanyId).toHaveBeenCalled()
+    expect(getDatatableList).toHaveBeenCalled()
+  })
+
+  it('searchChangedEvent treats Preferred Language (spaced custom field name) as excluded like PreferredLanguage', () => {
+    const resetPageNumber = jest.fn()
+    const callForGetTargetUserCustomFieldsByCompanyId = jest.fn()
+    const getDatatableList = jest.fn()
+    const searchFilter = {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [
+              { FieldName: 'FirstName', Operator: 'Contains', Value: 'x' },
+              { FieldName: 'Preferred Language', Operator: 'Contains', Value: 'x' }
+            ]
+          }
+        ]
+      }
+    }
+    const ctx = {
+      bodyData: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }]
+        }
+      },
+      resetPageNumber,
+      callForGetTargetUserCustomFieldsByCompanyId,
+      getDatatableList
+    }
+
+    methods.searchChangedEvent.call(ctx, searchFilter)
+
+    expect(ctx.bodyData.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'FirstName', Operator: 'Contains', Value: 'x' }
+    ])
+  })
+
+  it('searchChangedEvent clears OR filters when search term is empty (no Value-only noise to backend)', () => {
+    const resetPageNumber = jest.fn()
+    const callForGetTargetUserCustomFieldsByCompanyId = jest.fn()
+    const getDatatableList = jest.fn()
+    const searchFilter = {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [
+              { FieldName: 'FirstName', Operator: 'Contains', Value: '' },
+              { FieldName: 'Email', Operator: 'Contains', Value: '' }
+            ]
+          }
+        ]
+      }
+    }
+    const ctx = {
+      bodyData: {
+        filter: {
+          FilterGroups: [{ FilterItems: [] }, { FilterItems: [{ FieldName: 'Old', Value: 'x' }] }]
+        }
+      },
+      resetPageNumber,
+      callForGetTargetUserCustomFieldsByCompanyId,
+      getDatatableList
+    }
+
+    methods.searchChangedEvent.call(ctx, searchFilter)
+
+    expect(ctx.bodyData.filter.FilterGroups[1].FilterItems).toEqual([])
+  })
+
+  it('fetchShowAllPreviewCount calls searchTmp with full Status and pageSize 1, stores totalNumberOfRecords', async () => {
+    searchTmp.mockClear()
+    const ctx = {
+      isShowInvalid: true,
+      excelInfo: { transactionId: 'tx-preview' },
+      showAllPreviewRequestId: 0,
+      showAllPreviewCount: null,
+      bodyData: {
+        filter: {
+          FilterGroups: [
+            { FilterItems: [{ FieldName: 'Status', Operator: 'Include', Value: 'Error' }] },
+            {
+              FilterItems: [{ FieldName: 'Email', Operator: 'Contains', Value: 'riley' }]
+            }
+          ]
+        }
+      }
+    }
+    methods.fetchShowAllPreviewCount.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(searchTmp).toHaveBeenCalledTimes(1)
+    const [payload, transactionId] = searchTmp.mock.calls[0]
+    expect(transactionId).toBe('tx-preview')
+    expect(payload.pageNumber).toBe(1)
+    expect(payload.pageSize).toBe(1)
+    expect(
+      payload.filter.FilterGroups[0].FilterItems.find((i) => i.FieldName === 'Status').Value
+    ).toBe('New,Exists,Error,SCIM')
+    expect(payload.filter.FilterGroups[1].FilterItems[0].Value).toBe('riley')
+    expect(ctx.showAllPreviewCount).toBe(1)
+  })
+
+  it('fetchShowAllPreviewCount does not call searchTmp when not invalid-only or no global search', () => {
+    searchTmp.mockClear()
+    methods.fetchShowAllPreviewCount.call({
+      isShowInvalid: false,
+      excelInfo: { transactionId: 'tx' },
+      bodyData: defaultFilterBody,
+      showAllPreviewCount: 9
+    })
+    expect(searchTmp).not.toHaveBeenCalled()
+
+    searchTmp.mockClear()
+    methods.fetchShowAllPreviewCount.call({
+      isShowInvalid: true,
+      excelInfo: { transactionId: 'tx' },
+      bodyData: defaultFilterBody,
+      showAllPreviewCount: 9
+    })
+    expect(searchTmp).not.toHaveBeenCalled()
+
+    searchTmp.mockClear()
+    methods.fetchShowAllPreviewCount.call({
+      isShowInvalid: true,
+      excelInfo: null,
+      bodyData: defaultFilterBody
+    })
+    expect(searchTmp).not.toHaveBeenCalled()
+  })
+
+  it('resetBodyData clears showAllPreviewCount and resets default filter payload', () => {
+    const ctx = {
+      showAllPreviewCount: 3,
+      bodyData: {
+        pageNumber: 4,
+        filter: {
+          FilterGroups: [
+            { FilterItems: [{ FieldName: 'Status', Value: 'Error' }] },
+            { FilterItems: [{ FieldName: 'Email', Value: 'x' }] }
+          ]
+        }
+      }
+    }
+    methods.resetBodyData.call(ctx)
+    expect(ctx.showAllPreviewCount).toBeNull()
+    expect(ctx.bodyData.pageNumber).toBe(1)
+    expect(ctx.bodyData.filter.FilterGroups[0].FilterItems[0].Value).toBe('New,Exists,Error,SCIM')
+    expect(ctx.bodyData.filter.FilterGroups[1].FilterItems).toEqual([])
+  })
+
+  it('filterStatusChange clears showAllPreviewCount when leaving invalid-only mode', () => {
+    const getDatatableList = jest.fn()
+    const ctx = {
+      isShowInvalid: true,
+      showAllPreviewCount: 2,
+      bodyData: {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [{ FieldName: 'Status', Operator: 'Include', Value: 'Error' }]
+            },
+            { FilterItems: [] }
+          ]
+        }
+      },
+      step3Loading: false,
+      getDatatableList
+    }
+    methods.filterStatusChange.call(ctx)
+    expect(ctx.showAllPreviewCount).toBeNull()
+    expect(ctx.isShowInvalid).toBe(false)
+    expect(ctx.bodyData.filter.FilterGroups[0].FilterItems[0].Value).toBe('New,Exists,Error,SCIM')
+    expect(getDatatableList).toHaveBeenCalled()
   })
 })
