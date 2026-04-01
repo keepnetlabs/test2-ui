@@ -836,6 +836,7 @@ describe('GamificationReport.vue (extra)', () => {
   it('handleConfirmSendWithAI catches errors and logs them', async () => {
     sendAutonomous.mockRejectedValueOnce(new Error('fail'))
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const dispatch = jest.fn()
 
     const ctx = {
       selectedRowForAI: {
@@ -843,7 +844,9 @@ describe('GamificationReport.vue (extra)', () => {
         targetUserResourceId: 'u1',
         department: 'IT'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAIErrorMessage: () => 'error message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, { training: false, phishing: true })
@@ -853,18 +856,25 @@ describe('GamificationReport.vue (extra)', () => {
     expect(sendAutonomous).toHaveBeenCalled()
     expect(consoleSpy).toHaveBeenCalled()
     expect(ctx.handleCloseSendWithAIDialog).not.toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'error message' })
+    )
 
     consoleSpy.mockRestore()
   })
 
   it('handleConfirmSendWithAI builds empty actions when both options are false', async () => {
+    const dispatch = jest.fn()
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'tr',
         targetUserResourceId: 'u2',
         department: 'SOC'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, { training: false, phishing: false })
@@ -878,16 +888,23 @@ describe('GamificationReport.vue (extra)', () => {
       })
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'success message' })
+    )
   })
 
   it('handleConfirmSendWithAI sends single action when only training is selected', async () => {
+    const dispatch = jest.fn()
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
         targetUserResourceId: 'u-single',
         department: 'BlueTeam'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, { training: true, phishing: false })
@@ -901,16 +918,23 @@ describe('GamificationReport.vue (extra)', () => {
       })
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'success message' })
+    )
   })
 
   it('handleConfirmSendWithAI sends single action when only phishing is selected', async () => {
+    const dispatch = jest.fn()
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
         targetUserResourceId: 'u-phishing',
         department: 'RedTeam'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, { training: false, phishing: true })
@@ -924,16 +948,23 @@ describe('GamificationReport.vue (extra)', () => {
       })
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'success message' })
+    )
   })
 
   it('handleConfirmSendWithAI defaults sendAfterPhishingSimulation to false when missing in dual mode', async () => {
+    const dispatch = jest.fn()
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
         targetUserResourceId: 'u3',
         department: 'Sales'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, { training: true, phishing: true })
@@ -949,13 +980,16 @@ describe('GamificationReport.vue (extra)', () => {
   })
 
   it('handleConfirmSendWithAI passes correct params including departmentName', async () => {
+    const dispatch = jest.fn()
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
         targetUserResourceId: 'u4',
         department: 'Ops'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, { training: false, phishing: true })
@@ -972,13 +1006,16 @@ describe('GamificationReport.vue (extra)', () => {
   })
 
   it('handleConfirmSendWithAI keeps explicit sendAfterPhishingSimulation in dual mode', async () => {
+    const dispatch = jest.fn()
     const ctx = {
       selectedRowForAI: {
         preferredLanguage: 'en',
         targetUserResourceId: 'u5',
         department: 'R&D'
       },
-      handleCloseSendWithAIDialog: jest.fn()
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: () => 'success message',
+      $store: { dispatch }
     }
 
     methods.handleConfirmSendWithAI.call(ctx, {
@@ -996,6 +1033,30 @@ describe('GamificationReport.vue (extra)', () => {
       })
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'success message' })
+    )
+  })
+
+  it('agenticAIDialogMode returns approval when store mode is ApprovalGated', () => {
+    expect(
+      computed.agenticAIDialogMode.call({
+        executionModeStore: 'ApprovalGated'
+      })
+    ).toBe('approval')
+  })
+
+  it('leaderboardRowActions uses approval label when execution mode is approval-gated', () => {
+    const actions = computed.leaderboardRowActions.call({
+      hasAgenticAILicense: true,
+      isAgenticAIEnabledStore: true,
+      executionModeStore: 'ApprovalGated'
+    })
+
+    expect(actions.find((action) => action.action === 'on-send-with-ai')?.name).toBe(
+      'Send with AI for Approval'
+    )
   })
 
   it('isBadgesLoadingForRow returns false when not loading even without cache', () => {

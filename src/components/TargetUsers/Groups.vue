@@ -32,6 +32,8 @@
       v-if="isSendWithAIDialogOpen"
       :status="isSendWithAIDialogOpen"
       :options="sendWithAIOptions"
+      :mode="agenticAIDialogMode"
+      target-type="group"
       @closeOverlay="handleCloseSendWithAIDialog"
       @confirm="handleConfirmSendWithAI"
     />
@@ -139,7 +141,10 @@
             id="btn-send-with-ai--target-users-group-row-actions"
             :scope="scope"
             icon="mdi-creation"
-            text="Send with Agentic AI"
+            :text="executionModeStore === 'ApprovalGated' ? 'Send with AI for Approval' : 'Run with AI'"
+            :showTooltip="isSendWithAIActionDisabled(scope.row)"
+            :disabled="isSendWithAIActionDisabled(scope.row)"
+            :disabledTooltipText="getSendWithAIButtonTooltipMessage(scope.row)"
             @on-click="handleSendWithAI(scope.row)"
           />
           <TargetGroupRowActionsDeleteButton
@@ -388,8 +393,12 @@ export default {
     ...mapGetters({
       getTargetGroupsCreatePermissions: 'permissions/getTargetGroupsCreatePermissions',
       hasAgenticAILicense: 'login/getHasAgenticAILicense',
-      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled'
+      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled',
+      executionModeStore: 'login/getAgenticAIExecutionMode'
     }),
+    agenticAIDialogMode() {
+      return this.executionModeStore === 'ApprovalGated' ? 'approval' : 'autonomous'
+    },
     showSendWithAIAction() {
       return (
         isTestEnvironment() &&
@@ -458,6 +467,10 @@ export default {
         return 'Non-Simulated Users group is can not be deleted.'
       if (row.name === 'Untrained Users') return 'Untraining Users group is can not be deleted.'
     },
+    getSendWithAIButtonTooltipMessage(row) {
+      if (!this.isSendWithAIActionDisabled(row)) return ''
+      return 'Agentic AI actions cannot be run for this group.'
+    },
     isTooltipRenderable(row, isCheckSCIM) {
       if (isCheckSCIM && row.isScimGroup) return true
       return (
@@ -470,6 +483,9 @@ export default {
           'Untrained Users'
         ].includes(row.name)
       )
+    },
+    isSendWithAIActionDisabled(row) {
+      return this.isTooltipRenderable(row, true) && this.isTooltipRenderable(row)
     },
     handleRowIsSelectable(row) {
       return (
@@ -644,7 +660,17 @@ export default {
         phishing: true
       }
     },
-    handleConfirmSendWithAI(options) {
+    getSendWithAISuccessMessage() {
+      return this.agenticAIDialogMode === 'approval'
+        ? 'Agentic AI actions were sent for approval. No emails will be sent to users in the selected group until the request is approved.'
+        : 'Agentic AI process started. Users in the selected group will receive emails within 3-5 minutes.'
+    },
+    getSendWithAIErrorMessage() {
+      return this.agenticAIDialogMode === 'approval'
+        ? 'Failed to send Agentic AI actions for approval. Please try again.'
+        : 'Failed to start the Agentic AI process. Please try again.'
+    },
+    async handleConfirmSendWithAI(options) {
       const { resourceId } = this.selectedRowForAI
       const actions = []
 
@@ -655,20 +681,29 @@ export default {
         actions.push('phishing')
       }
 
-      sendBatchAutonomous({
-        targetGroupResourceId: resourceId,
-        actions,
-        sendAfterPhishingSimulation:
-          options.training && options.phishing
-            ? options.sendAfterPhishingSimulation || false
-            : false
-      })
-        .then(() => {
-          this.handleCloseSendWithAIDialog()
+      try {
+        await sendBatchAutonomous({
+          targetGroupResourceId: resourceId,
+          actions,
+          sendAfterPhishingSimulation:
+            options.training && options.phishing
+              ? options.sendAfterPhishingSimulation || false
+              : false
         })
-        .catch((error) => {
-          console.error('Error sending data to batch-autonomous:', error)
+        this.handleCloseSendWithAIDialog()
+        this.$store.dispatch('common/createSnackBar', {
+          message: this.getSendWithAISuccessMessage(),
+          icon: 'mdi-check-circle',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
         })
+      } catch (error) {
+        console.error('Error sending data to batch-autonomous:', error)
+        this.$store.dispatch('common/createSnackBar', {
+          message: this.getSendWithAIErrorMessage(),
+          icon: 'mdi-alert-circle',
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+        })
+      }
     },
     columnFilterChanged(filter) {
       this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterChanged(
