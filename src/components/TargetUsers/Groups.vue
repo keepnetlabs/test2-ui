@@ -386,10 +386,16 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTargetGroupsCreatePermissions: 'permissions/getTargetGroupsCreatePermissions'
+      getTargetGroupsCreatePermissions: 'permissions/getTargetGroupsCreatePermissions',
+      hasAgenticAILicense: 'login/getHasAgenticAILicense',
+      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled'
     }),
     showSendWithAIAction() {
-      return isTestEnvironment()
+      return (
+        isTestEnvironment() &&
+        this.hasAgenticAILicense &&
+        this.isAgenticAIEnabledStore
+      )
     },
     getGroupName() {
       return this.selectedGroup.name || localStorage.getItem('lastTargetGroupUsers')

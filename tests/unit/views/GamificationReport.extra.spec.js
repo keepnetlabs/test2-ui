@@ -99,75 +99,84 @@ describe('GamificationReport.vue (extra)', () => {
     })
   })
 
-  it('data() adds Autonomous AI row action on localhost', () => {
+  it('leaderboardRowActions always includes details action', () => {
+    const originalLocation = globalThis.location
+    Object.defineProperty(globalThis, 'location', {
+      value: { hostname: 'app.keepnetlabs.com' },
+      configurable: true
+    })
+    const ctx = {
+      hasAgenticAILicense: false,
+      isAgenticAIEnabledStore: false
+    }
+    expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-details')).toBe(true)
+    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
+  })
+
+  it('leaderboardRowActions includes Autonomous AI on localhost when licensed and enabled', () => {
     const originalLocation = globalThis.location
     Object.defineProperty(globalThis, 'location', {
       value: { hostname: 'localhost' },
       configurable: true
     })
-
-    const momentMock = () => ({
-      subtract: () => ({ format: () => '2026-01-01 00:00' }),
-      format: () => '2026-02-01 00:00'
-    })
-    const result = data.call({ $moment: momentMock })
-
-    expect(result.tableOptions.rowActions.some((a) => a.action === 'on-send-with-ai')).toBe(true)
-
+    const ctx = {
+      hasAgenticAILicense: true,
+      isAgenticAIEnabledStore: true
+    }
+    expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(true)
     Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
-  it('data() always includes details row action', () => {
+  it('leaderboardRowActions does not include Autonomous AI on production-like host', () => {
     const originalLocation = globalThis.location
     Object.defineProperty(globalThis, 'location', {
       value: { hostname: 'app.keepnetlabs.com' },
       configurable: true
     })
-
-    const momentMock = () => ({
-      subtract: () => ({ format: () => '2026-01-01 00:00' }),
-      format: () => '2026-02-01 00:00'
-    })
-    const result = data.call({ $moment: momentMock })
-
-    expect(result.tableOptions.rowActions.some((a) => a.action === 'on-details')).toBe(true)
-
+    const ctx = {
+      hasAgenticAILicense: true,
+      isAgenticAIEnabledStore: true
+    }
+    expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(false)
     Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
-  it('data() does not add Autonomous AI row action on production-like host', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'app.keepnetlabs.com' },
-      configurable: true
-    })
-
-    const momentMock = () => ({
-      subtract: () => ({ format: () => '2026-01-01 00:00' }),
-      format: () => '2026-02-01 00:00'
-    })
-    const result = data.call({ $moment: momentMock })
-
-    expect(result.tableOptions.rowActions.some((a) => a.action === 'on-send-with-ai')).toBe(false)
-
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
-  })
-
-  it('data() adds Autonomous AI row action on test-ui host', () => {
+  it('leaderboardRowActions includes Autonomous AI on test-ui when licensed and enabled', () => {
     const originalLocation = globalThis.location
     Object.defineProperty(globalThis, 'location', {
       value: { hostname: 'test-ui.devkeepnet.com' },
       configurable: true
     })
+    const ctx = {
+      hasAgenticAILicense: true,
+      isAgenticAIEnabledStore: true
+    }
+    expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(true)
+    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
+  })
 
-    const momentMock = () => ({
-      subtract: () => ({ format: () => '2026-01-01 00:00' }),
-      format: () => '2026-02-01 00:00'
+  it('leaderboardRowActions excludes Autonomous AI without license or when company Agentic AI is off', () => {
+    const originalLocation = globalThis.location
+    Object.defineProperty(globalThis, 'location', {
+      value: { hostname: 'localhost' },
+      configurable: true
     })
-    const result = data.call({ $moment: momentMock })
-
-    expect(result.tableOptions.rowActions.some((a) => a.action === 'on-send-with-ai')).toBe(true)
-
+    expect(
+      computed.leaderboardRowActions
+        .call({
+          hasAgenticAILicense: false,
+          isAgenticAIEnabledStore: true
+        })
+        .some((a) => a.action === 'on-send-with-ai')
+    ).toBe(false)
+    expect(
+      computed.leaderboardRowActions
+        .call({
+          hasAgenticAILicense: true,
+          isAgenticAIEnabledStore: false
+        })
+        .some((a) => a.action === 'on-send-with-ai')
+    ).toBe(false)
     Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 

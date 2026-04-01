@@ -308,6 +308,8 @@
                       filterable
                       options
                       is-server-side
+                      :axios-payload.sync="bodyData"
+                      :manage-column-filter-status-from-parent="importValidateManageColumnFilter"
                       :loading="step3Loading"
                       :table="tableData"
                       :empty="tableOptions.empty"
@@ -575,6 +577,30 @@ import { Fragment } from 'vue-frag'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import useCachableDialog from '@/mixins/useCachableDialog'
+
+/** Tmp import search API has no handler for these fields in global Contains (dataType 0 / NotImplemented). */
+const TMP_IMPORT_GLOBAL_SEARCH_EXCLUDED_FIELD_NAMES = [
+  'PreferredLanguage',
+  'TimeZone',
+  'Priority',
+  'CreateTime',
+  'Status'
+]
+
+function normalizeTmpImportFieldName(fieldName) {
+  return String(fieldName || '')
+    .replace(/\s+/g, '')
+    .toLowerCase()
+}
+
+function isTmpImportExcludedGlobalSearchField(fieldName) {
+  const norm = normalizeTmpImportFieldName(fieldName)
+  if (!norm) return false
+  return TMP_IMPORT_GLOBAL_SEARCH_EXCLUDED_FIELD_NAMES.some(
+    (ex) => normalizeTmpImportFieldName(ex) === norm
+  )
+}
+
 export default {
   name: 'TargetUserImportFromAFile',
   components: {
@@ -655,6 +681,29 @@ export default {
     },
     canPrev() {
       return this.activeStep > 1
+    },
+    /**
+     * When true, DataTable treats filters as "active" (empty rows → built-in search/filter message).
+     * Default-only Status filter does not count — avoids showing that message when there is simply no data.
+     */
+    importValidateDatatableFilterActive() {
+      const groups = this.bodyData?.filter?.FilterGroups
+      if (!groups) return false
+      const orItems = groups[1]?.FilterItems || []
+      const hasSearch = orItems.some(
+        (i) => i.Value != null && String(i.Value).trim() !== ''
+      )
+      if (hasSearch) return true
+
+      const andItems = groups[0]?.FilterItems || []
+      const defaultStatusValue = 'New,Exists,Error,SCIM'
+      if (andItems.length !== 1) return true
+      const only = andItems[0]
+      if (only.FieldName === 'Status' && only.Value === defaultStatusValue) return false
+      return true
+    },
+    importValidateManageColumnFilter() {
+      return { status: this.importValidateDatatableFilterActive }
     }
   },
   watch: {
@@ -686,6 +735,9 @@ export default {
       step3Loading: false,
       responsNumbers: false,
       isShowInvalid: false,
+      /** Total rows if user clicks SHOW ALL (all statuses + current global search). Fetched via extra searchTmp when invalid-only + search. */
+      showAllPreviewCount: null,
+      showAllPreviewRequestId: 0,
       showDatatable: false,
       showDatatableErrorState: false,
       mappingStatus: null,
@@ -818,7 +870,8 @@ export default {
             width: 200,
             filterableType: 'select',
             filterableItems: [],
-            filterableCustomFieldName: 'preferredLanguageId'
+            filterableCustomFieldName: 'preferredLanguageId',
+            unSearchable: true
           },
           {
             property: PROPERTY_STORE.TIME_ZONE,
@@ -833,7 +886,8 @@ export default {
             filterableType: 'select',
             filterableItems: [],
             dbName: 'TimeZone',
-            filterableCustomFieldName: 'TimeZoneId'
+            filterableCustomFieldName: 'TimeZoneId',
+            unSearchable: true
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -846,7 +900,8 @@ export default {
             width: 180,
             fullWidth: true,
             dbName: 'Priority',
-            emptyText: 'No Data'
+            emptyText: 'No Data',
+            unSearchable: true
           },
           {
             property: 'createTime',
@@ -860,7 +915,8 @@ export default {
             minWidth: 200,
             overrideWidth: true,
             dbName: 'CreateTime',
-            emptyText: 'No Data'
+            emptyText: 'No Data',
+            unSearchable: true
           }
         ],
         backupColumns: [
@@ -968,7 +1024,8 @@ export default {
             width: 200,
             filterableType: 'select',
             filterableItems: [],
-            filterableCustomFieldName: 'preferredLanguageId'
+            filterableCustomFieldName: 'preferredLanguageId',
+            unSearchable: true
           },
           {
             property: PROPERTY_STORE.TIME_ZONE,
@@ -983,7 +1040,8 @@ export default {
             filterableType: 'select',
             filterableItems: [],
             dbName: 'TimeZone',
-            filterableCustomFieldName: 'TimeZoneId'
+            filterableCustomFieldName: 'TimeZoneId',
+            unSearchable: true
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -996,7 +1054,8 @@ export default {
             width: 180,
             fullWidth: true,
             dbName: 'Priority',
-            emptyText: 'No Data'
+            emptyText: 'No Data',
+            unSearchable: true
           },
           {
             property: 'createTime',
@@ -1010,7 +1069,8 @@ export default {
             minWidth: 200,
             overrideWidth: true,
             dbName: 'CreateTime',
-            emptyText: 'No Data'
+            emptyText: 'No Data',
+            unSearchable: true
           }
         ],
         selectEvent: {
@@ -1185,16 +1245,74 @@ export default {
     },
     filterStatusChange() {
       this.isShowInvalid = !this.isShowInvalid
+      if (!this.isShowInvalid) {
+        this.showAllPreviewCount = null
+      }
       this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
       ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error,SCIM'
       this.step3Loading = true
       this.getDatatableList()
     },
+    /**
+     * After main table load: when invalid-only + global search, how many rows match the same search
+     * with full status list (what SHOW ALL will show). Keeps label in sync with post-click result.
+     */
+    fetchShowAllPreviewCount() {
+      if (!this.isShowInvalid || !this.excelInfo?.transactionId) {
+        this.showAllPreviewCount = null
+        return
+      }
+      const orItems = this.bodyData?.filter?.FilterGroups?.[1]?.FilterItems || []
+      const hasGlobalSearch = orItems.some(
+        (i) => i.Value != null && String(i.Value).trim() !== ''
+      )
+      if (!hasGlobalSearch) {
+        this.showAllPreviewCount = null
+        return
+      }
+      const reqId = ++this.showAllPreviewRequestId
+      const payload = JSON.parse(JSON.stringify(this.bodyData))
+      const statusItem = payload.filter.FilterGroups[0].FilterItems.find(
+        (i) => i.FieldName === 'Status'
+      )
+      if (statusItem) {
+        statusItem.Value = 'New,Exists,Error,SCIM'
+      }
+      payload.pageNumber = 1
+      payload.pageSize = 1
+      searchTmp(payload, this.excelInfo.transactionId)
+        .then((response) => {
+          if (reqId !== this.showAllPreviewRequestId) return
+          const n = response?.data?.data?.items?.totalNumberOfRecords
+          this.showAllPreviewCount = typeof n === 'number' ? n : null
+        })
+        .catch(() => {
+          if (reqId !== this.showAllPreviewRequestId) return
+          this.showAllPreviewCount = null
+        })
+    },
     setTableOption() {
-      return this.isShowInvalid
-        ? `SHOW ALL ${this.mappingStatus.totalRowCount}`
-        : `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
+      if (!this.mappingStatus) return ''
+      if (!this.isShowInvalid) {
+        return `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
+      }
+      const mappingTotal = this.mappingStatus.totalRowCount
+      const orItems = this.bodyData?.filter?.FilterGroups?.[1]?.FilterItems || []
+      const hasGlobalSearch = orItems.some(
+        (i) => i.Value != null && String(i.Value).trim() !== ''
+      )
+      if (hasGlobalSearch && typeof this.showAllPreviewCount === 'number') {
+        return `SHOW ALL ${this.showAllPreviewCount}`
+      }
+      const apiTotal = this.serverSideProps?.totalNumberOfRecords
+      const useSearchHitCount =
+        hasGlobalSearch &&
+        typeof apiTotal === 'number' &&
+        !this.step3Loading &&
+        apiTotal > 0
+      const total = useSearchHitCount ? apiTotal : mappingTotal
+      return `SHOW ALL ${total}`
     },
     onlyImportNewUsers() {},
     onlyUpdateExistingUsers() {},
@@ -1388,14 +1506,17 @@ export default {
             fullWidth: true,
             dbName: 'Status',
             minWidth: 170,
-            emptyText: 'No Data'
+            emptyText: 'No Data',
+            unSearchable: true
           })
           _this.loading = false
           _this.showDatatable = true
+          _this.fetchShowAllPreviewCount()
         })
         .catch(() => {
           this.tableData = []
           this.loading = false
+          this.showAllPreviewCount = null
         })
         .finally(() => {
           this.step3Loading = false
@@ -1445,21 +1566,15 @@ export default {
       this.getDatatableList()
     },
     searchChangedEvent(searchFilter = {}) {
-      this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      const timeZoneIndex = this.bodyData.filter.FilterGroups[1].FilterItems.findIndex(
-        (item) => item.FieldName === 'TimeZone'
+      const incoming = (searchFilter.filter && searchFilter.filter.FilterGroups[0].FilterItems) || []
+      let next = incoming.filter((item) => !isTmpImportExcludedGlobalSearchField(item.FieldName))
+      const hasAnySearchTerm = next.some(
+        (item) => item.Value != null && String(item.Value).trim() !== ''
       )
-      if (timeZoneIndex !== -1) {
-        this.bodyData.filter.FilterGroups[1].FilterItems.splice(timeZoneIndex, 1)
+      if (!hasAnySearchTerm) {
+        next = []
       }
-      const languageIndex = this.bodyData.filter.FilterGroups[1].FilterItems.findIndex(
-        (item) => item.FieldName === 'preferredLanguage'
-      )
-      if (languageIndex !== -1) {
-        this.bodyData.filter.FilterGroups[1].FilterItems.splice(languageIndex, 1)
-      }
+      this.bodyData.filter.FilterGroups[1].FilterItems = next
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
@@ -1694,6 +1809,7 @@ export default {
       }
     },
     resetBodyData() {
+      this.showAllPreviewCount = null
       this.bodyData = {
         pageNumber: 1,
         pageSize: 10,
