@@ -26,6 +26,32 @@ const mockActivityResponse = (activities = []) => ({
   }
 });
 
+const makeGroupedBatchApiRow = (batchId, title = "Batch") => ({
+  batchResourceId: batchId,
+  batchName: `${title} ${batchId}`,
+  activities: [
+    {
+      batchResourceId: batchId,
+      activityType: 1,
+      activityTypeName: "Phishing",
+      statusName: "executed"
+    }
+  ],
+  statusCounts: { Approved: 1, Pending: 0, Declined: 0 }
+});
+
+/** Default totalNumberOfPages 0 = API did not send page count; component uses totals / heuristics. */
+const mockBatchGroupedResponse = (results = [], totalNumberOfRecords = null, totalNumberOfPages = 0) => ({
+  data: {
+    data: {
+      results,
+      totalNumberOfRecords:
+        totalNumberOfRecords != null ? totalNumberOfRecords : Math.max(results.length, 0),
+      totalNumberOfPages
+    }
+  }
+});
+
 describe("AgenticAIActivitiesDrawer", () => {
   const localVue = createLocalVue();
 
@@ -502,6 +528,326 @@ describe("AgenticAIActivitiesDrawer", () => {
       await wrapper.vm.fetchActivities();
 
       expect(wrapper.vm.pagedTableData[0].explanationJson).toEqual({ reasoningText: "Low score user." });
+    });
+  });
+
+  describe("Batch list infinite scroll", () => {
+    it("mapActivityToBatch maps makeGroupedBatchApiRow to a batch with batchResourceId", () => {
+      const wrapper = mountFactory();
+      const mapped = wrapper.vm.mapActivityToBatch(makeGroupedBatchApiRow("b1"));
+      expect(mapped.batchResourceId).toBe("b1");
+      expect(mapped.title).toContain("b1");
+    });
+
+    it("buildBatchRequestPayload uses pageSize 100 and requested pageNumber", () => {
+      const wrapper = mountFactory();
+      const p1 = wrapper.vm.buildBatchRequestPayload(1);
+      const p3 = wrapper.vm.buildBatchRequestPayload(3);
+      expect(p1.pageSize).toBe(100);
+      expect(p1.pageNumber).toBe(1);
+      expect(p1.isGroupedByBatch).toBe(true);
+      expect(p3.pageNumber).toBe(3);
+    });
+
+    it("batchListHasMore is true when loaded count is below API total", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchListTotalPages: 0,
+        batchListTotalRecords: 100,
+        batchList: [makeGroupedBatchApiRow("b1")],
+        batchListLastPageSize: 1
+      });
+      expect(wrapper.vm.batchListHasMore).toBe(true);
+    });
+
+    it("batchListHasMore is false when loaded count reaches API total", () => {
+      const wrapper = mountFactory();
+      const row = makeGroupedBatchApiRow("b1");
+      wrapper.setData({
+        batchListTotalPages: 0,
+        batchListTotalRecords: 1,
+        batchList: [row],
+        batchListLastPageSize: 1
+      });
+      expect(wrapper.vm.batchListHasMore).toBe(false);
+    });
+
+    it("batchListHasMore prefers totalNumberOfPages over raw totals when set", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchListTotalPages: 3,
+        batchListPageNumber: 2,
+        batchListTotalRecords: 500,
+        batchList: [makeGroupedBatchApiRow("b1")],
+        batchListLastPageSize: 100
+      });
+      expect(wrapper.vm.batchListHasMore).toBe(true);
+      wrapper.setData({ batchListPageNumber: 3 });
+      expect(wrapper.vm.batchListHasMore).toBe(false);
+    });
+
+    it("batchListHasMore falls back to last page size when API total is unknown", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchListTotalPages: 0,
+        batchListTotalRecords: 0,
+        batchList: [],
+        batchListLastPageSize: 100
+      });
+      expect(wrapper.vm.batchListHasMore).toBe(true);
+      wrapper.setData({ batchListLastPageSize: 99 });
+      expect(wrapper.vm.batchListHasMore).toBe(false);
+    });
+
+    it("fetchBatches does not call API when drawer value is false", async () => {
+      const wrapper = mountFactory({ value: false });
+      CompanyAPI.searchAgenticAIActivities.mockClear();
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      expect(CompanyAPI.searchAgenticAIActivities).not.toHaveBeenCalled();
+    });
+
+    it("fetchBatches replaces list on first page and sets selection from API total", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue(
+        mockBatchGroupedResponse([makeGroupedBatchApiRow("b1"), makeGroupedBatchApiRow("b2")], 42)
+      );
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenCalledWith(
+        expect.objectContaining({ pageNumber: 1, pageSize: 100, isGroupedByBatch: true })
+      );
+      expect(wrapper.vm.batchList.length).toBe(2);
+      expect(wrapper.vm.batchListPageNumber).toBe(1);
+      expect(wrapper.vm.batchListTotalRecords).toBe(42);
+      expect(wrapper.vm.batchListTotalPages).toBe(0);
+      expect(wrapper.vm.selectedBatchId).toBe("b1");
+      expect(wrapper.vm.batchListLoading).toBe(false);
+    });
+
+    it("fetchBatches append merges next page and requests pageNumber + 1", async () => {
+      CompanyAPI.searchAgenticAIActivities
+        .mockResolvedValueOnce(mockBatchGroupedResponse([makeGroupedBatchApiRow("b1")], 5, 5))
+        .mockResolvedValueOnce(mockBatchGroupedResponse([makeGroupedBatchApiRow("b2")], 5, 5));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      expect(wrapper.vm.batchListPageNumber).toBe(1);
+
+      await wrapper.vm.fetchBatches({ append: true, preserveSelection: true });
+
+      expect(CompanyAPI.searchAgenticAIActivities).toHaveBeenLastCalledWith(
+        expect.objectContaining({ pageNumber: 2 })
+      );
+      expect(wrapper.vm.batchList.map((b) => b.batchResourceId)).toEqual(["b1", "b2"]);
+      expect(wrapper.vm.batchListPageNumber).toBe(2);
+      expect(wrapper.vm.batchListTotalPages).toBe(5);
+      expect(wrapper.vm.batchListLoadingMore).toBe(false);
+    });
+
+    it("fetchBatches append with empty results caps total to stop further loads", async () => {
+      CompanyAPI.searchAgenticAIActivities
+        .mockResolvedValueOnce(mockBatchGroupedResponse([makeGroupedBatchApiRow("b1")], 99))
+        .mockResolvedValueOnce(mockBatchGroupedResponse([], 99));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      await wrapper.vm.fetchBatches({ append: true, preserveSelection: true });
+
+      expect(wrapper.vm.batchList.length).toBe(1);
+      expect(wrapper.vm.batchListTotalRecords).toBe(1);
+      expect(wrapper.vm.batchListLastPageSize).toBe(0);
+      expect(wrapper.vm.batchListHasMore).toBe(false);
+    });
+
+    it("fetchBatches append with duplicate ids only caps total and does not grow list", async () => {
+      const dup = makeGroupedBatchApiRow("b1");
+      CompanyAPI.searchAgenticAIActivities
+        .mockResolvedValueOnce(mockBatchGroupedResponse([dup], 10))
+        .mockResolvedValueOnce(mockBatchGroupedResponse([dup], 10));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      expect(wrapper.vm.batchList.length).toBe(1);
+
+      await wrapper.vm.fetchBatches({ append: true, preserveSelection: true });
+
+      expect(wrapper.vm.batchList.length).toBe(1);
+      expect(wrapper.vm.batchListTotalRecords).toBe(1);
+      expect(wrapper.vm.batchListHasMore).toBe(false);
+    });
+
+    it("fetchBatches ignores stale response when a newer request completed first", async () => {
+      let resolveSlow;
+      const slowPromise = new Promise((resolve) => {
+        resolveSlow = resolve;
+      });
+      let call = 0;
+      CompanyAPI.searchAgenticAIActivities.mockImplementation(() => {
+        call += 1;
+        if (call === 1) {
+          return slowPromise;
+        }
+        return Promise.resolve(mockBatchGroupedResponse([makeGroupedBatchApiRow("b-fast")], 2));
+      });
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      const pendingSlow = wrapper.vm.fetchBatches({ preserveSelection: false });
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      await Promise.resolve();
+
+      expect(wrapper.vm.batchList[0].batchResourceId).toBe("b-fast");
+
+      resolveSlow(mockBatchGroupedResponse([makeGroupedBatchApiRow("b-slow")], 2));
+      await pendingSlow;
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.vm.batchList[0].batchResourceId).toBe("b-fast");
+    });
+
+    it("fetchBatches append returns early when already loading more", async () => {
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      wrapper.setData({
+        batchList: [makeGroupedBatchApiRow("b1")],
+        batchListPageNumber: 1,
+        batchListTotalPages: 0,
+        batchListTotalRecords: 100,
+        batchListLastPageSize: 100,
+        batchListLoadingMore: true
+      });
+      CompanyAPI.searchAgenticAIActivities.mockClear();
+      await wrapper.vm.fetchBatches({ append: true });
+      expect(CompanyAPI.searchAgenticAIActivities).not.toHaveBeenCalled();
+    });
+
+    it("fetchBatches append returns early when initial batch list is still loading", async () => {
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      wrapper.setData({
+        batchList: [],
+        batchListLoading: true,
+        batchListTotalPages: 0,
+        batchListTotalRecords: 100,
+        batchListLastPageSize: 0
+      });
+      CompanyAPI.searchAgenticAIActivities.mockClear();
+      await wrapper.vm.fetchBatches({ append: true });
+      expect(CompanyAPI.searchAgenticAIActivities).not.toHaveBeenCalled();
+    });
+
+    it("handleBatchListScroll calls fetchBatches with append when near bottom", async () => {
+      const wrapper = mountFactory();
+      const fetchSpy = jest.spyOn(wrapper.vm, "fetchBatches").mockResolvedValue();
+      wrapper.setData({
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        batchList: [{ batchResourceId: "a", activities: [] }],
+        batchListTotalPages: 0,
+        batchListTotalRecords: 200,
+        batchListLastPageSize: 100,
+        batchListPageNumber: 1
+      });
+      const div = document.createElement("div");
+      Object.defineProperty(div, "scrollHeight", { value: 1000, configurable: true });
+      Object.defineProperty(div, "scrollTop", { value: 880, configurable: true });
+      Object.defineProperty(div, "clientHeight", { value: 100, configurable: true });
+      await wrapper.vm.handleBatchListScroll({ currentTarget: div });
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(fetchSpy).toHaveBeenCalledWith({ preserveSelection: true, append: true });
+      fetchSpy.mockRestore();
+    });
+
+    it("handleBatchListScroll does nothing when not near bottom", async () => {
+      const wrapper = mountFactory();
+      const fetchSpy = jest.spyOn(wrapper.vm, "fetchBatches").mockResolvedValue();
+      wrapper.setData({
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        batchList: [{ batchResourceId: "a", activities: [] }],
+        batchListTotalPages: 0,
+        batchListTotalRecords: 200,
+        batchListLastPageSize: 100
+      });
+      const div = document.createElement("div");
+      Object.defineProperty(div, "scrollHeight", { value: 1000, configurable: true });
+      Object.defineProperty(div, "scrollTop", { value: 100, configurable: true });
+      Object.defineProperty(div, "clientHeight", { value: 100, configurable: true });
+      await wrapper.vm.handleBatchListScroll({ currentTarget: div });
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(fetchSpy).not.toHaveBeenCalled();
+      fetchSpy.mockRestore();
+    });
+
+    it("handleBatchListScroll does not fetch when batchListLoading is true", async () => {
+      const wrapper = mountFactory();
+      const fetchSpy = jest.spyOn(wrapper.vm, "fetchBatches").mockResolvedValue();
+      wrapper.setData({
+        batchListLoading: true,
+        batchListLoadingMore: false,
+        batchList: [{ batchResourceId: "a", activities: [] }],
+        batchListTotalPages: 0,
+        batchListTotalRecords: 200,
+        batchListLastPageSize: 100
+      });
+      const div = document.createElement("div");
+      Object.defineProperty(div, "scrollHeight", { value: 1000, configurable: true });
+      Object.defineProperty(div, "scrollTop", { value: 880, configurable: true });
+      Object.defineProperty(div, "clientHeight", { value: 100, configurable: true });
+      await wrapper.vm.handleBatchListScroll({ currentTarget: div });
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(fetchSpy).not.toHaveBeenCalled();
+      fetchSpy.mockRestore();
+    });
+
+    it("handleBatchListScroll does not fetch when batchListLoadingMore is true", async () => {
+      const wrapper = mountFactory();
+      const fetchSpy = jest.spyOn(wrapper.vm, "fetchBatches").mockResolvedValue();
+      wrapper.setData({
+        batchListLoading: false,
+        batchListLoadingMore: true,
+        batchList: [{ batchResourceId: "a", activities: [] }],
+        batchListTotalPages: 0,
+        batchListTotalRecords: 200,
+        batchListLastPageSize: 100
+      });
+      const div = document.createElement("div");
+      Object.defineProperty(div, "scrollHeight", { value: 1000, configurable: true });
+      Object.defineProperty(div, "scrollTop", { value: 880, configurable: true });
+      Object.defineProperty(div, "clientHeight", { value: 100, configurable: true });
+      await wrapper.vm.handleBatchListScroll({ currentTarget: div });
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(fetchSpy).not.toHaveBeenCalled();
+      fetchSpy.mockRestore();
+    });
+
+    it("handleBatchListScroll does not fetch when hasMore is false", async () => {
+      const wrapper = mountFactory();
+      const fetchSpy = jest.spyOn(wrapper.vm, "fetchBatches").mockResolvedValue();
+      wrapper.setData({
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        batchList: [{ batchResourceId: "a", activities: [] }],
+        batchListTotalPages: 0,
+        batchListTotalRecords: 1,
+        batchListLastPageSize: 1
+      });
+      const div = document.createElement("div");
+      Object.defineProperty(div, "scrollHeight", { value: 1000, configurable: true });
+      Object.defineProperty(div, "scrollTop", { value: 880, configurable: true });
+      Object.defineProperty(div, "clientHeight", { value: 100, configurable: true });
+      await wrapper.vm.handleBatchListScroll({ currentTarget: div });
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(fetchSpy).not.toHaveBeenCalled();
+      fetchSpy.mockRestore();
+    });
+
+    it("cancelBatchListScrollRaf clears scheduled scroll frame", () => {
+      const wrapper = mountFactory();
+      const spy = jest.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
+      wrapper.vm.batchListScrollRafId = 42;
+      wrapper.vm.cancelBatchListScrollRaf();
+      expect(spy).toHaveBeenCalledWith(42);
+      expect(wrapper.vm.batchListScrollRafId).toBeNull();
+      spy.mockRestore();
     });
   });
 
@@ -1310,7 +1656,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       closeDrawerSpy.mockRestore();
     });
 
-    it("handlePreviewApprove uses approve for training and approveActivity for phishing", async () => {
+    it("handlePreviewApprove uses approveActivity for training and phishing", async () => {
       const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
       const exec = jest.spyOn(wrapper.vm, "executeApproveReject").mockResolvedValue();
 
@@ -1324,7 +1670,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       });
       wrapper.vm.handlePreviewApprove();
       expect(exec).toHaveBeenCalledWith(
-        "approve",
+        "approveActivity",
         expect.objectContaining({ activityType: 4, trainingResourceId: "t1" })
       );
 

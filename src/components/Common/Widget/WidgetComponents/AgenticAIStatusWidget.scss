@@ -407,6 +407,12 @@
     align-items: center;
     justify-content: center;
     padding: 48px 16px;
+
+    &--append {
+      padding: 16px;
+      min-height: 56px;
+      border-top: 1px solid #e5e7eb;
+    }
   }
 
   .agentic-ai-activities-drawer__batch-card {

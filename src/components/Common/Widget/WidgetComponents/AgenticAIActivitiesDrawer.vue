@@ -28,7 +28,7 @@
 
         <div class="agentic-ai-activities-drawer__workspace">
           <div
-            v-if="!batchListLoading && !filteredBatchList.length && !leftSearch && !leftTypeFilter && !leftStatusFilter"
+            v-if="!batchListLoading && !batchList.length && !leftSearch && !leftTypeFilter && !leftStatusFilter"
             class="agentic-ai-activities-drawer__empty-state"
           >
             <h2 class="agentic-ai-activities-drawer__empty-state-title">No activities yet</h2>
@@ -89,6 +89,7 @@
           <multipane class="agentic-ai-activities-drawer__panes" layout="vertical">
             <div
               class="pane agentic-ai-activities-drawer__pane agentic-ai-activities-drawer__pane--list agentic-ai-activities-drawer__pane--list-initial"
+              @scroll="handleBatchListScroll"
             >
               <div class="agentic-ai-activities-drawer__list">
                 <div
@@ -109,14 +110,14 @@
                   </div>
                 </div>
                 <div
-                  v-else-if="!filteredBatchList.length"
+                  v-else-if="!batchList.length"
                   class="agentic-ai-activities-drawer__list-placeholder"
                 >
                   No activities found.
                 </div>
 
                 <button
-                  v-for="batch in filteredBatchList"
+                  v-for="batch in batchList"
                   :key="batch.batchResourceId"
                   type="button"
                   class="agentic-ai-activities-drawer__batch-card"
@@ -199,6 +200,13 @@
                     />
                   </div>
                 </button>
+
+                <div
+                  v-if="batchListLoadingMore"
+                  class="agentic-ai-activities-drawer__list-loader agentic-ai-activities-drawer__list-loader--append"
+                >
+                  <v-progress-circular indeterminate size="24" width="2" color="primary" />
+                </div>
               </div>
             </div>
 
@@ -299,7 +307,7 @@
                           @on-click="handleViewReport(scope.row)"
                         />
                         <DefaultMenuRowAction
-                          v-if="isWaitingForApproval(scope.row) && scope.row.activityType !== 4"
+                          v-if="isWaitingForApproval(scope.row)"
                           icon="mdi-check-circle"
                           :id="`btn-agentic-ai-activity-approve-${scope.$index}`"
                           text="Approve"
@@ -461,6 +469,11 @@ const DEFAULT_BATCH_PRODUCT_FILTER_OPTIONS = [
   "Training"
 ];
 
+/** Page size for grouped batch list (left pane); scroll loads next pages. */
+const BATCH_LIST_PAGE_SIZE = 100;
+
+const BATCH_LIST_SCROLL_LOAD_THRESHOLD_PX = 140;
+
 export default {
   name: "AgenticAIActivitiesDrawer",
   mixins: [useDrawerAnimation],
@@ -508,6 +521,17 @@ export default {
       axiosPayload: this.createDefaultPayload(),
       pagedTableData: [],
       batchList: [],
+      batchListPageNumber: 1,
+      batchListTotalRecords: 0,
+      /** When API sends totalNumberOfPages, this drives hasMore (preferred over raw totals). */
+      batchListTotalPages: 0,
+      batchListLastPageSize: 0,
+      batchListLoadingMore: false,
+      /** Monotonic tokens for stale-response guards (safe in same tick; Date.now() is not). */
+      batchRequestSeq: 0,
+      activitiesRequestSeq: 0,
+      /** requestAnimationFrame id for scroll; cleared on destroy. */
+      batchListScrollRafId: null,
       batchTypeFilterOptions: [...DEFAULT_BATCH_PRODUCT_FILTER_OPTIONS],
       batchStatusFilterOptions: [],
       batchListLoading: false,
@@ -517,8 +541,6 @@ export default {
       leftTypeFilter: null,
       leftStatusFilter: null,
       isLoading: false,
-      batchLatestRequestId: 0,
-      latestRequestId: 0,
       previewSelectedRow: null,
       previewActivityRow: null,
       previewType: null,
@@ -548,6 +570,7 @@ export default {
   },
   beforeDestroy() {
     this.clearLeftSearchDebounce();
+    this.cancelBatchListScrollRaf();
   },
   watch: {
     value(newValue) {
@@ -623,8 +646,15 @@ export default {
 
       return [...clonedColumns, ...(statusColumn ? [statusColumn] : [])];
     },
-    filteredBatchList() {
-      return this.batchList;
+    batchListHasMore() {
+      if (this.batchListTotalPages > 0) {
+        return this.batchListPageNumber < this.batchListTotalPages;
+      }
+      const total = this.batchListTotalRecords;
+      if (total > 0) {
+        return this.batchList.length < total;
+      }
+      return this.batchListLastPageSize >= BATCH_LIST_PAGE_SIZE;
     },
     selectedBatch() {
       return this.batchList.find((item) => item.batchResourceId === this.selectedBatchId) || null;
@@ -719,8 +749,9 @@ export default {
 
       return value;
     },
-    buildBatchRequestPayload() {
-      const payload = this.createDefaultPayload(100, true);
+    buildBatchRequestPayload(pageNumber = 1) {
+      const payload = this.createDefaultPayload(BATCH_LIST_PAGE_SIZE, true);
+      payload.pageNumber = pageNumber;
       const searchValue = this.leftSearch?.trim() || "";
 
       payload.isGroupedByBatch = true;
@@ -777,12 +808,20 @@ export default {
       return payload;
     },
     initializeDrawerData() {
+      this.cancelBatchListScrollRaf();
       this.closeConfirmDialog();
       this.closeRejectDialog();
       this.serverSideProps = new ServerSideProps("", false, 5, 1, 0, 0);
       this.axiosPayload = this.createDefaultPayload(5, false);
       this.pagedTableData = [];
       this.batchList = [];
+      this.batchListPageNumber = 1;
+      this.batchListTotalRecords = 0;
+      this.batchListTotalPages = 0;
+      this.batchListLastPageSize = 0;
+      this.batchListLoadingMore = false;
+      this.batchRequestSeq = 0;
+      this.activitiesRequestSeq = 0;
       this.batchTypeFilterOptions = [...DEFAULT_BATCH_PRODUCT_FILTER_OPTIONS];
       this.batchStatusFilterOptions = [];
       this.batchListLoading = false;
@@ -993,21 +1032,30 @@ export default {
         explanationJson: activity.explanationJson || null
       };
     },
-    async fetchBatches({ preserveSelection = true } = {}) {
+    async fetchBatches({ preserveSelection = true, append = false } = {}) {
       if (!this.value) {
         return;
       }
 
-      const requestId = Date.now();
-      this.batchLatestRequestId = requestId;
-      this.batchListLoading = true;
+      if (append) {
+        if (this.batchListLoadingMore || this.batchListLoading || !this.batchListHasMore) {
+          return;
+        }
+        this.batchListLoadingMore = true;
+      } else {
+        this.batchListLoading = true;
+      }
+
+      this.batchRequestSeq += 1;
+      const requestId = this.batchRequestSeq;
       const previousSelection = preserveSelection ? this.selectedBatchId : null;
+      const pageNumber = append ? this.batchListPageNumber + 1 : 1;
 
       try {
-        const response = await searchAgenticAIActivities(this.buildBatchRequestPayload());
+        const response = await searchAgenticAIActivities(this.buildBatchRequestPayload(pageNumber));
         const result = response.data?.data || {};
 
-        if (this.batchLatestRequestId !== requestId) {
+        if (requestId !== this.batchRequestSeq) {
           return;
         }
 
@@ -1019,28 +1067,112 @@ export default {
               index === list.findIndex((entry) => entry.batchResourceId === item.batchResourceId)
           );
 
-        this.syncBatchFilterOptions(mappedBatches);
-        this.batchList = mappedBatches;
+        const apiTotal =
+          result.totalNumberOfRecords ?? result.totalRowCount ?? result.totalCount ?? 0;
+        const apiTotalPages = result.totalNumberOfPages ?? 0;
 
-        if (previousSelection && mappedBatches.some((item) => item.batchResourceId === previousSelection)) {
-          this.selectedBatchId = previousSelection;
-        } else {
-          this.selectedBatchId = mappedBatches[0]?.batchResourceId || null;
+        if (append && mappedBatches.length === 0) {
+          this.batchListTotalRecords = this.batchList.length;
+          this.batchListLastPageSize = 0;
+          this.batchListTotalPages = Math.max(this.batchListTotalPages, this.batchListPageNumber);
+          return;
         }
+
+        if (append) {
+          const beforeCount = this.batchList.length;
+          const merged = [...this.batchList];
+          const seen = new Set(merged.map((b) => b.batchResourceId));
+          for (const b of mappedBatches) {
+            if (b.batchResourceId && !seen.has(b.batchResourceId)) {
+              seen.add(b.batchResourceId);
+              merged.push(b);
+            }
+          }
+          if (mappedBatches.length > 0 && merged.length === beforeCount) {
+            this.batchListTotalRecords = beforeCount;
+            this.batchListLastPageSize = 0;
+            this.batchListTotalPages = Math.max(this.batchListTotalPages, this.batchListPageNumber);
+            return;
+          }
+          this.batchList = merged;
+          this.batchListPageNumber = pageNumber;
+          if (apiTotal > 0) {
+            this.batchListTotalRecords = apiTotal;
+          }
+          if (apiTotalPages > 0) {
+            this.batchListTotalPages = apiTotalPages;
+          }
+          this.syncBatchFilterOptions(mappedBatches);
+        } else {
+          this.syncBatchFilterOptions(mappedBatches);
+          this.batchList = mappedBatches;
+          this.batchListPageNumber = 1;
+          this.batchListTotalRecords =
+            apiTotal > 0 ? apiTotal : mappedBatches.length;
+          this.batchListTotalPages = apiTotalPages > 0 ? apiTotalPages : 0;
+
+          if (previousSelection && mappedBatches.some((item) => item.batchResourceId === previousSelection)) {
+            this.selectedBatchId = previousSelection;
+          } else {
+            this.selectedBatchId = mappedBatches[0]?.batchResourceId || null;
+          }
+        }
+
+        this.batchListLastPageSize = mappedBatches.length;
       } catch {
-        this.batchList = [];
-        this.selectedBatchId = null;
+        if (!append) {
+          this.batchList = [];
+          this.selectedBatchId = null;
+          this.batchListPageNumber = 1;
+          this.batchListTotalRecords = 0;
+          this.batchListTotalPages = 0;
+          this.batchListLastPageSize = 0;
+        }
       } finally {
-        this.batchListLoading = false;
+        if (append) {
+          this.batchListLoadingMore = false;
+        } else {
+          this.batchListLoading = false;
+        }
       }
+    },
+    cancelBatchListScrollRaf() {
+      if (this.batchListScrollRafId != null) {
+        cancelAnimationFrame(this.batchListScrollRafId);
+        this.batchListScrollRafId = null;
+      }
+    },
+    handleBatchListScroll(event) {
+      const el = event.currentTarget;
+      if (!el) {
+        return;
+      }
+      if (this.batchListScrollRafId != null) {
+        return;
+      }
+      this.batchListScrollRafId = requestAnimationFrame(() => {
+        this.batchListScrollRafId = null;
+        this.loadMoreBatchesIfNearBottom(el);
+      });
+    },
+    loadMoreBatchesIfNearBottom(el) {
+      const nearBottom =
+        el.scrollHeight - el.scrollTop - el.clientHeight <= BATCH_LIST_SCROLL_LOAD_THRESHOLD_PX;
+      if (!nearBottom) {
+        return;
+      }
+      if (this.batchListLoading || this.batchListLoadingMore || !this.batchListHasMore) {
+        return;
+      }
+      this.fetchBatches({ preserveSelection: true, append: true });
     },
     async fetchActivities() {
       if (!this.value) {
         return;
       }
 
-      const requestId = Date.now();
-      this.latestRequestId = requestId;
+      this.activitiesRequestSeq += 1;
+      const requestId = this.activitiesRequestSeq;
       this.isLoading = true;
 
       try {
@@ -1048,7 +1180,7 @@ export default {
         const response = await searchAgenticAIActivities(payload);
         const result = response.data.data;
 
-        if (this.latestRequestId !== requestId) {
+        if (requestId !== this.activitiesRequestSeq) {
           return;
         }
 
@@ -1467,8 +1599,7 @@ export default {
       const row = this.previewActivityRow;
       if (!row) return;
       this.closePreview();
-      const action = row.activityType === 4 ? "approve" : "approveActivity";
-      this.executeApproveReject(action, row);
+      this.executeApproveReject("approveActivity", row);
     },
     handlePreviewDecline() {
       const row = this.previewActivityRow;
