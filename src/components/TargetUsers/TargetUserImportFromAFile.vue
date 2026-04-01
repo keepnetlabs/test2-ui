@@ -1248,9 +1248,12 @@ export default {
       if (!this.isShowInvalid) {
         this.showAllPreviewCount = null
       }
-      this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
+      const statusFilterItem = this.bodyData?.filter?.FilterGroups?.[0]?.FilterItems?.find(
         (item) => item.FieldName === 'Status'
-      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error,SCIM'
+      )
+      if (statusFilterItem) {
+        statusFilterItem.Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error,SCIM'
+      }
       this.step3Loading = true
       this.getDatatableList()
     },
@@ -1385,8 +1388,8 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.responsNumbers = response.data.data
-          _this.tableOptions.columns = structuredClone(_this.tableOptions.backupColumns)
-          let data = ({ status } = response.data.data.items.results)
+          _this.tableOptions.columns = globalThis.structuredClone(_this.tableOptions.backupColumns)
+          let data = response.data.data.items.results || []
           let customFields
           if (data.length) {
             customFields = data[0].customFields.map((item) => {
