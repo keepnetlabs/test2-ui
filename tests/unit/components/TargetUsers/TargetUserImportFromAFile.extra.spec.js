@@ -25,6 +25,8 @@ import labels from '@/model/constants/labels'
 import { LABEL_STORE } from '@/model/constants/commonConstants'
 import { updateTransactionId, searchTmp } from '@/api/targetUsers'
 
+const flushMacrotask = () => new Promise((resolve) => setTimeout(resolve, 0))
+
 describe('TargetUserImportFromAFile.vue (extra branches)', () => {
   const { computed, methods } = TargetUserImportFromAFile
   const defaultFilterBody = {
@@ -387,8 +389,7 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
     methods.getDatatableList.call(ctx)
     expect(searchTmp).toHaveBeenCalled()
     await searchTmp.mock.results[0].value
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushMacrotask()
 
     expect(ctx.tableData).toHaveLength(1)
     expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
@@ -470,8 +471,7 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
     methods.getDatatableList.call(ctx)
     expect(searchTmp).toHaveBeenCalled()
     await searchTmp.mock.results[0].value
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushMacrotask()
 
     expect(ctx.tableData[0].managerFullName).toBe('Michael Johnson')
   })

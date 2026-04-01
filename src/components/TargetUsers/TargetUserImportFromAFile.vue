@@ -1392,7 +1392,7 @@ export default {
           let data = response.data.data.items.results || []
           let customFields
           if (data.length) {
-            customFields = data[0].customFields.map((item) => {
+            customFields = (data[0].customFields || []).map((item) => {
               const filterableProps = {}
               if (item.dataType.toLowerCase() === 'string') {
                 filterableProps['filterableType'] = 'text'
@@ -1463,7 +1463,7 @@ export default {
               })
           }
           data = data.map((item) => {
-            let fieldObj = item.customFields.map((i) => {
+            let fieldObj = (item.customFields || []).map((i) => {
               return { [i.name]: i.value }
             })
             fieldObj.map((iItem) => {
