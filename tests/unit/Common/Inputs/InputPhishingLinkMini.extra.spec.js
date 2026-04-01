@@ -176,16 +176,21 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
   it('field watchers call relabel and schema check when needed', () => {
     const changeDisabledLabel = jest.fn()
     const checkSchemaTypes = jest.fn()
-    const ctx = { changeDisabledLabel, checkSchemaTypes }
+    const checkDomainBlacklist = jest.fn()
+    const ctx = { changeDisabledLabel, checkSchemaTypes, checkDomainBlacklist, isEdit: false }
 
     watch['value.domainRecordId'].call(ctx, 'd1')
     expect(changeDisabledLabel).toHaveBeenCalledTimes(1)
     expect(checkSchemaTypes).toHaveBeenCalledWith('d1')
+    expect(checkDomainBlacklist).not.toHaveBeenCalled()
+
+    watch['value.domainRecordId'].call({ ...ctx, isEdit: true }, 'd1')
+    expect(checkDomainBlacklist).toHaveBeenCalledWith('d1')
 
     watch['value.parameterTypeId'].call(ctx)
     watch['value.subDomain'].call(ctx)
     watch['value.pathTypeId'].call(ctx)
-    expect(changeDisabledLabel).toHaveBeenCalledTimes(4)
+    expect(changeDisabledLabel).toHaveBeenCalledTimes(5)
   })
 
   it('domainRecord watcher does not call schema check for falsy values', () => {
@@ -197,6 +202,101 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
 
     expect(changeDisabledLabel).toHaveBeenCalled()
     expect(checkSchemaTypes).not.toHaveBeenCalled()
+  })
+
+  describe('domainRecords watcher (late-loaded domain list)', () => {
+    const records = [
+      {
+        text: 'late.example.com',
+        value: 'late-1',
+        extraDatas: [{ value: '2', text: 'Both' }, { value: true }]
+      }
+    ]
+
+    it('create mode: [] -> items calls setDefaultValue when domainRecordId is empty', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = createCtx({
+        isEdit: false,
+        value: {
+          urlSchemaTypeId: '2',
+          subDomain: '',
+          domainRecordId: '',
+          pathTypeId: 'p1',
+          extensionTypeId: 'e1',
+          parameterTypeId: 'pm1'
+        },
+        setDefaultValue,
+        checkDomainBlacklist
+      })
+      watch.domainRecords.call(ctx, records, [])
+      expect(setDefaultValue).toHaveBeenCalledTimes(1)
+      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+    })
+
+    it('edit mode: [] -> items calls checkDomainBlacklist when domainRecordId is set', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = createCtx({
+        isEdit: true,
+        value: {
+          urlSchemaTypeId: '2',
+          subDomain: 'www',
+          domainRecordId: 'd1',
+          pathTypeId: 'p1',
+          extensionTypeId: 'e1',
+          parameterTypeId: 'pm1'
+        },
+        domainRecords: records,
+        setDefaultValue,
+        checkDomainBlacklist
+      })
+      watch.domainRecords.call(ctx, records, [])
+      expect(setDefaultValue).not.toHaveBeenCalled()
+      expect(checkDomainBlacklist).toHaveBeenCalledWith('d1')
+    })
+
+    it('create mode: [] -> items calls checkDomainBlacklist when domainRecordId already set', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = createCtx({
+        isEdit: false,
+        value: {
+          urlSchemaTypeId: '2',
+          subDomain: 'www',
+          domainRecordId: 'late-1',
+          pathTypeId: 'p1',
+          extensionTypeId: 'e1',
+          parameterTypeId: 'pm1'
+        },
+        domainRecords: records,
+        setDefaultValue,
+        checkDomainBlacklist
+      })
+      watch.domainRecords.call(ctx, records, [])
+      expect(setDefaultValue).not.toHaveBeenCalled()
+      expect(checkDomainBlacklist).toHaveBeenCalledWith('late-1')
+    })
+
+    it('returns early when new list is empty', () => {
+      const setDefaultValue = jest.fn()
+      const ctx = createCtx({ setDefaultValue, checkDomainBlacklist: jest.fn() })
+      watch.domainRecords.call(ctx, [], [])
+      expect(setDefaultValue).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when list was already non-empty (no empty->full transition)', () => {
+      const setDefaultValue = jest.fn()
+      const checkDomainBlacklist = jest.fn()
+      const ctx = createCtx({
+        setDefaultValue,
+        checkDomainBlacklist,
+        domainRecords: records
+      })
+      watch.domainRecords.call(ctx, records, records)
+      expect(setDefaultValue).not.toHaveBeenCalled()
+      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+    })
   })
 
   it('handleInputChange falls back to empty string when value is missing', () => {
@@ -433,6 +533,19 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
       })
       methods.checkDomainBlacklist.call(ctx, 'sd1')
       expect(getDomainBlacklistStatus).toHaveBeenCalledWith('special-domain.co')
+    })
+
+    it('checkDomainBlacklist matches record when id is number in list and string argument', () => {
+      jest.clearAllMocks()
+      const ctx = createCtx({
+        blacklistWarning: null,
+        cleanSuggestions: [],
+        domainRecords: [
+          { text: 'numeric-id.test', value: 42, extraDatas: [{ value: '2' }, { value: true }] }
+        ]
+      })
+      methods.checkDomainBlacklist.call(ctx, '42')
+      expect(getDomainBlacklistStatus).toHaveBeenCalledWith('numeric-id.test')
     })
 
     it('checkDomainBlacklist sets warning only for malicious or suspicious', async () => {
