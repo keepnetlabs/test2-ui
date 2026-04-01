@@ -365,7 +365,8 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
         }
       }
     }
-    searchTmp.mockImplementationOnce(() => Promise.resolve(response))
+    searchTmp.mockReset()
+    searchTmp.mockResolvedValue(response)
 
     const ctx = {
       columns: [],
@@ -447,7 +448,8 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
         }
       }
     }
-    searchTmp.mockImplementationOnce(() => Promise.resolve(response))
+    searchTmp.mockReset()
+    searchTmp.mockResolvedValue(response)
 
     const ctx = {
       columns: [],
