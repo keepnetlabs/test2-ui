@@ -96,7 +96,7 @@
         :server-side-props="serverSideProps"
         :server-side-events="tableOptions.serverSideEvents"
         :select-event="tableOptions.selectEvent"
-        :row-actions="tableOptions.rowActions"
+        :row-actions="leaderboardRowActions"
         :add-button="tableOptions.addButton"
         :download-button="tableOptions.downloadButton"
         :axios-payload.sync="axiosPayload"
@@ -171,22 +171,6 @@ export default {
   },
   mixins: [useLoading, useDefaultTableFunctions],
   data() {
-    const rowActions = [
-      {
-        name: labels.Details,
-        id: 'btn-interactions--row-actions-training-report-sending-report',
-        icon: '$custom-details',
-        action: 'on-details'
-      }
-    ]
-    if (isTestEnvironment()) {
-      rowActions.push({
-        name: 'Autonomous AI',
-        id: 'btn-send-with-ai-gamification-report',
-        icon: 'mdi-creation',
-        action: 'on-send-with-ai'
-      })
-    }
     return {
       formDetails: null,
       labels,
@@ -298,7 +282,6 @@ export default {
           delete: false,
           download: false
         },
-        rowActions,
         columns: [
           {
             property: 'rank',
@@ -436,7 +419,9 @@ export default {
       getBadgesForUser: 'gamificationBadges/getBadgesForUser',
       hasValidBadgesCache: 'gamificationBadges/hasValidCache',
       isBadgesCalculating: 'gamificationBadges/isCalculating',
-      isBadgesFetching: 'gamificationBadges/isFetching'
+      isBadgesFetching: 'gamificationBadges/isFetching',
+      hasAgenticAILicense: 'login/getHasAgenticAILicense',
+      isAgenticAIEnabledStore: 'login/getAgenticAIEnabled'
     }),
     ...mapState('gamificationBadges', ['badgesByUserId']),
     getDatePayload() {
@@ -452,6 +437,29 @@ export default {
       const lastDateLeft = this.selectedDateRange?.[1]?.split?.(' ')?.[0] || ''
       if (!firstDateLeft || !lastDateLeft) return ''
       return `${firstDateLeft} - ${lastDateLeft}`
+    },
+    leaderboardRowActions() {
+      const actions = [
+        {
+          name: labels.Details,
+          id: 'btn-interactions--row-actions-training-report-sending-report',
+          icon: '$custom-details',
+          action: 'on-details'
+        }
+      ]
+      if (
+        isTestEnvironment() &&
+        this.hasAgenticAILicense &&
+        this.isAgenticAIEnabledStore
+      ) {
+        actions.push({
+          name: 'Autonomous AI',
+          id: 'btn-send-with-ai-gamification-report',
+          icon: 'mdi-creation',
+          action: 'on-send-with-ai'
+        })
+      }
+      return actions
     }
   },
   watch: {

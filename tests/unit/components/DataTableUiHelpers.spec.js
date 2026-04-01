@@ -19,6 +19,20 @@ describe('DataTable.vue UI helper methods', () => {
     ])
   })
 
+  it('getSearchFilterItems omits columns with unSearchable', () => {
+    const ctx = {
+      columns: [
+        { property: 'name' },
+        { property: 'preferredLanguage', unSearchable: true }
+      ],
+      renderedColumns: ['name', 'preferredLanguage'],
+      search: 'x'
+    }
+
+    const result = DataTable.methods.getSearchFilterItems.call(ctx)
+    expect(result).toEqual([{ FieldName: 'Name', Operator: 'Contains', Value: 'x' }])
+  })
+
   it('toggleIsSettingsOpened toggles state, emits, and clears first-open flag later', () => {
     jest.useFakeTimers()
     const emit = jest.fn()

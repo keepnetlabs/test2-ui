@@ -20,6 +20,8 @@ jest.mock('@/api/targetUsers', () => ({
 import Groups from '@/components/TargetUsers/Groups.vue'
 
 describe('TargetUsers Groups.vue', () => {
+  const { computed } = Groups
+
   it('getGroupNameTooltipMessage returns empty when no row name', () => {
     const ctx = {}
     expect(Groups.methods.getGroupNameTooltipMessage.call(ctx, {})).toBe('')
@@ -109,5 +111,32 @@ describe('TargetUsers Groups.vue', () => {
     const selection = [{ resourceId: 'g1' }, { resourceId: 'g2' }]
     Groups.methods.handleDeleteGroupMultiple.call(ctx, selection)
     expect(handleDeleteGroup).toHaveBeenCalledTimes(2)
+  })
+
+  it('showSendWithAIAction requires test env, license and company Agentic AI enabled', () => {
+    const originalLocation = globalThis.location
+    Object.defineProperty(globalThis, 'location', {
+      value: { hostname: 'localhost' },
+      configurable: true
+    })
+    expect(
+      computed.showSendWithAIAction.call({
+        hasAgenticAILicense: true,
+        isAgenticAIEnabledStore: true
+      })
+    ).toBe(true)
+    expect(
+      computed.showSendWithAIAction.call({
+        hasAgenticAILicense: false,
+        isAgenticAIEnabledStore: true
+      })
+    ).toBe(false)
+    expect(
+      computed.showSendWithAIAction.call({
+        hasAgenticAILicense: true,
+        isAgenticAIEnabledStore: false
+      })
+    ).toBe(false)
+    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 })
