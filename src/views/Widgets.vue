@@ -714,22 +714,13 @@ export default {
           if (this.isTestEnvironment && this.hasAgenticAILicense) {
             this.ensureAgenticAIWidget(this.layout);
           }
-          this.newItemY = this.layout.reduce((acc, item) => {
-            acc += item.h;
-            return acc;
-          }, 0);
-          setTimeout(() => {
-            this.handleDeleteShadows();
-            this.breakpointChanged({ newBreakpoint: this.activeBreakpoint });
-          }, 20);
+          this.finalizeLoadedWidgetLayout();
+        } else {
+          this.applyDefaultWidgetLayout();
         }
       } catch (e) {
         console.error('Failed to load widget layout:', e);
-        this.layout = this.getDefaultLayoutObject();
-        setTimeout(() => {
-          this.handleDeleteShadows();
-          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint });
-        }, 20);
+        this.applyDefaultWidgetLayout();
       } finally {
         if (
           !this.layout.some(
@@ -751,6 +742,17 @@ export default {
     }
   },
   methods: {
+    applyDefaultWidgetLayout() {
+      this.layout = this.getDefaultLayoutObject();
+      this.finalizeLoadedWidgetLayout();
+    },
+    finalizeLoadedWidgetLayout() {
+      this.newItemY = this.layout.reduce((acc, item) => acc + item.h, 0);
+      setTimeout(() => {
+        this.handleDeleteShadows();
+        this.breakpointChanged({ newBreakpoint: this.activeBreakpoint });
+      }, 20);
+    },
     breakpointChanged({ newBreakpoint }) {
       this.activeBreakpoint = newBreakpoint;
       const bdCol = this.getBdCol(newBreakpoint);
