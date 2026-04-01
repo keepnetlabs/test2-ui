@@ -35,6 +35,27 @@ describe('GamificationReport.vue', () => {
     expect(computed.getDateRangeText.call({ selectedDateRange: ['', ''] })).toBe('')
   })
 
+  it('leaderboardRowActions always includes details; Autonomous AI only with test env, license, and company Agentic AI on', () => {
+    const originalLocation = globalThis.location
+    Object.defineProperty(globalThis, 'location', {
+      value: { hostname: 'localhost' },
+      configurable: true
+    })
+    const base = {
+      hasAgenticAILicense: true,
+      isAgenticAIEnabledStore: true
+    }
+    const rowActions = computed.leaderboardRowActions.call(base)
+    expect(rowActions.some((a) => a.action === 'on-details')).toBe(true)
+    expect(rowActions.some((a) => a.action === 'on-send-with-ai')).toBe(true)
+    expect(
+      computed.leaderboardRowActions.call({ ...base, isAgenticAIEnabledStore: false }).some(
+        (a) => a.action === 'on-send-with-ai'
+      )
+    ).toBe(false)
+    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
+  })
+
   it('disabledDates blocks older than one year and future dates', () => {
     const tooOld = new Date()
     tooOld.setFullYear(tooOld.getFullYear() - 2)

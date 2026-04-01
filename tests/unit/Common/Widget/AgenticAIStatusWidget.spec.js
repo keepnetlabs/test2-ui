@@ -1,9 +1,19 @@
 import { createLocalVue, shallowMount } from "@vue/test-utils";
+import Vuex from "vuex";
 import AgenticAIStatusWidget from "@/components/Common/Widget/WidgetComponents/AgenticAIStatusWidget.vue";
 import { customVuetify as vuetify } from "../../utils";
 
+jest.mock("@/api/company", () => ({
+  getAgenticAIActivitiesStats: jest.fn(() =>
+    Promise.resolve({ data: { data: { last30Days: {} } } })
+  )
+}));
+
+import { getAgenticAIActivitiesStats } from "@/api/company";
+
 describe("AgenticAIStatusWidget", () => {
   const localVue = createLocalVue();
+  localVue.use(Vuex);
 
   const mountFactory = (storeOverrides = {}, propsData = {}) => {
     return shallowMount(AgenticAIStatusWidget, {
@@ -490,6 +500,79 @@ describe("AgenticAIStatusWidget", () => {
       const wrapper = mountFactory({ "login/getHasAgenticAILicense": false });
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.isLoading).toBe(false);
+    });
+
+    it("does not request stats when Agentic AI is disabled in company settings", async () => {
+      getAgenticAIActivitiesStats.mockClear();
+      const wrapper = mountFactory({
+        "login/getHasAgenticAILicense": true,
+        "login/getAgenticAIEnabled": false
+      });
+      await wrapper.vm.$nextTick();
+      expect(getAgenticAIActivitiesStats).not.toHaveBeenCalled();
+      expect(wrapper.vm.isLoading).toBe(false);
+    });
+
+    it("requests stats when licensed and Agentic AI is enabled", async () => {
+      getAgenticAIActivitiesStats.mockClear();
+      const wrapper = mountFactory({
+        "login/getHasAgenticAILicense": true,
+        "login/getAgenticAIEnabled": true
+      });
+      await wrapper.vm.$nextTick();
+      expect(getAgenticAIActivitiesStats).toHaveBeenCalled();
+    });
+
+    it("requests stats when Agentic AI turns on after mount (store watcher)", async () => {
+      getAgenticAIActivitiesStats.mockClear();
+      const store = new Vuex.Store({
+        modules: {
+          login: {
+            namespaced: true,
+            state: {
+              agenticAIEnabled: false,
+              hasAgenticAILicense: true,
+              agenticAIExecutionMode: "Autonomous"
+            },
+            getters: {
+              getAgenticAIEnabled: (s) => s.agenticAIEnabled,
+              getHasAgenticAILicense: (s) => s.hasAgenticAILicense,
+              getAgenticAIExecutionMode: (s) => s.agenticAIExecutionMode
+            },
+            mutations: {
+              SET_AGENTIC_AI_ENABLED(state, v) {
+                state.agenticAIEnabled = v;
+              }
+            }
+          }
+        }
+      });
+      const wrapper = shallowMount(AgenticAIStatusWidget, {
+        localVue,
+        vuetify,
+        store,
+        mocks: {
+          $router: { push: jest.fn() }
+        },
+        stubs: [
+          "WidgetLoading",
+          "ExecutiveWidgetContainer",
+          "ExecutiveWidgetHeader",
+          "ExecutiveWidgetBody",
+          "AgenticAIActivitiesDrawer",
+          "v-menu",
+          "v-btn",
+          "v-icon"
+        ]
+      });
+      await wrapper.vm.$nextTick();
+      expect(getAgenticAIActivitiesStats).not.toHaveBeenCalled();
+
+      store.commit("login/SET_AGENTIC_AI_ENABLED", true);
+      await wrapper.vm.$nextTick();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(getAgenticAIActivitiesStats).toHaveBeenCalledTimes(1);
     });
   });
 

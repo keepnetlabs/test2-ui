@@ -3130,6 +3130,9 @@ export default {
     },
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
+        if (filterItem.unSearchable) {
+          return acc;
+        }
         if (
           this.renderedColumns.some(
             (property) => filterItem && property === filterItem.property
