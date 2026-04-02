@@ -53,4 +53,18 @@ describe('CommonSimulatorPreviewDialog.vue (extra branch coverage)', () => {
       ).toBe(false)
     })
   })
+
+  describe('approval footer props', () => {
+    it('approvalActionsDisabled defaults to false', () => {
+      const prop = CommonSimulatorPreviewDialog.props.approvalActionsDisabled
+      const def = typeof prop.default === 'function' ? prop.default() : prop.default
+      expect(def).toBe(false)
+    })
+
+    it('approvalActionsDisabledTooltip defaults to empty string', () => {
+      const prop = CommonSimulatorPreviewDialog.props.approvalActionsDisabledTooltip
+      const def = typeof prop.default === 'function' ? prop.default() : prop.default
+      expect(def).toBe('')
+    })
+  })
 })

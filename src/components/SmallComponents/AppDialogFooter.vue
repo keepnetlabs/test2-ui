@@ -16,7 +16,8 @@
       :id="confirmButtonId"
       class="k-dialog__button"
       @click="confirmButtonClick"
-      :disabled="confirmButtonDisabled"
+      :loading="confirmButtonLoading"
+      :disabled="confirmButtonDisabled || confirmButtonLoading"
     >
       {{ getActionButtonText }}
     </v-btn>
@@ -56,6 +57,10 @@ export default {
       default: '#f56c6c'
     },
     confirmButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
+    confirmButtonLoading: {
       type: Boolean,
       default: false
     },

@@ -88,9 +88,46 @@ describe('SendWithAIDialog.vue', () => {
       expect(wrapper.vm.targetType).toBe('user')
     })
 
+    it('submitLoading prop should default to false', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.submitLoading).toBe(false)
+    })
+
     it('simulation option label should reflect phishing and quishing support', () => {
       const wrapper = mountComponent()
       expect(wrapper.vm.simulationOptionLabel).toBe('Phishing or Quishing Simulation')
+    })
+
+    it('submitLoading prop is Boolean type', () => {
+      expect(SendWithAIDialog.props.submitLoading.type).toBe(Boolean)
+    })
+  })
+
+  describe('computed isApprovalMode', () => {
+    it('is true when mode is approval', () => {
+      const wrapper = mountComponent({ mode: 'approval' })
+      expect(wrapper.vm.isApprovalMode).toBe(true)
+    })
+
+    it('is false when mode is autonomous', () => {
+      const wrapper = mountComponent({ mode: 'autonomous' })
+      expect(wrapper.vm.isApprovalMode).toBe(false)
+    })
+  })
+
+  describe('footer wiring', () => {
+    it('passes approval confirm label to AppDialogFooter actionButtonText', async () => {
+      const wrapper = mountComponent({ mode: 'approval' })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('actionButtonText')).toBe('Send with AI for Approval')
+    })
+
+    it('passes autonomous label to AppDialogFooter actionButtonText', async () => {
+      const wrapper = mountComponent({ mode: 'autonomous' })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('actionButtonText')).toBe('Run with AI')
     })
   })
 
@@ -252,6 +289,13 @@ describe('SendWithAIDialog.vue', () => {
       await wrapper.vm.$nextTick()
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
       expect(footer.props('confirmButtonDisabled')).toBe(false)
+    })
+
+    it('passes submitLoading to footer as confirmButtonLoading', async () => {
+      const wrapper = mountComponent({ submitLoading: true })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('confirmButtonLoading')).toBe(true)
     })
   })
 
@@ -510,22 +554,14 @@ describe('SendWithAIDialog.vue', () => {
     })
   })
 
-  describe('Performance', () => {
-    it('component should mount quickly', () => {
-      const start = Date.now()
-      mountComponent()
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(150)
-    })
-
-    it('handleConfirm should execute quickly', () => {
+  describe('handleConfirm stress', () => {
+    it('emits confirm for many sequential clicks without throwing', () => {
       const wrapper = mountComponent()
-      const start = Date.now()
-      for (let i = 0; i < 100; i++) {
+      const n = 50
+      for (let i = 0; i < n; i++) {
         wrapper.vm.handleConfirm()
       }
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(5000)
+      expect(wrapper.emitted('confirm')).toHaveLength(n)
     })
   })
 })

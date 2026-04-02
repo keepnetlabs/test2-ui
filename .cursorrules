@@ -89,6 +89,16 @@ export default {
 - **Vuetify Priority:** Prefer Vuetify 2.6 components (`<v-*>`) over raw HTML
 - **Simple Solutions:** Choose computed properties over complex watchers when reactivity suffices
 - **Consistent Structure:** Always structure templates, scripts, and styles in their own blocks
+- **Derived UI state:** Prefer **computed** properties (class maps, disabled/tooltip flags, derived labels) over inline ternaries or repeated `this.prop` chains in templates—keep templates declarative and logic testable
+
+---
+
+## 🎨 SCSS & COMPONENT STYLES (PROJECT STANDARD)
+
+- **Do not use `<style scoped>`** in `.vue` files as the default way to add feature styles. Styles live in **`src/assets/scss/`** as partials (`.scss`) and are loaded through the **`_all.scss` import chain** (e.g. `src/assets/scss/component/_all.scss`, `src/assets/scss/pages/<area>/_all.scss`), which ultimately feeds the global bundle.
+- **Adding styles:** Create or extend a **dedicated `.scss` file** (e.g. under `component/` or `pages/<feature>/`), then add **`@import "filename";`** to the relevant **`_all.scss`** so the partial is included once.
+- **Naming:** Follow existing BEM / project conventions for class names; avoid ad-hoc globals without a clear scope.
+- **Reuse:** Shared modifiers (e.g. footer actions used by multiple drawers) belong in a **shared partial** imported from `component/_all.scss` rather than duplicated in SFCs.
 
 ---
 

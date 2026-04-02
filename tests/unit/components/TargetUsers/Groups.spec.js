@@ -247,4 +247,85 @@ describe('TargetUsers Groups.vue', () => {
 
     consoleSpy.mockRestore()
   })
+
+  it('handleConfirmSendWithAI clears isSendWithAISubmitting after success', async () => {
+    const ctx = {
+      selectedRowForAI: { resourceId: 'g-1' },
+      agenticAIDialogMode: 'approval',
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: Groups.methods.getSendWithAISuccessMessage,
+      $store: { dispatch: jest.fn() },
+      isSendWithAISubmitting: false
+    }
+
+    await Groups.methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: false
+    })
+    await flushPromises()
+
+    expect(ctx.isSendWithAISubmitting).toBe(false)
+  })
+
+  it('handleConfirmSendWithAI clears isSendWithAISubmitting after API error', async () => {
+    sendBatchAutonomous.mockRejectedValueOnce(new Error('fail'))
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const ctx = {
+      selectedRowForAI: { resourceId: 'g-err' },
+      agenticAIDialogMode: 'autonomous',
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAIErrorMessage: Groups.methods.getSendWithAIErrorMessage,
+      $store: { dispatch: jest.fn() },
+      isSendWithAISubmitting: false
+    }
+
+    await Groups.methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: false
+    })
+    await flushPromises()
+
+    expect(ctx.isSendWithAISubmitting).toBe(false)
+    consoleSpy.mockRestore()
+  })
+
+  it('handleCloseSendWithAIDialog resets isSendWithAISubmitting', () => {
+    const ctx = {
+      isSendWithAIDialogOpen: true,
+      isSendWithAISubmitting: true,
+      selectedRowForAI: { resourceId: 'g-x' },
+      sendWithAIOptions: { training: false, phishing: true }
+    }
+    Groups.methods.handleCloseSendWithAIDialog.call(ctx)
+    expect(ctx.isSendWithAISubmitting).toBe(false)
+    expect(ctx.isSendWithAIDialogOpen).toBe(false)
+    expect(ctx.selectedRowForAI).toBe(null)
+  })
+
+  it('handleConfirmSendWithAI keeps isSendWithAISubmitting true until batch API resolves', async () => {
+    let resolveApi
+    sendBatchAutonomous.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveApi = resolve
+        })
+    )
+    const ctx = {
+      selectedRowForAI: { resourceId: 'g-pending' },
+      agenticAIDialogMode: 'approval',
+      handleCloseSendWithAIDialog: jest.fn(),
+      getSendWithAISuccessMessage: Groups.methods.getSendWithAISuccessMessage,
+      $store: { dispatch: jest.fn() },
+      isSendWithAISubmitting: false
+    }
+    const pending = Groups.methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: false
+    })
+    expect(ctx.isSendWithAISubmitting).toBe(true)
+    resolveApi({ data: {} })
+    await pending
+    await flushPromises()
+    expect(ctx.isSendWithAISubmitting).toBe(false)
+  })
 })

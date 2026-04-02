@@ -67,6 +67,7 @@
         confirm-button-id="btn-confirm--send-with-ai"
         :action-button-text="confirmButtonText"
         :confirm-button-disabled="!localOptions.training && !localOptions.phishing"
+        :confirm-button-loading="submitLoading"
         @handleClose="$emit('closeOverlay', false)"
         @handleConfirm="handleConfirm"
       />
@@ -103,6 +104,11 @@ export default {
     targetType: {
       type: String,
       default: 'user'
+    },
+    /** Parent sets true while autonomous / batch API is in flight (disables confirm + shows loading). */
+    submitLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

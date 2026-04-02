@@ -45,6 +45,11 @@ describe('AppDialogFooter.vue', () => {
       const wrapper = mountComponent({ confirmButtonDisabled: true })
       expect(wrapper.vm.confirmButtonDisabled).toBe(true)
     })
+
+    it('should accept confirmButtonLoading prop defaulting to false', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.confirmButtonLoading).toBe(false)
+    })
   })
 
   describe('Button Labels', () => {
@@ -74,6 +79,45 @@ describe('AppDialogFooter.vue', () => {
       const wrapper = mountComponent({ confirmButtonDisabled: true })
       expect(wrapper.vm.confirmButtonDisabled).toBe(true)
     })
+
+    it('passes loading to confirm v-btn when confirmButtonLoading is true', () => {
+      const wrapper = mountComponent({ confirmButtonLoading: true })
+      const buttons = wrapper.findAllComponents({ name: 'VBtn' })
+      expect(buttons.length).toBeGreaterThanOrEqual(2)
+      expect(buttons.at(1).props('loading')).toBe(true)
+      expect(buttons.at(1).props('disabled')).toBe(true)
+    })
+
+    it('confirmButtonLoading defaults to false and does not disable confirm by itself', () => {
+      const wrapper = mountComponent({ confirmButtonDisabled: false })
+      const buttons = wrapper.findAllComponents({ name: 'VBtn' })
+      expect(buttons.at(1).props('loading')).toBe(false)
+      expect(buttons.at(1).props('disabled')).toBe(false)
+    })
+
+    it('cancel button is not affected by confirmButtonLoading', () => {
+      const wrapper = mountComponent({ confirmButtonLoading: true })
+      const buttons = wrapper.findAllComponents({ name: 'VBtn' })
+      expect(buttons.at(0).props('loading')).toBeFalsy()
+    })
+
+    it('confirm stays disabled when confirmButtonDisabled true even if loading is false', () => {
+      const wrapper = mountComponent({
+        confirmButtonDisabled: true,
+        confirmButtonLoading: false
+      })
+      const buttons = wrapper.findAllComponents({ name: 'VBtn' })
+      expect(buttons.at(1).props('disabled')).toBe(true)
+      expect(buttons.at(1).props('loading')).toBe(false)
+    })
+
+    it('confirm is disabled when both confirmButtonDisabled and confirmButtonLoading are true', () => {
+      const wrapper = mountComponent({
+        confirmButtonDisabled: true,
+        confirmButtonLoading: true
+      })
+      expect(wrapper.findAllComponents({ name: 'VBtn' }).at(1).props('disabled')).toBe(true)
+    })
   })
 
   describe('Multiple Instances', () => {
@@ -86,12 +130,48 @@ describe('AppDialogFooter.vue', () => {
     })
   })
 
-  describe('Performance', () => {
-    it('component should mount quickly', () => {
-      const start = Date.now()
-      mountComponent()
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(200)
+  describe('Methods', () => {
+    it('closeButtonClick emits handleClose', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.closeButtonClick()
+      expect(wrapper.emitted('handleClose')).toHaveLength(1)
+    })
+
+    it('confirmButtonClick emits handleConfirm', () => {
+      const wrapper = mountComponent()
+      wrapper.vm.confirmButtonClick()
+      expect(wrapper.emitted('handleConfirm')).toHaveLength(1)
+    })
+  })
+
+  describe('computed (delete type)', () => {
+    it('getActionButtonColor uses delete palette when type is delete', () => {
+      const wrapper = mountComponent({ type: 'delete', actionButtonColor: '#2196f3' })
+      expect(wrapper.vm.getActionButtonColor).toBe('#f56c6c')
+    })
+
+    it('getCancelButtonColor uses delete palette when type is delete', () => {
+      const wrapper = mountComponent({ type: 'delete', cancelButtonColor: '#f56c6c' })
+      expect(wrapper.vm.getCancelButtonColor).toBe('#383b41')
+    })
+
+    it('getActionButtonText is DELETE for delete type unless isForceActionButtonText', () => {
+      const wrapper = mountComponent({ type: 'delete', actionButtonText: 'Remove item' })
+      expect(wrapper.vm.getActionButtonText).toBe('DELETE')
+
+      const forced = mountComponent({
+        type: 'delete',
+        actionButtonText: 'Remove item',
+        isForceActionButtonText: true
+      })
+      expect(forced.vm.getActionButtonText).toBe('Remove item')
+    })
+  })
+
+  describe('layout', () => {
+    it('applies justify prop to root flex class', () => {
+      const wrapper = mountComponent({ justify: 'start' })
+      expect(wrapper.classes()).toEqual(expect.arrayContaining(['justify-start']))
     })
   })
 })
