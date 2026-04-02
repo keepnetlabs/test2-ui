@@ -154,6 +154,21 @@ describe('widgets store module (real)', () => {
       await widgets.actions.callForWidgets({ commit })
       expect(commit).toHaveBeenCalledWith('SET_RECENT_CAMPAIGNS', [])
     })
+    it('callForWidgets does not throw when summary sections are omitted', async () => {
+      widgetsApi.getSummary.mockResolvedValueOnce({
+        data: {
+          dashboardSummary: { data: {} },
+          recentPhishingCampaigns: { data: [] },
+          mostPhishedUsers: { data: [] },
+          phishingCampaignTrends: { data: [] },
+          mostEngagedCampaigns: { data: [] },
+          topPhishingSimulationReporters: { data: [] }
+        }
+      })
+      const commit = jest.fn()
+      await expect(widgets.actions.callForWidgets({ commit })).resolves.toBeDefined()
+      expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
+    })
     it('callForWidgets passes isLoading option', async () => {
       const commit = jest.fn()
       await widgets.actions.callForWidgets({ commit }, { isLoading: false })

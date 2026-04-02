@@ -216,9 +216,21 @@ export default {
           type: "text",
           show: true,
           filterableType: "text",
-          minWidth: 200,
-          width: 200,
+          minWidth: 240,
+          width: 240,
           fixed: false
+        },
+        {
+          label: "User Status",
+          property: "targetUserStatus",
+          type: "status",
+          show: true,
+          align: "center",
+          minWidth: 180,
+          width: 180,
+          fixed: false,
+          overrideWidth: true,
+          fullWidth: true
         },
         {
           label: "Status",
@@ -254,17 +266,10 @@ export default {
       ],
       activitiesTableRowActions: [
         {
-          name: "View",
-          id: "btn-agentic-ai-activity-view",
+          name: "Preview",
+          id: "btn-agentic-ai-activity-preview",
           icon: "mdi-eye",
-          action: "view"
-        },
-        {
-          name: "More",
-          id: "btn-agentic-ai-activity-more",
-          icon: "mdi-dots-vertical",
-          action: "more",
-          subActions: []
+          action: "preview"
         }
       ]
     };

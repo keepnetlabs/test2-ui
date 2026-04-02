@@ -171,14 +171,18 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
   })
 
   describe('submitLoading', () => {
-    it('forwards submitLoading to AppDialogFooter as confirmButtonLoading', async () => {
-      const wrapper = mountComponent({ submitLoading: true })
+    it('forwards submitLoading to AppDialogFooter as disabled without spinner', async () => {
+      const wrapper = mountComponent({
+        options: { training: true, phishing: true },
+        submitLoading: true
+      })
       await wrapper.vm.$nextTick()
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
-      expect(footer.props('confirmButtonLoading')).toBe(true)
+      expect(footer.props('confirmButtonDisabled')).toBe(true)
+      expect(footer.props('confirmButtonLoading')).toBe(false)
     })
 
-    it('footer shows loading while options valid (confirm not disabled by checkboxes)', async () => {
+    it('footer disables confirm while submitting when options valid', async () => {
       const wrapper = mountComponent({
         options: { training: true, phishing: false },
         submitLoading: true
@@ -186,11 +190,11 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
       wrapper.vm.localOptions = { training: true, phishing: false }
       await wrapper.vm.$nextTick()
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
-      expect(footer.props('confirmButtonDisabled')).toBe(false)
-      expect(footer.props('confirmButtonLoading')).toBe(true)
+      expect(footer.props('confirmButtonDisabled')).toBe(true)
+      expect(footer.props('confirmButtonLoading')).toBe(false)
     })
 
-    it('footer passes both disabled (no action selected) and loading when parent submits with empty selection edge', async () => {
+    it('footer stays disabled when no action selected and submitting', async () => {
       const wrapper = mountComponent({
         options: { training: false, phishing: false },
         submitLoading: true
@@ -199,7 +203,7 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
       await wrapper.vm.$nextTick()
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
       expect(footer.props('confirmButtonDisabled')).toBe(true)
-      expect(footer.props('confirmButtonLoading')).toBe(true)
+      expect(footer.props('confirmButtonLoading')).toBe(false)
     })
   })
 })

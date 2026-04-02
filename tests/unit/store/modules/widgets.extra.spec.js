@@ -391,12 +391,12 @@ describe('widgets store (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
 
-    it('callForWidgets rejects when dashboardTopRules is missing but still resets loading', async () => {
+    it('callForWidgets resolves when dashboardTopRules is missing and still resets loading', async () => {
       const { getSummary } = require('@/api/widgets')
       getSummary.mockResolvedValueOnce({
         data: {
           dashboardSummary: { data: {} },
-          // dashboardTopRules intentionally missing to hit destructuring failure branch
+          // dashboardTopRules intentionally omitted (undefined from API)
           runningInvestigations: { data: [] },
           topReporters: { data: [] },
           reportedEmailTrends: { data: [] },
@@ -409,18 +409,18 @@ describe('widgets store (extra coverage)', () => {
       })
       const commit = jest.fn()
 
-      await expect(widgetsStore.actions.callForWidgets({ commit })).rejects.toBeDefined()
+      await expect(widgetsStore.actions.callForWidgets({ commit })).resolves.toBeDefined()
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
 
-    it('callForWidgets rejects when topReporters is missing but still resets loading', async () => {
+    it('callForWidgets resolves when topReporters is missing and still resets loading', async () => {
       const { getSummary } = require('@/api/widgets')
       getSummary.mockResolvedValueOnce({
         data: {
           dashboardSummary: { data: {} },
           dashboardTopRules: { data: [] },
           runningInvestigations: { data: [] },
-          // topReporters intentionally missing
+          // topReporters intentionally omitted
           reportedEmailTrends: { data: [] },
           recentPhishingCampaigns: { data: [] },
           mostPhishedUsers: { data: [] },
@@ -431,7 +431,7 @@ describe('widgets store (extra coverage)', () => {
       })
       const commit = jest.fn()
 
-      await expect(widgetsStore.actions.callForWidgets({ commit })).rejects.toBeDefined()
+      await expect(widgetsStore.actions.callForWidgets({ commit })).resolves.toBeDefined()
       expect(commit).toHaveBeenCalledWith('SET_LOADING', false)
     })
   })
