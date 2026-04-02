@@ -72,25 +72,53 @@
           Decline {{ approvalTypeName }}
         </VBtn>
         <div style="display: flex; gap: 8px;">
-          <VBtn
-            outlined
-            rounded
-            class="elevation-0 fw-600"
-            style="background-color: #fff7e8; border-color: #f4c84f !important; color: #a45716 !important;"
-            @click="$emit('retry')"
+          <VTooltip
+            top
+            max-width="280"
+            :z-index="10000"
+            content-class="k-v-tooltip-content--over-drawer"
+            :open-delay="150"
+            :disabled="approvalFooterTooltipDisabled"
           >
-            <VIcon left>mdi-refresh</VIcon>
-            Retry
-          </VBtn>
-          <VBtn
-            rounded
-            color="#2196f3"
-            class="white--text elevation-0 fw-600"
-            @click="$emit('approve')"
+            <template #activator="{ on, attrs }">
+              <div v-bind="attrs" v-on="on" class="approval-footer-tooltip-activator">
+                <VBtn
+                  outlined
+                  rounded
+                  :class="approvalFooterRetryBtnClass"
+                  style="background-color: #fff7e8; border-color: #f4c84f !important; color: #a45716 !important;"
+                  @click="$emit('retry')"
+                >
+                  <VIcon left>mdi-refresh</VIcon>
+                  Retry
+                </VBtn>
+              </div>
+            </template>
+            <span>{{ approvalFooterTooltipText }}</span>
+          </VTooltip>
+          <VTooltip
+            top
+            max-width="280"
+            :z-index="10000"
+            content-class="k-v-tooltip-content--over-drawer"
+            :open-delay="150"
+            :disabled="approvalFooterTooltipDisabled"
           >
-            <VIcon left>mdi-check-circle</VIcon>
-            Approve {{ approvalTypeName }}
-          </VBtn>
+            <template #activator="{ on, attrs }">
+              <div v-bind="attrs" v-on="on" class="approval-footer-tooltip-activator">
+                <VBtn
+                  rounded
+                  color="#2196f3"
+                  :class="approvalFooterApproveBtnClass"
+                  @click="$emit('approve')"
+                >
+                  <VIcon left>mdi-check-circle</VIcon>
+                  Approve {{ approvalTypeName }}
+                </VBtn>
+              </div>
+            </template>
+            <span>{{ approvalFooterTooltipText }}</span>
+          </VTooltip>
         </div>
       </div>
     </VNavigationDrawer>
@@ -101,6 +129,7 @@
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import labels from '@/model/constants/labels'
 import { createRandomCryptStringNumber } from '@/utils/functions'
+import { approvalFooterActionsComputed } from '@/mixins/approvalFooterActionsComputed'
 import TrainingLibraryDrawerContent from './TrainingLibraryDrawerContent.vue'
 
 export default {
@@ -156,6 +185,14 @@ export default {
     reasoningText: {
       type: String,
       default: ''
+    },
+    approvalActionsDisabled: {
+      type: Boolean,
+      default: false
+    },
+    approvalActionsDisabledTooltip: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -175,6 +212,7 @@ export default {
         'drawer-right-deep-nested-animation': this.isDeepNested
       }
     },
+    ...approvalFooterActionsComputed,
     getTitle() {
       if (this.type === TRAINING_LIBRARY_TYPES.LEARNING_PATH) return labels.LearningPathPreview
       if (this.type === TRAINING_LIBRARY_TYPES.POSTER) return labels.PosterPreview

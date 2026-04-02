@@ -1803,4 +1803,176 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.getStatusBadgeColor("Unknown")).toBe("#667085");
     });
   });
+
+  describe("executeApproveReject target user guard", () => {
+    it("does not call approveAgenticAIActivity when approveActivity and target user not Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.approveAgenticAIActivity).not.toHaveBeenCalled();
+    });
+
+    it("does not call reject or retry when retry action and target user not Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("retry", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        activityType: 1,
+        targetUserStatus: "Inactive",
+        targetUserResourceId: "u1",
+        firstName: "A",
+        lastName: "B",
+        department: "D"
+      });
+      expect(CompanyAPI.rejectAgenticAIActivity).not.toHaveBeenCalled();
+      expect(AgenticAIService.retryAutonomous).not.toHaveBeenCalled();
+    });
+
+    it("calls approveAgenticAIActivity when approveActivity and target user Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.approveAgenticAIActivity.mockResolvedValue({ data: { data: { errorCount: 0 } } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active",
+        status: "Pending"
+      });
+      expect(CompanyAPI.approveAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"]
+      });
+    });
+
+    it("still calls rejectAgenticAIActivity on decline when target user is not Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("decline", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"]
+      });
+    });
+
+    it("calls approveAgenticAIBatch for batch approve when row has inactive target user (no per-row guard)", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.approveAgenticAIBatch.mockResolvedValue({
+        data: { data: { approvedCount: 2, errorCount: 0 } }
+      });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approve", {
+        batchResourceId: "batch-1",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.approveAgenticAIBatch).toHaveBeenCalledWith({ batchResourceId: "batch-1" });
+    });
+
+    it("returns without calling API when actionInProgress is already true", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.setData({ actionInProgress: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active"
+      });
+      expect(CompanyAPI.approveAgenticAIActivity).not.toHaveBeenCalled();
+    });
+
+    it("returns without calling API when row is null", async () => {
+      const wrapper = mountFactory({ value: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", null);
+      expect(CompanyAPI.approveAgenticAIActivity).not.toHaveBeenCalled();
+    });
+
+    it("calls rejectAgenticAIBatch for declineAll when target user is not Active (no guard)", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIBatch.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("declineAll", {
+        batchResourceId: "batch-x",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.rejectAgenticAIBatch).toHaveBeenCalledWith({ batchResourceId: "batch-x" });
+    });
+
+    it("passes rejectingReason to rejectAgenticAIActivity on decline when provided", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject(
+        "decline",
+        {
+          resourceId: "r1",
+          batchResourceId: "b1",
+          targetUserStatus: "Active"
+        },
+        "Not aligned with policy"
+      );
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"],
+        rejectingReason: "Not aligned with policy"
+      });
+    });
+
+    it("omits rejectingReason key on decline when third arg is falsy", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("decline", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active"
+      });
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"]
+      });
+    });
+
+    it("runs full retry branch when target user is Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      AgenticAIService.retryAutonomous.mockResolvedValue(undefined);
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject(
+        "retry",
+        {
+          resourceId: "r1",
+          batchResourceId: "b1",
+          activityType: 4,
+          targetUserStatus: "Active",
+          targetUserResourceId: "u1",
+          firstName: "A",
+          lastName: "B",
+          department: "D",
+          preferredLanguage: "en",
+          scenarioResourceId: "sc1"
+        },
+        "Please retry"
+      );
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"],
+        batchResourceId: "b1",
+        rejectingReason: "Please retry"
+      });
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({
+          targetUserResourceId: "u1",
+          actions: ["training"],
+          batchResourceId: "b1",
+          rejectingReason: "Please retry",
+          rejectedScenarioResourceId: "sc1"
+        })
+      );
+    });
+  });
 });

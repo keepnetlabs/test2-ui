@@ -34,6 +34,7 @@
       :options="sendWithAIOptions"
       :mode="agenticAIDialogMode"
       target-type="group"
+      :submit-loading="isSendWithAISubmitting"
       @closeOverlay="handleCloseSendWithAIDialog"
       @confirm="handleConfirmSendWithAI"
     />
@@ -221,6 +222,7 @@ export default {
     return {
       bulkDeleteErrorMessage: '',
       isSendWithAIDialogOpen: false,
+      isSendWithAISubmitting: false,
       selectedRowForAI: null,
       sendWithAIOptions: {
         training: true,
@@ -654,6 +656,7 @@ export default {
     },
     handleCloseSendWithAIDialog() {
       this.isSendWithAIDialogOpen = false
+      this.isSendWithAISubmitting = false
       this.selectedRowForAI = null
       this.sendWithAIOptions = {
         training: true,
@@ -681,6 +684,7 @@ export default {
         actions.push('phishing')
       }
 
+      this.isSendWithAISubmitting = true
       try {
         await sendBatchAutonomous({
           targetGroupResourceId: resourceId,
@@ -703,6 +707,8 @@ export default {
           icon: 'mdi-alert-circle',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
         })
+      } finally {
+        this.isSendWithAISubmitting = false
       }
     },
     columnFilterChanged(filter) {

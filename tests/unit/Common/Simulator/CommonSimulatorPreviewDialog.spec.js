@@ -1,6 +1,7 @@
 import CommonSimulatorPreviewDialog from '@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { approvalFooterActionsComputed } from '@/mixins/approvalFooterActionsComputed'
 
 describe('CommonSimulatorPreviewDialog.vue', () => {
   it('computes tab label and title by preview type', () => {
@@ -388,5 +389,16 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
         description: 'TR'
       }
     ])
+  })
+
+  describe('approval footer mixin', () => {
+    it('merges approvalFooterActionsComputed (same fn refs as mixin)', () => {
+      expect(CommonSimulatorPreviewDialog.computed.approvalFooterRetryBtnClass).toBe(
+        approvalFooterActionsComputed.approvalFooterRetryBtnClass
+      )
+      expect(CommonSimulatorPreviewDialog.computed.approvalFooterTooltipDisabled).toBe(
+        approvalFooterActionsComputed.approvalFooterTooltipDisabled
+      )
+    })
   })
 })

@@ -313,6 +313,9 @@
                           text="Approve"
                           :scope="scope"
                           :check-is-owner-property="false"
+                          :show-tooltip="isTargetUserActionRestricted(scope.row)"
+                          :disabled="isTargetUserActionRestricted(scope.row)"
+                          :disabled-tooltip-text="inactiveTargetUserApprovalTooltip"
                           @on-click="handleApproveRow(scope.row)"
                         />
                         <DefaultMenuRowAction
@@ -331,6 +334,9 @@
                           text="Retry"
                           :scope="scope"
                           :check-is-owner-property="false"
+                          :show-tooltip="isTargetUserActionRestricted(scope.row)"
+                          :disabled="isTargetUserActionRestricted(scope.row)"
+                          :disabled-tooltip-text="inactiveTargetUserApprovalTooltip"
                           @on-click="handleRetry(scope.row)"
                         />
                       </RowActionsMenu>
@@ -362,6 +368,8 @@
         :show-retry-button="isPreviewRowError"
         :approval-type-name="previewType"
         :reasoning-text="previewReasoningText"
+        :approval-actions-disabled="previewApprovalActionsDisabled"
+        :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
         @approve="handlePreviewApprove"
         @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
@@ -379,6 +387,8 @@
         :show-retry-button="isPreviewRowError"
         :approval-type-name="previewType"
         :reasoning-text="previewReasoningText"
+        :approval-actions-disabled="previewApprovalActionsDisabled"
+        :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
         @approve="handlePreviewApprove"
         @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
@@ -394,6 +404,8 @@
         :show-retry-button="isPreviewRowError"
         approval-type-name="Training"
         :reasoning-text="previewReasoningText"
+        :approval-actions-disabled="previewApprovalActionsDisabled"
+        :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
         @approve="handlePreviewApprove"
         @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
@@ -473,6 +485,10 @@ const DEFAULT_BATCH_PRODUCT_FILTER_OPTIONS = [
 const BATCH_LIST_PAGE_SIZE = 100;
 
 const BATCH_LIST_SCROLL_LOAD_THRESHOLD_PX = 140;
+
+/** Shown when Approve / Retry must be blocked because `targetUserStatus` is not Active. */
+const INACTIVE_TARGET_USER_APPROVAL_TOOLTIP =
+  "Approve and retry are unavailable when the target user status is not Active.";
 
 export default {
   name: "AgenticAIActivitiesDrawer",
@@ -563,6 +579,7 @@ export default {
         loading: false
       },
       PREVIEW_DIALOG_TYPES,
+      inactiveTargetUserApprovalTooltip: INACTIVE_TARGET_USER_APPROVAL_TOOLTIP,
       getPhishingScenarioLandingPageAndEmailTemplate,
       getQuishingScenarioLandingPageAndEmailTemplate:
         QuishingService.getQuishingScenarioLandingPageAndEmailTemplate
@@ -671,6 +688,9 @@ export default {
     },
     showApproveAllBanner() {
       return !!this.selectedBatch && this.selectedBatchPendingCount > 0;
+    },
+    previewApprovalActionsDisabled() {
+      return this.previewActivityRow ? !this.isTargetUserActive(this.previewActivityRow) : false;
     },
     pendingApprovalText() {
       const count = this.selectedBatchPendingCount;
@@ -1024,6 +1044,7 @@ export default {
         lastName: activity.targetUserLastName || "",
         email: activity.targetUserEmail || "",
         department: activity.targetUserDepartment || "",
+        targetUserStatus: activity.targetUserStatus || "",
         contentType: this.getActivityTypeName(activity),
         contentCategory: activity.contentCategory || "",
         status: this.normalizeStatus(activity.statusName || activity.status || ""),
@@ -1305,6 +1326,17 @@ export default {
         .replace(/\s+/g, " ");
       return normalized === "pending" || normalized === "waiting for approval" || normalized === "waitingforapproval";
     },
+    isTargetUserActive(row = {}) {
+      const raw = row.targetUserStatus;
+      if (raw === undefined || raw === null) {
+        return true;
+      }
+      return String(raw).trim().toLowerCase() === "active";
+    },
+    /** Approve / Retry must be blocked when the recipient target user is not Active (Decline still allowed). */
+    isTargetUserActionRestricted(row = {}) {
+      return !this.isTargetUserActive(row);
+    },
     isExecuted(row = {}) {
       const s = String(row.status || "").toLowerCase();
       return s === "approved" || s === "executed";
@@ -1535,6 +1567,12 @@ export default {
     },
     async executeApproveReject(action, row, rejectingReason) {
       if (!row || this.actionInProgress) return;
+      if (
+        (action === "approveActivity" || action === "retry") &&
+        this.isTargetUserActionRestricted(row)
+      ) {
+        return;
+      }
       this.actionInProgress = true;
       try {
         if (action === "approve") {
