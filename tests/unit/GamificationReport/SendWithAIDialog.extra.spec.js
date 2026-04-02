@@ -169,4 +169,37 @@ describe('SendWithAIDialog.vue (extra coverage)', () => {
     expect(wrapper.vm.simulationOptionDescription).toContain('phishing or quishing')
     expect(wrapper.vm.simulationOptionDescription).toContain('personalized')
   })
+
+  describe('submitLoading', () => {
+    it('forwards submitLoading to AppDialogFooter as confirmButtonLoading', async () => {
+      const wrapper = mountComponent({ submitLoading: true })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('confirmButtonLoading')).toBe(true)
+    })
+
+    it('footer shows loading while options valid (confirm not disabled by checkboxes)', async () => {
+      const wrapper = mountComponent({
+        options: { training: true, phishing: false },
+        submitLoading: true
+      })
+      wrapper.vm.localOptions = { training: true, phishing: false }
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('confirmButtonDisabled')).toBe(false)
+      expect(footer.props('confirmButtonLoading')).toBe(true)
+    })
+
+    it('footer passes both disabled (no action selected) and loading when parent submits with empty selection edge', async () => {
+      const wrapper = mountComponent({
+        options: { training: false, phishing: false },
+        submitLoading: true
+      })
+      wrapper.vm.localOptions = { training: false, phishing: false }
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('confirmButtonDisabled')).toBe(true)
+      expect(footer.props('confirmButtonLoading')).toBe(true)
+    })
+  })
 })

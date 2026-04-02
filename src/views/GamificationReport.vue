@@ -14,6 +14,7 @@
       :options="sendWithAIOptions"
       :mode="agenticAIDialogMode"
       target-type="user"
+      :submit-loading="isSendWithAISubmitting"
       @closeOverlay="handleCloseSendWithAIDialog"
       @confirm="handleConfirmSendWithAI"
     />
@@ -180,6 +181,7 @@ export default {
       isUserDetailsDrawerOpen: false,
       selectedRow: null,
       isSendWithAIDialogOpen: false,
+      isSendWithAISubmitting: false,
       selectedRowForAI: null,
       sendWithAIOptions: {
         training: true,
@@ -685,6 +687,7 @@ export default {
     },
     handleCloseSendWithAIDialog() {
       this.isSendWithAIDialogOpen = false
+      this.isSendWithAISubmitting = false
       this.selectedRowForAI = null
       this.sendWithAIOptions = {
         training: true,
@@ -712,6 +715,7 @@ export default {
         actions.push('phishing')
       }
 
+      this.isSendWithAISubmitting = true
       try {
         await sendAutonomous({
           preferredLanguage,
@@ -736,6 +740,8 @@ export default {
           icon: 'mdi-alert-circle',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
         })
+      } finally {
+        this.isSendWithAISubmitting = false
       }
     }
   }

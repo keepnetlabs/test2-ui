@@ -245,7 +245,8 @@ describe('GamificationReport.vue', () => {
       },
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAISuccessMessage: () => 'success message',
-      $store: { dispatch }
+      $store: { dispatch },
+      isSendWithAISubmitting: false
     }
 
     await methods.handleConfirmSendWithAI.call(ctx, {
@@ -273,6 +274,7 @@ describe('GamificationReport.vue', () => {
     )
     expect(ctx.handleCloseSendWithAIDialog).toHaveBeenCalled()
     expect(dispatch).toHaveBeenCalledWith('common/createSnackBar', expect.objectContaining({ message: 'success message' }))
+    expect(ctx.isSendWithAISubmitting).toBe(false)
 
     tokenSpy.mockRestore()
     postSpy.mockRestore()
@@ -297,7 +299,8 @@ describe('GamificationReport.vue', () => {
       },
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAISuccessMessage: () => 'success message',
-      $store: { dispatch }
+      $store: { dispatch },
+      isSendWithAISubmitting: false
     }
 
     await methods.handleConfirmSendWithAI.call(ctx, {
@@ -323,6 +326,7 @@ describe('GamificationReport.vue', () => {
     )
     expect(calledConfig).toEqual(expect.any(Object))
     expect(dispatch).toHaveBeenCalledWith('common/createSnackBar', expect.objectContaining({ message: 'success message' }))
+    expect(ctx.isSendWithAISubmitting).toBe(false)
 
     tokenSpy.mockRestore()
     postSpy.mockRestore()

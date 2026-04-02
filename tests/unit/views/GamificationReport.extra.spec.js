@@ -711,6 +711,7 @@ describe('GamificationReport.vue (extra)', () => {
   it('handleCloseSendWithAIDialog closes and resets row/options', () => {
     const ctx = {
       isSendWithAIDialogOpen: true,
+      isSendWithAISubmitting: true,
       selectedRowForAI: { targetUserResourceId: 'u-ai' },
       sendWithAIOptions: { training: false, phishing: false }
     }
@@ -718,6 +719,7 @@ describe('GamificationReport.vue (extra)', () => {
     methods.handleCloseSendWithAIDialog.call(ctx)
 
     expect(ctx.isSendWithAIDialogOpen).toBe(false)
+    expect(ctx.isSendWithAISubmitting).toBe(false)
     expect(ctx.selectedRowForAI).toBeNull()
     expect(ctx.sendWithAIOptions).toEqual({ training: true, phishing: true })
   })

@@ -1,8 +1,15 @@
 <template>
-  <v-tooltip v-if="canRenderTooltip" bottom offset-overflow>
-    <template #activator="{ on }">
-      <div v-on="on">
-        <v-list-item :class="className" :disabled="isDisabled" @click="onClick">
+  <v-tooltip
+    v-if="canRenderTooltip"
+    bottom
+    offset-overflow
+    :z-index="10000"
+    content-class="k-v-tooltip-content--over-drawer"
+    :open-delay="150"
+  >
+    <template #activator="{ on, attrs }">
+      <div v-bind="attrs" v-on="on" class="default-menu-row-action-tooltip-wrap">
+        <v-list-item :id="id" :class="className" :disabled="isDisabled" @click="onClick">
           <v-list-item-title>
             <v-icon :disabled="isDisabled" class="pr-3">{{ icon }}</v-icon>
             <span>{{ text }}</span>

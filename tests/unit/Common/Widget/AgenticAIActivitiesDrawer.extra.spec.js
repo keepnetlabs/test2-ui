@@ -227,4 +227,277 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       ).toBe('20%')
     })
   })
+
+  describe('isTargetUserActive', () => {
+    it('returns true when targetUserStatus is undefined (legacy API)', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, {})).toBe(true)
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: undefined })).toBe(
+        true
+      )
+    })
+
+    it('returns true when targetUserStatus is null', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: null })).toBe(true)
+    })
+
+    it('returns true for Active case-insensitive', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: 'Active' })).toBe(true)
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: '  active  ' })).toBe(
+        true
+      )
+    })
+
+    it('returns false for non-Active status strings', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: 'Inactive' })).toBe(
+        false
+      )
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: '' })).toBe(false)
+    })
+  })
+
+  describe('isTargetUserActionRestricted', () => {
+    it('is the inverse of isTargetUserActive', () => {
+      const ctx = {
+        isTargetUserActive: AgenticAIActivitiesDrawer.methods.isTargetUserActive
+      }
+      expect(
+        AgenticAIActivitiesDrawer.methods.isTargetUserActionRestricted.call(ctx, { targetUserStatus: 'Active' })
+      ).toBe(false)
+      expect(
+        AgenticAIActivitiesDrawer.methods.isTargetUserActionRestricted.call(ctx, { targetUserStatus: 'Inactive' })
+      ).toBe(true)
+    })
+  })
+
+  describe('mapActivityToRow', () => {
+    const methodCtx = {
+      getActivityTypeName: AgenticAIActivitiesDrawer.methods.getActivityTypeName,
+      normalizeStatus: AgenticAIActivitiesDrawer.methods.normalizeStatus,
+      formatActivityTypeDisplay: AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay
+    }
+
+    it('maps targetUserStatus and defaults empty to empty string', () => {
+      const row = AgenticAIActivitiesDrawer.methods.mapActivityToRow.call(methodCtx, {
+        resourceId: 'rid',
+        batchResourceId: 'bid',
+        activityType: 1,
+        activityTypeName: 'Phishing',
+        targetUserStatus: 'Inactive',
+        statusName: 'Pending',
+        targetUserFirstName: 'A',
+        targetUserLastName: 'B',
+        targetUserEmail: 'a@b.com',
+        targetUserDepartment: 'X'
+      })
+      expect(row.targetUserStatus).toBe('Inactive')
+    })
+
+    it('uses empty string when targetUserStatus missing', () => {
+      const row = AgenticAIActivitiesDrawer.methods.mapActivityToRow.call(methodCtx, {
+        resourceId: 'rid',
+        batchResourceId: 'bid',
+        activityType: 1,
+        statusName: 'Pending',
+        targetUserFirstName: 'A',
+        targetUserLastName: 'B',
+        targetUserEmail: 'a@b.com'
+      })
+      expect(row.targetUserStatus).toBe('')
+    })
+  })
+
+  describe('previewApprovalActionsDisabled', () => {
+    const baseCtx = {
+      isTargetUserActive: AgenticAIActivitiesDrawer.methods.isTargetUserActive
+    }
+
+    it('is false when previewActivityRow is null', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewApprovalActionsDisabled.call({
+          ...baseCtx,
+          previewActivityRow: null
+        })
+      ).toBe(false)
+    })
+
+    it('is false when preview row is Active', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewApprovalActionsDisabled.call({
+          ...baseCtx,
+          previewActivityRow: { targetUserStatus: 'Active' }
+        })
+      ).toBe(false)
+    })
+
+    it('is true when preview row is not Active', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewApprovalActionsDisabled.call({
+          ...baseCtx,
+          previewActivityRow: { targetUserStatus: 'Inactive' }
+        })
+      ).toBe(true)
+    })
+
+    it('is true when preview row has empty targetUserStatus (mapped default)', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewApprovalActionsDisabled.call({
+          ...baseCtx,
+          previewActivityRow: { targetUserStatus: '' }
+        })
+      ).toBe(true)
+    })
+
+    it('is false when preview row omits targetUserStatus (legacy undefined)', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewApprovalActionsDisabled.call({
+          ...baseCtx,
+          previewActivityRow: { resourceId: 'r1' }
+        })
+      ).toBe(false)
+    })
+  })
+
+  describe('isPreviewRowError', () => {
+    it('is true when status is error', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.isPreviewRowError.call({
+          previewActivityRow: { status: 'Error' }
+        })
+      ).toBe(true)
+    })
+
+    it('is false when no preview row', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.isPreviewRowError.call({
+          previewActivityRow: null
+        })
+      ).toBe(false)
+    })
+  })
+
+  describe('isPreviewRowWaitingForApproval', () => {
+    it('delegates to isWaitingForApproval when preview row exists', () => {
+      const ctx = {
+        previewActivityRow: { status: 'Pending' },
+        isWaitingForApproval: AgenticAIActivitiesDrawer.methods.isWaitingForApproval
+      }
+      expect(AgenticAIActivitiesDrawer.computed.isPreviewRowWaitingForApproval.call(ctx)).toBe(true)
+    })
+
+    it('is false when previewActivityRow is null', () => {
+      const ctx = {
+        previewActivityRow: null,
+        isWaitingForApproval: AgenticAIActivitiesDrawer.methods.isWaitingForApproval
+      }
+      expect(AgenticAIActivitiesDrawer.computed.isPreviewRowWaitingForApproval.call(ctx)).toBe(false)
+    })
+  })
+
+  describe('getApprovalCountForDialog', () => {
+    it('returns selectedBatchPendingCount when row matches selected batch', () => {
+      const ctx = {
+        selectedBatchId: 'b1',
+        selectedBatchPendingCount: 7,
+        isWaitingForApproval: AgenticAIActivitiesDrawer.methods.isWaitingForApproval
+      }
+      expect(
+        AgenticAIActivitiesDrawer.methods.getApprovalCountForDialog.call(ctx, {
+          batchResourceId: 'b1'
+        })
+      ).toBe(7)
+    })
+
+    it('returns waitingCount from row when set', () => {
+      const ctx = {
+        selectedBatchId: 'other',
+        selectedBatchPendingCount: 0,
+        isWaitingForApproval: AgenticAIActivitiesDrawer.methods.isWaitingForApproval
+      }
+      expect(
+        AgenticAIActivitiesDrawer.methods.getApprovalCountForDialog.call(ctx, {
+          batchResourceId: 'b2',
+          waitingCount: 3
+        })
+      ).toBe(3)
+    })
+
+    it('returns 1 when single row waiting and no batch aggregate', () => {
+      const ctx = {
+        selectedBatchId: null,
+        selectedBatchPendingCount: 0,
+        isWaitingForApproval: AgenticAIActivitiesDrawer.methods.isWaitingForApproval
+      }
+      expect(
+        AgenticAIActivitiesDrawer.methods.getApprovalCountForDialog.call(ctx, {
+          status: 'Pending'
+        })
+      ).toBe(1)
+    })
+
+    it('returns 0 when row not waiting', () => {
+      const ctx = {
+        selectedBatchId: null,
+        selectedBatchPendingCount: 0,
+        isWaitingForApproval: AgenticAIActivitiesDrawer.methods.isWaitingForApproval
+      }
+      expect(
+        AgenticAIActivitiesDrawer.methods.getApprovalCountForDialog.call(ctx, {
+          status: 'Approved'
+        })
+      ).toBe(0)
+    })
+  })
+
+  describe('pendingApprovalText', () => {
+    it('uses singular when count is 1', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.pendingApprovalText.call({
+          selectedBatchPendingCount: 1
+        })
+      ).toBe('1 approval is waiting')
+    })
+
+    it('uses plural when count is greater than 1', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.pendingApprovalText.call({
+          selectedBatchPendingCount: 4
+        })
+      ).toBe('4 approvals are waiting')
+    })
+  })
+
+  describe('previewReasoningText', () => {
+    it('returns reasoning from explanationJson when present', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewReasoningText.call({
+          previewActivityRow: {
+            explanationJson: { reasoningText: 'Because users need training.' }
+          }
+        })
+      ).toBe('Because users need training.')
+    })
+
+    it('returns empty string when preview row or reasoning missing', () => {
+      expect(AgenticAIActivitiesDrawer.computed.previewReasoningText.call({ previewActivityRow: null })).toBe('')
+      expect(
+        AgenticAIActivitiesDrawer.computed.previewReasoningText.call({
+          previewActivityRow: { explanationJson: {} }
+        })
+      ).toBe('')
+    })
+  })
+
+  describe('hasNestedPreview', () => {
+    it('is true when previewType is set', () => {
+      expect(AgenticAIActivitiesDrawer.computed.hasNestedPreview.call({ previewType: 'Phishing' })).toBe(true)
+    })
+
+    it('is false when previewType is null', () => {
+      expect(AgenticAIActivitiesDrawer.computed.hasNestedPreview.call({ previewType: null })).toBe(false)
+    })
+  })
 })
