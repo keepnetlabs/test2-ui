@@ -174,6 +174,28 @@ describe("AgenticAIStatusWidget", () => {
     expect(disabledWrapper.vm.statusIconColor).toBe("#6b7280");
   });
 
+  it("includes User Status column before Approval Status in activities table", () => {
+    const wrapper = mountFactory();
+    const cols = wrapper.vm.activitiesTableColumns;
+    const userIdx = cols.findIndex((c) => c.property === "targetUserStatus");
+    const statusIdx = cols.findIndex((c) => c.property === "status");
+    expect(cols[userIdx].label).toBe("User Status");
+    expect(cols[userIdx].type).toBe("status");
+    expect(cols[userIdx].fullWidth).toBe(true);
+    expect(cols[userIdx].overrideWidth).toBe(true);
+    expect(cols[userIdx].minWidth).toBe(180);
+    expect(cols[userIdx].width).toBe(180);
+    expect(userIdx).toBeLessThan(statusIdx);
+  });
+
+  it("sizes Assigned Scenario column for longer scenario titles", () => {
+    const wrapper = mountFactory();
+    const scenarioCol = wrapper.vm.activitiesTableColumns.find((c) => c.property === "scenarioName");
+    expect(scenarioCol.label).toBe("Assigned Scenario");
+    expect(scenarioCol.minWidth).toBe(240);
+    expect(scenarioCol.width).toBe(240);
+  });
+
   it("uses neutral status badge styling in activities table", () => {
     const wrapper = mountFactory();
     const statusColumn = wrapper.vm.activitiesTableColumns.find((column) => column.property === "status");

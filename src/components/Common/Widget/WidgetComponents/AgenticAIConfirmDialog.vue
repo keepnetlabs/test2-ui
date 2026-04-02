@@ -27,7 +27,7 @@
         <AppDialogFooter
           cancel-button-id="btn-confirm-cancel"
           :confirm-button-id="`btn-confirm-${action}`"
-          cancel-button-text="CANCEL"
+          cancel-button-text="Cancel"
           :action-button-text="confirmText"
           :confirm-button-disabled="loading"
           @handleClose="$emit('cancel')"

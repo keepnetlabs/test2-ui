@@ -135,21 +135,21 @@ const widgetsStore = {
             topPhishingSimulationReporters?.data || []
           )
 
-          const { data: topRules } = dashboardTopRules
+          const { data: topRules } = dashboardTopRules ?? {}
 
           commit('SET_TOP_RULES', topRules)
 
-          const { data: investigationsData } = runningInvestigations
+          const { data: investigationsData } = runningInvestigations ?? {}
 
           commit('SET_RECENT_INVESTIGATIONS', investigationsData)
 
-          const { data: reporters } = topReporters
+          const { data: reporters } = topReporters ?? {}
 
           commit('SET_REPORTERS', reporters)
 
-          const { data } = reportedEmailTrends
+          const { data: reportedEmailTrendsData } = reportedEmailTrends ?? {}
 
-          commit('SET_REPORTED_EMAIL_TRENDS', data)
+          commit('SET_REPORTED_EMAIL_TRENDS', reportedEmailTrendsData)
 
           return response
         })

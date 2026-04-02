@@ -257,6 +257,23 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       )
       expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: '' })).toBe(false)
     })
+
+    it('returns false when targetUserIsDeleted is true (People / API parity)', () => {
+      const ctx = {}
+      expect(
+        AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, {
+          targetUserIsDeleted: true,
+          targetUserStatus: 'Active'
+        })
+      ).toBe(false)
+    })
+
+    it('returns false for Deleted status string when flag is absent', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.isTargetUserActive.call(ctx, { targetUserStatus: 'Deleted' })).toBe(
+        false
+      )
+    })
   })
 
   describe('isTargetUserActionRestricted', () => {
@@ -273,11 +290,22 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
     })
   })
 
+  describe('normalizeTargetUserIsDeletedFlag', () => {
+    it('treats string "false" as not deleted', () => {
+      expect(AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag('false')).toBe(false)
+    })
+
+    it('treats string "true" as deleted', () => {
+      expect(AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag('true')).toBe(true)
+    })
+  })
+
   describe('mapActivityToRow', () => {
     const methodCtx = {
       getActivityTypeName: AgenticAIActivitiesDrawer.methods.getActivityTypeName,
       normalizeStatus: AgenticAIActivitiesDrawer.methods.normalizeStatus,
-      formatActivityTypeDisplay: AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay
+      formatActivityTypeDisplay: AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay,
+      normalizeTargetUserIsDeletedFlag: AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag
     }
 
     it('maps targetUserStatus and defaults empty to empty string', () => {
@@ -294,6 +322,23 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
         targetUserDepartment: 'X'
       })
       expect(row.targetUserStatus).toBe('Inactive')
+      expect(row.targetUserIsDeleted).toBe(false)
+    })
+
+    it('maps targetUserIsDeleted true to Deleted status like People.vue', () => {
+      const row = AgenticAIActivitiesDrawer.methods.mapActivityToRow.call(methodCtx, {
+        resourceId: 'rid',
+        batchResourceId: 'bid',
+        activityType: 1,
+        targetUserIsDeleted: true,
+        targetUserStatus: 'Active',
+        statusName: 'Pending',
+        targetUserFirstName: 'A',
+        targetUserLastName: 'B',
+        targetUserEmail: 'a@b.com'
+      })
+      expect(row.targetUserIsDeleted).toBe(true)
+      expect(row.targetUserStatus).toBe('Deleted')
     })
 
     it('uses empty string when targetUserStatus missing', () => {
@@ -307,6 +352,7 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
         targetUserEmail: 'a@b.com'
       })
       expect(row.targetUserStatus).toBe('')
+      expect(row.targetUserIsDeleted).toBe(false)
     })
   })
 

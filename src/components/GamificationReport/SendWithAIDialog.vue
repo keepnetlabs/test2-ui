@@ -66,8 +66,7 @@
         cancel-button-id="btn-cancel--send-with-ai"
         confirm-button-id="btn-confirm--send-with-ai"
         :action-button-text="confirmButtonText"
-        :confirm-button-disabled="!localOptions.training && !localOptions.phishing"
-        :confirm-button-loading="submitLoading"
+        :confirm-button-disabled="confirmActionDisabled"
         @handleClose="$emit('closeOverlay', false)"
         @handleConfirm="handleConfirm"
       />
@@ -105,7 +104,7 @@ export default {
       type: String,
       default: 'user'
     },
-    /** Parent sets true while autonomous / batch API is in flight (disables confirm + shows loading). */
+    /** Parent sets true while API is in flight (disables confirm only; no spinner). */
     submitLoading: {
       type: Boolean,
       default: false
@@ -156,6 +155,10 @@ export default {
     },
     confirmButtonText() {
       return this.isApprovalMode ? 'Send with AI for Approval' : 'Run with AI'
+    },
+    confirmActionDisabled() {
+      const noSelection = !this.localOptions.training && !this.localOptions.phishing
+      return noSelection || this.submitLoading
     }
   },
   watch: {

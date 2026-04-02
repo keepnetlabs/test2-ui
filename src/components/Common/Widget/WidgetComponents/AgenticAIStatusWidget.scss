@@ -792,6 +792,15 @@
     min-height: 360px;
   }
 
+  /* Actions column: cell has no extra padding; single-action rows get inset via wrapper */
+  .agentic-ai-activities-drawer__table-wrapper .k-table__wrapper .card .table-wrapper .el-table td.is-right.actions-container--first > .cell {
+    padding-right: 0 !important;
+  }
+
+  .agentic-ai-activities-drawer__row-actions--single {
+    padding-right: 12px;
+  }
+
   .table-search {
     align-items: center;
     gap: 8px;
