@@ -291,11 +291,15 @@ describe('SendWithAIDialog.vue', () => {
       expect(footer.props('confirmButtonDisabled')).toBe(false)
     })
 
-    it('passes submitLoading to footer as confirmButtonLoading', async () => {
-      const wrapper = mountComponent({ submitLoading: true })
+    it('passes submitLoading to footer as disabled without loading spinner', async () => {
+      const wrapper = mountComponent({
+        options: { training: true, phishing: true },
+        submitLoading: true
+      })
       await wrapper.vm.$nextTick()
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
-      expect(footer.props('confirmButtonLoading')).toBe(true)
+      expect(footer.props('confirmButtonDisabled')).toBe(true)
+      expect(footer.props('confirmButtonLoading')).toBe(false)
     })
   })
 

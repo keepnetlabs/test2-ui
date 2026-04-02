@@ -286,18 +286,24 @@
                     @refreshAction="handleRefresh"
                   >
                     <template #datatable-row-actions="{ scope }">
-                      <DefaultButtonRowAction
-                        icon="mdi-eye"
-                        :id="getViewActionId(scope.$index)"
-                        text="View"
-                        :scope="scope"
-                        :check-is-owner-property="false"
-                        @on-click="handleView(scope.row)"
-                      />
-                      <RowActionsMenu
-                        v-if="isExecuted(scope.row) || isWaitingForApproval(scope.row) || isRowError(scope.row)"
+                      <div
+                        class="d-flex align-center justify-end flex-nowrap agentic-ai-activities-drawer__row-actions"
+                        :class="
+                          isExecuted(scope.row)
+                            ? 'agentic-ai-activities-drawer__row-actions--dual'
+                            : 'agentic-ai-activities-drawer__row-actions--single'
+                        "
                       >
-                        <DefaultMenuRowAction
+                        <DefaultButtonRowAction
+                          icon="mdi-eye"
+                          :id="getViewActionId(scope.$index)"
+                          text="Preview"
+                          :scope="scope"
+                          :check-is-owner-property="false"
+                          :class="isExecuted(scope.row) ? 'mr-1' : ''"
+                          @on-click="handleView(scope.row)"
+                        />
+                        <DefaultButtonRowAction
                           v-if="isExecuted(scope.row)"
                           icon="mdi-text-box"
                           :id="`btn-agentic-ai-activity-report-${scope.$index}`"
@@ -306,40 +312,7 @@
                           :check-is-owner-property="false"
                           @on-click="handleViewReport(scope.row)"
                         />
-                        <DefaultMenuRowAction
-                          v-if="isWaitingForApproval(scope.row)"
-                          icon="mdi-check-circle"
-                          :id="`btn-agentic-ai-activity-approve-${scope.$index}`"
-                          text="Approve"
-                          :scope="scope"
-                          :check-is-owner-property="false"
-                          :show-tooltip="isTargetUserActionRestricted(scope.row)"
-                          :disabled="isTargetUserActionRestricted(scope.row)"
-                          :disabled-tooltip-text="inactiveTargetUserApprovalTooltip"
-                          @on-click="handleApproveRow(scope.row)"
-                        />
-                        <DefaultMenuRowAction
-                          v-if="isWaitingForApproval(scope.row)"
-                          icon="mdi-close-circle"
-                          :id="`btn-agentic-ai-activity-decline-${scope.$index}`"
-                          text="Decline"
-                          :scope="scope"
-                          :check-is-owner-property="false"
-                          @on-click="handleDecline(scope.row)"
-                        />
-                        <DefaultMenuRowAction
-                          v-if="isWaitingForApproval(scope.row) || isRowError(scope.row)"
-                          icon="mdi-refresh-circle"
-                          :id="`btn-agentic-ai-activity-retry-${scope.$index}`"
-                          text="Retry"
-                          :scope="scope"
-                          :check-is-owner-property="false"
-                          :show-tooltip="isTargetUserActionRestricted(scope.row)"
-                          :disabled="isTargetUserActionRestricted(scope.row)"
-                          :disabled-tooltip-text="inactiveTargetUserApprovalTooltip"
-                          @on-click="handleRetry(scope.row)"
-                        />
-                      </RowActionsMenu>
+                      </div>
                     </template>
                   </DataTable>
                 </div>
@@ -449,8 +422,6 @@ import KSelect from "@/components/Common/Inputs/KSelect.vue";
 import DataTable from "@/components/DataTable";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
-import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu.vue";
-import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction.vue";
 import AgenticAIConfirmDialog from "./AgenticAIConfirmDialog.vue";
 import AgenticAIRejectDialog from "./AgenticAIRejectDialog.vue";
 import CommonSimulatorPreviewDialog from "@/components/Common/Simulator/CommonSimulatorPreviewDialog.vue";
@@ -498,8 +469,6 @@ export default {
     AgenticAIRejectDialog,
     DataTable,
     DefaultButtonRowAction,
-    DefaultMenuRowAction,
-    RowActionsMenu,
     CommonSimulatorPreviewDialog,
     KSelect,
     TrainingLibraryDrawer,
@@ -531,7 +500,7 @@ export default {
   },
   data() {
     return {
-      serverSideProps: new ServerSideProps("", false, 5, 1, 0, 0),
+      serverSideProps: new ServerSideProps("", false, 10, 1, 0, 0),
       serverSideEvents: { pagination: true, search: true, sort: true },
       actionInProgress: false,
       axiosPayload: this.createDefaultPayload(),
@@ -719,7 +688,7 @@ export default {
 
       return value;
     },
-    createDefaultPayload(pageSize = 5, isGroupedByBatch = false) {
+    createDefaultPayload(pageSize = 10, isGroupedByBatch = false) {
       return getDefaultAxiosPayload({ pageSize, isGroupedByBatch }, "CreateTime");
     },
     normalizeBatchTypeFilterLabel(value = "") {
@@ -831,8 +800,8 @@ export default {
       this.cancelBatchListScrollRaf();
       this.closeConfirmDialog();
       this.closeRejectDialog();
-      this.serverSideProps = new ServerSideProps("", false, 5, 1, 0, 0);
-      this.axiosPayload = this.createDefaultPayload(5, false);
+      this.serverSideProps = new ServerSideProps("", false, 10, 1, 0, 0);
+      this.axiosPayload = this.createDefaultPayload(10, false);
       this.pagedTableData = [];
       this.batchList = [];
       this.batchListPageNumber = 1;
@@ -877,6 +846,7 @@ export default {
         lastName: "targetUserLastName",
         email: "targetUserEmail",
         department: "targetUserDepartment",
+        targetUserStatus: "targetUserStatus",
         contentType: "ActivityType",
         contentCategory: "contentCategory",
         status: "Status",
@@ -890,6 +860,7 @@ export default {
         lastName: "TargetUserLastName",
         email: "TargetUserEmail",
         department: "TargetUserDepartment",
+        targetUserStatus: "TargetUserStatus",
         contentType: "ActivityType",
         contentCategory: "ContentCategory",
         status: "Status",
@@ -908,11 +879,10 @@ export default {
       const filterGroups = this.axiosPayload?.filter?.FilterGroups || [];
       const andGroup = filterGroups[0] || { Condition: "AND", FilterItems: [], FilterGroups: [] };
       const orGroup = filterGroups[1] || { Condition: "OR", FilterItems: [], FilterGroups: [] };
-      const normalizedAndGroupItems = andGroup.FilterItems.map((item) => this.normalizeFilterItem(item))
-        .filter(
-          (item) =>
-            item.FieldName !== "batchResourceId" && item.FieldName !== "BatchResourceId"
-        );
+      const normalizedAndGroupItems = andGroup.FilterItems.map((item) => this.normalizeFilterItem(item)).filter(
+        (item) =>
+          item.FieldName !== "batchResourceId" && item.FieldName !== "BatchResourceId"
+      );
 
       if (this.selectedBatchId) {
         normalizedAndGroupItems.push({
@@ -1024,7 +994,16 @@ export default {
         statusCounts
       };
     },
+    /**
+     * API may return a real boolean; avoid `Boolean("false") === true` if a string slips through.
+     */
+    normalizeTargetUserIsDeletedFlag(raw) {
+      if (raw === true || raw === 1) return true;
+      if (raw === false || raw === 0 || raw === null || raw === undefined) return false;
+      return String(raw).trim().toLowerCase() === "true";
+    },
     mapActivityToRow(activity) {
+      const targetUserIsDeleted = this.normalizeTargetUserIsDeletedFlag(activity.targetUserIsDeleted);
       return {
         resourceId: activity.resourceId,
         batchResourceId: activity.batchResourceId,
@@ -1044,7 +1023,8 @@ export default {
         lastName: activity.targetUserLastName || "",
         email: activity.targetUserEmail || "",
         department: activity.targetUserDepartment || "",
-        targetUserStatus: activity.targetUserStatus || "",
+        targetUserIsDeleted,
+        targetUserStatus: targetUserIsDeleted ? "Deleted" : activity.targetUserStatus || "",
         contentType: this.getActivityTypeName(activity),
         contentCategory: activity.contentCategory || "",
         status: this.normalizeStatus(activity.statusName || activity.status || ""),
@@ -1327,11 +1307,18 @@ export default {
       return normalized === "pending" || normalized === "waiting for approval" || normalized === "waitingforapproval";
     },
     isTargetUserActive(row = {}) {
+      if (row.targetUserIsDeleted) {
+        return false;
+      }
       const raw = row.targetUserStatus;
       if (raw === undefined || raw === null) {
         return true;
       }
-      return String(raw).trim().toLowerCase() === "active";
+      const normalized = String(raw).trim().toLowerCase();
+      if (normalized === "deleted") {
+        return false;
+      }
+      return normalized === "active";
     },
     /** Approve / Retry must be blocked when the recipient target user is not Active (Decline still allowed). */
     isTargetUserActionRestricted(row = {}) {
@@ -1468,64 +1455,43 @@ export default {
     },
     handleApprove(row) {
       this.closeRejectDialog();
-      const approvalCount = this.getApprovalCountForDialog(row);
+      const n = this.getApprovalCountForDialog(row) || 0;
       this.confirmDialog = {
         status: true,
         action: "approve",
         row,
         icon: "mdi-check",
-        title: "Confirm Approval",
-        message: `${
-          approvalCount || 0
-        } approval${approvalCount === 1 ? "" : "s"} will be approved. Reviewing the scenario and user list beforehand is recommended. This action cannot be undone.`,
+        title: "Approve all recommendations?",
+        message: `${n} pending recommendation${n === 1 ? "" : "s"} will be approved and launched immediately.`,
         recommendation: "",
-        confirmText: "APPROVE ALL USERS",
+        confirmText: "Approve All",
         loading: false
       };
     },
     handleDeclineAll(row) {
       this.closeRejectDialog();
-      const count = this.getApprovalCountForDialog(row);
+      const n = this.getApprovalCountForDialog(row) || 0;
       this.confirmDialog = {
         status: true,
         action: "declineAll",
         row,
         icon: "mdi-close",
-        title: "Confirm Decline",
-        message: `${count || 0} approval${count === 1 ? "" : "s"} will be declined. This action cannot be undone.`,
+        title: "Decline all recommendations?",
+        message: `${n} pending recommendation${n === 1 ? "" : "s"} will be declined.`,
         recommendation: "",
-        confirmText: "DECLINE ALL",
+        confirmText: "Decline All",
         loading: false
       };
     },
-    handleApproveRow(row) {
+    /** Single-row approve: no AgenticAIConfirmDialog (bulk-only). */
+    async handleApproveRow(row) {
       this.closeRejectDialog();
-      this.confirmDialog = {
-        status: true,
-        action: "approveActivity",
-        row,
-        icon: "mdi-check",
-        title: "Confirm Approval",
-        message: "This action will be approved and executed. This action cannot be undone.",
-        recommendation: "",
-        confirmText: "APPROVE",
-        loading: false
-      };
+      await this.executeApproveReject("approveActivity", row);
     },
-    handleDecline(row) {
+    /** Single-row decline: no AgenticAIConfirmDialog (bulk-only). */
+    async handleDecline(row) {
       this.closeRejectDialog();
-      this.confirmDialog = {
-        status: true,
-        action: "decline",
-        row,
-        icon: "mdi-close",
-        title: "Confirm Decline",
-        message:
-          "This action will be declined and will not be executed. This action cannot be undone.",
-        recommendation: "",
-        confirmText: "DECLINE",
-        loading: false
-      };
+      await this.executeApproveReject("decline", row);
     },
     closeRejectDialog() {
       this.rejectDialog = {
@@ -1637,28 +1603,19 @@ export default {
         this.actionInProgress = false;
       }
     },
-    handlePreviewApprove() {
+    async handlePreviewApprove() {
       const row = this.previewActivityRow;
       if (!row) return;
       this.closePreview();
-      this.executeApproveReject("approveActivity", row);
+      await this.executeApproveReject("approveActivity", row);
     },
-    handlePreviewDecline() {
+    /** Preview decline: no AgenticAIConfirmDialog (bulk-only); retry still uses AgenticAIRejectDialog. */
+    async handlePreviewDecline() {
       const row = this.previewActivityRow;
       if (!row) return;
       this.closeRejectDialog();
-      this.confirmDialog = {
-        status: true,
-        action: "decline",
-        row,
-        icon: "mdi-close",
-        title: "Confirm Decline",
-        message:
-          "This action will be declined and will not be executed. This action cannot be undone.",
-        recommendation: "",
-        confirmText: "DECLINE",
-        loading: false
-      };
+      this.closePreview();
+      await this.executeApproveReject("decline", row);
     },
     isRowError(row = {}) {
       return String(row.status || "").toLowerCase() === "error";
