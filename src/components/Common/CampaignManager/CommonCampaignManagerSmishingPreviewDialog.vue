@@ -1,7 +1,7 @@
 <template>
   <CommonCampaignManagerPreviewFrame
     :status="status"
-    title="Smishing Campaign Preview"
+    :title="getTitle"
     :campaign-name="getSubtitle"
     :loading="isLoading"
     @on-close="$emit('on-close')"
@@ -108,6 +108,9 @@ export default {
     }
   },
   computed: {
+    getTitle() {
+      return 'Smishing Campaign Preview'
+    },
     getSubtitle() {
       return this.selectedRow?.name || ''
     }
