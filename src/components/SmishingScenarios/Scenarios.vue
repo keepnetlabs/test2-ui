@@ -176,7 +176,7 @@ export default {
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
-      scenarioDetailsLookup: null,
+      scenarioDetailsLookup: { methodTypes: [], difficultyTypes: [], preferredLanguageTypes: [] },
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
       isShowNoTextMessageTemplateModal: false,
@@ -502,14 +502,16 @@ export default {
       if (this.getSmishingScenariosSearchPermissions) {
         SmishingService.searchSmishingScenarios(this.axiosPayload)
           .then((response) => {
+            const data = response?.data?.data || {}
             const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+              totalNumberOfRecords = 0,
+              totalNumberOfPages = 0,
+              pageNumber = 1,
+              results = []
+            } = data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
             this.tableData = results.map((item) => {
               const language = this.languageFilterOptions.find(
                 (lang) => lang.languageName === item.languageTypeName

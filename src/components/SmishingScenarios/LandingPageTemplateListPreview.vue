@@ -71,7 +71,7 @@
                 <div style="max-width: 140px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
-                    :items="scenarioDetailsLookup.difficultyTypes"
+                    :items="difficultyTypeItems"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
@@ -413,6 +413,9 @@ export default {
     }
   },
   computed: {
+    difficultyTypeItems() {
+      return this.scenarioDetailsLookup?.difficultyTypes || []
+    },
     getSelectedTemplateHeader() {
       return this.landingPageTemplates?.length > 1
         ? this.landingPageTemplates?.[Number.parseInt(this.selectedTab) - 1]?.name || ''
