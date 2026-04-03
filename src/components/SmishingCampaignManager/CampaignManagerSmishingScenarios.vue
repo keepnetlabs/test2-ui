@@ -1,23 +1,26 @@
 <template>
   <div class="emailTemplatePreview pt-0" style="min-height: auto !important;">
-    <AppDialog
-      icon="mdi-eye"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      :subtitle="labels.TemplatePreview"
+    <SmishingPreviewDrawer
+      v-if="isShowTemplate"
       :status="isShowTemplate"
-      :title="getTemplateHeader"
-      style="overflow: hidden;"
-      @changeStatus="toggleTemplateDialog"
+      title="Landing Page Template Preview"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isShowTemplate = false"
     >
-      <template #app-dialog-body>
-        <KEmailPreview v-if="!!getTemplatePreviewContent" :html="getTemplatePreviewContent" />
-      </template>
-      <template #app-dialog-footer>
-        <AppDialogFooterWithClose @on-close="toggleTemplateDialog" />
-      </template>
-    </AppDialog>
+      <div class="email-template-preview">
+        <div v-if="getTemplateHeader" class="email-template-preview__title">
+          {{ getTemplateHeader }}
+        </div>
+        <div class="email-template-preview__container">
+          <KEmailPreview
+            v-if="!!getTemplatePreviewContent"
+            :html="getTemplatePreviewContent"
+            :key="getTemplatePreviewContent"
+          />
+        </div>
+      </div>
+    </SmishingPreviewDrawer>
     <TrainingLibraryCommonComponents />
     <div class="emailTemplatePreview__container pt-0" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main" :style="getContainerStyle">
@@ -277,7 +280,7 @@ import SmishingService from '@/api/smishing'
 const EMITS = {
   ON_ITEM_CHANGE: 'on-item-change'
 }
-import AppDialog from '@/components/AppDialog.vue'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import labels from '@/model/constants/labels'
 import { methods, difficulties } from '@/components/SmishingCampaignManager/utils'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
@@ -287,7 +290,6 @@ import ShowMoreTags from '@/components/ShowMoreTags.vue'
 import useDebounce from '@/hooks/useDebounce'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
 import CampaignManagerPhishingScenariosTrainingTab from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenariosTrainingTab.vue'
 import { mapGetters } from 'vuex'
 import TrainingTabModel from '@/components/CampaignManager/PhishingScenarios/trainingTabModel'
@@ -301,11 +303,10 @@ export default {
   components: {
     TrainingLibraryCommonComponents,
     CampaignManagerPhishingScenariosTrainingTab,
-    AppDialogFooterWithClose,
+    SmishingPreviewDrawer,
     ShowMoreTags,
     KEmailPreview,
     KSelect,
-    AppDialog,
     Multipane,
     MultipaneResizer,
     TabsWithMfaSettings
@@ -684,9 +685,6 @@ export default {
         }, 500)
       }
     },
-    toggleTemplateDialog() {
-      this.isShowTemplate = !this.isShowTemplate
-    },
     setSelectedTemplate(item = {}, value = false) {
       if (this.trainingTabModel[item.resourceId]) {
         this.$set(this.trainingTabModel[item.resourceId], 'isCheckboxSelected', value)
@@ -703,7 +701,7 @@ export default {
       }
     },
     handleClickPreview() {
-      this.toggleTemplateDialog()
+      this.isShowTemplate = true
     },
     resetFilters() {
       this.search = ''
