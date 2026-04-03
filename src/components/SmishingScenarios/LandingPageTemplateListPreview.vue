@@ -1,35 +1,24 @@
 <template>
   <div class="landingPagePreview">
-    <AppDialog
-      style="overflow: hidden;"
-      subtitle="Landing Page Template Preview"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
-      icon="mdi-eye"
+    <SmishingPreviewDrawer
+      v-if="isTemplateDetails"
       :status="isTemplateDetails"
-      :title="getSelectedTemplateHeader"
-      @changeStatus="isTemplateDetails = false"
+      title="Landing Page Template Preview"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isTemplateDetails = false"
     >
-      <template #app-dialog-body>
-        <KEmailPreview
-          v-if="!!getSelectedTemplateDetails"
-          :html="getSelectedTemplateDetails"
-          :key="getSelectedTemplateDetails"
-        />
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
+      <div class="email-template-preview">
+        <div v-if="templateName" class="email-template-preview__title">{{ templateName }}</div>
+        <div class="email-template-preview__container">
+          <KEmailPreview
+            v-if="!!getSelectedTemplateDetails"
+            :html="getSelectedTemplateDetails"
+            :key="getSelectedTemplateDetails"
+          />
         </div>
-      </template>
-    </AppDialog>
+      </div>
+    </SmishingPreviewDrawer>
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
         <div class="landingPagePreview-content">
@@ -71,7 +60,7 @@
                 <div style="max-width: 140px;">
                   <KSelect
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[2].value"
-                    :items="scenarioDetailsLookup.difficultyTypes"
+                    :items="difficultyTypeItems"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
@@ -288,7 +277,7 @@
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import InfiniteScroll from '@/directives/infinite-scroll'
-import AppDialog from '../AppDialog'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import SmishingService from '@/api/smishing'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
@@ -316,7 +305,7 @@ export default {
     KEmailPreview,
     Multipane,
     MultipaneResizer,
-    AppDialog,
+    SmishingPreviewDrawer,
     EmailTemplateListLeftSideLanguages
   },
   directives: {
@@ -413,10 +402,8 @@ export default {
     }
   },
   computed: {
-    getSelectedTemplateHeader() {
-      return this.landingPageTemplates?.length > 1
-        ? this.landingPageTemplates?.[Number.parseInt(this.selectedTab) - 1]?.name || ''
-        : this.landingPageTemplates?.[0]?.name || ''
+    difficultyTypeItems() {
+      return this.scenarioDetailsLookup?.difficultyTypes || []
     },
     getSelectedTemplateDetails() {
       return this.landingPageTemplates?.length > 1

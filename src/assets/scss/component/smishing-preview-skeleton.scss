@@ -1,0 +1,88 @@
+// SmishingPreviewSkeleton.vue — global, imported via _all.scss
+
+.smishing-preview-skeleton {
+  &__campaign-bar,
+  &__scenario-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  &__campaign-bar {
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+
+  // Scenario drawer: first row matches loaded scenario name strip (mt-4 mb-1)
+  &__scenario-bar {
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+
+  &__scenario-tabs {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding-left: 2px;
+  }
+
+  // Campaign text tab block: under inner tabs — same as loaded (mt-n4 name + tight container)
+  &__text-tab.email-template-preview {
+    .email-template-preview__title {
+      margin-top: -16px;
+    }
+
+    .email-template-preview__container {
+      margin-top: 8px;
+    }
+  }
+
+  &__card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+  }
+
+  &__tab-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-left: 2px;
+  }
+
+  // Parent already shows the real scenario name strip — only tab + text placeholders; extra air vs. double bar + negative title margin
+  &--scenario-inline {
+    .smishing-preview-skeleton__tab-row {
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    .smishing-preview-skeleton__text-tab.email-template-preview {
+      .email-template-preview__title {
+        margin-top: 8px;
+      }
+
+      .email-template-preview__container {
+        margin-top: 12px;
+        min-height: 140px;
+      }
+    }
+  }
+
+  &__preview-block {
+    border-radius: 8px;
+    overflow: hidden;
+
+    .v-skeleton-loader__image {
+      height: 320px !important;
+      border-radius: 8px;
+    }
+  }
+}

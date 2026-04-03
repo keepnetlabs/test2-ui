@@ -13,9 +13,12 @@
     </div>
     <div class="landing-page-template-preview__container">
       <!-- Language Selection and Actions Header -->
-      <div class="landing-page-template-preview__header" :class="{ 'justify-end': isQuishing }">
+      <div
+        class="landing-page-template-preview__header"
+        :class="{ 'justify-end': isQuishing || isSmishingProp }"
+      >
         <InputLanguagePreview
-          v-if="!isQuishing"
+          v-if="!isQuishing && !isSmishingProp"
           v-model="selectedLanguageId"
           :items="languageItems"
           :label="templateLanguageLabel"
@@ -130,6 +133,11 @@ export default {
       default: false
     },
     isQuishingProp: {
+      type: Boolean,
+      default: false
+    },
+    /** Hide language dropdown (e.g. Smishing); re-enable when multi-language UX ships (Quishing-style toggle). */
+    isSmishingProp: {
       type: Boolean,
       default: false
     },

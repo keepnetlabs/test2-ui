@@ -31,6 +31,17 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     ).toBe(true)
   })
 
+  it('template language row hidden for Quishing or Smishing (!isQuishing && !isSmishingProp)', () => {
+    const shouldShow = (ctx) =>
+      !computed.isQuishing.call(ctx) && !ctx.isSmishingProp
+    expect(shouldShow({ isQuishingProp: true, type: 'phishing', isSmishingProp: false })).toBe(false)
+    expect(shouldShow({ isQuishingProp: false, type: PREVIEW_DIALOG_TYPES.QUISHING, isSmishingProp: false })).toBe(
+      false
+    )
+    expect(shouldShow({ isQuishingProp: false, type: 'phishing', isSmishingProp: true })).toBe(false)
+    expect(shouldShow({ isQuishingProp: false, type: 'phishing', isSmishingProp: false })).toBe(true)
+  })
+
   it('maps language items and builds language label', () => {
     const languageItems = computed.languageItems.call({
       languages: [{ text: 'English', value: 'en' }, { name: 'Turkish', id: 'tr' }]

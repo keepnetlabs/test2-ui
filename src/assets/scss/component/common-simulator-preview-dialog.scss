@@ -5,13 +5,14 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.17);
-  z-index: 250;
+  // Above AppModal `.k-overlay__footer` (z-index 1000) so dim covers wizard footer when preview opens
+  z-index: 1001;
   cursor: pointer;
 }
 
 .k-navigation-drawer.k-navigation-drawer--preview-dialog {
   transition: right 0.25s ease-in-out;
-  z-index: 251 !important;
+  z-index: 1002 !important;
 }
 
 // Flex + scrollable body: only when needed (Agentic `read-only` and/or approval footer).
@@ -20,6 +21,17 @@
   display: flex !important;
   flex-direction: column;
   overflow: hidden !important;
+
+  // Vuetify sets `.v-navigation-drawer__content` to overflow-y: auto — that scrolls the entire slot
+  // and duplicates scroll with `.k-navigation-drawer__body`. One column + scroll only on body.
+  &.v-navigation-drawer > .v-navigation-drawer__content {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
 
   .campaign-manager-scenario-statistics-modal__header--sticky {
     flex: 0 0 auto;

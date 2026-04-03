@@ -33,40 +33,27 @@
       @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
-    <app-dialog
+    <SmishingPreviewDrawer
       v-if="isTemplateDetails"
-      custom-size="1600"
-      max-height
-      max-height-size="900"
       :status="isTemplateDetails"
-      @changeStatus="isTemplateDetails = false"
-      icon="mdi-eye"
-      :title="selectedTemplateHeader"
-      :subtitle="'Landing Page Template Preview'"
-      :size="'ultraMaximum'"
+      title="Landing Page Template Preview"
+      @on-close="handleCloseLandingPreview"
     >
-      <template #app-dialog-body>
-        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <LandingPageTemplateModalPreview
-          v-show="!isPreviewLoading"
-          :templateName="landingPageParams.name"
-          :landingPageTemplates="landingPageTemplates"
-          :phishingUrl="landingPageParams.urlTemplate"
-        />
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            id="btn-close--landing-page-preview-popup"
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
+      <LandingPagePreviewSkeleton v-if="isPreviewLoading" />
+      <LandingPageTemplateModalPreview
+        v-show="!isPreviewLoading"
+        :type="PREVIEW_DIALOG_TYPES.PHISHING"
+        :template-name="landingPageParams.name"
+        :landing-page-templates="landingPageTemplates"
+        :languages="landingPageParams.languages || []"
+        :phishing-url="landingPageParams.urlTemplate"
+        :is-assisted-by-a-i="landingPageParams.isAssistedByAI"
+        :is-owner="previewRow && previewRow.isOwner !== false"
+        is-smishing-prop
+        @edit="handleEditFromPreview"
+        @duplicate="handleDuplicateFromPreview"
+      />
+    </SmishingPreviewDrawer>
     <DataTable
       v-if="getSmishingLandingPageTemplatesSearchPermissions"
       id="landingPage-data-table"
@@ -157,7 +144,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import NewLandingPage from '@/components/SmishingLandingPages/NewLandingPage'
-import AppDialog from '@/components/AppDialog'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -168,13 +155,14 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import SmishingService from '@/api/smishing'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import LandingPagePreviewSkeleton from '@/components/SkeletonLoading/LandingPagePreviewSkeleton.vue'
 import { mapGetters } from 'vuex'
 import useCallForLanguagesForTableFilter from '@/hooks/useCallForLanguagesForTableFilter'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/DefaultMenuRowAction'
-import LandingPageTemplateModalPreview from '@/components/SmishingLandingPages/LandingPageTemplateModalPreview'
+import LandingPageTemplateModalPreview from '@/components/LandingPage/LandingPageTemplateModalPreview'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import ScenariosRowActionsEditButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsEditButton'
 import ScenariosRowActionsDeleteButton from '@/components/SmallComponents/RowActions/ScenariosRowActionsDeleteButton'
@@ -194,15 +182,16 @@ export default {
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    DatatableLoading,
+    LandingPagePreviewSkeleton,
     DataTable,
     NewLandingPage,
-    AppDialog,
+    SmishingPreviewDrawer,
     LandingPageTemplateModalPreview
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   data() {
     return {
+      PREVIEW_DIALOG_TYPES,
       SCENARIO_DELETE_DIALOG_TYPES,
       landingPageData: null,
       editableFormValues: {},
@@ -388,8 +377,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
-      selectedTemplateHeader: null,
-      templateHTML: null,
+      previewRow: null,
       timeoutId: ''
     }
   },
@@ -474,20 +462,53 @@ export default {
       this.showDeleteModal = false
       this.callForData()
     },
+    handleCloseLandingPreview() {
+      this.isTemplateDetails = false
+      this.previewRow = null
+    },
+    handleEditFromPreview() {
+      const row = this.previewRow
+      this.isTemplateDetails = false
+      this.previewRow = null
+      if (row) {
+        this.handleEdit(row, false)
+      }
+    },
+    handleDuplicateFromPreview() {
+      const row = this.previewRow
+      this.isTemplateDetails = false
+      this.previewRow = null
+      if (row) {
+        this.handleEdit(row, true)
+      }
+    },
     handlePreview(row) {
       const id = row.resourceId
+      this.previewRow = row
       this.isTemplateDetails = true
       this.isPreviewLoading = true
       SmishingService.getLandingPageTemplate(id)
         .then((response) => {
           const data = response.data.data
-          this.landingPageParams.urlTemplate = data.urlTemplate
-          this.landingPageParams.name = data.name
-          this.landingPageTemplates = data.landingPages
-          this.selectedTemplateHeader = data.name
-          this.templateHTML = data.landingPages?.length
-            ? data.landingPages[0]?.content || null
-            : null
+          const languages = []
+          if (data.languageTypeResourceId) {
+            const mainLang = this.languageFilterOptions.find(
+              (l) => l.value === data.languageTypeResourceId
+            )
+            if (mainLang) {
+              languages.push({
+                text: mainLang.text,
+                value: mainLang.value
+              })
+            }
+          }
+          this.landingPageParams = {
+            urlTemplate: data.urlTemplate,
+            name: data.name,
+            isAssistedByAI: data.isAssistedByAI || false,
+            languages
+          }
+          this.landingPageTemplates = data.landingPages || []
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {

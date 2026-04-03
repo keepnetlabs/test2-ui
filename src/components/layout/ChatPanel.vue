@@ -139,8 +139,18 @@ export default {
     agenticAIEnabled() {
       return this.$store.getters["login/getAgenticAIEnabled"];
     },
+    agenticAISettingsPermission() {
+      return this.$store.getters["permissions/getAgenticAISettingsGetPermissions"];
+    },
     iframeSrc() {
       return `${this.chatUrl}?embedded=true&theme=${this.getCurrentTheme()}`;
+    }
+  },
+  watch: {
+    agenticAIEnabled(enabled) {
+      if (enabled && this.agenticAISettingsPermission && !this.chatUrl) {
+        this.fetchAgentLoginUrl();
+      }
     }
   },
   methods: {
@@ -288,7 +298,7 @@ export default {
       this.toggleChat();
     },
     handleExternalOpen() {
-      if (!this.agenticAIEnabled) return;
+      if (!this.agenticAIEnabled || !this.agenticAISettingsPermission) return;
       if (!this.chatUrl) {
         this.fetchAgentLoginUrl();
       }
@@ -314,8 +324,10 @@ export default {
     // Chat panel'i başlangıçtan sonra göster
     this.isInitialHidden = false;
 
-    // Agent login URL'sini al ve iframe'e ata
-    this.fetchAgentLoginUrl();
+    // agenticAIEnabled zaten true ise (watch tetiklenmez), burada kontrol et
+    if (this.agenticAIEnabled && this.agenticAISettingsPermission) {
+      this.fetchAgentLoginUrl();
+    }
 
     // Interval ile diğer chat-popup elemanını kapat
     this.chatPopupInterval = setInterval(() => {

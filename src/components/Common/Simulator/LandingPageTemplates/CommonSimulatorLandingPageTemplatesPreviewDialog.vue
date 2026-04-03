@@ -45,6 +45,7 @@
           :phishing-url="landingPageParams.urlTemplate"
           :is-nested="isNested"
           :is-quishing-prop="isQuishing"
+          :is-smishing-prop="isSmishing"
           :disable-edit="disableEdit"
           :is-owner="isOwnerProp"
           :is-assisted-by-a-i="landingPageParams.isAssistedByAI"
@@ -101,6 +102,10 @@ export default {
       default: 'calc(100% - 72px)'
     },
     isQuishing: {
+      type: Boolean,
+      default: false
+    },
+    isSmishing: {
       type: Boolean,
       default: false
     },

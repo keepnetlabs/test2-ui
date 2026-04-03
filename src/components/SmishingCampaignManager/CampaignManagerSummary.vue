@@ -1,5 +1,39 @@
 <template>
   <div class="campaign-manager-last-step">
+    <SmishingPreviewDrawer
+      v-if="showTextMessagePreviewDialog"
+      :status="showTextMessagePreviewDialog"
+      title="Text Message Template Preview"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="showTextMessagePreviewDialog = false"
+    >
+      <div v-if="textTemplateParams.name" class="email-template-preview">
+        <div class="email-template-preview__title">{{ textTemplateParams.name }}</div>
+        <div class="email-template-preview__container">
+          <div class="common-simulator-preview__text">
+            <div class="template-preview__text">
+              <span class="template-preview__text--title">Text Message</span>
+              <span class="template-preview__text--body d-block mt-1">{{
+                textTemplateParams.template
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SmishingPreviewDrawer>
+    <CommonSimulatorLandingPageTemplatesPreviewDialog
+      v-if="showLandingPagePreviewDialog && landingPagePreviewSelectedRow"
+      ref="landingPagePreviewDialog"
+      :status="showLandingPagePreviewDialog"
+      :selected-row="landingPagePreviewSelectedRow"
+      :type="PREVIEW_DIALOG_TYPES.PHISHING"
+      :languages="languageOptions"
+      is-nested
+      is-smishing
+      :should-control-html-overflow="false"
+      @on-close="showLandingPagePreviewDialog = false"
+    />
     <CampaignManagerScheduleDialog
       v-if="showSchedule && isShowScheduleDialog"
       :type="DISTRIBUTION_TYPES.SMISHING"
@@ -111,18 +145,20 @@
       </CampaignManagerSummaryCard>
     </div>
     <div class="my-6 d-flex justify-space-between align-center">
-      <span class="campaign-manager-last-step__phishing-scenario-label">Smishing Scenarios</span>
-      <VTooltip v-if="phishingScenarios.length > 5" bottom>
-        <template #activator="{ on }">
-          <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
-            >Total {{ phishingScenarios.length }} Scenarios</span
-          >
-        </template>
-        <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
-          {{ methodWrapper.method }} ({{ methodWrapper.count }})
-        </div>
-      </VTooltip>
-      <div v-if="showSchedule">
+      <div>
+        <span class="campaign-manager-last-step__phishing-scenario-label">Smishing Scenarios</span>
+        <VTooltip v-if="phishingScenarios.length > 5" bottom>
+          <template #activator="{ on }">
+            <span v-on="on" class="campaign-manager-last-step__phishing-scenario-badge ml-4"
+              >Total {{ phishingScenarios.length }} Scenarios</span
+            >
+          </template>
+          <div v-for="(methodWrapper, index) in getMethodDetail" :key="index">
+            {{ methodWrapper.method }} ({{ methodWrapper.count }})
+          </div>
+        </VTooltip>
+      </div>
+      <div v-if="showSchedule && isDistributionManually">
         <v-btn
           class="campaign-manager-summary-card__button pr-4 mr-6"
           rounded
@@ -150,51 +186,29 @@
     </ElTabs>
     <div class="campaign-manager-last-step__email-template mt-4">
       <CampaignManagerSummaryCard
+        v-if="isDistributionManually && isFormData && textTemplateParams.name && phishingScenarios.length"
+        detailable
+        is-training
         icon="mdi-message-alert"
-        title="Text Message Template that will be sent to users"
-      >
-        <template #body>
-          <div
-            v-if="isFormData && textTemplateParams && phishingScenarios.length"
-            class="campaign-manager-last-step__email-template-body pb-4"
-          >
-            <div class="campaign-manager-last-step__email-template-body-header">
-              <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ textTemplateParams.name }}
-              </div>
-              <div class="campaign-manager-last-step__email-template-body-header-right">
-                <v-btn style="display: none;"></v-btn>
-                <Badge
-                  size="mini"
-                  :color="getBadgeColor(textTemplateParams.difficulty)"
-                  :text="getBadgeText(textTemplateParams.difficulty)"
-                  :outline="false"
-                />
-                <Badge
-                  v-if="landingPageParams.method || textTemplateParams.method"
-                  size="mini"
-                  color="#E0E0E0"
-                  class-name="badge-middle px-2 py-2"
-                  :text="getBadgeText(landingPageParams.method || textTemplateParams.method)"
-                  :outline="false"
-                />
-                <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-                  <template #content>
-                    <v-icon>mdi-web</v-icon>{{ textTemplateParams.languageShortCode }}
-                  </template>
-                </Badge>
-              </div>
-            </div>
-            <div class="campaign-manager-last-step__email-template-body-header-sub">
-              <span style="font-weight: 600;">Text Message:</span>
-              {{ textTemplateParams.template }}
-            </div>
-          </div>
-        </template>
-      </CampaignManagerSummaryCard>
+        :show-body-detail.sync="showTextMessagePreviewDialog"
+        :title="getTextMessageTitle"
+      />
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
-      <CampaignManagerSummaryLandingPage :formData="landingPageParams" :isMethodMfa="isMethodMfa" />
+      <CampaignManagerSummaryCard
+        v-if="
+          isDistributionManually &&
+          !isAttachmentBasedScenario &&
+          isFormData &&
+          landingPageParams.name &&
+          phishingScenarios.length
+        "
+        detailable
+        is-training
+        icon="mdi-application"
+        :show-body-detail.sync="showLandingPagePreviewDialog"
+        :title="getLandingPageTitle"
+      />
     </div>
     <div class="campaign-manager-last-step__landing-page-template mt-4">
       <CampaignManagerReportSummaryTraining
@@ -211,14 +225,14 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
-import Badge from '@/components/Badge'
-import { getDifficultyBadgeColor } from '@/utils/functions'
 import AlertBox from '@/components//AlertBox'
 import { SEND_RANDOMLY_USERS_CALCULATE_TYPES } from '@/components/CampaignManager/utils'
 import SmishingService from '@/api/smishing'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import CampaignManagerSummaryLandingPage from '@/components/SmishingCampaignManager/CampaignManagerSummaryLandingPage'
 import CampaignManagerScheduleDialog from '@/components/CampaignManager/CampaignManagerScheduleDialog.vue'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
@@ -230,10 +244,10 @@ export default {
   components: {
     CampaignManagerReportSummaryTraining,
     CampaignManagerScheduleDialog,
-    Badge,
+    SmishingPreviewDrawer,
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
     CampaignManagerSummaryCard,
-    CampaignManagerSummaryLandingPage,
     AlertBox,
     CampaignManagerSenderPhoneNumbersModal
   },
@@ -260,15 +274,16 @@ export default {
   },
   data() {
     return {
+      PREVIEW_DIALOG_TYPES,
       DISTRIBUTION_TYPES,
       labels,
       isSenderPhoneNumbersModalVisible: false,
       isShowTargetUserDetail: false,
-      isShowEmailTemplate: false,
-      isShowLandingPageTemplate: false,
+      showTextMessagePreviewDialog: false,
+      showLandingPagePreviewDialog: false,
+      landingPagePreviewSelectedRow: null,
       isScenarioDetailLoading: false,
       selectedScenarioResourceId: '',
-      selectedScenarioMethodTypeId: '',
       isShowScheduleDialog: false,
       trainingParams: null,
       selectedTraining: null,
@@ -282,6 +297,14 @@ export default {
     ...mapGetters({
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
+    getTextMessageTitle() {
+      const templateName = this.textTemplateParams?.name || ''
+      return `Text Message: ${templateName}`
+    },
+    getLandingPageTitle() {
+      const templateName = this.landingPageParams?.name || ''
+      return `Landing Page: ${templateName}`
+    },
     canRenderTimeZoneAlertBox() {
       return this.getActiveUsersWithoutTimeZoneCount > 0 && this.formData?.useTargetUserTimeZone
     },
@@ -315,9 +338,6 @@ export default {
     },
     getScheduledDate() {
       return this?.formData?.scheduledDate || ''
-    },
-    isMethodMfa() {
-      return this.selectedScenarioMethodTypeId === 4
     },
     getMethodDetail() {
       const mappedObj = this.phishingScenarios.reduce(
@@ -424,6 +444,11 @@ export default {
     },
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    /** Wizard has no category-based distribution; undefined counts as manual (Phishing summary parity). */
+    isDistributionManually() {
+      const d = this.formData?.scenarioDistribution
+      return d === undefined || d === SCENARIO_DISTRIBUTION.MANUALLY
     },
     isAttachmentBasedScenario() {
       return this.landingPageParams?.method === 'Attachment' || false
@@ -575,7 +600,6 @@ export default {
           const {
             textTemplate,
             landingPageTemplate,
-            methodTypeId: scenarioMethodTypeId,
             mfaTextTemplate,
             mfaSmsSenderNumber
           } = data
@@ -605,7 +629,8 @@ export default {
             urlTemplate,
             difficultyTypeId,
             languageTypeResourceId,
-            methodTypeId
+            methodTypeId,
+            resourceId: landingPageResourceId = ''
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
@@ -616,12 +641,16 @@ export default {
             languageTypeResourceId,
             landingPageTemplates: landingPages,
             mfaTextTemplate,
-            mfaSmsSenderNumber
+            mfaSmsSenderNumber,
+            resourceId: landingPageResourceId
           }
           this.landingPageParams.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.landingPageParams.languageTypeResourceId
           )?.text
-          this.selectedScenarioMethodTypeId = scenarioMethodTypeId
+          this.landingPagePreviewSelectedRow = {
+            resourceId: landingPageResourceId,
+            name: this.landingPageParams.name
+          }
         })
         .finally(() => (this.isScenarioDetailLoading = false))
     },
@@ -651,12 +680,6 @@ export default {
       AwarenessEducatorService.getLanguages().then((res) => {
         this.trainingLanguages = res?.data?.data || []
       })
-    },
-    getBadgeColor(text = '') {
-      return getDifficultyBadgeColor(text)
-    },
-    getBadgeText(text = '') {
-      return text
     },
     handleSchedule() {
       this.toggleScheduleDialog()
