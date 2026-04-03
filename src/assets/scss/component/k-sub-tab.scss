@@ -21,3 +21,20 @@
     margin-left:8px;
   }
 }
+
+// Smishing/CommonSimulator drawer preview: align with parent ElTabs (no ml-2 / -8px hack)
+.tabs-with-mfa-settings.tabs-with-mfa-settings--drawer-flush {
+  margin-left: 0;
+  .el-tabs__nav {
+    margin-left: 0;
+  }
+  // Inner Landing Page k-sub-tab: drawer-flush above zeroes ALL .el-tabs__nav; restore k-sub-tab default
+  // so "Page 1" matches Phishing (16px inset) instead of flush to the card edge.
+  .el-tabs.k-sub-tab .el-tabs__nav {
+    margin-left: 16px;
+  }
+  .el-tabs.k-sub-tab > .el-tabs__header {
+    padding-top: 8px;
+    box-sizing: border-box;
+  }
+}

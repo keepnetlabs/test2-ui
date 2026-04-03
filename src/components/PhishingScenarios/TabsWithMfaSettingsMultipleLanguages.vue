@@ -16,12 +16,12 @@
         <div
           class="email-template-preview__header d-flex align-center mb-4"
           :class="{
-            'justify-end': isQuishing,
-            'justify-space-between': isPhishing
+            'justify-end': isQuishing || isSmishing,
+            'justify-space-between': isPhishing && !isSmishing
           }"
         >
           <InputLanguagePreview
-            v-if="!isQuishing"
+            v-if="!isQuishing && !isSmishing"
             :value="languagePreview"
             :items="selectedLanguages"
             :label="templateLanguageLabel"

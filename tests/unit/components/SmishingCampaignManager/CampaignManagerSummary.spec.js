@@ -23,6 +23,7 @@ jest.mock('@/api/awarenessEducator', () => ({
 }))
 
 import CampaignManagerSummary from '@/components/SmishingCampaignManager/CampaignManagerSummary.vue'
+import SmishingService from '@/api/smishing'
 
 describe('CampaignManagerSummary.vue', () => {
   const baseFormData = {
@@ -89,6 +90,34 @@ describe('CampaignManagerSummary.vue', () => {
     expect(items['Sender Phone Numbers']).toEqual(['+1', '+2'])
   })
 
+  it('getTextMessageTitle prefixes template name', () => {
+    const title = CampaignManagerSummary.computed.getTextMessageTitle.call({
+      textTemplateParams: { name: 'Morning SMS' }
+    })
+    expect(title).toBe('Text Message: Morning SMS')
+  })
+
+  it('getTextMessageTitle handles missing name', () => {
+    const title = CampaignManagerSummary.computed.getTextMessageTitle.call({
+      textTemplateParams: {}
+    })
+    expect(title).toBe('Text Message: ')
+  })
+
+  it('getLandingPageTitle prefixes template name', () => {
+    const title = CampaignManagerSummary.computed.getLandingPageTitle.call({
+      landingPageParams: { name: 'Phish LP' }
+    })
+    expect(title).toBe('Landing Page: Phish LP')
+  })
+
+  it('getLandingPageTitle handles missing name', () => {
+    const title = CampaignManagerSummary.computed.getLandingPageTitle.call({
+      landingPageParams: {}
+    })
+    expect(title).toBe('Landing Page: ')
+  })
+
   it('getMethodDetail counts scenario methods', () => {
     const ctx = {
       phishingScenarios: [
@@ -129,5 +158,47 @@ describe('CampaignManagerSummary.vue', () => {
     CampaignManagerSummary.methods.callForScenarioDetail.call(ctx, {})
     expect(ctx.isScenarioDetailLoading).toBe(false)
     expect(ctx.trainingParams).toBe(null)
+  })
+
+  it('callForScenarioDetail sets landingPagePreviewSelectedRow for landing preview dialog', async () => {
+    SmishingService.previewSmishingScenario.mockResolvedValueOnce({
+      data: {
+        data: {
+          textTemplate: {
+            name: 'SMS A',
+            template: 'Hi',
+            difficultyResourceId: 'mT0CeYGgKsVb',
+            languageTypeResourceId: null,
+            method: 'Click-Only'
+          },
+          landingPageTemplate: {
+            name: 'LP A',
+            resourceId: 'lp-resource-1',
+            landingPages: [],
+            urlTemplate: 'https://example.com/x',
+            difficultyTypeId: 1,
+            languageTypeResourceId: null,
+            methodTypeId: 1
+          }
+        }
+      }
+    })
+    const ctx = {
+      formData: {},
+      trainingParams: null,
+      languageOptions: [],
+      isScenarioDetailLoading: false,
+      textTemplateParams: {},
+      landingPageParams: {},
+      landingPagePreviewSelectedRow: null
+    }
+    CampaignManagerSummary.methods.callForScenarioDetail.call(ctx, { name: 'scenario-1' })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(ctx.landingPagePreviewSelectedRow).toEqual({
+      resourceId: 'lp-resource-1',
+      name: 'LP A'
+    })
+    expect(ctx.landingPageParams.resourceId).toBe('lp-resource-1')
+    expect(ctx.isScenarioDetailLoading).toBe(false)
   })
 })

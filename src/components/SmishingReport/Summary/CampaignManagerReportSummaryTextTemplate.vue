@@ -1,121 +1,92 @@
 <template>
-  <CampaignManagerSummaryCard
-    class="mt-4"
-    icon="mdi-message-alert"
-    title="Text Message Template that will be sent to users"
-    :isLoading="isFetchingSummary"
-  >
-    <template #body>
-      <div v-if="isFormData" class="campaign-manager-last-step__email-template-body pb-4">
-        <div class="campaign-manager-last-step__email-template-body-header">
-          <div class="campaign-manager-last-step__email-template-body-header-left">
-            {{ formData.name }}
-          </div>
-          <div class="campaign-manager-last-step__email-template-body-header-right">
-            <v-btn style="display: none;"></v-btn>
-            <Badge
-              size="mini"
-              :color="getBadgeColor(difficulty)"
-              :text="getBadgeText(difficulty)"
-              :outline="false"
-            />
-            <Badge
-              size="mini"
-              color="#E0E0E0"
-              class-name="badge-middle px-2 py-2"
-              :text="getBadgeText(method)"
-              :outline="false"
-            />
-            <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
-              <template #content>
-                <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
-              </template>
-            </Badge>
+  <div>
+    <SmishingPreviewDrawer
+      v-if="isShowTextMessageTemplate"
+      :status="isShowTextMessageTemplate"
+      title="Text Message Template Preview"
+      is-nested
+      :should-control-html-overflow="false"
+      @on-close="isShowTextMessageTemplate = false"
+    >
+      <div v-if="previewName" class="email-template-preview">
+        <div class="email-template-preview__title">{{ previewName }}</div>
+        <div class="email-template-preview__container">
+          <div class="common-simulator-preview__text">
+            <div class="template-preview__text">
+              <span class="template-preview__text--title">Text Message</span>
+              <span class="template-preview__text--body d-block mt-1">{{ previewTemplate }}</span>
+            </div>
           </div>
         </div>
-        <div class="campaign-manager-last-step__email-template-body-header-sub">
-          <span class="font-weight-bold">Text Message:</span> {{ textTemplate }}
-        </div>
-        <div></div>
       </div>
-    </template>
-  </CampaignManagerSummaryCard>
+    </SmishingPreviewDrawer>
+    <CampaignManagerSummaryCard
+      class="mt-4"
+      detailable
+      is-training
+      icon="mdi-message-alert"
+      detailable-button-id="btn-preview--campaign-report-text-message-template"
+      :isLoading="isFetchingSummary"
+      :show-body-detail.sync="isShowTextMessageTemplate"
+      :title="getTitle"
+    />
+  </div>
 </template>
 
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
-import labels from '@/model/constants/labels'
-import Badge from '@/components/Badge'
-import { useLoading } from '@/hooks/useLoading'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import SmishingService from '@/api/smishing'
-import { getDifficultyBadgeColor } from '@/utils/functions'
 
 export default {
   name: 'CampaignManagerReportSummaryTextTemplate',
   components: {
-    Badge,
+    SmishingPreviewDrawer,
     CampaignManagerSummaryCard
   },
-  mixins: [useLoading],
   props: {
     formData: {
       type: Object
     },
     isFetchingSummary: {
       type: Boolean
-    },
-    difficulties: {
-      type: Array
-    },
-    methods: {
-      type: Array
     }
   },
   data() {
     return {
-      labels,
-      textTemplate: null,
-      difficulty: '',
-      method: ''
+      isShowTextMessageTemplate: false,
+      previewName: '',
+      previewTemplate: ''
     }
   },
   computed: {
-    isFormData() {
-      return Object.keys(this.formData).length
+    getTitle() {
+      const templateName = this.formData?.name || ''
+      return `Text Message: ${templateName}`
     }
   },
   watch: {
+    isShowTextMessageTemplate(val) {
+      if (val && this.formData?.resourceId) {
+        this.loadTextPreview()
+      }
+    },
     'formData.resourceId': {
-      deep: true,
-      immediate: true,
-      handler(val) {
-        if (val) this.callForTemplate(true)
+      handler() {
+        this.previewName = ''
+        this.previewTemplate = ''
       }
     }
   },
   methods: {
-    callForTemplate(showLoader = true) {
-      if (showLoader) this.setLoading(true)
-      SmishingService.getTextMessageTemplate(this.formData.resourceId)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.textTemplate = data.template
-          this.difficulty = this.difficulties.find(
-            (item) => item.value === data.difficultyResourceId
-          )?.text
-          this.method = this.methods.find((item) => item.value === data.categoryResourceId)?.text
-        })
-        .finally(() => {
-          if (showLoader) this.setLoading()
-        })
-    },
-    getBadgeColor(text = '') {
-      return getDifficultyBadgeColor(text)
-    },
-    getBadgeText(text = '') {
-      return text
+    loadTextPreview() {
+      this.previewName = this.formData?.name || ''
+      return SmishingService.getTextMessageTemplate(this.formData.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.previewTemplate = data?.template ?? ''
+      })
     }
   }
 }

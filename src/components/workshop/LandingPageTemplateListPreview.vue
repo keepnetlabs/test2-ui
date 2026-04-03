@@ -9,6 +9,7 @@
       :languages="languages"
       :api-func="apiFuncs.content"
       is-nested
+      :is-smishing="type === SCENARIO_TYPES.SMISHING"
       :should-control-html-overflow="false"
       @on-close="isTemplateDetails = false"
     />

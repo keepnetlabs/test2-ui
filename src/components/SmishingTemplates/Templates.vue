@@ -30,39 +30,25 @@
       @on-success-multiple="handleSuccessMultipleDeleteAction"
       @on-close="showDeleteModal = false"
     />
-    <AppDialog
+    <SmishingPreviewDrawer
       v-if="isTemplateDetails"
-      custom-size="668"
-      max-height
-      max-height-size="900"
-      icon="mdi-eye"
-      title="Text Message Template Preview"
       :status="isTemplateDetails"
-      :subtitle="selectedTemplateHeader"
-      @changeStatus="isTemplateDetails = false"
+      title="Text Message Template Preview"
+      @on-close="isTemplateDetails = false"
     >
-      <template v-slot:app-dialog-body>
-        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
-        <div v-show="!isPreviewLoading" class="template-preview">
-          <div class="d-flex flex-column py-6">
-            <span class="mb-2 text-body-1">Text Message</span>
-            <span class="text-body-1">{{ template }}</span>
+      <SmishingPreviewSkeleton v-if="isPreviewLoading" variant="text" />
+      <div v-show="!isPreviewLoading" class="email-template-preview smishing-text-template-drawer">
+        <div class="email-template-preview__title">{{ selectedTemplateHeader }}</div>
+        <div class="email-template-preview__container">
+          <div class="common-simulator-preview__text">
+            <div class="template-preview__text">
+              <span class="template-preview__text--title">Text Message</span>
+              <span class="template-preview__text--body d-block mt-0">{{ template }}</span>
+            </div>
           </div>
         </div>
-      </template>
-      <template #app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            id="btn-close--email-preview-popup"
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isTemplateDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </AppDialog>
+      </div>
+    </SmishingPreviewDrawer>
     <DataTable
       v-if="getSmishingTextMessageTemplatesSearchPermissions"
       id="emailTemplates-data-table"
@@ -151,7 +137,7 @@
 import DataTable from '@/components/DataTable'
 import NewSmishingTemplate from '@/components/SmishingTemplates/NewTemplate'
 import DeleteTemplateModal from '@/components/SmishingTemplates/DeleteTemplateModal'
-import AppDialog from '@/components/AppDialog'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import SmishingService from '@/api/smishing'
 import {
   getStoreValue,
@@ -163,7 +149,7 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import SmishingPreviewSkeleton from '@/components/SkeletonLoading/SmishingPreviewSkeleton.vue'
 import * as Validations from '@/utils/validations'
 import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -186,11 +172,11 @@ export default {
     DefaultMenuRowAction,
     RowActionsMenu,
     DefaultButtonRowAction,
-    DatatableLoading,
+    SmishingPreviewSkeleton,
     DataTable,
     DeleteTemplateModal,
     NewSmishingTemplate,
-    AppDialog
+    SmishingPreviewDrawer
   },
   mixins: [useCallForLanguagesForTableFilter, useDefaultTableFunctions],
   computed: {

@@ -1,6 +1,41 @@
 <template>
   <app-modal :status="status" icon-name="mdi-message-alert" :title="getModalTitle">
     <template #overlay-body>
+      <CommonSimulatorLandingPageTemplatesPreviewDialog
+        v-if="showLandingPagePreviewDialog"
+        ref="landingPagePreviewDialog"
+        :status="showLandingPagePreviewDialog"
+        :selected-row="landingPagePreviewSelectedRow"
+        :type="PREVIEW_DIALOG_TYPES.PHISHING"
+        :languages="languageOptions"
+        :api-func="getLandingPageTemplateApi"
+        is-nested
+        is-smishing
+        :should-control-html-overflow="false"
+        @on-close="showLandingPagePreviewDialog = false"
+      />
+      <SmishingPreviewDrawer
+        v-if="showTextMessagePreviewDialog"
+        :status="showTextMessagePreviewDialog"
+        title="Text Message Template Preview"
+        is-nested
+        :should-control-html-overflow="false"
+        @on-close="showTextMessagePreviewDialog = false"
+      >
+        <div v-if="textMessageTemplate" class="email-template-preview smishing-text-template-drawer">
+          <div class="email-template-preview__title">{{ textMessageTemplate.name }}</div>
+          <div class="email-template-preview__container">
+            <div class="common-simulator-preview__text">
+              <div class="template-preview__text">
+                <span class="template-preview__text--title">Text Message</span>
+                <span class="template-preview__text--body d-block mt-0">{{
+                  textMessageTemplate.template
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SmishingPreviewDrawer>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -224,235 +259,61 @@
                   </div>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
+              <v-list-item class="pl-0">
                 <v-list-item-content>
                   <div class="summary">
-                    <div class="summary-header">
+                    <div
+                      class="summary-header py-4 px-6 d-flex align-center justify-space-between flex-wrap"
+                    >
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
                           mdi-message-processing
                         </v-icon>
-                        Text Message Template that will be sent to users
+                        <span>Text Message: </span>
+                        <span>{{ textMessageTemplate && textMessageTemplate.name }}</span>
                       </div>
-                    </div>
-                    <div class="summary-content">
-                      <div class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!textMessageTemplate">
-                          <div class="template-summary__title">
-                            {{ textMessageTemplate && textMessageTemplate.name }}
-                          </div>
-                          <div class="template-summary__sub-title mt-2">
-                            <span class="font-weight-bold">Text Message:</span>
-                            {{ getSummaryTextMessage }}
-                          </div>
-                        </div>
-                        <div v-if="!!textMessageTemplate" class="d-flex">
-                          <v-chip
-                            class="template-list--item template-list--item__chip p mr-2"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                            :color="emailDifficultyChipColor"
-                          >
-                            {{ textMessageDifficultyText }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!textMessageTemplate"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            {{ textMessageMethodText }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!textMessageTemplate"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              background-color: #757575;
-                              margin-left: 8px;
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{ getTextMessageLanguageDisplay }}
-                          </v-chip>
-                        </div>
+                      <div>
+                        <v-btn
+                          class="campaign-manager-summary-card__button pr-4"
+                          rounded
+                          outlined
+                          color="#2196f3"
+                          :disabled="!textMessageTemplate"
+                          @click="showTextMessagePreviewDialog = true"
+                        >
+                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                          Preview
+                        </v-btn>
                       </div>
                     </div>
                   </div>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item v-if="!isAttachmentBasedScenario">
+              <v-list-item v-if="!isAttachmentBasedScenario" class="pl-0">
                 <v-list-item-content>
                   <div class="summary">
-                    <div class="summary-header">
+                    <div
+                      class="summary-header py-4 px-6 d-flex align-center justify-space-between flex-wrap"
+                    >
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                          {{ 'mdi-application' }}
+                          mdi-application
                         </v-icon>
-                        Landing Page for users who clicked the phishing link
+                        <span>Landing Page: </span>
+                        <span>{{ landingPageTemplate && landingPageTemplate.name }}</span>
                       </div>
                       <div>
                         <v-btn
-                          class="campaign-manager-summary-card__button"
+                          class="campaign-manager-summary-card__button pr-4"
                           rounded
                           outlined
                           color="#2196f3"
-                          @click="showTemplate2 = !showTemplate2"
-                          >Preview
-                          <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate2 ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                          </v-icon></v-btn
+                          :disabled="!landingPageTemplate"
+                          @click="showLandingPagePreviewDialog = true"
                         >
-                      </div>
-                    </div>
-                    <div v-if="landingPageTemplate" class="summary-content">
-                      <el-tabs
-                        v-if="
-                          landingPageTemplate.landingPages &&
-                          landingPageTemplate.landingPages.length > 1
-                        "
-                        v-model="selectedTab"
-                      >
-                        <el-tab-pane
-                          v-for="(template, index) in landingPageTemplate.landingPages"
-                          :key="index"
-                          :name="`${index + 1}`"
-                          :label="`Page ${index + 1}`"
-                        >
-                          <div class="d-flex justify-space-between">
-                            <div class="d-flex flex-column" v-if="!!landingPageTemplate">
-                              <div class="template-summary__title">
-                                {{ landingPageTemplate && landingPageTemplate.name }}
-                              </div>
-                              <div class="template-summary__sub-title mt-2">
-                                <b>URL:</b>
-                                {{ landingPageTemplate.urlTemplate }}
-                              </div>
-                            </div>
-                            <div class="d-flex" v-if="!!landingPageTemplate">
-                              <v-chip
-                                v-if="!!landingPageTemplate"
-                                class="template-list--item template-list--item__chip p mr-2"
-                                style="
-                                  color: white;
-                                  border-radius: 6px;
-                                  height: 24px;
-                                  font-weight: 600;
-                                  font-size: 12px;
-                                "
-                                :color="getLandingPageDifficultyColor"
-                              >
-                                {{ landingPageDifficultyText }}
-                              </v-chip>
-                              <v-chip
-                                v-if="!!landingPageTemplate"
-                                class="template-list--item template-list--item__chip p"
-                                style="
-                                  border-radius: 6px;
-                                  height: 24px;
-                                  font-weight: 600;
-                                  font-size: 12px;
-                                "
-                              >
-                                {{ landingPageMethodText }}
-                              </v-chip>
-                              <v-chip
-                                v-if="!!landingPageTemplate"
-                                class="template-list--item template-list--item__chip p"
-                                style="
-                                  color: white;
-                                  border-radius: 6px;
-                                  height: 24px;
-                                  font-weight: 600;
-                                  background-color: #757575;
-                                  margin-left: 8px;
-                                  font-size: 12px;
-                                "
-                              >
-                                <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                                >{{ getLandingPageLanguageDisplay }}
-                              </v-chip>
-                            </div>
-                          </div>
-                        </el-tab-pane>
-                      </el-tabs>
-                      <div v-else class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!landingPageTemplate">
-                          <div class="template-summary__title">
-                            {{ landingPageTemplate && landingPageTemplate.name }}
-                          </div>
-                          <div class="template-summary__sub-title mt-2">
-                            <b>URL:</b> {{ landingPageTemplate.urlTemplate }}
-                          </div>
-                        </div>
-                        <div v-if="!!landingPageTemplate" class="d-flex">
-                          <v-chip
-                            class="template-list--item template-list--item__chip p mr-2"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                            :color="getLandingPageDifficultyColor"
-                          >
-                            {{ landingPageDifficultyText }}
-                          </v-chip>
-                          <v-chip
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            {{ landingPageMethodText }}
-                          </v-chip>
-                          <v-chip
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              background-color: #757575;
-                              margin-left: 8px;
-                              font-size: 12px;
-                            "
-                          >
-                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{ getLandingPageLanguageDisplay }}
-                          </v-chip>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      v-if="showTemplate2"
-                      class="summary-content summary-content__collapsable"
-                      style="border: none;"
-                    >
-                      <div class="summary-template">
-                        <KEmailPreview
-                          v-if="!!getCurrentLandingPageTemplate"
-                          :html="getCurrentLandingPageTemplate"
-                          :key="getCurrentLandingPageTemplate"
-                          is-extra-height
-                        />
+                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                          Preview
+                        </v-btn>
                       </div>
                     </div>
                   </div>
@@ -490,7 +351,6 @@ import * as Validations from '@/utils/validations'
 import SmishingService from '@/api/smishing'
 import LandingPageListPreview from '@/components/SmishingScenarios/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import KEmailPreview from '@/components/KEmailPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
@@ -501,15 +361,15 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import TextMessageTemplateSelectList from '@/components/SmishingScenarios/TextMessageTemplateSelectList'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
-import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
+import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { mapGetters } from 'vuex'
-import { getDifficultyColor } from '@/components/SmishingReport/Opened/utils'
 export default {
   name: 'NewScenario',
   components: {
     KSelect,
     StepperFooter,
-    KEmailPreview,
     AppModal,
     FormGroup,
     MakeAvailableFor,
@@ -519,7 +379,9 @@ export default {
     InputEntityName,
     InputDescription,
     TextMessageTemplateSelectList,
-    CampaignManagerSummaryCard
+    CampaignManagerSummaryCard,
+    CommonSimulatorLandingPageTemplatesPreviewDialog,
+    SmishingPreviewDrawer
   },
   props: {
     status: {
@@ -550,6 +412,9 @@ export default {
   data() {
     return {
       SCENARIO_TYPES,
+      PREVIEW_DIALOG_TYPES,
+      showTextMessagePreviewDialog: false,
+      showLandingPagePreviewDialog: false,
       footerButtonsIds: {
         cancelButton: 'btn-cancel--add-or-edit-scenario-modal',
         backButton: 'btn-back--add-or-edit-scenario-modal',
@@ -557,11 +422,8 @@ export default {
         saveButton: 'btn-save--add-or-edit-scenario-modal'
       },
       isInitial: true,
-      emailDifficultyChipColor: '#217124',
       isFetched: false,
-      selectedTab: '1',
       summaryData: {},
-      showTemplate2: false,
       languageOptions: [],
       methods: [
         { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
@@ -612,7 +474,6 @@ export default {
     }
   },
   methods: {
-    getDifficultyColor,
     getMethodTypeDescription(method = '') {
       if (method === 'Click-Only') return 'See who fails for phishing links'
       return method === 'Data Submission' ? 'Gather information from users' : 'Send a smishing MFA'
@@ -661,6 +522,8 @@ export default {
       this.$emit('validation', this.isAvailableForValid)
     },
     changeNewScenarioModalStatus() {
+      this.showTextMessagePreviewDialog = false
+      this.showLandingPagePreviewDialog = false
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
         return this.$emit('changeNewScenarioModalStatus', false)
@@ -671,6 +534,9 @@ export default {
           this.$emit('changeNewScenarioModalStatus', false)
         }
       })
+    },
+    getLandingPageTemplateApi(resourceId) {
+      return SmishingService.getLandingPageTemplate(resourceId)
     },
     nextStep() {
       const currentStep = structuredClone(this.step)
@@ -704,9 +570,6 @@ export default {
         }
         if (this.formValues.landingPageTemplateId && this.landingPageTemplate) {
           this.mfaData = this.$refs?.refLandingPageTemplateListPreview?.mfaData
-          this.emailDifficultyChipColor = this.getDifficultyColor(
-            this.textMessageTemplate.difficultyName
-          )
           this.textMessageTemplate.languageShortCode = this.languageOptions.find(
             (language) => language.value === this.textMessageTemplate.languageTypeResourceId
           )?.description
@@ -754,9 +617,6 @@ export default {
     }
   },
   watch: {
-    landingPageTemplateResourceId() {
-      this.selectedTab = '1'
-    },
     'formValues.methodTypeId'(val, oldVal) {
       if (val !== oldVal && !this.isInitial) {
         this.formValues.textTemplateId = null
@@ -771,20 +631,6 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
-    getTextMessageLanguageDisplay() {
-      if (!this.textMessageTemplate) return ''
-      const language = this.languageOptions.find(
-        (lang) => lang.value === this.textMessageTemplate.languageTypeResourceId
-      )
-      return language?.text || this.textMessageTemplate.languageShortCode || ''
-    },
-    getLandingPageLanguageDisplay() {
-      if (!this.landingPageTemplate) return ''
-      const language = this.languageOptions.find(
-        (lang) => lang.value === this.landingPageTemplate.languageTypeResourceId
-      )
-      return language?.text || this.landingPageTemplate.languageShortCode || ''
-    },
     getSummaryContainerStyle() {
       return this.isMethodMfa
         ? {
@@ -812,9 +658,6 @@ export default {
         'Sender Phone Number': this?.mfaData?.mfaCallerPhoneNumber,
         'Verification Message': this?.mfaData?.mfaTextTemplate
       }
-    },
-    getSummaryTextMessage() {
-      return this.textMessageTemplate?.template
     },
     getSelectedMethod() {
       return this.formValues?.methodTypeId
@@ -858,17 +701,6 @@ export default {
           }
         : null
     },
-    getLandingPageDifficultyColor() {
-      let difficultyType = ''
-      if (this.landingPageTemplate) {
-        difficultyType = (this.scenarioDetailsLookup?.difficultyTypes || []).find(
-          (item) => item.value === this.landingPageTemplate.difficultyTypeId?.toString()
-        )?.text
-      }
-      if (difficultyType === 'Easy') return '#217124'
-      else if (difficultyType === 'Medium') return '#2196F3'
-      else return '#F56C6C'
-    },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
     },
@@ -900,45 +732,18 @@ export default {
         )?.text || ''
       )
     },
+    landingPagePreviewSelectedRow() {
+      if (!this.landingPageTemplate) return {}
+      return {
+        ...this.landingPageTemplate,
+        resourceId:
+          this.landingPageTemplateResourceId ||
+          this.landingPageTemplate.resourceId ||
+          this.landingPageTemplate.id
+      }
+    },
     methodTypeItems() {
       return this.scenarioDetailsLookup?.methodTypes || []
-    },
-    textMessageDifficultyText() {
-      if (!this.textMessageTemplate) return ''
-      const found = this.difficulties.find(
-        (item) => item.value === this.textMessageTemplate.difficultyResourceId
-      )
-      return found ? found.text : ''
-    },
-    textMessageMethodText() {
-      if (!this.textMessageTemplate) return ''
-      const found = this.methods.find(
-        (item) => item.value === this.textMessageTemplate.categoryResourceId
-      )
-      return found ? found.text : ''
-    },
-    landingPageDifficultyText() {
-      if (!this.landingPageTemplate) return ''
-      const types = this.scenarioDetailsLookup?.difficultyTypes || []
-      const id = this.landingPageTemplate.difficultyTypeId
-      if (id == null) return ''
-      const found = types.find((item) => item.value === id.toString())
-      return found ? found.text : ''
-    },
-    landingPageMethodText() {
-      if (!this.landingPageTemplate) return ''
-      const types = this.scenarioDetailsLookup?.methodTypes || []
-      const id = this.landingPageTemplate.methodTypeId
-      if (id == null) return ''
-      const found = types.find((item) => item.value === id.toString())
-      return found ? found.text : ''
-    },
-    getCurrentLandingPageTemplate() {
-      const pages = this.landingPageTemplate?.landingPages
-      if (!pages?.length) return ''
-      return pages.length > 1
-        ? pages[Number.parseInt(this.selectedTab) - 1]?.content || ''
-        : pages[0]?.content || ''
     }
   },
   created() {

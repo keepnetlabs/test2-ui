@@ -9,9 +9,9 @@ describe('SmishingScenarioPreview.vue', () => {
     expect(SmishingScenarioPreview.computed.getTitle.call({})).toBe('Smishing Scenario Preview')
   })
 
-  it('getSubtitle returns selectedRow name', () => {
+  it('scenarioDisplayName returns selectedRow name', () => {
     const ctx = { selectedRow: { name: 'Test Scenario' } }
-    expect(SmishingScenarioPreview.computed.getSubtitle.call(ctx)).toBe('Test Scenario')
+    expect(SmishingScenarioPreview.computed.scenarioDisplayName.call(ctx)).toBe('Test Scenario')
   })
 
   it('handleClose emits on-close', () => {

@@ -18,3 +18,17 @@
   .el-tabs__item {
   max-width: initial !important;
 }
+
+// Smishing campaign preview: tighter gap template name → bordered box (parity with landing tab / scenario preview)
+.smishing-campaign-preview {
+  .email-template-preview .email-template-preview__container {
+    margin-top: 8px;
+  }
+
+  // Inner "Page 1 / MFA" k-sub-tab: Phishing campaign preview uses TabsWithMfaSettingsMultipleLanguages
+  // without tabs-with-mfa-settings + drawer-flush on the same root, so k-sub-tab.scss does not add
+  // the extra 8px header padding-top. Match that strip height here only.
+  .tabs-with-mfa-settings.tabs-with-mfa-settings--drawer-flush .el-tabs.k-sub-tab > .el-tabs__header {
+    padding-top: 0;
+  }
+}

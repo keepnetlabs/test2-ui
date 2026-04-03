@@ -461,6 +461,7 @@
               :languages="languages"
               :phishing-url="landingPageParams.urlTemplate"
               :read-only="readOnly"
+              :is-smishing="isSmishing"
               @on-edit="handleEdit"
             />
           </ElTabPane>
@@ -618,6 +619,11 @@ export default {
       default: ""
     },
     isNested: {
+      type: Boolean,
+      default: false
+    },
+    /** Smishing: hide template language row (parity with landing drawer / TabsWithMfaSettings). */
+    isSmishing: {
       type: Boolean,
       default: false
     },

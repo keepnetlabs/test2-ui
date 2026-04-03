@@ -1,26 +1,70 @@
 <template>
-  <AppDialog
-    icon="mdi-eye"
-    custom-size="1600"
+  <SmishingPreviewDrawer
     :status="status"
     :title="getTitle"
-    :subtitle="getSubtitle"
-    max-height
-    max-height-size="900"
-    class-name="campaign-manager-preview-dialog"
-    @changeStatus="handleClose"
+    @on-close="handleClose"
   >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <ElTabs v-show="!isLoading" v-model="tab">
+    <div class="smishing-scenario-preview">
+      <!-- Scenario name row: parity with CommonSimulatorPreviewDialog (bordered bar + edit) -->
+      <div
+        v-if="selectedRow"
+        class="d-flex align-center justify-space-between mt-4 mb-1"
+        style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+      >
+        <div class="pr-2" style="min-width: 0;">
+          <span class="text-primary-color fs-5 fw-600 text-truncate d-block">{{
+            scenarioDisplayName
+          }}</span>
+        </div>
+        <div v-if="showEditButton" class="d-flex align-center flex-shrink-0">
+          <VTooltip bottom>
+            <template #activator="{ on }">
+              <div v-on="on">
+                <VBtn
+                  icon
+                  outlined
+                  color="#2196F3"
+                  small
+                  aria-label="Edit scenario"
+                  @click="handleEditScenario"
+                >
+                  <VIcon small>mdi-pencil</VIcon>
+                </VBtn>
+              </div>
+            </template>
+            <span>Edit</span>
+          </VTooltip>
+        </div>
+      </div>
+      <SmishingPreviewSkeleton
+        v-if="isLoading"
+        variant="scenario"
+        hide-scenario-name-bar
+        class="smishing-scenario-preview__skeleton"
+      />
+      <ElTabs v-else v-model="tab" class="smishing-scenario-preview__main-tabs">
         <ElTabPane
           id="campaign-manager-info--email-content"
           name="textMessage"
           label="Text Message"
         >
-          <div class="template-preview pt-4">
-            <div class="template-preview__text" v-if="!!textTemplate">
-              <span class="template-preview__text--body">{{ textTemplateParams.template }}</span>
+          <!-- Same as CommonSimulatorPreviewDialog email tab: template name above card, content in bordered container (EmailTemplateMultipleLanguagePreviewDialog parity) -->
+          <div class="email-template-preview">
+            <div
+              v-if="textTemplateParams.name"
+              class="text-primary-color fs-4 fw-600 mb-2 mt-n4"
+            >
+              {{ textTemplateParams.name }}
+            </div>
+            <div class="email-template-preview__container">
+              <div class="common-simulator-preview__text">
+                <div v-if="!!textTemplate" class="template-preview__text">
+                  <span class="template-preview__text--title">Text Message</span>
+                  <span class="template-preview__text--body d-block mt-0">{{
+                    textTemplateParams.template
+                  }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </ElTabPane>
@@ -31,41 +75,34 @@
         >
           <TabsWithMfaSettings
             class="tabs-with-mfa-settings"
+            preview-layout="simulator"
+            :flush-drawer-align="true"
             :isMethodMfa="isMethodMfa"
             :landing-page-params="landingPageParams"
             :landing-page-templates="landingPageTemplates"
+            :is-phishing-scenario="false"
+            :is-smishing="true"
+            show-landing-url-open-button
           />
         </ElTabPane>
       </ElTabs>
-    </template>
-    <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn
-          id="btn-close--scenario-preview"
-          class="pa-0 k-dialog__button"
-          text
-          color="#2196f3"
-          @click="handleClose"
-          >CLOSE
-        </v-btn>
-      </div>
-    </template>
-  </AppDialog>
+    </div>
+  </SmishingPreviewDrawer>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
+import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import SmishingService from '@/api/smishing'
 import labels from '@/model/constants/labels'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
-import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import SmishingPreviewSkeleton from '@/components/SkeletonLoading/SmishingPreviewSkeleton.vue'
 import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
 
 export default {
   name: 'SmishingScenarioPreview',
   components: {
-    DatatableLoading,
-    AppDialog,
+    SmishingPreviewSkeleton,
+    SmishingPreviewDrawer,
     TabsWithMfaSettings
   },
   props: {
@@ -94,7 +131,11 @@ export default {
     getTitle() {
       return 'Smishing Scenario Preview'
     },
-    getSubtitle() {
+    /** Same rule as CommonSimulatorPreviewDialog.showEditButton */
+    showEditButton() {
+      return !this.selectedRow || this.selectedRow.isOwner !== false
+    },
+    scenarioDisplayName() {
       return this.selectedRow?.name || ''
     },
     hasLandingPageTemplate() {
@@ -165,6 +206,9 @@ export default {
     },
     handleClose() {
       this.$emit('on-close')
+    },
+    handleEditScenario() {
+      this.$emit('on-edit')
     },
     handlePreviousTemplate() {
       this.selectedLandingPageIndex--
