@@ -57,6 +57,19 @@ describe('CommonCampaignManagerPreviewDialog.vue', () => {
     expect(wrapper.vm.isQuishing).toBe(false)
   })
 
+  it('has isPhishing false when type is quishing', () => {
+    const wrapper = createWrapper({ type: PREVIEW_DIALOG_TYPES.QUISHING })
+    expect(wrapper.vm.isPhishing).toBe(false)
+    expect(wrapper.vm.isQuishing).toBe(true)
+  })
+
+  it('returns empty getSubtitle when selectedRow has no name', () => {
+    const wrapper = createWrapper({
+      selectedRow: { resourceId: 'only-id' }
+    })
+    expect(wrapper.vm.getSubtitle).toBe('')
+  })
+
   it('has correct title and printout flag for quishing individual template', () => {
     const wrapper = createWrapper({
       type: PREVIEW_DIALOG_TYPES.QUISHING,
@@ -66,6 +79,19 @@ describe('CommonCampaignManagerPreviewDialog.vue', () => {
     expect(wrapper.vm.getTitle).toBe('Quishing Campaign Preview')
     expect(wrapper.vm.isQuishing).toBe(true)
     expect(wrapper.vm.isQuishingTypeIndividualPrintOut).toBe(true)
+  })
+
+  it('does not treat quishing as individual printout when template type is not individual', () => {
+    const wrapper = createWrapper({
+      type: PREVIEW_DIALOG_TYPES.QUISHING,
+      selectedRow: { templateType: 'EMAIL' }
+    })
+    expect(wrapper.vm.isQuishingTypeIndividualPrintOut).toBe(false)
+  })
+
+  it('builds template language label when no languages are selected', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.templateLanguageLabel).toBe('Template Language (0)')
   })
 
   it('builds template language label and printout button style', async () => {
@@ -260,10 +286,16 @@ describe('CommonCampaignManagerPreviewDialog.vue', () => {
     expect(wrapper.vm.emailTemplateParams.fromName).toBe('Old Name')
   })
 
+  it('sets nested-drawer in getNavigationDrawerClass when isNested is true', () => {
+    const wrapper = createWrapper({ isNested: true })
+    expect(wrapper.vm.getNavigationDrawerClass['nested-drawer']).toBe(true)
+  })
+
   it('returns static navigation drawer class and training fallbacks', async () => {
     const wrapper = createWrapper()
     expect(wrapper.vm.getNavigationDrawerClass).toEqual({
-      'k-navigation-drawer k-navigation-drawer--campaign-manager-preview': true
+      'k-navigation-drawer k-navigation-drawer--campaign-manager-preview': true,
+      'nested-drawer': false
     })
 
     expect(wrapper.vm.getTrainingName).toBe('')
