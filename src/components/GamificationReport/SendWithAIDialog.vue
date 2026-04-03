@@ -1,7 +1,9 @@
 <template>
   <AppDialog
     :status="status"
-    title="Autonomous AI"
+    :title="dialogTitle"
+    class-name="send-with-ai-dialog-popup"
+    custom-size="760"
     icon="mdi-creation"
     icon-color="#2196f3"
     @changeStatus="$emit('closeOverlay', $event)"
@@ -9,36 +11,39 @@
     <template #app-dialog-body>
       <div class="send-with-ai-dialog__body">
         <p class="send-with-ai-dialog__text">
-          Select the actions to perform for this user. This process will take 3-5 minutes and the
-          selected user will receive notifications via email:
+          {{ dialogDescription }}
         </p>
         <div class="send-with-ai-dialog__options">
           <div class="send-with-ai-dialog__option-item">
-            <div class="send-with-ai-dialog__option-checkbox">
-              <v-checkbox
-                v-model="localOptions.training"
-                label="Training"
-                color="#2196f3"
-                class="send-with-ai-dialog__checkbox"
-              />
+            <v-checkbox
+              v-model="localOptions.training"
+              color="#2196f3"
+              class="send-with-ai-dialog__checkbox"
+              hide-details
+              aria-label="Training"
+            />
+            <div class="send-with-ai-dialog__option-content">
+              <p class="send-with-ai-dialog__option-label">Training</p>
+              <p class="send-with-ai-dialog__option-description">
+                Automatically assign personalized training based on the user's security level and
+                weaknesses
+              </p>
             </div>
-            <p class="send-with-ai-dialog__option-description">
-              Automatically assign personalized training based on the user's security level and
-              weaknesses
-            </p>
           </div>
           <div class="send-with-ai-dialog__option-item">
-            <div class="send-with-ai-dialog__option-checkbox">
-              <v-checkbox
-                v-model="localOptions.phishing"
-                label="Phishing Simulation"
-                color="#2196f3"
-                class="send-with-ai-dialog__checkbox"
-              />
+            <v-checkbox
+              v-model="localOptions.phishing"
+              color="#2196f3"
+              class="send-with-ai-dialog__checkbox"
+              hide-details
+              :aria-label="simulationOptionLabel"
+            />
+            <div class="send-with-ai-dialog__option-content">
+              <p class="send-with-ai-dialog__option-label">{{ simulationOptionLabel }}</p>
+              <p class="send-with-ai-dialog__option-description">
+                {{ simulationOptionDescription }}
+              </p>
             </div>
-            <p class="send-with-ai-dialog__option-description">
-              Automatically send targeted phishing emails to help users identify and report threats
-            </p>
           </div>
           <div
             v-if="localOptions.training && localOptions.phishing"
@@ -60,8 +65,8 @@
       <AppDialogFooter
         cancel-button-id="btn-cancel--send-with-ai"
         confirm-button-id="btn-confirm--send-with-ai"
-        action-button-text="Start Autonomous AI"
-        :confirm-button-disabled="!localOptions.training && !localOptions.phishing"
+        :action-button-text="confirmButtonText"
+        :confirm-button-disabled="confirmActionDisabled"
         @handleClose="$emit('closeOverlay', false)"
         @handleConfirm="handleConfirm"
       />
@@ -90,6 +95,19 @@ export default {
         training: true,
         phishing: true
       })
+    },
+    mode: {
+      type: String,
+      default: 'autonomous'
+    },
+    targetType: {
+      type: String,
+      default: 'user'
+    },
+    /** Parent sets true while API is in flight (disables confirm only; no spinner). */
+    submitLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -99,6 +117,48 @@ export default {
         phishing: true
       },
       sendAfterPhishingSimulation: false
+    }
+  },
+  computed: {
+    isApprovalMode() {
+      return this.mode === 'approval'
+    },
+    targetContextLabel() {
+      return this.targetType === 'group' ? 'group' : 'user'
+    },
+    deliveryTargetLabel() {
+      return this.targetType === 'group' ? 'users in the selected group' : 'the selected user'
+    },
+    deliveryTargetLabelForSentence() {
+      return this.targetType === 'group' ? 'Users in the selected group' : 'The selected user'
+    },
+    personalizationDescription() {
+      return this.targetType === 'group'
+        ? "each user's individual risk signals, behavior, and weaknesses"
+        : "the user's risk signals, behavior, and weaknesses"
+    },
+    dialogTitle() {
+      return this.isApprovalMode ? 'Send with AI for Approval' : 'Run with AI'
+    },
+    dialogDescription() {
+      if (this.isApprovalMode) {
+        return `Select the actions to submit for approval for this ${this.targetContextLabel}. Agentic AI will personalize the selected actions based on ${this.personalizationDescription}. No emails will be sent until the request is approved.`
+      }
+
+      return `Select the actions to generate for this ${this.targetContextLabel}. Agentic AI will personalize the selected actions based on ${this.personalizationDescription}. This process will take 3-5 minutes and ${this.deliveryTargetLabel} will receive notifications via email.`
+    },
+    simulationOptionLabel() {
+      return 'Phishing or Quishing Simulation'
+    },
+    simulationOptionDescription() {
+      return 'Automatically send personalized phishing or quishing simulations to help users identify and report threats'
+    },
+    confirmButtonText() {
+      return this.isApprovalMode ? 'Send with AI for Approval' : 'Run with AI'
+    },
+    confirmActionDisabled() {
+      const noSelection = !this.localOptions.training && !this.localOptions.phishing
+      return noSelection || this.submitLoading
     }
   },
   watch: {
@@ -116,76 +176,7 @@ export default {
         sendAfterPhishingSimulation: this.sendAfterPhishingSimulation
       }
       this.$emit('confirm', confirmData)
-
-      // Close dialog
-      this.$emit('closeOverlay', false)
-
-      // Show success toast after dialog closes
-      this.$nextTick(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message:
-            'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
-          icon: 'mdi-check-circle',
-          color: '#4caf50'
-        })
-      })
     }
   }
 }
 </script>
-
-<style scoped>
-.send-with-ai-dialog {
-  &__body {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  &__text {
-    font-size: 14px;
-    color: #383b41;
-    margin: 0;
-    font-weight: 500;
-    letter-spacing: 0.4px;
-  }
-
-  &__options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: #f5f7fa;
-    padding: 16px;
-    border-radius: 8px;
-  }
-
-  &__option-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  &__checkbox {
-    margin: 0;
-  }
-
-  &__option-description {
-    font-size: 12px;
-    color: #666d75;
-    margin: 0;
-    line-height: 1.5;
-    margin-left: 32px;
-  }
-
-  &__switch-container {
-    margin-top: 8px;
-    padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
-  }
-
-  &__switch {
-    margin: 0;
-    max-width: 100%;
-  }
-}
-</style>

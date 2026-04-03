@@ -42,4 +42,31 @@ describe('DefaultMenuRowAction.vue (extra)', () => {
       expect(ctx.$emit).not.toHaveBeenCalled()
     })
   })
+
+  describe('isDisabled with checkIsOwnerProperty false (Agentic row actions)', () => {
+    it('ignores isOwner when checkIsOwnerProperty is false', () => {
+      const ctx = {
+        scope: { row: { isOwner: false } },
+        disabled: false,
+        checkIsOwnerProperty: false
+      }
+      expect(DefaultMenuRowAction.computed.isDisabled.call(ctx)).toBe(false)
+    })
+
+    it('uses disabled prop when checkIsOwnerProperty is false', () => {
+      const ctx = {
+        scope: { row: { isOwner: true } },
+        disabled: true,
+        checkIsOwnerProperty: false
+      }
+      expect(DefaultMenuRowAction.computed.isDisabled.call(ctx)).toBe(true)
+    })
+  })
+
+  describe('canRenderTooltip edge cases', () => {
+    it('is false when both showTooltip and isDisabled are false', () => {
+      const ctx = { showTooltip: false, isDisabled: false }
+      expect(DefaultMenuRowAction.computed.canRenderTooltip.call(ctx)).toBe(false)
+    })
+  })
 })

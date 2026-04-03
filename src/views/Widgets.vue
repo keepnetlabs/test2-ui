@@ -698,10 +698,14 @@ export default {
     if (this?.permissions?.widgets) {
       try {
         const response = await this.$store.dispatch("widgets/callForWidgets");
-        const settings =
-          response?.data?.["dashboardWidgetsOrdering"]?.data?.settings;
-        if (settings && settings.length) {
+        const ordering = response?.data?.["dashboardWidgetsOrdering"];
+        const rawSettings = ordering?.data?.settings;
+        const settings = Array.isArray(rawSettings) ? rawSettings : [];
+        if (settings.length) {
           this.layout = settings.reduce((acc, item) => {
+            if (!item?.key || !this.allWidgets[item.key]) {
+              return acc;
+            }
             const widget = { ...this.allWidgets[item.key], ...item };
             const isAgenticWidgetWithoutLicense =
               item.key === "AgenticAIStatusWidget" && !this.hasAgenticAILicense;

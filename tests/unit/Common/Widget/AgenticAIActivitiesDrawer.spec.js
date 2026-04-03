@@ -89,8 +89,6 @@ describe("AgenticAIActivitiesDrawer", () => {
       stubs: [
         "DataTable",
         "DefaultButtonRowAction",
-        "DefaultMenuRowAction",
-        "RowActionsMenu",
         "VNavigationDrawer",
         "VIcon",
         "v-tooltip"
@@ -428,6 +426,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.getFilterFieldName("firstName")).toBe("targetUserFirstName");
       expect(wrapper.vm.getFilterFieldName("contentType")).toBe("ActivityType");
       expect(wrapper.vm.getFilterFieldName("status")).toBe("Status");
+      expect(wrapper.vm.getFilterFieldName("targetUserStatus")).toBe("targetUserStatus");
       expect(wrapper.vm.getFilterFieldName("unknown")).toBe("unknown");
     });
 
@@ -453,6 +452,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(result.FieldName).toBe("targetUserFirstName");
       expect(result.Value).toBe("John");
     });
+
   });
 
   describe("Data Fetching", () => {
@@ -920,16 +920,24 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Confirm vs retry modal exclusivity", () => {
-    it("handleDecline clears reject dialog before opening confirm", () => {
-      const wrapper = mountFactory();
+    it("handleDecline clears reject dialog and declines without AgenticAIConfirmDialog", async () => {
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      const wrapper = mountFactory(
+        { value: true },
+        {
+          fetchBatches: jest.fn().mockResolvedValue(),
+          fetchActivities: jest.fn().mockResolvedValue(),
+          refreshTableLayout: jest.fn()
+        }
+      );
       const row = { resourceId: "r1", batchResourceId: "b1" };
       wrapper.setData({
         rejectDialog: { status: true, action: "retry", row, loading: false }
       });
-      wrapper.vm.handleDecline(row);
+      await wrapper.vm.handleDecline(row);
       expect(wrapper.vm.rejectDialog.status).toBe(false);
-      expect(wrapper.vm.confirmDialog.status).toBe(true);
-      expect(wrapper.vm.confirmDialog.action).toBe("decline");
+      expect(wrapper.vm.confirmDialog.status).toBe(false);
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({ resourceIds: ["r1"] });
     });
 
     it("handleRetry clears confirm dialog before opening retry feedback", () => {
@@ -1091,24 +1099,35 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Preview handlers", () => {
-    it("handlePreviewDecline opens decline confirm and clears reject dialog", () => {
-      const wrapper = mountFactory();
+    it("handlePreviewDecline closes preview and declines without AgenticAIConfirmDialog", async () => {
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      const wrapper = mountFactory(
+        { value: true },
+        {
+          fetchBatches: jest.fn().mockResolvedValue(),
+          fetchActivities: jest.fn().mockResolvedValue(),
+          refreshTableLayout: jest.fn()
+        }
+      );
       const row = { resourceId: "r1", batchResourceId: "b1" };
+      const closePreviewSpy = jest.spyOn(wrapper.vm, "closePreview");
       wrapper.setData({
         previewActivityRow: row,
+        previewType: "Phishing",
         rejectDialog: { status: true, action: "retry", row, loading: false }
       });
-      wrapper.vm.handlePreviewDecline();
+      await wrapper.vm.handlePreviewDecline();
       expect(wrapper.vm.rejectDialog.status).toBe(false);
-      expect(wrapper.vm.confirmDialog.status).toBe(true);
-      expect(wrapper.vm.confirmDialog.action).toBe("decline");
-      expect(wrapper.vm.confirmDialog.message).toContain("will be declined");
+      expect(closePreviewSpy).toHaveBeenCalled();
+      expect(wrapper.vm.confirmDialog.status).toBe(false);
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({ resourceIds: ["r1"] });
+      closePreviewSpy.mockRestore();
     });
 
-    it("handlePreviewDecline does nothing when previewActivityRow is null", () => {
+    it("handlePreviewDecline does nothing when previewActivityRow is null", async () => {
       const wrapper = mountFactory();
       wrapper.setData({ previewActivityRow: null, confirmDialog: { status: false } });
-      wrapper.vm.handlePreviewDecline();
+      await wrapper.vm.handlePreviewDecline();
       expect(wrapper.vm.confirmDialog.status).toBe(false);
     });
 
@@ -1346,6 +1365,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       const wrapper = mountFactory({
         columns: [
           { property: "scenarioName", label: "Scenario" },
+          { property: "targetUserStatus", label: "User Status" },
           { property: "status", label: "Status" }
         ]
       });
@@ -1353,6 +1373,10 @@ describe("AgenticAIActivitiesDrawer", () => {
       const statusCol = cols.find((c) => c.property === "status");
       expect(statusCol.label).toBe("Approval Status");
       expect(statusCol.fixed).toBe("right");
+      const statusIdx = cols.findIndex((c) => c.property === "status");
+      const userStatusIdx = cols.findIndex((c) => c.property === "targetUserStatus");
+      expect(userStatusIdx).toBeGreaterThan(-1);
+      expect(userStatusIdx).toBeLessThan(statusIdx);
     });
 
     it("drawerColumns hides Assigned Scenario column when batch is Training", () => {
@@ -1401,7 +1425,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           title: "Confirm Approval",
           message: "m",
           recommendation: "",
-          confirmText: "APPROVE ALL USERS",
+          confirmText: "Approve All",
           loading: false
         }
       });
@@ -1441,7 +1465,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           title: "Confirm Approval",
           message: "m",
           recommendation: "",
-          confirmText: "APPROVE ALL USERS",
+          confirmText: "Approve All",
           loading: false
         }
       });
@@ -1509,7 +1533,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           title: "Confirm Decline",
           message: "m",
           recommendation: "",
-          confirmText: "DECLINE ALL",
+          confirmText: "Decline All",
           loading: false
         }
       });
@@ -1668,7 +1692,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           trainingResourceId: "t1"
         }
       });
-      wrapper.vm.handlePreviewApprove();
+      await wrapper.vm.handlePreviewApprove();
       expect(exec).toHaveBeenCalledWith(
         "approveActivity",
         expect.objectContaining({ activityType: 4, trainingResourceId: "t1" })
@@ -1682,7 +1706,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           scenarioResourceId: "s1"
         }
       });
-      wrapper.vm.handlePreviewApprove();
+      await wrapper.vm.handlePreviewApprove();
       expect(exec).toHaveBeenCalledWith(
         "approveActivity",
         expect.objectContaining({ activityType: 1 })
@@ -1746,12 +1770,21 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.showApproveAllBanner).toBe(false);
     });
 
-    it("handleApproveRow opens confirm with approveActivity action", () => {
-      const wrapper = mountFactory();
-      wrapper.vm.handleApproveRow({ resourceId: "a1", batchResourceId: "b1" });
-      expect(wrapper.vm.confirmDialog.status).toBe(true);
-      expect(wrapper.vm.confirmDialog.action).toBe("approveActivity");
-      expect(wrapper.vm.confirmDialog.confirmText).toBe("APPROVE");
+    it("handleApproveRow approves without AgenticAIConfirmDialog", async () => {
+      CompanyAPI.approveAgenticAIActivity.mockResolvedValue({
+        data: { data: { errorCount: 0 } }
+      });
+      const wrapper = mountFactory(
+        { value: true },
+        {
+          fetchBatches: jest.fn().mockResolvedValue(),
+          fetchActivities: jest.fn().mockResolvedValue(),
+          refreshTableLayout: jest.fn()
+        }
+      );
+      await wrapper.vm.handleApproveRow({ resourceId: "a1", batchResourceId: "b1" });
+      expect(wrapper.vm.confirmDialog.status).toBe(false);
+      expect(CompanyAPI.approveAgenticAIActivity).toHaveBeenCalledWith({ resourceIds: ["a1"] });
     });
 
     it("getViewActionId and getUserCountText return stable strings", () => {
@@ -1801,6 +1834,178 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.getStatusBadgeColor("Declined")).toBe("#757575");
       expect(wrapper.vm.getStatusBadgeColor("error")).toBe("#e53935");
       expect(wrapper.vm.getStatusBadgeColor("Unknown")).toBe("#667085");
+    });
+  });
+
+  describe("executeApproveReject target user guard", () => {
+    it("does not call approveAgenticAIActivity when approveActivity and target user not Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.approveAgenticAIActivity).not.toHaveBeenCalled();
+    });
+
+    it("does not call reject or retry when retry action and target user not Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("retry", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        activityType: 1,
+        targetUserStatus: "Inactive",
+        targetUserResourceId: "u1",
+        firstName: "A",
+        lastName: "B",
+        department: "D"
+      });
+      expect(CompanyAPI.rejectAgenticAIActivity).not.toHaveBeenCalled();
+      expect(AgenticAIService.retryAutonomous).not.toHaveBeenCalled();
+    });
+
+    it("calls approveAgenticAIActivity when approveActivity and target user Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.approveAgenticAIActivity.mockResolvedValue({ data: { data: { errorCount: 0 } } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active",
+        status: "Pending"
+      });
+      expect(CompanyAPI.approveAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"]
+      });
+    });
+
+    it("still calls rejectAgenticAIActivity on decline when target user is not Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("decline", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"]
+      });
+    });
+
+    it("calls approveAgenticAIBatch for batch approve when row has inactive target user (no per-row guard)", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.approveAgenticAIBatch.mockResolvedValue({
+        data: { data: { approvedCount: 2, errorCount: 0 } }
+      });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approve", {
+        batchResourceId: "batch-1",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.approveAgenticAIBatch).toHaveBeenCalledWith({ batchResourceId: "batch-1" });
+    });
+
+    it("returns without calling API when actionInProgress is already true", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.setData({ actionInProgress: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active"
+      });
+      expect(CompanyAPI.approveAgenticAIActivity).not.toHaveBeenCalled();
+    });
+
+    it("returns without calling API when row is null", async () => {
+      const wrapper = mountFactory({ value: true });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("approveActivity", null);
+      expect(CompanyAPI.approveAgenticAIActivity).not.toHaveBeenCalled();
+    });
+
+    it("calls rejectAgenticAIBatch for declineAll when target user is not Active (no guard)", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIBatch.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("declineAll", {
+        batchResourceId: "batch-x",
+        targetUserStatus: "Inactive"
+      });
+      expect(CompanyAPI.rejectAgenticAIBatch).toHaveBeenCalledWith({ batchResourceId: "batch-x" });
+    });
+
+    it("passes rejectingReason to rejectAgenticAIActivity on decline when provided", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject(
+        "decline",
+        {
+          resourceId: "r1",
+          batchResourceId: "b1",
+          targetUserStatus: "Active"
+        },
+        "Not aligned with policy"
+      );
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"],
+        rejectingReason: "Not aligned with policy"
+      });
+    });
+
+    it("omits rejectingReason key on decline when third arg is falsy", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject("decline", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active"
+      });
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"]
+      });
+    });
+
+    it("runs full retry branch when target user is Active", async () => {
+      const wrapper = mountFactory({ value: true });
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      AgenticAIService.retryAutonomous.mockResolvedValue(undefined);
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject(
+        "retry",
+        {
+          resourceId: "r1",
+          batchResourceId: "b1",
+          activityType: 4,
+          targetUserStatus: "Active",
+          targetUserResourceId: "u1",
+          firstName: "A",
+          lastName: "B",
+          department: "D",
+          preferredLanguage: "en",
+          scenarioResourceId: "sc1"
+        },
+        "Please retry"
+      );
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
+        resourceIds: ["r1"],
+        batchResourceId: "b1",
+        rejectingReason: "Please retry"
+      });
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({
+          targetUserResourceId: "u1",
+          actions: ["training"],
+          batchResourceId: "b1",
+          rejectingReason: "Please retry",
+          rejectedScenarioResourceId: "sc1"
+        })
+      );
     });
   });
 });

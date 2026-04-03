@@ -107,7 +107,7 @@
                   <KSelect
                     v-bind="commonRules"
                     v-model="formValues.methodTypeId"
-                    :items="scenarioDetailsLookup.methodTypes"
+                    :items="methodTypeItems"
                     item-disabled="disabled"
                     item-text="text"
                     item-value="value"
@@ -669,7 +669,7 @@ export default {
       return this.textMessageTemplate?.categoryName || ''
     },
     getStep3Subtitle() {
-      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
+      const mTypeText = (this.scenarioDetailsLookup?.methodTypes || []).find(
         (mType) => mType.value === this.formValues.methodTypeId
       )?.text
       if (mTypeText === 'Click-Only') return 'Choose your click only type landing page'
@@ -706,18 +706,19 @@ export default {
     },
     getDifficultyType() {
       if (this.textMessageTemplate && this.landingPageTemplate) {
-        const textMessageTemplateDifficultyValue = this.scenarioDetailsLookup[
-          'difficultyTypes'
-        ].find((item) => item.text === this.textMessageTemplate?.difficultyName)?.value
-        const landingMessageTemplateDifficultyValue = this.scenarioDetailsLookup[
-          'difficultyTypes'
-        ].find((item) => item.text === this.landingPageTemplate?.difficulty)?.value
+        const difficultyTypes = this.scenarioDetailsLookup?.difficultyTypes || []
+        const textMessageTemplateDifficultyValue = difficultyTypes.find(
+          (item) => item.text === this.textMessageTemplate?.difficultyName
+        )?.value
+        const landingMessageTemplateDifficultyValue = difficultyTypes.find(
+          (item) => item.text === this.landingPageTemplate?.difficulty
+        )?.value
         const maxDifficulty = Math.max(
           Number.parseInt(textMessageTemplateDifficultyValue),
           Number.parseInt(landingMessageTemplateDifficultyValue)
         )
         return (
-          this.scenarioDetailsLookup['difficultyTypes'].find(
+          difficultyTypes.find(
             (item) => item.value === maxDifficulty.toString()
           )?.text || ''
         )
@@ -726,7 +727,7 @@ export default {
     },
     getMethodText() {
       return (
-        this.scenarioDetailsLookup.methodTypes.find(
+        (this.scenarioDetailsLookup?.methodTypes || []).find(
           (item) => item.value === this.formValues.methodTypeId
         )?.text || ''
       )
@@ -740,6 +741,9 @@ export default {
           this.landingPageTemplate.resourceId ||
           this.landingPageTemplate.id
       }
+    },
+    methodTypeItems() {
+      return this.scenarioDetailsLookup?.methodTypes || []
     }
   },
   created() {

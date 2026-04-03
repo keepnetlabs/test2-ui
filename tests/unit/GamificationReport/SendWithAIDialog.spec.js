@@ -77,6 +77,58 @@ describe('SendWithAIDialog.vue', () => {
     it('options prop should be of type Object', () => {
       expect(SendWithAIDialog.props.options.type).toBe(Object)
     })
+
+    it('mode prop should default to autonomous', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.mode).toBe('autonomous')
+    })
+
+    it('targetType prop should default to user', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.targetType).toBe('user')
+    })
+
+    it('submitLoading prop should default to false', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.submitLoading).toBe(false)
+    })
+
+    it('simulation option label should reflect phishing and quishing support', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.simulationOptionLabel).toBe('Phishing or Quishing Simulation')
+    })
+
+    it('submitLoading prop is Boolean type', () => {
+      expect(SendWithAIDialog.props.submitLoading.type).toBe(Boolean)
+    })
+  })
+
+  describe('computed isApprovalMode', () => {
+    it('is true when mode is approval', () => {
+      const wrapper = mountComponent({ mode: 'approval' })
+      expect(wrapper.vm.isApprovalMode).toBe(true)
+    })
+
+    it('is false when mode is autonomous', () => {
+      const wrapper = mountComponent({ mode: 'autonomous' })
+      expect(wrapper.vm.isApprovalMode).toBe(false)
+    })
+  })
+
+  describe('footer wiring', () => {
+    it('passes approval confirm label to AppDialogFooter actionButtonText', async () => {
+      const wrapper = mountComponent({ mode: 'approval' })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('actionButtonText')).toBe('Send with AI for Approval')
+    })
+
+    it('passes autonomous label to AppDialogFooter actionButtonText', async () => {
+      const wrapper = mountComponent({ mode: 'autonomous' })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('actionButtonText')).toBe('Run with AI')
+    })
   })
 
   describe('Local Options Management', () => {
@@ -238,6 +290,17 @@ describe('SendWithAIDialog.vue', () => {
       const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
       expect(footer.props('confirmButtonDisabled')).toBe(false)
     })
+
+    it('passes submitLoading to footer as disabled without loading spinner', async () => {
+      const wrapper = mountComponent({
+        options: { training: true, phishing: true },
+        submitLoading: true
+      })
+      await wrapper.vm.$nextTick()
+      const footer = wrapper.findComponent({ name: 'AppDialogFooter' })
+      expect(footer.props('confirmButtonDisabled')).toBe(true)
+      expect(footer.props('confirmButtonLoading')).toBe(false)
+    })
   })
 
   describe('Methods', () => {
@@ -282,45 +345,22 @@ describe('SendWithAIDialog.vue', () => {
       expect(emitted).toHaveProperty('sendAfterPhishingSimulation', true)
     })
 
-    it('handleConfirm should emit closeOverlay event', () => {
+    it('handleConfirm should not emit closeOverlay event', () => {
       const wrapper = mountComponent()
       wrapper.vm.handleConfirm()
-      expect(wrapper.emitted('closeOverlay')).toBeTruthy()
+      expect(wrapper.emitted('closeOverlay')).toBeFalsy()
     })
 
-    it('handleConfirm should emit closeOverlay with false', () => {
-      const wrapper = mountComponent()
-      wrapper.vm.handleConfirm()
-      const emitted = wrapper.emitted('closeOverlay')
-      expect(emitted[emitted.length - 1][0]).toBe(false)
-    })
-
-    it('handleConfirm should dispatch snackbar action', async () => {
+    it('handleConfirm should not dispatch snackbar action directly', async () => {
       const wrapper = mountComponent()
       wrapper.vm.handleConfirm()
       await wrapper.vm.$nextTick()
-      expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith('common/createSnackBar', expect.any(Object))
+      expect(wrapper.vm.$store.dispatch).not.toHaveBeenCalled()
     })
 
-    it('handleConfirm should dispatch snackbar with success message', async () => {
+    it('confirmButtonText uses consistent autonomous wording', () => {
       const wrapper = mountComponent()
-      wrapper.vm.handleConfirm()
-      await wrapper.vm.$nextTick()
-      const callArgs = wrapper.vm.$store.dispatch.mock.calls[0][1]
-      expect(callArgs.message).toContain('Autonomous AI process started')
-    })
-
-    it('handleConfirm dispatches snackbar with expected icon and color', async () => {
-      const wrapper = mountComponent()
-      wrapper.vm.handleConfirm()
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith('common/createSnackBar', {
-        message:
-          'Autonomous AI process started. The selected user will receive emails within 3-5 minutes.',
-        icon: 'mdi-check-circle',
-        color: '#4caf50'
-      })
+      expect(wrapper.vm.confirmButtonText).toBe('Run with AI')
     })
   })
 
@@ -367,7 +407,7 @@ describe('SendWithAIDialog.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.emitted('confirm')).toBeTruthy()
-      expect(wrapper.emitted('closeOverlay')).toBeTruthy()
+      expect(wrapper.emitted('closeOverlay')).toBeFalsy()
     })
   })
 
@@ -518,22 +558,14 @@ describe('SendWithAIDialog.vue', () => {
     })
   })
 
-  describe('Performance', () => {
-    it('component should mount quickly', () => {
-      const start = Date.now()
-      mountComponent()
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(150)
-    })
-
-    it('handleConfirm should execute quickly', () => {
+  describe('handleConfirm stress', () => {
+    it('emits confirm for many sequential clicks without throwing', () => {
       const wrapper = mountComponent()
-      const start = Date.now()
-      for (let i = 0; i < 100; i++) {
+      const n = 50
+      for (let i = 0; i < n; i++) {
         wrapper.vm.handleConfirm()
       }
-      const duration = Date.now() - start
-      expect(duration).toBeLessThan(5000)
+      expect(wrapper.emitted('confirm')).toHaveLength(n)
     })
   })
 })

@@ -1,0 +1,29 @@
+// Shared by CommonSimulatorPreviewDialog and TrainingLibraryDrawer approval footers
+// (Agentic AI: non–Active target user — visual disable without native disabled, so tooltips work)
+.approval-footer-action--restricted {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+// Wrap Retry/Approve so hover hits this layer (child has pointer-events: none; events otherwise fall through)
+.approval-footer-tooltip-activator {
+  display: inline-flex;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+}
+
+// VTooltip content is portaled to [data-app]; nested drawers (z-index ~251+) need a higher stack
+.k-v-tooltip-content--over-drawer {
+  z-index: 10000 !important;
+}
+
+// DefaultMenuRowAction: disabled v-list-item blocks hover; let parent receive mouse for VTooltip
+.default-menu-row-action-tooltip-wrap {
+  display: block;
+  width: 100%;
+
+  .v-list-item--disabled {
+    pointer-events: none;
+  }
+}

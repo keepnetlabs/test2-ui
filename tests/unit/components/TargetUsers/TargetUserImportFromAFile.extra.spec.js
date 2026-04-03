@@ -383,7 +383,8 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
       languageFilterOptions: [{ name: 'English', text: 'English' }],
       serverSideProps: {},
       tableData: [],
-      step3Loading: false
+      step3Loading: false,
+      fetchShowAllPreviewCount: jest.fn()
     }
 
     methods.getDatatableList.call(ctx)
@@ -465,7 +466,8 @@ describe('TargetUserImportFromAFile.vue (extra branches)', () => {
       languageFilterOptions: [],
       serverSideProps: {},
       tableData: [],
-      step3Loading: false
+      step3Loading: false,
+      fetchShowAllPreviewCount: jest.fn()
     }
 
     methods.getDatatableList.call(ctx)

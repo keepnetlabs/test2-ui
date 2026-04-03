@@ -27,4 +27,21 @@ describe('DefaultMenuRowAction.vue', () => {
     DefaultMenuRowAction.methods.onClick.call(ctx)
     expect(ctx.$emit).not.toHaveBeenCalled()
   })
+
+  describe('canRenderTooltip', () => {
+    it('is true when showTooltip and isDisabled are both true', () => {
+      const ctx = { showTooltip: true, isDisabled: true }
+      expect(DefaultMenuRowAction.computed.canRenderTooltip.call(ctx)).toBe(true)
+    })
+
+    it('is false when showTooltip is false', () => {
+      const ctx = { showTooltip: false, isDisabled: true }
+      expect(DefaultMenuRowAction.computed.canRenderTooltip.call(ctx)).toBe(false)
+    })
+
+    it('is false when isDisabled is false', () => {
+      const ctx = { showTooltip: true, isDisabled: false }
+      expect(DefaultMenuRowAction.computed.canRenderTooltip.call(ctx)).toBe(false)
+    })
+  })
 })
