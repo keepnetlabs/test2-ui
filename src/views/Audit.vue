@@ -269,11 +269,14 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+      const filterItems = (
+        searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || []
+      ).filter((filterItem) => {
+        if (!filterItem?.FieldName) return false
         const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+          (col) => col.property?.toLowerCase() === filterItem.FieldName.toLowerCase()
         )
-        return column.filterableType
+        return column?.filterableType
       })
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
@@ -310,11 +313,13 @@ export default {
       this.loading = true
       getAuditLogs(this.bodyData)
         .then((response) => {
+          const responseData = response?.data?.data || {}
           const {
-            data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
+            results = [],
+            totalNumberOfRecords = 0,
+            totalNumberOfPages = 0,
+            pageNumber = 1
+          } = responseData
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber

@@ -72,7 +72,7 @@
                   <KSelect
                     v-bind="commonRules"
                     v-model="formValues.methodTypeId"
-                    :items="scenarioDetailsLookup.methodTypes"
+                    :items="methodTypeItems"
                     item-disabled="disabled"
                     item-text="text"
                     item-value="value"
@@ -258,11 +258,7 @@
                             "
                             :color="emailDifficultyChipColor"
                           >
-                            {{
-                              difficulties.find(
-                                (item) => item.value === textMessageTemplate.difficultyResourceId
-                              ).text
-                            }}
+                            {{ textMessageDifficultyText }}
                           </v-chip>
                           <v-chip
                             v-if="!!textMessageTemplate"
@@ -274,11 +270,7 @@
                               font-size: 12px;
                             "
                           >
-                            {{
-                              methods.find(
-                                (item) => item.value === textMessageTemplate.categoryResourceId
-                              ).text
-                            }}
+                            {{ textMessageMethodText }}
                           </v-chip>
                           <v-chip
                             v-if="!!textMessageTemplate"
@@ -363,12 +355,7 @@
                                 "
                                 :color="getLandingPageDifficultyColor"
                               >
-                                {{
-                                  scenarioDetailsLookup.difficultyTypes.find(
-                                    (item) =>
-                                      item.value === landingPageTemplate.difficultyTypeId.toString()
-                                  ).text
-                                }}
+                                {{ landingPageDifficultyText }}
                               </v-chip>
                               <v-chip
                                 v-if="!!landingPageTemplate"
@@ -380,12 +367,7 @@
                                   font-size: 12px;
                                 "
                               >
-                                {{
-                                  scenarioDetailsLookup.methodTypes.find(
-                                    (item) =>
-                                      item.value === landingPageTemplate.methodTypeId.toString()
-                                  ).text
-                                }}
+                                {{ landingPageMethodText }}
                               </v-chip>
                               <v-chip
                                 v-if="!!landingPageTemplate"
@@ -428,12 +410,7 @@
                             "
                             :color="getLandingPageDifficultyColor"
                           >
-                            {{
-                              scenarioDetailsLookup.difficultyTypes.find(
-                                (item) =>
-                                  item.value === landingPageTemplate.difficultyTypeId.toString()
-                              ).text
-                            }}
+                            {{ landingPageDifficultyText }}
                           </v-chip>
                           <v-chip
                             class="template-list--item template-list--item__chip p"
@@ -444,11 +421,7 @@
                               font-size: 12px;
                             "
                           >
-                            {{
-                              scenarioDetailsLookup.methodTypes.find(
-                                (item) => item.value === landingPageTemplate.methodTypeId.toString()
-                              ).text
-                            }}
+                            {{ landingPageMethodText }}
                           </v-chip>
                           <v-chip
                             class="template-list--item template-list--item__chip p"
@@ -853,7 +826,7 @@ export default {
       return this.textMessageTemplate?.categoryName || ''
     },
     getStep3Subtitle() {
-      const mTypeText = this.scenarioDetailsLookup.methodTypes.find(
+      const mTypeText = (this.scenarioDetailsLookup?.methodTypes || []).find(
         (mType) => mType.value === this.formValues.methodTypeId
       )?.text
       if (mTypeText === 'Click-Only') return 'Choose your click only type landing page'
@@ -888,8 +861,8 @@ export default {
     getLandingPageDifficultyColor() {
       let difficultyType = ''
       if (this.landingPageTemplate) {
-        difficultyType = this.scenarioDetailsLookup.difficultyTypes.find(
-          (item) => item.value === this.landingPageTemplate.difficultyTypeId.toString()
+        difficultyType = (this.scenarioDetailsLookup?.difficultyTypes || []).find(
+          (item) => item.value === this.landingPageTemplate.difficultyTypeId?.toString()
         )?.text
       }
       if (difficultyType === 'Easy') return '#217124'
@@ -901,18 +874,19 @@ export default {
     },
     getDifficultyType() {
       if (this.textMessageTemplate && this.landingPageTemplate) {
-        const textMessageTemplateDifficultyValue = this.scenarioDetailsLookup[
-          'difficultyTypes'
-        ].find((item) => item.text === this.textMessageTemplate?.difficultyName)?.value
-        const landingMessageTemplateDifficultyValue = this.scenarioDetailsLookup[
-          'difficultyTypes'
-        ].find((item) => item.text === this.landingPageTemplate?.difficulty)?.value
+        const difficultyTypes = this.scenarioDetailsLookup?.difficultyTypes || []
+        const textMessageTemplateDifficultyValue = difficultyTypes.find(
+          (item) => item.text === this.textMessageTemplate?.difficultyName
+        )?.value
+        const landingMessageTemplateDifficultyValue = difficultyTypes.find(
+          (item) => item.text === this.landingPageTemplate?.difficulty
+        )?.value
         const maxDifficulty = Math.max(
           Number.parseInt(textMessageTemplateDifficultyValue),
           Number.parseInt(landingMessageTemplateDifficultyValue)
         )
         return (
-          this.scenarioDetailsLookup['difficultyTypes'].find(
+          difficultyTypes.find(
             (item) => item.value === maxDifficulty.toString()
           )?.text || ''
         )
@@ -921,15 +895,50 @@ export default {
     },
     getMethodText() {
       return (
-        this.scenarioDetailsLookup.methodTypes.find(
+        (this.scenarioDetailsLookup?.methodTypes || []).find(
           (item) => item.value === this.formValues.methodTypeId
         )?.text || ''
       )
     },
+    methodTypeItems() {
+      return this.scenarioDetailsLookup?.methodTypes || []
+    },
+    textMessageDifficultyText() {
+      if (!this.textMessageTemplate) return ''
+      const found = this.difficulties.find(
+        (item) => item.value === this.textMessageTemplate.difficultyResourceId
+      )
+      return found ? found.text : ''
+    },
+    textMessageMethodText() {
+      if (!this.textMessageTemplate) return ''
+      const found = this.methods.find(
+        (item) => item.value === this.textMessageTemplate.categoryResourceId
+      )
+      return found ? found.text : ''
+    },
+    landingPageDifficultyText() {
+      if (!this.landingPageTemplate) return ''
+      const types = this.scenarioDetailsLookup?.difficultyTypes || []
+      const id = this.landingPageTemplate.difficultyTypeId
+      if (id == null) return ''
+      const found = types.find((item) => item.value === id.toString())
+      return found ? found.text : ''
+    },
+    landingPageMethodText() {
+      if (!this.landingPageTemplate) return ''
+      const types = this.scenarioDetailsLookup?.methodTypes || []
+      const id = this.landingPageTemplate.methodTypeId
+      if (id == null) return ''
+      const found = types.find((item) => item.value === id.toString())
+      return found ? found.text : ''
+    },
     getCurrentLandingPageTemplate() {
-      return this.landingPageTemplate?.landingPages?.length > 1
-        ? this.landingPageTemplate.landingPages[Number.parseInt(this.selectedTab) - 1].content || ''
-        : this.landingPageTemplate.landingPages[0].content || ''
+      const pages = this.landingPageTemplate?.landingPages
+      if (!pages?.length) return ''
+      return pages.length > 1
+        ? pages[Number.parseInt(this.selectedTab) - 1]?.content || ''
+        : pages[0]?.content || ''
     }
   },
   created() {

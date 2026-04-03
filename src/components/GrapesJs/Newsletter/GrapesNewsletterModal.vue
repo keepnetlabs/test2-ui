@@ -1274,11 +1274,11 @@ export default {
         "background:#fff;outline:none;width:100%;border-radius:2px;margin-top:16px;margin-bottom:4px;padding:4px";
       searchField.setAttribute("placeholder", "Search");
       searchField.addEventListener("input", (e) => {
-        const { value } = e.target;
+        const value = e.target?.value || '';
         const assets = this.editor.AssetManager.getAll();
         this.renderAssetsToAssetsManager(
           assets.filter((asset) => {
-            return asset.attributes.name
+            return (asset.attributes?.name || '')
               .toLowerCase()
               .includes(value.toLowerCase());
           })
@@ -1617,9 +1617,9 @@ export default {
 
       // Arama filtresi
       searchInput.addEventListener("input", (e) => {
-        const q = e.target.value.toLowerCase();
+        const q = (e.target?.value || '').toLowerCase();
         itemElements.forEach((el, i) => {
-          el.style.display = tags[i].label.toLowerCase().includes(q)
+          el.style.display = (tags[i]?.label || '').toLowerCase().includes(q)
             ? "block"
             : "none";
         });
