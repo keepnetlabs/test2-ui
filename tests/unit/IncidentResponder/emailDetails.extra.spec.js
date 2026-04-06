@@ -1,4 +1,6 @@
 import EmailDetails from '@/components/IncidentResponder/emailDetails.vue'
+import { shallowMount } from '@vue/test-utils'
+import { getNotifiedEmail } from '@/api/notifiedEmail'
 
 jest.mock('@/api/notifiedEmail', () => ({
   getNotifiedEmail: jest.fn()
@@ -13,6 +15,8 @@ jest.mock('@/utils/functions', () => {
     copyToClipboard: jest.fn().mockResolvedValue(undefined)
   }
 })
+
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
   const { methods, computed, created, watch } = EmailDetails
@@ -223,6 +227,114 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
       expect(
         computed.isMailDetailsHaveAttachments.call({ mailDetails: {} })
       ).toBeUndefined()
+    })
+  })
+
+  describe('user feedback computed values', () => {
+    it('returns backend values when report reason and comment exist', () => {
+      const ctx = {
+        mailDetails: {
+          reportReasonText: 'Received phishing email',
+          reportComment: 'Suspicious content'
+        }
+      }
+
+      expect(computed.reportReasonText.call(ctx)).toBe('Received phishing email')
+      expect(computed.reportCommentText.call(ctx)).toBe('Suspicious content')
+    })
+
+    it('returns empty strings when feedback fields are missing', () => {
+      expect(computed.reportReasonText.call({ mailDetails: {} })).toBe('')
+      expect(computed.reportCommentText.call({ mailDetails: null })).toBe('')
+    })
+  })
+
+  describe('user feedback tab rendering', () => {
+    it('renders backend report reason and comment in the user feedback tab', async () => {
+      getNotifiedEmail.mockResolvedValueOnce({
+        data: {
+          data: {
+            subject: 'Suspicious Email',
+            reportReasonText: 'Received phishing email',
+            reportComment: 'This email appears suspicious and may contain malicious content.',
+            attachments: [],
+            headers: [],
+            emailRelays: []
+          }
+        }
+      })
+
+      const wrapper = shallowMount(EmailDetails, {
+        propsData: { id: 'mail-1' },
+        mocks: {
+          $route: { params: {}, query: { tab: 'sixth' } },
+          $store: { state: { auth: { selectedCompanyName: '' } } }
+        },
+        stubs: {
+          Datatable: true,
+          DownloadModal: true,
+          DownloadAttachmentModal: true,
+          EmailDetailsContentDetails: true,
+          EmailDetailsPreviewFooter: true,
+          EmailDetailsAIAnalyze: true,
+          EmailDetailsUrl: true,
+          KEmailPreview: true,
+          PreviewHeaderForSinglePost: true,
+          Badge: true
+        }
+      })
+
+      await flushPromises()
+      await wrapper.vm.$nextTick()
+
+      const values = wrapper.findAll('.email-details__user-feedback-value')
+      expect(wrapper.vm.tab).toBe('sixth')
+      expect(values.at(0).text()).toBe('Received phishing email')
+      expect(values.at(1).text()).toBe(
+        'This email appears suspicious and may contain malicious content.'
+      )
+    })
+
+    it('renders empty strings for missing user feedback values without fallback dash', async () => {
+      getNotifiedEmail.mockResolvedValueOnce({
+        data: {
+          data: {
+            subject: 'Suspicious Email',
+            reportReasonText: '',
+            reportComment: '',
+            attachments: [],
+            headers: [],
+            emailRelays: []
+          }
+        }
+      })
+
+      const wrapper = shallowMount(EmailDetails, {
+        propsData: { id: 'mail-2' },
+        mocks: {
+          $route: { params: {}, query: { tab: 'sixth' } },
+          $store: { state: { auth: { selectedCompanyName: '' } } }
+        },
+        stubs: {
+          Datatable: true,
+          DownloadModal: true,
+          DownloadAttachmentModal: true,
+          EmailDetailsContentDetails: true,
+          EmailDetailsPreviewFooter: true,
+          EmailDetailsAIAnalyze: true,
+          EmailDetailsUrl: true,
+          KEmailPreview: true,
+          PreviewHeaderForSinglePost: true,
+          Badge: true
+        }
+      })
+
+      await flushPromises()
+      await wrapper.vm.$nextTick()
+
+      const values = wrapper.findAll('.email-details__user-feedback-value')
+      expect(values.at(0).text()).toBe('')
+      expect(values.at(1).text()).toBe('')
     })
   })
 

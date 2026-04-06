@@ -20,6 +20,7 @@ import PlayFileGray from '@/components/CustomIcons/PlayFileGray'
 import PDFFile from '@/components/CustomIcons/PDFFile.vue'
 import MicrosoftTeamsResend from '@/components/CustomIcons/MicrosoftTeamsResend'
 import MicrosoftTeamsResendWhite from '@/components/CustomIcons/MicrosoftTeamsResendWhite'
+import CommentAccountOutline from '@/components/CustomIcons/CommentAccountOutline'
 Vue.use(Vuetify)
 
 export default new Vuetify({
@@ -87,6 +88,9 @@ export default new Vuetify({
       },
       'microsoft-teams-resend-white': {
         component: MicrosoftTeamsResendWhite
+      },
+      'comment-account-outline': {
+        component: CommentAccountOutline
       }
     }
   }
