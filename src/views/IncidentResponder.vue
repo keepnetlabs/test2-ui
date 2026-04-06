@@ -307,6 +307,7 @@
             @handleListBulleted="handleListBulletedClick"
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
+            @handleUserFeedback="handleUserFeedbackOnClick"
             @onEditClick="onEditClick"
             @handleEdit="handleEdit"
             @handleReAnalyze="handleReAnalyze"
@@ -1023,6 +1024,12 @@ export default {
           action: "handleDetails"
         },
         {
+          name: "User Feedback",
+          id: "btn-user-feedback--incident-responder-emails-row-actions",
+          icon: "$comment-account-outline",
+          action: "handleUserFeedback"
+        },
+        {
           name: labels.Investigate,
           id: "btn-investigate--incident-responder-emails-row-actions",
           icon: "mdi-magnify",
@@ -1449,7 +1456,7 @@ export default {
     getIncidentResponderNotifiedEmailReAnalyze: {
       immediate: true,
       handler(newValue) {
-        this.emails.rowActions[4].disabled = !newValue;
+        this.emails.rowActions[5].disabled = !newValue;
       }
     }
   },
@@ -2438,6 +2445,12 @@ export default {
     irDetailsOnClick(row) {
       globalThis.open(
         `${globalThis.location.href}/reported-emails/email-details/${row.resourceId}`
+      );
+    },
+    handleUserFeedbackOnClick(row) {
+      globalThis.open(
+        `${globalThis.location.href}/reported-emails/email-details/${row.resourceId}?tab=sixth`,
+        "_blank"
       );
     },
     handleReportedEmailInvestigate(row) {

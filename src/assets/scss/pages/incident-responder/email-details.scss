@@ -683,6 +683,33 @@
   }
 }
 
+.email-details__user-feedback {
+  padding: 0 24px 0 0;
+  text-align: left;
+
+  &-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.71;
+    color: rgba(0, 0, 0, 0.87);
+
+    &:not(:last-child) {
+      margin-bottom: 16px;
+    }
+  }
+
+  &-label {
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &-value {
+    word-break: break-word;
+  }
+}
+
 .show-overflow-tab-content .el-tabs__content {
   overflow: hidden;
 }
