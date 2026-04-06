@@ -55,6 +55,48 @@ describe('CampaignManagerNewInstanceModal.extra.spec.js', () => {
       const wrapper = createWrapper({ selectedRow: { method: 'Phishing' } })
       expect(wrapper.vm.isMFAScenarioSelected).toBe(false)
     })
+
+    it('returns false when Multiple Method detail has no MFA entry', () => {
+      const wrapper = createWrapper({
+        selectedRow: {
+          method: 'Multiple Method',
+          methodDetail: JSON.stringify([{ method: 'Phishing' }, { method: 'Click' }])
+        }
+      })
+      expect(wrapper.vm.isMFAScenarioSelected).toBe(false)
+    })
+  })
+
+  describe('getSelectedSmtpDelayOverTimeType', () => {
+    it('returns empty string when distributionSmtpDelayTimeTypes is absent', () => {
+      const wrapper = createWrapper({ formDetails: {} })
+      expect(wrapper.vm.getSelectedSmtpDelayOverTimeType).toBe('')
+    })
+
+    it('returns matching label text for current distributionDelayTimeTypeId', () => {
+      const wrapper = createWrapper({
+        formDetails: {
+          distributionSmtpDelayTimeTypes: [
+            { text: 'Minutes', value: '1' },
+            { text: 'Hours', value: '2' }
+          ]
+        }
+      })
+      wrapper.setData({
+        inputDistributionFormData: {
+          ...wrapper.vm.inputDistributionFormData,
+          distributionDelayTimeTypeId: '2'
+        }
+      })
+      expect(wrapper.vm.getSelectedSmtpDelayOverTimeType).toBe('Hours')
+    })
+  })
+
+  describe('scheduledTimeItems', () => {
+    it('maps store timezone list to text/value items', () => {
+      const wrapper = createWrapper()
+      expect(wrapper.vm.scheduledTimeItems).toEqual([{ text: 'UTC', value: 'tz1' }])
+    })
   })
 
   describe('handleSubmit validation', () => {
@@ -97,6 +139,14 @@ describe('CampaignManagerNewInstanceModal.extra.spec.js', () => {
       const wrapper = createWrapper()
       wrapper.setData({ formValues: { targetGroupResourceIds: [] } })
       expect(wrapper.vm.getTargetGroupErrorMessage).toBe(wrapper.vm.labels.TargetGroupSelectionRequiredError)
+    })
+
+    it('returns Required when groups are selected (modal has no isShowTargetGroupUsersError in data)', () => {
+      const wrapper = createWrapper()
+      wrapper.setData({
+        formValues: { ...wrapper.vm.formValues, targetGroupResourceIds: ['g1'] }
+      })
+      expect(wrapper.vm.getTargetGroupErrorMessage).toBe('Required')
     })
   })
 })

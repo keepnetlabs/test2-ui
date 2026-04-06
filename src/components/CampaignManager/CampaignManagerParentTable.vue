@@ -149,9 +149,9 @@
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
-  ACTION_STATUSES,
   COLUMNS,
   getStatusBadgeProps,
+  isIdleOrScheduledStatus,
   METHOD_TYPES,
   SCENARIO_DISTRIBUTION_TEXTS
 } from '@/components/CampaignManager/utils'
@@ -441,7 +441,7 @@ export default {
       return row?.status !== 'Error' || !row?.jobResultMessage
     },
     isTargetUsersShowGroups(row = {}) {
-      return [ACTION_STATUSES.IDLE, ACTION_STATUSES.SCHEDULED].includes(row?.status)
+      return isIdleOrScheduledStatus(row?.status)
     },
     handleTargetUsersGroupsClick(row) {
       this.$emit('on-target-users-groups-click', row)

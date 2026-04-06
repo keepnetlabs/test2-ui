@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils'
 import CampaignManager from '@/views/CampaignManager.vue'
-import { CAMPAIGN_TYPE } from '@/components/CampaignManager/utils'
+import { CAMPAIGN_TYPE, STATUS_FILTER_ITEMS } from '@/components/CampaignManager/utils'
 
 jest.mock('@/api/phishingsimulator', () => ({
   bulkDeleteCampaignReports: jest.fn(() => Promise.resolve()),
@@ -191,6 +191,37 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.targetGroupsDialogCampaign).toBe(null)
   })
 
+  it('replaces target groups dialog row when opening again with a different campaign row', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.handleTargetUsersGroupsClick({
+      resourceId: 'first',
+      campaignType: 1,
+      instanceGroup: 'a'
+    })
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('first')
+
+    wrapper.vm.toggleTargetGroupsDialog()
+    wrapper.vm.handleTargetUsersGroupsClick({
+      resourceId: 'second',
+      campaignType: 2,
+      instanceGroup: 'b'
+    })
+
+    expect(wrapper.vm.isShowTargetGroupsDialog).toBe(true)
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('second')
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(2)
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('b')
+  })
+
+  it('toggleTargetGroupsDialog opening path does not null campaign before dialog is shown', () => {
+    const wrapper = createWrapper()
+    const row = { resourceId: 'r-open', campaignType: 5, instanceGroup: 'g1' }
+    wrapper.vm.handleTargetUsersGroupsClick(row)
+    expect(wrapper.vm.targetGroupsDialogCampaign).toEqual(row)
+    expect(wrapper.vm.isShowTargetGroupsDialog).toBe(true)
+  })
+
   it('blocks route leave when campaign modal is open', () => {
     const wrapper = createWrapper()
     const next = jest.fn()
@@ -249,6 +280,20 @@ describe('CampaignManager.vue', () => {
 
     expect(Array.isArray(wrapper.vm.getStatusItems)).toBe(true)
     expect(wrapper.vm.getStatusItems.length).toBeGreaterThan(0)
+  })
+
+  it('uses fallback status items when form details status is empty array', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ formDetails: { status: [] } })
+
+    expect(wrapper.vm.getStatusItems).toEqual(STATUS_FILTER_ITEMS)
+  })
+
+  it('uses fallback status items when form details status is not an array', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({ formDetails: { status: 'invalid' } })
+
+    expect(wrapper.vm.getStatusItems).toEqual(STATUS_FILTER_ITEMS)
   })
 
   it('uses form status items when provided', () => {
@@ -643,6 +688,62 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('')
   })
 
+  it('stringifies instanceGroup 0 for dialog props (numeric zero)', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      targetGroupsDialogCampaign: {
+        resourceId: 'c-zero-ig',
+        campaignType: CAMPAIGN_TYPE.Phishing,
+        instanceGroup: 0
+      }
+    })
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('0')
+  })
+
+  it('keeps campaignType 0 in computed (does not fall back to default Phishing)', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      targetGroupsDialogCampaign: {
+        resourceId: 'c-type-0',
+        campaignType: 0,
+        instanceGroup: 'ig'
+      }
+    })
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(0)
+  })
+
+  it('defaults targetGroupsDialogCampaignType to Phishing when clicked row omits campaignType', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.handleTargetUsersGroupsClick({
+      resourceId: 'c-no-type',
+      instanceGroup: 'ig-x'
+    })
+    expect(wrapper.vm.isShowTargetGroupsDialog).toBe(true)
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(CAMPAIGN_TYPE.Phishing)
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('c-no-type')
+  })
+
+  it('computes empty instanceGroup when clicked row omits instanceGroup', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.handleTargetUsersGroupsClick({
+      resourceId: 'c-no-ig',
+      campaignType: CAMPAIGN_TYPE.Phishing
+    })
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('')
+  })
+
+  it('computes empty resource id when clicked row omits resourceId', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.handleTargetUsersGroupsClick({
+      campaignType: CAMPAIGN_TYPE.Quishing,
+      instanceGroup: 'ig-only'
+    })
+    expect(wrapper.vm.targetGroupsDialogCampaignResourceId).toBe('')
+    expect(wrapper.vm.targetGroupsDialogCampaignType).toBe(CAMPAIGN_TYPE.Quishing)
+    expect(wrapper.vm.targetGroupsDialogInstanceGroup).toBe('ig-only')
+    expect(wrapper.vm.isShowTargetGroupsDialog).toBe(true)
+  })
+
   it('setDeleteDialogActionButtonDisabled uses explicit and default values', () => {
     const wrapper = createWrapper()
 
@@ -922,6 +1023,78 @@ describe('CampaignManager.vue', () => {
     expect(wrapper.vm.selectedRow).toEqual({ id: 'keep' })
     expect(wrapper.vm.isEdit).toBe(true)
     expect(wrapper.vm.isDuplicate).toBe(true)
+  })
+
+  it('resets add/edit modal flags when closing an already open modal', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      isShowAddOrEditCampaignManagerModal: true,
+      selectedRow: { id: 'close-me' },
+      isEdit: true,
+      isDuplicate: true
+    })
+
+    wrapper.vm.toggleAddCampaignManagerModal()
+
+    expect(wrapper.vm.isShowAddOrEditCampaignManagerModal).toBe(false)
+    expect(wrapper.vm.selectedRow).toBe(null)
+    expect(wrapper.vm.isEdit).toBe(false)
+    expect(wrapper.vm.isDuplicate).toBe(false)
+  })
+
+  it('calls parent table callForData when backing out of item table', () => {
+    const wrapper = createWrapper()
+    const parentCall = jest.fn()
+    wrapper.vm.$refs.campaignManagerParentTable = { callForData: parentCall }
+    wrapper.setData({ isItemTableShowing: true })
+
+    wrapper.vm.handleOnBackClick()
+
+    expect(parentCall).toHaveBeenCalled()
+    expect(wrapper.vm.isItemTableShowing).toBe(false)
+  })
+
+  it('calls item table callForData when backing out of frequency table', () => {
+    const wrapper = createWrapper()
+    const itemCall = jest.fn()
+    wrapper.vm.$refs.campaignManagerItemTable = { callForData: itemCall }
+    wrapper.setData({ isFrequencyTableShowing: true })
+
+    wrapper.vm.handleOnFrequencyBackClick()
+
+    expect(itemCall).toHaveBeenCalled()
+    expect(wrapper.vm.isFrequencyTableShowing).toBe(false)
+  })
+
+  it('clears start/stop action disabled flags when launch/stop API rejects', async () => {
+    launchPhishingCampaignInstanceGroup.mockRejectedValueOnce(new Error('start failed'))
+    stopPhishingCampaignJob.mockRejectedValueOnce(new Error('stop failed'))
+
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.campaignManagerItemTable = { callForData: jest.fn() }
+
+    await wrapper.vm.handleStartCampaign({ resourceId: 'r-fail', instanceGroup: 'i1' })
+    await flushPromises()
+    expect(wrapper.vm.isStartDialogActionButtonDisabled).toBe(false)
+
+    await wrapper.vm.handleStopCampaign({ resourceId: 'r-fail2', instanceGroup: 'i2' })
+    await flushPromises()
+    expect(wrapper.vm.isStopDialogActionButtonDisabled).toBe(false)
+  })
+
+  it('clears delete action disabled flag when bulk delete API rejects', async () => {
+    bulkDeleteCampaignReports.mockRejectedValueOnce(new Error('bulk failed'))
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.campaignManagerParentTable = {
+      callForData: jest.fn(),
+      $refs: { refTable: { resetSelectableParams: jest.fn() } }
+    }
+    wrapper.setData({ multipleSystemUserPayload: { ids: ['x'] } })
+
+    await wrapper.vm.handleOnMultipleDelete()
+    await flushPromises()
+
+    expect(wrapper.vm.isDeleteDialogActionButtonDisabled).toBe(false)
   })
 
 })

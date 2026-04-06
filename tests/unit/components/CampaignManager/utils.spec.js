@@ -6,6 +6,7 @@ import {
   ACTION_STATUSES,
   STATUS_FILTER_ITEMS,
   getStatusBadgeProps,
+  isIdleOrScheduledStatus,
   SCENARIO_DISTRIBUTION,
   SCENARIO_DISTRIBUTION_TEXTS,
   COLUMNS
@@ -51,10 +52,58 @@ describe('CampaignManager utils', () => {
     })
   })
 
+  describe('isIdleOrScheduledStatus', () => {
+    it('returns true for Idle/Scheduled regardless of casing', () => {
+      expect(isIdleOrScheduledStatus('Idle')).toBe(true)
+      expect(isIdleOrScheduledStatus('idle')).toBe(true)
+      expect(isIdleOrScheduledStatus('IDLE')).toBe(true)
+      expect(isIdleOrScheduledStatus('  idle  ')).toBe(true)
+      expect(isIdleOrScheduledStatus('Scheduled')).toBe(true)
+      expect(isIdleOrScheduledStatus('scheduled')).toBe(true)
+      expect(isIdleOrScheduledStatus('SCHEDULED')).toBe(true)
+      expect(isIdleOrScheduledStatus('  Scheduled  ')).toBe(true)
+      expect(isIdleOrScheduledStatus('ScHeDuLeD')).toBe(true)
+    })
+
+    it('matches ACTION_STATUSES canonical strings used by API filters', () => {
+      expect(isIdleOrScheduledStatus(ACTION_STATUSES.IDLE)).toBe(true)
+      expect(isIdleOrScheduledStatus(ACTION_STATUSES.SCHEDULED)).toBe(true)
+    })
+
+    it('returns false for other statuses, whitespace-only, and non-strings', () => {
+      expect(isIdleOrScheduledStatus('Running')).toBe(false)
+      expect(isIdleOrScheduledStatus('Completed')).toBe(false)
+      expect(isIdleOrScheduledStatus('Paused')).toBe(false)
+      expect(isIdleOrScheduledStatus('Error')).toBe(false)
+      expect(isIdleOrScheduledStatus('Idle ')).toBe(true)
+      expect(isIdleOrScheduledStatus('')).toBe(false)
+      expect(isIdleOrScheduledStatus('   ')).toBe(false)
+      expect(isIdleOrScheduledStatus(null)).toBe(false)
+      expect(isIdleOrScheduledStatus(undefined)).toBe(false)
+    })
+
+    it('coerces non-string status via String() for edge payloads', () => {
+      expect(isIdleOrScheduledStatus(42)).toBe(false)
+      expect(isIdleOrScheduledStatus({})).toBe(false)
+    })
+
+    it('returns false for tab or newline-only strings after trim', () => {
+      expect(isIdleOrScheduledStatus('\t')).toBe(false)
+      expect(isIdleOrScheduledStatus('\n')).toBe(false)
+    })
+
+    it('returns false for boolean and array status values', () => {
+      expect(isIdleOrScheduledStatus(true)).toBe(false)
+      expect(isIdleOrScheduledStatus(false)).toBe(false)
+      expect(isIdleOrScheduledStatus([])).toBe(false)
+    })
+  })
+
   describe('COLUMNS', () => {
     it('TARGET_USERS_ITEM_TABLE has type text and correct property', () => {
-      // Regression guard: type was 'slot' which caused Users column to render
-      // empty in Instance table and show Status badge in Recurrence/Frequency table.
+      // Default column def stays type text; Item/Frequency tables override to type
+      // 'slot' in computed columns so Users can render Groups + dialog (DataTable
+      // only mounts datatable-custom-column when col.type === 'slot').
       expect(COLUMNS.TARGET_USERS_ITEM_TABLE.type).toBe('text')
       expect(COLUMNS.TARGET_USERS_ITEM_TABLE.property).toBe('totalTargetUserCount')
       expect(COLUMNS.TARGET_USERS_ITEM_TABLE.emptyText).toBe(0)

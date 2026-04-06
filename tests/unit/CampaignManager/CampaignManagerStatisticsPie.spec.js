@@ -136,4 +136,45 @@ describe('CampaignManagerStatisticsPie.vue', () => {
     expect(emit).toHaveBeenCalledWith('on-delete', card)
     expect(emit).toHaveBeenCalledWith('on-edit', card)
   })
+
+  describe('created hook', () => {
+    it('uses defaultWidgetData when non-empty instead of fetching', () => {
+      const setChartData = jest.fn()
+      const callForData = jest.fn()
+      const defaultWidgetData = [
+        {
+          widgetDatas: [
+            { dataObject: { ActionRange: 'Undetected' }, values: [{ value: 1 }, { value: 2 }] }
+          ]
+        }
+      ]
+      CampaignManagerStatisticsPie.created.call({
+        defaultWidgetData,
+        setChartData,
+        callForData
+      })
+      expect(setChartData).toHaveBeenCalledWith(defaultWidgetData)
+      expect(callForData).not.toHaveBeenCalled()
+    })
+
+    it('calls callForData when defaultWidgetData is missing or empty', () => {
+      const setChartData = jest.fn()
+      const callForData = jest.fn()
+      CampaignManagerStatisticsPie.created.call({
+        defaultWidgetData: undefined,
+        setChartData,
+        callForData
+      })
+      expect(callForData).toHaveBeenCalled()
+      expect(setChartData).not.toHaveBeenCalled()
+
+      callForData.mockClear()
+      CampaignManagerStatisticsPie.created.call({
+        defaultWidgetData: [],
+        setChartData,
+        callForData
+      })
+      expect(callForData).toHaveBeenCalled()
+    })
+  })
 })

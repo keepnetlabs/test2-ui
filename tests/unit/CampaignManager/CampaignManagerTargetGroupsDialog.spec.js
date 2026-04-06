@@ -7,6 +7,8 @@ jest.mock('@/api/phishingsimulator', () => ({
   getCampaignTargetGroups: jest.fn()
 }))
 
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
+
 describe('CampaignManagerTargetGroupsDialog.vue', () => {
   const localVue = createLocalVue()
 
@@ -412,6 +414,104 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
         }
       )
     })
+
+    it('passes campaignType 0 to API (valid enum value)', async () => {
+      const wrapper = mountComponent({
+        campaignResourceId: 'camp-zero-type',
+        instanceGroup: 'ig-1',
+        campaignType: 0
+      })
+      await wrapper.vm.fetchTargetGroups()
+      expect(phishingsimulatorAPI.getCampaignTargetGroups).toHaveBeenCalledWith('camp-zero-type', {
+        campaignType: 0,
+        instanceGroup: 'ig-1'
+      })
+    })
+
+    it('passes string instanceGroup through to API when provided', async () => {
+      const wrapper = mountComponent({
+        campaignResourceId: 'camp-ig-str',
+        instanceGroup: 'frequency-group-9',
+        campaignType: CAMPAIGN_TYPE.Phishing
+      })
+      await wrapper.vm.fetchTargetGroups()
+      expect(phishingsimulatorAPI.getCampaignTargetGroups).toHaveBeenCalledWith(
+        'camp-ig-str',
+        expect.objectContaining({
+          instanceGroup: 'frequency-group-9',
+          campaignType: CAMPAIGN_TYPE.Phishing
+        })
+      )
+    })
+  })
+
+  describe('fetchTargetGroups response shape (parseGroupsFromResponse)', () => {
+    it('prefers groups over targetGroups when both keys exist', async () => {
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue({
+        data: {
+          data: {
+            groups: [{ name: 'FromGroups', count: 1 }],
+            targetGroups: [{ name: 'FromTargetGroups', count: 99 }]
+          }
+        }
+      })
+      const wrapper = mountComponent()
+      await wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual([{ name: 'FromGroups', count: 1 }])
+    })
+
+    it('uses targetGroups when groups is absent', async () => {
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue({
+        data: {
+          data: {
+            targetGroups: [{ name: 'OnlyTargetGroups', usersCount: 12 }]
+          }
+        }
+      })
+      const wrapper = mountComponent()
+      await wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual([{ name: 'OnlyTargetGroups', usersCount: 12 }])
+    })
+
+    it('accepts top-level response.data as array of groups', async () => {
+      const rows = [
+        { name: 'RowA', count: 1 },
+        { name: 'RowB', count: 2 }
+      ]
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue({
+        data: rows
+      })
+      const wrapper = mountComponent()
+      await wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual(rows)
+    })
+
+    it('maps non-array groups payload to empty list', async () => {
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue({
+        data: {
+          data: {
+            groups: 'invalid-not-array'
+          }
+        }
+      })
+      const wrapper = mountComponent()
+      await wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual([])
+    })
+
+    it('parses nested data.data.groups from typical API envelope', async () => {
+      const groups = [{ name: 'Envelope', count: 42 }]
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue({
+        data: {
+          data: {
+            groups
+          }
+        }
+      })
+      const wrapper = mountComponent()
+      await wrapper.vm.fetchTargetGroups()
+      expect(wrapper.vm.targetGroups).toEqual(groups)
+    })
   })
 
   describe('Methods - getGroupCount', () => {
@@ -461,6 +561,39 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
       const group = { count: 100, usersCount: 200, userCount: 300 }
       expect(wrapper.vm.getGroupCount(group)).toBe(100)
     })
+
+    it('skips null count and uses usersCount', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getGroupCount({ count: null, usersCount: 44 })).toBe(44)
+    })
+
+    it('uses first Verified domainAllowList entry when multiple Verified rows exist', () => {
+      const wrapper = mountComponent()
+      const group = {
+        domainAllowList: [
+          { status: 'Pending', count: 1 },
+          { status: 'Verified', count: 77 },
+          { status: 'Verified', count: 88 }
+        ]
+      }
+      expect(wrapper.vm.getGroupCount(group)).toBe(77)
+    })
+
+    it('returns 0 when domainAllowList has no Verified row', () => {
+      const wrapper = mountComponent()
+      const group = {
+        domainAllowList: [
+          { status: 'Pending', count: 10 },
+          { status: 'Draft', count: 5 }
+        ]
+      }
+      expect(wrapper.vm.getGroupCount(group)).toBe(0)
+    })
+
+    it('returns 0 when domainAllowList is empty array', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getGroupCount({ domainAllowList: [] })).toBe(0)
+    })
   })
 
   describe('Methods - getGroupName', () => {
@@ -498,6 +631,43 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
       const group = { name: 'Group A', targetGroupName: 'Group B' }
       expect(wrapper.vm.getGroupName(group)).toBe('Group A')
     })
+
+    it('returns empty string when both name and targetGroupName are missing', () => {
+      const wrapper = mountComponent()
+      expect(wrapper.vm.getGroupName({ count: 5 })).toBe('')
+    })
+
+    it('uses targetGroupName when name key is undefined', () => {
+      const wrapper = mountComponent()
+      const group = { targetGroupName: 'TG Only' }
+      expect(wrapper.vm.getGroupName(group)).toBe('TG Only')
+    })
+  })
+
+  describe('Watcher status (dialog open/close)', () => {
+    it('clears targetGroups when status becomes false after load', async () => {
+      phishingsimulatorAPI.getCampaignTargetGroups.mockResolvedValue(mockApiResponse)
+      const wrapper = mountComponent({
+        status: true,
+        campaignResourceId: 'campaign-clear'
+      })
+      await flushPromises()
+      expect(wrapper.vm.targetGroups.length).toBeGreaterThan(0)
+
+      await wrapper.setProps({ status: false })
+      expect(wrapper.vm.targetGroups).toEqual([])
+    })
+
+    it('does not fetch when status true but campaignResourceId is empty string', async () => {
+      jest.clearAllMocks()
+      const wrapper = mountComponent({
+        status: true,
+        campaignResourceId: ''
+      })
+      await wrapper.vm.$nextTick()
+      expect(phishingsimulatorAPI.getCampaignTargetGroups).not.toHaveBeenCalled()
+      expect(wrapper.vm.targetGroups).toEqual([])
+    })
   })
 
   describe('Methods - handleClose', () => {
@@ -512,6 +682,20 @@ describe('CampaignManagerTargetGroupsDialog.vue', () => {
       wrapper.vm.handleClose()
       expect(emitSpy).toHaveBeenCalledWith('on-close')
     })
+  })
+
+  describe('AppDialog close wiring', () => {
+    it('emits on-close when AppDialog changeStatus listener runs (same as Schedule dialog)', () => {
+      const wrapper = mountComponent()
+      const emitSpy = jest.spyOn(wrapper.vm, '$emit')
+      const appDialog = wrapper.findComponent({ name: 'AppDialog' })
+      expect(appDialog.exists()).toBe(true)
+      expect(typeof appDialog.vm.$listeners.changeStatus).toBe('function')
+      appDialog.vm.$listeners.changeStatus()
+      expect(emitSpy).toHaveBeenCalledWith('on-close')
+      emitSpy.mockRestore()
+    })
+
   })
 
   describe('Event Emission', () => {

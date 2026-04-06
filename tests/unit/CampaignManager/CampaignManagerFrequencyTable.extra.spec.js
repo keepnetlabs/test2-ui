@@ -14,6 +14,10 @@ jest.mock('@/api/phishingsimulator', () => ({
 }))
 
 import CampaignManagerFrequencyTable from '@/components/CampaignManager/CampaignManagerFrequencyTable.vue'
+import { CAMPAIGN_TYPE } from '@/components/CampaignManager/utils'
+
+const { searchCampaignPhishingJob } = require('@/api/phishingsimulator')
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('CampaignManagerFrequencyTable.vue (extra branch coverage)', () => {
   describe('getTooltipDisabilityStatus', () => {
@@ -82,12 +86,45 @@ describe('CampaignManagerFrequencyTable.vue (extra branch coverage)', () => {
         true
       )
     })
+    it('returns true for lowercase scheduled', () => {
+      const ctx = {}
+      expect(
+        CampaignManagerFrequencyTable.methods.isTargetUsersShowGroups.call(ctx, { status: 'scheduled' })
+      ).toBe(true)
+    })
     it('returns false for other status', () => {
       const ctx = {}
       const row = { status: 'Complete' }
       expect(CampaignManagerFrequencyTable.methods.isTargetUsersShowGroups.call(ctx, row)).toBe(
         false
       )
+    })
+
+    it('returns false when status is missing', () => {
+      const ctx = {}
+      expect(CampaignManagerFrequencyTable.methods.isTargetUsersShowGroups.call(ctx, {})).toBe(
+        false
+      )
+    })
+  })
+
+  describe('handleTargetUsersGroupsClick', () => {
+    it('emits instanceGroup 0 from row when API sends numeric zero', () => {
+      const emit = jest.fn()
+      CampaignManagerFrequencyTable.methods.handleTargetUsersGroupsClick.call(
+        {
+          parentResourceId: 'p1',
+          parentCampaignType: CAMPAIGN_TYPE.Phishing,
+          item: {},
+          $emit: emit
+        },
+        { instanceGroup: 0, status: 'Idle' }
+      )
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'p1',
+        campaignType: CAMPAIGN_TYPE.Phishing,
+        instanceGroup: 0
+      })
     })
   })
 
@@ -148,6 +185,111 @@ describe('CampaignManagerFrequencyTable.vue (extra branch coverage)', () => {
       const wrapper = { $set: jest.fn() }
       CampaignManagerFrequencyTable.watch.statusItems.handler.call(wrapper, [])
       expect(wrapper.$set).not.toHaveBeenCalled()
+    })
+
+    it('does nothing if val is null or undefined', () => {
+      const wrapper = { $set: jest.fn() }
+      CampaignManagerFrequencyTable.watch.statusItems.handler.call(wrapper, null)
+      expect(wrapper.$set).not.toHaveBeenCalled()
+      CampaignManagerFrequencyTable.watch.statusItems.handler.call(wrapper, undefined)
+      expect(wrapper.$set).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('handleTargetUsersGroupsClick (parentCampaignType)', () => {
+    it('emits null campaignType when parentCampaignType prop is null', () => {
+      const emit = jest.fn()
+      CampaignManagerFrequencyTable.methods.handleTargetUsersGroupsClick.call(
+        {
+          parentResourceId: 'parent-res',
+          parentCampaignType: null,
+          $emit: emit
+        },
+        { instanceGroup: 'ig-9', status: 'Idle' }
+      )
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'parent-res',
+        campaignType: null,
+        instanceGroup: 'ig-9'
+      })
+    })
+
+    it('emits undefined campaignType when parentCampaignType prop is undefined', () => {
+      const emit = jest.fn()
+      CampaignManagerFrequencyTable.methods.handleTargetUsersGroupsClick.call(
+        {
+          parentResourceId: 'parent-u',
+          parentCampaignType: undefined,
+          $emit: emit
+        },
+        { instanceGroup: 'ig-u', status: 'Idle' }
+      )
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'parent-u',
+        campaignType: undefined,
+        instanceGroup: 'ig-u'
+      })
+    })
+  })
+
+  describe('toggleShowDeleteDialog', () => {
+    it('clears selectedRow when closing delete dialog', () => {
+      const wrapper = {
+        isShowDeleteDialog: true,
+        selectedRow: { instanceGroup: 'g1' }
+      }
+      CampaignManagerFrequencyTable.methods.toggleShowDeleteDialog.call(wrapper)
+      expect(wrapper.isShowDeleteDialog).toBe(false)
+      expect(wrapper.selectedRow).toEqual({})
+    })
+
+    it('does not clear selectedRow when opening delete dialog', () => {
+      const row = { instanceGroup: 'g-open' }
+      const wrapper = {
+        isShowDeleteDialog: false,
+        selectedRow: row
+      }
+      CampaignManagerFrequencyTable.methods.toggleShowDeleteDialog.call(wrapper)
+      expect(wrapper.isShowDeleteDialog).toBe(true)
+      expect(wrapper.selectedRow).toBe(row)
+    })
+  })
+
+  describe('handleOnAddButtonClick', () => {
+    it('emits on-launch with parent resource id', () => {
+      const emit = jest.fn()
+      CampaignManagerFrequencyTable.methods.handleOnAddButtonClick.call({
+        parentResourceId: 'parent-res-42',
+        $emit: emit
+      })
+      expect(emit).toHaveBeenCalledWith('on-launch', { resourceId: 'parent-res-42' })
+    })
+  })
+
+  describe('callForData API payload', () => {
+    it('merges phishingCampaignFrequencyGroup and passes parent resource id to search', async () => {
+      jest.clearAllMocks()
+      const setLoading = jest.fn()
+      const ctx = {
+        setLoading,
+        axiosPayload: { orderBy: 'CreatedDate', ascending: false, filter: { f: 1 } },
+        item: { frequencyGroup: 'freq-group-xyz' },
+        parentResourceId: 'parent-resource-99',
+        serverSideProps: {},
+        tableData: [],
+        $nextTick: (fn) => fn(),
+        $refs: {}
+      }
+      CampaignManagerFrequencyTable.methods.callForData.call(ctx)
+      await flushPromises()
+      expect(searchCampaignPhishingJob).toHaveBeenCalledWith(
+        expect.objectContaining({
+          phishingCampaignFrequencyGroup: 'freq-group-xyz',
+          orderBy: 'CreatedDate',
+          filter: { f: 1 }
+        }),
+        'parent-resource-99'
+      )
     })
   })
 })

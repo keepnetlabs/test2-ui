@@ -47,9 +47,10 @@ jest.mock('@/components/Common/Inputs/InputDistribution', () => ({
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings.vue'
 import CallbackService from '@/api/callback'
 import QuishingService from '@/api/quishing'
-import { getEmailDeliveries } from '@/api/phishingsimulator'
+import { getEmailDeliveries, calculateSendingInfo } from '@/api/phishingsimulator'
 import { DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -219,5 +220,257 @@ describe('CampaignManagerDeliverySettings.vue (extra)', () => {
     })
     await flushPromises()
     expect(getEmailDeliveries).toHaveBeenCalled()
+  })
+
+  describe('computed branches (call context)', () => {
+    it('canRenderAlertBox is true only for the reseller DEC fallback label', () => {
+      const label = `First Use Company's DEC config then Fallback to default SMTP`
+      expect(
+        CampaignManagerDeliverySettings.computed.canRenderAlertBox.call({
+          emailDelivery: { name: label }
+        })
+      ).toBe(true)
+      expect(
+        CampaignManagerDeliverySettings.computed.canRenderAlertBox.call({
+          emailDelivery: { name: 'SMTP only' }
+        })
+      ).toBe(false)
+      expect(
+        CampaignManagerDeliverySettings.computed.canRenderAlertBox.call({
+          emailDelivery: null
+        })
+      ).toBe(false)
+    })
+
+    it('isSelectedEmailDeliveryIsSmtp follows emailDelivery presence and type', () => {
+      expect(
+        CampaignManagerDeliverySettings.computed.isSelectedEmailDeliveryIsSmtp.call({
+          emailDelivery: null
+        })
+      ).toBe(false)
+      expect(
+        CampaignManagerDeliverySettings.computed.isSelectedEmailDeliveryIsSmtp.call({
+          emailDelivery: { type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL }
+        })
+      ).toBe(false)
+      expect(
+        CampaignManagerDeliverySettings.computed.isSelectedEmailDeliveryIsSmtp.call({
+          emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP }
+        })
+      ).toBe(true)
+    })
+
+    it('getSmtpInputErrorMessage shows copy only when flag is set', () => {
+      expect(
+        CampaignManagerDeliverySettings.computed.getSmtpInputErrorMessage.call({
+          isShowSmtpInputError: false
+        })
+      ).toBe('')
+      expect(
+        CampaignManagerDeliverySettings.computed.getSmtpInputErrorMessage.call({
+          isShowSmtpInputError: true
+        })
+      ).toBe('You cannot use this scenario with this SMTP setting.')
+    })
+
+    it('getSelectedSmtpDelayOverTimeType returns label or empty by formDetails', () => {
+      expect(
+        CampaignManagerDeliverySettings.computed.getSelectedSmtpDelayOverTimeType.call({
+          formDetails: {},
+          inputDistributionFormData: { distributionDelayTimeTypeId: '1' }
+        })
+      ).toBe('')
+      expect(
+        CampaignManagerDeliverySettings.computed.getSelectedSmtpDelayOverTimeType.call({
+          formDetails: {
+            distributionSmtpDelayTimeTypes: [{ text: 'Minutes', value: '1' }]
+          },
+          inputDistributionFormData: { distributionDelayTimeTypeId: '1' }
+        })
+      ).toBe('Minutes')
+    })
+  })
+
+  describe('SMTP error dialog toggles', () => {
+    it('toggleShowSmtpErrorDialog flips visibility flag', () => {
+      const ctx = { isShowSmtpErrorDialog: false }
+      CampaignManagerDeliverySettings.methods.toggleShowSmtpErrorDialog.call(ctx)
+      expect(ctx.isShowSmtpErrorDialog).toBe(true)
+      CampaignManagerDeliverySettings.methods.toggleShowSmtpErrorDialog.call(ctx)
+      expect(ctx.isShowSmtpErrorDialog).toBe(false)
+    })
+
+    it('handleOnConfirmSmtpErrorDialog closes dialog and emits on-increment-step', () => {
+      const emit = jest.fn()
+      const ctx = {
+        isShowSmtpErrorDialog: true,
+        $emit: emit,
+        toggleShowSmtpErrorDialog: CampaignManagerDeliverySettings.methods.toggleShowSmtpErrorDialog
+      }
+      CampaignManagerDeliverySettings.methods.handleOnConfirmSmtpErrorDialog.call(ctx)
+      expect(ctx.isShowSmtpErrorDialog).toBe(false)
+      expect(emit).toHaveBeenCalledWith('on-increment-step')
+    })
+  })
+
+  describe('getTestConnectionButtonStyle', () => {
+    it('locks pointer after successful test mail', () => {
+      expect(
+        CampaignManagerDeliverySettings.methods.getTestConnectionButtonStyle.call({
+          isTestMailSend: true
+        })
+      ).toEqual({ fontWeight: 600, pointerEvents: 'none' })
+      expect(
+        CampaignManagerDeliverySettings.methods.getTestConnectionButtonStyle.call({
+          isTestMailSend: false
+        })
+      ).toEqual({ fontWeight: 600, pointerEvents: 'cursor' })
+    })
+  })
+
+  describe('callForEmailDeliveries DEC branching (Reseller)', () => {
+    const decResults = () => [
+      { type: EMAIL_DELIVERY_TYPES.SMTP, name: 'SMTP A', resourceId: 'smtp-a' },
+      { type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL, name: 'DEC 1', resourceId: 'dec-1' },
+      { type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL, name: 'DEC 2', resourceId: 'dec-2' }
+    ]
+
+    it('marks extra DEC options disabled when Phishing Reseller and a target group company differs', async () => {
+      getEmailDeliveries.mockResolvedValueOnce({
+        data: { data: { results: decResults() } }
+      })
+      const ctx = {
+        type: SCENARIO_TYPES.PHISHING,
+        getUser: { role: { name: 'Reseller' } },
+        getCompanyName: 'Keepnet',
+        targetGroupCompanyNames: ['Acme'],
+        emailDeliveryItems: [],
+        formData: { smtpSettingResourceId: 'x', directEmailSettingResourceId: 'y' },
+        emailDelivery: null,
+        isEdit: false,
+        $nextTick: (cb) => cb()
+      }
+      CampaignManagerDeliverySettings.methods.callForEmailDeliveries.call(ctx)
+      await flushPromises()
+
+      const disabled = ctx.emailDeliveryItems.filter((i) => i.disabled === true)
+      expect(disabled.length).toBeGreaterThan(0)
+      expect(String(disabled[0].description)).toMatch(/belong to you/)
+    })
+
+    it('keeps all DEC options enabled for Phishing when user is not Reseller', async () => {
+      getEmailDeliveries.mockResolvedValueOnce({
+        data: { data: { results: decResults() } }
+      })
+      const ctx = {
+        type: SCENARIO_TYPES.PHISHING,
+        getUser: { role: { name: 'CompanyAdmin' } },
+        getCompanyName: 'Keepnet',
+        targetGroupCompanyNames: ['OtherCo'],
+        emailDeliveryItems: [],
+        formData: { smtpSettingResourceId: 'x', directEmailSettingResourceId: 'y' },
+        emailDelivery: null,
+        isEdit: false,
+        $nextTick: (cb) => cb()
+      }
+      CampaignManagerDeliverySettings.methods.callForEmailDeliveries.call(ctx)
+      await flushPromises()
+
+      expect(ctx.emailDeliveryItems.filter((i) => i.disabled === true)).toHaveLength(0)
+    })
+
+    it('keeps DEC options enabled for Reseller when every target group company matches', async () => {
+      getEmailDeliveries.mockResolvedValueOnce({
+        data: { data: { results: decResults() } }
+      })
+      const ctx = {
+        type: SCENARIO_TYPES.PHISHING,
+        getUser: { role: { name: 'Reseller' } },
+        getCompanyName: 'Keepnet',
+        targetGroupCompanyNames: ['Keepnet'],
+        emailDeliveryItems: [],
+        formData: { smtpSettingResourceId: 'x', directEmailSettingResourceId: 'y' },
+        emailDelivery: null,
+        isEdit: false,
+        $nextTick: (cb) => cb()
+      }
+      CampaignManagerDeliverySettings.methods.callForEmailDeliveries.call(ctx)
+      await flushPromises()
+
+      expect(ctx.emailDeliveryItems.filter((i) => i.disabled === true)).toHaveLength(0)
+    })
+  })
+
+  describe('callForCalculateSendingInfo early exits', () => {
+    it('does not schedule debounced API when target groups are empty', () => {
+      const debounce = jest.fn()
+      CampaignManagerDeliverySettings.methods.callForCalculateSendingInfo.call({
+        targetGroupResourceIds: [],
+        totalTargetUserCount: 50,
+        inputDistributionFormData: { distributionDelayEvery: 5 },
+        debounce
+      })
+      expect(debounce).not.toHaveBeenCalled()
+    })
+
+    it('does not schedule when totalTargetUserCount is 1', () => {
+      const debounce = jest.fn()
+      CampaignManagerDeliverySettings.methods.callForCalculateSendingInfo.call({
+        targetGroupResourceIds: ['g1'],
+        totalTargetUserCount: 1,
+        inputDistributionFormData: { distributionDelayEvery: 5 },
+        debounce
+      })
+      expect(debounce).not.toHaveBeenCalled()
+    })
+
+    it('does not schedule when distributionDelayEvery is falsy', () => {
+      const debounce = jest.fn()
+      CampaignManagerDeliverySettings.methods.callForCalculateSendingInfo.call({
+        targetGroupResourceIds: ['g1'],
+        totalTargetUserCount: 20,
+        inputDistributionFormData: { distributionDelayEvery: 0 },
+        debounce
+      })
+      expect(debounce).not.toHaveBeenCalled()
+    })
+
+    it('calls calculateSendingInfo through debounce when inputs are valid', async () => {
+      calculateSendingInfo.mockResolvedValueOnce({
+        data: { data: { totalSendSecond: 10, batchEverySendSecond: 2 } }
+      })
+      const debounce = jest.fn((fn) => fn())
+      const ctx = {
+        type: SCENARIO_TYPES.PHISHING,
+        targetGroupResourceIds: ['tg-1'],
+        totalTargetUserCount: 100,
+        inputDistributionFormData: {
+          distributionTypeId: 1,
+          distributionDelayEvery: 5,
+          distributionDelayTimeTypeId: '1',
+          distributionEmailOver: 8,
+          distributionEmailOverTimeTypeId: '1',
+          sendingLimit: 50,
+          distributionDays: 7,
+          distributionStartTime: '09:00',
+          distributionEndTime: '17:00'
+        },
+        userTargetAudienceData: {
+          sendOnlyActiveUsers: false,
+          sendRandomlyUsers: false,
+          sendRandomlyUsersCount: 0,
+          sendRandomlyUsersCalculateTypeId: ''
+        },
+        debounce,
+        totalSendSecond: 0,
+        batchEverySendSecond: 0
+      }
+      CampaignManagerDeliverySettings.methods.callForCalculateSendingInfo.call(ctx)
+      await flushPromises()
+      expect(debounce).toHaveBeenCalled()
+      expect(calculateSendingInfo).toHaveBeenCalled()
+      expect(ctx.totalSendSecond).toBe(10)
+      expect(ctx.batchEverySendSecond).toBe(2)
+    })
   })
 })

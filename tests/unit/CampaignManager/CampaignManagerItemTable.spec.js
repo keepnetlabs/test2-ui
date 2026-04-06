@@ -298,6 +298,7 @@ describe('CampaignManagerItemTable.vue', () => {
     expect(wrapper.vm.getStatusBadgeProps('Running')).toEqual(getStatusBadgeProps('Running'))
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.IDLE })).toBe(true)
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.SCHEDULED })).toBe(true)
+    expect(wrapper.vm.isTargetUsersShowGroups({ status: 'scheduled' })).toBe(true)
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.RUNNING })).toBe(false)
   })
 
@@ -358,6 +359,7 @@ describe('CampaignManagerItemTable.vue', () => {
 
     expect(usersCol.label).toBe('Users')
     expect(usersCol.width).toBe(240)
+    expect(usersCol.type).toBe('slot')
     expect(statusCol.width).toBe(240)
   })
 
@@ -451,5 +453,125 @@ describe('CampaignManagerItemTable.vue', () => {
       true
     )
     expect(wrapper.vm.getTableAllRecordsText).toBe('Campaign Name: Campaign A')
+  })
+
+  describe('isTargetUsersShowGroups (Idle / Scheduled variants)', () => {
+    it.each([
+      ['Idle', true],
+      ['idle', true],
+      ['Scheduled', true],
+      ['scheduled', true],
+      ['Running', false],
+      ['Completed', false],
+      ['Paused', false],
+      ['Error', false]
+    ])('status %s -> %s', (status, expected) => {
+      const wrapper = createWrapper()
+      expect(wrapper.vm.isTargetUsersShowGroups({ status })).toBe(expected)
+    })
+  })
+
+  describe('target groups column (Groups vs count)', () => {
+    it('handleTargetUsersGroupsClick emits campaign ids from item and instanceGroup from row', () => {
+      const emit = jest.fn()
+      const ctx = {
+        item: {
+          resourceId: 'camp-x',
+          campaignType: 7,
+          name: 'N'
+        },
+        $emit: emit
+      }
+      const row = { instanceGroup: 'ig-row-2', status: 'Scheduled' }
+
+      CampaignManagerItemTable.methods.handleTargetUsersGroupsClick.call(ctx, row)
+
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'camp-x',
+        campaignType: 7,
+        instanceGroup: 'ig-row-2'
+      })
+    })
+
+    it('handleTargetUsersGroupsClick passes undefined instanceGroup when row omits it', () => {
+      const emit = jest.fn()
+      const ctx = {
+        item: { resourceId: 'c1', campaignType: 1 },
+        $emit: emit
+      }
+      CampaignManagerItemTable.methods.handleTargetUsersGroupsClick.call(ctx, { status: 'Idle' })
+      expect(emit).toHaveBeenCalledWith(
+        'on-target-users-groups-click',
+        expect.objectContaining({
+          resourceId: 'c1',
+          campaignType: 1,
+          instanceGroup: undefined
+        })
+      )
+    })
+
+    it('handleTargetUsersGroupsClick emits undefined campaignType when item has no campaignType', () => {
+      const emit = jest.fn()
+      CampaignManagerItemTable.methods.handleTargetUsersGroupsClick.call(
+        {
+          item: { resourceId: 'c-undef-type', name: 'N' },
+          $emit: emit
+        },
+        { instanceGroup: 'ig-1', status: 'Idle' }
+      )
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'c-undef-type',
+        campaignType: undefined,
+        instanceGroup: 'ig-1'
+      })
+    })
+
+    it('handleTargetUsersGroupsClick passes numeric instanceGroup 0 on row', () => {
+      const emit = jest.fn()
+      CampaignManagerItemTable.methods.handleTargetUsersGroupsClick.call(
+        {
+          item: { resourceId: 'c1', campaignType: 1 },
+          $emit: emit
+        },
+        { instanceGroup: 0, status: 'Scheduled' }
+      )
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'c1',
+        campaignType: 1,
+        instanceGroup: 0
+      })
+    })
+
+    it('handleTargetUsersGroupsClick preserves campaignType 0 from item', () => {
+      const emit = jest.fn()
+      CampaignManagerItemTable.methods.handleTargetUsersGroupsClick.call(
+        {
+          item: { resourceId: 'c0', campaignType: 0 },
+          $emit: emit
+        },
+        { instanceGroup: 'ig-0', status: 'Idle' }
+      )
+      expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+        resourceId: 'c0',
+        campaignType: 0,
+        instanceGroup: 'ig-0'
+      })
+    })
+
+    it('tableColumnsWithTooltips sets Users column to slot only; leaves other column types intact', () => {
+      const wrapper = createWrapper()
+      const cols = wrapper.vm.tableColumnsWithTooltips
+
+      const users = cols.find((c) => c.property === 'totalTargetUserCount')
+      const frequency = cols.find((c) => c.property === COLUMNS.FREQUENCY.property)
+      const startTime = cols.find((c) => c.property === 'startDate')
+      const status = cols.find((c) => c.property === COLUMNS.STATUS.property)
+
+      expect(users.type).toBe('slot')
+      expect(users.property).toBe('totalTargetUserCount')
+      expect(frequency.type).toBe('slot')
+      expect(startTime.type).toBe('text')
+      expect(status.type).toBe('slot')
+    })
   })
 })
