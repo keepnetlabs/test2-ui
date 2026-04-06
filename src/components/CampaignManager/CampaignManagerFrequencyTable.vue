@@ -17,7 +17,7 @@
       is-server-side
       :loading="isLoading"
       :table="tableData"
-      :columns="tableOptions.columns"
+      :columns="tableColumnsForDataTable"
       :empty="tableOptions.iEmpty"
       :server-side-props="serverSideProps"
       :server-side-events="tableOptions.serverSideEvents"
@@ -100,9 +100,9 @@
 <script>
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
-  ACTION_STATUSES,
   COLUMNS,
-  getStatusBadgeProps
+  getStatusBadgeProps,
+  isIdleOrScheduledStatus
 } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
 import {
@@ -213,6 +213,13 @@ export default {
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
+    }
+  },
+  computed: {
+    tableColumnsForDataTable() {
+      return this.tableOptions.columns.map((col) =>
+        col.property === 'totalTargetUserCount' ? { ...col, type: 'slot' } : col
+      )
     }
   },
   watch: {
@@ -338,13 +345,13 @@ export default {
       return row?.status !== 'Error' || !row?.jobResultMessage
     },
     isTargetUsersShowGroups(row = {}) {
-      return [ACTION_STATUSES.IDLE, ACTION_STATUSES.SCHEDULED].includes(row?.status)
+      return isIdleOrScheduledStatus(row?.status)
     },
     handleTargetUsersGroupsClick(row) {
       this.$emit(EMITS.ON_TARGET_USERS_GROUPS_CLICK, {
         resourceId: this.parentResourceId,
         campaignType: this.parentCampaignType,
-        instanceGroup: this.item?.instanceGroup
+        instanceGroup: row?.instanceGroup
       })
     }
   }

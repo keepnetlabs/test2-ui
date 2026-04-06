@@ -279,6 +279,7 @@ export default {
           this.$refs.campaignManagerParentTable.callForData();
           this.toggleShowDeleteDialog();
         })
+        .catch(() => {})
         .finally(() => {
           this.setDeleteDialogActionButtonDisabled(false);
         });
@@ -407,6 +408,7 @@ export default {
           }
           this.toggleStartCampaignDialog();
         })
+        .catch(() => {})
         .finally(() => {
           this.isStartDialogActionButtonDisabled = false;
         });
@@ -422,6 +424,7 @@ export default {
           }
           this.toggleStopCampaignDialog();
         })
+        .catch(() => {})
         .finally(() => {
           this.isStopDialogActionButtonDisabled = false;
         });

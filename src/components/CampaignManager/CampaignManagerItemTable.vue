@@ -125,9 +125,9 @@
 <script>
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import {
-  ACTION_STATUSES,
   COLUMNS,
   getStatusBadgeProps,
+  isIdleOrScheduledStatus,
   SCENARIO_DISTRIBUTION_TEXTS
 } from "@/components/CampaignManager/utils";
 import labels from "@/model/constants/labels";
@@ -252,6 +252,7 @@ export default {
         if (col.property === "totalTargetUserCount") {
           return {
             ...col,
+            type: "slot",
             label: "Users",
             width: 240
           };
@@ -424,9 +425,7 @@ export default {
       return row?.status !== "Error" || !row?.jobResultMessage;
     },
     isTargetUsersShowGroups(row = {}) {
-      return [ACTION_STATUSES.IDLE, ACTION_STATUSES.SCHEDULED].includes(
-        row?.status
-      );
+      return isIdleOrScheduledStatus(row?.status);
     },
     handleTargetUsersGroupsClick(row) {
       this.$emit("on-target-users-groups-click", {
