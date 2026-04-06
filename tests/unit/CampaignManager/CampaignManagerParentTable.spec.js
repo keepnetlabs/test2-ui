@@ -275,6 +275,30 @@ describe('CampaignManagerParentTable.vue', () => {
         status: 'Error'
       })
     ).toBe(false)
+    expect(
+      CampaignManagerParentTable.methods.isTargetUsersShowGroups.call({}, {
+        status: 'scheduled'
+      })
+    ).toBe(true)
+    expect(
+      CampaignManagerParentTable.methods.isTargetUsersShowGroups.call({}, {
+        status: 'iDlE'
+      })
+    ).toBe(true)
+  })
+
+  it('isTargetUsersShowGroups is true for spaced idle string (trim + lowercase)', () => {
+    expect(
+      CampaignManagerParentTable.methods.isTargetUsersShowGroups.call({}, { status: '  idle  ' })
+    ).toBe(true)
+  })
+
+  it('handleTargetUsersGroupsClick emits on-target-users-groups-click with row reference', () => {
+    const emit = jest.fn()
+    const row = { resourceId: 'x', status: 'Idle', targetUsers: 5 }
+    CampaignManagerParentTable.methods.handleTargetUsersGroupsClick.call({ $emit: emit }, row)
+    expect(emit).toHaveBeenCalledTimes(1)
+    expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', row)
   })
 
   it('statusItems watcher maps filter items and rerenders filters when items exist', () => {

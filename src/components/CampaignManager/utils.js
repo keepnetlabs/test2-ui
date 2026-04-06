@@ -341,6 +341,16 @@ export const STATUS_FILTER_ITEMS = Object.values(ACTION_STATUSES).map((text) => 
   value: text
 }))
 
+/**
+ * Users column shows "Groups" (vs raw count) when status is Idle or Scheduled.
+ * API may return inconsistent casing (e.g. "scheduled" vs "Scheduled").
+ */
+export function isIdleOrScheduledStatus(status) {
+  if (status == null || status === '') return false
+  const s = String(status).trim().toLowerCase()
+  return s === 'idle' || s === 'scheduled'
+}
+
 export function getStatusBadgeProps(status) {
   if (status === 'Completed') {
     return {

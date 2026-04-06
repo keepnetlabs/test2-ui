@@ -1,4 +1,5 @@
 import CampaignManagerScenarioStatisticsModal from '@/components/CampaignManager/CampaignManagerScenarioStatisticsModal.vue'
+import CampaignManagerStatisticsRegion from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsRegion'
 import CampaignManagerStatisticsLanguage from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsLanguage.vue'
 import CampaignManagerStatisticsEmotionalTrigger from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsEmotionalTrigger.vue'
 import CampaignManagerStatisticsBrand from '@/components/CampaignManager/CampaignManagerStatistics/CampaignManagerStatisticsBrand.vue'
@@ -45,11 +46,54 @@ describe('CampaignManagerScenarioStatisticsModal.vue (extra branches)', () => {
   it('getComponent resolves to mapped Vue components accurately for all switch branches', () => {
     const getComp = CampaignManagerScenarioStatisticsModal.methods.getComponent
 
+    expect(getComp.call({}, 'StatisticsRegionWidget')).toBe(CampaignManagerStatisticsRegion)
     expect(getComp.call({}, 'StatisticsLanguageWidget')).toBe(CampaignManagerStatisticsLanguage)
     expect(getComp.call({}, 'StatisticsEmotionalTriggerWidget')).toBe(CampaignManagerStatisticsEmotionalTrigger)
     expect(getComp.call({}, 'StatisticsBrandWidget')).toBe(CampaignManagerStatisticsBrand)
     expect(getComp.call({}, 'StatisticsAttackTypeWidget')).toBe(CampaignManagerStatisticsAttackType)
     expect(getComp.call({}, 'StatisticsIndustryWidget')).toBe(CampaignManagerStatisticsIndustry)
+  })
+
+  it('getComponent default branch falls back to Region widget', () => {
+    const getComp = CampaignManagerScenarioStatisticsModal.methods.getComponent
+    expect(getComp.call({}, 'StatisticsUnknownWidget')).toBe(CampaignManagerStatisticsRegion)
+  })
+
+  it('getComponentData returns each series and defaults to industry', () => {
+    const data = {
+      region: ['r1'],
+      language: ['l1'],
+      emotion: ['e1'],
+      brand: ['b1'],
+      attackType: ['a1'],
+      industry: ['i1']
+    }
+    const getData = CampaignManagerScenarioStatisticsModal.methods.getComponentData
+    expect(getData.call({ data }, 'StatisticsRegionWidget')).toEqual(['r1'])
+    expect(getData.call({ data }, 'StatisticsLanguageWidget')).toEqual(['l1'])
+    expect(getData.call({ data }, 'StatisticsEmotionalTriggerWidget')).toEqual(['e1'])
+    expect(getData.call({ data }, 'StatisticsBrandWidget')).toEqual(['b1'])
+    expect(getData.call({ data }, 'StatisticsAttackTypeWidget')).toEqual(['a1'])
+    expect(getData.call({ data }, 'StatisticsIndustryWidget')).toEqual(['i1'])
+    expect(getData.call({ data }, 'StatisticsUnknownWidget')).toEqual(['i1'])
+  })
+
+  it('handleDrawerClickOutside emits drawer close', () => {
+    const emit = jest.fn()
+    CampaignManagerScenarioStatisticsModal.methods.handleDrawerClickOutside.call({ $emit: emit })
+    expect(emit).toHaveBeenCalledWith('navigation-drawer-change', false)
+  })
+
+  it('breakpointChanged skips layout reflow when bdCol is greater than 2', () => {
+    const original = { x: 9, y: 9, w: 6, h: 6, key: 'pinned' }
+    const ctx = {
+      activeBreakpoint: 'lg',
+      layout: [original],
+      getBdCol: () => 12
+    }
+    CampaignManagerScenarioStatisticsModal.methods.breakpointChanged.call(ctx, { newBreakpoint: 'md' })
+    expect(ctx.activeBreakpoint).toBe('md')
+    expect(ctx.layout[0]).toEqual(original)
   })
 
   describe('transformStatisticData', () => {

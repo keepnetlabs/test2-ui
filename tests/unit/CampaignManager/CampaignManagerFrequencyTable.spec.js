@@ -87,6 +87,51 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(wrapper.text()).toContain('Weekly')
   })
 
+  it('overrides Users column to type slot so Groups cell uses datatable-custom-column', () => {
+    const wrapper = createWrapper()
+    const usersCol = wrapper.vm.tableColumnsForDataTable.find(
+      (col) => col.property === 'totalTargetUserCount'
+    )
+    expect(usersCol.type).toBe('slot')
+  })
+
+  it('tableColumnsForDataTable only changes totalTargetUserCount; schedule and status types preserved', () => {
+    const wrapper = createWrapper()
+    const resolved = wrapper.vm.tableColumnsForDataTable
+    const base = wrapper.vm.tableOptions.columns
+
+    const byProp = (arr, prop) => arr.find((c) => c.property === prop)
+
+    expect(byProp(resolved, 'startDate').type).toBe(byProp(base, 'startDate').type)
+    expect(byProp(resolved, 'startDate').type).toBe('text')
+    expect(byProp(resolved, COLUMNS.STATUS.property).type).toBe('slot')
+    expect(byProp(resolved, 'totalTargetUserCount').type).toBe('slot')
+    expect(byProp(base, 'totalTargetUserCount').type).toBe('text')
+  })
+
+  it('tableColumnsForDataTable stays aligned with tableOptions.columns length', () => {
+    const wrapper = createWrapper()
+    const cols = wrapper.vm.tableColumnsForDataTable
+    expect(cols).toHaveLength(wrapper.vm.tableOptions.columns.length)
+  })
+
+  it('tableColumnsForDataTable leaves createdDate column as type text', () => {
+    const wrapper = createWrapper()
+    const col = wrapper.vm.tableColumnsForDataTable.find((c) => c.property === 'createdDate')
+    expect(col).toBeDefined()
+    expect(col.type).toBe('text')
+  })
+
+  it.each([
+    ['Idle', true],
+    ['Scheduled', true],
+    ['scheduled', true],
+    ['Running', false]
+  ])('isTargetUsersShowGroups for status %s returns %s', (status, expected) => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.isTargetUsersShowGroups({ status })).toBe(expected)
+  })
+
   it('loads data on created with frequencyGroup payload', async () => {
     const wrapper = createWrapper()
     await flushPromises()
@@ -265,6 +310,7 @@ describe('CampaignManagerFrequencyTable.vue', () => {
 
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.IDLE })).toBe(true)
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.SCHEDULED })).toBe(true)
+    expect(wrapper.vm.isTargetUsersShowGroups({ status: 'scheduled' })).toBe(true)
     expect(wrapper.vm.isTargetUsersShowGroups({ status: ACTION_STATUSES.RUNNING })).toBe(false)
     expect(wrapper.vm.isTargetUsersShowGroups({})).toBe(false)
   })
@@ -285,7 +331,7 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(wrapper.emitted('on-target-users-groups-click')[0][0]).toEqual({
       resourceId: 'parent-1',
       campaignType: 1,
-      instanceGroup: 'ig-parent'
+      instanceGroup: 'will-be-ignored'
     })
   })
 
@@ -345,7 +391,7 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(loadingFlags).toEqual([true, false])
   })
 
-  it('handleTargetUsersGroupsClick emits undefined instanceGroup when item is missing', () => {
+  it('handleTargetUsersGroupsClick emits instanceGroup from clicked row (not parent item)', () => {
     const emit = jest.fn()
     const ctx = {
       parentResourceId: 'parent-z',
@@ -361,7 +407,43 @@ describe('CampaignManagerFrequencyTable.vue', () => {
     expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
       resourceId: 'parent-z',
       campaignType: 9,
+      instanceGroup: 'ignored'
+    })
+  })
+
+  it('handleTargetUsersGroupsClick includes undefined instanceGroup when row has no instanceGroup', () => {
+    const emit = jest.fn()
+    CampaignManagerFrequencyTable.methods.handleTargetUsersGroupsClick.call(
+      {
+        parentResourceId: 'p-a',
+        parentCampaignType: 2,
+        item: { instanceGroup: 'parent-ig' },
+        $emit: emit
+      },
+      { status: 'Idle' }
+    )
+    expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+      resourceId: 'p-a',
+      campaignType: 2,
       instanceGroup: undefined
+    })
+  })
+
+  it('handleTargetUsersGroupsClick passes parentCampaignType 0 to dialog payload', () => {
+    const emit = jest.fn()
+    CampaignManagerFrequencyTable.methods.handleTargetUsersGroupsClick.call(
+      {
+        parentResourceId: 'p0',
+        parentCampaignType: 0,
+        item: { instanceGroup: 'x' },
+        $emit: emit
+      },
+      { instanceGroup: 'freq-ig', status: 'Scheduled' }
+    )
+    expect(emit).toHaveBeenCalledWith('on-target-users-groups-click', {
+      resourceId: 'p0',
+      campaignType: 0,
+      instanceGroup: 'freq-ig'
     })
   })
 
