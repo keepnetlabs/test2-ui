@@ -51,6 +51,18 @@ describe('IncidentResponder.vue (extra)', () => {
     ).toBe('(Multiple Values)')
   })
 
+  it('configures user feedback row action with custom icon before re-analyze action', () => {
+    const state = IncidentResponder.data()
+    const userFeedbackAction = state.emails.rowActions.find(
+      (action) => action.action === 'handleUserFeedback'
+    )
+
+    expect(userFeedbackAction).toBeDefined()
+    expect(userFeedbackAction.name).toBe('User Feedback')
+    expect(userFeedbackAction.icon).toBe('$comment-account-outline')
+    expect(state.emails.rowActions[5].action).toBe('handleReAnalyze')
+  })
+
   it('watchers update addButton text and row action state', () => {
     const parentCtx = {
       emails: { addButton: { label: '', tooltip: '' } }
@@ -69,10 +81,10 @@ describe('IncidentResponder.vue (extra)', () => {
     expect(clusteredCtx.clusteredTable.addButton.tooltip).toContain('FILTER BY')
 
     const permissionCtx = {
-      emails: { rowActions: [{}, {}, {}, {}, { disabled: true }] }
+      emails: { rowActions: [{}, {}, {}, {}, {}, { disabled: true }] }
     }
     watch.getIncidentResponderNotifiedEmailReAnalyze.handler.call(permissionCtx, true)
-    expect(permissionCtx.emails.rowActions[4].disabled).toBe(false)
+    expect(permissionCtx.emails.rowActions[5].disabled).toBe(false)
   })
 
   it('clearFilterByHashProps clears clustered hash filter and refreshes clustered table', () => {
@@ -221,5 +233,30 @@ describe('IncidentResponder.vue (extra)', () => {
       next
     )
     expect(next).toHaveBeenCalledWith()
+  })
+
+  it('handleUserFeedbackOnClick opens email details in a new tab on user feedback tab', () => {
+    const open = jest.fn()
+    const previousOpen = globalThis.open
+    const previousLocation = globalThis.location
+
+    globalThis.open = open
+    Object.defineProperty(globalThis, 'location', {
+      value: { href: 'https://test.keepnetlabs.com/incident-responder' },
+      configurable: true
+    })
+
+    methods.handleUserFeedbackOnClick.call({}, { resourceId: 'mail-1' })
+
+    expect(open).toHaveBeenCalledWith(
+      'https://test.keepnetlabs.com/incident-responder/reported-emails/email-details/mail-1?tab=sixth',
+      '_blank'
+    )
+
+    globalThis.open = previousOpen
+    Object.defineProperty(globalThis, 'location', {
+      value: previousLocation,
+      configurable: true
+    })
   })
 })

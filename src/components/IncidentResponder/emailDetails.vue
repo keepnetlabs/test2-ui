@@ -312,7 +312,22 @@
               </div>
             </template>
           </el-tab-pane>
-          <el-tab-pane v-if="showAIAnalyze" name="sixth" id="email-details-ai-analyze-content">
+          <el-tab-pane label="User Feedback" name="sixth" id="email-details-user-feedback-content">
+            <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
+            <template v-else>
+              <div class="email-details__user-feedback">
+                <div class="email-details__user-feedback-item">
+                  <span class="email-details__user-feedback-label">Reason:</span>
+                  <span class="email-details__user-feedback-value">{{ reportReasonText }}</span>
+                </div>
+                <div class="email-details__user-feedback-item">
+                  <span class="email-details__user-feedback-label">User Comment:</span>
+                  <span class="email-details__user-feedback-value">{{ reportCommentText }}</span>
+                </div>
+              </div>
+            </template>
+          </el-tab-pane>
+          <el-tab-pane v-if="showAIAnalyze" name="seventh" id="email-details-ai-analyze-content">
             <template #label>
               <v-icon class="mr-2" style="font-size: 18px; color: #1e88e5;"
                 >mdi-brain</v-icon
@@ -735,6 +750,16 @@ export default {
   computed: {
     isMailDetailsHaveAttachments() {
       return this.mailDetails?.attachments?.length
+    },
+    reportReasonText() {
+      return this.mailDetails && this.mailDetails.reportReasonText
+        ? this.mailDetails.reportReasonText
+        : ''
+    },
+    reportCommentText() {
+      return this.mailDetails && this.mailDetails.reportComment
+        ? this.mailDetails.reportComment
+        : ''
     },
     showAIAnalyze() {
       const AI_ANALYZE_COMPANIES = ['Bolearis', 'TIP Group', 'Sunexpress', 'ETİ', 'Axa Sigorta', 'Vodafone TR', 'System', 'Aksigorta', 'Sahibinden']
