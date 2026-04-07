@@ -1,6 +1,8 @@
 import { shallowMount } from '@vue/test-utils'
 import CompanyList from '@/components/Companies/CompanyList.vue'
 import { searchCompanies, deleteCompany } from '@/api/company'
+import { getLicences } from '@/api/common'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 
 jest.mock('@/api/company', () => ({
@@ -28,6 +30,19 @@ jest.mock('@/helper-classes/lookup-local-storage', () => ({
   default: {
     getMultiple: jest.fn(() => Promise.resolve([]))
   }
+}))
+
+jest.mock('@/api/common', () => ({
+  getLicences: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        data: {
+          licenses: [],
+          allLicenseModules: []
+        }
+      }
+    })
+  )
 }))
 
 jest.mock('@/utils/helperFunctions', () => ({
@@ -125,6 +140,7 @@ describe('CompanyList.vue (extra)', () => {
     await flushPromises()
 
     expect(handleIsSafari).toHaveBeenCalled()
+    expect(getLicences).toHaveBeenCalled()
     expect(typeof wrapper.vm.bindPropsIsSafari.handleSetCellClass).toBe('function')
     const out = wrapper.vm.bindPropsIsSafari.handleSetCellClass({ row: { companyName: 'Acme' } })
     expect(setSafariClusterFix).toHaveBeenCalledWith(
@@ -183,6 +199,42 @@ describe('CompanyList.vue (extra)', () => {
     expect(wrapper.vm.canRenderAlertbox).toBe(false)
   })
 
+  it('getTableData clears tableData on request failure', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    searchCompanies.mockRejectedValueOnce(new Error('network'))
+    wrapper.vm.tableData = [{ companyResourceId: 'existing-row' }]
+
+    wrapper.vm.getTableData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+  })
+
+  it('getTableData handles responses without a results field', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    searchCompanies.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          limitExceededCompanyCount: 4
+        }
+      }
+    })
+    wrapper.vm.tableData = [{ companyResourceId: 'existing-row' }]
+    wrapper.vm.canRenderAlertbox = true
+
+    wrapper.vm.getTableData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.limitExceededCompanyCount).toBe(0)
+    expect(wrapper.vm.canRenderAlertbox).toBe(false)
+  })
+
   it('deleteConfirmedItem does not refresh table when api response has no message', async () => {
     deleteCompany.mockResolvedValueOnce({ data: {} })
     const wrapper = createWrapper()
@@ -200,6 +252,25 @@ describe('CompanyList.vue (extra)', () => {
     expect(unSelectRow).toHaveBeenCalled()
     expect(changeServerSideSelectionCount).toHaveBeenCalledWith(-1)
     expect(wrapper.vm.getTableData).not.toHaveBeenCalled()
+  })
+
+  it('getTableData merges incoming payload overrides with cluster and limit flags', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    wrapper.vm.isClustered = true
+    wrapper.vm.isTargetUserCountExceedLimit = true
+
+    wrapper.vm.getTableData({ pageNumber: 7, orderBy: 'CompanyName' })
+    await flushPromises()
+
+    expect(searchCompanies).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        pageNumber: 7,
+        orderBy: 'CompanyName',
+        isClustered: true,
+        isTargetUserCountExceededLimit: true
+      })
+    )
   })
 
   describe('Training metrics columns', () => {
@@ -302,6 +373,125 @@ describe('CompanyList.vue (extra)', () => {
         { text: 'AwareGO', value: 'v-2' }
       ])
     })
+
+    it('keeps existing vendor filter items when API returns empty list', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      const col = wrapper.vm.tableOptions.columns.find((c) => c.property === 'enrolledVendorNames')
+      col.filterableItems = [{ text: 'Existing', value: 'existing' }]
+
+      const AwarenessEducatorService = require('@/api/awarenessEducator').default
+      AwarenessEducatorService.getVendors.mockResolvedValueOnce({ data: { data: [] } })
+
+      wrapper.vm.loadTrainingVendorFilterItems()
+      await flushPromises()
+
+      expect(col.filterableItems).toEqual([{ text: 'Existing', value: 'existing' }])
+    })
+
+    it('supports vendor payloads returned directly in response.data', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      const col = wrapper.vm.tableOptions.columns.find((c) => c.property === 'enrolledVendorNames')
+      const AwarenessEducatorService = require('@/api/awarenessEducator').default
+      AwarenessEducatorService.getVendors.mockResolvedValueOnce({
+        data: [{ id: 'v-9', name: 'Fallback Vendor' }]
+      })
+
+      wrapper.vm.loadTrainingVendorFilterItems()
+      await flushPromises()
+
+      expect(col.filterableItems).toEqual([{ text: 'Fallback Vendor', value: 'v-9' }])
+    })
+
+    it('swallows vendor API errors without throwing', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      const AwarenessEducatorService = require('@/api/awarenessEducator').default
+      AwarenessEducatorService.getVendors.mockRejectedValueOnce(new Error('vendor-error'))
+
+      expect(() => wrapper.vm.loadTrainingVendorFilterItems()).not.toThrow()
+      await flushPromises()
+    })
+  })
+
+  describe('getLookUpDatas fallback branches', () => {
+    it('uses empty license groups when licenses lookup fails', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+      LookupLocalStorage.getMultiple.mockResolvedValueOnce([
+        { genericCodeTypeId: 2, name: 'Industry X', resourceId: 'i-x' }
+      ])
+      getLicences.mockRejectedValueOnce(new Error('licenses-error'))
+
+      wrapper.vm.getLookUpDatas()
+      await flushPromises()
+
+      expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([
+        { text: 'Industry X', value: 'i-x' }
+      ])
+      expect(wrapper.vm.tableOptions.columns[3].filterableConfig).toEqual({
+        exclusiveGroups: true,
+        groups: [
+          {
+            key: 'licenseType',
+            label: 'License Type',
+            fieldName: 'LicenseTypeResourceId',
+            operator: 'Include',
+            items: []
+          },
+          {
+            key: 'products',
+            label: 'Products',
+            fieldName: 'ModuleResourceId',
+            operator: 'Include',
+            items: []
+          }
+        ]
+      })
+    })
+
+    it('uses empty industry items when generic lookup fails but keeps license groups', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+      LookupLocalStorage.getMultiple.mockRejectedValueOnce(new Error('lookup-error'))
+      getLicences.mockResolvedValueOnce({
+        data: {
+          data: {
+            licenses: [{ name: 'Awareness', resourceId: 'license-awareness' }],
+            allLicenseModules: [
+              { name: 'Phishing Simulator', resourceId: 'module-1', isAvailable: true }
+            ]
+          }
+        }
+      })
+
+      wrapper.vm.getLookUpDatas()
+      await flushPromises()
+
+      expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([])
+      expect(wrapper.vm.tableOptions.columns[3].filterableConfig).toEqual({
+        exclusiveGroups: true,
+        groups: [
+          {
+            key: 'licenseType',
+            label: 'License Type',
+            fieldName: 'LicenseTypeResourceId',
+            operator: 'Include',
+            items: [{ text: 'Awareness', value: 'license-awareness' }]
+          },
+          {
+            key: 'products',
+            label: 'Products',
+            fieldName: 'ModuleResourceId',
+            operator: 'Include',
+            items: [{ text: 'Phishing Simulator', value: 'module-1' }]
+          }
+        ]
+      })
+    })
   })
 
   describe('getManipulatedTableData', () => {
@@ -321,6 +511,23 @@ describe('CompanyList.vue (extra)', () => {
         { enrolledVendorNames: '' }
       ])
       expect(data[0].enrolledVendorNames).toBe('')
+    })
+
+    it('keeps non-string enrolledVendorNames as-is and marks direct children when requested', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      const vendorArray = ['Keepnet']
+      const data = wrapper.vm.getManipulatedTableData(
+        [
+          { enrolledVendorNames: vendorArray },
+          { companyName: 'Child Company' }
+        ],
+        true
+      )
+
+      expect(data[0].enrolledVendorNames).toBe(vendorArray)
+      expect(data[0].isChild).toBe(true)
+      expect(data[1].isChild).toBe(true)
     })
   })
 
@@ -351,15 +558,41 @@ describe('CompanyList.vue (extra)', () => {
 
   describe('columnFilterCleared for composite', () => {
     it('clears TrainingConsumptionStatus when TrainingConsumptionMonth is cleared', async () => {
-      const { columnFilterCleared } = require('@/utils/helperFunctions')
       const wrapper = createWrapper()
       await flushPromises()
       wrapper.vm.getTableData = jest.fn()
+      wrapper.vm.payload.filter.FilterGroups[0].FilterItems = [
+        { FieldName: 'TrainingConsumptionMonth', Value: '2026-03' },
+        { FieldName: 'TrainingConsumptionStatus', Value: '1' },
+        { FieldName: 'CompanyName', Value: 'Acme' }
+      ]
 
       wrapper.vm.columnFilterCleared('TrainingConsumptionMonth')
 
-      expect(columnFilterCleared).toHaveBeenCalledWith('TrainingConsumptionMonth', expect.any(Object))
-      expect(columnFilterCleared).toHaveBeenCalledWith('TrainingConsumptionStatus', expect.any(Object))
+      expect(wrapper.vm.payload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'CompanyName', Value: 'Acme' }
+      ])
+      expect(wrapper.vm.getTableData).toHaveBeenCalled()
+    })
+  })
+
+  describe('columnFilterCleared for nested filter arrays', () => {
+    it('clears all provided nested field names in one pass', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.getTableData = jest.fn()
+      wrapper.vm.payload.filter.FilterGroups[0].FilterItems = [
+        { FieldName: 'LicenseTypeResourceId', Value: 'license-awareness' },
+        { FieldName: 'ModuleResourceId', Value: 'module-1' },
+        { FieldName: 'CompanyName', Value: 'Acme' }
+      ]
+
+      wrapper.vm.columnFilterCleared(['LicenseTypeResourceId', 'ModuleResourceId'])
+
+      expect(wrapper.vm.payload.filter.FilterGroups[0].FilterItems).toEqual([
+        { FieldName: 'CompanyName', Value: 'Acme' }
+      ])
+      expect(wrapper.vm.getTableData).toHaveBeenCalled()
     })
   })
 
@@ -395,6 +628,41 @@ describe('CompanyList.vue (extra)', () => {
       ])
       expect(result[0].Operator).toBe('=')
       expect(result[1].Operator).toBe('Include')
+    })
+  })
+
+  describe('deleteMultipleConfirmedItems', () => {
+    it('refreshes data and clears deleting state even when datatable ref is missing', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.getTableData = jest.fn()
+      wrapper.vm.multipleDeletePayload = { items: ['c-1'] }
+      wrapper.vm.$refs = {}
+
+      wrapper.vm.deleteMultipleConfirmedItems()
+      await flushPromises()
+
+      expect(wrapper.vm.getTableData).toHaveBeenCalled()
+      expect(wrapper.vm.isDeleting).toBe(false)
+    })
+  })
+
+  describe('normalizeFilterForBackend', () => {
+    it('leaves unrelated field operators unchanged for single items', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+
+      expect(
+        wrapper.vm.normalizeFilterForBackend({
+          FieldName: 'CompanyName',
+          Operator: 'Contains',
+          Value: 'Acme'
+        })
+      ).toEqual({
+        FieldName: 'CompanyName',
+        Operator: 'Contains',
+        Value: 'Acme'
+      })
     })
   })
 })

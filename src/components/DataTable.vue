@@ -843,6 +843,7 @@
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
+                  :filterableConfig="col.filterableConfig || null"
                   :filterableOptions="col.filterableOptions"
                   :showSelect="col.showSelect"
                   :show-select-search="col.showSelectSearch"
@@ -3737,7 +3738,13 @@ export default {
     },
     handleClearColumnFilter(fieldName) {
       this.isSelectedAllEver = false;
-      this.$delete(this.filterValues, fieldName);
+      if (Array.isArray(fieldName)) {
+        fieldName.forEach((item) => {
+          this.$delete(this.filterValues, item);
+        });
+      } else {
+        this.$delete(this.filterValues, fieldName);
+      }
       this.$emit("columnFilterCleared", fieldName);
     },
     reRenderFilters(filterValues) {
