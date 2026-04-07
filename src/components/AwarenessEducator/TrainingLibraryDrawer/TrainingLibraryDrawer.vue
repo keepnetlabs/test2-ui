@@ -48,6 +48,10 @@
           <p class="training-library-drawer__reasoning-title">WHY THIS RECOMMENDATION?</p>
           <p class="training-library-drawer__reasoning-text">{{ reasoningText }}</p>
         </div>
+        <div v-if="declineReasonText" class="training-library-drawer__decline-reason">
+          <p class="training-library-drawer__decline-reason-title">WHY THIS WAS DECLINED?</p>
+          <p class="training-library-drawer__decline-reason-text">{{ declineReasonText }}</p>
+        </div>
         <TrainingLibraryDrawerContent
           :training-data="trainingData"
           :type="type"
@@ -183,6 +187,10 @@ export default {
       default: ''
     },
     reasoningText: {
+      type: String,
+      default: ''
+    },
+    declineReasonText: {
       type: String,
       default: ''
     },

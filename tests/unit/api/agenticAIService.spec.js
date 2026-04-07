@@ -365,6 +365,20 @@ describe('agenticAIService', () => {
       )
     })
 
+    it('should include retryOfActivityResourceId in payload when provided', async () => {
+      await retryAutonomous({ ...retryParams, retryOfActivityResourceId: 'J0WKx2R919vR' })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.retryOfActivityResourceId).toBe('J0WKx2R919vR')
+    })
+
+    it('should omit retryOfActivityResourceId when not provided', async () => {
+      await retryAutonomous(retryParams)
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.retryOfActivityResourceId).toBeUndefined()
+    })
+
     it('should include baseApiUrl in payload', async () => {
       await retryAutonomous(retryParams)
 

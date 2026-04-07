@@ -3,16 +3,19 @@ import AgenticAIRejectDialog from "@/components/Common/Widget/WidgetComponents/A
 describe("AgenticAIRejectDialog", () => {
   describe("computed", () => {
     it("returns four retry suggestion options", () => {
-      const suggestions = AgenticAIRejectDialog.computed.suggestedReasons.call({});
+      const suggestions = AgenticAIRejectDialog.computed.suggestedReasons.call({
+        action: "retry",
+        isRetryAction: true
+      });
 
       expect(suggestions).toHaveLength(4);
-      expect(suggestions[0].label).toBe("Delivery / technical issue");
+      expect(suggestions[0].label).toBe("Delivery / technical");
       expect(suggestions[0].key).toBe("delivery-or-technical");
       expect(suggestions.map((s) => s.key)).toEqual([
         "delivery-or-technical",
         "language-or-locale",
         "audience-or-risk-fit",
-        "regenerate-quality"
+        "quality-or-tone"
       ]);
     });
 
@@ -35,11 +38,14 @@ describe("AgenticAIRejectDialog", () => {
 
       AgenticAIRejectDialog.methods.handleSuggestedReasonClick.call(ctx, {
         key: "delivery-or-technical",
-        template: "The previous attempt failed to deliver or render correctly."
+        template:
+          "The previous attempt did not deliver or render correctly (for example the message or landing page failed to load). Requesting a new run with corrected delivery."
       });
 
       expect(ctx.selectedSuggestedReasonKey).toBe("delivery-or-technical");
-      expect(ctx.reason).toBe("The previous attempt failed to deliver or render correctly.");
+      expect(ctx.reason).toBe(
+        "The previous attempt did not deliver or render correctly (for example the message or landing page failed to load). Requesting a new run with corrected delivery."
+      );
     });
 
     it("resets reason and selection together", () => {
@@ -54,17 +60,21 @@ describe("AgenticAIRejectDialog", () => {
       expect(ctx.selectedSuggestedReasonKey).toBeNull();
     });
 
-    it("emits trimmed reason on confirm", () => {
+    it("emits trimmed reason and declineForRetry on confirm", () => {
       const $emit = jest.fn();
       const ctx = {
         reason: "  Valid retry reason with enough length  ",
         isValid: true,
+        isRetryAction: true,
         $emit
       };
 
       AgenticAIRejectDialog.methods.handleConfirm.call(ctx);
 
-      expect($emit).toHaveBeenCalledWith("confirm", "Valid retry reason with enough length");
+      expect($emit).toHaveBeenCalledWith("confirm", {
+        reason: "Valid retry reason with enough length",
+        declineForRetry: true
+      });
     });
 
     it("does not emit confirm when invalid", () => {

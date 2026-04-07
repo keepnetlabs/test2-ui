@@ -89,6 +89,31 @@
   line-height: 1.5;
 }
 
+// Decline explainability (declined rows; mirrors reasoning layout, neutral / declined palette)
+.common-simulator-preview__decline-reason {
+  border-radius: 8px;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  padding: 10px 14px;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.common-simulator-preview__decline-reason-title {
+  margin-bottom: 0 !important;
+  font-size: 12px;
+  font-weight: 600;
+  color: #757575;
+}
+
+.common-simulator-preview__decline-reason-text {
+  margin-bottom: 0 !important;
+  font-size: 14px;
+  color: #383b41;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
 // Approval footer for Agentic AI preview
 .common-simulator-preview__approval-footer {
   flex: 0 0 auto;

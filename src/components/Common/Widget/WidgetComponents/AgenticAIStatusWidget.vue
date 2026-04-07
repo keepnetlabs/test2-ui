@@ -235,7 +235,7 @@ export default {
         {
           label: "Status",
           property: "status",
-          type: "status",
+          type: "slot",
           show: true,
           minWidth: 200,
           width: 200,
@@ -246,13 +246,17 @@ export default {
             { text: "Pending", value: "1" },
             { text: "Declined", value: "3" },
             { text: "Approved", value: "4" },
-            { text: "Error", value: "5" }
+            { text: "Error", value: "5" },
+            { text: "Retrying", value: "6" },
+            { text: "Retried", value: "7" }
           ],
           badgeColorMap: {
             pending: "#2196f3",
             approved: "#43a047",
             declined: "#757575",
-            error: "#e53935"
+            error: "#e53935",
+            retrying: "#1173C1",
+            retried: "#757575"
           },
           fullWidth: false,
           props: {

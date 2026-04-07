@@ -200,12 +200,233 @@ describe("AgenticAIStatusWidget", () => {
     const wrapper = mountFactory();
     const statusColumn = wrapper.vm.activitiesTableColumns.find((column) => column.property === "status");
 
+    expect(statusColumn.type).toBe("slot");
     expect(statusColumn.badgeColorMap.pending).toBe("#2196f3");
     expect(statusColumn.badgeColorMap.approved).toBe("#43a047");
     expect(statusColumn.badgeColorMap.declined).toBe("#757575");
     expect(statusColumn.badgeColorMap.error).toBe("#e53935");
+    expect(statusColumn.badgeColorMap.retrying).toBe("#1173C1");
+    expect(statusColumn.badgeColorMap.retried).toBe("#757575");
     expect(statusColumn.props.outlined).toBe(false);
     expect(statusColumn.props.style.color).toBe("#ffffff");
+  });
+
+  it("exposes full approval status filter options including Retrying and Retried", () => {
+    const wrapper = mountFactory();
+    const statusColumn = wrapper.vm.activitiesTableColumns.find((column) => column.property === "status");
+    const items = statusColumn.filterableItems;
+    expect(items.map((i) => i.text)).toEqual([
+      "Pending",
+      "Declined",
+      "Approved",
+      "Error",
+      "Retrying",
+      "Retried"
+    ]);
+    expect(items.map((i) => i.value)).toEqual(["1", "3", "4", "5", "6", "7"]);
+  });
+
+  it("keeps status column filterable as select type", () => {
+    const wrapper = mountFactory();
+    const statusColumn = wrapper.vm.activitiesTableColumns.find((column) => column.property === "status");
+    expect(statusColumn.filterableType).toBe("select");
+  });
+
+  it("shows no-pending headline when manual mode has zero pending approvals", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Manual"
+    });
+    wrapper.setData({
+      statCards: [
+        { title: "Actions Executed", subtitle: "Last 30 days", value: 0, hasMenu: true, menuOptions: [] },
+        { title: "Pending Approvals", subtitle: "", value: 0, hasMenu: false }
+      ]
+    });
+    expect(wrapper.vm.currentStatusText).toBe("There are no pending AI actions for approval");
+    expect(wrapper.vm.currentDescription).toContain("AI suggests actions for review");
+  });
+
+  it("uses review-oriented description when manual mode has pending approvals", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Manual"
+    });
+    wrapper.setData({
+      statCards: [
+        { title: "Actions Executed", subtitle: "Last 30 days", value: 0, hasMenu: true, menuOptions: [] },
+        { title: "Pending Approvals", subtitle: "", value: 2, hasMenu: false }
+      ]
+    });
+    expect(wrapper.vm.currentDescription).toContain("Review and approve");
+  });
+
+  it("maps status icon and background by enabled state", () => {
+    const enabled = mountFactory({ "login/getAgenticAIEnabled": true });
+    expect(enabled.vm.statusIcon).toBe("mdi-check-circle-outline");
+    expect(enabled.vm.iconBackgroundColor).toBe("#F1F8FE");
+
+    const disabled = mountFactory({ "login/getAgenticAIEnabled": false });
+    expect(disabled.vm.statusIcon).toBe("mdi-creation");
+    expect(disabled.vm.iconBackgroundColor).toBe("#e5e7eb");
+  });
+
+  it("getPeriodKey maps period labels to stats keys with last30Days fallback", () => {
+    const wrapper = mountFactory();
+    expect(wrapper.vm.getPeriodKey("Last 7 days")).toBe("last7Days");
+    expect(wrapper.vm.getPeriodKey("Last 24 hours")).toBe("last24Hours");
+    expect(wrapper.vm.getPeriodKey("unknown label")).toBe("last30Days");
+  });
+
+  it("selectSubtitle updates Actions Executed value when stats period changes", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Autonomous",
+      "login/getHasAgenticAILicense": true
+    });
+    const executed = wrapper.vm.statCards.find((c) => c.title === "Actions Executed");
+    wrapper.setData({
+      statsData: {
+        last7Days: { autonomous: { Approved: 9 } },
+        last30Days: { autonomous: { Approved: 1 } }
+      }
+    });
+    wrapper.vm.selectSubtitle(executed, "Last 7 days");
+    expect(executed.subtitle).toBe("Last 7 days");
+    expect(executed.value).toBe(9);
+  });
+
+  it("isPendingApprovalsCard is true only for Pending Approvals title", () => {
+    const wrapper = mountFactory();
+    expect(wrapper.vm.isPendingApprovalsCard({ title: "Pending Approvals" })).toBe(true);
+    expect(wrapper.vm.isPendingApprovalsCard({ title: "Actions Executed" })).toBe(false);
+  });
+
+  it("navigateToAgenticAISettings does not throw when router is missing", () => {
+    const wrapper = mountFactory();
+    wrapper.vm.$router = undefined;
+    expect(() => wrapper.vm.navigateToAgenticAISettings()).not.toThrow();
+  });
+
+  it("highlightedCardTitles lists only Actions Executed in autonomous mode without pending", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Autonomous"
+    });
+    expect(wrapper.vm.highlightedCardTitles).toEqual(["Actions Executed"]);
+  });
+
+  it("highlightedCardTitles includes Pending Approvals when autonomous and pending count positive", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Autonomous"
+    });
+    wrapper.vm.pendingApprovalsCard.value = 2;
+    expect(wrapper.vm.highlightedCardTitles).toEqual(["Actions Executed", "Pending Approvals"]);
+  });
+
+  it("isApprovalReviewState and isApprovalGatedNoPendingState are mutually exclusive", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Manual"
+    });
+    wrapper.setData({
+      statCards: [
+        { title: "Actions Executed", subtitle: "Last 30 days", value: 0, hasMenu: true, menuOptions: [] },
+        { title: "Pending Approvals", subtitle: "", value: 0, hasMenu: false }
+      ]
+    });
+    expect(wrapper.vm.isApprovalReviewState).toBe(false);
+    expect(wrapper.vm.isApprovalGatedNoPendingState).toBe(true);
+
+    wrapper.vm.pendingApprovalsCard.value = 3;
+    expect(wrapper.vm.isApprovalReviewState).toBe(true);
+    expect(wrapper.vm.isApprovalGatedNoPendingState).toBe(false);
+  });
+
+  it("currentDescription is autonomous vs manual when AI is enabled", () => {
+    const auto = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Autonomous"
+    });
+    expect(auto.vm.currentDescription).toContain("automatically");
+
+    const manual = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Manual"
+    });
+    manual.setData({
+      statCards: [
+        { title: "Actions Executed", subtitle: "Last 30 days", value: 0, hasMenu: true, menuOptions: [] },
+        { title: "Pending Approvals", subtitle: "", value: 1, hasMenu: false }
+      ]
+    });
+    expect(manual.vm.currentDescription).toContain("approve");
+  });
+
+  it("updateStatCards returns early when statsData is null", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getHasAgenticAILicense": true
+    });
+    const executed = wrapper.vm.statCards.find((c) => c.title === "Actions Executed");
+    const before = executed.value;
+    wrapper.setData({ statsData: null });
+    wrapper.vm.updateStatCards();
+    expect(executed.value).toBe(before);
+  });
+
+  it("updateStatCards uses approvalGated counts when not autonomous", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Manual",
+      "login/getHasAgenticAILicense": true
+    });
+    wrapper.setData({
+      statsData: {
+        last30Days: {
+          approvalGated: { Approved: 11, Pending: 2 },
+          autonomous: { Approved: 99 }
+        }
+      }
+    });
+    wrapper.vm.updateStatCards();
+    const executed = wrapper.vm.statCards.find((c) => c.title === "Actions Executed");
+    const pending = wrapper.vm.statCards.find((c) => c.title === "Pending Approvals");
+    expect(executed.value).toBe(11);
+    expect(pending.value).toBe(2);
+  });
+
+  it("fetchStats leaves default card values when API rejects", async () => {
+    getAgenticAIActivitiesStats.mockRejectedValueOnce(new Error("stats down"));
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getHasAgenticAILicense": true
+    });
+    const executed = wrapper.vm.statCards.find((c) => c.title === "Actions Executed");
+    const before = executed.value;
+    await wrapper.vm.fetchStats();
+    expect(executed.value).toBe(before);
+    expect(wrapper.vm.isLoading).toBe(false);
+  });
+
+  it("selectSubtitle does not update executed value when a card other than Actions Executed changes", () => {
+    const wrapper = mountFactory({
+      "login/getAgenticAIEnabled": true,
+      "login/getAgenticAIExecutionMode": "Autonomous",
+      "login/getHasAgenticAILicense": true
+    });
+    const pending = wrapper.vm.statCards.find((c) => c.title === "Pending Approvals");
+    const executed = wrapper.vm.statCards.find((c) => c.title === "Actions Executed");
+    const executedBefore = executed.value;
+    wrapper.setData({
+      statsData: {
+        last30Days: { autonomous: { Approved: 50 } }
+      }
+    });
+    wrapper.vm.selectSubtitle(pending, "Last 7 days");
+    expect(pending.subtitle).toBe("Last 7 days");
+    expect(executed.value).toBe(executedBefore);
   });
 
   describe("Component Structure", () => {

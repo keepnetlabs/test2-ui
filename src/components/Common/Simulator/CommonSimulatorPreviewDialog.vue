@@ -107,6 +107,14 @@
             {{ reasoningText }}
           </p>
         </div>
+        <div v-if="declineReasonText" class="common-simulator-preview__decline-reason">
+          <p class="common-simulator-preview__decline-reason-title">
+            WHY THIS WAS DECLINED?
+          </p>
+          <p class="common-simulator-preview__decline-reason-text">
+            {{ declineReasonText }}
+          </p>
+        </div>
         <EmailTemplatePreviewSkeleton v-if="isLoading" />
         <EmailTemplatesAILoader
           v-if="isRedFlagsLoading"
@@ -615,6 +623,11 @@ export default {
       default: ""
     },
     reasoningText: {
+      type: String,
+      default: ""
+    },
+    /** Agentic AI: reviewer decline explainability (same pattern as reasoning). */
+    declineReasonText: {
       type: String,
       default: ""
     },

@@ -1,3 +1,4 @@
+import { shallowMount } from '@vue/test-utils'
 import AppSnackbar from '@/layout/AppSnackbar.vue'
 
 describe('AppSnackbar.vue', () => {
@@ -99,5 +100,61 @@ describe('AppSnackbar.vue', () => {
     Object.defineProperty(window, 'outerWidth', { value: 700, writable: true })
     const style = AppSnackbar.methods.getSnackBarStyle.call({}, '     ', 0)
     expect(style.width).toBe('480px')
+  })
+
+  it('renders app-snackbar class on snackbar instances for drawer stacking', () => {
+    const wrapper = shallowMount(AppSnackbar, {
+      mocks: {
+        $store: {
+          getters: {
+            'common/getSnackBars': [
+              {
+                id: 's3',
+                status: true,
+                color: 'success',
+                message: 'Saved successfully'
+              }
+            ]
+          },
+          dispatch: jest.fn()
+        }
+      },
+      stubs: ['v-snackbar', 'v-icon', 'router-link', 'v-btn']
+    })
+
+    const snackbar = wrapper.find('v-snackbar-stub')
+    expect(snackbar.exists()).toBe(true)
+    expect(snackbar.classes()).toContain('app-snackbar')
+  })
+
+  it('renders action link branch when snackbar action exists', () => {
+    const wrapper = shallowMount(AppSnackbar, {
+      mocks: {
+        $store: {
+          getters: {
+            'common/getSnackBars': [
+              {
+                id: 's4',
+                status: true,
+                color: 'success',
+                message: 'Saved successfully',
+                action: {
+                  label: 'View',
+                  link: '/details',
+                  linkType: 'text'
+                }
+              }
+            ]
+          },
+          dispatch: jest.fn()
+        }
+      },
+      stubs: ['v-snackbar', 'v-icon', 'router-link', 'v-btn']
+    })
+
+    expect(wrapper.find('router-link-stub').exists()).toBe(true)
+    expect(wrapper.find('router-link-stub').classes()).toContain('snackbar__action')
+    expect(wrapper.find('router-link-stub').classes()).toContain('mr-n1')
+    expect(wrapper.find('v-icon-stub').exists()).toBe(false)
   })
 })
