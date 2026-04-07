@@ -1,6 +1,9 @@
 <template>
   <div v-if="isVisible">
-    <div class="common-simulator-preview-overlay" @click="handleMainOverlayClick"></div>
+    <div
+      class="common-simulator-preview-overlay agentic-ai-activities-drawer__overlay"
+      @click="handleMainOverlayClick"
+    ></div>
     <VNavigationDrawer
       :value="isVisible"
       :class="getNavigationDrawerClass"
@@ -175,6 +178,15 @@
                       {{ getBatchStatusCounts(batch).approved }} approved
                     </v-chip>
                     <v-chip
+                      v-if="getBatchStatusCounts(batch).retrying > 0"
+                      small
+                      label
+                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--retrying"
+                      outlined
+                    >
+                      {{ getBatchStatusCounts(batch).retrying }} retrying
+                    </v-chip>
+                    <v-chip
                       v-if="getBatchStatusCounts(batch).declined > 0"
                       small
                       label
@@ -182,6 +194,15 @@
                       outlined
                     >
                       {{ getBatchStatusCounts(batch).declined }} declined
+                    </v-chip>
+                    <v-chip
+                      v-if="getBatchStatusCounts(batch).retried > 0"
+                      small
+                      label
+                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--retried"
+                      outlined
+                    >
+                      {{ getBatchStatusCounts(batch).retried }} retried
                     </v-chip>
                   </div>
 
@@ -193,6 +214,14 @@
                     <div
                       class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--pending"
                       :style="{ width: getBatchSegmentWidth(batch, 'pending') }"
+                    />
+                    <div
+                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--retrying"
+                      :style="{ width: getBatchSegmentWidth(batch, 'retrying') }"
+                    />
+                    <div
+                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--retried"
+                      :style="{ width: getBatchSegmentWidth(batch, 'retried') }"
                     />
                     <div
                       class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--declined"
@@ -285,6 +314,36 @@
                     @columnFilterCleared="handleColumnFilterCleared"
                     @refreshAction="handleRefresh"
                   >
+                    <template #datatable-custom-column="{ scope, col }">
+                      <template v-if="col.property === 'status'">
+                        <v-tooltip
+                          v-if="shouldShowApprovalStatusDeclineReasonTooltip(scope.row)"
+                          bottom
+                          opacity="1"
+                          max-width="360px"
+                          :z-index="1200"
+                        >
+                          <template #activator="{ on }">
+                            <div v-on="on" class="d-flex justify-center">
+                              <Badge
+                                v-bind="col.props"
+                                :color="getStatusBadgeColor(scope.row.status)"
+                                :full-width="col.fullWidth"
+                                :text="formatApprovalStatusCellLabel(scope.row.status)"
+                              />
+                            </div>
+                          </template>
+                          <span class="agentic-ai-activities-drawer__approval-status-tooltip">{{
+                            scope.row.declineReason
+                          }}</span>
+                        </v-tooltip>
+                        <DataTableStatus
+                          v-else
+                          :scope="scope"
+                          :col="agenticApprovalStatusColumnForCell(col)"
+                        />
+                      </template>
+                    </template>
                     <template #datatable-row-actions="{ scope }">
                       <div
                         class="d-flex align-center justify-end flex-nowrap agentic-ai-activities-drawer__row-actions"
@@ -341,6 +400,7 @@
         :show-retry-button="isPreviewRowError"
         :approval-type-name="previewType"
         :reasoning-text="previewReasoningText"
+        :decline-reason-text="previewDeclineReasonText"
         :approval-actions-disabled="previewApprovalActionsDisabled"
         :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
         @approve="handlePreviewApprove"
@@ -360,6 +420,7 @@
         :show-retry-button="isPreviewRowError"
         :approval-type-name="previewType"
         :reasoning-text="previewReasoningText"
+        :decline-reason-text="previewDeclineReasonText"
         :approval-actions-disabled="previewApprovalActionsDisabled"
         :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
         @approve="handlePreviewApprove"
@@ -377,6 +438,7 @@
         :show-retry-button="isPreviewRowError"
         approval-type-name="Training"
         :reasoning-text="previewReasoningText"
+        :decline-reason-text="previewDeclineReasonText"
         :approval-actions-disabled="previewApprovalActionsDisabled"
         :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
         @approve="handlePreviewApprove"
@@ -434,7 +496,9 @@ import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
 import useDrawerAnimation from "@/hooks/useDrawerAnimation";
 import { searchAgenticAIActivities, approveAgenticAIBatch, approveAgenticAIActivity, rejectAgenticAIActivity, rejectAgenticAIBatch } from "@/api/company";
 import { getPhishingScenarioLandingPageAndEmailTemplate } from "@/api/phishingsimulator";
-import { getDefaultAxiosPayload } from "@/utils/functions";
+import { getDefaultAxiosPayload, getDataTableFieldLabel as formatDataTableFieldLabel } from "@/utils/functions";
+import Badge from "@/components/Badge";
+import DataTableStatus from "@/components/DataTableComponents/DataTableStatus.vue";
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import QuishingService from "@/api/quishing";
 import { retryAutonomous } from "@/api/agenticAIService";
@@ -467,7 +531,9 @@ export default {
   components: {
     AgenticAIConfirmDialog,
     AgenticAIRejectDialog,
+    Badge,
     DataTable,
+    DataTableStatus,
     DefaultButtonRowAction,
     CommonSimulatorPreviewDialog,
     KSelect,
@@ -599,6 +665,11 @@ export default {
     previewReasoningText() {
       return this.previewActivityRow?.explanationJson?.reasoningText || "";
     },
+    /** Declined-row explainability; shown in preview card when present. */
+    previewDeclineReasonText() {
+      const raw = this.previewActivityRow?.declineReason;
+      return raw && String(raw).trim() ? String(raw).trim() : "";
+    },
     batchTypeFilterItems() {
       return this.getStableFilterItems(this.batchTypeFilterOptions, this.leftTypeFilter);
     },
@@ -626,7 +697,8 @@ export default {
           ? {
               ...clonedColumns.splice(statusColumnIndex, 1)[0],
               label: "Approval Status",
-              fixed: "right"
+              fixed: "right",
+              type: "slot"
             }
           : null;
 
@@ -734,6 +806,14 @@ export default {
 
       if (normalizedValue === "error") {
         return "5";
+      }
+
+      if (normalizedValue === "retrying") {
+        return "6";
+      }
+
+      if (normalizedValue === "retried") {
+        return "7";
       }
 
       return value;
@@ -953,7 +1033,9 @@ export default {
         allapproved: "All Approved",
         "all declined": "All Declined",
         alldeclined: "All Declined",
-        error: "Error"
+        error: "Error",
+        retrying: "Retrying",
+        retried: "Retried"
       };
       if (statusMap[cleaned]) return statusMap[cleaned];
       if (!cleaned) return status;
@@ -1030,7 +1112,10 @@ export default {
         status: this.normalizeStatus(activity.statusName || activity.status || ""),
         startDate: activity.executionTime || activity.createTime || "",
         instanceGroup: activity.instanceGroup,
-        explanationJson: activity.explanationJson || null
+        explanationJson: activity.explanationJson || null,
+        declineReason: (activity.declineReason ?? "").trim() || null,
+        retryOfActivityResourceId: activity.retryOfActivityResourceId || null,
+        retryActivityResourceId: activity.retryActivityResourceId || null
       };
     },
     async fetchBatches({ preserveSelection = true, append = false } = {}) {
@@ -1337,18 +1422,34 @@ export default {
     formatBatchDate(dateStr = "") {
       return dateStr || "";
     },
+    /** Slot cell uses DataTableStatus; column from parent has `type: 'slot'`. */
+    agenticApprovalStatusColumnForCell(col = {}) {
+      return { ...col, type: "status" };
+    },
+    /** Hover tooltip for `declineReason` on Retried / Declined rows (same column slot). */
+    shouldShowApprovalStatusDeclineReasonTooltip(row = {}) {
+      const normalized = this.normalizeStatus(row.status || "").toLowerCase();
+      const reason = row.declineReason;
+      if (reason == null || String(reason).trim() === "") return false;
+      return normalized === "retried" || normalized === "declined";
+    },
+    formatApprovalStatusCellLabel(value) {
+      return formatDataTableFieldLabel(value);
+    },
     getBatchStatusCounts(batch = {}) {
       const counts = batch.statusCounts || {};
       const approved = counts.Approved ?? counts.approved ?? counts.Executed ?? counts.executed ?? 0;
       const declined = counts.Declined ?? counts.declined ?? counts.Rejected ?? counts.rejected ?? 0;
       const pending = counts.Pending ?? counts.pending ?? counts.WaitingForApproval ?? 0;
-      return { approved, pending, declined };
+      const retrying = counts.Retrying ?? counts.retrying ?? 0;
+      const retried = counts.Retried ?? counts.retried ?? 0;
+      return { approved, pending, declined, retrying, retried };
     },
     getBatchSegmentWidth(batch = {}, type = "pending") {
       const total = batch.userCount || 0;
       if (!total) return "0%";
-      const { approved, pending, declined } = this.getBatchStatusCounts(batch);
-      const map = { approved, pending, declined };
+      const { approved, pending, declined, retrying, retried } = this.getBatchStatusCounts(batch);
+      const map = { approved, pending, declined, retrying, retried };
       const pct = Math.round(((map[type] || 0) / total) * 100);
       return `${pct}%`;
     },
@@ -1369,6 +1470,14 @@ export default {
 
       if (normalized === "error") {
         return "#e53935";
+      }
+
+      if (normalized === "retrying") {
+        return "#1173C1";
+      }
+
+      if (normalized === "retried") {
+        return "#757575";
       }
 
       return "#667085";
@@ -1469,17 +1578,11 @@ export default {
       };
     },
     handleDeclineAll(row) {
-      this.closeRejectDialog();
-      const n = this.getApprovalCountForDialog(row) || 0;
-      this.confirmDialog = {
+      this.closeConfirmDialog();
+      this.rejectDialog = {
         status: true,
         action: "declineAll",
         row,
-        icon: "mdi-close",
-        title: "Decline all recommendations?",
-        message: `${n} pending recommendation${n === 1 ? "" : "s"} will be declined.`,
-        recommendation: "",
-        confirmText: "Decline All",
         loading: false
       };
     },
@@ -1488,10 +1591,15 @@ export default {
       this.closeRejectDialog();
       await this.executeApproveReject("approveActivity", row);
     },
-    /** Single-row decline: no AgenticAIConfirmDialog (bulk-only). */
-    async handleDecline(row) {
-      this.closeRejectDialog();
-      await this.executeApproveReject("decline", row);
+    /** Single-row decline: feedback dialog; API `declineForRetry: false` (permanent decline). */
+    handleDecline(row) {
+      this.closeConfirmDialog();
+      this.rejectDialog = {
+        status: true,
+        action: "decline",
+        row,
+        loading: false
+      };
     },
     closeRejectDialog() {
       this.rejectDialog = {
@@ -1501,14 +1609,33 @@ export default {
         loading: false
       };
     },
-    async handleRejectConfirm(rejectingReason) {
+    /**
+     * @param {string | { reason: string, declineForRetry: boolean }} payload — from AgenticAIRejectDialog (`reason`; `declineForRetry` true only for retry action).
+     */
+    async handleRejectConfirm(payload) {
       const { action, row } = this.rejectDialog;
       if (!row) return;
+      const rejectPayload = this.normalizeRejectPayload(payload, action);
       this.rejectDialog.loading = true;
-      await this.executeApproveReject(action, row, rejectingReason);
+      await this.executeApproveReject(action, row, rejectPayload);
       this.rejectDialog.loading = false;
       this.closeRejectDialog();
-      if (this.previewType) this.closePreview();
+      if (this.previewType) {
+        this.onPreviewClosed();
+      }
+    },
+    normalizeRejectPayload(payload, action) {
+      if (typeof payload === "string") {
+        return {
+          reason: payload.trim(),
+          declineForRetry: action === "retry"
+        };
+      }
+      const reason = (payload?.reason ?? "").trim();
+      return {
+        reason,
+        declineForRetry: action === "retry"
+      };
     },
     closeConfirmDialog() {
       this.confirmDialog = {
@@ -1531,8 +1658,23 @@ export default {
     showSnackbar(message, color = "green", icon = "mdi-check-circle") {
       this.$store.dispatch("common/createSnackBar", { message, color, icon });
     },
-    async executeApproveReject(action, row, rejectingReason) {
+    buildAgenticRejectBody({ resourceIds, batchResourceId, reason, declineForRetry }) {
+      const body = { ...(resourceIds ? { resourceIds } : {}), ...(batchResourceId ? { batchResourceId } : {}) };
+      if (reason) {
+        body.reason = reason;
+      }
+      if (declineForRetry !== undefined) {
+        body.declineForRetry = declineForRetry;
+      }
+      return body;
+    },
+    async executeApproveReject(action, row, rejectPayload = {}) {
       if (!row || this.actionInProgress) return;
+      const reason = typeof rejectPayload === "string" ? rejectPayload : rejectPayload?.reason ?? "";
+      const declineForRetry =
+        typeof rejectPayload === "object" && rejectPayload !== null && "declineForRetry" in rejectPayload
+          ? !!rejectPayload.declineForRetry
+          : action === "retry";
       if (
         (action === "approveActivity" || action === "retry") &&
         this.isTargetUserActionRestricted(row)
@@ -1563,18 +1705,34 @@ export default {
           }
           this.$emit("on-approve", row);
         } else if (action === "declineAll") {
-          await rejectAgenticAIBatch({ batchResourceId: row.batchResourceId });
-          this.showSnackbar("All pending actions declined.", "green", "mdi-close-circle");
+          await rejectAgenticAIBatch(
+            this.buildAgenticRejectBody({
+              batchResourceId: row.batchResourceId,
+              reason,
+              declineForRetry
+            })
+          );
+          this.showSnackbar("Pending recommendations declined.", "green", "mdi-close-circle");
           this.$emit("on-decline", row);
         } else if (action === "decline") {
-          await rejectAgenticAIActivity({
-            resourceIds: [row.resourceId],
-            ...(rejectingReason ? { rejectingReason } : {})
-          });
-          this.showSnackbar("Action declined and will not be executed.", "green", "mdi-close-circle");
+          await rejectAgenticAIActivity(
+            this.buildAgenticRejectBody({
+              resourceIds: [row.resourceId],
+              reason,
+              declineForRetry
+            })
+          );
+          this.showSnackbar("Recommendation declined.", "green", "mdi-close-circle");
           this.$emit("on-decline", row);
         } else if (action === "retry") {
-          await rejectAgenticAIActivity({ resourceIds: [row.resourceId], batchResourceId: row.batchResourceId, rejectingReason });
+          await rejectAgenticAIActivity(
+            this.buildAgenticRejectBody({
+              resourceIds: [row.resourceId],
+              batchResourceId: row.batchResourceId,
+              reason,
+              declineForRetry: true
+            })
+          );
           const activityTypeActionMap = { 1: "phishing", 2: "phishing", 3: "phishing", 4: "training" };
           const actionName = activityTypeActionMap[row.activityType] || "phishing";
           retryAutonomous({
@@ -1585,8 +1743,9 @@ export default {
             actions: [actionName],
             preferredLanguage: row.preferredLanguage,
             batchResourceId: row.batchResourceId,
-            rejectingReason,
-            rejectedScenarioResourceId: row.scenarioResourceId
+            rejectingReason: reason,
+            rejectedScenarioResourceId: row.scenarioResourceId,
+            retryOfActivityResourceId: row.resourceId
           }).catch(() => {});
           this.showSnackbar(
             "Agentic AI request submitted. This may take 3-5 minutes. A new entry will appear in the table.",
@@ -1609,13 +1768,17 @@ export default {
       this.closePreview();
       await this.executeApproveReject("approveActivity", row);
     },
-    /** Preview decline: no AgenticAIConfirmDialog (bulk-only); retry still uses AgenticAIRejectDialog. */
-    async handlePreviewDecline() {
+    /** Preview decline: same feedback dialog as table decline (permanent decline, `declineForRetry: false`). */
+    handlePreviewDecline() {
       const row = this.previewActivityRow;
       if (!row) return;
-      this.closeRejectDialog();
-      this.closePreview();
-      await this.executeApproveReject("decline", row);
+      this.closeConfirmDialog();
+      this.rejectDialog = {
+        status: true,
+        action: "decline",
+        row,
+        loading: false
+      };
     },
     isRowError(row = {}) {
       return String(row.status || "").toLowerCase() === "error";

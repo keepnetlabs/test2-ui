@@ -4,7 +4,12 @@
     <div v-if="isSkeletonLoading" class="blacklist-skeleton-wrapper">
       <div class="blacklist-skeleton-badge" />
     </div>
-    <v-tooltip v-else-if="shouldRenderTooltip" bottom opacity="1" max-width="200px">
+    <v-tooltip
+      v-else-if="shouldRenderTooltip"
+      bottom
+      opacity="1"
+      :max-width="tooltipMaxWidth"
+    >
       <template v-slot:activator="{ on }">
         <div v-on="on">
           <badge
@@ -19,7 +24,7 @@
           </span>
         </div>
       </template>
-      <span>{{ getStatusTooltipText(scope.row[col.property]) }}</span>
+      <span class="datatable-status-tooltip-text">{{ getStatusTooltipText(scope.row[col.property]) }}</span>
     </v-tooltip>
     <template v-else>
       <badge
@@ -77,6 +82,9 @@ export default {
     shouldRenderTooltip() {
       if (this.col.tooltipKey) return !!this.scope.row[this.col.tooltipKey]
       return this.col.isWithTooltip
+    },
+    tooltipMaxWidth() {
+      return this.col.tooltipMaxWidth || "200px"
     }
   },
   methods: {
@@ -120,6 +128,12 @@ export default {
   100% {
     background-position: -200% 0;
   }
+}
+
+.datatable-status-tooltip-text {
+  display: block;
+  white-space: pre-wrap;
+  text-align: left;
 }
 </style>
 

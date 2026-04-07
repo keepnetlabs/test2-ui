@@ -707,6 +707,12 @@
 
   &-value {
     word-break: break-word;
+
+    &--empty {
+      color: #98a2b3;
+      font-style: italic;
+      font-size: 13px;
+    }
   }
 }
 

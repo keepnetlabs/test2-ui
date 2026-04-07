@@ -78,6 +78,7 @@ export function retryAutonomous({
   batchResourceId,
   rejectingReason,
   rejectedScenarioResourceId,
+  retryOfActivityResourceId,
   companyId = getActiveCompanyId()
 }) {
   const body = {
@@ -95,5 +96,8 @@ export function retryAutonomous({
     rejectedScenarioResourceId,
     companyId
   };
+  if (retryOfActivityResourceId) {
+    body.retryOfActivityResourceId = retryOfActivityResourceId;
+  }
   return axios.post(`${BASE_URL}/autonomous`, body, { headers });
 }

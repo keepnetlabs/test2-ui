@@ -318,11 +318,25 @@
               <div class="email-details__user-feedback">
                 <div class="email-details__user-feedback-item">
                   <span class="email-details__user-feedback-label">Reason:</span>
-                  <span class="email-details__user-feedback-value">{{ reportReasonText }}</span>
+                  <span
+                    :class="[
+                      'email-details__user-feedback-value',
+                      { 'email-details__user-feedback-value--empty': !hasReportReasonText }
+                    ]"
+                  >
+                    {{ reportReasonDisplayText }}
+                  </span>
                 </div>
                 <div class="email-details__user-feedback-item">
                   <span class="email-details__user-feedback-label">User Comment:</span>
-                  <span class="email-details__user-feedback-value">{{ reportCommentText }}</span>
+                  <span
+                    :class="[
+                      'email-details__user-feedback-value',
+                      { 'email-details__user-feedback-value--empty': !hasReportCommentText }
+                    ]"
+                  >
+                    {{ reportCommentDisplayText }}
+                  </span>
                 </div>
               </div>
             </template>
@@ -756,10 +770,54 @@ export default {
         ? this.mailDetails.reportReasonText
         : ''
     },
+    hasReportReasonText() {
+      const reportReasonText =
+        typeof this.reportReasonText === 'string'
+          ? this.reportReasonText
+          : this.mailDetails && this.mailDetails.reportReasonText
+            ? this.mailDetails.reportReasonText
+            : ''
+
+      return !!reportReasonText.trim()
+    },
+    reportReasonDisplayText() {
+      const reportReasonText =
+        typeof this.reportReasonText === 'string'
+          ? this.reportReasonText
+          : this.mailDetails && this.mailDetails.reportReasonText
+            ? this.mailDetails.reportReasonText
+            : ''
+
+      return reportReasonText.trim()
+        ? reportReasonText
+        : 'No reason was provided.'
+    },
     reportCommentText() {
       return this.mailDetails && this.mailDetails.reportComment
         ? this.mailDetails.reportComment
         : ''
+    },
+    hasReportCommentText() {
+      const reportCommentText =
+        typeof this.reportCommentText === 'string'
+          ? this.reportCommentText
+          : this.mailDetails && this.mailDetails.reportComment
+            ? this.mailDetails.reportComment
+            : ''
+
+      return !!reportCommentText.trim()
+    },
+    reportCommentDisplayText() {
+      const reportCommentText =
+        typeof this.reportCommentText === 'string'
+          ? this.reportCommentText
+          : this.mailDetails && this.mailDetails.reportComment
+            ? this.mailDetails.reportComment
+            : ''
+
+      return reportCommentText.trim()
+        ? reportCommentText
+        : 'No user comment was provided.'
     },
     showAIAnalyze() {
       const AI_ANALYZE_COMPANIES = ['Bolearis', 'TIP Group', 'Sunexpress', 'ETİ', 'Axa Sigorta', 'Vodafone TR', 'System', 'Aksigorta', 'Sahibinden']
