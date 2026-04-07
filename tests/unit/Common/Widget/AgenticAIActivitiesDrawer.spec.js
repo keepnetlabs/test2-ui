@@ -3,6 +3,7 @@ import AgenticAIActivitiesDrawer from "@/components/Common/Widget/WidgetComponen
 import { customVuetify as vuetify } from "../../utils";
 import * as CompanyAPI from "@/api/company";
 import * as AgenticAIService from "@/api/agenticAIService";
+import { resolveAgenticRetryLanguage } from "@/services/agenticAIRetryLanguage";
 import { getDataTableFieldLabel } from "@/utils/functions";
 
 jest.mock("@/api/company", () => ({
@@ -15,6 +16,10 @@ jest.mock("@/api/company", () => ({
 
 jest.mock("@/api/agenticAIService", () => ({
   retryAutonomous: jest.fn(() => Promise.resolve())
+}));
+
+jest.mock("@/services/agenticAIRetryLanguage", () => ({
+  resolveAgenticRetryLanguage: jest.fn(() => Promise.resolve(""))
 }));
 
 const mockActivityResponse = (activities = []) => ({
@@ -2119,6 +2124,46 @@ describe("AgenticAIActivitiesDrawer", () => {
       });
       expect(CompanyAPI.rejectAgenticAIActivity).not.toHaveBeenCalled();
       expect(AgenticAIService.retryAutonomous).not.toHaveBeenCalled();
+    });
+
+    it("uses resolved content language for retry payload", async () => {
+      resolveAgenticRetryLanguage.mockResolvedValue("German");
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+
+      const fetchBatches = jest.fn().mockResolvedValue();
+      const fetchActivities = jest.fn();
+      const wrapper = mountFactory(
+        { value: true },
+        {
+          fetchBatches,
+          fetchActivities
+        }
+      );
+
+      const row = {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        activityType: 1,
+        targetUserStatus: "Active",
+        targetUserResourceId: "u1",
+        firstName: "Ada",
+        lastName: "Lovelace",
+        department: "Engineering",
+        preferredLanguage: "English",
+        scenarioResourceId: "s1"
+      };
+
+      await wrapper.vm.executeApproveReject("retry", row, { reason: "Needs rewrite" });
+
+      expect(resolveAgenticRetryLanguage).toHaveBeenCalledWith(row);
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({
+          targetUserResourceId: "u1",
+          preferredLanguage: "German",
+          rejectingReason: "Needs rewrite",
+          rejectedScenarioResourceId: "s1"
+        })
+      );
     });
 
     it("calls approveAgenticAIActivity when approveActivity and target user Active", async () => {
