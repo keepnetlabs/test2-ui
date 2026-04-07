@@ -502,6 +502,7 @@ import DataTableStatus from "@/components/DataTableComponents/DataTableStatus.vu
 import { columnFilterChanged, columnFilterCleared } from "@/utils/helperFunctions";
 import QuishingService from "@/api/quishing";
 import { retryAutonomous } from "@/api/agenticAIService";
+import { resolveAgenticRetryLanguage } from "@/services/agenticAIRetryLanguage";
 
 const ACTIVITY_TYPE_MAP = {
   1: "Phishing",
@@ -1735,13 +1736,14 @@ export default {
           );
           const activityTypeActionMap = { 1: "phishing", 2: "phishing", 3: "phishing", 4: "training" };
           const actionName = activityTypeActionMap[row.activityType] || "phishing";
+          const preferredLanguage = await resolveAgenticRetryLanguage(row);
           retryAutonomous({
             targetUserResourceId: row.targetUserResourceId,
             firstName: row.firstName,
             lastName: row.lastName,
             departmentName: row.department,
             actions: [actionName],
-            preferredLanguage: row.preferredLanguage,
+            preferredLanguage,
             batchResourceId: row.batchResourceId,
             rejectingReason: reason,
             rejectedScenarioResourceId: row.scenarioResourceId,
