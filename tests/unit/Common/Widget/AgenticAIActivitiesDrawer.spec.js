@@ -3,6 +3,7 @@ import AgenticAIActivitiesDrawer from "@/components/Common/Widget/WidgetComponen
 import { customVuetify as vuetify } from "../../utils";
 import * as CompanyAPI from "@/api/company";
 import * as AgenticAIService from "@/api/agenticAIService";
+import { getDataTableFieldLabel } from "@/utils/functions";
 
 jest.mock("@/api/company", () => ({
   searchAgenticAIActivities: jest.fn(),
@@ -229,6 +230,44 @@ describe("AgenticAIActivitiesDrawer", () => {
       });
       expect(row.scenarioName).toBe("Named module");
     });
+
+    it("maps declineReason to trimmed string or null when empty", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.mapActivityToRow({
+          resourceId: "r1",
+          statusName: "Declined",
+          declineReason: "  Policy block  "
+        }).declineReason
+      ).toBe("Policy block");
+      expect(
+        wrapper.vm.mapActivityToRow({
+          resourceId: "r2",
+          statusName: "Declined",
+          declineReason: "   "
+        }).declineReason
+      ).toBeNull();
+      expect(wrapper.vm.mapActivityToRow({ resourceId: "r3", statusName: "Pending" }).declineReason).toBeNull();
+    });
+
+    it("maps retryOfActivityResourceId and retryActivityResourceId when present", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({
+        resourceId: "r-new",
+        statusName: "Retried",
+        retryOfActivityResourceId: "orig-1",
+        retryActivityResourceId: "retry-2"
+      });
+      expect(row.retryOfActivityResourceId).toBe("orig-1");
+      expect(row.retryActivityResourceId).toBe("retry-2");
+    });
+
+    it("defaults retry resource id fields to null when absent", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({ resourceId: "r1", statusName: "Pending" });
+      expect(row.retryOfActivityResourceId).toBeNull();
+      expect(row.retryActivityResourceId).toBeNull();
+    });
   });
 
   describe("getBatchStatusCounts", () => {
@@ -240,7 +279,9 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.getBatchStatusCounts(batch)).toEqual({
         approved: 2,
         pending: 3,
-        declined: 1
+        declined: 1,
+        retrying: 0,
+        retried: 0
       });
     });
 
@@ -249,7 +290,35 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.getBatchStatusCounts({})).toEqual({
         approved: 0,
         pending: 0,
-        declined: 0
+        declined: 0,
+        retrying: 0,
+        retried: 0
+      });
+    });
+
+    it("reads retrying and retried from alternate API key casings", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.getBatchStatusCounts({
+          statusCounts: { Retrying: 2, Retried: 1, Approved: 1 }
+        })
+      ).toEqual({
+        approved: 1,
+        pending: 0,
+        declined: 0,
+        retrying: 2,
+        retried: 1
+      });
+      expect(
+        wrapper.vm.getBatchStatusCounts({
+          statusCounts: { retrying: 3, retried: 4 }
+        })
+      ).toEqual({
+        approved: 0,
+        pending: 0,
+        declined: 0,
+        retrying: 3,
+        retried: 4
       });
     });
   });
@@ -282,6 +351,16 @@ describe("AgenticAIActivitiesDrawer", () => {
       const wrapper = mountFactory();
       const batch = { userCount: 2, statusCounts: {} };
       expect(wrapper.vm.getBatchSegmentWidth(batch, "approved")).toBe("0%");
+    });
+
+    it("calculates retrying and retried segment widths", () => {
+      const wrapper = mountFactory();
+      const batch = {
+        userCount: 10,
+        statusCounts: { Approved: 2, Pending: 2, Declined: 2, Retrying: 2, Retried: 2 }
+      };
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "retrying")).toBe("20%");
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "retried")).toBe("20%");
     });
   });
 
@@ -324,6 +403,28 @@ describe("AgenticAIActivitiesDrawer", () => {
       const wrapper = mountFactory();
       wrapper.setData({ previewActivityRow: { status: "Pending", explanationJson: null } });
       expect(wrapper.vm.previewReasoningText).toBe("");
+    });
+  });
+
+  describe("previewDeclineReasonText computed", () => {
+    it("returns trimmed declineReason from preview row", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        previewActivityRow: { status: "Declined", declineReason: "  Policy violation  " }
+      });
+      expect(wrapper.vm.previewDeclineReasonText).toBe("Policy violation");
+    });
+
+    it("returns empty string when preview row missing or declineReason empty", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({ previewActivityRow: null });
+      expect(wrapper.vm.previewDeclineReasonText).toBe("");
+
+      wrapper.setData({ previewActivityRow: { declineReason: null } });
+      expect(wrapper.vm.previewDeclineReasonText).toBe("");
+
+      wrapper.setData({ previewActivityRow: { declineReason: "   " } });
+      expect(wrapper.vm.previewDeclineReasonText).toBe("");
     });
   });
 
@@ -383,6 +484,12 @@ describe("AgenticAIActivitiesDrawer", () => {
     it("should normalize error status", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm.normalizeStatus("error")).toBe("Error");
+    });
+
+    it("should normalize retried and retrying statuses", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeStatus("retried")).toBe("Retried");
+      expect(wrapper.vm.normalizeStatus("retrying")).toBe("Retrying");
     });
   });
 
@@ -920,8 +1027,7 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Confirm vs retry modal exclusivity", () => {
-    it("handleDecline clears reject dialog and declines without AgenticAIConfirmDialog", async () => {
-      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+    it("handleDecline opens reject feedback dialog (decline) instead of calling API immediately", async () => {
       const wrapper = mountFactory(
         { value: true },
         {
@@ -935,9 +1041,11 @@ describe("AgenticAIActivitiesDrawer", () => {
         rejectDialog: { status: true, action: "retry", row, loading: false }
       });
       await wrapper.vm.handleDecline(row);
-      expect(wrapper.vm.rejectDialog.status).toBe(false);
       expect(wrapper.vm.confirmDialog.status).toBe(false);
-      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({ resourceIds: ["r1"] });
+      expect(wrapper.vm.rejectDialog.status).toBe(true);
+      expect(wrapper.vm.rejectDialog.action).toBe("decline");
+      expect(wrapper.vm.rejectDialog.row).toEqual(row);
+      expect(CompanyAPI.rejectAgenticAIActivity).not.toHaveBeenCalled();
     });
 
     it("handleRetry clears confirm dialog before opening retry feedback", () => {
@@ -996,8 +1104,10 @@ describe("AgenticAIActivitiesDrawer", () => {
         rejectDialog: { status: true, action: "retry", row: {}, loading: false }
       });
       wrapper.vm.handleDeclineAll(batchRow);
-      expect(wrapper.vm.rejectDialog.status).toBe(false);
-      expect(wrapper.vm.confirmDialog.action).toBe("declineAll");
+      expect(wrapper.vm.confirmDialog.status).toBe(false);
+      expect(wrapper.vm.rejectDialog.status).toBe(true);
+      expect(wrapper.vm.rejectDialog.action).toBe("declineAll");
+      expect(wrapper.vm.rejectDialog.row).toEqual(batchRow);
     });
 
     it("handleConfirmAction declines via API, dispatches snackbar and resets confirm", async () => {
@@ -1025,13 +1135,16 @@ describe("AgenticAIActivitiesDrawer", () => {
 
       await wrapper.vm.handleConfirmAction();
 
-      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
-        resourceIds: ["act-1"]
-      });
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith(
+        expect.objectContaining({
+          resourceIds: ["act-1"],
+          declineForRetry: false
+        })
+      );
       expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
         "common/createSnackBar",
         expect.objectContaining({
-          message: "Action declined and will not be executed.",
+          message: "Recommendation declined.",
           color: "green"
         })
       );
@@ -1099,8 +1212,7 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Preview handlers", () => {
-    it("handlePreviewDecline closes preview and declines without AgenticAIConfirmDialog", async () => {
-      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+    it("handlePreviewDecline opens decline feedback dialog; preview closes only after confirm", async () => {
       const wrapper = mountFactory(
         { value: true },
         {
@@ -1117,10 +1229,12 @@ describe("AgenticAIActivitiesDrawer", () => {
         rejectDialog: { status: true, action: "retry", row, loading: false }
       });
       await wrapper.vm.handlePreviewDecline();
-      expect(wrapper.vm.rejectDialog.status).toBe(false);
-      expect(closePreviewSpy).toHaveBeenCalled();
+      expect(wrapper.vm.rejectDialog.status).toBe(true);
+      expect(wrapper.vm.rejectDialog.action).toBe("decline");
+      expect(wrapper.vm.rejectDialog.row).toEqual(row);
+      expect(closePreviewSpy).not.toHaveBeenCalled();
       expect(wrapper.vm.confirmDialog.status).toBe(false);
-      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({ resourceIds: ["r1"] });
+      expect(CompanyAPI.rejectAgenticAIActivity).not.toHaveBeenCalled();
       closePreviewSpy.mockRestore();
     });
 
@@ -1299,6 +1413,8 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.getStatusFilterValueForApi("declined")).toBe("3");
       expect(wrapper.vm.getStatusFilterValueForApi("executed")).toBe("4");
       expect(wrapper.vm.getStatusFilterValueForApi("error")).toBe("5");
+      expect(wrapper.vm.getStatusFilterValueForApi("retrying")).toBe("6");
+      expect(wrapper.vm.getStatusFilterValueForApi("retried")).toBe("7");
       expect(wrapper.vm.getStatusFilterValueForApi("custom")).toBe("custom");
     });
 
@@ -1306,6 +1422,8 @@ describe("AgenticAIActivitiesDrawer", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm.getBatchWaitingCount({ Pending: 3 })).toBe(3);
       expect(wrapper.vm.getBatchWaitingCount({ pending: 2 })).toBe(2);
+      expect(wrapper.vm.getBatchWaitingCount({ WaitingForApproval: 5 })).toBe(5);
+      expect(wrapper.vm.getBatchWaitingCount({ "waiting for approval": 4 })).toBe(4);
       expect(wrapper.vm.getBatchWaitingCount({})).toBe(0);
     });
 
@@ -1361,7 +1479,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.selectedBatchPendingCount).toBe(2);
     });
 
-    it("drawerColumns renames status column to Approval Status and fixes to right", () => {
+    it("drawerColumns renames status column to Approval Status, fixes to right, and uses slot for custom cell", () => {
       const wrapper = mountFactory({
         columns: [
           { property: "scenarioName", label: "Scenario" },
@@ -1373,6 +1491,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       const statusCol = cols.find((c) => c.property === "status");
       expect(statusCol.label).toBe("Approval Status");
       expect(statusCol.fixed).toBe("right");
+      expect(statusCol.type).toBe("slot");
       const statusIdx = cols.findIndex((c) => c.property === "status");
       const userStatusIdx = cols.findIndex((c) => c.property === "targetUserStatus");
       expect(userStatusIdx).toBeGreaterThan(-1);
@@ -1401,6 +1520,108 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.drawerColumns.find((c) => c.property === "status")?.label).toBe(
         "Approval Status"
       );
+    });
+
+    it("isCurrentBatchTraining is true when selected batch contentType resolves to Training without activityType 4", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchList: [
+          {
+            batchResourceId: "b1",
+            title: "T",
+            contentType: "Training",
+            activities: []
+          }
+        ],
+        selectedBatchId: "b1"
+      });
+      expect(wrapper.vm.isCurrentBatchTraining).toBe(true);
+    });
+
+    it("previewApprovalActionsDisabled reflects inactive target user in preview row", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({ previewActivityRow: { targetUserStatus: "Inactive" } });
+      expect(wrapper.vm.previewApprovalActionsDisabled).toBe(true);
+      wrapper.setData({ previewActivityRow: { targetUserStatus: "Active" } });
+      expect(wrapper.vm.previewApprovalActionsDisabled).toBe(false);
+    });
+  });
+
+  describe("Approval status slot helpers", () => {
+    it("agenticApprovalStatusColumnForCell forces type status for DataTableStatus fallback", () => {
+      const wrapper = mountFactory();
+      const col = { property: "status", type: "slot", label: "Approval Status" };
+      expect(wrapper.vm.agenticApprovalStatusColumnForCell(col)).toEqual({
+        property: "status",
+        type: "status",
+        label: "Approval Status"
+      });
+    });
+
+    it("shouldShowApprovalStatusDeclineReasonTooltip is true for Retried or Declined with non-empty declineReason", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Retried",
+          declineReason: "Previous run failed"
+        })
+      ).toBe(true);
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Declined",
+          declineReason: "User opted out"
+        })
+      ).toBe(true);
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "rejected",
+          declineReason: "Spam"
+        })
+      ).toBe(true);
+    });
+
+    it("shouldShowApprovalStatusDeclineReasonTooltip is false without reason or for other statuses", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Retried",
+          declineReason: null
+        })
+      ).toBe(false);
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Retried",
+          declineReason: "   "
+        })
+      ).toBe(false);
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Pending",
+          declineReason: "Should not show"
+        })
+      ).toBe(false);
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Approved",
+          declineReason: "x"
+        })
+      ).toBe(false);
+    });
+
+    it("shouldShowApprovalStatusDeclineReasonTooltip is false for Retrying or Error even with reason", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Retrying",
+          declineReason: "Queued"
+        })
+      ).toBe(false);
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Error",
+          declineReason: "Failed"
+        })
+      ).toBe(false);
     });
   });
 
@@ -1540,10 +1761,12 @@ describe("AgenticAIActivitiesDrawer", () => {
 
       await wrapper.vm.handleConfirmAction();
 
-      expect(CompanyAPI.rejectAgenticAIBatch).toHaveBeenCalledWith({ batchResourceId: "batch-x" });
+      expect(CompanyAPI.rejectAgenticAIBatch).toHaveBeenCalledWith(
+        expect.objectContaining({ batchResourceId: "batch-x", declineForRetry: false })
+      );
       expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
         "common/createSnackBar",
-        expect.objectContaining({ message: "All pending actions declined." })
+        expect.objectContaining({ message: "Pending recommendations declined." })
       );
     });
   });
@@ -1573,7 +1796,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           refreshTableLayout: jest.fn()
         }
       );
-      const closePreviewSpy = jest.spyOn(wrapper.vm, "closePreview");
+      const onPreviewClosedSpy = jest.spyOn(wrapper.vm, "onPreviewClosed");
       wrapper.setData({
         actionInProgress: false,
         previewType: "Phishing",
@@ -1601,12 +1824,18 @@ describe("AgenticAIActivitiesDrawer", () => {
         expect.objectContaining({
           resourceIds: ["r1"],
           batchResourceId: "b1",
+          reason: "Please retry with a better scenario.",
+          declineForRetry: true
+        })
+      );
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({
+          retryOfActivityResourceId: "r1",
           rejectingReason: "Please retry with a better scenario."
         })
       );
-      expect(AgenticAIService.retryAutonomous).toHaveBeenCalled();
-      expect(closePreviewSpy).toHaveBeenCalled();
-      closePreviewSpy.mockRestore();
+      expect(onPreviewClosedSpy).toHaveBeenCalled();
+      onPreviewClosedSpy.mockRestore();
     });
   });
 
@@ -1750,6 +1979,12 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("Lightbox, overlay branches, and small row helpers", () => {
+    it("renders a dedicated overlay hook class for drawer-specific stacking", async () => {
+      const wrapper = mountFactory({ value: true });
+      await wrapper.setData({ isVisible: true });
+      expect(wrapper.find(".agentic-ai-activities-drawer__overlay").exists()).toBe(true);
+    });
+
     it("selectedBatchTitle and showApproveAllBanner follow selection and pending count", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm.selectedBatchTitle).toBe("Select an activity");
@@ -1827,12 +2062,32 @@ describe("AgenticAIActivitiesDrawer", () => {
       closeDrawerSpy.mockRestore();
     });
 
+    it("handleMainOverlayClick closes drawer directly when no nested preview is open", () => {
+      const wrapper = mountFactory();
+      const closePreviewSpy = jest.spyOn(wrapper.vm, "closePreview");
+      const closeDrawerSpy = jest.spyOn(wrapper.vm, "closeDrawer").mockImplementation(() => {});
+      wrapper.setData({
+        previewClosing: false,
+        previewType: null
+      });
+
+      wrapper.vm.handleMainOverlayClick();
+
+      expect(closePreviewSpy).not.toHaveBeenCalled();
+      expect(closeDrawerSpy).toHaveBeenCalled();
+      closePreviewSpy.mockRestore();
+      closeDrawerSpy.mockRestore();
+    });
+
     it("getStatusBadgeColor maps normalized statuses to palette", () => {
       const wrapper = mountFactory();
       expect(wrapper.vm.getStatusBadgeColor("Pending")).toBe("#2196f3");
       expect(wrapper.vm.getStatusBadgeColor("Approved")).toBe("#43a047");
       expect(wrapper.vm.getStatusBadgeColor("Declined")).toBe("#757575");
+      expect(wrapper.vm.getStatusBadgeColor("rejected")).toBe("#757575");
       expect(wrapper.vm.getStatusBadgeColor("error")).toBe("#e53935");
+      expect(wrapper.vm.getStatusBadgeColor("Retrying")).toBe("#1173C1");
+      expect(wrapper.vm.getStatusBadgeColor("Retried")).toBe("#757575");
       expect(wrapper.vm.getStatusBadgeColor("Unknown")).toBe("#667085");
     });
   });
@@ -1891,7 +2146,8 @@ describe("AgenticAIActivitiesDrawer", () => {
         targetUserStatus: "Inactive"
       });
       expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
-        resourceIds: ["r1"]
+        resourceIds: ["r1"],
+        declineForRetry: false
       });
     });
 
@@ -1935,10 +2191,12 @@ describe("AgenticAIActivitiesDrawer", () => {
         batchResourceId: "batch-x",
         targetUserStatus: "Inactive"
       });
-      expect(CompanyAPI.rejectAgenticAIBatch).toHaveBeenCalledWith({ batchResourceId: "batch-x" });
+      expect(CompanyAPI.rejectAgenticAIBatch).toHaveBeenCalledWith(
+        expect.objectContaining({ batchResourceId: "batch-x", declineForRetry: false })
+      );
     });
 
-    it("passes rejectingReason to rejectAgenticAIActivity on decline when provided", async () => {
+    it("passes reason to rejectAgenticAIActivity on decline when provided", async () => {
       const wrapper = mountFactory({ value: true });
       CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
       jest.clearAllMocks();
@@ -1953,11 +2211,12 @@ describe("AgenticAIActivitiesDrawer", () => {
       );
       expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
         resourceIds: ["r1"],
-        rejectingReason: "Not aligned with policy"
+        reason: "Not aligned with policy",
+        declineForRetry: false
       });
     });
 
-    it("omits rejectingReason key on decline when third arg is falsy", async () => {
+    it("omits reason key on decline when third arg is falsy", async () => {
       const wrapper = mountFactory({ value: true });
       CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
       jest.clearAllMocks();
@@ -1967,7 +2226,8 @@ describe("AgenticAIActivitiesDrawer", () => {
         targetUserStatus: "Active"
       });
       expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
-        resourceIds: ["r1"]
+        resourceIds: ["r1"],
+        declineForRetry: false
       });
     });
 
@@ -1995,7 +2255,8 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith({
         resourceIds: ["r1"],
         batchResourceId: "b1",
-        rejectingReason: "Please retry"
+        reason: "Please retry",
+        declineForRetry: true
       });
       expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -2003,9 +2264,951 @@ describe("AgenticAIActivitiesDrawer", () => {
           actions: ["training"],
           batchResourceId: "b1",
           rejectingReason: "Please retry",
-          rejectedScenarioResourceId: "sc1"
+          rejectedScenarioResourceId: "sc1",
+          retryOfActivityResourceId: "r1"
         })
       );
+    });
+  });
+
+  describe("normalizeTargetUserIsDeletedFlag and target user helpers", () => {
+    it("maps truthy/falsy and string forms for deleted flag", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(true)).toBe(true);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(1)).toBe(true);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag("true")).toBe(true);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(" TRUE ")).toBe(true);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(false)).toBe(false);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(0)).toBe(false);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(null)).toBe(false);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag(undefined)).toBe(false);
+      expect(wrapper.vm.normalizeTargetUserIsDeletedFlag("false")).toBe(false);
+    });
+
+    it("isTargetUserActive is false when deleted flag or status is deleted", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isTargetUserActive({ targetUserIsDeleted: true })).toBe(false);
+      expect(wrapper.vm.isTargetUserActive({ targetUserStatus: "Deleted" })).toBe(false);
+      expect(wrapper.vm.isTargetUserActive({ targetUserStatus: "deleted" })).toBe(false);
+    });
+
+    it("isTargetUserActive treats missing or null status as active", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isTargetUserActive({})).toBe(true);
+      expect(wrapper.vm.isTargetUserActive({ targetUserStatus: null })).toBe(true);
+    });
+
+    it("isTargetUserActive is true only for Active", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isTargetUserActive({ targetUserStatus: "Active" })).toBe(true);
+      expect(wrapper.vm.isTargetUserActive({ targetUserStatus: "Inactive" })).toBe(false);
+    });
+
+    it("isTargetUserActionRestricted is the inverse of active", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isTargetUserActionRestricted({ targetUserStatus: "Inactive" })).toBe(true);
+      expect(wrapper.vm.isTargetUserActionRestricted({ targetUserStatus: "Active" })).toBe(false);
+    });
+
+    it("mapActivityToRow forces Deleted user status when targetUserIsDeleted string is true", () => {
+      const wrapper = mountFactory();
+      const row = wrapper.vm.mapActivityToRow({
+        resourceId: "r1",
+        targetUserIsDeleted: "true",
+        targetUserStatus: "Active"
+      });
+      expect(row.targetUserIsDeleted).toBe(true);
+      expect(row.targetUserStatus).toBe("Deleted");
+    });
+  });
+
+  describe("getActivityTypeName, mapActivityToBatch, getBatchStatusCounts", () => {
+    it("getActivityTypeName prefers ACTIVITY_TYPE_MAP then activityTypeName", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getActivityTypeName({ activityType: 1 })).toBe("Phishing");
+      expect(wrapper.vm.getActivityTypeName({ activityType: 4 })).toBe("Training");
+      expect(wrapper.vm.getActivityTypeName({ activityTypeName: "Custom" })).toBe("Custom");
+    });
+
+    it("mapActivityToBatch uses Untitled activity and resourceId when batch metadata is sparse", () => {
+      const wrapper = mountFactory();
+      const batch = wrapper.vm.mapActivityToBatch({
+        resourceId: "only-res",
+        activities: []
+      });
+      expect(batch.title).toBe("Untitled activity");
+      expect(batch.batchResourceId).toBe("only-res");
+    });
+
+    it("getBatchStatusCounts maps Executed and rejected keys into approved/declined", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.getBatchStatusCounts({
+          statusCounts: { Executed: 2, rejected: 1 }
+        })
+      ).toEqual({
+        approved: 2,
+        pending: 0,
+        declined: 1,
+        retrying: 0,
+        retried: 0
+      });
+    });
+  });
+
+  describe("Extra status normalization and labels", () => {
+    it("normalizeStatus maps aggregate batch status strings", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeStatus("awaiting approval")).toBe("Awaiting Approval");
+      expect(wrapper.vm.normalizeStatus("all approved")).toBe("All Approved");
+      expect(wrapper.vm.normalizeStatus("all declined")).toBe("All Declined");
+    });
+
+    it("isWaitingForApproval accepts compact waitingforapproval", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isWaitingForApproval({ status: "waitingforapproval" })).toBe(true);
+    });
+
+    it("getStatusBadgeColor falls back to default for unknown status", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getStatusBadgeColor("totally unknown")).toBe("#667085");
+    });
+
+    it("formatApprovalStatusCellLabel matches getDataTableFieldLabel", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.formatApprovalStatusCellLabel("approved")).toBe(getDataTableFieldLabel("approved"));
+    });
+  });
+
+  describe("getApprovalCountForDialog when batch pending is zero", () => {
+    it("uses row waitingCount when selection matches but batch waitingCount is zero", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchList: [{ batchResourceId: "b1", waitingCount: 0, title: "B" }],
+        selectedBatchId: "b1",
+        pagedTableData: []
+      });
+      expect(
+        wrapper.vm.getApprovalCountForDialog({
+          batchResourceId: "b1",
+          waitingCount: 8
+        })
+      ).toBe(8);
+    });
+  });
+
+  describe("syncBatchFilterOptions and buildBatchRequestPayload", () => {
+    it("merges unique activity types and statuses into filter option lists", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchTypeFilterOptions: ["Phishing"],
+        batchStatusFilterOptions: ["Pending"]
+      });
+      wrapper.vm.syncBatchFilterOptions([
+        { activityTypeName: "Phishing", status: "Approved" },
+        { activityTypeName: "Quishing", status: "Approved" }
+      ]);
+      expect(wrapper.vm.batchTypeFilterOptions).toEqual(expect.arrayContaining(["Phishing", "Quishing"]));
+      expect(wrapper.vm.batchStatusFilterOptions).toEqual(expect.arrayContaining(["Pending", "Approved"]));
+    });
+
+    it("includes ActivityType filter, BatchStatusName, and OR search fields when filters are set", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        leftSearch: "  q ",
+        leftTypeFilter: "Phishing",
+        leftStatusFilter: "Pending"
+      });
+      const payload = wrapper.vm.buildBatchRequestPayload(2);
+      expect(payload.pageNumber).toBe(2);
+      expect(payload.isGroupedByBatch).toBe(true);
+      expect(payload.filter.SearchInputTextValue).toBe("q");
+      const andItems = payload.filter.FilterGroups[0].FilterItems;
+      expect(andItems.find((i) => i.FieldName === "ActivityType")?.Value).toBe("1");
+      expect(andItems.find((i) => i.FieldName === "BatchStatusName")?.Value).toBe("Pending");
+      const orItems = payload.filter.FilterGroups[1].FilterItems;
+      expect(orItems.length).toBeGreaterThan(0);
+      expect(orItems.some((i) => i.FieldName === "batchName")).toBe(true);
+    });
+  });
+
+  describe("buildRequestPayload and normalizeFilterItem", () => {
+    it("adds BatchResourceId when a batch is selected", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        selectedBatchId: "batch-99",
+        axiosPayload: wrapper.vm.createDefaultPayload(10, false)
+      });
+      const out = wrapper.vm.buildRequestPayload();
+      const andItems = out.filter.FilterGroups[0].FilterItems;
+      expect(andItems.some((i) => i.FieldName === "BatchResourceId" && i.Value === "batch-99")).toBe(true);
+    });
+
+    it("normalizeFilterItem maps FieldName aliases and coalesces value", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeFilterItem({ FieldName: "firstName", Value: "Ann" }).FieldName).toBe(
+        "targetUserFirstName"
+      );
+      expect(wrapper.vm.normalizeFilterItem({ FieldName: "firstName", value: "Bob" }).Value).toBe("Bob");
+    });
+  });
+
+  describe("normalizeRejectPayload and buildAgenticRejectBody", () => {
+    it("normalizeRejectPayload trims string reason and declineForRetry follows action", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeRejectPayload("  nope  ", "retry")).toEqual({
+        reason: "nope",
+        declineForRetry: true
+      });
+      expect(wrapper.vm.normalizeRejectPayload("x", "decline")).toEqual({
+        reason: "x",
+        declineForRetry: false
+      });
+    });
+
+    it("normalizeRejectPayload accepts object payload", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeRejectPayload({ reason: "  z " }, "retry")).toEqual({
+        reason: "z",
+        declineForRetry: true
+      });
+    });
+
+    it("buildAgenticRejectBody passes through ids, reason, and declineForRetry", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.buildAgenticRejectBody({
+          resourceIds: ["a"],
+          reason: "r",
+          declineForRetry: true
+        })
+      ).toEqual({
+        resourceIds: ["a"],
+        reason: "r",
+        declineForRetry: true
+      });
+      expect(wrapper.vm.buildAgenticRejectBody({ batchResourceId: "b" })).toEqual({ batchResourceId: "b" });
+      expect(
+        wrapper.vm.buildAgenticRejectBody({
+          resourceIds: ["a"],
+          reason: "r",
+          declineForRetry: false
+        })
+      ).toEqual({
+        resourceIds: ["a"],
+        reason: "r",
+        declineForRetry: false
+      });
+    });
+  });
+
+  describe("Additional branching: activities fetch, batch selection, handlers, scroll", () => {
+    it("fetchActivities ignores stale response when a newer request completes first", async () => {
+      let resolveSlow;
+      const slowPromise = new Promise((resolve) => {
+        resolveSlow = resolve;
+      });
+      CompanyAPI.searchAgenticAIActivities.mockImplementationOnce(() => slowPromise).mockResolvedValueOnce(
+        mockActivityResponse([{ resourceId: "r-new", statusName: "executed" }])
+      );
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      const pendingSlow = wrapper.vm.fetchActivities();
+      await wrapper.vm.fetchActivities();
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.vm.pagedTableData[0].resourceId).toBe("r-new");
+
+      resolveSlow(mockActivityResponse([{ resourceId: "r-old", statusName: "executed" }]));
+      await pendingSlow;
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.vm.pagedTableData[0].resourceId).toBe("r-new");
+    });
+
+    it("fetchActivities resets pageNumber when it exceeds totalNumberOfPages from API", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue({
+        data: { data: { results: [], totalNumberOfRecords: 0, totalNumberOfPages: 1 } }
+      });
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      wrapper.vm.serverSideProps.pageNumber = 5;
+      await wrapper.vm.fetchActivities();
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+    });
+
+    it("fetchActivities uses first row totalRowCount when totalNumberOfRecords is absent", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockResolvedValue({
+        data: {
+          data: {
+            results: [{ resourceId: "a1", statusName: "executed", totalRowCount: 77 }],
+            totalNumberOfRecords: undefined,
+            totalNumberOfPages: 1
+          }
+        }
+      });
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchActivities();
+      expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(77);
+    });
+
+    it("fetchBatches on first-page error clears list, selection, and totals", async () => {
+      CompanyAPI.searchAgenticAIActivities.mockRejectedValue(new Error("batch failed"));
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      expect(wrapper.vm.batchList).toEqual([]);
+      expect(wrapper.vm.selectedBatchId).toBeNull();
+      expect(wrapper.vm.batchListTotalRecords).toBe(0);
+      expect(wrapper.vm.batchListLoading).toBe(false);
+    });
+
+    it("fetchBatches preserveSelection keeps selected batch when it still exists in results", async () => {
+      CompanyAPI.searchAgenticAIActivities
+        .mockResolvedValueOnce(mockBatchGroupedResponse([makeGroupedBatchApiRow("b1"), makeGroupedBatchApiRow("b2")], 2))
+        .mockResolvedValueOnce(
+          mockBatchGroupedResponse([makeGroupedBatchApiRow("b1"), makeGroupedBatchApiRow("b3")], 2)
+        );
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      expect(wrapper.vm.selectedBatchId).toBe("b1");
+
+      await wrapper.vm.fetchBatches({ preserveSelection: true });
+      expect(wrapper.vm.selectedBatchId).toBe("b1");
+    });
+
+    it("fetchBatches preserveSelection falls back to first batch when previous id is absent", async () => {
+      CompanyAPI.searchAgenticAIActivities
+        .mockResolvedValueOnce(mockBatchGroupedResponse([makeGroupedBatchApiRow("b1"), makeGroupedBatchApiRow("b2")], 2))
+        .mockResolvedValueOnce(
+          mockBatchGroupedResponse([makeGroupedBatchApiRow("b9"), makeGroupedBatchApiRow("b10")], 2)
+        );
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      wrapper.setData({ selectedBatchId: "b1" });
+
+      await wrapper.vm.fetchBatches({ preserveSelection: true });
+      expect(wrapper.vm.selectedBatchId).toBe("b9");
+    });
+
+    it("handleBatchSelect returns early when batch is missing id or already selected", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchActivities });
+      wrapper.setData({
+        batchList: [makeGroupedBatchApiRow("b1")],
+        selectedBatchId: "b1"
+      });
+
+      fetchActivities.mockClear();
+      wrapper.vm.handleBatchSelect({ batchResourceId: "b1" });
+      wrapper.vm.handleBatchSelect({});
+      expect(fetchActivities).not.toHaveBeenCalled();
+    });
+
+    it("handleSortChange sets descending order and defaults orderBy to CreateTime", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.vm.handleSortChange({ prop: "email", order: "descending" });
+      expect(wrapper.vm.axiosPayload.ascending).toBe(false);
+      expect(wrapper.vm.axiosPayload.orderBy).toBe("email");
+
+      wrapper.vm.handleSortChange({ order: "descending" });
+      expect(wrapper.vm.axiosPayload.orderBy).toBe("CreateTime");
+    });
+
+    it("handleSearchChange copies server search text and OR FilterGroup items", () => {
+      const wrapper = mountFactory({ value: true });
+      const orItems = [{ FieldName: "batchName", Value: "needle" }];
+      wrapper.vm.handleSearchChange({
+        filter: {
+          SearchInputTextValue: "needle",
+          FilterGroups: [{ FilterItems: orItems }]
+        }
+      });
+      expect(wrapper.vm.axiosPayload.filter.SearchInputTextValue).toBe("needle");
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual(orItems);
+    });
+
+    it("handleViewReport maps Quishing, Smishing, and Training routes", () => {
+      const openSpy = jest.spyOn(window, "open").mockImplementation(() => {});
+      const wrapper = mountFactory();
+      const resolve = jest.fn((cfg) => ({ href: `/r/${cfg.name}` }));
+      wrapper.vm.$router.resolve = resolve;
+
+      wrapper.vm.handleViewReport({
+        activityType: 2,
+        campaignResourceId: "c2",
+        instanceGroup: 1
+      });
+      expect(resolve).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Quishing Report", params: { id: "c2", instanceGroup: 1 } })
+      );
+
+      wrapper.vm.handleViewReport({ activityType: 3, campaignResourceId: "c3" });
+      expect(resolve).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Smishing Report", params: { id: "c3", instanceGroup: 1 } })
+      );
+
+      wrapper.vm.handleViewReport({
+        activityType: 4,
+        enrollmentResourceId: "en1",
+        batchResourceId: "b-fallback"
+      });
+      expect(resolve).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Training Report", params: { id: "en1" } })
+      );
+
+      resolve.mockClear();
+      wrapper.vm.handleViewReport({ activityType: 4, batchResourceId: "b-only" });
+      expect(resolve).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Training Report", params: { id: "b-only" } })
+      );
+
+      openSpy.mockRestore();
+    });
+
+    it("handlePreviewApprove does nothing when previewActivityRow is null", async () => {
+      const wrapper = mountFactory({ value: true });
+      const exec = jest.spyOn(wrapper.vm, "executeApproveReject").mockResolvedValue(undefined);
+      wrapper.setData({ previewActivityRow: null });
+      await wrapper.vm.handlePreviewApprove();
+      expect(exec).not.toHaveBeenCalled();
+      exec.mockRestore();
+    });
+
+    it("loadMoreBatchesIfNearBottom skips fetch when not within threshold of bottom", () => {
+      const fetchBatches = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchBatches });
+      wrapper.setData({
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        batchListTotalPages: 2,
+        batchListPageNumber: 1,
+        batchList: [makeGroupedBatchApiRow("b1")]
+      });
+      wrapper.vm.loadMoreBatchesIfNearBottom({
+        scrollHeight: 1000,
+        scrollTop: 0,
+        clientHeight: 800
+      });
+      expect(fetchBatches).not.toHaveBeenCalled();
+    });
+
+    it("loadMoreBatchesIfNearBottom calls fetchBatches when within threshold of bottom", () => {
+      const fetchBatches = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchBatches });
+      wrapper.setData({
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        batchListTotalPages: 2,
+        batchListPageNumber: 1,
+        batchList: [makeGroupedBatchApiRow("b1")]
+      });
+      wrapper.vm.loadMoreBatchesIfNearBottom({
+        scrollHeight: 500,
+        scrollTop: 350,
+        clientHeight: 100
+      });
+      expect(fetchBatches).toHaveBeenCalledWith({ preserveSelection: true, append: true });
+    });
+
+    it("handleBatchListScroll does not schedule load when currentTarget is missing", () => {
+      const wrapper = mountFactory();
+      const loadSpy = jest.spyOn(wrapper.vm, "loadMoreBatchesIfNearBottom");
+      wrapper.vm.handleBatchListScroll({ currentTarget: null });
+      expect(loadSpy).not.toHaveBeenCalled();
+      loadSpy.mockRestore();
+    });
+
+    it("cancelBatchListScrollRaf is a no-op when no frame id is set", () => {
+      const wrapper = mountFactory();
+      wrapper.vm.batchListScrollRafId = null;
+      const spy = jest.spyOn(window, "cancelAnimationFrame");
+      wrapper.vm.cancelBatchListScrollRaf();
+      expect(spy).not.toHaveBeenCalled();
+      spy.mockRestore();
+    });
+
+    it("handleLeftFiltersChanged clears table rows when selection becomes empty after refetch", async () => {
+      const wrapper = mountFactory({ value: true });
+      const fetchBatches = jest.spyOn(wrapper.vm, "fetchBatches").mockImplementation(async () => {
+        wrapper.setData({ selectedBatchId: null });
+      });
+      const fetchActivities = jest.spyOn(wrapper.vm, "fetchActivities").mockResolvedValue(undefined);
+      wrapper.setData({
+        selectedBatchId: "b1",
+        pagedTableData: [{ resourceId: "x", status: "Pending" }]
+      });
+
+      await wrapper.vm.handleLeftFiltersChanged();
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.vm.pagedTableData).toEqual([]);
+      expect(fetchActivities).not.toHaveBeenCalled();
+      fetchBatches.mockRestore();
+      fetchActivities.mockRestore();
+    });
+
+    it("handleLeftFiltersChanged does not refetch activities when batch selection is unchanged", async () => {
+      const wrapper = mountFactory({ value: true });
+      const fetchBatches = jest.spyOn(wrapper.vm, "fetchBatches").mockResolvedValue(undefined);
+      const fetchActivities = jest.spyOn(wrapper.vm, "fetchActivities").mockResolvedValue(undefined);
+      wrapper.setData({ selectedBatchId: "b-stable" });
+
+      await wrapper.vm.handleLeftFiltersChanged();
+      await wrapper.vm.$nextTick();
+
+      expect(fetchActivities).not.toHaveBeenCalled();
+      fetchBatches.mockRestore();
+      fetchActivities.mockRestore();
+    });
+
+    it("executeApproveReject resets actionInProgress when approve API throws", async () => {
+      CompanyAPI.approveAgenticAIBatch.mockRejectedValue(new Error("network"));
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchBatches: jest.fn().mockResolvedValue(), fetchActivities: jest.fn().mockResolvedValue() }
+      );
+      wrapper.setData({ actionInProgress: false });
+      await wrapper.vm.executeApproveReject("approve", { batchResourceId: "b1" });
+      expect(wrapper.vm.actionInProgress).toBe(false);
+    });
+
+    it("normalizeStatus returns raw empty string for empty input", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeStatus("")).toBe("");
+    });
+  });
+
+  describe("Column filters, layout, snackbar, and drawer chrome", () => {
+    it("handleColumnFilterChanged merges filter into AND group and refetches", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchActivities });
+      wrapper.vm.handleColumnFilterChanged({
+        FieldName: "Status",
+        Value: "4",
+        Operator: "="
+      });
+      await wrapper.vm.$nextTick();
+      const items = wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems;
+      expect(items.some((i) => i.FieldName === "Status" && i.Value === "4")).toBe(true);
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+      expect(fetchActivities).toHaveBeenCalled();
+    });
+
+    it("handleColumnFilterCleared removes filter field and refetches", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchActivities });
+      wrapper.setData({
+        axiosPayload: {
+          ...wrapper.vm.axiosPayload,
+          filter: {
+            ...wrapper.vm.axiosPayload.filter,
+            FilterGroups: [
+              {
+                Condition: "AND",
+                FilterItems: [
+                  { FieldName: "Status", Value: "1", Operator: "=" },
+                  { FieldName: "email", Value: "x@y.com", Operator: "Contains" }
+                ],
+                FilterGroups: []
+              },
+              wrapper.vm.axiosPayload.filter.FilterGroups[1]
+            ]
+          }
+        }
+      });
+      wrapper.vm.handleColumnFilterCleared("Status");
+      await wrapper.vm.$nextTick();
+      const items = wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems;
+      expect(items.some((i) => i.FieldName === "Status")).toBe(false);
+      expect(items.some((i) => i.FieldName === "email")).toBe(true);
+      expect(fetchActivities).toHaveBeenCalled();
+    });
+
+    it("refreshTableLayout calls elTableRef.doLayout when ref chain exists", () => {
+      const wrapper = mountFactory();
+      const doLayout = jest.fn();
+      wrapper.vm.$refs.activitiesTable = {
+        lastColFixed: false,
+        actionFixed: "left",
+        $refs: { elTableRef: { doLayout } }
+      };
+      wrapper.vm.refreshTableLayout();
+      expect(wrapper.vm.$refs.activitiesTable.lastColFixed).toBe(true);
+      expect(wrapper.vm.$refs.activitiesTable.actionFixed).toBe("right");
+      expect(doLayout).toHaveBeenCalled();
+    });
+
+    it("showSnackbar dispatches common/createSnackBar with payload", () => {
+      const wrapper = mountFactory();
+      wrapper.vm.showSnackbar("Saved", "orange", "mdi-alert");
+      expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith("common/createSnackBar", {
+        message: "Saved",
+        color: "orange",
+        icon: "mdi-alert"
+      });
+    });
+
+    it("getNavigationDrawerClass uses preview drawer modifier", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getNavigationDrawerClass).toEqual({
+        "k-navigation-drawer k-navigation-drawer--preview-dialog": true
+      });
+    });
+
+    it("mapActivityToBatch prefers campaignName for title when batchName absent", () => {
+      const wrapper = mountFactory();
+      const mapped = wrapper.vm.mapActivityToBatch({
+        campaignName: "Summer phish",
+        activities: [
+          {
+            batchResourceId: "b-camp",
+            activityType: 1,
+            activityTypeName: "Phishing",
+            statusName: "executed"
+          }
+        ]
+      });
+      expect(mapped.title).toBe("Summer phish");
+      expect(mapped.campaignName).toBe("");
+    });
+
+    it("mapActivityToBatch maps lastActivityTime from batch root", () => {
+      const wrapper = mountFactory();
+      const mapped = wrapper.vm.mapActivityToBatch({
+        batchResourceId: "b1",
+        activities: [],
+        lastActivityTime: "2025-01-02T00:00:00Z"
+      });
+      expect(mapped.lastActivityTime).toBe("2025-01-02T00:00:00Z");
+    });
+
+    it("getSortFieldName returns property as-is for unknown column", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getSortFieldName("customColumn")).toBe("customColumn");
+    });
+
+    it("handleBatchListScroll returns early when a RAF is already scheduled", () => {
+      const wrapper = mountFactory();
+      wrapper.vm.batchListScrollRafId = 99;
+      const rafSpy = jest.spyOn(window, "requestAnimationFrame");
+      wrapper.vm.handleBatchListScroll({
+        currentTarget: { scrollHeight: 100, scrollTop: 0, clientHeight: 50 }
+      });
+      expect(rafSpy).not.toHaveBeenCalled();
+      rafSpy.mockRestore();
+    });
+  });
+
+  describe("Stronger branching coverage", () => {
+    it("handleApprove sets singular message when pending count is 1", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchList: [{ batchResourceId: "b1", waitingCount: 1, title: "B" }],
+        selectedBatchId: "b1",
+        pagedTableData: []
+      });
+      wrapper.vm.handleApprove({ batchResourceId: "b1", waitingCount: 1 });
+      expect(wrapper.vm.confirmDialog.message).toBe(
+        "1 pending recommendation will be approved and launched immediately."
+      );
+    });
+
+    it("handleApprove sets plural message when pending count is not 1", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchList: [{ batchResourceId: "b1", waitingCount: 4, title: "B" }],
+        selectedBatchId: "b1",
+        pagedTableData: []
+      });
+      wrapper.vm.handleApprove({ batchResourceId: "b1", waitingCount: 4 });
+      expect(wrapper.vm.confirmDialog.message).toContain("4 pending recommendations");
+    });
+
+    it("getApprovalCountForDialog falls through to row status when batch id matches but batch pending is 0 and no waitingCount", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchList: [{ batchResourceId: "b1", waitingCount: 0, title: "B" }],
+        selectedBatchId: "b1",
+        pagedTableData: []
+      });
+      expect(
+        wrapper.vm.getApprovalCountForDialog({
+          batchResourceId: "b1",
+          status: "Pending"
+        })
+      ).toBe(1);
+      expect(
+        wrapper.vm.getApprovalCountForDialog({
+          batchResourceId: "b1",
+          status: "Approved"
+        })
+      ).toBe(0);
+    });
+
+    it("handleView opens Quishing preview when scenarioResourceId is set", async () => {
+      const wrapper = mountFactory();
+      await wrapper.vm.handleView({
+        activityType: 2,
+        resourceId: "r1",
+        scenarioResourceId: "sc-q",
+        scenarioName: "Q scenario"
+      });
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.previewType).toBe("Quishing");
+      expect(wrapper.vm.previewSelectedRow).toEqual({ resourceId: "sc-q", name: "Q scenario" });
+    });
+
+    it("handleView opens Smishing preview when scenarioResourceId is set", async () => {
+      const wrapper = mountFactory();
+      await wrapper.vm.handleView({
+        activityType: 3,
+        resourceId: "r1",
+        scenarioResourceId: "sc-s",
+        scenarioName: "S scenario"
+      });
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.previewType).toBe("Smishing");
+      expect(wrapper.vm.previewSelectedRow).toEqual({ resourceId: "sc-s", name: "S scenario" });
+    });
+
+    it("handleView opens Training preview when trainingResourceId is set", async () => {
+      const wrapper = mountFactory();
+      await wrapper.vm.handleView({
+        activityType: 4,
+        resourceId: "r1",
+        trainingResourceId: "t-99",
+        scenarioResourceId: "ignored-for-training"
+      });
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.previewType).toBe("Training");
+      expect(wrapper.vm.previewSelectedRow).toEqual({ trainingId: "t-99" });
+    });
+
+    it("executeApproveReject retry uses training action for activityType 4 and phishing fallback for unknown type", async () => {
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      AgenticAIService.retryAutonomous.mockResolvedValue(undefined);
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchBatches: jest.fn().mockResolvedValue(), fetchActivities: jest.fn().mockResolvedValue() }
+      );
+      jest.clearAllMocks();
+
+      await wrapper.vm.executeApproveReject(
+        "retry",
+        {
+          resourceId: "r1",
+          batchResourceId: "b1",
+          activityType: 4,
+          targetUserStatus: "Active",
+          targetUserResourceId: "u1",
+          firstName: "A",
+          lastName: "B",
+          department: "D",
+          preferredLanguage: "en",
+          scenarioResourceId: "sc1"
+        },
+        "go"
+      );
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({ actions: ["training"] })
+      );
+
+      jest.clearAllMocks();
+      await wrapper.vm.executeApproveReject(
+        "retry",
+        {
+          resourceId: "r2",
+          batchResourceId: "b1",
+          activityType: 99,
+          targetUserStatus: "Active",
+          targetUserResourceId: "u1",
+          firstName: "A",
+          lastName: "B",
+          department: "D",
+          preferredLanguage: "en",
+          scenarioResourceId: "sc1"
+        },
+        "go"
+      );
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({ actions: ["phishing"] })
+      );
+    });
+
+    it("fetchBatches append error does not clear existing batch list", async () => {
+      CompanyAPI.searchAgenticAIActivities
+        .mockResolvedValueOnce(mockBatchGroupedResponse([makeGroupedBatchApiRow("b1")], 10, 2))
+        .mockRejectedValueOnce(new Error("append failed"));
+
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      await wrapper.vm.fetchBatches({ preserveSelection: false });
+      expect(wrapper.vm.batchList.length).toBe(1);
+
+      await wrapper.vm.fetchBatches({ append: true, preserveSelection: true });
+
+      expect(wrapper.vm.batchList.length).toBe(1);
+      expect(wrapper.vm.batchList[0].batchResourceId).toBe("b1");
+      expect(wrapper.vm.batchListLoadingMore).toBe(false);
+    });
+
+    it("getStableFilterItems returns list unchanged when selectedValue is empty string", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.getStableFilterItems(["a", "b"], "")).toEqual(["a", "b"]);
+    });
+
+    it("handleColumnFilterChanged supports array filter payload from column helper", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchActivities });
+      wrapper.vm.handleColumnFilterChanged([
+        { FieldName: "Status", Value: "3", Operator: "=" },
+        { FieldName: "email", Value: "z", Operator: "Contains" }
+      ]);
+      await wrapper.vm.$nextTick();
+      const items = wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems;
+      expect(items.filter((i) => i.FieldName === "Status").length).toBeGreaterThan(0);
+      expect(fetchActivities).toHaveBeenCalled();
+    });
+
+    it("buildAgenticRejectBody omits reason and declineForRetry when not provided", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.buildAgenticRejectBody({ resourceIds: ["x"] })).toEqual({ resourceIds: ["x"] });
+      expect(wrapper.vm.buildAgenticRejectBody({ batchResourceId: "b", reason: "" })).toEqual({
+        batchResourceId: "b"
+      });
+    });
+
+    it("pendingApprovalText uses plural form for zero approvals waiting", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        batchList: [{ batchResourceId: "b1", waitingCount: 0, title: "B" }],
+        selectedBatchId: "b1",
+        pagedTableData: []
+      });
+      expect(wrapper.vm.pendingApprovalText).toBe("0 approvals are waiting");
+    });
+  });
+
+  describe("Extended branching", () => {
+    it("executeApproveReject shows orange snackbar when approveActivity returns errorCount", async () => {
+      CompanyAPI.approveAgenticAIActivity.mockResolvedValue({
+        data: { data: { errorCount: 2 } }
+      });
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchBatches: jest.fn().mockResolvedValue(), fetchActivities: jest.fn().mockResolvedValue() }
+      );
+      await wrapper.vm.executeApproveReject("approveActivity", {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        targetUserStatus: "Active"
+      });
+      expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
+        "common/createSnackBar",
+        expect.objectContaining({
+          message: "Approval failed. Please try again.",
+          color: "orange",
+          icon: "mdi-alert-circle"
+        })
+      );
+    });
+
+    it("refreshTableLayout does not throw when activities table ref is missing", () => {
+      const wrapper = mountFactory();
+      wrapper.vm.$refs.activitiesTable = undefined;
+      expect(() => wrapper.vm.refreshTableLayout()).not.toThrow();
+    });
+
+    it("refreshTableLayout skips doLayout when elTableRef chain is missing", () => {
+      const wrapper = mountFactory();
+      const doLayout = jest.fn();
+      wrapper.vm.$refs.activitiesTable = { lastColFixed: false, $refs: {} };
+      wrapper.vm.refreshTableLayout();
+      expect(doLayout).not.toHaveBeenCalled();
+    });
+
+    it("getBatchSegmentWidth returns 0% for unknown segment type key", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.getBatchSegmentWidth(
+          { userCount: 50, statusCounts: { Approved: 50 } },
+          "unknownSegment"
+        )
+      ).toBe("0%");
+    });
+
+    it("clearLeftSearchDebounce clears timeout when debounce id is set", () => {
+      const wrapper = mountFactory();
+      const spy = jest.spyOn(window, "clearTimeout").mockImplementation(() => {});
+      wrapper.vm.leftSearchDebounceId = 123;
+      wrapper.vm.clearLeftSearchDebounce();
+      expect(spy).toHaveBeenCalledWith(123);
+      expect(wrapper.vm.leftSearchDebounceId).toBeNull();
+      spy.mockRestore();
+    });
+
+    it("mapActivityToRow preserves instanceGroup from activity payload", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.mapActivityToRow({
+          resourceId: "r1",
+          instanceGroup: 3,
+          statusName: "executed"
+        }).instanceGroup
+      ).toBe(3);
+    });
+
+    it("isExecuted returns true for Approved capitalized status", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.isExecuted({ status: "Approved" })).toBe(true);
+    });
+
+    it("normalizeStatus title-cases unknown multi-word status strings", () => {
+      const wrapper = mountFactory();
+      expect(wrapper.vm.normalizeStatus("custom workflow status")).toBe("Custom Workflow Status");
+    });
+
+    it("handleRejectConfirm decline with string payload calls reject API with trimmed reason", async () => {
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchBatches: jest.fn().mockResolvedValue(), fetchActivities: jest.fn().mockResolvedValue() }
+      );
+      wrapper.setData({
+        actionInProgress: false,
+        rejectDialog: {
+          status: true,
+          action: "decline",
+          row: { resourceId: "r1", batchResourceId: "b1", targetUserStatus: "Active" },
+          loading: false
+        }
+      });
+      await wrapper.vm.handleRejectConfirm("  No thanks  ");
+      expect(CompanyAPI.rejectAgenticAIActivity).toHaveBeenCalledWith(
+        expect.objectContaining({
+          resourceIds: ["r1"],
+          reason: "No thanks",
+          declineForRetry: false
+        })
+      );
+    });
+
+    it("buildAgenticRejectBody includes declineForRetry false when explicitly set", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.buildAgenticRejectBody({
+          batchResourceId: "b1",
+          reason: "x",
+          declineForRetry: false
+        })
+      ).toEqual({
+        batchResourceId: "b1",
+        reason: "x",
+        declineForRetry: false
+      });
     });
   });
 });

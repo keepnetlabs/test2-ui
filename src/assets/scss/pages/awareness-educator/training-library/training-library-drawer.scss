@@ -95,6 +95,29 @@
     line-height: 1.5;
   }
 
+  &__decline-reason {
+    border-radius: 8px;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    padding: 10px 14px;
+    margin: 16px 48px 0 !important;
+  }
+
+  &__decline-reason-title {
+    margin-bottom: 0 !important;
+    font-size: 12px;
+    font-weight: 600;
+    color: #757575;
+  }
+
+  &__decline-reason-text {
+    margin: 0 !important;
+    font-size: 14px;
+    color: #383b41;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
   &__content {
     height: calc(100% - 77px);
     overflow-y: auto;

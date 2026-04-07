@@ -240,12 +240,44 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
       }
 
       expect(computed.reportReasonText.call(ctx)).toBe('Received phishing email')
+      expect(computed.hasReportReasonText.call(ctx)).toBe(true)
+      expect(computed.reportReasonDisplayText.call(ctx)).toBe('Received phishing email')
       expect(computed.reportCommentText.call(ctx)).toBe('Suspicious content')
+      expect(computed.hasReportCommentText.call(ctx)).toBe(true)
+      expect(computed.reportCommentDisplayText.call(ctx)).toBe('Suspicious content')
     })
 
     it('returns empty strings when feedback fields are missing', () => {
       expect(computed.reportReasonText.call({ mailDetails: {} })).toBe('')
       expect(computed.reportCommentText.call({ mailDetails: null })).toBe('')
+    })
+
+    it('returns fallback display text when report comment is blank or whitespace', () => {
+      expect(
+        computed.hasReportCommentText.call({
+          reportCommentText: '   '
+        })
+      ).toBe(false)
+      expect(
+        computed.reportCommentDisplayText.call({
+          hasReportCommentText: false,
+          reportCommentText: '   '
+        })
+      ).toBe('No user comment was provided.')
+    })
+
+    it('returns fallback display text when report reason is blank or whitespace', () => {
+      expect(
+        computed.hasReportReasonText.call({
+          reportReasonText: '   '
+        })
+      ).toBe(false)
+      expect(
+        computed.reportReasonDisplayText.call({
+          hasReportReasonText: false,
+          reportReasonText: '   '
+        })
+      ).toBe('No reason was provided.')
     })
   })
 
@@ -295,7 +327,7 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
       )
     })
 
-    it('renders empty strings for missing user feedback values without fallback dash', async () => {
+    it('renders fallback text and empty-state style for missing user feedback values', async () => {
       getNotifiedEmail.mockResolvedValueOnce({
         data: {
           data: {
@@ -333,8 +365,54 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
       await wrapper.vm.$nextTick()
 
       const values = wrapper.findAll('.email-details__user-feedback-value')
-      expect(values.at(0).text()).toBe('')
-      expect(values.at(1).text()).toBe('')
+      expect(values.at(0).text()).toBe('No reason was provided.')
+      expect(values.at(0).classes()).toContain('email-details__user-feedback-value--empty')
+      expect(values.at(1).text()).toBe('No user comment was provided.')
+      expect(values.at(1).classes()).toContain('email-details__user-feedback-value--empty')
+    })
+
+    it('renders fallback text for whitespace-only user feedback values', async () => {
+      getNotifiedEmail.mockResolvedValueOnce({
+        data: {
+          data: {
+            subject: 'Suspicious Email',
+            reportReasonText: '   ',
+            reportComment: '   ',
+            attachments: [],
+            headers: [],
+            emailRelays: []
+          }
+        }
+      })
+
+      const wrapper = shallowMount(EmailDetails, {
+        propsData: { id: 'mail-3' },
+        mocks: {
+          $route: { params: {}, query: { tab: 'sixth' } },
+          $store: { state: { auth: { selectedCompanyName: '' } } }
+        },
+        stubs: {
+          Datatable: true,
+          DownloadModal: true,
+          DownloadAttachmentModal: true,
+          EmailDetailsContentDetails: true,
+          EmailDetailsPreviewFooter: true,
+          EmailDetailsAIAnalyze: true,
+          EmailDetailsUrl: true,
+          KEmailPreview: true,
+          PreviewHeaderForSinglePost: true,
+          Badge: true
+        }
+      })
+
+      await flushPromises()
+      await wrapper.vm.$nextTick()
+
+      const values = wrapper.findAll('.email-details__user-feedback-value')
+      expect(values.at(0).text()).toBe('No reason was provided.')
+      expect(values.at(0).classes()).toContain('email-details__user-feedback-value--empty')
+      expect(values.at(1).text()).toBe('No user comment was provided.')
+      expect(values.at(1).classes()).toContain('email-details__user-feedback-value--empty')
     })
   })
 

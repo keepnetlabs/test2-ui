@@ -7,8 +7,8 @@
     ></div>
     <AppDialog
       :status="status"
-      icon="mdi-refresh"
-      title="Why are you retrying?"
+      :icon="dialogIcon"
+      :title="dialogTitle"
       class-name="agentic-ai-confirm-dialog"
       custom-size="560"
       hide-overlay
@@ -16,10 +16,10 @@
     >
       <template #app-dialog-body>
         <p class="agentic-ai-reject-dialog__description">
-          Please explain in 1–2 sentences what went wrong. Your feedback helps improve AI recommendations.
+          {{ dialogDescription }}
         </p>
         <div class="agentic-ai-reject-dialog__suggestions">
-          <div class="agentic-ai-reject-dialog__suggestions-label">Suggested reasons</div>
+          <div class="agentic-ai-reject-dialog__suggestions-label">Suggested responses</div>
           <div class="agentic-ai-reject-dialog__chips">
             <v-chip
               v-for="reasonOption in suggestedReasons"
@@ -43,7 +43,7 @@
           dense
           no-resize
           rows="5"
-          placeholder="e.g. The scenario did not match this user’s department, or the content failed to load in preview."
+          :placeholder="textareaPlaceholder"
           class="agentic-ai-reject-dialog__textarea mt-2"
           :counter="maxLength"
           :rules="[rules.minLength]"
@@ -52,11 +52,11 @@
       </template>
       <template #app-dialog-footer>
         <AppDialogFooter
-          cancel-button-id="btn-retry-feedback-dialog-cancel"
-          confirm-button-id="btn-retry-feedback-dialog-confirm"
+          :cancel-button-id="cancelButtonId"
+          :confirm-button-id="confirmButtonId"
           cancel-button-text="CANCEL"
-          action-button-text="RETRY"
-          action-button-color="#a45716"
+          :action-button-text="confirmButtonText"
+          :action-button-color="actionButtonColor"
           cancel-button-color="#383b41"
           :confirm-button-disabled="!isValid || loading"
           @handleClose="$emit('cancel')"
@@ -74,30 +74,59 @@ import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter.vue";
 const MIN_LENGTH = 15;
 const MAX_LENGTH = 500;
 
+/** Shown for **Retry** — user feedback; API receives `declineForRetry: true` before the autonomous retry step. */
 const RETRY_SUGGESTED_REASONS = [
   {
     key: "delivery-or-technical",
-    label: "Delivery / technical issue",
+    label: "Delivery / technical",
     template:
-      "The previous attempt failed to deliver or render correctly (for example the message or landing page did not load). Please retry with a fresh run."
+      "The previous attempt did not deliver or render correctly (for example the message or landing page failed to load). Requesting a new run with corrected delivery."
   },
   {
     key: "language-or-locale",
-    label: "Language or locale mismatch",
+    label: "Language / locale",
     template:
-      "The recommended content did not match this user’s preferred language or regional settings. Please regenerate with the correct localization."
+      "The recommendation did not match this recipient’s language or regional settings. Requesting a regenerated version with the correct localization."
   },
   {
     key: "audience-or-risk-fit",
-    label: "Wrong fit for user or risk level",
+    label: "Audience / risk fit",
     template:
-      "The scenario or training was not appropriate for this user’s role, department, or risk profile. Please retry with a better-matched recommendation."
+      "The scenario or training is not appropriate for this recipient’s role, department, or risk profile. Requesting a better-aligned recommendation."
   },
   {
-    key: "regenerate-quality",
-    label: "Regenerate (quality or tone)",
+    key: "quality-or-tone",
+    label: "Quality / tone",
     template:
-      "The previous output was not suitable in quality, tone, or alignment with our standards. Please generate a new recommendation for this user."
+      "The output did not meet our standards for quality, tone, or alignment with organizational messaging. Requesting a new recommendation."
+  }
+];
+
+/** Shown for **Decline** — permanent decline only; API sends `declineForRetry: false`. */
+const DECLINE_SUGGESTED_REASONS = [
+  {
+    key: "not-relevant",
+    label: "Not a fit",
+    template:
+      "This recommendation does not match the recipient’s role, department, or risk level. Declining per our review criteria."
+  },
+  {
+    key: "policy-or-compliance",
+    label: "Policy / compliance",
+    template:
+      "The proposed content or approach does not meet our security awareness or compliance requirements. Declining this recommendation."
+  },
+  {
+    key: "wrong-channel-or-timing",
+    label: "Channel / timing",
+    template:
+      "The suggested delivery channel or schedule is not appropriate for this recipient. Declining this recommendation."
+  },
+  {
+    key: "manual-handling",
+    label: "Manual handling",
+    template:
+      "This case will be managed outside of automated recommendations. Declining this automated action."
   }
 ];
 
@@ -116,6 +145,7 @@ export default {
       type: Boolean,
       default: false
     },
+    /** `retry` | `decline` | `declineAll` — copy and primary action only. */
     action: {
       type: String,
       default: "retry"
@@ -129,13 +159,57 @@ export default {
       rules: {
         minLength: (v) =>
           (v && v.trim().length >= MIN_LENGTH) ||
-          `Please write at least ${MIN_LENGTH} characters`
+          `Enter at least ${MIN_LENGTH} characters.`
       }
     };
   },
   computed: {
+    isRetryAction() {
+      return this.action === "retry";
+    },
+    dialogIcon() {
+      return this.isRetryAction ? "mdi-refresh" : "mdi-close";
+    },
+    dialogTitle() {
+      if (this.isRetryAction) return "Provide feedback to retry";
+      if (this.action === "declineAll") return "Decline all pending recommendations";
+      return "Decline recommendation";
+    },
+    dialogDescription() {
+      if (this.isRetryAction) {
+        return "Briefly describe why this recommendation should be regenerated. Your feedback is used to request a new run and to improve future suggestions.";
+      }
+      if (this.action === "declineAll") {
+        return "Provide a reason for declining every pending item in this batch. Declined items will not be executed.";
+      }
+      return "Provide a reason for declining. The recommendation will not run and will be recorded as declined.";
+    },
+    textareaPlaceholder() {
+      if (this.isRetryAction) {
+        return "For example: content did not match the recipient’s department, or the preview failed to load.";
+      }
+      return "For example: content is not appropriate for this audience, or it conflicts with our awareness program policy.";
+    },
     suggestedReasons() {
-      return RETRY_SUGGESTED_REASONS;
+      return this.isRetryAction ? RETRY_SUGGESTED_REASONS : DECLINE_SUGGESTED_REASONS;
+    },
+    confirmButtonText() {
+      if (this.isRetryAction) return "RETRY";
+      if (this.action === "declineAll") return "DECLINE ALL";
+      return "DECLINE";
+    },
+    actionButtonColor() {
+      return this.isRetryAction ? "#a45716" : "#c62828";
+    },
+    cancelButtonId() {
+      if (this.isRetryAction) return "btn-retry-feedback-dialog-cancel";
+      if (this.action === "declineAll") return "btn-decline-all-feedback-dialog-cancel";
+      return "btn-decline-feedback-dialog-cancel";
+    },
+    confirmButtonId() {
+      if (this.isRetryAction) return "btn-retry-feedback-dialog-confirm";
+      if (this.action === "declineAll") return "btn-decline-all-feedback-dialog-confirm";
+      return "btn-decline-feedback-dialog-confirm";
     },
     isValid() {
       return this.reason.trim().length >= MIN_LENGTH;
@@ -167,7 +241,12 @@ export default {
     },
     handleConfirm() {
       if (!this.isValid) return;
-      this.$emit("confirm", this.reason.trim());
+      const trimmed = this.reason.trim();
+      /** Retry: `declineForRetry: true` for the reject leg; Decline: `false` only (no retry path in this dialog). */
+      this.$emit("confirm", {
+        reason: trimmed,
+        declineForRetry: this.isRetryAction
+      });
     }
   }
 };

@@ -5,6 +5,7 @@
         :key="snackbar.id"
         v-model="snackbar.status"
         :color="snackbar.color"
+        class="app-snackbar"
         bottom
         @input="changeSnackbarStatus($event, snackbar)"
         :style="getSnackBarStyle(snackbar.message, index)"
