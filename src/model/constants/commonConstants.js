@@ -370,6 +370,7 @@ export const TABLE_SETTINGS_KEYS = {
   SMSIHING_FREQUENCY_TABLE: 'SmishingFrequencyTableSettings',
   TRAINING_LIBRARY_POSTER_TABLE: 'TrainingLibraryPosterTableSettings',
   TRAINING_REPORT_OPENED_TABLE: 'TrainingReportOpenedTableSettings',
+  TRAINING_LIBRARY_SURVEY_TABLE: 'TrainingLibrarySurveyTableSettings',
   TRAINING_LIBRARY_TRAINING_TABLE: 'TrainingLibraryTrainingTableSettings',
   TRAINING_REPORT_NON_TARGET_USERS_PROGRESS_TABLE:
     'TrainingReportNonTargetUserProgressTableSettings',
