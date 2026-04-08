@@ -250,6 +250,120 @@ describe('DataTable.vue computed/watch extra coverage', () => {
     ).toBe(false)
   })
 
+  it('download button computed values reflect data presence and parent disabled flag', () => {
+    expect(
+      DataTable.computed.hasDownloadableData.call({
+        isServerSide: true,
+        serverSideProps: { totalNumberOfRecords: 0 },
+        tableData: []
+      })
+    ).toBe(false)
+    expect(
+      DataTable.computed.hasDownloadableData.call({
+        isServerSide: true,
+        serverSideProps: { totalNumberOfRecords: 4 },
+        tableData: []
+      })
+    ).toBe(true)
+    expect(
+      DataTable.computed.hasDownloadableData.call({
+        isServerSide: true,
+        serverSideProps: { totalNumberOfRecords: 0 },
+        tableData: [{ id: 99 }]
+      })
+    ).toBe(true)
+    expect(
+      DataTable.computed.hasDownloadableData.call({
+        isServerSide: false,
+        initialData: [],
+        tableData: []
+      })
+    ).toBe(false)
+    expect(
+      DataTable.computed.hasDownloadableData.call({
+        isServerSide: false,
+        initialData: [{ id: 1 }],
+        tableData: []
+      })
+    ).toBe(true)
+    expect(
+      DataTable.computed.hasDownloadableData.call({
+        isServerSide: false,
+        initialData: [],
+        tableData: [{ id: 2 }]
+      })
+    ).toBe(true)
+
+    expect(
+      DataTable.computed.isDownloadButtonDisabled.call({
+        downloadButton: { disabled: false },
+        hasDownloadableData: false
+      })
+    ).toBe(true)
+    expect(
+      DataTable.computed.isDownloadButtonDisabled.call({
+        downloadButton: { disabled: true },
+        hasDownloadableData: true
+      })
+    ).toBe(true)
+    expect(
+      DataTable.computed.isDownloadButtonDisabled.call({
+        downloadButton: { disabled: false },
+        hasDownloadableData: true
+      })
+    ).toBe(false)
+
+    expect(
+      DataTable.computed.downloadButtonTooltipText.call({
+        hasDownloadableData: false
+      })
+    ).toBe('No data available to export. Download will be enabled once data is available.')
+    expect(
+      DataTable.computed.downloadButtonTooltipText.call({
+        hasDownloadableData: true
+      })
+    ).toBe('Download Options')
+  })
+
+  it('scheduleTableLayoutRefresh waits for the next frames before relayout', () => {
+    const nextTick = jest.fn((callback) => callback())
+    const doLayout = jest.fn()
+    const reRenderFixedItems = jest.fn()
+    const previousRequestAnimationFrame = window.requestAnimationFrame
+    window.requestAnimationFrame = jest.fn((callback) => callback())
+
+    DataTable.methods.scheduleTableLayoutRefresh.call({
+      $nextTick: nextTick,
+      $refs: {
+        elTableRef: { doLayout }
+      },
+      reRenderFixedItems
+    })
+
+    expect(nextTick).toHaveBeenCalled()
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(2)
+    expect(doLayout).toHaveBeenCalled()
+    expect(reRenderFixedItems).toHaveBeenCalled()
+
+    window.requestAnimationFrame = previousRequestAnimationFrame
+  })
+
+  it('handleChangeVisibilityOfColumn refreshes rendered columns and table layout', () => {
+    const ctx = {
+      setRenderedColumns: jest.fn(),
+      $forceUpdate: jest.fn(),
+      handleTableSettingsChange: jest.fn(),
+      scheduleTableLayoutRefresh: jest.fn()
+    }
+
+    DataTable.methods.handleChangeVisibilityOfColumn.call(ctx)
+
+    expect(ctx.setRenderedColumns).toHaveBeenCalled()
+    expect(ctx.$forceUpdate).toHaveBeenCalled()
+    expect(ctx.handleTableSettingsChange).toHaveBeenCalled()
+    expect(ctx.scheduleTableLayoutRefresh).toHaveBeenCalled()
+  })
+
   it('watch.getSelectionText emits current selection count', () => {
     const emit = jest.fn()
     DataTable.watch.getSelectionText.call({
@@ -263,9 +377,11 @@ describe('DataTable.vue computed/watch extra coverage', () => {
   })
 
   it('watch.firstColFixed and watch.lastColFixed update fixed values', () => {
+    const scheduleTableLayoutRefresh = jest.fn()
     const ctx = {
       columns: [{ fixed: 'left' }, { fixed: false }],
       firstColFixed: true,
+      scheduleTableLayoutRefresh,
       $refs: {
         elTableRef: { columns: [{ fixed: true }] }
       }
@@ -279,12 +395,17 @@ describe('DataTable.vue computed/watch extra coverage', () => {
     expect(ctx.columns[0].fixed).toBe('left')
     expect(ctx.firstColFixed).toBe(true)
     expect(ctx.$refs.elTableRef.columns[0].fixed).toBe(true)
+    expect(scheduleTableLayoutRefresh).toHaveBeenCalledTimes(2)
 
-    const lastCtx = { actionFixed: 'right' }
+    const lastCtx = {
+      actionFixed: 'right',
+      scheduleTableLayoutRefresh: jest.fn()
+    }
     DataTable.watch.lastColFixed.call(lastCtx, false)
     expect(lastCtx.actionFixed).toBe(false)
     DataTable.watch.lastColFixed.call(lastCtx, true)
     expect(lastCtx.actionFixed).toBe('right')
+    expect(lastCtx.scheduleTableLayoutRefresh).toHaveBeenCalledTimes(2)
   })
 
   it('watch.columns.handler updates rendered columns and allHidden flag', () => {

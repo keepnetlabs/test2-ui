@@ -52,7 +52,7 @@ describe('DataTable.vue', () => {
           template: '<div><slot name="activator" :on="{}"></slot><span><slot /></span></div>'
       },
       'v-btn': {
-          template: '<button @click="$emit(\'click\')"><slot /></button>'
+          template: '<button v-bind="$attrs" @click="$emit(\'click\')"><slot /></button>'
       },
       'v-menu': {
           template: '<div><slot name="activator" :on="{}"></slot><slot /></div>'
@@ -428,6 +428,57 @@ describe('DataTable.vue', () => {
         downloadButton: { show: true, disabled: true }
       })
       expect(wrapper.vm.downloadButton.disabled).toBe(true)
+    })
+
+    it('should disable download button and show empty-data tooltip when there is no data', () => {
+      const wrapper = mountComponent({
+        options: true,
+        table: [],
+        downloadButton: { show: true, disabled: false }
+      })
+
+      expect(wrapper.vm.isDownloadButtonDisabled).toBe(true)
+      expect(wrapper.vm.downloadButtonTooltipText).toBe(
+        'No data available to export. Download will be enabled once data is available.'
+      )
+      expect(wrapper.find('button[disabled]').exists()).toBe(true)
+      expect(wrapper.find('.k-table__download-activator').attributes('style')).toContain(
+        'cursor: default;'
+      )
+      expect(wrapper.text()).toContain(
+        'No data available to export. Download will be enabled once data is available.'
+      )
+    })
+
+    it('should keep download button enabled and show default tooltip when data exists', () => {
+      const wrapper = mountComponent({
+        options: true,
+        table: [{ name: 'Item 1' }],
+        downloadButton: { show: true, disabled: false }
+      })
+
+      expect(wrapper.vm.isDownloadButtonDisabled).toBe(false)
+      expect(wrapper.vm.downloadButtonTooltipText).toBe('Download Options')
+      expect(wrapper.find('button[disabled]').exists()).toBe(false)
+      expect(wrapper.find('.k-table__download-activator').attributes('style')).toContain(
+        'cursor: pointer;'
+      )
+      expect(wrapper.text()).toContain('Download Options')
+    })
+
+    it('should keep default cursor when download button is disabled by parent config', () => {
+      const wrapper = mountComponent({
+        options: true,
+        table: [{ name: 'Item 1' }],
+        downloadButton: { show: true, disabled: true }
+      })
+
+      expect(wrapper.vm.hasDownloadableData).toBe(true)
+      expect(wrapper.vm.isDownloadButtonDisabled).toBe(true)
+      expect(wrapper.find('button[disabled]').exists()).toBe(true)
+      expect(wrapper.find('.k-table__download-activator').attributes('style')).toContain(
+        'cursor: default;'
+      )
     })
   })
 
