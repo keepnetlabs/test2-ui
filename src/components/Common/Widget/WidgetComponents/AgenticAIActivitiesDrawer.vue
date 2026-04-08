@@ -370,11 +370,6 @@
                     <template #datatable-row-actions="{ scope }">
                       <div
                         class="d-flex align-center justify-end flex-nowrap agentic-ai-activities-drawer__row-actions"
-                        :class="
-                          isExecuted(scope.row)
-                            ? 'agentic-ai-activities-drawer__row-actions--dual'
-                            : 'agentic-ai-activities-drawer__row-actions--single'
-                        "
                       >
                         <DefaultButtonRowAction
                           icon="mdi-eye"
@@ -382,15 +377,16 @@
                           text="Preview"
                           :scope="scope"
                           :check-is-owner-property="false"
-                          :class="isExecuted(scope.row) ? 'mr-1' : ''"
+                          class="mr-1"
                           @on-click="handleView(scope.row)"
                         />
                         <DefaultButtonRowAction
-                          v-if="isExecuted(scope.row)"
                           icon="mdi-text-box"
                           :id="`btn-agentic-ai-activity-report-${scope.$index}`"
                           text="View Report"
                           :scope="scope"
+                          :disabled="isReportActionDisabled(scope.row)"
+                          :disabled-tooltip-text="getReportActionDisabledTooltip(scope.row)"
                           :check-is-owner-property="false"
                           @on-click="handleViewReport(scope.row)"
                         />
@@ -1475,6 +1471,32 @@ export default {
       const s = String(row.status || "").toLowerCase();
       return s === "approved" || s === "executed";
     },
+    getReportRouteConfig(row = {}) {
+      const instanceGroup = row.instanceGroup || 1;
+      const typeRouteMap = {
+        1: { name: "Campaign Report", params: { id: row.campaignResourceId, instanceGroup } },
+        2: { name: "Quishing Report", params: { id: row.campaignResourceId, instanceGroup } },
+        3: { name: "Smishing Report", params: { id: row.campaignResourceId, instanceGroup } },
+        4: { name: "Training Report", params: { id: row.enrollmentResourceId || row.batchResourceId } }
+      };
+      const routeConfig = typeRouteMap[row.activityType];
+      return routeConfig?.params?.id ? routeConfig : null;
+    },
+    canViewReport(row = {}) {
+      return this.isExecuted(row) && !!this.getReportRouteConfig(row);
+    },
+    isReportActionDisabled(row = {}) {
+      return !this.canViewReport(row);
+    },
+    getReportActionDisabledTooltip(row = {}) {
+      if (!this.isExecuted(row)) {
+        return "Report will be available after this recommendation is approved.";
+      }
+      if (!this.getReportRouteConfig(row)) {
+        return "Report is not available for this activity.";
+      }
+      return "View Report";
+    },
     getViewActionId(index) {
       return `btn-agentic-ai-activity-view-${index}`;
     },
@@ -1884,15 +1906,8 @@ export default {
       this.handleRetry(row);
     },
     handleViewReport(row) {
-      const instanceGroup = row.instanceGroup || 1;
-      const typeRouteMap = {
-        1: { name: "Campaign Report", params: { id: row.campaignResourceId, instanceGroup } },
-        2: { name: "Quishing Report", params: { id: row.campaignResourceId, instanceGroup } },
-        3: { name: "Smishing Report", params: { id: row.campaignResourceId, instanceGroup } },
-        4: { name: "Training Report", params: { id: row.enrollmentResourceId || row.batchResourceId } }
-      };
-      const routeConfig = typeRouteMap[row.activityType];
-      if (!routeConfig) return;
+      const routeConfig = this.getReportRouteConfig(row);
+      if (!this.canViewReport(row) || !routeConfig) return;
       const route = this.$router.resolve(routeConfig);
       window.open(route.href, "_blank");
     },

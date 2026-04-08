@@ -1218,6 +1218,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       );
       wrapper.setData({
         actionInProgress: false,
+        selectedBatchId: "b-1",
         confirmDialog: {
           status: true,
           action: "decline",
@@ -2103,6 +2104,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       wrapper.vm.$router.resolve = jest.fn(() => ({ href: "/reports/campaign/1" }));
 
       wrapper.vm.handleViewReport({
+        status: "Approved",
         activityType: 1,
         campaignResourceId: "camp-1",
         instanceGroup: 2
@@ -2828,6 +2830,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       wrapper.vm.$router.resolve = resolve;
 
       wrapper.vm.handleViewReport({
+        status: "Approved",
         activityType: 2,
         campaignResourceId: "c2",
         instanceGroup: 1
@@ -2836,12 +2839,13 @@ describe("AgenticAIActivitiesDrawer", () => {
         expect.objectContaining({ name: "Quishing Report", params: { id: "c2", instanceGroup: 1 } })
       );
 
-      wrapper.vm.handleViewReport({ activityType: 3, campaignResourceId: "c3" });
+      wrapper.vm.handleViewReport({ status: "Approved", activityType: 3, campaignResourceId: "c3" });
       expect(resolve).toHaveBeenCalledWith(
         expect.objectContaining({ name: "Smishing Report", params: { id: "c3", instanceGroup: 1 } })
       );
 
       wrapper.vm.handleViewReport({
+        status: "Approved",
         activityType: 4,
         enrollmentResourceId: "en1",
         batchResourceId: "b-fallback"
@@ -2851,7 +2855,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       );
 
       resolve.mockClear();
-      wrapper.vm.handleViewReport({ activityType: 4, batchResourceId: "b-only" });
+      wrapper.vm.handleViewReport({ status: "Approved", activityType: 4, batchResourceId: "b-only" });
       expect(resolve).toHaveBeenCalledWith(
         expect.objectContaining({ name: "Training Report", params: { id: "b-only" } })
       );
