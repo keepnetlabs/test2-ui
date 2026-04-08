@@ -18,7 +18,7 @@
     >
       <div class="agentic-ai-activities-drawer__header">
         <span class="agentic-ai-activities-drawer__header-title">View Activities</span>
-        <VIcon class="agentic-ai-activities-drawer__header-close" @click="closeDrawer">
+        <VIcon class="agentic-ai-activities-drawer__header-close" @click="handleCloseRequest">
           mdi-close
         </VIcon>
       </div>
@@ -87,6 +87,25 @@
                   @change="handleLeftFiltersChanged"
                 />
               </div>
+              <div class="agentic-ai-activities-drawer__list-filter-actions">
+                <v-tooltip bottom opacity="1">
+                  <template #activator="{ on }">
+                    <span
+                      class="agentic-ai-activities-drawer__list-filter-refresh-activator"
+                      v-on="on"
+                    >
+                      <VBtn
+                        icon
+                        :disabled="isGlobalRefreshDisabled"
+                        @click="handleGlobalRefresh"
+                      >
+                        <VIcon>mdi-refresh</VIcon>
+                      </VBtn>
+                    </span>
+                  </template>
+                  <span class="tooltip-span">Refresh</span>
+                </v-tooltip>
+              </div>
             </div>
           </div>
           <multipane class="agentic-ai-activities-drawer__panes" layout="vertical">
@@ -112,130 +131,132 @@
                     <div class="agentic-ai-activities-drawer__skeleton-line agentic-ai-activities-drawer__skeleton-line--bar" />
                   </div>
                 </div>
-                <div
-                  v-else-if="!batchList.length"
-                  class="agentic-ai-activities-drawer__list-placeholder"
-                >
-                  No activities found.
-                </div>
-
-                <button
-                  v-for="batch in batchList"
-                  :key="batch.batchResourceId"
-                  type="button"
-                  class="agentic-ai-activities-drawer__batch-card"
-                  :class="{
-                    'agentic-ai-activities-drawer__batch-card--selected':
-                      batch.batchResourceId === selectedBatchId
-                  }"
-                  @click="handleBatchSelect(batch)"
-                >
-                  <div class="agentic-ai-activities-drawer__batch-card-title-row">
-                    <span class="agentic-ai-activities-drawer__batch-card-title">
-                      {{ batch.title }}
-                    </span>
+                <template v-else>
+                  <div
+                    v-if="!batchList.length"
+                    class="agentic-ai-activities-drawer__list-placeholder"
+                  >
+                    No activities found.
                   </div>
 
-                  <div class="agentic-ai-activities-drawer__batch-card-meta-main">
-                    <span
-                      v-if="batch.userCount !== null && batch.userCount !== undefined"
-                      class="agentic-ai-activities-drawer__batch-card-meta"
-                    >
-                      <VIcon size="14" color="#667085">mdi-account-multiple</VIcon>
-                      {{ getUserCountText(batch.userCount) }}
-                    </span>
-                    <template v-if="batch.subtitle">
-                      <span class="agentic-ai-activities-drawer__batch-card-meta-sep">·</span>
-                      <span class="agentic-ai-activities-drawer__batch-card-type">{{
-                        batch.subtitle
-                      }}</span>
-                    </template>
-                    <template v-if="batch.createTime">
-                      <span class="agentic-ai-activities-drawer__batch-card-meta-sep">·</span>
-                      <span class="agentic-ai-activities-drawer__batch-card-date">{{
-                        formatBatchDate(batch.createTime)
-                      }}</span>
-                    </template>
-                  </div>
+                  <button
+                    v-for="batch in batchList"
+                    :key="batch.batchResourceId"
+                    type="button"
+                    class="agentic-ai-activities-drawer__batch-card"
+                    :class="{
+                      'agentic-ai-activities-drawer__batch-card--selected':
+                        batch.batchResourceId === selectedBatchId
+                    }"
+                    @click="handleBatchSelect(batch)"
+                  >
+                    <div class="agentic-ai-activities-drawer__batch-card-title-row">
+                      <span class="agentic-ai-activities-drawer__batch-card-title">
+                        {{ batch.title }}
+                      </span>
+                    </div>
 
-                  <div class="agentic-ai-activities-drawer__batch-card-chips">
-                    <v-chip
-                      v-if="getBatchStatusCounts(batch).pending > 0"
-                      small
-                      label
-                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--pending"
-                      outlined
-                    >
-                      {{ getBatchStatusCounts(batch).pending }} pending
-                    </v-chip>
-                    <v-chip
-                      v-if="getBatchStatusCounts(batch).approved > 0"
-                      small
-                      label
-                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--approved"
-                      outlined
-                    >
-                      {{ getBatchStatusCounts(batch).approved }} approved
-                    </v-chip>
-                    <v-chip
-                      v-if="getBatchStatusCounts(batch).retrying > 0"
-                      small
-                      label
-                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--retrying"
-                      outlined
-                    >
-                      {{ getBatchStatusCounts(batch).retrying }} retrying
-                    </v-chip>
-                    <v-chip
-                      v-if="getBatchStatusCounts(batch).declined > 0"
-                      small
-                      label
-                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--declined"
-                      outlined
-                    >
-                      {{ getBatchStatusCounts(batch).declined }} declined
-                    </v-chip>
-                    <v-chip
-                      v-if="getBatchStatusCounts(batch).retried > 0"
-                      small
-                      label
-                      class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--retried"
-                      outlined
-                    >
-                      {{ getBatchStatusCounts(batch).retried }} retried
-                    </v-chip>
-                  </div>
+                    <div class="agentic-ai-activities-drawer__batch-card-meta-main">
+                      <span
+                        v-if="batch.userCount !== null && batch.userCount !== undefined"
+                        class="agentic-ai-activities-drawer__batch-card-meta"
+                      >
+                        <VIcon size="14" color="#667085">mdi-account-multiple</VIcon>
+                        {{ getUserCountText(batch.userCount) }}
+                      </span>
+                      <template v-if="batch.subtitle">
+                        <span class="agentic-ai-activities-drawer__batch-card-meta-sep">·</span>
+                        <span class="agentic-ai-activities-drawer__batch-card-type">{{
+                          batch.subtitle
+                        }}</span>
+                      </template>
+                      <template v-if="batch.createTime">
+                        <span class="agentic-ai-activities-drawer__batch-card-meta-sep">·</span>
+                        <span class="agentic-ai-activities-drawer__batch-card-date">{{
+                          formatBatchDate(batch.createTime)
+                        }}</span>
+                      </template>
+                    </div>
 
-                  <div class="agentic-ai-activities-drawer__batch-card-progress">
-                    <div
-                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--approved"
-                      :style="{ width: getBatchSegmentWidth(batch, 'approved') }"
-                    />
-                    <div
-                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--pending"
-                      :style="{ width: getBatchSegmentWidth(batch, 'pending') }"
-                    />
-                    <div
-                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--retrying"
-                      :style="{ width: getBatchSegmentWidth(batch, 'retrying') }"
-                    />
-                    <div
-                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--retried"
-                      :style="{ width: getBatchSegmentWidth(batch, 'retried') }"
-                    />
-                    <div
-                      class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--declined"
-                      :style="{ width: getBatchSegmentWidth(batch, 'declined') }"
-                    />
-                  </div>
-                </button>
+                    <div class="agentic-ai-activities-drawer__batch-card-chips">
+                      <v-chip
+                        v-if="getBatchStatusCounts(batch).pending > 0"
+                        small
+                        label
+                        class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--pending"
+                        outlined
+                      >
+                        {{ getBatchStatusCounts(batch).pending }} pending
+                      </v-chip>
+                      <v-chip
+                        v-if="getBatchStatusCounts(batch).approved > 0"
+                        small
+                        label
+                        class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--approved"
+                        outlined
+                      >
+                        {{ getBatchStatusCounts(batch).approved }} approved
+                      </v-chip>
+                      <v-chip
+                        v-if="getBatchStatusCounts(batch).retrying > 0"
+                        small
+                        label
+                        class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--retrying"
+                        outlined
+                      >
+                        {{ getBatchStatusCounts(batch).retrying }} retrying
+                      </v-chip>
+                      <v-chip
+                        v-if="getBatchStatusCounts(batch).declined > 0"
+                        small
+                        label
+                        class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--declined"
+                        outlined
+                      >
+                        {{ getBatchStatusCounts(batch).declined }} declined
+                      </v-chip>
+                      <v-chip
+                        v-if="getBatchStatusCounts(batch).retried > 0"
+                        small
+                        label
+                        class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--retried"
+                        outlined
+                      >
+                        {{ getBatchStatusCounts(batch).retried }} retried
+                      </v-chip>
+                    </div>
 
-                <div
-                  v-if="batchListLoadingMore"
-                  class="agentic-ai-activities-drawer__list-loader agentic-ai-activities-drawer__list-loader--append"
-                >
-                  <v-progress-circular indeterminate size="24" width="2" color="primary" />
-                </div>
+                    <div class="agentic-ai-activities-drawer__batch-card-progress">
+                      <div
+                        class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--approved"
+                        :style="{ width: getBatchSegmentWidth(batch, 'approved') }"
+                      />
+                      <div
+                        class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--pending"
+                        :style="{ width: getBatchSegmentWidth(batch, 'pending') }"
+                      />
+                      <div
+                        class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--retrying"
+                        :style="{ width: getBatchSegmentWidth(batch, 'retrying') }"
+                      />
+                      <div
+                        class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--retried"
+                        :style="{ width: getBatchSegmentWidth(batch, 'retried') }"
+                      />
+                      <div
+                        class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--declined"
+                        :style="{ width: getBatchSegmentWidth(batch, 'declined') }"
+                      />
+                    </div>
+                  </button>
+
+                  <div
+                    v-if="batchListLoadingMore"
+                    class="agentic-ai-activities-drawer__list-loader agentic-ai-activities-drawer__list-loader--append"
+                  >
+                    <v-progress-circular indeterminate size="24" width="2" color="primary" />
+                  </div>
+                </template>
               </div>
             </div>
 
@@ -253,6 +274,7 @@
                   <div class="agentic-ai-activities-drawer__detail-header-actions">
                     <VBtn
                       class="agentic-ai-activities-drawer__approval-button agentic-ai-activities-drawer__approval-button--approve"
+                      :class="{ 'agentic-ai-activities-drawer__approval-button--locked': actionInProgress }"
                       rounded
                       small
                       :disabled="actionInProgress"
@@ -263,6 +285,7 @@
                     </VBtn>
                     <VBtn
                       class="agentic-ai-activities-drawer__approval-button agentic-ai-activities-drawer__approval-button--decline"
+                      :class="{ 'agentic-ai-activities-drawer__approval-button--locked': actionInProgress }"
                       rounded
                       small
                       outlined
@@ -391,7 +414,8 @@
 
       <CommonSimulatorPreviewDialog
         v-if="previewType === 'Phishing'"
-        :status="previewType === 'Phishing' && !previewClosing"
+        ref="phishingPreviewDrawer"
+        :status="previewType === 'Phishing'"
         :selected-row="previewSelectedRow"
         :api-func="getPhishingScenarioLandingPageAndEmailTemplate"
         is-nested
@@ -402,7 +426,7 @@
         :reasoning-text="previewReasoningText"
         :decline-reason-text="previewDeclineReasonText"
         :approval-actions-disabled="previewApprovalActionsDisabled"
-        :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
+        :approval-actions-disabled-tooltip="previewApprovalActionsDisabledTooltip"
         @approve="handlePreviewApprove"
         @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
@@ -410,8 +434,9 @@
       />
       <CommonSimulatorPreviewDialog
         v-if="previewType === 'Quishing'"
+        ref="quishingPreviewDrawer"
         :type="PREVIEW_DIALOG_TYPES.QUISHING"
-        :status="previewType === 'Quishing' && !previewClosing"
+        :status="previewType === 'Quishing'"
         :selected-row="previewSelectedRow"
         :api-func="getQuishingScenarioLandingPageAndEmailTemplate"
         is-nested
@@ -422,7 +447,7 @@
         :reasoning-text="previewReasoningText"
         :decline-reason-text="previewDeclineReasonText"
         :approval-actions-disabled="previewApprovalActionsDisabled"
-        :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
+        :approval-actions-disabled-tooltip="previewApprovalActionsDisabledTooltip"
         @approve="handlePreviewApprove"
         @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
@@ -430,7 +455,8 @@
       />
       <TrainingLibraryDrawer
         v-if="previewType === 'Training'"
-        :value="previewType === 'Training' && !previewClosing"
+        ref="trainingPreviewDrawer"
+        :value="previewType === 'Training'"
         :training-data="previewSelectedRow"
         only-preview
         is-nested
@@ -440,7 +466,7 @@
         :reasoning-text="previewReasoningText"
         :decline-reason-text="previewDeclineReasonText"
         :approval-actions-disabled="previewApprovalActionsDisabled"
-        :approval-actions-disabled-tooltip="inactiveTargetUserApprovalTooltip"
+        :approval-actions-disabled-tooltip="previewApprovalActionsDisabledTooltip"
         @approve="handlePreviewApprove"
         @decline="handlePreviewDecline"
         @retry="handlePreviewRetry"
@@ -731,8 +757,20 @@ export default {
     showApproveAllBanner() {
       return !!this.selectedBatch && this.selectedBatchPendingCount > 0;
     },
+    isGlobalRefreshDisabled() {
+      return this.batchListLoading || this.batchListLoadingMore || this.isLoading || this.actionInProgress;
+    },
+    isDrawerCloseLocked() {
+      return this.actionInProgress || this.confirmDialog.loading || this.rejectDialog.loading;
+    },
     previewApprovalActionsDisabled() {
-      return this.previewActivityRow ? !this.isTargetUserActive(this.previewActivityRow) : false;
+      return this.actionInProgress || (this.previewActivityRow ? !this.isTargetUserActive(this.previewActivityRow) : false);
+    },
+    previewApprovalActionsDisabledTooltip() {
+      if (this.actionInProgress) {
+        return "Action in progress. Please wait.";
+      }
+      return this.inactiveTargetUserApprovalTooltip;
     },
     pendingApprovalText() {
       const count = this.selectedBatchPendingCount;
@@ -741,7 +779,7 @@ export default {
   },
   methods: {
     formatActivityTypeDisplay(value = "") {
-      const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
+      const normalizedValue = String(value).trim().toLowerCase().replace(/\s+/g, "");
 
       if (normalizedValue === "phishing" || normalizedValue === "phishingsimulation") {
         return "Phishing";
@@ -765,7 +803,7 @@ export default {
       return getDefaultAxiosPayload({ pageSize, isGroupedByBatch }, "CreateTime");
     },
     normalizeBatchTypeFilterLabel(value = "") {
-      const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
+      const normalizedValue = String(value).trim().toLowerCase().replace(/\s+/g, "");
 
       if (normalizedValue === "smishing" || normalizedValue === "smishingsimulation") {
         return "";
@@ -774,7 +812,7 @@ export default {
       return this.formatActivityTypeDisplay(value);
     },
     getBatchTypeFilterValueForApi(value = "") {
-      const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
+      const normalizedValue = String(value).trim().toLowerCase().replace(/\s+/g, "");
 
       if (normalizedValue === "phishing" || normalizedValue === "phishingsimulation") {
         return "1";
@@ -791,7 +829,7 @@ export default {
       return value;
     },
     getStatusFilterValueForApi(value = "") {
-      const normalizedValue = String(value).trim().toLowerCase().replaceAll(/\s+/g, "");
+      const normalizedValue = String(value).trim().toLowerCase().replace(/\s+/g, "");
 
       if (normalizedValue === "pending" || normalizedValue === "waitingforapproval") {
         return "1";
@@ -1365,6 +1403,29 @@ export default {
     async handleRefresh() {
       await this.fetchActivities();
     },
+    resetActivitiesTableState() {
+      this.pagedTableData = [];
+      this.serverSideProps.totalNumberOfRecords = 0;
+      this.serverSideProps.totalNumberOfPages = 0;
+      this.serverSideProps.pageNumber = 1;
+    },
+    async refreshPanelsAfterAction() {
+      this.clearLeftSearchDebounce();
+      await this.fetchBatches({ preserveSelection: true });
+
+      if (this.selectedBatchId) {
+        await this.fetchActivities();
+        return;
+      }
+
+      this.resetActivitiesTableState();
+    },
+    async handleGlobalRefresh() {
+      if (this.isGlobalRefreshDisabled) {
+        return;
+      }
+      await this.refreshPanelsAfterAction();
+    },
     handleColumnFilterChanged(filter) {
       this.resetPageNumber();
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
@@ -1522,7 +1583,25 @@ export default {
       });
     },
     closePreview() {
+      if (this.previewClosing) {
+        return;
+      }
+
       this.previewClosing = true;
+
+      const previewRefMap = {
+        Phishing: "phishingPreviewDrawer",
+        Quishing: "quishingPreviewDrawer",
+        Training: "trainingPreviewDrawer"
+      };
+      const activePreview = this.$refs[previewRefMap[this.previewType]];
+
+      if (activePreview?.closeDrawer) {
+        activePreview.closeDrawer();
+        return;
+      }
+
+      this.onPreviewClosed();
     },
     onPreviewClosed() {
       this.previewType = null;
@@ -1531,13 +1610,22 @@ export default {
       this.previewClosing = false;
     },
     handleMainOverlayClick() {
+      if (this.isDrawerCloseLocked) {
+        return;
+      }
       if (this.previewClosing) {
         this.onPreviewClosed();
-        this.closeDrawer();
+        this.handleCloseRequest();
         return;
       }
       if (this.hasNestedPreview) {
         this.closePreview();
+        return;
+      }
+      this.handleCloseRequest();
+    },
+    handleCloseRequest() {
+      if (this.isDrawerCloseLocked) {
         return;
       }
       this.closeDrawer();
@@ -1622,7 +1710,7 @@ export default {
       this.rejectDialog.loading = false;
       this.closeRejectDialog();
       if (this.previewType) {
-        this.onPreviewClosed();
+        this.closePreview();
       }
     },
     normalizeRejectPayload(payload, action) {
@@ -1756,8 +1844,7 @@ export default {
           );
           this.$emit("on-retry", row);
         }
-        await this.fetchBatches();
-        this.fetchActivities();
+        await this.refreshPanelsAfterAction();
       } catch {
         // error handled by interceptor
       } finally {
@@ -1767,8 +1854,10 @@ export default {
     async handlePreviewApprove() {
       const row = this.previewActivityRow;
       if (!row) return;
-      this.closePreview();
       await this.executeApproveReject("approveActivity", row);
+      if (this.previewType) {
+        this.closePreview();
+      }
     },
     /** Preview decline: same feedback dialog as table decline (permanent decline, `declineForRetry: false`). */
     handlePreviewDecline() {

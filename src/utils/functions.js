@@ -138,9 +138,9 @@ export function getDataTableFieldLabel(field = "") {
   const defField = String(field).trim();
   const normalizedField = defField
     .toLowerCase()
-    .replaceAll(/[_-]+/g, " ")
-    .replaceAll(/\s+/g, " ");
-  const compactField = normalizedField.replaceAll(/\s+/g, "");
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+  const compactField = normalizedField.replace(/\s+/g, "");
 
   const fieldMap = {
     beinganalyzed: "Being Analyzed",
