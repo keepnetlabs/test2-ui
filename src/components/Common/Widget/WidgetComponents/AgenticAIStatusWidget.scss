@@ -353,6 +353,18 @@
     max-width: 280px;
   }
 
+  .agentic-ai-activities-drawer__list-filter-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+  }
+
+  .agentic-ai-activities-drawer__list-filter-refresh-activator {
+    display: inline-flex;
+  }
+
   .agentic-ai-activities-drawer__search,
   .agentic-ai-activities-drawer__select {
     width: 100%;
@@ -805,10 +817,16 @@
 
   .agentic-ai-activities-drawer__approval-button.v-btn--disabled {
     opacity: 0.5 !important;
+    pointer-events: none !important;
   }
 
   .agentic-ai-activities-drawer__approval-button.v-btn--disabled .v-btn__content {
     opacity: 1 !important;
+  }
+
+  .agentic-ai-activities-drawer__approval-button--locked {
+    opacity: 0.5 !important;
+    pointer-events: none !important;
   }
 
   .agentic-ai-activities-drawer__approval-button .v-btn__content {
