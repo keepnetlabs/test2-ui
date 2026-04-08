@@ -81,6 +81,20 @@ describe('CallbackScenarios.vue', () => {
     expect(ctx.$refs.refEmailTemplates.changeNewEmailTemplateModalStatus).toHaveBeenCalledWith(true, false)
   })
 
+  it('no-template handlers remain safe when target refs are missing', () => {
+    const ctx = {
+      tab: 'scenarios',
+      $refs: {},
+      $nextTick: (cb) => cb()
+    }
+
+    expect(() => CallbackScenarios.methods.handleNoMessageTemplate.call(ctx)).not.toThrow()
+    expect(ctx.tab).toBe('callbackTemplates')
+
+    expect(() => CallbackScenarios.methods.handleNoLandingPageTemplate.call(ctx)).not.toThrow()
+    expect(ctx.tab).toBe('emailTemplates')
+  })
+
   it('beforeRouteLeave covers blocking modal/fast-launch/grapes branches and allow branch', () => {
     const next = jest.fn()
 
@@ -143,6 +157,17 @@ describe('CallbackScenarios.vue', () => {
     }
     CallbackScenarios.beforeRouteLeave.call(templateModalCtx, {}, {}, next)
     expect(templateModalCtx.$refs.refTemplates.checkIfCanCloseCallbackTemplateModal).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(false)
+
+    next.mockClear()
+    const templateModalWithoutGuardCtx = {
+      $refs: {
+        refTemplates: {
+          modalStatus: true
+        }
+      }
+    }
+    CallbackScenarios.beforeRouteLeave.call(templateModalWithoutGuardCtx, {}, {}, next)
     expect(next).toHaveBeenCalledWith(false)
 
     next.mockClear()

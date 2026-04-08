@@ -309,8 +309,8 @@
         :max-step="4"
         :step.sync="step"
         :disabled-statuses="{
-          nextButton: isSubmitDisabled,
-          submitButton: isSubmitDisabled
+          nextButton: isFooterActionDisabled,
+          submitButton: isFooterActionDisabled
         }"
         :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
@@ -455,6 +455,7 @@ export default {
       isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
+      isFetchingSelectedCallbackTemplate: false,
       selectedTab: '1',
       summaryData: {},
       showTemplate1: false,
@@ -512,6 +513,9 @@ export default {
     },
     isMethodMfa() {
       return this.formValues.methodTypeId === '4'
+    },
+    isFooterActionDisabled() {
+      return this.isSubmitDisabled || (this.step >= 3 && this.isFetchingSelectedCallbackTemplate)
     },
     getScenarioInfoItems() {
       return {
@@ -586,10 +590,76 @@ export default {
       this.initialFormValues.callbackTemplateResourceId = id
     },
     handleSelectedTemplateResourceIdChange(id) {
+      if (this.formValues.callbackTemplateResourceId !== id) {
+        this.selectedCallbackTemplate = null
+        this.summaryData.callbackTemplate = null
+      }
       this.formValues.callbackTemplateResourceId = id
     },
     handleSelectedTemplateChange(item) {
       this.selectedCallbackTemplate = item
+    },
+    getSelectedCallbackTemplateLanguageAndVoice(templateDetails = {}, templatePreview = {}) {
+      const matchedLanguage = this.languages?.find(
+        (language) => language.resourceId === templateDetails.vishingLanguageResourceId
+      )
+
+      return {
+        language: templatePreview.language || matchedLanguage?.language || '',
+        voice: templatePreview.voice || matchedLanguage?.name || ''
+      }
+    },
+    async hydrateSelectedCallbackTemplate(resourceId = this.formValues.callbackTemplateResourceId) {
+      if (!resourceId) {
+        this.selectedCallbackTemplate = null
+        return null
+      }
+
+      const requestedResourceId = resourceId
+      this.isFetchingSelectedCallbackTemplate = true
+
+      try {
+        const [templateResponse, previewResponse] = await Promise.all([
+          CallbackService.getCallbackTemplate(requestedResourceId),
+          CallbackService.getCallbackTemplatePreview(requestedResourceId)
+        ])
+        const templateDetails = templateResponse?.data?.data || {}
+        const templatePreview = previewResponse?.data?.data || {}
+        const previewSteps = Array.isArray(templatePreview.steps) ? [...templatePreview.steps] : []
+        const [invalidDialingNotice = {}, callGreeting = {}, ...steps] = previewSteps
+        const { language, voice } = this.getSelectedCallbackTemplateLanguageAndVoice(
+          templateDetails,
+          templatePreview
+        )
+
+        const hydratedTemplate = {
+          ...templateDetails,
+          ...templatePreview,
+          invalidDialingNotice,
+          callGreeting,
+          steps,
+          language,
+          voice
+        }
+
+        if (requestedResourceId !== this.formValues.callbackTemplateResourceId) {
+          return null
+        }
+
+        this.selectedCallbackTemplate = hydratedTemplate
+
+        return hydratedTemplate
+      } catch {
+        this.selectedCallbackTemplate = null
+        return null
+      } finally {
+        this.isFetchingSelectedCallbackTemplate = false
+      }
+    },
+    async ensureSelectedCallbackTemplate() {
+      if (this.selectedCallbackTemplate?.id) return this.selectedCallbackTemplate
+
+      return this.hydrateSelectedCallbackTemplate()
     },
     setFooterDuplicateIds() {
       this.footerButtonsIds = {
@@ -612,6 +682,9 @@ export default {
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.formValues.tags = this.formValues.tags || []
           const availableForList = response?.data?.data?.availableForList
+          if (this.formValues.callbackTemplateResourceId) {
+            this.hydrateSelectedCallbackTemplate(this.formValues.callbackTemplateResourceId)
+          }
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)
           this.initialFormValues = structuredClone(this.formValues)
@@ -677,7 +750,7 @@ export default {
         }
       })
     },
-    nextStep() {
+    async nextStep() {
       const currentStep = structuredClone(this.step)
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
@@ -695,38 +768,37 @@ export default {
       if (currentStep === 2) {
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
           this.isSubmitDisabled = true
-          getEmailTemplatePreviewContent(this.emailTemplateResourceId)
-            .then((response) => {
-              const languageShortCode = this.languageOptions.find(
-                (language) => language.value === response?.data?.data?.languageTypeResourceId
-              )?.text
-              const emailTemplateData = {
-                ...response.data.data,
-                languageShortCode
-              }
-              if (this.selectedEmailTemplate) {
-                this.generalDifficultyTypeId =
-                  this.scenarioDetailsLookup['difficultyTypes']
-                    ?.find(
-                      (difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName
-                    )
-                    ?.value.toString() || ''
-                this.emailDifficultyChipColor = this.getDifficultyColor(
-                  this.selectedEmailTemplate.difficultyName
-                )
-              }
-              this.summaryData.emailTemplate = structuredClone(emailTemplateData)
-              this.step += 1
-            })
-            .finally(() => {
-              this.isSubmitDisabled = false
-            })
+          try {
+            const response = await getEmailTemplatePreviewContent(this.emailTemplateResourceId)
+            const languageShortCode = this.languageOptions.find(
+              (language) => language.value === response?.data?.data?.languageTypeResourceId
+            )?.text
+            const emailTemplateData = {
+              ...response.data.data,
+              languageShortCode
+            }
+            if (this.selectedEmailTemplate) {
+              this.generalDifficultyTypeId =
+                this.scenarioDetailsLookup['difficultyTypes']
+                  ?.find((difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName)
+                  ?.value.toString() || ''
+              this.emailDifficultyChipColor = this.getDifficultyColor(
+                this.selectedEmailTemplate.difficultyName
+              )
+            }
+            this.summaryData.emailTemplate = structuredClone(emailTemplateData)
+            this.step += 1
+          } finally {
+            this.isSubmitDisabled = false
+          }
         }
       }
       if (currentStep === 3) {
         if (!this.formValues.callbackTemplateResourceId) return
+        const selectedCallbackTemplate = await this.ensureSelectedCallbackTemplate()
+        if (!selectedCallbackTemplate) return
         this.summaryData.callbackTemplate = {
-          template: this.selectedCallbackTemplate
+          template: selectedCallbackTemplate
         }
         this.step += 1
       }
@@ -735,11 +807,16 @@ export default {
       this.step -= 1
       this.isSubmitDisabled = false
     },
-    submit() {
+    async submit() {
       this.isSubmitDisabled = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
         refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+      }
+      const selectedCallbackTemplate = await this.ensureSelectedCallbackTemplate()
+      if (!selectedCallbackTemplate?.id) {
+        this.isSubmitDisabled = false
+        return
       }
       const payload = {
         name: this.formValues.name,
@@ -747,7 +824,7 @@ export default {
         languageTypeResourceId: this.formValues.languageTypeResourceId,
         tags: this.formValues.tags || [],
         emailTemplateId: this.formValues.emailTemplateId,
-        callbackTemplateId: this.selectedCallbackTemplate.id,
+        callbackTemplateId: selectedCallbackTemplate.id,
         availableForRequests: this.availableForRequests
       }
       if (this.isEdit && !this.isDuplicate) {

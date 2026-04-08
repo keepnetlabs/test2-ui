@@ -2,12 +2,23 @@ import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackS
 
 describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverage)', () => {
   describe('computed', () => {
+    it('template returns null when formValues is missing', () => {
+      expect(CallbackCampaignModalSummaryCallbackTemplate.computed.template.call({})).toBeNull()
+    })
+
+    it('template returns nested template object when available', () => {
+      const template = { id: 'cb-1' }
+      expect(
+        CallbackCampaignModalSummaryCallbackTemplate.computed.template.call({
+          formValues: { template }
+        })
+      ).toEqual(template)
+    })
+
     it('hasAudioFile returns true when steps have FileUpload', () => {
       const ctx = {
-        formValues: {
-          template: {
-            steps: [{ inputType: 'TextToSpeech' }, { inputType: 'FileUpload' }]
-          }
+        template: {
+          steps: [{ inputType: 'TextToSpeech' }, { inputType: 'FileUpload' }]
         }
       }
       expect(
@@ -17,11 +28,9 @@ describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverag
 
     it('hasAudioFile returns true when invalidDialingNotice has FileUpload', () => {
       const ctx = {
-        formValues: {
-          template: {
-            steps: [],
-            invalidDialingNotice: { inputType: 'FileUpload' }
-          }
+        template: {
+          steps: [],
+          invalidDialingNotice: { inputType: 'FileUpload' }
         }
       }
       expect(
@@ -31,11 +40,9 @@ describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverag
 
     it('hasAudioFile returns true when callGreeting has FileUpload', () => {
       const ctx = {
-        formValues: {
-          template: {
-            steps: [],
-            callGreeting: { inputType: 'FileUpload' }
-          }
+        template: {
+          steps: [],
+          callGreeting: { inputType: 'FileUpload' }
         }
       }
       expect(
@@ -45,12 +52,10 @@ describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverag
 
     it('hasAudioFile returns false when no FileUpload', () => {
       const ctx = {
-        formValues: {
-          template: {
-            steps: [{ inputType: 'TextToSpeech' }],
-            invalidDialingNotice: { inputType: 'TextToSpeech' },
-            callGreeting: { inputType: 'TextToSpeech' }
-          }
+        template: {
+          steps: [{ inputType: 'TextToSpeech' }],
+          invalidDialingNotice: { inputType: 'TextToSpeech' },
+          callGreeting: { inputType: 'TextToSpeech' }
         }
       }
       expect(
@@ -58,15 +63,23 @@ describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverag
       ).toBe(false)
     })
 
+    it('hasAudioFile returns false when template is missing', () => {
+      expect(
+        CallbackCampaignModalSummaryCallbackTemplate.computed.hasAudioFile.call({
+          template: null
+        })
+      ).toBe(false)
+    })
+
     it('isTextToSpeechCompatible returns true for voiceProviderTypeId 2 or 3', () => {
       expect(
         CallbackCampaignModalSummaryCallbackTemplate.computed.isTextToSpeechCompatible.call({
-          formValues: { template: { voiceProviderTypeId: 2 } }
+          template: { voiceProviderTypeId: 2 }
         })
       ).toBe(true)
       expect(
         CallbackCampaignModalSummaryCallbackTemplate.computed.isTextToSpeechCompatible.call({
-          formValues: { template: { voiceProviderTypeId: 3 } }
+          template: { voiceProviderTypeId: 3 }
         })
       ).toBe(true)
     })
@@ -74,13 +87,18 @@ describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverag
     it('isTextToSpeechCompatible returns false for other voiceProviderTypeId', () => {
       expect(
         CallbackCampaignModalSummaryCallbackTemplate.computed.isTextToSpeechCompatible.call({
-          formValues: { template: { voiceProviderTypeId: 1 } }
+          template: { voiceProviderTypeId: 1 }
+        })
+      ).toBe(false)
+      expect(
+        CallbackCampaignModalSummaryCallbackTemplate.computed.isTextToSpeechCompatible.call({
+          template: null
         })
       ).toBe(false)
     })
   })
 
-  describe('getBadgeColor', () => {
+  describe('methods', () => {
     it('returns colors for each difficulty', () => {
       const method = CallbackCampaignModalSummaryCallbackTemplate.methods.getBadgeColor
       expect(method.call({}, 'easy')).toBe('#217124')
@@ -88,6 +106,13 @@ describe('CallbackCampaignModalSummaryCallbackTemplate.vue (extra branch coverag
       expect(method.call({}, 'hard')).toBe('#f56c6c')
       expect(method.call({}, 'unknown')).toBe('#2196f3')
       expect(method.call({})).toBe('#2196f3')
+    })
+
+    it('getBadgeText returns incoming text', () => {
+      expect(CallbackCampaignModalSummaryCallbackTemplate.methods.getBadgeText.call({}, 'Medium')).toBe(
+        'Medium'
+      )
+      expect(CallbackCampaignModalSummaryCallbackTemplate.methods.getBadgeText.call({})).toBe('')
     })
   })
 })

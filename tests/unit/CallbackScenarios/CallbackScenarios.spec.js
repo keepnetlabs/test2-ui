@@ -16,6 +16,18 @@ describe('CallbackScenarios.vue methods', () => {
     jest.clearAllMocks()
   })
 
+  it('mounted loads languages and table data', () => {
+    const ctx = {
+      callForLanguages: jest.fn(),
+      callForData: jest.fn()
+    }
+
+    CallbackScenarios.mounted.call(ctx)
+
+    expect(ctx.callForLanguages).toHaveBeenCalledWith('refScenariosList')
+    expect(ctx.callForData).toHaveBeenCalled()
+  })
+
   it('toggleShowPreviewDialog toggles state and resets selected scenario on close', () => {
     const ctx = {
       isShowPreviewDialog: false,
@@ -65,6 +77,18 @@ describe('CallbackScenarios.vue methods', () => {
     CallbackScenarios.methods.handlePreview.call(previewCtx, row)
     expect(previewCtx.selectedPhishingScenario).toEqual(row)
     expect(toggleShowPreviewDialog).toHaveBeenCalled()
+  })
+
+  it('handleFastLaunch uses empty object when row is not provided', () => {
+    const ctx = {
+      selectedRow: null,
+      toggleShowFastLaunch: jest.fn()
+    }
+
+    CallbackScenarios.methods.handleFastLaunch.call(ctx)
+
+    expect(ctx.selectedRow).toEqual({})
+    expect(ctx.toggleShowFastLaunch).toHaveBeenCalled()
   })
 
   it('handleEdit sets modal/edit/duplicate flags and scenario id', () => {
@@ -183,6 +207,35 @@ describe('CallbackScenarios.vue methods', () => {
     CallbackScenarios.methods.callForData.call(ctx)
     await flushPromises()
 
+    expect(ctx.tableData).toEqual([])
+    expect(ctx.loading).toBe(false)
+  })
+
+  it('callForData falls back to empty results list when api payload has no results', async () => {
+    CallbackService.searchCallbackScenarios.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 0,
+          totalNumberOfPages: 0,
+          pageNumber: 1
+        }
+      }
+    })
+    const ctx = {
+      loading: false,
+      getCallbackScenariosSearchPermissions: true,
+      axiosPayload: { filter: {} },
+      serverSideProps: { totalNumberOfRecords: 99, totalNumberOfPages: 99, pageNumber: 99 },
+      languageFilterOptions: [{ languageName: 'English', text: 'EN' }],
+      tableData: [{ resourceId: 'old' }]
+    }
+
+    CallbackScenarios.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.serverSideProps.totalNumberOfRecords).toBe(0)
+    expect(ctx.serverSideProps.totalNumberOfPages).toBe(0)
+    expect(ctx.serverSideProps.pageNumber).toBe(1)
     expect(ctx.tableData).toEqual([])
     expect(ctx.loading).toBe(false)
   })
@@ -408,6 +461,31 @@ describe('CallbackScenarios.vue methods', () => {
         reportAllPages: false
       })
     )
+
+    createElementSpy.mockRestore()
+    window.URL.createObjectURL = originalCreateObjectURL
+  })
+
+  it('exportScenario converts xls downloads to xlsx extension', async () => {
+    const blob = new Blob(['x'], { type: 'text/plain' })
+    CallbackService.exportCallbackScenarios.mockResolvedValueOnce({ data: blob })
+
+    const link = { click: jest.fn(), href: '', download: '' }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    const originalCreateObjectURL = window.URL.createObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'blob:url')
+
+    const ctx = { axiosPayload: { filter: {} } }
+    CallbackScenarios.methods.exportScenario.call(ctx, {
+      exportTypes: ['XLS'],
+      reportAllPages: false,
+      pageNumber: 1,
+      pageSize: 10
+    })
+    await flushPromises()
+
+    expect(link.download).toBe('Callback-Scenarios.xlsx')
+    expect(link.click).toHaveBeenCalled()
 
     createElementSpy.mockRestore()
     window.URL.createObjectURL = originalCreateObjectURL

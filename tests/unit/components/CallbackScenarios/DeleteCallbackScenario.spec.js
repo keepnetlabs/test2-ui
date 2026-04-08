@@ -77,4 +77,53 @@ describe('DeleteCallbackScenario.vue', () => {
     expect($emit).toHaveBeenCalledWith('on-success-multiple')
     expect(ctx.isActionButtonDisabled).toBe(false)
   })
+
+  it('handleDelete single re-enables button when delete request fails', async () => {
+    CallbackService.deleteCallbackScenario.mockImplementationOnce(() => ({
+      then: () => ({
+        finally: (cb) => cb()
+      })
+    }))
+    const $emit = jest.fn()
+    const ctx = {
+      isMultiple: false,
+      isActionButtonDisabled: false,
+      selectedScenario: { resourceId: 'r1', name: 'Scenario A' },
+      $emit,
+      closeModal: DeleteCallbackScenario.methods.closeModal
+    }
+
+    DeleteCallbackScenario.methods.handleDelete.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(CallbackService.deleteCallbackScenario).toHaveBeenCalledWith('r1')
+    expect($emit).not.toHaveBeenCalledWith('handleSuccessDeleteAction', ctx.selectedScenario)
+    expect($emit).not.toHaveBeenCalledWith('handleCloseModal')
+    expect(ctx.isActionButtonDisabled).toBe(false)
+  })
+
+  it('handleDelete multiple re-enables button when bulk request fails', async () => {
+    CallbackService.bulkDeleteCallbackScenarios.mockImplementationOnce(() => ({
+      then: () => ({
+        finally: (cb) => cb()
+      })
+    }))
+    const $emit = jest.fn()
+    const payload = { ids: ['r1', 'r2'] }
+    const ctx = {
+      isMultiple: true,
+      isActionButtonDisabled: false,
+      multipleDeletePayload: payload,
+      $emit
+    }
+
+    DeleteCallbackScenario.methods.handleDelete.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(CallbackService.bulkDeleteCallbackScenarios).toHaveBeenCalledWith(payload)
+    expect($emit).not.toHaveBeenCalledWith('on-success-multiple')
+    expect(ctx.isActionButtonDisabled).toBe(false)
+  })
 })
