@@ -631,13 +631,15 @@ describe('DataTable.vue action methods', () => {
 
   it('setStoredTableSettings applies defaults when fixed flags are false', () => {
     const setRenderedColumns = jest.fn()
+    const scheduleTableLayoutRefresh = jest.fn()
     const ctx = {
       firstColFixed: true,
       lastColFixed: true,
       actionFixed: true,
       columns: [{ property: 'a', fixed: 'left', show: true }],
       renderedColumns: ['a'],
-      setRenderedColumns
+      setRenderedColumns,
+      scheduleTableLayoutRefresh
     }
 
     DataTable.methods.setStoredTableSettings.call(ctx, {
@@ -651,9 +653,11 @@ describe('DataTable.vue action methods', () => {
     expect(ctx.actionFixed).toBe(false)
     expect(ctx.columns[0].fixed).toBe(false)
     expect(setRenderedColumns).toHaveBeenCalled()
+    expect(scheduleTableLayoutRefresh).toHaveBeenCalled()
   })
 
   it('setStoredTableSettings updates visible columns from renderedColumns list', () => {
+    const scheduleTableLayoutRefresh = jest.fn()
     const ctx = {
       firstColFixed: false,
       lastColFixed: false,
@@ -663,7 +667,8 @@ describe('DataTable.vue action methods', () => {
         { property: 'b', show: true }
       ],
       renderedColumns: [],
-      setRenderedColumns: jest.fn()
+      setRenderedColumns: jest.fn(),
+      scheduleTableLayoutRefresh
     }
 
     DataTable.methods.setStoredTableSettings.call(ctx, {
@@ -675,6 +680,7 @@ describe('DataTable.vue action methods', () => {
     expect(ctx.columns[0].show).toBeUndefined()
     expect(ctx.columns[1].show).toBe('b')
     expect(ctx.renderedColumns).toEqual(['b'])
+    expect(scheduleTableLayoutRefresh).toHaveBeenCalled()
   })
 
   it('clustered item helpers add/delete without duplicates', () => {

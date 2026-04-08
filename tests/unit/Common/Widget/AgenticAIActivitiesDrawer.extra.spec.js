@@ -1,6 +1,9 @@
+import { createLocalVue, shallowMount } from '@vue/test-utils'
 import AgenticAIActivitiesDrawer from '@/components/Common/Widget/WidgetComponents/AgenticAIActivitiesDrawer.vue'
 
 describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
+  const localVue = createLocalVue()
+
   describe('formatActivityTypeDisplay', () => {
     it('removes Simulation suffix for phishing and quishing labels', () => {
       const ctx = {}
@@ -544,6 +547,411 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
 
     it('is false when previewType is null', () => {
       expect(AgenticAIActivitiesDrawer.computed.hasNestedPreview.call({ previewType: null })).toBe(false)
+    })
+  })
+
+  describe('report action availability', () => {
+    it('builds report route config for campaign-backed activities', () => {
+      const routeConfig = AgenticAIActivitiesDrawer.methods.getReportRouteConfig.call(
+        {},
+        {
+          activityType: 1,
+          campaignResourceId: 'campaign-1',
+          instanceGroup: 3
+        }
+      )
+
+      expect(routeConfig).toEqual({
+        name: 'Campaign Report',
+        params: { id: 'campaign-1', instanceGroup: 3 }
+      })
+    })
+
+    it('uses batchResourceId fallback for training reports', () => {
+      const routeConfig = AgenticAIActivitiesDrawer.methods.getReportRouteConfig.call(
+        {},
+        {
+          activityType: 4,
+          enrollmentResourceId: '',
+          batchResourceId: 'batch-9'
+        }
+      )
+
+      expect(routeConfig).toEqual({
+        name: 'Training Report',
+        params: { id: 'batch-9' }
+      })
+    })
+
+    it('prefers enrollmentResourceId over batchResourceId for training reports', () => {
+      const routeConfig = AgenticAIActivitiesDrawer.methods.getReportRouteConfig.call(
+        {},
+        {
+          activityType: 4,
+          enrollmentResourceId: 'enrollment-7',
+          batchResourceId: 'batch-9'
+        }
+      )
+
+      expect(routeConfig).toEqual({
+        name: 'Training Report',
+        params: { id: 'enrollment-7' }
+      })
+    })
+
+    it('returns null when report route is missing a required id', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getReportRouteConfig.call({}, {
+          activityType: 2,
+          campaignResourceId: ''
+        })
+      ).toBeNull()
+    })
+
+    it('returns null when activity type does not map to a report route', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getReportRouteConfig.call({}, {
+          activityType: 99,
+          campaignResourceId: 'campaign-99'
+        })
+      ).toBeNull()
+    })
+
+    it('defaults instanceGroup to 1 when it is missing', () => {
+      const routeConfig = AgenticAIActivitiesDrawer.methods.getReportRouteConfig.call(
+        {},
+        {
+          activityType: 3,
+          campaignResourceId: 'campaign-3'
+        }
+      )
+
+      expect(routeConfig).toEqual({
+        name: 'Smishing Report',
+        params: { id: 'campaign-3', instanceGroup: 1 }
+      })
+    })
+
+    it('allows report viewing only for executed rows with a route config', () => {
+      const ctx = {
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig
+      }
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.canViewReport.call(ctx, {
+          status: 'Approved',
+          activityType: 1,
+          campaignResourceId: 'campaign-1'
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.canViewReport.call(ctx, {
+          status: 'Pending',
+          activityType: 1,
+          campaignResourceId: 'campaign-1'
+        })
+      ).toBe(false)
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.canViewReport.call(ctx, {
+          status: 'Approved',
+          activityType: 1,
+          campaignResourceId: ''
+        })
+      ).toBe(false)
+    })
+
+    it('disables report action when the report cannot be viewed', () => {
+      const ctx = {
+        canViewReport: AgenticAIActivitiesDrawer.methods.canViewReport,
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig
+      }
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.isReportActionDisabled.call(ctx, {
+          status: 'Pending',
+          activityType: 1,
+          campaignResourceId: 'campaign-1'
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.isReportActionDisabled.call(ctx, {
+          status: 'Approved',
+          activityType: 1,
+          campaignResourceId: 'campaign-1'
+        })
+      ).toBe(false)
+    })
+
+    it('returns the approval tooltip before the recommendation is approved', () => {
+      const ctx = {
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig
+      }
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.getReportActionDisabledTooltip.call(ctx, {
+          status: 'Pending',
+          activityType: 1,
+          campaignResourceId: 'campaign-1'
+        })
+      ).toBe('Report will be available after this recommendation is approved.')
+    })
+
+    it('returns unavailable tooltip when report route data is missing after approval', () => {
+      const ctx = {
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig
+      }
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.getReportActionDisabledTooltip.call(ctx, {
+          status: 'Approved',
+          activityType: 1,
+          campaignResourceId: ''
+        })
+      ).toBe('Report is not available for this activity.')
+    })
+
+    it('returns default tooltip text when report action is enabled', () => {
+      const ctx = {
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig
+      }
+
+      expect(
+        AgenticAIActivitiesDrawer.methods.getReportActionDisabledTooltip.call(ctx, {
+          status: 'Approved',
+          activityType: 1,
+          campaignResourceId: 'campaign-1'
+        })
+      ).toBe('View Report')
+    })
+
+    it('handleViewReport opens a new tab when report is available', () => {
+      const openSpy = jest.spyOn(window, 'open').mockImplementation(() => {})
+      const ctx = {
+        $router: {
+          resolve: jest.fn(() => ({ href: '/reports/campaign/available' }))
+        },
+        canViewReport: AgenticAIActivitiesDrawer.methods.canViewReport,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig,
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted
+      }
+
+      AgenticAIActivitiesDrawer.methods.handleViewReport.call(ctx, {
+        status: 'Approved',
+        activityType: 1,
+        campaignResourceId: 'campaign-available',
+        instanceGroup: 4
+      })
+
+      expect(ctx.$router.resolve).toHaveBeenCalledWith({
+        name: 'Campaign Report',
+        params: { id: 'campaign-available', instanceGroup: 4 }
+      })
+      expect(openSpy).toHaveBeenCalledWith('/reports/campaign/available', '_blank')
+      openSpy.mockRestore()
+    })
+
+    it('handleViewReport returns early when report is not yet available', () => {
+      const openSpy = jest.spyOn(window, 'open').mockImplementation(() => {})
+      const ctx = {
+        $router: {
+          resolve: jest.fn(() => ({ href: '/reports/campaign/pending' }))
+        },
+        canViewReport: AgenticAIActivitiesDrawer.methods.canViewReport,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig,
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted
+      }
+
+      AgenticAIActivitiesDrawer.methods.handleViewReport.call(ctx, {
+        status: 'Pending',
+        activityType: 1,
+        campaignResourceId: 'campaign-pending'
+      })
+
+      expect(ctx.$router.resolve).not.toHaveBeenCalled()
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
+
+    it('handleViewReport returns early when approved row has no report id', () => {
+      const openSpy = jest.spyOn(window, 'open').mockImplementation(() => {})
+      const ctx = {
+        $router: {
+          resolve: jest.fn(() => ({ href: '/reports/campaign/missing-id' }))
+        },
+        canViewReport: AgenticAIActivitiesDrawer.methods.canViewReport,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig,
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted
+      }
+
+      AgenticAIActivitiesDrawer.methods.handleViewReport.call(ctx, {
+        status: 'Approved',
+        activityType: 1,
+        campaignResourceId: ''
+      })
+
+      expect(ctx.$router.resolve).not.toHaveBeenCalled()
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
+
+    it('handleViewReport returns early when approved row has no supported report route', () => {
+      const openSpy = jest.spyOn(window, 'open').mockImplementation(() => {})
+      const ctx = {
+        $router: {
+          resolve: jest.fn(() => ({ href: '/reports/unknown' }))
+        },
+        canViewReport: AgenticAIActivitiesDrawer.methods.canViewReport,
+        getReportRouteConfig: AgenticAIActivitiesDrawer.methods.getReportRouteConfig,
+        isExecuted: AgenticAIActivitiesDrawer.methods.isExecuted
+      }
+
+      AgenticAIActivitiesDrawer.methods.handleViewReport.call(ctx, {
+        status: 'Approved',
+        activityType: 99,
+        campaignResourceId: 'unknown-route'
+      })
+
+      expect(ctx.$router.resolve).not.toHaveBeenCalled()
+      expect(openSpy).not.toHaveBeenCalled()
+      openSpy.mockRestore()
+    })
+  })
+
+  describe('row action rendering integration', () => {
+    const renderDrawerWithRow = async (row) => {
+      const wrapper = shallowMount(AgenticAIActivitiesDrawer, {
+        localVue,
+        propsData: {
+          value: false,
+          columns: [{ label: 'Status', property: 'status', type: 'status', show: true }]
+        },
+        mocks: {
+          $store: {
+            getters: {
+              'trainingLibrary/getLightbox': {}
+            },
+            commit: jest.fn(),
+            dispatch: jest.fn()
+          },
+          $router: { resolve: jest.fn(() => ({ href: '/' })) }
+        },
+        stubs: {
+          VNavigationDrawer: {
+            template: '<div class="nav-drawer-stub"><slot /></div>'
+          },
+          VIcon: true,
+          VBtn: true,
+          'v-tooltip': {
+            template: '<div class="tooltip-stub"><slot name="activator" :on="{}" /><slot /></div>'
+          },
+          Multipane: {
+            template: '<div class="multipane-stub"><slot /></div>'
+          },
+          MultipaneResizer: true,
+          KSelect: true,
+          AgenticAIConfirmDialog: true,
+          AgenticAIRejectDialog: true,
+          CommonSimulatorPreviewDialog: true,
+          TrainingLibraryDrawer: true,
+          TrainingLibraryLightbox: {
+            template: '<div><slot /></div>'
+          },
+          TrainingLibraryLightboxContent: true,
+          Badge: true,
+          DataTableStatus: true,
+          DataTable: {
+            props: ['table'],
+            template: `
+              <div class="data-table-stub">
+                <slot name="datatable-row-actions" :scope="{ row: table[0], $index: 0 }" />
+              </div>
+            `
+          },
+          DefaultButtonRowAction: {
+            props: ['text', 'disabled', 'disabledTooltipText'],
+            template: `
+              <div
+                class="row-action-stub"
+                :data-text="text"
+                :data-disabled="String(!!disabled)"
+                :data-tooltip="disabledTooltipText || ''"
+              />
+            `
+          }
+        }
+      })
+
+      await wrapper.setData({
+        isVisible: true,
+        leftSearch: 'report',
+        pagedTableData: [row],
+        isLoading: false
+      })
+
+      return wrapper
+    }
+
+    it('always renders both Preview and View Report actions for pending rows', async () => {
+      const wrapper = await renderDrawerWithRow({
+        status: 'Pending',
+        activityType: 1,
+        campaignResourceId: 'campaign-pending'
+      })
+
+      const actionStubs = wrapper.findAll('.row-action-stub')
+      expect(actionStubs).toHaveLength(2)
+      expect(actionStubs.at(0).attributes('data-text')).toBe('Preview')
+      expect(actionStubs.at(0).attributes('data-disabled')).toBe('false')
+      expect(actionStubs.at(1).attributes('data-text')).toBe('View Report')
+      expect(actionStubs.at(1).attributes('data-disabled')).toBe('true')
+      expect(actionStubs.at(1).attributes('data-tooltip')).toBe(
+        'Report will be available after this recommendation is approved.'
+      )
+    })
+
+    it('renders enabled View Report action for approved rows with a report route', async () => {
+      const wrapper = await renderDrawerWithRow({
+        status: 'Approved',
+        activityType: 1,
+        campaignResourceId: 'campaign-approved'
+      })
+
+      const reportAction = wrapper.findAll('.row-action-stub').at(1)
+      expect(reportAction.attributes('data-text')).toBe('View Report')
+      expect(reportAction.attributes('data-disabled')).toBe('false')
+      expect(reportAction.attributes('data-tooltip')).toBe('View Report')
+    })
+
+    it('renders unavailable tooltip for approved rows missing report route data', async () => {
+      const wrapper = await renderDrawerWithRow({
+        status: 'Approved',
+        activityType: 1,
+        campaignResourceId: ''
+      })
+
+      const reportAction = wrapper.findAll('.row-action-stub').at(1)
+      expect(reportAction.attributes('data-disabled')).toBe('true')
+      expect(reportAction.attributes('data-tooltip')).toBe('Report is not available for this activity.')
+    })
+
+    it('renders unavailable tooltip for approved rows with unsupported report route type', async () => {
+      const wrapper = await renderDrawerWithRow({
+        status: 'Approved',
+        activityType: 99,
+        campaignResourceId: 'unsupported'
+      })
+
+      const reportAction = wrapper.findAll('.row-action-stub').at(1)
+      expect(reportAction.attributes('data-disabled')).toBe('true')
+      expect(reportAction.attributes('data-tooltip')).toBe('Report is not available for this activity.')
     })
   })
 })
