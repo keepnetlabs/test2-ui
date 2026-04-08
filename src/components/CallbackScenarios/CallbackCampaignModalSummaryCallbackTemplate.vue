@@ -6,17 +6,17 @@
       :isLoading="isFetchingSummary"
     >
       <template #body>
-        <div class="callback-campaign-modal__summary__template-body pb-4">
+        <div v-if="template" class="callback-campaign-modal__summary__template-body pb-4">
           <div class="callback-campaign-modal__summary__template-body-header">
             <div class="callback-campaign-modal__summary__template-body-header-left">
-              {{ formValues.template.name }}
+              {{ template.name }}
             </div>
             <div class="callback-campaign-modal__summary__template-body-header-right">
               <v-btn style="display: none;"></v-btn>
               <Badge
                 size="mini"
-                :color="getBadgeColor(formValues.template.difficulty)"
-                :text="getBadgeText(formValues.template.difficulty)"
+                :color="getBadgeColor(template.difficulty)"
+                :text="getBadgeText(template.difficulty)"
                 :outline="false"
               />
               <Badge
@@ -33,7 +33,7 @@
                 }"
               >
                 <template #content>
-                  <v-icon :size="16" class="mr-1">mdi-web</v-icon>{{ formValues.template.language }}
+                  <v-icon :size="16" class="mr-1">mdi-web</v-icon>{{ template.language }}
                 </template>
               </Badge>
               <Badge
@@ -51,7 +51,7 @@
               >
                 <template #content>
                   <v-icon :size="16" class="mr-1">mdi-microphone-outline</v-icon
-                  >{{ formValues.template.voice }}
+                  >{{ template.voice }}
                 </template>
               </Badge>
               <div v-if="hasAudioFile" class="callback-campaign-modal__summary__audio-file-badge">
@@ -61,9 +61,9 @@
           </div>
           <CallbackTemplatePreviewSteps
             :showHeader="false"
-            :template="formValues.template"
+            :template="template"
             :isTextToSpeechCompatible="isTextToSpeechCompatible"
-            :voiceResourceId="formValues.template.vishingLanguageResourceId"
+            :voiceResourceId="template.vishingLanguageResourceId"
           />
         </div>
       </template>
@@ -89,15 +89,18 @@ export default {
     }
   },
   computed: {
+    template() {
+      return this.formValues?.template || null
+    },
     hasAudioFile() {
       return (
-        this.formValues?.template?.steps?.some((step) => step.inputType === 'FileUpload') ||
-        this.formValues?.template?.invalidDialingNotice?.inputType === 'FileUpload' ||
-        this.formValues?.template?.callGreeting?.inputType === 'FileUpload'
+        this.template?.steps?.some((step) => step.inputType === 'FileUpload') ||
+        this.template?.invalidDialingNotice?.inputType === 'FileUpload' ||
+        this.template?.callGreeting?.inputType === 'FileUpload'
       )
     },
     isTextToSpeechCompatible() {
-      return [2, 3].includes(this.formValues?.template?.voiceProviderTypeId)
+      return [2, 3].includes(this.template?.voiceProviderTypeId)
     }
   },
   methods: {

@@ -40,6 +40,21 @@ describe('TargetUserLDAPImportSyncByQueryStep.vue', () => {
     expect(wrapper.vm.query.children[0].query.logicalOperator).toBe('AND')
   })
 
+  it('data remaps matching custom fields and keeps unmatched field mappings intact', () => {
+    const wrapper = createWrapper()
+    const operands = wrapper.vm.rules[0].operands
+
+    expect(operands[0]).toEqual({ text: 'Department', value: 'Department' })
+    expect(operands[1]).toEqual({ text: 'TimeZone', value: 'timezone' })
+  })
+
+  it('created hook leaves default query unchanged when edited filter is missing', () => {
+    const wrapper = createWrapper(null)
+
+    expect(wrapper.vm.query.children[0].query.children).toEqual([])
+    expect(wrapper.vm.query.children[0].query.logicalOperator).toBe('AND')
+  })
+
   it('setEditedFilter loads AND filter items from edited schedule filter', () => {
     const wrapper = createWrapper({
       filterGroups: [
@@ -121,6 +136,24 @@ describe('TargetUserLDAPImportSyncByQueryStep.vue', () => {
     expect(out.items[0].FieldName).toBe('TimeZoneId')
   })
 
+  it('setViewUsersTableFilterParams keeps field names unchanged when timezone rule is absent', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.query.children[0].query.logicalOperator = 'AND'
+    wrapper.vm.query.children[0].query.children = [
+      {
+        type: 'query-builder-rule',
+        query: { operand: 'Department', operator: 'Contains', value: 'IT' }
+      }
+    ]
+
+    const out = wrapper.vm.setViewUsersTableFilterParams()
+
+    expect(out.operator).toBe(false)
+    expect(out.items).toEqual([
+      { Value: 'IT', FieldName: 'Department', Operator: 'Contains' }
+    ])
+  })
+
   it('getPayloadFilter delegates to getAxiosPayloadOfManuallyTable with hideFilter=true', () => {
     const wrapper = createWrapper()
     wrapper.vm.query.children[0].query.children = [
@@ -149,5 +182,35 @@ describe('TargetUserLDAPImportSyncByQueryStep.vue', () => {
 
     expect(setSpy).toHaveBeenCalled()
     expect(wrapper.vm.showUsersDialog).toBe(true)
+  })
+
+  it('transformQuery supports nested children arrays and blank values', () => {
+    const wrapper = createWrapper()
+
+    const output = wrapper.vm.transformQuery(
+      [
+        {
+          children: [
+            {
+              type: 'query-builder-rule',
+              query: { operand: 'Department', operator: '=', value: '' }
+            }
+          ]
+        }
+      ],
+      []
+    )
+
+    expect(output).toEqual([{ Value: '', FieldName: 'Department', Operator: '=' }])
+  })
+
+  it('toggleShowUsersDialog flips dialog state both ways', () => {
+    const wrapper = createWrapper()
+
+    wrapper.vm.toggleShowUsersDialog()
+    expect(wrapper.vm.showUsersDialog).toBe(true)
+
+    wrapper.vm.toggleShowUsersDialog()
+    expect(wrapper.vm.showUsersDialog).toBe(false)
   })
 })
