@@ -464,7 +464,7 @@ export const TABLE_SETTINGS_KEYS = {
   PHISHINGREPORTER: 'PhishingReporterTableSettings',
   TARGET_USERS_VIEW_USER_GROUPS: 'targetUsersViewUserGroupsTableSettings',
   TARGET_USERS_PEOPLE: 'TargetUsersPeopleTableSettings',
-  COMPANY_LIST: 'CompanyListTableSettings',
+  COMPANY_LIST: 'CompanyListTableSettingsV2',
   COMPANY_GROUP_LIST: 'CompanyGroupListTableSettings',
   COMPANY_GROUP_DETAILS: 'CompanyGroupDetailsTableSettings',
   SMTP_SETTINGS: 'SmtpSettingsTableSettings',
