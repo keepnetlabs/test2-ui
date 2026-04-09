@@ -49,6 +49,11 @@ describe('EmailDetailsUrl.vue', () => {
     expect(copyToClipboard).toHaveBeenCalledWith('https://example.com')
   })
 
+  it('handleCopyUrl uses empty string by default when url is missing', () => {
+    methods.handleCopyUrl()
+    expect(copyToClipboard).toHaveBeenCalledWith('')
+  })
+
   it('isFileUploaded checks upload flags', () => {
     expect(methods.isFileUploaded([{ isSendFile: true }])).toBe(true)
     expect(methods.isFileUploaded([{ isSendFileHash: true }])).toBe(true)
@@ -110,5 +115,35 @@ describe('EmailDetailsUrl.vue', () => {
     const firstItem = methods.getFirstItemURL(url)
     expect(firstItem[0].url).toBe('https://a.com')
     expect(firstItem[0].redirectUrls).toEqual([])
+  })
+
+  it('getExpansionPanelHeaderText returns SHOW REDIRECT URL for collapsed redirect urls', () => {
+    const ctx = { showSecondCollapse: [], isRedirectUrl: methods.isRedirectUrl }
+    const url = {
+      resourceId: 'u1',
+      url: 'https://a.com',
+      redirectUrls: [{ resourceId: 'u2' }, { resourceId: 'u3' }]
+    }
+
+    expect(methods.getExpansionPanelHeaderText.call(ctx, url, 0)).toBe('SHOW REDIRECT URL')
+  })
+
+  it('getFirstItemURL returns a cloned url without mutating original redirectUrls', () => {
+    const url = {
+      resourceId: 'u1',
+      url: 'https://a.com',
+      redirectUrls: [{ resourceId: 'u2' }]
+    }
+
+    const firstItem = methods.getFirstItemURL(url)
+
+    expect(firstItem).toEqual([
+      {
+        resourceId: 'u1',
+        url: 'https://a.com',
+        redirectUrls: []
+      }
+    ])
+    expect(url.redirectUrls).toEqual([{ resourceId: 'u2' }])
   })
 })
