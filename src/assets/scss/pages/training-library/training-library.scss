@@ -8,6 +8,14 @@
 .training-library-list-view-first-card-header {
   display: flex;
   justify-content: space-between;
+  &__download-activator {
+    display: inline-flex;
+    &--disabled,
+    &--disabled .v-btn,
+    &--disabled .v-icon {
+      cursor: default !important;
+    }
+  }
   &__search {
     min-width: 328px;
   }
