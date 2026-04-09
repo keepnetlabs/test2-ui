@@ -181,7 +181,7 @@ export default {
             show: true,
             type: 'text',
             width: 200,
-            filterableType: this.hideFilter ? null : 'text',
+            filterableType: null,
             dbName: 'PreferredLanguage'
           },
           {
@@ -316,7 +316,7 @@ export default {
         'filterableItems',
         filterableItems
       )
-      this?.$refs?.refPeopleTable?.reRenderFilters()
+      this?.$refs?.refTable?.reRenderFilters?.()
     },
     callForData() {
       this.setLoading(true)

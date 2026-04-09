@@ -79,7 +79,7 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
     ).toBe('SHOW ALL')
   })
 
-  it('data includes preferred language column without fallback empty text', () => {
+  it('data includes preferred language column without filter config', () => {
     const data = TargetUserLDAPImportManuallyStepTable.data.call({
       hideFilter: false,
       viewUsersTableFilterParams: null
@@ -94,7 +94,7 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
         label: 'Preferred Language',
         type: 'text',
         dbName: 'PreferredLanguage',
-        filterableType: 'text'
+        filterableType: null
       })
     )
     expect(preferredLanguageColumn.emptyText).toBeUndefined()
@@ -193,7 +193,7 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
       $set: (obj, key, value) => {
         obj[key] = value
       },
-      $refs: { refPeopleTable: ref }
+      $refs: { refTable: ref }
     }
 
     TargetUserLDAPImportManuallyStepTable.methods.setTimeZoneFilterableItems.call(ctx)
