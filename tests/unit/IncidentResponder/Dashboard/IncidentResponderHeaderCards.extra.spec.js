@@ -1,7 +1,7 @@
 import IncidentResponderHeaderCards from '@/components/IncidentResponder/Dashboard/IncidentResponderHeaderCards.vue'
 
 describe('IncidentResponderHeaderCards.vue (extra branch coverage)', () => {
-  const { computed, methods } = IncidentResponderHeaderCards
+  const { computed, methods, created } = IncidentResponderHeaderCards
 
   it('isPhishingEmpty returns true when counts are zero', () => {
     const ctx = {
@@ -53,6 +53,15 @@ describe('IncidentResponderHeaderCards.vue (extra branch coverage)', () => {
     ).toBe(true)
   })
 
+  it('count getters fall back to zero when nested summary objects are missing', () => {
+    expect(computed.getIncidentAnalysisNotifiedHarmfulCount.call({ irSummary: {} })).toBe(0)
+    expect(computed.getIncidentAnalysisNotifiedReportedMailCount.call({ irSummary: {} })).toBe(0)
+    expect(computed.getAutomaticInvestigationCount.call({ irSummary: {} })).toBe(0)
+    expect(computed.getManuelInvestigationCount.call({ irSummary: {} })).toBe(0)
+    expect(computed.getROISummaryTime.call({ irSummary: {} })).toBe(0)
+    expect(computed.getROISummaryRevenue.call({ irSummary: {} })).toBe(0)
+  })
+
   it('callForData resets loading even when store dispatch rejects', async () => {
     const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
     const ctx = {
@@ -85,5 +94,27 @@ describe('IncidentResponderHeaderCards.vue (extra branch coverage)', () => {
     querySelectorSpy.mockRestore()
     querySelectorAllSpy.mockRestore()
     window.innerWidth = originalInnerWidth
+  })
+
+  it('created hook fetches data and subscribes to resize events', () => {
+    const callForData = jest.fn()
+    const addEventListenerSpy = jest.spyOn(window, 'addEventListener').mockImplementation(() => {})
+    const ctx = { callForData, addQuery: jest.fn() }
+
+    created.call(ctx)
+
+    expect(callForData).toHaveBeenCalledTimes(1)
+    expect(addEventListenerSpy).toHaveBeenCalledWith('resize', ctx.addQuery)
+    addEventListenerSpy.mockRestore()
+  })
+
+  it('beforeDestroy unsubscribes from resize events', () => {
+    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener').mockImplementation(() => {})
+    const ctx = { addQuery: jest.fn() }
+
+    IncidentResponderHeaderCards.beforeDestroy.call(ctx)
+
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', ctx.addQuery)
+    removeEventListenerSpy.mockRestore()
   })
 })

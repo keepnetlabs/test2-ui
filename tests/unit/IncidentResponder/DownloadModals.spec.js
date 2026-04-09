@@ -92,6 +92,27 @@ describe('IncidentResponder download modals', () => {
     expect(emit).not.toHaveBeenCalled()
   })
 
+  it('DownloadModal safely ignores empty API responses', async () => {
+    downloadMsgFiles.mockResolvedValueOnce(undefined)
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-3',
+      zipPassword: 'infected',
+      $emit: emit
+    }
+
+    DownloadModal.methods.handleDownload.call(ctx)
+    await flushPromises()
+
+    expect(downloadMsgFiles).toHaveBeenCalledWith({
+      resourceId: 'mail-3',
+      zipPassword: 'infected'
+    })
+    expect(createObjectURLSpy).not.toHaveBeenCalled()
+    expect(link.click).not.toHaveBeenCalled()
+    expect(emit).not.toHaveBeenCalled()
+  })
+
   it('DownloadAttachmentModal does not emit close when response data is not Blob', async () => {
     downloadAttachment.mockResolvedValueOnce({ data: 'invalid' })
     const emit = jest.fn()
@@ -109,6 +130,28 @@ describe('IncidentResponder download modals', () => {
       resourceId: 'att-2',
       zipPassword: 'infected'
     })
+    expect(link.click).not.toHaveBeenCalled()
+    expect(emit).not.toHaveBeenCalled()
+  })
+
+  it('DownloadAttachmentModal safely ignores empty API responses', async () => {
+    downloadAttachment.mockResolvedValueOnce(undefined)
+    const emit = jest.fn()
+    const ctx = {
+      id: 'att-3',
+      zipPassword: 'infected',
+      attachment: { name: 'file.txt' },
+      $emit: emit
+    }
+
+    DownloadAttachmentModal.methods.handleDownload.call(ctx)
+    await flushPromises()
+
+    expect(downloadAttachment).toHaveBeenCalledWith({
+      resourceId: 'att-3',
+      zipPassword: 'infected'
+    })
+    expect(createObjectURLSpy).not.toHaveBeenCalled()
     expect(link.click).not.toHaveBeenCalled()
     expect(emit).not.toHaveBeenCalled()
   })
