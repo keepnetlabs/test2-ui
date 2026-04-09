@@ -165,7 +165,8 @@ describe('DataTable.vue state/filter methods', () => {
     const ctx = {
       setRenderedColumns: jest.fn(),
       $forceUpdate: jest.fn(),
-      handleTableSettingsChange: jest.fn()
+      handleTableSettingsChange: jest.fn(),
+      scheduleTableLayoutRefresh: jest.fn()
     }
 
     DataTable.methods.handleChangeVisibilityOfColumn.call(ctx)
@@ -173,5 +174,6 @@ describe('DataTable.vue state/filter methods', () => {
     expect(ctx.setRenderedColumns).toHaveBeenCalledTimes(1)
     expect(ctx.$forceUpdate).toHaveBeenCalledTimes(1)
     expect(ctx.handleTableSettingsChange).toHaveBeenCalledTimes(1)
+    expect(ctx.scheduleTableLayoutRefresh).toHaveBeenCalledTimes(1)
   })
 })

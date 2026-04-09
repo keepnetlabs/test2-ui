@@ -294,7 +294,7 @@ export default {
       return this?.irSummary?.notifiedEmailResultCount?.harmfulCount || 0
     },
     getIncidentAnalysisNotifiedReportedMailCount() {
-      return this?.irSummary.notifiedEmailResultCount.reportedMailCount || 0
+      return this?.irSummary?.notifiedEmailResultCount?.reportedMailCount || 0
     },
     isInvestigationsEmpty() {
       const summary = this.irSummary
@@ -319,7 +319,7 @@ export default {
       return this?.irSummary?.investigationTypeCount?.automaticInvestigationCount || 0
     },
     getManuelInvestigationCount() {
-      return this?.irSummary.investigationTypeCount?.manualInvestigationCount || 0
+      return this?.irSummary?.investigationTypeCount?.manualInvestigationCount || 0
     },
     isRoiSummaryEmpty() {
       const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = this.irSummary || {}
