@@ -39,6 +39,25 @@ jest.mock('@/components/TargetUsers/LDAP/utils', () => ({
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('created sets page size for hidden filter and loads dependencies', () => {
+    const ctx = {
+      hideFilter: true,
+      serverSideProps: { pageSize: 10 },
+      callForGetTimeZones: jest.fn(),
+      callForData: jest.fn()
+    }
+
+    TargetUserLDAPImportManuallyStepTable.created.call(ctx)
+
+    expect(ctx.serverSideProps.pageSize).toBe(5)
+    expect(ctx.callForGetTimeZones).toHaveBeenCalled()
+    expect(ctx.callForData).toHaveBeenCalled()
+  })
+
   it('computes validity button text and invalid count', () => {
     const invalidCount = TargetUserLDAPImportManuallyStepTable.computed.getInvalidUserCount.call({
       getMappingObject: () => ({ invalidUserCount: 7 })
@@ -60,6 +79,27 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
     ).toBe('SHOW ALL')
   })
 
+  it('data includes preferred language column without filter config', () => {
+    const data = TargetUserLDAPImportManuallyStepTable.data.call({
+      hideFilter: false,
+      viewUsersTableFilterParams: null
+    })
+
+    const preferredLanguageColumn = data.tableOptions.columns.find(
+      (column) => column.property === 'preferredLanguage'
+    )
+
+    expect(preferredLanguageColumn).toEqual(
+      expect.objectContaining({
+        label: 'Preferred Language',
+        type: 'text',
+        dbName: 'PreferredLanguage',
+        filterableType: null
+      })
+    )
+    expect(preferredLanguageColumn.emptyText).toBeUndefined()
+  })
+
   it('getTimezones watcher triggers setTimeZoneFilterableItems when list exists', () => {
     const setTimeZoneFilterableItems = jest.fn()
     TargetUserLDAPImportManuallyStepTable.watch.getTimezones.handler.call(
@@ -67,6 +107,15 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
       { timeZoneList: [{ id: 'tz-1' }] }
     )
     expect(setTimeZoneFilterableItems).toHaveBeenCalled()
+  })
+
+  it('getTimezones watcher does nothing when list is empty', () => {
+    const setTimeZoneFilterableItems = jest.fn()
+    TargetUserLDAPImportManuallyStepTable.watch.getTimezones.handler.call(
+      { setTimeZoneFilterableItems },
+      { timeZoneList: [] }
+    )
+    expect(setTimeZoneFilterableItems).not.toHaveBeenCalled()
   })
 
   it('callForGetTimeZones dispatches only when timezone list is empty', () => {
@@ -88,6 +137,15 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
     }
     TargetUserLDAPImportManuallyStepTable.methods.callForGetTimeZones.call(ctx2)
     expect(ctx2.$store.dispatch).not.toHaveBeenCalled()
+
+    const ctx3 = {
+      $store: {
+        getters: {},
+        dispatch: jest.fn()
+      }
+    }
+    TargetUserLDAPImportManuallyStepTable.methods.callForGetTimeZones.call(ctx3)
+    expect(ctx3.$store.dispatch).not.toHaveBeenCalled()
   })
 
   it('handleSearchChange copies search filters, removes TimeZone, resets page and refreshes', () => {
@@ -135,14 +193,35 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
       $set: (obj, key, value) => {
         obj[key] = value
       },
-      $refs: { refPeopleTable: ref }
+      $refs: { refTable: ref }
     }
 
     TargetUserLDAPImportManuallyStepTable.methods.setTimeZoneFilterableItems.call(ctx)
-    const tzColumn = ctx.tableOptions.columns.find((c) => c.property === ctx.tableOptions.columns[5].property)
+    const tzColumn = ctx.tableOptions.columns.find((c) => c.property === 'timeZone')
     expect(tzColumn.filterableItems[0]).toEqual({ text: 'Blank', value: 'Blank' })
     expect(tzColumn.filterableItems[1]).toEqual({ text: 'UTC', value: 'tz-1' })
     expect(ref.reRenderFilters).toHaveBeenCalled()
+  })
+
+  it('setTimeZoneFilterableItems stays safe when table ref is missing', () => {
+    const data = TargetUserLDAPImportManuallyStepTable.data.call({
+      hideFilter: false,
+      viewUsersTableFilterParams: null
+    })
+    const ctx = {
+      ...data,
+      getTimezones: {
+        timeZoneList: [{ id: 'tz-1', displayName: 'UTC' }]
+      },
+      $set: (obj, key, value) => {
+        obj[key] = value
+      },
+      $refs: {}
+    }
+
+    expect(() =>
+      TargetUserLDAPImportManuallyStepTable.methods.setTimeZoneFilterableItems.call(ctx)
+    ).not.toThrow()
   })
 
   it('createCustomFields creates filterable types and appends status column once', () => {
@@ -178,14 +257,22 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
     TargetUserLDAPImportManuallyStepTable.methods.setTableData.call(ctx, [
       {
         firstName: 'A',
+        preferredLanguage: 'English',
         customFields: [
           { name: 'JobTitle', value: 'Analyst' },
           { name: 'Region', value: 'EU' }
         ]
+      },
+      {
+        firstName: 'B',
+        preferredLanguage: '',
+        customFields: []
       }
     ])
     expect(ctx.tableData[0].JobTitle).toBe('Analyst')
     expect(ctx.tableData[0].Region).toBe('EU')
+    expect(ctx.tableData[0].preferredLanguage).toBe('English')
+    expect(ctx.tableData[1].preferredLanguage).toBe('')
   })
 
   it('handleValidityButton toggles filter value and refreshes', () => {
@@ -207,6 +294,34 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
     TargetUserLDAPImportManuallyStepTable.methods.handleValidityButton.call(ctx)
     expect(ctx.isShowInvalid).toBe(true)
     expect(ctx.axiosPayload.filter.FilterGroups[0].FilterItems[0].Value).toBe('Error')
+    expect(callForData).toHaveBeenCalled()
+  })
+
+  it('handleValidityButton adds status filter when hidden filter mode has no existing status item', () => {
+    const callForData = jest.fn()
+    const ctx = {
+      isShowInvalid: false,
+      hideFilter: true,
+      axiosPayload: {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: []
+            }
+          ]
+        }
+      },
+      callForData
+    }
+
+    TargetUserLDAPImportManuallyStepTable.methods.handleValidityButton.call(ctx)
+
+    expect(ctx.isShowInvalid).toBe(true)
+    expect(ctx.axiosPayload.filter.FilterGroups[0].FilterItems[0]).toEqual({
+      FieldName: 'Status',
+      Operator: 'Include',
+      Value: 'Error'
+    })
     expect(callForData).toHaveBeenCalled()
   })
 
@@ -265,5 +380,51 @@ describe('TargetUserLDAPImportManuallyStepTable.vue', () => {
     expect(emit).toHaveBeenCalledWith('update:totalNumberOfRecords', 11)
     expect(createCustomFields).toHaveBeenCalled()
     expect(setTableData).toHaveBeenCalledWith([{ id: 1, customFields: [] }])
+  })
+
+  it('callForData returns early when transaction id is missing', () => {
+    const ctx = {
+      setLoading: jest.fn(),
+      getTransactionId: () => '',
+      axiosPayload: { pageNumber: 1 }
+    }
+
+    TargetUserLDAPImportManuallyStepTable.methods.callForData.call(ctx)
+
+    expect(ctx.setLoading).toHaveBeenCalledWith(true)
+    expect(LDAPService.searchTmpTargetUsersForLdap).not.toHaveBeenCalled()
+  })
+
+  it('callForData skips setTotalNumberOfRecords when filter is hidden', async () => {
+    LDAPService.searchTmpTargetUsersForLdap.mockResolvedValueOnce({
+      data: {
+        data: {
+          items: {
+            results: [],
+            totalNumberOfRecords: 5,
+            totalNumberOfPages: 1,
+            pageNumber: 1
+          }
+        }
+      }
+    })
+    const ctx = {
+      setLoading: jest.fn(),
+      getTransactionId: () => 'trx-2',
+      axiosPayload: { pageNumber: 1 },
+      hideFilter: true,
+      setTotalNumberOfRecords: jest.fn(),
+      serverSideProps: { totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 0 },
+      customFields: [],
+      createCustomFields: jest.fn(),
+      setTableData: jest.fn(),
+      $emit: jest.fn()
+    }
+
+    TargetUserLDAPImportManuallyStepTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.setTotalNumberOfRecords).not.toHaveBeenCalled()
+    expect(ctx.$emit).toHaveBeenCalledWith('update:totalNumberOfRecords', 5)
   })
 })

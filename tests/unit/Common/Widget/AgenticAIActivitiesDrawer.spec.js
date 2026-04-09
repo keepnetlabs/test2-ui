@@ -3,6 +3,7 @@ import AgenticAIActivitiesDrawer from "@/components/Common/Widget/WidgetComponen
 import { customVuetify as vuetify } from "../../utils";
 import * as CompanyAPI from "@/api/company";
 import * as AgenticAIService from "@/api/agenticAIService";
+import { resolveAgenticRetryLanguage } from "@/services/agenticAIRetryLanguage";
 import { getDataTableFieldLabel } from "@/utils/functions";
 
 jest.mock("@/api/company", () => ({
@@ -15,6 +16,10 @@ jest.mock("@/api/company", () => ({
 
 jest.mock("@/api/agenticAIService", () => ({
   retryAutonomous: jest.fn(() => Promise.resolve())
+}));
+
+jest.mock("@/services/agenticAIRetryLanguage", () => ({
+  resolveAgenticRetryLanguage: jest.fn(() => Promise.resolve(""))
 }));
 
 const mockActivityResponse = (activities = []) => ({
@@ -1012,6 +1017,99 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(fetchActivities).toHaveBeenCalledTimes(1);
       expect(fetchBatches).not.toHaveBeenCalled();
     });
+
+    it("should call handleGlobalRefresh to refetch batches and activities while preserving selection", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue();
+      const fetchBatches = jest.fn().mockResolvedValue();
+      const clearLeftSearchDebounce = jest.fn();
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchActivities, fetchBatches, clearLeftSearchDebounce }
+      );
+      wrapper.setData({
+        selectedBatchId: "batch-1",
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        isLoading: false,
+        actionInProgress: false
+      });
+
+      await wrapper.vm.handleGlobalRefresh();
+
+      expect(clearLeftSearchDebounce).toHaveBeenCalledTimes(1);
+      expect(fetchBatches).toHaveBeenCalledWith({ preserveSelection: true });
+      expect(fetchActivities).toHaveBeenCalledTimes(1);
+    });
+
+    it("should clear table state on handleGlobalRefresh when selection is missing after batch reload", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue();
+      const fetchBatches = jest.fn().mockImplementation(async function () {
+        this.selectedBatchId = null;
+      });
+      const clearLeftSearchDebounce = jest.fn();
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchActivities, fetchBatches, clearLeftSearchDebounce }
+      );
+      wrapper.setData({
+        selectedBatchId: "batch-1",
+        pagedTableData: [{ resourceId: "row-1" }],
+        serverSideProps: {
+          pageNumber: 3,
+          totalNumberOfRecords: 11,
+          totalNumberOfPages: 2
+        },
+        batchListLoading: false,
+        batchListLoadingMore: false,
+        isLoading: false,
+        actionInProgress: false
+      });
+
+      await wrapper.vm.handleGlobalRefresh();
+
+      expect(clearLeftSearchDebounce).toHaveBeenCalledTimes(1);
+      expect(fetchBatches).toHaveBeenCalledWith({ preserveSelection: true });
+      expect(fetchActivities).not.toHaveBeenCalled();
+      expect(wrapper.vm.pagedTableData).toEqual([]);
+      expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(0);
+      expect(wrapper.vm.serverSideProps.totalNumberOfPages).toBe(0);
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+    });
+
+    it("should not run handleGlobalRefresh while global refresh is disabled", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue();
+      const fetchBatches = jest.fn().mockResolvedValue();
+      const clearLeftSearchDebounce = jest.fn();
+      const wrapper = mountFactory(
+        { value: true },
+        { fetchActivities, fetchBatches, clearLeftSearchDebounce }
+      );
+      wrapper.setData({
+        batchListLoading: true,
+        batchListLoadingMore: false,
+        isLoading: false,
+        actionInProgress: false
+      });
+
+      await wrapper.vm.handleGlobalRefresh();
+
+      expect(clearLeftSearchDebounce).not.toHaveBeenCalled();
+      expect(fetchBatches).not.toHaveBeenCalled();
+      expect(fetchActivities).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Filter Refresh UI", () => {
+    it("renders refresh action next to left filters when batch list is visible", async () => {
+      const wrapper = mountFactory({ value: true });
+      wrapper.setData({
+        batchList: [makeGroupedBatchApiRow("batch-1")],
+        batchListLoading: false
+      });
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.find(".agentic-ai-activities-drawer__list-filter-actions").exists()).toBe(true);
+    });
   });
 
   describe("Drawer Close", () => {
@@ -1120,6 +1218,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       );
       wrapper.setData({
         actionInProgress: false,
+        selectedBatchId: "b-1",
         confirmDialog: {
           status: true,
           action: "decline",
@@ -1545,6 +1644,17 @@ describe("AgenticAIActivitiesDrawer", () => {
       wrapper.setData({ previewActivityRow: { targetUserStatus: "Active" } });
       expect(wrapper.vm.previewApprovalActionsDisabled).toBe(false);
     });
+
+    it("previewApprovalActionsDisabled locks actions while approve request is running", () => {
+      const wrapper = mountFactory();
+      wrapper.setData({
+        actionInProgress: true,
+        previewActivityRow: { targetUserStatus: "Active" }
+      });
+
+      expect(wrapper.vm.previewApprovalActionsDisabled).toBe(true);
+      expect(wrapper.vm.previewApprovalActionsDisabledTooltip).toBe("Action in progress. Please wait.");
+    });
   });
 
   describe("Approval status slot helpers", () => {
@@ -1796,7 +1906,7 @@ describe("AgenticAIActivitiesDrawer", () => {
           refreshTableLayout: jest.fn()
         }
       );
-      const onPreviewClosedSpy = jest.spyOn(wrapper.vm, "onPreviewClosed");
+      const closePreviewSpy = jest.spyOn(wrapper.vm, "closePreview").mockImplementation(() => {});
       wrapper.setData({
         actionInProgress: false,
         previewType: "Phishing",
@@ -1834,8 +1944,8 @@ describe("AgenticAIActivitiesDrawer", () => {
           rejectingReason: "Please retry with a better scenario."
         })
       );
-      expect(onPreviewClosedSpy).toHaveBeenCalled();
-      onPreviewClosedSpy.mockRestore();
+      expect(closePreviewSpy).toHaveBeenCalled();
+      closePreviewSpy.mockRestore();
     });
   });
 
@@ -1909,6 +2019,17 @@ describe("AgenticAIActivitiesDrawer", () => {
       closeDrawerSpy.mockRestore();
     });
 
+    it("handleMainOverlayClick does not close drawer while an action is in progress", () => {
+      const wrapper = mountFactory();
+      const closeDrawerSpy = jest.spyOn(wrapper.vm, "closeDrawer").mockImplementation(() => {});
+
+      wrapper.setData({ actionInProgress: true, previewClosing: false, previewType: null });
+      wrapper.vm.handleMainOverlayClick();
+
+      expect(closeDrawerSpy).not.toHaveBeenCalled();
+      closeDrawerSpy.mockRestore();
+    });
+
     it("handlePreviewApprove uses approveActivity for training and phishing", async () => {
       const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
       const exec = jest.spyOn(wrapper.vm, "executeApproveReject").mockResolvedValue();
@@ -1944,12 +2065,46 @@ describe("AgenticAIActivitiesDrawer", () => {
       exec.mockRestore();
     });
 
+    it("handlePreviewApprove keeps preview open until approve call finishes", async () => {
+      const wrapper = mountFactory({ value: true }, { refreshTableLayout: jest.fn() });
+      let resolveApprove;
+      const exec = jest.spyOn(wrapper.vm, "executeApproveReject").mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveApprove = resolve;
+          })
+      );
+      const closePreviewSpy = jest.spyOn(wrapper.vm, "closePreview");
+
+      wrapper.setData({
+        previewType: "Phishing",
+        previewActivityRow: {
+          activityType: 1,
+          resourceId: "r1",
+          scenarioResourceId: "s1"
+        }
+      });
+
+      const approvePromise = wrapper.vm.handlePreviewApprove();
+
+      expect(closePreviewSpy).not.toHaveBeenCalled();
+
+      resolveApprove();
+      await approvePromise;
+
+      expect(closePreviewSpy).toHaveBeenCalledTimes(1);
+
+      exec.mockRestore();
+      closePreviewSpy.mockRestore();
+    });
+
     it("handleViewReport resolves route and opens window for campaign report", () => {
       const openSpy = jest.spyOn(window, "open").mockImplementation(() => {});
       const wrapper = mountFactory();
       wrapper.vm.$router.resolve = jest.fn(() => ({ href: "/reports/campaign/1" }));
 
       wrapper.vm.handleViewReport({
+        status: "Approved",
         activityType: 1,
         campaignResourceId: "camp-1",
         instanceGroup: 2
@@ -2119,6 +2274,46 @@ describe("AgenticAIActivitiesDrawer", () => {
       });
       expect(CompanyAPI.rejectAgenticAIActivity).not.toHaveBeenCalled();
       expect(AgenticAIService.retryAutonomous).not.toHaveBeenCalled();
+    });
+
+    it("uses resolved content language for retry payload", async () => {
+      resolveAgenticRetryLanguage.mockResolvedValue("German");
+      CompanyAPI.rejectAgenticAIActivity.mockResolvedValue({ data: { data: {} } });
+
+      const fetchBatches = jest.fn().mockResolvedValue();
+      const fetchActivities = jest.fn();
+      const wrapper = mountFactory(
+        { value: true },
+        {
+          fetchBatches,
+          fetchActivities
+        }
+      );
+
+      const row = {
+        resourceId: "r1",
+        batchResourceId: "b1",
+        activityType: 1,
+        targetUserStatus: "Active",
+        targetUserResourceId: "u1",
+        firstName: "Ada",
+        lastName: "Lovelace",
+        department: "Engineering",
+        preferredLanguage: "English",
+        scenarioResourceId: "s1"
+      };
+
+      await wrapper.vm.executeApproveReject("retry", row, { reason: "Needs rewrite" });
+
+      expect(resolveAgenticRetryLanguage).toHaveBeenCalledWith(row);
+      expect(AgenticAIService.retryAutonomous).toHaveBeenCalledWith(
+        expect.objectContaining({
+          targetUserResourceId: "u1",
+          preferredLanguage: "German",
+          rejectingReason: "Needs rewrite",
+          rejectedScenarioResourceId: "s1"
+        })
+      );
     });
 
     it("calls approveAgenticAIActivity when approveActivity and target user Active", async () => {
@@ -2635,6 +2830,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       wrapper.vm.$router.resolve = resolve;
 
       wrapper.vm.handleViewReport({
+        status: "Approved",
         activityType: 2,
         campaignResourceId: "c2",
         instanceGroup: 1
@@ -2643,12 +2839,13 @@ describe("AgenticAIActivitiesDrawer", () => {
         expect.objectContaining({ name: "Quishing Report", params: { id: "c2", instanceGroup: 1 } })
       );
 
-      wrapper.vm.handleViewReport({ activityType: 3, campaignResourceId: "c3" });
+      wrapper.vm.handleViewReport({ status: "Approved", activityType: 3, campaignResourceId: "c3" });
       expect(resolve).toHaveBeenCalledWith(
         expect.objectContaining({ name: "Smishing Report", params: { id: "c3", instanceGroup: 1 } })
       );
 
       wrapper.vm.handleViewReport({
+        status: "Approved",
         activityType: 4,
         enrollmentResourceId: "en1",
         batchResourceId: "b-fallback"
@@ -2658,7 +2855,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       );
 
       resolve.mockClear();
-      wrapper.vm.handleViewReport({ activityType: 4, batchResourceId: "b-only" });
+      wrapper.vm.handleViewReport({ status: "Approved", activityType: 4, batchResourceId: "b-only" });
       expect(resolve).toHaveBeenCalledWith(
         expect.objectContaining({ name: "Training Report", params: { id: "b-only" } })
       );

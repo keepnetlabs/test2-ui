@@ -1,16 +1,23 @@
 <template>
-  <v-tooltip max-width="200" bottom>
-    <template #activator="{ on }">
-      <v-btn
-        v-on="on"
-        :id="id"
-        icon
-        :ripple="!isDisabled"
-        :class="{ 'default-button-row-action--disabled': isDisabled }"
-        @click="handleClick"
-      >
-        <v-icon :ripple="!isDisabled">{{ icon }}</v-icon>
-      </v-btn>
+  <v-tooltip
+    max-width="200"
+    bottom
+    :z-index="10000"
+    content-class="k-v-tooltip-content--over-drawer"
+    :open-delay="150"
+  >
+    <template #activator="{ on, attrs }">
+      <span v-bind="attrs" v-on="on" class="default-button-row-action-tooltip-wrap">
+        <v-btn
+          :id="id"
+          icon
+          :disabled="isDisabled"
+          :ripple="!isDisabled"
+          @click="handleClick"
+        >
+          <v-icon :disabled="isDisabled">{{ icon }}</v-icon>
+        </v-btn>
+      </span>
     </template>
     <span>{{ tooltipMessage }}</span>
   </v-tooltip>
@@ -71,3 +78,17 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.default-button-row-action-tooltip-wrap {
+  display: inline-flex;
+  align-items: center;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+
+  .v-btn--disabled {
+    pointer-events: none;
+  }
+}
+</style>

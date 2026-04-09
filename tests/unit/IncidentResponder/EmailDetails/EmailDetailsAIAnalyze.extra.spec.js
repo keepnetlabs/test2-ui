@@ -93,6 +93,50 @@ describe('EmailDetailsAIAnalyze.vue (extra branch coverage)', () => {
     expect(axios.post).not.toHaveBeenCalled()
   })
 
+  it('fetchReport returns early when id is missing', async () => {
+    const ctx = { id: '', isLoadingReport: false }
+    await methods.fetchReport.call(ctx)
+    expect(axios.post).not.toHaveBeenCalled()
+  })
+
+  it('runAnalysis success path accepts nested payload.data.report and opens first evidence step', async () => {
+    axios.post.mockResolvedValueOnce({
+      data: {
+        data: {
+          report: {
+            evidence_flow: [{ step: 2 }]
+          }
+        }
+      }
+    })
+
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-77',
+      isRunningAnalysis: false,
+      isLoadingReport: false,
+      loadError: 'old',
+      report: null,
+      reportCreatedAt: null,
+      isMetadataExpanded: false,
+      isAgentDeterminationExpanded: true,
+      openEvidenceSteps: [99],
+      $emit: emit,
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps
+    }
+
+    await methods.runAnalysis.call(ctx)
+
+    expect(ctx.report).toEqual({ evidence_flow: [{ step: 2 }] })
+    expect(ctx.openEvidenceSteps).toEqual([2])
+    expect(ctx.isRunningAnalysis).toBe(false)
+    expect(ctx.isLoadingReport).toBe(false)
+    expect(ctx.loadError).toBe('')
+    expect(ctx.reportCreatedAt).toBeTruthy()
+    expect(emit).toHaveBeenCalledWith('update:loading', true)
+    expect(emit).toHaveBeenCalledWith('update:loading', false)
+  })
+
   it('runAnalysis handles failure path and resets loading flags', async () => {
     axios.post.mockRejectedValueOnce(new Error('fail'))
     const emit = jest.fn()
@@ -133,5 +177,20 @@ describe('EmailDetailsAIAnalyze.vue (extra branch coverage)', () => {
     const ctx = { evidenceFindingMetaMap: {} }
     expect(methods.getEvidenceFindingMeta.call(ctx, { title: 'Risk evaluation' }).text).toBe('HIGH')
     expect(methods.getEvidenceFindingMeta.call(ctx, { title: 'Anything else' }).text).toBe('PASS')
+  })
+
+  it('default evidence helpers handle missing data and closed state', () => {
+    expect(methods.getDefaultOpenEvidenceSteps.call({ report: null })).toEqual([])
+    expect(methods.isEvidenceStepOpen.call({ openEvidenceSteps: [3] }, 1)).toBe(false)
+  })
+
+  it('confidence and summary fallbacks return defaults', () => {
+    expect(computed.confidenceBasis.call({ report: null })).toBe(
+      'Based on behavioral and contextual indicators.'
+    )
+    expect(computed.whyThisMatters.call({ report: null })).toBe('')
+    expect(computed.formattedVerdict.call({ report: { executive_summary: { verdict: 'Benign' } } })).toBe(
+      'Benign'
+    )
   })
 })

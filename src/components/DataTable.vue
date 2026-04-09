@@ -394,26 +394,41 @@
               bottom
               left
               offset-y
+              :disabled="isDownloadButtonDisabled"
               :attach="isTesting && testProps.menuAttach"
             >
               <template #activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template #activator="{ on: tooltip }">
-                    <v-btn
+                    <span
                       v-bind="attrs"
-                      v-on="{ ...tooltip, ...menu }"
-                      :id="`btn-download--table-${Math.random()
-                        .toString()
-                        .substring(2)}`"
-                      class="btn-hover mr-1"
-                      icon
-                      style="order: 5;"
-                      :disabled="downloadButton.disabled"
+                      class="d-inline-flex k-table__download-activator"
+                      :style="{
+                        order: 5,
+                        cursor: isDownloadButtonDisabled ? 'default' : 'pointer'
+                      }"
+                      v-on="
+                        isDownloadButtonDisabled
+                          ? tooltip
+                          : { ...tooltip, ...menu }
+                      "
                     >
-                      <v-icon>mdi-download</v-icon>
-                    </v-btn>
+                      <v-btn
+                        :id="`btn-download--table-${Math.random()
+                          .toString()
+                          .substring(2)}`"
+                        class="btn-hover mr-1"
+                        icon
+                        :style="{
+                          cursor: isDownloadButtonDisabled ? 'default' : 'pointer'
+                        }"
+                        :disabled="isDownloadButtonDisabled"
+                      >
+                        <v-icon>mdi-download</v-icon>
+                      </v-btn>
+                    </span>
                   </template>
-                  <span class="tooltip-span">Download Options</span>
+                  <span class="tooltip-span">{{ downloadButtonTooltipText }}</span>
                 </v-tooltip>
               </template>
               <v-list-item
@@ -1796,6 +1811,23 @@ export default {
     },
     getSelectionCheckboxDisabledValue() {
       return this.showfilteredData ? !this.filteredData.length : false;
+    },
+    hasDownloadableData() {
+      if (this.isServerSide) {
+        return (
+          (this.serverSideProps?.totalNumberOfRecords || 0) > 0 ||
+          !!this.tableData?.length
+        );
+      }
+      return !!(this.initialData?.length || this.tableData?.length);
+    },
+    isDownloadButtonDisabled() {
+      return this.downloadButton?.disabled || !this.hasDownloadableData;
+    },
+    downloadButtonTooltipText() {
+      return this.hasDownloadableData
+        ? "Download Options"
+        : "No data available to export. Download will be enabled once data is available.";
     }
   },
   data() {
@@ -2046,6 +2078,7 @@ export default {
           this.$refs.elTableRef.columns[0].fixed = true;
         }
       }
+      this.scheduleTableLayoutRefresh();
     },
     lastColFixed(val) {
       if (val) {
@@ -2053,6 +2086,7 @@ export default {
       } else {
         this.actionFixed = false;
       }
+      this.scheduleTableLayoutRefresh();
     },
     multipleSelection() {
       this.calculateAllSelected();
@@ -2317,6 +2351,25 @@ export default {
     },
     getSelectedMultipleValues() {
       return this.multipleSelection;
+    },
+    scheduleTableLayoutRefresh() {
+      this.$nextTick(() => {
+        const refreshLayout = () => {
+          this.$refs?.elTableRef?.doLayout?.();
+          this.reRenderFixedItems();
+        };
+        if (
+          typeof window !== "undefined" &&
+          typeof window.requestAnimationFrame === "function"
+        ) {
+          // Double frame gives Safari time to reconcile hidden columns with fixed clones.
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(refreshLayout);
+          });
+          return;
+        }
+        refreshLayout();
+      });
     },
     reRenderFixedItems() {
       if (this.renderFixedItemsTimeout) {
@@ -2604,6 +2657,7 @@ export default {
       this.setRenderedColumns();
       this.$forceUpdate();
       this.handleTableSettingsChange();
+      this.scheduleTableLayoutRefresh();
     },
     handleTableSettingsChange() {
       const tableSettings = {
@@ -2805,6 +2859,7 @@ export default {
       } else {
         this.setRenderedColumns();
       }
+      this.scheduleTableLayoutRefresh();
     },
     addItemToClusteredItems(item = {}) {
       const index = this.clusteredItems.findIndex(

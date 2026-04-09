@@ -1,6 +1,7 @@
 import EmailDetails from '@/components/IncidentResponder/emailDetails.vue'
 import { shallowMount } from '@vue/test-utils'
 import { getNotifiedEmail } from '@/api/notifiedEmail'
+import { scrollToComponent, copyToClipboard } from '@/utils/functions'
 
 jest.mock('@/api/notifiedEmail', () => ({
   getNotifiedEmail: jest.fn()
@@ -125,6 +126,20 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
 
       jest.useRealTimers()
     })
+
+    it('does not mutate clipboard arrays for unsupported type but still copies value', async () => {
+      const ctx = {
+        isCopiedShaClipboard: [],
+        isCopiedMd5Clipboard: []
+      }
+
+      methods.writeToNavigator.call(ctx, 'plain-value', 5, 'other')
+      await flushPromises()
+
+      expect(ctx.isCopiedShaClipboard).toEqual([])
+      expect(ctx.isCopiedMd5Clipboard).toEqual([])
+      expect(copyToClipboard).toHaveBeenCalledWith('plain-value')
+    })
   })
 
   describe('setSecondCollapse', () => {
@@ -146,7 +161,6 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
 
   describe('handleAttachmentClick', () => {
     it('sets tab to fifth and pushes to panel and showSecondCollapse', () => {
-      const scrollToComponent = jest.fn()
       const nextTick = jest.fn((cb) => cb())
       const ctx = {
         tab: 'first',
@@ -161,8 +175,50 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
       expect(ctx.tab).toBe('fifth')
       expect(ctx.panel).toEqual([2])
       expect(ctx.showSecondCollapse).toEqual([2])
+      expect(scrollToComponent).toHaveBeenCalled()
 
       jest.restoreAllMocks()
+    })
+  })
+
+  describe('getPostDetails', () => {
+    it('loads email details and populates attachment, header, and relay tables', async () => {
+      getNotifiedEmail.mockResolvedValueOnce({
+        data: {
+          data: {
+            resourceId: 'mail-9',
+            attachments: [{ resourceId: 'att-1' }],
+            headers: [{ key: 'from', value: 'sender@example.com' }],
+            emailRelays: [{ hop: 1 }]
+          }
+        }
+      })
+
+      const ctx = {
+        id: 'mail-9',
+        isLoading: false,
+        mailDetails: null,
+        attachmentTableOptions: { tableData: [] },
+        headersTable: { data: [] },
+        relayTable: { data: [] }
+      }
+
+      methods.getPostDetails.call(ctx)
+      expect(ctx.isLoading).toBe(true)
+
+      await flushPromises()
+
+      expect(getNotifiedEmail).toHaveBeenCalledWith('mail-9')
+      expect(ctx.mailDetails).toEqual(
+        expect.objectContaining({
+          resourceId: 'mail-9',
+          attachments: [{ resourceId: 'att-1' }]
+        })
+      )
+      expect(ctx.attachmentTableOptions.tableData).toEqual([{ resourceId: 'att-1' }])
+      expect(ctx.headersTable.data).toEqual([{ key: 'from', value: 'sender@example.com' }])
+      expect(ctx.relayTable.data).toEqual([{ hop: 1 }])
+      expect(ctx.isLoading).toBe(false)
     })
   })
 
@@ -182,6 +238,15 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
   })
 
   describe('created hook', () => {
+    it('prefers route params tab over query tab when both exist', () => {
+      const ctx = {
+        tab: 'first',
+        $route: { params: { tab: 'second' }, query: { tab: 'third' } }
+      }
+      created.call(ctx)
+      expect(ctx.tab).toBe('second')
+    })
+
     it('sets tab from route params', () => {
       const ctx = {
         tab: 'first',
@@ -429,6 +494,22 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
       const mockThis = {
         isTestEnvironment: false,
         $store: { state: { auth: { selectedCompanyName: 'Bolearis' } } }
+      }
+      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
+    })
+
+    it('returns true for BDO UK even without test environment', () => {
+      const mockThis = {
+        isTestEnvironment: false,
+        $store: { state: { auth: { selectedCompanyName: 'BDO UK' } } }
+      }
+      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
+    })
+
+    it('matches allowed company names case-insensitively', () => {
+      const mockThis = {
+        isTestEnvironment: false,
+        $store: { state: { auth: { selectedCompanyName: 'bdo uk' } } }
       }
       expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
     })

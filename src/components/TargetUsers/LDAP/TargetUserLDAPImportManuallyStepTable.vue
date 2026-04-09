@@ -173,6 +173,18 @@ export default {
             emptyText: 'No Data'
           },
           {
+            property: 'preferredLanguage',
+            align: 'left',
+            editable: false,
+            label: labels.PreferredLanguage,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 200,
+            filterableType: null,
+            dbName: 'PreferredLanguage'
+          },
+          {
             property: PROPERTY_STORE.TIME_ZONE,
             align: 'left',
             editable: false,
@@ -304,7 +316,7 @@ export default {
         'filterableItems',
         filterableItems
       )
-      this?.$refs?.refPeopleTable?.reRenderFilters()
+      this?.$refs?.refTable?.reRenderFilters?.()
     },
     callForData() {
       this.setLoading(true)
