@@ -2,6 +2,19 @@ import AgenticAIStatusWidget from '@/components/Common/Widget/WidgetComponents/A
 
 describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
   describe('computed', () => {
+    it('isAutonomousComputed returns true only for Autonomous mode', () => {
+      expect(
+        AgenticAIStatusWidget.computed.isAutonomousComputed.call({
+          executionModeStore: 'Autonomous'
+        })
+      ).toBe(true)
+      expect(
+        AgenticAIStatusWidget.computed.isAutonomousComputed.call({
+          executionModeStore: 'Manual'
+        })
+      ).toBe(false)
+    })
+
     it('currentStatusText returns disabled when not active', () => {
       const ctx = {
         isAgenticAllyActiveComputed: false,
@@ -93,6 +106,19 @@ describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
       expect(result[0].title).toBe('Actions Executed')
     })
 
+    it('visibleStatCards returns all stat cards when not autonomous', () => {
+      const ctx = {
+        isAutonomousComputed: false,
+        statCards: [
+          { title: 'Actions Executed', subtitle: '', value: 0 },
+          { title: 'Pending Approvals', subtitle: '', value: 0 }
+        ]
+      }
+      expect(AgenticAIStatusWidget.computed.visibleStatCards.call(ctx)).toEqual(
+        ctx.statCards
+      )
+    })
+
     it('currentDescription returns disabled text when not active', () => {
       const ctx = { isAgenticAllyActiveComputed: false, isAutonomousComputed: false, isApprovalGatedNoPendingState: false }
       expect(AgenticAIStatusWidget.computed.currentDescription.call(ctx)).toContain('enable it')
@@ -111,6 +137,29 @@ describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
     it('currentDescription returns manual review text when manual', () => {
       const ctx = { isAgenticAllyActiveComputed: true, isAutonomousComputed: false, isApprovalGatedNoPendingState: false }
       expect(AgenticAIStatusWidget.computed.currentDescription.call(ctx)).toContain('Review and approve')
+    })
+
+    it('showSettingsIcon stays visible regardless of execution mode', () => {
+      expect(AgenticAIStatusWidget.computed.showSettingsIcon.call({})).toBe(true)
+    })
+
+    it('pendingApprovalsCard returns the matching card when present', () => {
+      const pendingCard = { title: 'Pending Approvals', value: 4 }
+      const ctx = {
+        statCards: [{ title: 'Actions Executed', value: 1 }, pendingCard]
+      }
+      expect(AgenticAIStatusWidget.computed.pendingApprovalsCard.call(ctx)).toBe(
+        pendingCard
+      )
+    })
+
+    it('pendingApprovalsCard returns undefined when the card is missing', () => {
+      const ctx = {
+        statCards: [{ title: 'Actions Executed', value: 1 }]
+      }
+      expect(
+        AgenticAIStatusWidget.computed.pendingApprovalsCard.call(ctx)
+      ).toBeUndefined()
     })
 
     it('statusIcon returns check-circle when active', () => {
@@ -153,6 +202,11 @@ describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
       expect(AgenticAIStatusWidget.computed.isApprovalGatedNoPendingState.call(ctx)).toBe(false)
     })
 
+    it('isApprovalGatedNoPendingState returns false when Agentic AI is disabled', () => {
+      const ctx = { isAgenticAllyActiveComputed: false, isAutonomousComputed: false, hasPendingApprovals: false }
+      expect(AgenticAIStatusWidget.computed.isApprovalGatedNoPendingState.call(ctx)).toBe(false)
+    })
+
     it('hasPendingApprovals returns true when card value > 0', () => {
       const ctx = { pendingApprovalsCard: { title: 'Pending Approvals', value: 3 } }
       expect(AgenticAIStatusWidget.computed.hasPendingApprovals.call(ctx)).toBe(true)
@@ -166,6 +220,53 @@ describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
     it('hasPendingApprovals returns falsy when card is undefined', () => {
       const ctx = { pendingApprovalsCard: undefined }
       expect(AgenticAIStatusWidget.computed.hasPendingApprovals.call(ctx)).toBeFalsy()
+    })
+
+    it('highlightedCardTitles returns empty array when nothing is highlighted', () => {
+      const ctx = {
+        isAutonomousComputed: false,
+        hasPendingApprovals: false
+      }
+      expect(AgenticAIStatusWidget.computed.highlightedCardTitles.call(ctx)).toEqual([])
+    })
+
+    it('highlightedCardTitles returns only Pending Approvals in manual mode with pending', () => {
+      const ctx = {
+        isAutonomousComputed: false,
+        hasPendingApprovals: true
+      }
+      expect(AgenticAIStatusWidget.computed.highlightedCardTitles.call(ctx)).toEqual([
+        'Pending Approvals'
+      ])
+    })
+  })
+
+  describe('watch', () => {
+    it('isAgenticAIEnabledStore watcher fetches stats when enabled and licensed', () => {
+      const fetchStats = jest.fn()
+      AgenticAIStatusWidget.watch.isAgenticAIEnabledStore.call(
+        { hasAgenticAILicense: true, fetchStats },
+        true
+      )
+      expect(fetchStats).toHaveBeenCalledTimes(1)
+    })
+
+    it('isAgenticAIEnabledStore watcher does not fetch stats when disabled', () => {
+      const fetchStats = jest.fn()
+      AgenticAIStatusWidget.watch.isAgenticAIEnabledStore.call(
+        { hasAgenticAILicense: true, fetchStats },
+        false
+      )
+      expect(fetchStats).not.toHaveBeenCalled()
+    })
+
+    it('isAgenticAIEnabledStore watcher does not fetch stats without license', () => {
+      const fetchStats = jest.fn()
+      AgenticAIStatusWidget.watch.isAgenticAIEnabledStore.call(
+        { hasAgenticAILicense: false, fetchStats },
+        true
+      )
+      expect(fetchStats).not.toHaveBeenCalled()
     })
   })
 
@@ -281,6 +382,42 @@ describe('AgenticAIStatusWidget.vue (extra branch coverage)', () => {
       const ctx = { statsData: null, statCards }
       AgenticAIStatusWidget.methods.updateStatCards.call(ctx)
       expect(statCards[0].value).toBe(7)
+    })
+
+    it('updateStatCards falls back to 0 when the selected stats period is missing', () => {
+      const statCards = [
+        { title: 'Actions Executed', subtitle: 'Last 7 days', value: 11 },
+        { title: 'Pending Approvals', subtitle: '', value: 5 }
+      ]
+      const ctx = {
+        isAutonomousComputed: true,
+        statsData: {
+          last30Days: {
+            approvalGated: { Pending: 0 }
+          }
+        },
+        statCards,
+        getPeriodKey: AgenticAIStatusWidget.methods.getPeriodKey
+      }
+      AgenticAIStatusWidget.methods.updateStatCards.call(ctx)
+      expect(statCards[0].value).toBe(0)
+      expect(statCards[1].value).toBe(0)
+    })
+
+    it('updateStatCards skips missing cards without throwing', () => {
+      const ctx = {
+        isAutonomousComputed: false,
+        statsData: {
+          last30Days: {
+            approvalGated: { Approved: 4, Pending: 2 }
+          }
+        },
+        statCards: [{ title: 'Other Card', subtitle: '', value: 1 }],
+        getPeriodKey: AgenticAIStatusWidget.methods.getPeriodKey
+      }
+      expect(() => {
+        AgenticAIStatusWidget.methods.updateStatCards.call(ctx)
+      }).not.toThrow()
     })
 
     it('handleChatWithAgenticAI dispatches open-agentic-ai-chat event', () => {

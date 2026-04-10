@@ -4,6 +4,229 @@ import AgenticAIActivitiesDrawer from '@/components/Common/Widget/WidgetComponen
 describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
   const localVue = createLocalVue()
 
+  describe('watch', () => {
+    it('value watcher initializes drawer data only when opened', () => {
+      const initializeDrawerData = jest.fn()
+
+      AgenticAIActivitiesDrawer.watch.value.call({ initializeDrawerData }, true)
+      expect(initializeDrawerData).toHaveBeenCalledTimes(1)
+
+      initializeDrawerData.mockClear()
+      AgenticAIActivitiesDrawer.watch.value.call({ initializeDrawerData }, false)
+      expect(initializeDrawerData).not.toHaveBeenCalled()
+    })
+
+    it('getLightbox.status watcher toggles drawer body overflow when the element exists', () => {
+      const drawerBody = { style: { overflowY: '' } }
+      const ctx = {
+        $el: {
+          querySelector: jest.fn(() => drawerBody)
+        }
+      }
+
+      AgenticAIActivitiesDrawer.watch['getLightbox.status'].call(ctx, true)
+      expect(drawerBody.style.overflowY).toBe('hidden')
+
+      AgenticAIActivitiesDrawer.watch['getLightbox.status'].call(ctx, false)
+      expect(drawerBody.style.overflowY).toBe('')
+    })
+
+    it('getLightbox.status watcher safely skips missing drawer body', () => {
+      const ctx = {
+        $el: {
+          querySelector: jest.fn(() => null)
+        }
+      }
+
+      expect(() => {
+        AgenticAIActivitiesDrawer.watch['getLightbox.status'].call(ctx, true)
+      }).not.toThrow()
+    })
+  })
+
+  describe('lightweight computed coverage', () => {
+    it('status mirrors the value prop and isNested stays false', () => {
+      expect(AgenticAIActivitiesDrawer.computed.status.call({ value: true })).toBe(true)
+      expect(AgenticAIActivitiesDrawer.computed.isNested.call({})).toBe(false)
+    })
+
+    it('batchTypeFilterItems preserves a selected value that is no longer in the list', () => {
+      const ctx = {
+        batchTypeFilterOptions: ['Phishing', 'Training'],
+        leftTypeFilter: 'Quishing',
+        getStableFilterItems: AgenticAIActivitiesDrawer.methods.getStableFilterItems
+      }
+
+      expect(AgenticAIActivitiesDrawer.computed.batchTypeFilterItems.call(ctx)).toEqual([
+        'Quishing',
+        'Phishing',
+        'Training'
+      ])
+    })
+
+    it('batchStatusFilterItems reuses the same options array when selection already exists', () => {
+      const options = ['Pending', 'Approved']
+      const ctx = {
+        batchStatusFilterOptions: options,
+        leftStatusFilter: 'Pending',
+        getStableFilterItems: AgenticAIActivitiesDrawer.methods.getStableFilterItems
+      }
+
+      expect(AgenticAIActivitiesDrawer.computed.batchStatusFilterItems.call(ctx)).toBe(options)
+    })
+
+    it('isGlobalRefreshDisabled reacts to each loading gate', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: false,
+          isLoading: false,
+          actionInProgress: false
+        })
+      ).toBe(false)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: true,
+          batchListLoadingMore: false,
+          isLoading: false,
+          actionInProgress: false
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: true,
+          isLoading: false,
+          actionInProgress: false
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: false,
+          isLoading: true,
+          actionInProgress: false
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: false,
+          isLoading: false,
+          actionInProgress: true
+        })
+      ).toBe(true)
+    })
+
+    it('isDrawerCloseLocked reacts to action and dialog loading states', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: false,
+          confirmDialog: { loading: false },
+          rejectDialog: { loading: false }
+        })
+      ).toBe(false)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: true,
+          confirmDialog: { loading: false },
+          rejectDialog: { loading: false }
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: false,
+          confirmDialog: { loading: true },
+          rejectDialog: { loading: false }
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: false,
+          confirmDialog: { loading: false },
+          rejectDialog: { loading: true }
+        })
+      ).toBe(true)
+    })
+  })
+
+  describe('small interaction helpers', () => {
+    it('handleLeftSearchInput debounces filter refresh and clears its timer reference', () => {
+      jest.useFakeTimers()
+
+      try {
+        const ctx = {
+          leftSearchDebounceId: null,
+          clearLeftSearchDebounce: AgenticAIActivitiesDrawer.methods.clearLeftSearchDebounce,
+          handleLeftFiltersChanged: jest.fn()
+        }
+
+        AgenticAIActivitiesDrawer.methods.handleLeftSearchInput.call(ctx)
+        expect(ctx.leftSearchDebounceId).not.toBeNull()
+
+        jest.advanceTimersByTime(250)
+        expect(ctx.handleLeftFiltersChanged).toHaveBeenCalledTimes(1)
+        expect(ctx.leftSearchDebounceId).toBeNull()
+      } finally {
+        jest.useRealTimers()
+      }
+    })
+
+    it('handleLeftSearchClear cancels pending debounce work and refreshes immediately', () => {
+      const clearLeftSearchDebounce = jest.fn()
+      const handleLeftFiltersChanged = jest.fn()
+
+      AgenticAIActivitiesDrawer.methods.handleLeftSearchClear.call({
+        clearLeftSearchDebounce,
+        handleLeftFiltersChanged
+      })
+
+      expect(clearLeftSearchDebounce).toHaveBeenCalledTimes(1)
+      expect(handleLeftFiltersChanged).toHaveBeenCalledTimes(1)
+    })
+
+    it('resetActivitiesTableState clears rows and resets server-side pagination totals', () => {
+      const ctx = {
+        pagedTableData: [{ resourceId: 'r1' }],
+        serverSideProps: {
+          totalNumberOfRecords: 12,
+          totalNumberOfPages: 3,
+          pageNumber: 4
+        }
+      }
+
+      AgenticAIActivitiesDrawer.methods.resetActivitiesTableState.call(ctx)
+
+      expect(ctx.pagedTableData).toEqual([])
+      expect(ctx.serverSideProps.totalNumberOfRecords).toBe(0)
+      expect(ctx.serverSideProps.totalNumberOfPages).toBe(0)
+      expect(ctx.serverSideProps.pageNumber).toBe(1)
+    })
+
+    it('handleCloseRequest closes the drawer only when closing is not locked', () => {
+      const closeDrawer = jest.fn()
+
+      AgenticAIActivitiesDrawer.methods.handleCloseRequest.call({
+        isDrawerCloseLocked: true,
+        closeDrawer
+      })
+      expect(closeDrawer).not.toHaveBeenCalled()
+
+      AgenticAIActivitiesDrawer.methods.handleCloseRequest.call({
+        isDrawerCloseLocked: false,
+        closeDrawer
+      })
+      expect(closeDrawer).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('formatActivityTypeDisplay', () => {
     it('removes Simulation suffix for phishing and quishing labels', () => {
       const ctx = {}

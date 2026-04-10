@@ -16,10 +16,12 @@ describe('CampaignManager utils', () => {
   it('exports campaign and scenario constants', () => {
     expect(CAMPAIGN_TYPE.Phishing).toBe(1)
     expect(METHOD_TYPES.ATTACHMENT).toBe('Attachment')
-    expect(scenarioDistributionFilterItems).toHaveLength(4)
-    expect(scenarioDistributionItems).toHaveLength(4)
+    expect(scenarioDistributionFilterItems).toHaveLength(5)
+    expect(scenarioDistributionItems).toHaveLength(5)
     expect(SCENARIO_DISTRIBUTION.SAME_SCENARIO_FOR_ALL).toBe(2)
+    expect(SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING).toBe(4)
     expect(SCENARIO_DISTRIBUTION_TEXTS[0]).toBe('Manually')
+    expect(SCENARIO_DISTRIBUTION_TEXTS[4]).toBe('Agentic AI explicit user-scenario mapping')
   })
 
   it('builds status filter items from action statuses', () => {

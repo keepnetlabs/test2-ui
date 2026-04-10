@@ -101,11 +101,14 @@ describe('CampaignManager utils (extra branch coverage)', () => {
       expect(SCENARIO_DISTRIBUTION.MANUALLY).toBe(0)
       expect(SCENARIO_DISTRIBUTION.RANDOM_SCENARIO_FOR_EACH).toBe(1)
       expect(SCENARIO_DISTRIBUTION.SAME_SCENARIO_FOR_ALL).toBe(2)
+      expect(SCENARIO_DISTRIBUTION.AI_ALLY_SELECTS_SCENARIO_FOR_EACH_USER).toBe(3)
+      expect(SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING).toBe(4)
     })
 
-    it('SCENARIO_DISTRIBUTION_TEXTS has 4 entries', () => {
-      expect(SCENARIO_DISTRIBUTION_TEXTS).toHaveLength(4)
+    it('SCENARIO_DISTRIBUTION_TEXTS has 5 entries', () => {
+      expect(SCENARIO_DISTRIBUTION_TEXTS).toHaveLength(5)
       expect(SCENARIO_DISTRIBUTION_TEXTS[0]).toBe('Manually')
+      expect(SCENARIO_DISTRIBUTION_TEXTS[4]).toBe('Agentic AI explicit user-scenario mapping')
     })
 
     it('CAMPAIGN_TYPE exposes distinct numeric scenario kinds', () => {
@@ -152,10 +155,10 @@ describe('CampaignManager utils (extra branch coverage)', () => {
     })
 
     it('scenario distribution filter and select items stay aligned in length', () => {
-      expect(scenarioDistributionFilterItems).toHaveLength(4)
-      expect(scenarioDistributionItems).toHaveLength(4)
+      expect(scenarioDistributionFilterItems).toHaveLength(5)
+      expect(scenarioDistributionItems).toHaveLength(5)
       const values = scenarioDistributionItems.map((i) => i.value)
-      expect(new Set(values)).toEqual(new Set([0, 1, 2, 3]))
+      expect(new Set(values)).toEqual(new Set([0, 1, 2, 3, 4]))
     })
   })
 })
