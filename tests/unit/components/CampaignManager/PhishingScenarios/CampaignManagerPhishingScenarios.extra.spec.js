@@ -4,6 +4,21 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 describe('CampaignManagerPhishingScenarios.vue (extra)', () => {
+  it('data exposes explicit Agentic AI user-scenario mapping as a distribution option', () => {
+    const data = CampaignManagerPhishingScenarios.data.call({
+      type: SCENARIO_TYPES.PHISHING
+    })
+
+    expect(data.scenarioDistributionItems).toEqual(
+      expect.arrayContaining([
+        {
+          text: 'Agentic AI explicit user-scenario mapping',
+          value: SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+        }
+      ])
+    )
+  })
+
   it('getContainerStyle returns empty object when distribution is not manually', () => {
     const ctx = {
       isValid: false,
@@ -261,6 +276,39 @@ describe('CampaignManagerPhishingScenarios.vue (extra)', () => {
       expect(ctx.isShowSelectedScenarios).toBe(false)
       expect(ctx.$emit).toHaveBeenCalledWith('input', [])
       expect(ctx.checkboxModel).toEqual({})
+    })
+
+    it('scenarioDistribution watch applies the same reset flow for explicit Agentic AI mapping mode', () => {
+      ctx.tab = 'landing-page'
+      ctx.isShowSelectedScenarios = true
+      ctx.checkboxModel = { existing: true }
+
+      CampaignManagerPhishingScenarios.watch.scenarioDistribution.call(
+        ctx,
+        SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+      )
+
+      expect(ctx.$emit).toHaveBeenCalledWith(
+        'distributionChanged',
+        SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+      )
+      expect(ctx.tab).toBe('email')
+      expect(ctx.isShowSelectedScenarios).toBe(false)
+      expect(ctx.$emit).toHaveBeenCalledWith('input', [])
+      expect(ctx.checkboxModel).toEqual({})
+    })
+
+    it('initialScenarioDistribution watcher accepts explicit Agentic AI mapping mode', () => {
+      ctx.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
+
+      CampaignManagerPhishingScenarios.watch.initialScenarioDistribution.handler.call(
+        ctx,
+        SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+      )
+
+      expect(ctx.scenarioDistribution).toBe(
+        SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+      )
     })
 
     it('defaultPhishingScenariosValuesMapped handles arrays', () => {
