@@ -269,7 +269,7 @@
                   </div>
                   <!-- Red Flags Button -->
                   <VBtn
-                    v-if="isPhishing"
+                    v-if="isPhishing || isQuishing"
                     :ripple="false"
                     class="fw-600"
                     rounded
@@ -565,6 +565,7 @@ import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplat
 import { defaultRedFlags } from "@/components/PhishingScenarios/utils";
 import QuishingService from "@/api/quishing";
 import { checkRedFlags } from "@/api/phishingsimulator";
+import { checkQuishingRedFlags } from "@/api/quishing";
 import {
   createRandomCryptStringNumber,
   FLAGGED_AREA_CSS,
@@ -1177,9 +1178,12 @@ export default {
             this.updateTemplateWithFlaggedStyles();
           })
           .catch((e) => {
+            const redFlagServiceUrl = this.isQuishing
+              ? 'quishing-red-flag.keepnet-labs-ltd-business-profile4086.workers.dev'
+              : 'r-flg.keepnetlabs.com';
             if (!e?.response || e?.response?.status === 0) {
               this.$store.dispatch("common/createSnackBar", {
-                message: `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: 0`,
+                message: `Network error while reaching https://${redFlagServiceUrl}. Status Code: 0`,
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 icon: "mdi-alert-circle"
               });
@@ -1189,7 +1193,7 @@ export default {
               message:
                 e?.response?.data?.detail ||
                 e?.response?.data?.message ||
-                `Network error while reaching https://r-flg.keepnetlabs.com. Status Code: ${
+                `Network error while reaching https://${redFlagServiceUrl}. Status Code: ${
                   e?.response?.status || e?.response?.data?.status || 0
                 }`,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -1229,8 +1233,9 @@ export default {
       delay = 5000,
       currentAttempt = 1
     ) {
+      const checkFn = this.isQuishing ? checkQuishingRedFlags : checkRedFlags;
       return new Promise((resolve, reject) => {
-        checkRedFlags(payload)
+        checkFn(payload)
           .then((response) => {
             resolve(response);
           })
