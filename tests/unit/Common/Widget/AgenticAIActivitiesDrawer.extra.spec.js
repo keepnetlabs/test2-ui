@@ -457,7 +457,9 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       getActivityTypeName: AgenticAIActivitiesDrawer.methods.getActivityTypeName,
       normalizeStatus: AgenticAIActivitiesDrawer.methods.normalizeStatus,
       formatActivityTypeDisplay: AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay,
-      normalizeTargetUserIsDeletedFlag: AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag
+      normalizeTargetUserIsDeletedFlag: AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag,
+      normalizeActivityTooltipMessage: AgenticAIActivitiesDrawer.methods.normalizeActivityTooltipMessage,
+      getActivityErrorMessage: AgenticAIActivitiesDrawer.methods.getActivityErrorMessage
     }
 
     it('maps targetUserStatus and defaults empty to empty string', () => {
@@ -505,6 +507,50 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       })
       expect(row.targetUserStatus).toBe('')
       expect(row.targetUserIsDeleted).toBe(false)
+    })
+
+    it('maps error tooltip text from fallback message fields', () => {
+      const row = AgenticAIActivitiesDrawer.methods.mapActivityToRow.call(methodCtx, {
+        resourceId: 'rid',
+        batchResourceId: 'bid',
+        activityType: 1,
+        statusName: 'Error',
+        message: '  Domain verification failed  '
+      })
+      expect(row.errorMessage).toBe('Domain verification failed')
+    })
+  })
+
+  describe('approval status tooltip helpers', () => {
+    const ctx = {
+      normalizeStatus: AgenticAIActivitiesDrawer.methods.normalizeStatus,
+      normalizeActivityTooltipMessage: AgenticAIActivitiesDrawer.methods.normalizeActivityTooltipMessage
+    }
+
+    it('normalizes arrays and message objects into a single tooltip string', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.normalizeActivityTooltipMessage.call(ctx, [
+          { Message: 'Domain is not verified.' },
+          { message: 'Try a verified sender.' }
+        ])
+      ).toBe('Domain is not verified., Try a verified sender.')
+    })
+
+    it('extracts validationDetail JSON when direct error message is absent', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getActivityErrorMessage.call(ctx, {
+          validationDetail: JSON.stringify([{ Message: 'Unverified domain detected.' }])
+        })
+      ).toBe('Unverified domain detected.')
+    })
+
+    it('returns empty string for unsupported statuses', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getApprovalStatusTooltipText.call(ctx, {
+          status: 'Approved',
+          errorMessage: 'ignored'
+        })
+      ).toBe('')
     })
   })
 
