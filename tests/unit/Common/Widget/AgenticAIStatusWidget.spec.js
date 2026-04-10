@@ -140,7 +140,7 @@ describe("AgenticAIStatusWidget", () => {
     });
   });
 
-  it("shows settings icon only when active and not autonomous", () => {
+  it("shows settings icon in manual, autonomous, and disabled states", () => {
     const wrapper = mountFactory({
       "login/getAgenticAIEnabled": true,
       "login/getAgenticAIExecutionMode": "Manual"
@@ -151,7 +151,7 @@ describe("AgenticAIStatusWidget", () => {
       "login/getAgenticAIEnabled": true,
       "login/getAgenticAIExecutionMode": "Autonomous"
     });
-    expect(autoWrapper.vm.showSettingsIcon).toBe(false);
+    expect(autoWrapper.vm.showSettingsIcon).toBe(true);
 
     const disabledWrapper = mountFactory({
       "login/getAgenticAIEnabled": false,
@@ -587,11 +587,11 @@ describe("AgenticAIStatusWidget", () => {
       expect(wrapper.vm.showSettingsIcon).toBe(true);
     });
 
-    it("should hide settings icon in autonomous mode", () => {
+    it("should show settings icon in autonomous mode", () => {
       const wrapper = mountFactory({
         "login/getAgenticAIExecutionMode": "Autonomous"
       });
-      expect(wrapper.vm.showSettingsIcon).toBe(false);
+      expect(wrapper.vm.showSettingsIcon).toBe(true);
     });
 
     it("should show settings icon when disabled", () => {

@@ -356,7 +356,7 @@ export default {
         : "Review and approve AI-recommended actions before they are executed.";
     },
     showSettingsIcon() {
-      return !this.isAutonomousComputed || !this.isAgenticAllyActiveComputed;
+      return true;
     },
     statusIcon() {
       if (this.isAgenticAllyActiveComputed) {

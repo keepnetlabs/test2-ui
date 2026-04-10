@@ -90,7 +90,7 @@
       </FormGroup>
 
       <FormGroup
-        v-if="showSettingsForm"
+        v-if="showBehavioralPoliciesForm"
         class-name="agentic-ai-settings__behavioral-policies-form-group mt-6"
       >
         <template #title>
@@ -190,7 +190,10 @@ export default {
   },
   computed: {
     showSettingsForm() {
-      return this.agenticAISettings.isAgenticAIEnabled && isTestEnvironment();
+      return this.agenticAISettings.isAgenticAIEnabled;
+    },
+    showBehavioralPoliciesForm() {
+      return this.showSettingsForm && isTestEnvironment();
     },
     hasAgenticAILicense() {
       return this.$store.getters["login/getHasAgenticAILicense"];
