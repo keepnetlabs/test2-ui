@@ -68,6 +68,19 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       const ctx = {}
       expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'unknownField')).toBe('unknownField')
     })
+
+    it('maps DataTable search field casing back to API field names', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'FirstName')).toBe(
+        'targetUserFirstName'
+      )
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'Email')).toBe(
+        'targetUserEmail'
+      )
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'StartDate')).toBe(
+        'createTime'
+      )
+    })
   })
 
   describe('getSortFieldName', () => {
@@ -127,6 +140,18 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx)
       expect(result.Value).toBe('')
     })
+
+    it('normalizes DataTable search field casing before sending to API', () => {
+      const ctx = {
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
+      }
+      const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx, {
+        FieldName: 'FirstName',
+        Value: 'Damla'
+      })
+      expect(result.FieldName).toBe('targetUserFirstName')
+      expect(result.Value).toBe('Damla')
+    })
   })
 
   describe('resetPageNumber', () => {
@@ -138,6 +163,130 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       AgenticAIActivitiesDrawer.methods.resetPageNumber.call(ctx)
       expect(ctx.axiosPayload.pageNumber).toBe(1)
       expect(ctx.serverSideProps.pageNumber).toBe(1)
+    })
+  })
+
+  describe('saved filter persistence helpers', () => {
+    afterEach(() => {
+      localStorage.clear()
+    })
+
+    it('returns null when no saved filter key exists or JSON is invalid', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getSavedActivitiesTableFilters.call({
+          savedFiltersLocalStorageKey: ''
+        })
+      ).toBeNull()
+
+      localStorage.setItem('AgenticAIActivitiesTableSearchKeys', '{bad-json')
+      expect(
+        AgenticAIActivitiesDrawer.methods.getSavedActivitiesTableFilters.call({
+          savedFiltersLocalStorageKey: 'AgenticAIActivitiesTableSearchKeys'
+        })
+      ).toBeNull()
+    })
+
+    it('getSavedActivitiesTableFilters returns parsed localStorage data', () => {
+      localStorage.setItem(
+        'AgenticAIActivitiesTableSearchKeys',
+        JSON.stringify({ filter: { SearchInputTextValue: 'damla' } })
+      )
+
+      const result = AgenticAIActivitiesDrawer.methods.getSavedActivitiesTableFilters.call({
+        savedFiltersLocalStorageKey: 'AgenticAIActivitiesTableSearchKeys'
+      })
+
+      expect(result).toEqual({ filter: { SearchInputTextValue: 'damla' } })
+    })
+
+    it('applySavedActivitiesTableFilters hydrates axios payload filter from saved defaults', () => {
+      const ctx = {
+        axiosPayload: { filter: { SearchInputTextValue: '', FilterGroups: [] } },
+        $set: (obj, key, value) => {
+          obj[key] = value
+        },
+        getSavedActivitiesTableFilters: jest.fn(() => ({
+          filter: {
+            SearchInputTextValue: 'damla',
+            FilterGroups: [{ FilterItems: [{ FieldName: 'FirstName', Value: 'damla' }] }]
+          }
+        }))
+      }
+
+      AgenticAIActivitiesDrawer.methods.applySavedActivitiesTableFilters.call(ctx)
+
+      expect(ctx.axiosPayload.filter.SearchInputTextValue).toBe('damla')
+      expect(ctx.axiosPayload.filter.FilterGroups[0].FilterItems[0].FieldName).toBe('FirstName')
+    })
+
+    it('applySavedActivitiesTableFilters leaves payload untouched when no saved filter exists', () => {
+      const originalFilter = { SearchInputTextValue: '', FilterGroups: [] }
+      const ctx = {
+        axiosPayload: { filter: originalFilter },
+        $set: jest.fn(),
+        getSavedActivitiesTableFilters: jest.fn(() => null)
+      }
+
+      AgenticAIActivitiesDrawer.methods.applySavedActivitiesTableFilters.call(ctx)
+
+      expect(ctx.$set).not.toHaveBeenCalled()
+      expect(ctx.axiosPayload.filter).toBe(originalFilter)
+    })
+  })
+
+  describe('buildRequestPayload', () => {
+    it('normalizes saved search field names and removes duplicate batch filters before appending selected batch', () => {
+      const ctx = {
+        axiosPayload: {
+          pageNumber: 4,
+          pageSize: 10,
+          orderBy: 'firstName',
+          filter: {
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [
+                  { FieldName: 'batchResourceId', Operator: '=', Value: 'old-batch' },
+                  { FieldName: 'FirstName', Operator: 'Contains', Value: 'damla' }
+                ],
+                FilterGroups: []
+              },
+              {
+                Condition: 'OR',
+                FilterItems: [{ FieldName: 'Email', Operator: 'Contains', Value: 'damla@x.com' }],
+                FilterGroups: []
+              }
+            ]
+          }
+        },
+        serverSideProps: { pageNumber: 2, pageSize: 25 },
+        selectedBatchId: 'new-batch',
+        getSortFieldName: AgenticAIActivitiesDrawer.methods.getSortFieldName,
+        normalizeFilterItem: AgenticAIActivitiesDrawer.methods.normalizeFilterItem,
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
+      }
+
+      const result = AgenticAIActivitiesDrawer.methods.buildRequestPayload.call(ctx)
+
+      expect(result.pageNumber).toBe(2)
+      expect(result.pageSize).toBe(25)
+      expect(result.orderBy).toBe('TargetUserFirstName')
+      expect(result.filter.FilterGroups[0].FilterItems).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            FieldName: 'targetUserFirstName',
+            Value: 'damla'
+          }),
+          expect.objectContaining({
+            FieldName: 'BatchResourceId',
+            Value: 'new-batch'
+          })
+        ])
+      )
+      expect(
+        result.filter.FilterGroups[0].FilterItems.some((item) => item.Value === 'old-batch')
+      ).toBe(false)
+      expect(result.filter.FilterGroups[1].FilterItems[0].FieldName).toBe('targetUserEmail')
     })
   })
 
