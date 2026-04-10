@@ -104,6 +104,7 @@ describe("AgenticAIActivitiesDrawer", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
     CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse([]));
   });
 
@@ -447,6 +448,19 @@ describe("AgenticAIActivitiesDrawer", () => {
     it("should accept columns prop", () => {
       const wrapper = mountFactory({ columns: baseColumns });
       expect(wrapper.props("columns")).toEqual(baseColumns);
+    });
+
+    it("exposes stable saved filter persistence keys for the detail DataTable", async () => {
+      const wrapper = mountFactory({ value: true });
+      await wrapper.setData({
+        batchList: [makeGroupedBatchApiRow("b-1")],
+        selectedBatchId: "b-1"
+      });
+
+      const dataTable = wrapper.find("datatable-stub");
+      expect(dataTable.exists()).toBe(true);
+      expect(wrapper.vm.savedFiltersLocalStorageKey).toBe("AgenticAIActivitiesTableSearchKeys");
+      expect(wrapper.vm.savedTableSettingsLocalStorageKey).toBe("AgenticAIActivitiesTableSettings");
     });
   });
 
@@ -1184,6 +1198,23 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(closeRejectSpy).toHaveBeenCalled();
       closeConfirmSpy.mockRestore();
       closeRejectSpy.mockRestore();
+    });
+
+    it("initializeDrawerData applies saved activity table filters before fetching", () => {
+      const wrapper = mountFactory(
+        { value: false },
+        {
+          fetchBatches: jest.fn().mockResolvedValue(undefined),
+          fetchActivities: jest.fn(),
+          moveToBody: jest.fn()
+        }
+      );
+      const applySavedFiltersSpy = jest.spyOn(wrapper.vm, "applySavedActivitiesTableFilters");
+
+      wrapper.vm.initializeDrawerData();
+
+      expect(applySavedFiltersSpy).toHaveBeenCalledTimes(1);
+      applySavedFiltersSpy.mockRestore();
     });
 
     it("handleApprove and handleDeclineAll clear reject dialog before opening confirm", () => {

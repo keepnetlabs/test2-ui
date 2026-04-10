@@ -320,6 +320,8 @@
                     :download-button="{ show: false }"
                     :is-settings-popup="true"
                     :axios-payload.sync="axiosPayload"
+                    :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
+                    :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
                     rowKey="resourceId"
                     filterable
                     options
@@ -544,6 +546,9 @@ const BATCH_LIST_PAGE_SIZE = 100;
 
 const BATCH_LIST_SCROLL_LOAD_THRESHOLD_PX = 140;
 
+const ACTIVITIES_TABLE_SAVED_FILTERS_KEY = "AgenticAIActivitiesTableSearchKeys";
+const ACTIVITIES_TABLE_SAVED_SETTINGS_KEY = "AgenticAIActivitiesTableSettings";
+
 /** Shown when Approve / Retry must be blocked because `targetUserStatus` is not Active. */
 const INACTIVE_TARGET_USER_APPROVAL_TOOLTIP =
   "Approve and retry are unavailable when the target user status is not Active.";
@@ -591,6 +596,8 @@ export default {
     return {
       serverSideProps: new ServerSideProps("", false, 10, 1, 0, 0),
       serverSideEvents: { pagination: true, search: true, sort: true },
+      savedFiltersLocalStorageKey: ACTIVITIES_TABLE_SAVED_FILTERS_KEY,
+      savedTableSettingsLocalStorageKey: ACTIVITIES_TABLE_SAVED_SETTINGS_KEY,
       actionInProgress: false,
       axiosPayload: this.createDefaultPayload(),
       pagedTableData: [],
@@ -917,6 +924,7 @@ export default {
       this.closeRejectDialog();
       this.serverSideProps = new ServerSideProps("", false, 10, 1, 0, 0);
       this.axiosPayload = this.createDefaultPayload(10, false);
+      this.applySavedActivitiesTableFilters();
       this.pagedTableData = [];
       this.batchList = [];
       this.batchListPageNumber = 1;
@@ -967,7 +975,28 @@ export default {
         status: "Status",
         startDate: "createTime"
       };
-      return fieldMap[property] || property;
+      const normalizedProperty =
+        typeof property === "string" && property.length
+          ? `${property.charAt(0).toLowerCase()}${property.slice(1)}`
+          : property;
+      return fieldMap[property] || fieldMap[normalizedProperty] || property;
+    },
+    getSavedActivitiesTableFilters() {
+      if (!this.savedFiltersLocalStorageKey) {
+        return null;
+      }
+      try {
+        return JSON.parse(localStorage.getItem(this.savedFiltersLocalStorageKey) || "null");
+      } catch {
+        return null;
+      }
+    },
+    applySavedActivitiesTableFilters() {
+      const savedFilters = this.getSavedActivitiesTableFilters();
+      if (!savedFilters?.filter) {
+        return;
+      }
+      this.$set(this.axiosPayload, "filter", savedFilters.filter);
     },
     getSortFieldName(property) {
       const fieldMap = {
