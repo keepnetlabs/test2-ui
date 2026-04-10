@@ -19,4 +19,14 @@ describe('AgenticAIStatusWidget drawer action spacing styles', () => {
     )
     expect(stylesheet).toContain('padding-right: 18px !important;')
   })
+
+  it('defines matching error styles for the left batch badge and progress bar', () => {
+    const stylesheet = fs.readFileSync(stylesheetPath, 'utf8')
+
+    expect(stylesheet).toContain('&--error {')
+    expect(stylesheet).toContain('background: #feeeee !important;')
+    expect(stylesheet).toContain('border-color: #ef9a9a !important;')
+    expect(stylesheet).toContain('color: #c62828 !important;')
+    expect(stylesheet).toContain('background: #c62828;')
+  })
 })
