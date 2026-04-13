@@ -1130,7 +1130,7 @@ export default {
 
         // İlk kez red flags çağrılıyor
         this.isRedFlagsLoading = true;
-        const currentLanguageData = this.selectedTemplateLanguages.find(
+        const currentLanguageData = this.languages.find(
           (lang) => lang.value === this.languagePreview
         );
         const payload = {
@@ -1140,7 +1140,7 @@ export default {
           fromEmail: this.emailTemplateParams.fromAddress || "",
           cc: this.emailTemplateParams.ccAddresses || [],
           attachmentFileName: this.emailTemplateParams.attachment?.name || "",
-          language: currentLanguageData?.text || ""
+          language: currentLanguageData?.code || currentLanguageData?.description || ""
         };
 
         this.checkRedFlagsWithRetry(payload)

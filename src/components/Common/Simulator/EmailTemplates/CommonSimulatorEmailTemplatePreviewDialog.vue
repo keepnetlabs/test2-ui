@@ -36,7 +36,13 @@
       </div>
       <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
         <EmailTemplatePreviewSkeleton v-if="isPreviewLoading" />
-        <div v-if="!isPreviewLoading" class="email-template-preview">
+        <EmailTemplatesAILoader
+          v-if="isRedFlagsLoading"
+          :title="getLoaderTitle"
+          :description="getLoaderDescription"
+          :loaderTime="20"
+        />
+        <div v-if="!isPreviewLoading && !isRedFlagsLoading" class="email-template-preview">
           <div class="email-template-preview__title">
             {{ emailTemplateParams.name }}
             <VTooltip v-if="emailTemplateParams.isAssistedByAI" bottom>
@@ -62,7 +68,6 @@
                     outlined
                     color="#2196f3"
                     @click="handleShowRedFlagsClick"
-                    :loading="isRedFlagsLoading"
                   >
                     <VIcon>mdi-flag</VIcon>
                     <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
@@ -239,7 +244,7 @@
               </div>
             </div>
             <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
-            <div class="mt-2">
+            <div :class="isShowRedFlags ? 'email-template-preview-phishing mt-2' : 'mt-2'">
               <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
             </div>
           </div>
@@ -251,6 +256,7 @@
 
 <script>
 import EmailTemplatePreviewSkeleton from '@/components/SkeletonLoading/EmailTemplatePreviewSkeleton.vue'
+import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAILoader.vue'
 import KEmailPreview from '@/components/KEmailPreview.vue'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview.vue'
 import RedFlagTooltip from '@/components/Common/Others/RedFlagTooltip.vue'
@@ -274,7 +280,8 @@ export default {
     AttachmentsPreview,
     KEmailPreview,
     EmailTemplatePreviewSkeleton,
-    RedFlagTooltip
+    RedFlagTooltip,
+    EmailTemplatesAILoader
   },
   mixins: [useLoading, useDrawerAnimation, useHtmlOverflowControl],
   props: {
@@ -360,6 +367,12 @@ export default {
     redFlagsText() {
       return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
     },
+    getLoaderTitle() {
+      return 'AI Ally is analyzing your email template for red flags'
+    },
+    getLoaderDescription() {
+      return 'The scan may take some time depending on the localization. Please stay on the page while the scan is completed.'
+    },
     getTitle() {
       return this?.isIndividualPrintoutTemplate
         ? labels.IndividualPrintoutTemplatePreview
@@ -405,7 +418,9 @@ export default {
             difficultyResourceId,
             phishingFileName,
             subject,
-            type
+            type,
+            languageTypeName,
+            languageTypeResourceId
           } = data
           this.emailTemplateParams = {
             fromName,
@@ -420,7 +435,9 @@ export default {
                   name: phishingFileName
                 }
               : null,
-            isAssistedByAI: data.isAssistedByAI
+            isAssistedByAI: data.isAssistedByAI,
+            languageTypeName,
+            languageTypeResourceId
           }
           if (this.type === SCENARIO_TYPES.QUISHING)
             data.template = data?.template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
@@ -474,6 +491,9 @@ export default {
         if (this.$refs.refPreview) {
           this.$refs.refPreview.isEmailGenerating = true
         }
+        const currentLanguageData = this.languages.find(
+          (lang) => lang.value === this.emailTemplateParams.languageTypeResourceId
+        )
         const payload = {
           template: this.templateHTML || '',
           subject: this.emailTemplateParams.subject || '',
@@ -481,7 +501,7 @@ export default {
           fromEmail: this.emailTemplateParams.fromAddress || '',
           cc: this.emailTemplateParams.ccAddresses || [],
           attachmentFileName: this.emailTemplateParams.attachment?.name || '',
-          language: ''
+          language: currentLanguageData?.code || currentLanguageData?.description || ''
         }
 
         this.checkRedFlagsWithRetry(payload)
