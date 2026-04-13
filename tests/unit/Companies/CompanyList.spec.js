@@ -159,6 +159,7 @@ describe('CompanyList.vue', () => {
           label: 'License Type',
           fieldName: 'LicenseTypeResourceId',
           operator: 'Include',
+          icon: 'mdi-certificate-outline',
           items: [
             { text: 'Awareness', value: 'license-awareness' },
             { text: 'Enterprise', value: 'license-enterprise' }
@@ -169,6 +170,7 @@ describe('CompanyList.vue', () => {
           label: 'Products',
           fieldName: 'ModuleResourceId',
           operator: 'Include',
+          icon: 'mdi-package-variant-closed',
           items: [
             { text: 'Phishing Simulator', value: 'module-1' },
             { text: 'Awareness Educator', value: 'module-3' }
@@ -1134,6 +1136,7 @@ describe('CompanyList.vue', () => {
           label: 'License Type',
           fieldName: 'LicenseTypeResourceId',
           operator: 'Include',
+          icon: 'mdi-certificate-outline',
           items: [{ text: 'License C', value: 'l-3' }]
         },
         {
@@ -1141,6 +1144,7 @@ describe('CompanyList.vue', () => {
           label: 'Products',
           fieldName: 'ModuleResourceId',
           operator: 'Include',
+          icon: 'mdi-package-variant-closed',
           items: [{ text: 'Module C', value: 'm-3' }]
         }
       ]
