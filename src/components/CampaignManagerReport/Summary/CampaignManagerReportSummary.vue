@@ -30,7 +30,7 @@
         :isLoading="isLoading"
       />
     </div>
-    <div v-if="isCategoryBasedDistribution" class="mt-6">
+    <div v-if="phishingScenarios.length === 1" class="mt-6">
       <CampaignManagerReportSummaryScenarioInfo
         :items="getScenarioInfoItems"
         :categories="getCategories"
@@ -344,15 +344,15 @@ export default {
           NumberOfCategories: categories.length,
           Method: methodText,
           Languages: languageShortCodesEmailTemplateInfos.size
-            ? [...languageShortCodesEmailTemplateInfos].join(', ')
-            : mappedLanguageShortCodes.join(','),
+            ? [...languageShortCodesEmailTemplateInfos]
+            : mappedLanguageShortCodes,
           Difficulty: difficultyText
         }
       }
       return {
         NumberOfCategories: 15,
         Method: 'Click-Only, Data Submission, Attachment, MFA',
-        Languages: 'EN, TR, DE, FR',
+        Languages: ['EN', 'TR', 'DE', 'FR'],
         Difficulty: 'Easy, Medium, Hard'
       }
     },

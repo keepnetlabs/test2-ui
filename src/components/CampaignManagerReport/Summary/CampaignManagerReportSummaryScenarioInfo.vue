@@ -1,5 +1,5 @@
 <template>
-  <Fragment>
+  <div style="display: contents;">
     <CampaignManagerReportSummaryCategoriesPopup
       :status="isCategoriesPopupVisible"
       :categories="categories"
@@ -20,25 +20,31 @@
         <div class="campaign-manager-summary-card__body-item-value">
           <div class="d-flex align-center">
             <span>{{ items[key] }}</span>
-            <v-btn class="ml-4" icon @click="handleCategoriesClick">
-              <v-icon center color="#2196F3">mdi-eye</v-icon>
-            </v-btn>
+            <v-icon class="ml-4" color="#2196F3" style="cursor: pointer;" @click="handleCategoriesClick">mdi-eye</v-icon>
           </div>
         </div>
       </template>
+      <template #Languages="{ props: { val } }">
+        <div class="campaign-manager-summary-card__body-item-key">
+          Languages
+        </div>
+        <div class="campaign-manager-summary-card__body-item-value">
+          <CampaignInfoLanguages :value="val" />
+        </div>
+      </template>
     </CampaignManagerSummaryCardOneLine>
-  </Fragment>
+  </div>
 </template>
 
 <script>
 import CampaignManagerSummaryCardOneLine from '@/components/CampaignManager/Summary/CampaignManagerSummaryCardOneLine'
-import { Fragment } from 'vue-frag'
+import CampaignInfoLanguages from '@/components/Common/Report/CampaignInfoLanguages.vue'
 import CampaignManagerReportSummaryCategoriesPopup from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategoriesPopup.vue'
 export default {
   name: 'CampaignManagerReportSummaryScenarioInfo',
   components: {
     CampaignManagerSummaryCardOneLine,
-    Fragment,
+    CampaignInfoLanguages,
     CampaignManagerReportSummaryCategoriesPopup
   },
   props: {

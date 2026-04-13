@@ -136,7 +136,7 @@ describe('CampaignManagerReportSummary.vue (extra branch coverage)', () => {
     expect(wrapper.vm.getScenarioInfoItems).toEqual({
       NumberOfCategories: 15,
       Method: 'Click-Only, Data Submission, Attachment, MFA',
-      Languages: 'EN, TR, DE, FR',
+      Languages: ['EN', 'TR', 'DE', 'FR'],
       Difficulty: 'Easy, Medium, Hard'
     })
   })
