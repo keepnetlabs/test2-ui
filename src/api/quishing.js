@@ -1,5 +1,7 @@
+import axios from 'axios'
 import testRequest from '@/utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
+import { isTestEnvironment } from '@/utils/isTestEnvironment'
 
 const exportScenarios = (payload) => {
   return testRequest.post(`/quishing-simulator/quishing-scenario/search/export`, payload, {
@@ -664,6 +666,24 @@ const searchCampaignJobUserEmailSubmittedMfa = (payload = {}, id = '', instanceG
 
 export function getQuishingScenariosPhoneNumber() {
   return testRequest.get(`/quishing-simulator/quishing-scenario/mfa-phone-number`)
+}
+
+const quishingRedFlagWorkerUrl = isTestEnvironment()
+  ? 'https://quishing-red-flag.keepnet-labs-ltd-business-profile4086.workers.dev'
+  : 'https://quishing-red-flag.keepnet-labs-ltd-business-profile4086.workers.dev'
+export const checkQuishingRedFlags = (payload) => {
+  return axios.post(`${quishingRedFlagWorkerUrl}?method=flag`, payload, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+export const translateQuishingRedFlagsTexts = (payload) => {
+  return axios.post(`${quishingRedFlagWorkerUrl}?method=translate`, payload, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 }
 
 export default {
