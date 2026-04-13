@@ -253,6 +253,7 @@ describe('GamificationReport.vue', () => {
       'http://localhost:4111/autonomous',
       {
         token: 'token-abc',
+        baseApiUrl: expect.any(String),
         preferredLanguage: 'en',
         targetUserResourceId: 'user-1',
         departmentName: 'SOC',
@@ -278,6 +279,7 @@ describe('GamificationReport.vue', () => {
   it('handleConfirmSendWithAI keeps sendAfter flag false when single action', async () => {
     const tokenSpy = jest.spyOn(AuthenticationService, 'getToken').mockReturnValue('token-prod')
     const postSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: {} })
+    postSpy.mockClear()
     localStorage.setItem('companyRequestId', 'company-456')
     const dispatch = jest.fn()
     const originalWindow = global.window
@@ -313,6 +315,7 @@ describe('GamificationReport.vue', () => {
     expect(calledBody).toEqual(
       expect.objectContaining({
         token: 'token-prod',
+        baseApiUrl: expect.any(String),
         actions: ['training'],
         sendAfterPhishingSimulation: false,
         companyId: 'company-456'
