@@ -35,6 +35,7 @@ export function sendAutonomous({
 }) {
   const body = {
     token: AuthenticationService.getToken(),
+    baseApiUrl: getBaseApiUrl(),
     preferredLanguage,
     targetUserResourceId,
     departmentName,
@@ -56,6 +57,7 @@ export function sendBatchAutonomous({
 }) {
   const body = {
     token: AuthenticationService.getToken(),
+    baseApiUrl: getBaseApiUrl(),
     targetGroupResourceId,
     actions,
     sendAfterPhishingSimulation,
