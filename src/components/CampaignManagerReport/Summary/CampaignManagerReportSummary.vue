@@ -106,6 +106,7 @@ import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Su
 import CampaignManagerReportSummaryCategory from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCategory.vue'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
 import { SCENARIO_DISTRIBUTION_TEXTS } from '@/components/CampaignManager/utils'
+import { collectScenarioLanguages } from '@/components/Common/Report/utils'
 import CampaignManagerReportSummaryPhishingEmail from './CampaignManagerReportSummaryPhishingEmail.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
@@ -245,14 +246,7 @@ export default {
         trackingReplyInfo: ''
       }
       const { smartGroupInfo, campaignInfo = {} } = this?.campaignSummary || {}
-      const languages = new Set()
-      this?.phishingScenarios?.forEach((scenario) => {
-        const languageCode = scenario.scenarioInfo.languageShortCode
-        const language = this.languageOptions.find(
-          (lang) => lang.languageShortCode === languageCode
-        )
-        languages.add(language?.text || languageCode)
-      })
+      const languages = collectScenarioLanguages(this.phishingScenarios, this.languageOptions)
       const { duration = '0' } = this.campaignSummary?.settings || {
         duration: '0'
       }
@@ -265,7 +259,7 @@ export default {
         'Smart Grouping': smartGroupInfo,
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languages.size ? [...languages].join(', ') : '',
+        Languages: languages,
         'Scenario Distribution': categoryDistributionType,
         'Reply Tracking': trackingReplyInfo
       }

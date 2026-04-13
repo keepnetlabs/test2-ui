@@ -184,6 +184,50 @@ describe('CampaignManagerReportSummary.vue (extra branch coverage)', () => {
     expect(payload.languages).toHaveLength(2)
   })
 
+  it('getCampaignSummaryItems prefers multi-language emailTemplateInfos over scenario language', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.languageOptions = [
+      { languageShortCode: 'en', text: 'English' },
+      { languageShortCode: 'tr', text: 'Turkish' },
+      { languageShortCode: 'de', text: 'German' },
+      { languageShortCode: 'fr', text: 'French' },
+      { languageShortCode: 'es', text: 'Spanish' }
+    ]
+    wrapper.vm.campaignSummary = {
+      campaignInfo: {
+        totalTargetUserCount: 120
+      },
+      settings: {
+        duration: 30
+      },
+      scenarios: [
+        {
+          scenarioInfo: { name: 'S1', languageShortCode: 'en' },
+          emailTemplateInfos: [
+            { languageShortCode: 'en' },
+            { languageShortCode: 'tr' },
+            { languageShortCode: 'de' }
+          ]
+        },
+        {
+          scenarioInfo: { name: 'S2', languageShortCode: 'fr' },
+          emailTemplateInfos: [
+            { languageShortCode: 'fr' },
+            { languageShortCode: 'es' }
+          ]
+        }
+      ]
+    }
+
+    expect(wrapper.vm.getCampaignSummaryItems.Languages).toEqual([
+      'English',
+      'Turkish',
+      'German',
+      'French',
+      'Spanish'
+    ])
+  })
+
   it('setCampaignSummary creates custom keys once and preserves on subsequent calls', async () => {
     const wrapper = createWrapper()
     const response = {
