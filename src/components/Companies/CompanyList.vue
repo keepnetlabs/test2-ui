@@ -240,6 +240,12 @@
             </div>
           </VTooltip>
         </template>
+        <template v-else-if="scope.column.property === 'licenseTypeName'">
+          <CompanyLicenseTypeCell
+            :license-type-name="scope.row.licenseTypeName"
+            :modules="scope.row.modules"
+          />
+        </template>
       </template>
       <template #extended-custom-view-slot>
         <company-list-extend
@@ -317,6 +323,7 @@ import {
 } from "@/model/constants/commonConstants";
 import CompanyListExtend from "@/components/Companies/CompanyListExtend";
 import CompanyCreateOrEdit from "@/components/Companies/CompanyCreateOrEdit";
+import CompanyLicenseTypeCell from "@/components/Companies/CompanyLicenseTypeCell";
 import AddGroupToModal from "@/components/Companies/AddToGroupModal";
 import CreateItemModal from "@/components/CompanyGroups/CreateItemModal";
 import AppModal from "@/components/AppModal";
@@ -328,10 +335,8 @@ import {
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import ConfigureNewCompanyModal from "@/components/Companies/ConfigureNewCompanyModal";
 import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
-import {
-  columnFilterChanged,
-  columnFilterCleared
-} from "@/utils/helperFunctions";
+import { getLicences } from "@/api/common";
+import { columnFilterChanged } from "@/utils/helperFunctions";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
 import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
@@ -345,6 +350,7 @@ export default {
     CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,
+    CompanyLicenseTypeCell,
     CompanyListExtend,
     Datatable,
     DeleteModal,
@@ -424,11 +430,13 @@ export default {
             label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "select",
-            filterableItems: [],
+            type: "slot",
+            filterableType: "nestedSelect",
+            filterableConfig: {
+              groups: []
+            },
             filterableCustomFieldName: "LicenseTypeResourceId",
-            width: 150
+            width: 230
           },
           {
             property: "targetUserCount",
@@ -876,9 +884,14 @@ export default {
         .catch(() => {});
     },
     getLookUpDatas() {
-      LookupLocalStorage.getMultiple([2, 3])
-        .then((response) => {
-          const res = response;
+      Promise.allSettled([LookupLocalStorage.getMultiple([2]), getLicences()])
+        .then(([lookupResult, licensesResult]) => {
+          const res =
+            lookupResult.status === "fulfilled" ? lookupResult.value : [];
+          const { licenses = [], allLicenseModules = [] } =
+            licensesResult.status === "fulfilled"
+              ? licensesResult.value?.data?.data || {}
+              : {};
           this.$set(
             this.tableOptions.columns[2],
             "filterableItems",
@@ -886,13 +899,35 @@ export default {
               .filter((item) => item.genericCodeTypeId === 2)
               .map((item) => ({ text: item.name, value: item.resourceId }))
           );
-          this.$set(
-            this.tableOptions.columns[3],
-            "filterableItems",
-            res
-              .filter((item) => item.genericCodeTypeId === 3)
-              .map((item) => ({ text: item.name, value: item.resourceId }))
-          );
+          this.$set(this.tableOptions.columns[3], "filterableConfig", {
+            exclusiveGroups: true,
+            groups: [
+              {
+                key: "licenseType",
+                label: "License Type",
+                icon: "mdi-certificate-outline",
+                fieldName: "LicenseTypeResourceId",
+                operator: "Include",
+                items: licenses.map((item) => ({
+                  text: item.name,
+                  value: item.resourceId
+                }))
+              },
+              {
+                key: "products",
+                label: "Products",
+                icon: "mdi-package-variant-closed",
+                fieldName: "ModuleResourceId",
+                operator: "Include",
+                items: allLicenseModules
+                  .filter((item) => item.isAvailable)
+                  .map((item) => ({
+                    text: item.name,
+                    value: item.resourceId
+                  }))
+              }
+            ]
+          });
           this?.$refs?.refDataList?.reRenderFilters();
         })
         .finally(() => this.getTableData());
@@ -1193,9 +1228,16 @@ export default {
       this.showCreateNewGroupWithCompany = status;
     },
     columnFilterChanged(filter) {
-      const transformedFilter = this.normalizeFilterForBackend(filter);
+      const sourceFilter = filter?.filters || filter;
+      const transformedFilter = this.normalizeFilterForBackend(sourceFilter);
+      const clearFieldNames = filter?.clearFieldNames || [];
       if (Array.isArray(transformedFilter)) {
-        const fieldNames = transformedFilter.map((f) => f.FieldName);
+        const fieldNames = [
+          ...new Set([
+            ...clearFieldNames,
+            ...transformedFilter.map((f) => f.FieldName)
+          ])
+        ];
         this.payload.filter.FilterGroups[0].FilterItems =
           this.payload.filter.FilterGroups[0].FilterItems.filter(
             (item) => !fieldNames.includes(item.FieldName)
@@ -1224,16 +1266,14 @@ export default {
         : setOperator(filter);
     },
     columnFilterCleared(fieldName) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.payload
-      );
-      if (fieldName === "TrainingConsumptionMonth") {
-        this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-          "TrainingConsumptionStatus",
-          this.payload
-        );
+      const fieldNames = Array.isArray(fieldName) ? [...fieldName] : [fieldName];
+      if (fieldNames.includes("TrainingConsumptionMonth")) {
+        fieldNames.push("TrainingConsumptionStatus");
       }
+      const fieldNameSet = new Set(fieldNames);
+      this.payload.filter.FilterGroups[0].FilterItems = this.payload.filter.FilterGroups[0].FilterItems.filter(
+        (item) => !fieldNameSet.has(item.FieldName)
+      );
       this.getTableData();
     }
   }
