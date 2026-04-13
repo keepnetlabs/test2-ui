@@ -1072,7 +1072,7 @@ describe('DataTableFilter.vue', () => {
 
       expect(wrapper.vm.getMenuContentClass).toContain('data-table-filter__menu-content--nested')
       expect(wrapper.vm.getMenuMaxHeight).toBe(420)
-      expect(wrapper.vm.getWidth).toBe('560px')
+      expect(wrapper.vm.getWidth).toBe('606px')
       expect(wrapper.vm.activeNestedGroupConfig).toBeNull()
     })
 

@@ -104,4 +104,39 @@ describe('CampaignManagerReportSummary.vue', () => {
     CampaignManagerReportSummary.methods.setScenarioDetail.call(ctx, { index: 2 })
     expect(ctx.activeScenarioIndex).toBe(2)
   })
+
+  it('callForData immediately loads summary data and schedules refresh', () => {
+    const originalSetInterval = global.setInterval
+    global.setInterval = jest.fn(() => 123)
+
+    const ctx = {
+      callApis: jest.fn(),
+      interval: null
+    }
+
+    CampaignManagerReportSummary.methods.callForData.call(ctx)
+
+    expect(ctx.callApis).toHaveBeenCalledWith(true)
+    expect(global.setInterval).toHaveBeenCalledTimes(1)
+    expect(ctx.interval).toBe(123)
+
+    global.setInterval = originalSetInterval
+  })
+
+  it('apiResponse watcher initializes summary immediately when prop is already populated', () => {
+    jest.useFakeTimers()
+    const ctx = {
+      setCampaignSummary: jest.fn(),
+      setLoading: jest.fn()
+    }
+
+    CampaignManagerReportSummary.watch.apiResponse.handler.call(ctx, {
+      data: { data: { quishingCampaignName: 'Q-Camp' } }
+    })
+
+    expect(ctx.setCampaignSummary).toHaveBeenCalled()
+    jest.runAllTimers()
+    expect(ctx.setLoading).toHaveBeenCalledWith(false)
+    jest.useRealTimers()
+  })
 })
