@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils'
 import CompanyList from '@/components/Companies/CompanyList.vue'
 import { searchCompanies, getCompanyByID, exportCompanies, bulkDeleteCompanies, deleteCompany } from '@/api/company'
+import { getLicences } from '@/api/common'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 
@@ -29,9 +30,41 @@ jest.mock('@/helper-classes/lookup-local-storage', () => ({
   default: {
     getMultiple: jest.fn(() =>
       Promise.resolve([
-        { genericCodeTypeId: 2, name: 'Industry A', resourceId: 'i-1' },
-        { genericCodeTypeId: 3, name: 'License A', resourceId: 'l-1' }
+        { genericCodeTypeId: 2, name: 'Industry A', resourceId: 'i-1' }
       ])
+    )
+  }
+}))
+
+jest.mock('@/api/common', () => ({
+  getLicences: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        data: {
+          licenses: [
+            { name: 'Awareness', resourceId: 'license-awareness' },
+            { name: 'Enterprise', resourceId: 'license-enterprise' }
+          ],
+          allLicenseModules: [
+            { name: 'Phishing Simulator', resourceId: 'module-1', isAvailable: true },
+            { name: 'Threat Sharing', resourceId: 'module-2', isAvailable: false },
+            { name: 'Awareness Educator', resourceId: 'module-3', isAvailable: true }
+          ]
+        }
+      }
+    })
+  )
+}))
+
+jest.mock('@/api/awarenessEducator', () => ({
+  __esModule: true,
+  default: {
+    getVendors: jest.fn(() =>
+      Promise.resolve({
+        data: {
+          data: [{ id: 'v-1', name: 'Keepnet' }]
+        }
+      })
     )
   }
 }))
@@ -103,10 +136,46 @@ describe('CompanyList.vue', () => {
     const wrapper = createWrapper()
     await flushPromises()
 
-    expect(LookupLocalStorage.getMultiple).toHaveBeenCalledWith([2, 3])
+    expect(LookupLocalStorage.getMultiple).toHaveBeenCalledWith([2])
+    expect(getLicences).toHaveBeenCalled()
     expect(searchCompanies).toHaveBeenCalled()
     expect(wrapper.vm.tableData).toHaveLength(1)
     expect(wrapper.vm.limitExceededCompanyCount).toBe(1)
+  })
+
+  it('configures license type nested filter as exclusive groups', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+
+    const col = wrapper.vm.tableOptions.columns.find((x) => x.property === 'licenseTypeName')
+
+    expect(col.type).toBe('slot')
+    expect(col.width).toBe(230)
+    expect(col.filterableConfig).toEqual({
+      exclusiveGroups: true,
+      groups: [
+        {
+          key: 'licenseType',
+          label: 'License Type',
+          fieldName: 'LicenseTypeResourceId',
+          operator: 'Include',
+          items: [
+            { text: 'Awareness', value: 'license-awareness' },
+            { text: 'Enterprise', value: 'license-enterprise' }
+          ]
+        },
+        {
+          key: 'products',
+          label: 'Products',
+          fieldName: 'ModuleResourceId',
+          operator: 'Include',
+          items: [
+            { text: 'Phishing Simulator', value: 'module-1' },
+            { text: 'Awareness Educator', value: 'module-3' }
+          ]
+        }
+      ]
+    })
   })
 
   it('computes exceeding-limit filter label and tooltip states', async () => {
@@ -200,6 +269,28 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.payload.pageNumber).toBe(1)
   })
 
+  it('sortChanged sets ascending=false for non-ascending orders', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.getTableData = jest.fn()
+
+    wrapper.vm.sortChanged({ order: 'descending', prop: 'CompanyName' })
+
+    expect(wrapper.vm.payload.ascending).toBe(false)
+    expect(wrapper.vm.payload.orderBy).toBe('CompanyName')
+    expect(wrapper.vm.getTableData).toHaveBeenCalled()
+  })
+
+  it('resetPageNumber restores both payload and server-side page numbers to 1', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.payload.pageNumber = 4
+    wrapper.vm.serverSideProps.pageNumber = 5
+
+    wrapper.vm.resetPageNumber()
+
+    expect(wrapper.vm.payload.pageNumber).toBe(1)
+    expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
+  })
+
   it('number-of-users helper methods return expected numeric values', () => {
     const wrapper = createWrapper()
 
@@ -280,7 +371,6 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.payload.filter.FilterGroups[0].FilterItems).toHaveLength(1)
 
     wrapper.vm.columnFilterCleared('CompanyName')
-    expect(columnFilterCleared).toHaveBeenCalled()
     expect(wrapper.vm.payload.filter.FilterGroups[0].FilterItems).toEqual([])
   })
 
@@ -301,6 +391,29 @@ describe('CompanyList.vue', () => {
       }),
       wrapper.vm.payload
     )
+    expect(wrapper.vm.getTableData).toHaveBeenCalled()
+  })
+
+  it('columnFilterChanged replaces nested filter field names and preserves unrelated filters', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.getTableData = jest.fn()
+    wrapper.vm.payload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'CompanyName', Operator: 'Contains', Value: 'Acme' },
+      { FieldName: 'LicenseTypeResourceId', Operator: 'Include', Value: 'old-license' },
+      { FieldName: 'ModuleResourceId', Operator: 'Include', Value: 'old-module' }
+    ]
+
+    wrapper.vm.columnFilterChanged({
+      filters: [
+        { FieldName: 'LicenseTypeResourceId', Operator: 'Include', Value: 'new-license' }
+      ],
+      clearFieldNames: ['LicenseTypeResourceId', 'ModuleResourceId']
+    })
+
+    expect(wrapper.vm.payload.filter.FilterGroups[0].FilterItems).toEqual([
+      { FieldName: 'CompanyName', Operator: 'Contains', Value: 'Acme' },
+      { FieldName: 'LicenseTypeResourceId', Operator: 'Include', Value: 'new-license' }
+    ])
     expect(wrapper.vm.getTableData).toHaveBeenCalled()
   })
 
@@ -348,7 +461,10 @@ describe('CompanyList.vue', () => {
     wrapper.vm.handleSwitchCompany({ companyResourceId: 'c-777', companyName: 'Switch Co' })
 
     expect(wrapper.vm.$router.go).toHaveBeenCalledWith(0)
+    expect(localStorage.getItem('isSelectCompany')).toBe('true')
     expect(localStorage.getItem('companyId')).toBe('c-777')
+    expect(localStorage.getItem('companyRequestId')).toBe('c-777')
+    expect(localStorage.getItem('selectedCompanyRequestId')).toBe('c-777')
     expect(localStorage.getItem('selectedCompanyName')).toBe('Switch Co')
   })
 
@@ -754,6 +870,21 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.createdCompanyResourceIdForConfigureCompany).toBe('')
   })
 
+  it('toggles configure modal open without refetching data', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.getTableData = jest.fn()
+    await wrapper.setData({
+      isShowConfigureCompanyModal: false,
+      createdCompanyResourceIdForConfigureCompany: 'company-1'
+    })
+
+    wrapper.vm.toggleConfigureNewCompanyModal()
+
+    expect(wrapper.vm.getTableData).not.toHaveBeenCalled()
+    expect(wrapper.vm.isShowConfigureCompanyModal).toBe(true)
+    expect(wrapper.vm.createdCompanyResourceIdForConfigureCompany).toBe('company-1')
+  })
+
   it('deleteConfirmedItem calls api and updates table selection helpers', async () => {
     const wrapper = createWrapper()
     const unSelectRow = jest.fn()
@@ -769,6 +900,19 @@ describe('CompanyList.vue', () => {
     expect(unSelectRow).toHaveBeenCalledWith(wrapper.vm.selectedRow)
     expect(changeServerSideSelectionCount).toHaveBeenCalledWith(-1)
     expect(wrapper.vm.getTableData).toHaveBeenCalled()
+  })
+
+  it('handleTableItemDelete switches to single-delete mode and stores selected row', () => {
+    const wrapper = createWrapper()
+    const changeDeleteModalStatusSpy = jest.spyOn(wrapper.vm, 'changeDeleteModalStatus')
+    wrapper.vm.isMultipleDelete = true
+    const selectedItem = { companyResourceId: 'c-9' }
+
+    wrapper.vm.handleTableItemDelete(selectedItem)
+
+    expect(wrapper.vm.isMultipleDelete).toBe(false)
+    expect(wrapper.vm.selectedRow).toEqual(selectedItem)
+    expect(changeDeleteModalStatusSpy).toHaveBeenCalledWith(true)
   })
 
   it('editAction opens modal on success and closes extend on error', async () => {
@@ -817,6 +961,19 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.toggleConfigureNewCompanyModal).toHaveBeenCalled()
   })
 
+  it('close form configure flow also supports default empty id', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.cancelCreateOrEditForm = jest.fn()
+    wrapper.vm.toggleConfigureNewCompanyModal = jest.fn()
+    wrapper.vm.createdCompanyResourceIdForConfigureCompany = 'existing'
+
+    wrapper.vm.closeFormConfigureNewCompanyModal()
+
+    expect(wrapper.vm.createdCompanyResourceIdForConfigureCompany).toBe('')
+    expect(wrapper.vm.cancelCreateOrEditForm).toHaveBeenCalled()
+    expect(wrapper.vm.toggleConfigureNewCompanyModal).toHaveBeenCalled()
+  })
+
   it('addButton opens create/edit modal', () => {
     const wrapper = createWrapper()
     const spy = jest.spyOn(wrapper.vm, 'changeCreateOrEditModalStatus')
@@ -837,6 +994,27 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.selectedExtend).toEqual({})
     expect(wrapper.vm.isShowExtended).toBe(false)
     expect(wrapper.vm.selectedRow).toEqual({})
+  })
+
+  it('handleCompanyNameClick keeps settings panel closed when it is already closed', async () => {
+    const wrapper = createWrapper()
+    wrapper.vm.$refs.extend = { clickClose: jest.fn() }
+    wrapper.vm.$refs.refDataList = {
+      isSettingsOpened: false,
+      toggleIsSettingsOpened: jest.fn(),
+      reRenderFilters: jest.fn(),
+      $el: { clientHeight: 420 }
+    }
+
+    wrapper.vm.handleCompanyNameClick({ companyResourceId: 'c-1', companyName: 'Acme' })
+    await flushPromises()
+
+    expect(wrapper.vm.$refs.refDataList.toggleIsSettingsOpened).not.toHaveBeenCalled()
+    expect(wrapper.vm.selectedRow).toEqual({
+      companyResourceId: 'c-1',
+      companyName: 'Acme'
+    })
+    expect(wrapper.vm.tableHeight).toBe(420)
   })
 
   it('handleChangeIsSettingsOpen closes extended panel only when value is truthy', async () => {
@@ -930,9 +1108,16 @@ describe('CompanyList.vue', () => {
     const wrapper = createWrapper()
     await flushPromises()
     LookupLocalStorage.getMultiple.mockResolvedValueOnce([
-      { genericCodeTypeId: 2, name: 'Industry C', resourceId: 'i-3' },
-      { genericCodeTypeId: 3, name: 'License C', resourceId: 'l-3' }
+      { genericCodeTypeId: 2, name: 'Industry C', resourceId: 'i-3' }
     ])
+    getLicences.mockResolvedValueOnce({
+      data: {
+        data: {
+          licenses: [{ name: 'License C', resourceId: 'l-3' }],
+          allLicenseModules: [{ name: 'Module C', resourceId: 'm-3', isAvailable: true }]
+        }
+      }
+    })
     wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
 
     wrapper.vm.getLookUpDatas()
@@ -941,9 +1126,25 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([
       { text: 'Industry C', value: 'i-3' }
     ])
-    expect(wrapper.vm.tableOptions.columns[3].filterableItems).toEqual([
-      { text: 'License C', value: 'l-3' }
-    ])
+    expect(wrapper.vm.tableOptions.columns[3].filterableConfig).toEqual({
+      exclusiveGroups: true,
+      groups: [
+        {
+          key: 'licenseType',
+          label: 'License Type',
+          fieldName: 'LicenseTypeResourceId',
+          operator: 'Include',
+          items: [{ text: 'License C', value: 'l-3' }]
+        },
+        {
+          key: 'products',
+          label: 'Products',
+          fieldName: 'ModuleResourceId',
+          operator: 'Include',
+          items: [{ text: 'Module C', value: 'm-3' }]
+        }
+      ]
+    })
     expect(wrapper.vm.$refs.refDataList.reRenderFilters).toHaveBeenCalled()
   })
 
@@ -981,6 +1182,44 @@ describe('CompanyList.vue', () => {
         exportType: 'CSV'
       })
     )
+    expect(click).toHaveBeenCalled()
+
+    createElementSpy.mockRestore()
+    objectUrlSpy.mockRestore()
+  })
+
+  it('maps XLS export type to Excel payload and xlsx filename', async () => {
+    const wrapper = createWrapper()
+    const click = jest.fn()
+    const originalCreateElement = document.createElement.bind(document)
+    let createdLink = null
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = originalCreateElement(tagName)
+      if (tagName === 'a') {
+        element.click = click
+        createdLink = element
+      }
+      return element
+    })
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = jest.fn()
+    }
+    const objectUrlSpy = jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:test')
+
+    wrapper.vm.handleTableDownload({
+      exportTypes: ['XLS'],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: false
+    })
+    await flushPromises()
+
+    expect(exportCompanies).toHaveBeenCalledWith(
+      expect.objectContaining({
+        exportType: 'Excel'
+      })
+    )
+    expect(createdLink.download).toBe('Companies.xlsx')
     expect(click).toHaveBeenCalled()
 
     createElementSpy.mockRestore()
