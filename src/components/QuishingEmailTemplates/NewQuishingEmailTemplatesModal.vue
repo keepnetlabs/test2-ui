@@ -134,24 +134,42 @@
                       <template #title>
                         <div class="d-flex align-center justify-space-between">
                           <div class="k-form-group__title">Email Template</div>
-                          <v-tooltip bottom opacity="1">
-                            <template v-slot:activator="{ on }">
-                              <v-btn
-                                v-on="on"
-                                rounded
-                                outlined
-                                color="#2196f3"
-                                style="font-weight: 600;"
-                                @click="handleUploadEmailButtonClick"
+                          <div class="d-flex align-center gap-2">
+                            <v-btn
+                              :ripple="false"
+                              class="fw-600"
+                              rounded
+                              outlined
+                              color="#2196f3"
+                              @click="handleShowRedFlagsClick"
+                              :loading="isRedFlagsLoading"
+                            >
+                              <v-icon>mdi-flag</v-icon>
+                              <span
+                                class="button-new__text fw-600 ml-1"
+                                style="text-transform: none;"
+                                >{{ redFlagsText }}</span
                               >
-                                <v-icon style="font-size: 20px; margin-top: 1px;"
-                                  >mdi-upload</v-icon
+                            </v-btn>
+                            <v-tooltip bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-btn
+                                  v-on="on"
+                                  rounded
+                                  outlined
+                                  color="#2196f3"
+                                  style="font-weight: 600;"
+                                  @click="handleUploadEmailButtonClick"
                                 >
-                                <span class="button-new__text">IMPORT EMAIL</span>
-                              </v-btn>
-                            </template>
-                            <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
-                          </v-tooltip>
+                                  <v-icon style="font-size: 20px; margin-top: 1px;"
+                                    >mdi-upload</v-icon
+                                  >
+                                  <span class="button-new__text">IMPORT EMAIL</span>
+                                </v-btn>
+                              </template>
+                              <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
+                            </v-tooltip>
+                          </div>
                           <input
                             v-show="false"
                             ref="refInputFileUpload"
@@ -174,6 +192,9 @@
                         :isAttachmentError="isAttachmentError"
                         :is-edit="!!isEdit"
                         :is-phishing-template="isAttachmentBasedTemplate"
+                        :is-show-red-flags="isShowRedFlags"
+                        :is-red-flags-loading="isRedFlagsLoading"
+                        :red-flags="redFlags"
                         :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
                         :size="5"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
@@ -230,11 +251,14 @@ import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { MERGED_TEXTS } from '@/components/PhishingScenarios/utils'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import QuishingService from '@/api/quishing'
+import QuishingService, { checkQuishingRedFlags } from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { defaultRedFlags } from '@/components/PhishingScenarios/utils'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog.vue'
 import { mapGetters } from 'vuex'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { FLAGGED_AREA_CSS } from '@/utils/functions'
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 export default {
   name: 'NewQuishingEmailTemplatesModal',
@@ -279,6 +303,11 @@ export default {
       },
       isShowQrCodeErrorDialog: false,
       isRenameModalVisible: false,
+      isShowRedFlags: false,
+      isRedFlagsLoading: false,
+      isFlaggedStylesEnabled: false,
+      redFlags: structuredClone(defaultRedFlags),
+      lastRedFlags: {},
       attachmentName: '',
       languageOptions: [],
       isSubmitDisabled: false,
@@ -385,6 +414,9 @@ export default {
     },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    },
+    redFlagsText() {
+      return this.isShowRedFlags ? 'Hide Red Flags' : 'Show Red Flags'
     }
   },
   created() {
@@ -549,7 +581,8 @@ export default {
         this.isSubmitDisabled = false
         return
       }
-      const payloadTemplate = this.formValues.template.replaceAll(qrCodeString, '{QRCODEURLIMAGE}')
+      let payloadTemplate = this.formValues.template.replaceAll(qrCodeString, '{QRCODEURLIMAGE}')
+      payloadTemplate = this._removeFlaggedStylesFromTemplate(payloadTemplate)
 
       let payload = {
         ...this.formValues,
@@ -619,6 +652,232 @@ export default {
     },
     toggleQrCodeErrorDialog() {
       this.isShowQrCodeErrorDialog = !this.isShowQrCodeErrorDialog
+    },
+    handleShowRedFlagsClick() {
+      this.isShowRedFlags = !this.isShowRedFlags
+      this.isFlaggedStylesEnabled = !this.isFlaggedStylesEnabled
+      if (this.isShowRedFlags) {
+        if (this.lastRedFlags.flags) {
+          this.redFlags = structuredClone(this.lastRedFlags.flags)
+          if (this.lastRedFlags.template) {
+            this.formValues.template = this.lastRedFlags.template
+          }
+          this.updateTemplateWithFlaggedStyles()
+          return
+        }
+
+        this.isRedFlagsLoading = true
+        const payload = {
+          template: this.formValues.template || '',
+          subject: this.formValues.subject || '',
+          fromName: this.formValues.fromName || '',
+          fromEmail: this.formValues.fromAddress || '',
+          cc: [],
+          attachmentFileName:
+            this.formValues.attachmentFiles?.[0]?.fileName ||
+            this.formValues.attachmentFiles?.[0]?.name ||
+            '',
+          language: ''
+        }
+
+        this.checkRedFlagsWithRetry(payload)
+          .then((res) => {
+            const { cc, fromEmail, fromName, subject, template, attachmentFileName } =
+              res?.data ?? {}
+            const redFlags = {
+              ccAddresses: cc,
+              fromAddress: fromEmail,
+              fromName: fromName,
+              subject: subject,
+              attachmentFileName: attachmentFileName
+            }
+
+            this.formValues.template = template
+            this.lastRedFlags = {
+              flags: structuredClone(redFlags),
+              template: template
+            }
+
+            this.redFlags = structuredClone(redFlags)
+            this.updateTemplateWithFlaggedStyles()
+          })
+          .catch((e) => {
+            const redFlagServiceUrl =
+              'quishing-red-flag.keepnet-labs-ltd-business-profile4086.workers.dev'
+            if (!e?.response || e?.response?.status === 0) {
+              this.$store.dispatch('common/createSnackBar', {
+                message: `Network error while reaching https://${redFlagServiceUrl}. Status Code: 0`,
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                icon: 'mdi-alert-circle'
+              })
+              return
+            }
+            this.$store.dispatch('common/createSnackBar', {
+              message:
+                e?.response?.data?.detail ||
+                e?.response?.data?.message ||
+                `Network error while reaching https://${redFlagServiceUrl}. Status Code: ${
+                  e?.response?.status || e?.response?.data?.status || 0
+                }`,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
+            this.isShowRedFlags = false
+            this.isFlaggedStylesEnabled = false
+            this.redFlags = structuredClone(defaultRedFlags)
+          })
+          .finally(() => {
+            this.isRedFlagsLoading = false
+          })
+      } else {
+        this.lastRedFlags = {
+          flags: structuredClone(this.redFlags),
+          template: null
+        }
+        this.redFlags = structuredClone(defaultRedFlags)
+        this.updateTemplateWithFlaggedStyles()
+      }
+    },
+    checkRedFlagsWithRetry(payload, maxRetries = 5, delay = 5000, currentAttempt = 1) {
+      return new Promise((resolve, reject) => {
+        checkQuishingRedFlags(payload)
+          .then((response) => {
+            resolve(response)
+          })
+          .catch((error) => {
+            if (currentAttempt >= maxRetries) {
+              reject(error)
+              return
+            }
+            setTimeout(() => {
+              this.checkRedFlagsWithRetry(payload, maxRetries, delay, currentAttempt + 1)
+                .then(resolve)
+                .catch(reject)
+            }, delay)
+          })
+      })
+    },
+    updateTemplateWithFlaggedStyles() {
+      if (!this.formValues.template) return
+
+      if (this.isFlaggedStylesEnabled) {
+        this.formValues.template = this._addFlaggedStylesToTemplate(this.formValues.template)
+      } else {
+        this.formValues.template = this._removeFlaggedStylesFromTemplate(this.formValues.template)
+      }
+    },
+    _isFullHtmlTemplate(template) {
+      const htmlRegex = /<html[\s\S]*?>|<head[\s\S]*?>/i
+      return htmlRegex.test(template)
+    },
+    _hasHeadTag(template) {
+      return /<head[\s\S]*?>/i.test(template)
+    },
+    _addFlaggedStylesToTemplate(template) {
+      if (template.includes(FLAGGED_AREA_CSS.trim())) {
+        return template
+      }
+
+      if (this._isFullHtmlTemplate(template)) {
+        return this._injectCssIntoHead(template)
+      } else {
+        return this._prependCssToBodyContent(template)
+      }
+    },
+    _injectCssIntoHead(template) {
+      if (this._hasHeadTag(template)) {
+        let templateWithCss = template.replace(/<\/head>/i, `${FLAGGED_AREA_CSS}</head>`)
+        return this._injectScriptIntoBody(templateWithCss)
+      }
+      let templateWithCss = template.replace(
+        /<html[\s\S]*?>/i,
+        `$&<head>${FLAGGED_AREA_CSS}</head>`
+      )
+      return this._injectScriptIntoBody(templateWithCss)
+    },
+    _prependCssToBodyContent(template) {
+      let templateWithCss = `${FLAGGED_AREA_CSS}${template}`
+      return this._injectScriptIntoBody(templateWithCss)
+    },
+    _injectScriptIntoBody(template) {
+      const script = this._getPreventClickScript()
+      try {
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(template, 'text/html')
+        const body = doc.querySelector('body')
+
+        if (body) {
+          body.insertAdjacentHTML('beforeend', script)
+          return doc.documentElement.outerHTML
+        } else {
+          const newBody = doc.createElement('body')
+          newBody.innerHTML = template
+          newBody.insertAdjacentHTML('beforeend', script)
+          doc.documentElement.appendChild(newBody)
+          return doc.documentElement.outerHTML
+        }
+      } catch {
+        return `${template}${script}`
+      }
+    },
+    _removeFlaggedStylesFromTemplate(template) {
+      if (!template) return template
+      const cssToRemove = FLAGGED_AREA_CSS.trim()
+      const scriptToRemove = this._getPreventClickScript().trim()
+
+      let cleanedTemplate = template.replaceAll(new RegExp(this._escapeRegExp(cssToRemove), 'g'), '')
+      cleanedTemplate = cleanedTemplate.replaceAll(
+        new RegExp(this._escapeRegExp(scriptToRemove), 'g'),
+        ''
+      )
+
+      return cleanedTemplate
+    },
+    _getPreventClickScript() {
+      // eslint-disable-next-line no-use-before-define
+      const method = `(function() {
+            'use strict';
+
+            function initializeEventPrevention() {
+              const eventTypes = [
+                'click', 'auxclick', 'dblclick', 'mousedown', 'mouseup', 'mousemove',
+                'keydown', 'keyup', 'keypress', 'submit', 'change',
+                'focus', 'blur', 'input', 'select', 'dragstart',
+                'contextmenu'
+              ];
+
+              eventTypes.forEach(eventType => {
+                document.body.addEventListener(eventType, function(e) {
+                  const flaggedElement = e.target.closest('.flagged-area');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }, true);
+              });
+              ['click', 'auxclick'].forEach(anchorEvent => {
+                document.body.addEventListener(anchorEvent, function(e) {
+                  const anchor = e.target.closest('a');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    try { anchor.setAttribute('data-blocked', 'true'); } catch (_) {}
+                    return false;
+                }, true);
+              });
+            }
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', initializeEventPrevention);
+            } else {
+              initializeEventPrevention();
+            }
+          })();`
+      //@ts-ignore
+      //eslint-disable-next-line no-use-before-define
+      return '<script>' + method + '<\/script>'
+    },
+    _escapeRegExp(string) {
+      return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
     }
   }
 }
