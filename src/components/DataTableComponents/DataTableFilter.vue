@@ -4,12 +4,15 @@
     ref="refMenu"
     :value="menu"
     class="filter__container"
+    :content-class="getMenuContentClass"
     bottom
     offset-y
-    max-height="260px"
+    nudge-bottom="12"
+    :nudge-left="getHorizontalNudge"
+    :max-height="getMenuMaxHeight"
     :z-index="zIndex"
     :min-width="getWidth"
-    :max-width="getWidth"
+    :max-width="getMaxWidth"
     :close-on-content-click="false"
     :close-on-click="isCloseOnClick"
     @input="handleMenuVisibilityChange"
@@ -42,7 +45,12 @@
         >mdi-filter-variant</v-icon
       >
     </template>
-    <div class="filter__body-container">
+    <div
+      :class="[
+        'filter__body-container',
+        { 'filter__body-container--nested-select': filterableType === 'nestedSelect' }
+      ]"
+    >
       <template v-if="filterableType === 'text'">
         <v-select
           v-model="filteredSelectValue"
@@ -209,6 +217,96 @@
         >
         </v-checkbox>
       </template>
+      <template v-if="filterableType === 'nestedSelect'">
+        <div class="nested-select-filter">
+          <div class="nested-select-filter__left">
+            <v-list class="nested-select-filter__list">
+              <v-list-item
+              v-for="group in nestedFilterGroups"
+              :key="group.key"
+              :class="[
+                'nested-select-filter__group',
+                {
+                  'nested-select-filter__group--active': activeNestedGroup === group.key,
+                  'nested-select-filter__group--selected': hasAppliedNestedGroupSelection(group.key)
+                }
+              ]"
+              tabindex="0"
+              @click.stop="setActiveNestedGroup(group.key)"
+              @keydown.enter.stop.prevent="setActiveNestedGroup(group.key)"
+            >
+              <v-list-item-title class="nested-select-filter__group-title">
+                <div class="nested-select-filter__group-primary">
+                  <v-icon
+                    v-if="group.icon"
+                    class="nested-select-filter__group-icon"
+                  >
+                    {{ group.icon }}
+                  </v-icon>
+                  <span class="nested-select-filter__group-label">{{ group.label }}</span>
+                </div>
+                <div class="nested-select-filter__group-meta">
+                  <span
+                    v-if="getAppliedNestedGroupSelectionCount(group.key) > 0"
+                    class="nested-select-filter__group-count"
+                  >
+                    {{ getAppliedNestedGroupSelectionCount(group.key) }}
+                  </span>
+                  <v-icon class="nested-select-filter__group-arrow">mdi-menu-right</v-icon>
+                </div>
+              </v-list-item-title>
+            </v-list-item>
+            </v-list>
+          </div>
+          <div v-if="activeNestedGroupConfig" class="nested-select-filter__right">
+            <div class="nested-select-filter__right-container">
+              <v-text-field
+                v-if="activeNestedGroupConfig.showSearch !== false"
+                v-model="nestedSearchValues[activeNestedGroupConfig.key]"
+                placeholder="Search"
+                class="filter__text nested-select-filter__search"
+                outlined
+                dense
+                height="40"
+              ></v-text-field>
+              <div class="nested-select-filter__items">
+                <v-checkbox
+                  v-for="item in getFilteredNestedGroupItems(activeNestedGroupConfig)"
+                  :key="`${activeNestedGroupConfig.key}-${item.value}`"
+                  v-model="nestedFilterSelections[activeNestedGroupConfig.key]"
+                  color="#2196f3"
+                  :value="item.value"
+                  :label="item.text"
+                  :ripple="false"
+                  hide-details
+                  class="mt-0 pt-0 nested-select-filter__checkbox"
+                  @change="handleNestedSelectionChange(activeNestedGroupConfig.key)"
+                >
+                </v-checkbox>
+              </div>
+            </div>
+            <div class="nested-select-filter__right-footer">
+              <v-btn
+                text
+                class="filter__footer-button"
+                color="#f56c6c"
+                @click="clearNestedGroupSelection(activeNestedGroupConfig.key)"
+              >
+                Clear
+              </v-btn>
+              <v-btn
+                :disabled="getFilterButtonDisabled"
+                text
+                class="filter__footer-button"
+                color="#2196f3"
+                @click="handleFilter"
+              >
+                Filter
+              </v-btn>
+            </div>
+          </div>
+        </div>
+      </template>
       <template v-if="filterableType === 'singleSelect'">
         <v-select
           v-model="filteredSingleValue"
@@ -288,7 +386,7 @@
           onkeypress="return event.target.value.includes('--') ? false : event.target.value.length ? event.target.value.indexOf('-') === 0 ? (event.keyCode === 8 || (event.charCode >= 48 && event.charCode <= 57)) : (!event.target.value.includes('-') && event.charCode !== 45 && (event.charCode >= 48 && event.charCode <= 57)) : event.charCode === 45 || (event.charCode >= 48 && event.charCode <= 57);"
         ></v-text-field>
       </template>
-      <div class="filter__footer">
+      <div v-if="filterableType !== 'nestedSelect'" class="filter__footer">
         <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
           Clear
         </v-btn>
@@ -327,6 +425,10 @@ export default {
     filterableItems: {
       type: Array,
       default: () => []
+    },
+    filterableConfig: {
+      type: Object,
+      default: null
     },
     isSettingsOpened: {
       type: Boolean,
@@ -405,16 +507,29 @@ export default {
       ['singleSelect', 'compositeSelect'].includes(this.filterableType)
         ? this.value.selectValue || this.defaultFilterValue || null
         : null
+    const nestedFilterSelections =
+      this.filterableType === 'nestedSelect'
+        ? this.getInitialNestedFilterSelections()
+        : {}
+    const nestedSearchValues =
+      this.filterableType === 'nestedSelect'
+        ? this.getEmptyNestedSearchValues()
+        : {}
     return {
       isCloseOnClick: true,
       status: false,
-      zIndex: 202,
+      zIndex: this.filterableType === 'nestedSelect' ? 302 : 202,
       menu: null,
       btnKeySafariFix: `btn-key-${createRandomCryptStringNumber()}`,
       isFilterActive:
-        ['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)
+        this.filterableType === 'nestedSelect'
+          ? this.hasAnyNestedSelection(nestedFilterSelections)
+          : ['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)
           ? !!this.value.selectValue
           : !!this.value.textValue,
+      activeNestedGroup: '',
+      nestedFilterSelections,
+      nestedSearchValues,
       filteredSingleValue,
       filteredSelectValue: this.filterProps
         ? this.filterProps.items && this.filterProps.items[0]
@@ -488,10 +603,21 @@ export default {
       if (newVal) {
         this.zIndex = ['date', 'dateOnly'].includes(this.filterableType) ? 252 : 202
         this.$emit('update:isSettingsOpened', false)
+        if (this.filterableType === 'nestedSelect') {
+          this.syncNestedFilterConfig()
+        }
       }
     },
     getFilterButtonDisabled() {
       this.btnKeySafariFix = `btn-key-${createRandomCryptStringNumber()}`
+    },
+    filterableConfig: {
+      handler() {
+        if (this.filterableType === 'nestedSelect') {
+          this.syncNestedFilterConfig()
+        }
+      },
+      deep: true
     },
     filterableItems(newItems) {
       if (['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)) {
@@ -502,6 +628,9 @@ export default {
     }
   },
   created() {
+    if (this.filterableType === 'nestedSelect') {
+      this.syncNestedFilterConfig()
+    }
     if (['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)) {
       this.filterableItems.forEach((x) => {
         this.convertedFilterableItems.push(
@@ -540,6 +669,14 @@ export default {
       }
       this.isCloseOnClick = true
       this.menu = val
+      if (this.filterableType === 'nestedSelect') {
+        if (val) {
+          this.activeNestedGroup = this.nestedFilterGroups[0]?.key || ''
+        } else {
+          this.activeNestedGroup = ''
+          this.nestedSearchValues = this.getEmptyNestedSearchValues()
+        }
+      }
     },
     handlePickerChange() {
       const { refMenu } = this.$refs
@@ -587,6 +724,10 @@ export default {
       }
     },
     clearFilter(isEmit = true) {
+      if (this.filterableType === 'nestedSelect') {
+        this.clearAllNestedSelections(isEmit)
+        return
+      }
       this.clearDataParams()
       if (isEmit) {
         this.emitValue()
@@ -611,13 +752,212 @@ export default {
       this.filteredSelectValueNumber = '='
       this.filteredSingleValue = null
       this.compositeSecondValue = null
+      if (this.filterableType === 'nestedSelect') {
+        this.activeNestedGroup = ''
+        this.nestedFilterSelections = this.getEmptyNestedFilterSelections()
+        this.nestedSearchValues = this.getEmptyNestedSearchValues()
+      }
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })
     },
+    emitNestedValue(nestedSelections = this.getSerializableNestedSelections()) {
+      this.$emit('input', {
+        textValue: '',
+        selectValue: '',
+        fieldName: this.fieldName,
+        nestedSelections
+      })
+    },
+    getNormalizedNestedGroups() {
+      return (this.filterableConfig?.groups || []).map((group) => ({
+        ...group,
+        items: (group.items || []).map((item) =>
+          typeof item === 'string' ? { text: item, value: item } : item
+        )
+      }))
+    },
+    getEmptyNestedFilterSelections() {
+      return this.getNormalizedNestedGroups().reduce((acc, group) => {
+        acc[group.key] = []
+        return acc
+      }, {})
+    },
+    getEmptyNestedSearchValues() {
+      return this.getNormalizedNestedGroups().reduce((acc, group) => {
+        acc[group.key] = ''
+        return acc
+      }, {})
+    },
+    getInitialNestedFilterSelections() {
+      const baseSelections = this.getEmptyNestedFilterSelections()
+      const valueSelections = this.value?.nestedSelections || {}
+      Object.keys(baseSelections).forEach((key) => {
+        if (Array.isArray(valueSelections[key])) {
+          baseSelections[key] = [...valueSelections[key]]
+        }
+      })
+      return baseSelections
+    },
+    getSerializableNestedSelections() {
+      return Object.keys(this.nestedFilterSelections).reduce((acc, key) => {
+        acc[key] = [...(this.nestedFilterSelections[key] || [])]
+        return acc
+      }, {})
+    },
+    hasAnyNestedSelection(selections = this.nestedFilterSelections) {
+      return Object.values(selections).some((items) => Array.isArray(items) && items.length > 0)
+    },
+    getExclusiveNestedGroupKey(selections = {}) {
+      if (!this.isNestedGroupsExclusive) return ''
+      const activeGroupHasSelection = Array.isArray(selections[this.activeNestedGroup])
+        ? selections[this.activeNestedGroup].length > 0
+        : false
+      if (activeGroupHasSelection) return this.activeNestedGroup
+      const firstSelectedGroup = this.nestedFilterGroups.find(
+        (group) => Array.isArray(selections[group.key]) && selections[group.key].length > 0
+      )
+      return firstSelectedGroup?.key || ''
+    },
+    normalizeExclusiveNestedSelections(selections = {}) {
+      if (!this.isNestedGroupsExclusive) return selections
+      const activeGroupKey = this.getExclusiveNestedGroupKey(selections)
+      if (!activeGroupKey) return selections
+      return Object.keys(selections).reduce((acc, key) => {
+        acc[key] = key === activeGroupKey ? [...(selections[key] || [])] : []
+        return acc
+      }, {})
+    },
+    syncNestedFilterConfig() {
+      const nextSelections = this.getEmptyNestedFilterSelections()
+      const nextSearchValues = this.getEmptyNestedSearchValues()
+      const valueSelections = this.value?.nestedSelections || {}
+      Object.keys(nextSelections).forEach((key) => {
+        if (Array.isArray(this.nestedFilterSelections[key])) {
+          nextSelections[key] = [...this.nestedFilterSelections[key]]
+        } else if (Array.isArray(valueSelections[key])) {
+          nextSelections[key] = [...valueSelections[key]]
+        }
+      })
+      const normalizedSelections = this.normalizeExclusiveNestedSelections(nextSelections)
+      this.nestedFilterSelections = normalizedSelections
+      Object.keys(nextSearchValues).forEach((key) => {
+        if (typeof this.nestedSearchValues[key] === 'string') {
+          nextSearchValues[key] = this.nestedSearchValues[key]
+        }
+      })
+      this.nestedSearchValues = nextSearchValues
+      this.isFilterActive = this.hasAnyNestedSelection(normalizedSelections)
+      if (
+        this.activeNestedGroup &&
+        !this.nestedFilterGroups.some((group) => group.key === this.activeNestedGroup)
+      ) {
+        this.activeNestedGroup = ''
+      }
+    },
+    setActiveNestedGroup(groupKey = '') {
+      if (!groupKey) return
+      this.activeNestedGroup = groupKey
+    },
+    buildNestedFilterItems(groupKey = '') {
+      const groupsToApply = groupKey
+        ? this.nestedFilterGroups.filter((group) => group.key === groupKey)
+        : this.nestedFilterGroups
+      return groupsToApply.reduce((acc, group) => {
+        const selectedValues = this.nestedFilterSelections[group.key] || []
+        if (!selectedValues.length) return acc
+        acc.push({
+          Value: selectedValues.toString(),
+          FieldName: group.fieldName,
+          Operator: group.operator || 'Include'
+        })
+        return acc
+      }, [])
+    },
+    getNestedFieldNames() {
+      return this.nestedFilterGroups.map((group) => group.fieldName)
+    },
+    getAppliedNestedSelections() {
+      return this.value?.nestedSelections || {}
+    },
+    getAppliedNestedGroupSelectionCount(groupKey = '') {
+      return (this.getAppliedNestedSelections()[groupKey] || []).length
+    },
+    hasAppliedNestedGroupSelection(groupKey = '') {
+      return this.getAppliedNestedGroupSelectionCount(groupKey) > 0
+    },
+    getNestedGroupSelectionCount(groupKey = '') {
+      return (this.nestedFilterSelections[groupKey] || []).length
+    },
+    hasNestedGroupSelection(groupKey = '') {
+      return this.getNestedGroupSelectionCount(groupKey) > 0
+    },
+    clearInactiveNestedSelections(activeGroupKey = '') {
+      if (!this.isNestedGroupsExclusive || !activeGroupKey) return
+      this.nestedFilterGroups.forEach((group) => {
+        if (group.key !== activeGroupKey) {
+          this.$set(this.nestedFilterSelections, group.key, [])
+          this.$set(this.nestedSearchValues, group.key, '')
+        }
+      })
+    },
+    getFilteredNestedGroupItems(group = {}) {
+      const items = group.items || []
+      const searchValue = this.nestedSearchValues[group.key] || ''
+      if (!searchValue) return items
+      return items.filter((item) =>
+        item.text.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    },
+    handleNestedSelectionChange(groupKey = '') {
+      if (!groupKey) return
+      this.clearInactiveNestedSelections(groupKey)
+      this.isFilterActive = this.hasAnyNestedSelection()
+    },
+    clearNestedGroupSelection(groupKey = '') {
+      if (!groupKey) return
+      this.$set(this.nestedFilterSelections, groupKey, [])
+      this.$set(this.nestedSearchValues, groupKey, '')
+      const nestedFilterItems = this.buildNestedFilterItems()
+      this.menu = false
+      this.isFilterActive = this.hasAnyNestedSelection()
+      if (!nestedFilterItems.length) {
+        this.$emit('handleClearColumnFilter', this.getNestedFieldNames())
+        return
+      }
+      this.emitNestedValue()
+      this.$emit('handleFilterColumn', {
+        filters: nestedFilterItems,
+        clearFieldNames: this.getNestedFieldNames()
+      })
+    },
+    clearAllNestedSelections(isEmit = true) {
+      this.clearDataParams()
+      if (isEmit) {
+        this.$emit('handleClearColumnFilter', this.getNestedFieldNames())
+      }
+    },
     handleFilter() {
       this.menu = false
       this.isFilterActive = true
+
+      if (this.filterableType === 'nestedSelect') {
+        this.clearInactiveNestedSelections(this.activeNestedGroup)
+        const nestedFilterItems = this.buildNestedFilterItems(
+          this.isNestedGroupsExclusive ? this.activeNestedGroup : ''
+        )
+        this.isFilterActive = nestedFilterItems.length > 0
+        if (!nestedFilterItems.length) {
+          this.$emit('handleClearColumnFilter', this.getNestedFieldNames())
+          return
+        }
+        this.emitNestedValue()
+        this.$emit('handleFilterColumn', {
+          filters: nestedFilterItems,
+          clearFieldNames: this.getNestedFieldNames()
+        })
+        return
+      }
 
       if (this.filterableType === 'text') {
         if (this.filteredSelectValue === 'between') {
@@ -730,8 +1070,26 @@ export default {
     }
   },
   computed: {
+    getMenuContentClass() {
+      return this.filterableType === 'nestedSelect'
+        ? 'data-table-filter__menu-content data-table-filter__menu-content--nested'
+        : 'data-table-filter__menu-content'
+    },
+    getMenuMaxHeight() {
+      return this.filterableType === 'nestedSelect' ? 420 : 260
+    },
     isShowSearchTextField() {
       return this.showSelectSearch && (this.filterValue || this.searchInItems.length > 4)
+    },
+    nestedFilterGroups() {
+      return this.getNormalizedNestedGroups()
+    },
+    activeNestedGroupConfig() {
+      if (!this.activeNestedGroup) return null
+      return this.nestedFilterGroups.find((group) => group.key === this.activeNestedGroup) || null
+    },
+    isNestedGroupsExclusive() {
+      return this.filterableConfig?.exclusiveGroups === true
     },
     getDateKey() {
       return this.$store?.state?.auth?.user?.userCompany?.timeZone
@@ -743,7 +1101,19 @@ export default {
       return this.filterProps ? this.filterProps.items : this.textFilterItems
     },
     getWidth() {
+      if (this.filterableType === 'nestedSelect') {
+        return '606px'
+      }
       return this.filteredSelectValueDate === 'between' ? '450px' : '260px'
+    },
+    getMaxWidth() {
+      if (this.filterableType === 'nestedSelect') {
+        return null
+      }
+      return this.getWidth
+    },
+    getHorizontalNudge() {
+      return this.filterableType === 'nestedSelect' ? 200 : 0
     },
     searchInItems: function () {
       return this.filterValue.length > 0
@@ -764,6 +1134,11 @@ export default {
       }
       if (this.filterableType === 'select') {
         return !this?.filterChecked?.length
+      }
+      if (this.filterableType === 'nestedSelect') {
+        return this.isNestedGroupsExclusive
+          ? !this.hasNestedGroupSelection(this.activeNestedGroup)
+          : !this.hasAnyNestedSelection()
       }
       if (this.filterableType === 'singleSelect') {
         return !this.filteredSingleValue

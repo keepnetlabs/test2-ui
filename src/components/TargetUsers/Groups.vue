@@ -193,7 +193,6 @@ import DefaultMenuRowAction from '@/components/SmallComponents/RowActions/Defaul
 import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMenu'
 import AddTargetGroupModal from '@/components/TargetUsers/AddTargetGroupModal.vue'
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
-import { isTestEnvironment } from '@/utils/isTestEnvironment'
 import { sendBatchAutonomous } from '@/api/agenticAIService'
 export default {
   name: 'Groups',
@@ -402,11 +401,7 @@ export default {
       return this.executionModeStore === 'ApprovalGated' ? 'approval' : 'autonomous'
     },
     showSendWithAIAction() {
-      return (
-        isTestEnvironment() &&
-        this.hasAgenticAILicense &&
-        this.isAgenticAIEnabledStore
-      )
+      return this.hasAgenticAILicense && this.isAgenticAIEnabledStore
     },
     getGroupName() {
       return this.selectedGroup.name || localStorage.getItem('lastTargetGroupUsers')
