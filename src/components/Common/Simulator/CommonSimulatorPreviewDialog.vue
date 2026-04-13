@@ -1130,9 +1130,12 @@ export default {
 
         // İlk kez red flags çağrılıyor
         this.isRedFlagsLoading = true;
-        const currentLanguageData = this.languages.find(
-          (lang) => lang.value === this.languagePreview
-        );
+        const langId = this.languagePreview || this.emailTemplateParams.languageTypeResourceId;
+        const langName = this.emailTemplateParams.languageTypeName || this.selectedRow?.languageTypeName;
+        const currentLanguageData = (langId && this.languages.find((lang) => lang.value === langId))
+          || (langName && this.languages.find(
+            (lang) => lang.languageTypeName === langName || lang.text === langName
+          ));
         const payload = {
           template: this.emailTemplate || "",
           subject: this.emailTemplateParams.subject || "",

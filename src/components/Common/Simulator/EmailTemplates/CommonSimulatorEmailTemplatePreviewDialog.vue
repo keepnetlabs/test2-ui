@@ -215,16 +215,24 @@
               </div>
             </template>
             <div v-else>
-              <div
-                class="email-template-preview__text"
-                v-if="isQuishing && emailTemplateParams.type"
-              >
-                <div>
-                  <span class="email-template-preview__text--title">Quishing Type: </span>
-                  <span class="email-template-preview__text--body">{{
-                    emailTemplateParams.type || 'Email'
-                  }}</span>
+              <div class="d-flex align-center justify-space-between mb-4">
+                <div v-if="isQuishing && emailTemplateParams.type" class="text-primary-color fs-4">
+                  <span class="fw-600">Quishing Type: </span>
+                  <span>{{ emailTemplateParams.type || 'Email' }}</span>
                 </div>
+                <VBtn
+                  :ripple="false"
+                  class="fw-600"
+                  rounded
+                  outlined
+                  color="#2196f3"
+                  @click="handleShowRedFlagsClick"
+                >
+                  <VIcon>mdi-flag</VIcon>
+                  <span class="button-new__text fw-600 ml-1" style="text-transform: none;">{{
+                    redFlagsText
+                  }}</span>
+                </VBtn>
               </div>
               <div class="d-flex justify-space-between align-center">
                 <div class="text-primary-color fs-4">
