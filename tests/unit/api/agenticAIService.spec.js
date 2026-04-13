@@ -50,6 +50,7 @@ describe('agenticAIService', () => {
         `${BASE_URL}/autonomous`,
         {
           token: 'mock-token',
+          baseApiUrl: expect.any(String),
           preferredLanguage: 'tr',
           targetUserResourceId: 'usr-123',
           departmentName: 'Finance',
@@ -154,6 +155,7 @@ describe('agenticAIService', () => {
       expect(payload.actions).toEqual(['phishing', 'training'])
       expect(payload.sendAfterPhishingSimulation).toBe(true)
       expect(payload.companyId).toBe('company-request-1')
+      expect(payload.baseApiUrl).toEqual(expect.any(String))
     })
 
     it('should always use POST method', async () => {
@@ -202,6 +204,30 @@ describe('agenticAIService', () => {
       expect(axios.post.mock.calls[0][1].token).toBe('token-1')
       expect(axios.post.mock.calls[1][1].token).toBe('token-2')
     })
+
+    it('should include baseApiUrl in payload', async () => {
+      await sendAutonomous({
+        preferredLanguage: 'en',
+        targetUserResourceId: 'usr-base',
+        departmentName: 'IT',
+        actions: ['training']
+      })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.baseApiUrl).toEqual(expect.any(String))
+    })
+
+    it('should strip trailing /api from sendAutonomous baseApiUrl', async () => {
+      await sendAutonomous({
+        preferredLanguage: 'en',
+        targetUserResourceId: 'usr-base-trim',
+        departmentName: 'IT',
+        actions: ['phishing']
+      })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.baseApiUrl).not.toMatch(/\/api\/?$/)
+    })
   })
 
   describe('sendBatchAutonomous', () => {
@@ -218,6 +244,7 @@ describe('agenticAIService', () => {
         `${BASE_URL}/batch-autonomous`,
         {
           token: 'mock-token',
+          baseApiUrl: expect.any(String),
           targetGroupResourceId: 'grp-123',
           actions: ['training', 'phishing'],
           sendAfterPhishingSimulation: true,
@@ -311,6 +338,7 @@ describe('agenticAIService', () => {
       expect(payload.actions).toEqual(['phishing', 'training'])
       expect(payload.sendAfterPhishingSimulation).toBe(true)
       expect(payload.companyId).toBe('company-request-1')
+      expect(payload.baseApiUrl).toEqual(expect.any(String))
     })
 
     it('should fallback to companyId when companyRequestId is missing', async () => {
@@ -337,6 +365,26 @@ describe('agenticAIService', () => {
 
       const payload = axios.post.mock.calls[0][1]
       expect(payload.companyId).toBe('company-resource-1')
+    })
+
+    it('should include baseApiUrl in batch payload', async () => {
+      await sendBatchAutonomous({
+        targetGroupResourceId: 'grp-base',
+        actions: ['training']
+      })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.baseApiUrl).toEqual(expect.any(String))
+    })
+
+    it('should strip trailing /api from batch baseApiUrl', async () => {
+      await sendBatchAutonomous({
+        targetGroupResourceId: 'grp-base-trim',
+        actions: ['phishing']
+      })
+
+      const payload = axios.post.mock.calls[0][1]
+      expect(payload.baseApiUrl).not.toMatch(/\/api\/?$/)
     })
   })
 
