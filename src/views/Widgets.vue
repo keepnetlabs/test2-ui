@@ -91,7 +91,6 @@ import {
   createRandomCryptStringNumber,
   getTimeZoneForMoment
 } from "@/utils/functions";
-import { isTestEnvironment } from "@/utils/isTestEnvironment";
 import ExecutiveReportsSimulationCoverageBar from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsSimulationCoverageBar.vue";
 import ExecutiveReportsTrainingCompletionBar from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsTrainingCompletionBar.vue";
 import ExecutiveReportsIndustryPhishingRiskScore from "@/components/ExecutiveReports/ExecutiveReportsCharts/ExecutiveReportsIndustryPhishingRiskScore.vue";
@@ -123,8 +122,8 @@ export default {
     })
   },
   data() {
+    const hasAgenticAILicense = this.$store.getters["login/getHasAgenticAILicense"];
     return {
-      isTestEnvironment: isTestEnvironment(),
       activeBreakpoint: "lg",
       initialLayout: [],
       initialAvailableWidgets: [],
@@ -389,7 +388,7 @@ export default {
           i: createRandomCryptStringNumber(),
           key: "AgenticAIStatusWidget",
           title: "Agentic AI Status",
-          isAllowed: isTestEnvironment()
+          isAllowed: hasAgenticAILicense
         },
         TopPhishingSimulationReporters: {
           x: 0,
@@ -671,7 +670,7 @@ export default {
         {
           name: "Agentic AI Status",
           key: "AgenticAIStatusWidget",
-          isAllowed: isTestEnvironment()
+          isAllowed: hasAgenticAILicense
         }
       ],
       style:
@@ -689,7 +688,8 @@ export default {
       }
     },
     hasAgenticAILicense(val) {
-      if (val && this.isTestEnvironment && this.layout.length) {
+      this.syncAgenticAIWidgetAvailability(val);
+      if (val && this.layout.length) {
         this.ensureAgenticAIWidget(this.layout);
       }
     }
@@ -715,7 +715,7 @@ export default {
             }
             return acc;
           }, []);
-          if (this.isTestEnvironment && this.hasAgenticAILicense) {
+          if (this.hasAgenticAILicense) {
             this.ensureAgenticAIWidget(this.layout);
           }
           this.finalizeLoadedWidgetLayout();
@@ -953,7 +953,7 @@ export default {
     },
 
     ensureAgenticAIWidget(layoutArray) {
-      if (!this.isTestEnvironment || !this.hasAgenticAILicense) return;
+      if (!this.hasAgenticAILicense) return;
 
       if (
         !layoutArray.some((widget) => widget.key === "AgenticAIStatusWidget")
@@ -969,6 +969,40 @@ export default {
           y: 0
         };
         layoutArray.unshift(widget);
+      }
+    },
+
+    syncAgenticAIWidgetAvailability(isAllowed = this.hasAgenticAILicense) {
+      if (this.allWidgets?.AgenticAIStatusWidget) {
+        this.allWidgets.AgenticAIStatusWidget.isAllowed = isAllowed;
+      }
+
+      const availableWidgetIndex = this.availableWidgets.findIndex(
+        (widget) => widget.key === "AgenticAIStatusWidget"
+      );
+
+      if (!isAllowed) {
+        if (availableWidgetIndex !== -1) {
+          this.availableWidgets.splice(availableWidgetIndex, 1);
+        }
+        this.layout = this.layout.filter(
+          (widget) => widget.key !== "AgenticAIStatusWidget"
+        );
+        return;
+      }
+
+      const hasWidgetInLayout = this.layout.some(
+        (widget) => widget.key === "AgenticAIStatusWidget"
+      );
+
+      if (!hasWidgetInLayout && availableWidgetIndex === -1) {
+        this.availableWidgets.push({
+          name: "Agentic AI Status",
+          key: "AgenticAIStatusWidget",
+          isAllowed: true
+        });
+      } else if (availableWidgetIndex !== -1) {
+        this.availableWidgets[availableWidgetIndex].isAllowed = true;
       }
     },
 
@@ -1366,7 +1400,7 @@ export default {
           isDashboardWidget: true
         }
       ];
-      if (this.isTestEnvironment && this.hasAgenticAILicense) {
+      if (this.hasAgenticAILicense) {
         widgets.unshift({
           x: 8,
           y: 0,
