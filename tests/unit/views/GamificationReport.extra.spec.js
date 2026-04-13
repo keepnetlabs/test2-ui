@@ -100,67 +100,38 @@ describe('GamificationReport.vue (extra)', () => {
   })
 
   it('leaderboardRowActions always includes details action', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'app.keepnetlabs.com' },
-      configurable: true
-    })
     const ctx = {
       hasAgenticAILicense: false,
       isAgenticAIEnabledStore: false
     }
     expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-details')).toBe(true)
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
-  it('leaderboardRowActions includes Autonomous AI on localhost when licensed and enabled', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'localhost' },
-      configurable: true
-    })
+  it('leaderboardRowActions includes Autonomous AI when licensed and enabled', () => {
     const ctx = {
       hasAgenticAILicense: true,
       isAgenticAIEnabledStore: true
     }
     expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(true)
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
-  it('leaderboardRowActions does not include Autonomous AI on production-like host', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'app.keepnetlabs.com' },
-      configurable: true
-    })
-    const ctx = {
-      hasAgenticAILicense: true,
-      isAgenticAIEnabledStore: true
-    }
-    expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(false)
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
-  })
-
-  it('leaderboardRowActions includes Autonomous AI on test-ui when licensed and enabled', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'test-ui.devkeepnet.com' },
-      configurable: true
-    })
+  it('leaderboardRowActions includes Autonomous AI on production-like host when licensed and enabled', () => {
     const ctx = {
       hasAgenticAILicense: true,
       isAgenticAIEnabledStore: true
     }
     expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(true)
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
+  })
+
+  it('leaderboardRowActions keeps the AI action available regardless of hostname when licensed and enabled', () => {
+    const ctx = {
+      hasAgenticAILicense: true,
+      isAgenticAIEnabledStore: true
+    }
+    expect(computed.leaderboardRowActions.call(ctx).some((a) => a.action === 'on-send-with-ai')).toBe(true)
   })
 
   it('leaderboardRowActions excludes Autonomous AI without license or when company Agentic AI is off', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'localhost' },
-      configurable: true
-    })
     expect(
       computed.leaderboardRowActions
         .call({
@@ -177,7 +148,6 @@ describe('GamificationReport.vue (extra)', () => {
         })
         .some((a) => a.action === 'on-send-with-ai')
     ).toBe(false)
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
   it('picker onPick updates datePeriod and formats selected range when both dates exist', () => {
