@@ -73,6 +73,7 @@ import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
+import { collectScenarioLanguages } from '@/components/Common/Report/utils'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerReportSummary',
@@ -151,20 +152,13 @@ export default {
         endDate: '0',
         totalTargetUserCount: 0
       }
-      const languages = new Set()
-      this?.phishingScenarios?.forEach((scenario) => {
-        const languageCode = scenario.languageShortCode
-        const language = this.languageOptions.find(
-          (lang) => lang.languageShortCode === languageCode
-        )
-        languages.add(language?.text || languageCode)
-      })
+      const languages = collectScenarioLanguages(this.phishingScenarios, this.languageOptions)
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languages.size ? [...languages].join(', ') : ''
+        Languages: languages
       }
     },
     getCampaignSummaryHelperData() {

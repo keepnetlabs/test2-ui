@@ -1,5 +1,5 @@
 <template>
-  <Fragment>
+  <div style="display: contents;">
     <CommonReportViewTargetGroupsModal
       v-if="isTargetGroupsModalVisible"
       :status="isTargetGroupsModalVisible"
@@ -32,9 +32,7 @@
               <div v-if="key === 'Target Groups'">
                 <div class="campaign-manager-summary-card__body-item-value">
                   <div class="d-flex align-center">
-                    <v-btn class="mr-1" icon @click="handleViewTargetGroupsClick">
-                      <v-icon center size="20" color="#2196F3">mdi-eye</v-icon>
-                    </v-btn>
+                    <v-icon class="mr-1" size="20" color="#2196F3" style="cursor: pointer;" @click="handleViewTargetGroupsClick">mdi-eye</v-icon>
                     <span style="color: #2196f3; font-weight: 600;"
                       >{{ getTargetGroups.length }}
                       {{ getTargetGroups.length > 1 ? 'groups' : 'group' }}</span
@@ -53,6 +51,9 @@
                   </v-tooltip>
                 </div>
               </div>
+              <div v-else-if="key === 'Languages'" class="campaign-manager-summary-card__body-item-value">
+                <CampaignInfoLanguages :value="val" />
+              </div>
               <div v-else class="campaign-manager-summary-card__body-item-value">
                 {{ val }}
               </div>
@@ -67,22 +68,22 @@
         </div>
       </template>
     </CampaignManagerSummaryCard>
-  </Fragment>
+  </div>
 </template>
 
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
+import CampaignInfoLanguages from '@/components/Common/Report/CampaignInfoLanguages.vue'
 import CommonReportViewTargetGroupsModal from '@/components/Common/Report/CommonReportViewTargetGroupsModal'
-import { Fragment } from 'vue-frag'
 export default {
   name: 'CampaignManagerReportSummaryCampaignInfo',
   components: {
+    CampaignInfoLanguages,
     Badge,
     CampaignManagerSummaryCard,
-    CommonReportViewTargetGroupsModal,
-    Fragment
+    CommonReportViewTargetGroupsModal
   },
   props: {
     items: {
