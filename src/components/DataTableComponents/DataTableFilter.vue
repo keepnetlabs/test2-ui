@@ -8,10 +8,11 @@
     bottom
     offset-y
     nudge-bottom="12"
+    :nudge-left="getHorizontalNudge"
     :max-height="getMenuMaxHeight"
     :z-index="zIndex"
     :min-width="getWidth"
-    :max-width="getWidth"
+    :max-width="getMaxWidth"
     :close-on-content-click="false"
     :close-on-click="isCloseOnClick"
     @input="handleMenuVisibilityChange"
@@ -235,7 +236,15 @@
               @keydown.enter.stop.prevent="setActiveNestedGroup(group.key)"
             >
               <v-list-item-title class="nested-select-filter__group-title">
-                <span class="nested-select-filter__group-label">{{ group.label }}</span>
+                <div class="nested-select-filter__group-primary">
+                  <v-icon
+                    v-if="group.icon"
+                    class="nested-select-filter__group-icon"
+                  >
+                    {{ group.icon }}
+                  </v-icon>
+                  <span class="nested-select-filter__group-label">{{ group.label }}</span>
+                </div>
                 <div class="nested-select-filter__group-meta">
                   <span
                     v-if="getAppliedNestedGroupSelectionCount(group.key) > 0"
@@ -243,7 +252,7 @@
                   >
                     {{ getAppliedNestedGroupSelectionCount(group.key) }}
                   </span>
-                  <v-icon class="nested-select-filter__group-arrow" small>mdi-menu-right</v-icon>
+                  <v-icon class="nested-select-filter__group-arrow">mdi-menu-right</v-icon>
                 </div>
               </v-list-item-title>
             </v-list-item>
@@ -1093,9 +1102,18 @@ export default {
     },
     getWidth() {
       if (this.filterableType === 'nestedSelect') {
-        return '560px'
+        return '606px'
       }
       return this.filteredSelectValueDate === 'between' ? '450px' : '260px'
+    },
+    getMaxWidth() {
+      if (this.filterableType === 'nestedSelect') {
+        return null
+      }
+      return this.getWidth
+    },
+    getHorizontalNudge() {
+      return this.filterableType === 'nestedSelect' ? 200 : 0
     },
     searchInItems: function () {
       return this.filterValue.length > 0

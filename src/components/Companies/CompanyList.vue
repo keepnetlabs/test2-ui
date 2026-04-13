@@ -905,6 +905,7 @@ export default {
               {
                 key: "licenseType",
                 label: "License Type",
+                icon: "mdi-certificate-outline",
                 fieldName: "LicenseTypeResourceId",
                 operator: "Include",
                 items: licenses.map((item) => ({
@@ -915,6 +916,7 @@ export default {
               {
                 key: "products",
                 label: "Products",
+                icon: "mdi-package-variant-closed",
                 fieldName: "ModuleResourceId",
                 operator: "Include",
                 items: allLicenseModules
