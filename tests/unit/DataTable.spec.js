@@ -635,12 +635,22 @@ describe('DataTable.vue', () => {
         isReportWithExam: true,
         serverSideProps: { pageSize: 25, pageNumber: 2, totalNumberOfRecords: 100 },
         axiosPayload: {
-          filter: { FilterGroups: [{ FilterItems: [{ FieldName: 'Status', Value: 'Active' }] }, { FilterItems: [] }] }
+          filter: { FilterGroups: [{ FilterItems: [] }, { FilterItems: [] }] }
         }
       })
       wrapper.vm.handleRefresh = jest.fn()
       wrapper.vm.$refs.elTableRef = { clearSort: jest.fn() }
-      wrapper.setData({ search: 'to-clear', filterValues: { Status: 'Active' } })
+      wrapper.setData({
+        search: 'to-clear',
+        filterValues: { Status: 'Active' },
+        axiosPayload: {
+          ...wrapper.vm.axiosPayload,
+          filter: {
+            ...wrapper.vm.axiosPayload.filter,
+            FilterGroups: [{ FilterItems: [{ FieldName: 'Status', Value: 'Active' }] }, { FilterItems: [] }]
+          }
+        }
+      })
 
       wrapper.vm.handleClearFilters()
 
@@ -651,6 +661,8 @@ describe('DataTable.vue', () => {
       expect(wrapper.emitted('update:axios-payload')).toBeTruthy()
       expect(wrapper.emitted('update:axios-payload')[0][0].pageSize).toBe(25)
       expect(wrapper.emitted('update:axios-payload')[0][0].showByExamStatus).toBe('FirstAttempt')
+      expect(wrapper.emitted('update:axios-payload')[0][0].filter.FilterGroups[0].FilterItems).toEqual([])
+      expect(wrapper.emitted('update:axios-payload')[0][0].filter.FilterGroups[1].FilterItems).toEqual([])
     })
 
     it('should emit correct downloadEvent payload for server-side and client-side', () => {

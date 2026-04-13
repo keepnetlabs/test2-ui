@@ -156,7 +156,6 @@ import GamificationReportUserDetailsDrawer from '@/components/GamificationReport
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import LeaderboardBadgesColumn from '@/components/GamificationReport/LeaderboardBadgesColumn'
 import labels from '@/model/constants/labels'
-import { isTestEnvironment } from '@/utils/isTestEnvironment'
 import { sendAutonomous } from '@/api/agenticAIService'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
@@ -456,11 +455,7 @@ export default {
           action: 'on-details'
         }
       ]
-      if (
-        isTestEnvironment() &&
-        this.hasAgenticAILicense &&
-        this.isAgenticAIEnabledStore
-      ) {
+      if (this.hasAgenticAILicense && this.isAgenticAIEnabledStore) {
         actions.push({
           name: this.executionModeStore === 'ApprovalGated' ? 'Send with AI for Approval' : 'Run with AI',
           id: 'btn-send-with-ai-gamification-report',

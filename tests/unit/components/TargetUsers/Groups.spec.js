@@ -120,12 +120,7 @@ describe('TargetUsers Groups.vue', () => {
     expect(handleDeleteGroup).toHaveBeenCalledTimes(2)
   })
 
-  it('showSendWithAIAction requires test env, license and company Agentic AI enabled', () => {
-    const originalLocation = globalThis.location
-    Object.defineProperty(globalThis, 'location', {
-      value: { hostname: 'localhost' },
-      configurable: true
-    })
+  it('showSendWithAIAction requires license and company Agentic AI enabled', () => {
     expect(
       computed.showSendWithAIAction.call({
         hasAgenticAILicense: true,
@@ -144,7 +139,6 @@ describe('TargetUsers Groups.vue', () => {
         isAgenticAIEnabledStore: false
       })
     ).toBe(false)
-    Object.defineProperty(globalThis, 'location', { value: originalLocation, configurable: true })
   })
 
   it('agenticAIDialogMode returns approval for approval-gated execution', () => {

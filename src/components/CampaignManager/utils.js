@@ -50,6 +50,7 @@ export const SEND_RANDOMLY_USERS_CALCULATE_TYPES = {
 export const scenarioDistributionFilterItems = [
   'Manually',
   'AI Ally selects scenario for each user',
+  'Agentic AI explicit user-scenario mapping',
   'Random scenarios for each user',
   'Same random scenario for all users'
 ]
@@ -57,7 +58,8 @@ export const scenarioDistributionItems = [
   { text: 'Select scenarios manually', value: 0 },
   { text: 'Select random scenarios for each user', value: 1 },
   { text: 'Select same random scenario for all users', value: 2 },
-  { text: 'AI Ally selects scenario for each user', value: 3 }
+  { text: 'AI Ally selects scenario for each user', value: 3 },
+  { text: 'Agentic AI explicit user-scenario mapping', value: 4 }
 ]
 export const COLUMNS = {
   SCENARIO_DISTRIBUTION: {
@@ -420,12 +422,15 @@ export const frequencyItems = [
 export const SCENARIO_DISTRIBUTION = {
   MANUALLY: 0,
   RANDOM_SCENARIO_FOR_EACH: 1,
-  SAME_SCENARIO_FOR_ALL: 2
+  SAME_SCENARIO_FOR_ALL: 2,
+  AI_ALLY_SELECTS_SCENARIO_FOR_EACH_USER: 3,
+  AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING: 4
 }
 
 export const SCENARIO_DISTRIBUTION_TEXTS = [
   'Manually',
   'Random scenarios for each user',
   'Same random scenario for all users',
-  'AI Ally selects scenario for each user'
+  'AI Ally selects scenario for each user',
+  'Agentic AI explicit user-scenario mapping'
 ]

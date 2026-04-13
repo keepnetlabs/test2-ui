@@ -4,6 +4,229 @@ import AgenticAIActivitiesDrawer from '@/components/Common/Widget/WidgetComponen
 describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
   const localVue = createLocalVue()
 
+  describe('watch', () => {
+    it('value watcher initializes drawer data only when opened', () => {
+      const initializeDrawerData = jest.fn()
+
+      AgenticAIActivitiesDrawer.watch.value.call({ initializeDrawerData }, true)
+      expect(initializeDrawerData).toHaveBeenCalledTimes(1)
+
+      initializeDrawerData.mockClear()
+      AgenticAIActivitiesDrawer.watch.value.call({ initializeDrawerData }, false)
+      expect(initializeDrawerData).not.toHaveBeenCalled()
+    })
+
+    it('getLightbox.status watcher toggles drawer body overflow when the element exists', () => {
+      const drawerBody = { style: { overflowY: '' } }
+      const ctx = {
+        $el: {
+          querySelector: jest.fn(() => drawerBody)
+        }
+      }
+
+      AgenticAIActivitiesDrawer.watch['getLightbox.status'].call(ctx, true)
+      expect(drawerBody.style.overflowY).toBe('hidden')
+
+      AgenticAIActivitiesDrawer.watch['getLightbox.status'].call(ctx, false)
+      expect(drawerBody.style.overflowY).toBe('')
+    })
+
+    it('getLightbox.status watcher safely skips missing drawer body', () => {
+      const ctx = {
+        $el: {
+          querySelector: jest.fn(() => null)
+        }
+      }
+
+      expect(() => {
+        AgenticAIActivitiesDrawer.watch['getLightbox.status'].call(ctx, true)
+      }).not.toThrow()
+    })
+  })
+
+  describe('lightweight computed coverage', () => {
+    it('status mirrors the value prop and isNested stays false', () => {
+      expect(AgenticAIActivitiesDrawer.computed.status.call({ value: true })).toBe(true)
+      expect(AgenticAIActivitiesDrawer.computed.isNested.call({})).toBe(false)
+    })
+
+    it('batchTypeFilterItems preserves a selected value that is no longer in the list', () => {
+      const ctx = {
+        batchTypeFilterOptions: ['Phishing', 'Training'],
+        leftTypeFilter: 'Quishing',
+        getStableFilterItems: AgenticAIActivitiesDrawer.methods.getStableFilterItems
+      }
+
+      expect(AgenticAIActivitiesDrawer.computed.batchTypeFilterItems.call(ctx)).toEqual([
+        'Quishing',
+        'Phishing',
+        'Training'
+      ])
+    })
+
+    it('batchStatusFilterItems reuses the same options array when selection already exists', () => {
+      const options = ['Pending', 'Approved']
+      const ctx = {
+        batchStatusFilterOptions: options,
+        leftStatusFilter: 'Pending',
+        getStableFilterItems: AgenticAIActivitiesDrawer.methods.getStableFilterItems
+      }
+
+      expect(AgenticAIActivitiesDrawer.computed.batchStatusFilterItems.call(ctx)).toBe(options)
+    })
+
+    it('isGlobalRefreshDisabled reacts to each loading gate', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: false,
+          isLoading: false,
+          actionInProgress: false
+        })
+      ).toBe(false)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: true,
+          batchListLoadingMore: false,
+          isLoading: false,
+          actionInProgress: false
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: true,
+          isLoading: false,
+          actionInProgress: false
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: false,
+          isLoading: true,
+          actionInProgress: false
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isGlobalRefreshDisabled.call({
+          batchListLoading: false,
+          batchListLoadingMore: false,
+          isLoading: false,
+          actionInProgress: true
+        })
+      ).toBe(true)
+    })
+
+    it('isDrawerCloseLocked reacts to action and dialog loading states', () => {
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: false,
+          confirmDialog: { loading: false },
+          rejectDialog: { loading: false }
+        })
+      ).toBe(false)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: true,
+          confirmDialog: { loading: false },
+          rejectDialog: { loading: false }
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: false,
+          confirmDialog: { loading: true },
+          rejectDialog: { loading: false }
+        })
+      ).toBe(true)
+
+      expect(
+        AgenticAIActivitiesDrawer.computed.isDrawerCloseLocked.call({
+          actionInProgress: false,
+          confirmDialog: { loading: false },
+          rejectDialog: { loading: true }
+        })
+      ).toBe(true)
+    })
+  })
+
+  describe('small interaction helpers', () => {
+    it('handleLeftSearchInput debounces filter refresh and clears its timer reference', () => {
+      jest.useFakeTimers()
+
+      try {
+        const ctx = {
+          leftSearchDebounceId: null,
+          clearLeftSearchDebounce: AgenticAIActivitiesDrawer.methods.clearLeftSearchDebounce,
+          handleLeftFiltersChanged: jest.fn()
+        }
+
+        AgenticAIActivitiesDrawer.methods.handleLeftSearchInput.call(ctx)
+        expect(ctx.leftSearchDebounceId).not.toBeNull()
+
+        jest.advanceTimersByTime(250)
+        expect(ctx.handleLeftFiltersChanged).toHaveBeenCalledTimes(1)
+        expect(ctx.leftSearchDebounceId).toBeNull()
+      } finally {
+        jest.useRealTimers()
+      }
+    })
+
+    it('handleLeftSearchClear cancels pending debounce work and refreshes immediately', () => {
+      const clearLeftSearchDebounce = jest.fn()
+      const handleLeftFiltersChanged = jest.fn()
+
+      AgenticAIActivitiesDrawer.methods.handleLeftSearchClear.call({
+        clearLeftSearchDebounce,
+        handleLeftFiltersChanged
+      })
+
+      expect(clearLeftSearchDebounce).toHaveBeenCalledTimes(1)
+      expect(handleLeftFiltersChanged).toHaveBeenCalledTimes(1)
+    })
+
+    it('resetActivitiesTableState clears rows and resets server-side pagination totals', () => {
+      const ctx = {
+        pagedTableData: [{ resourceId: 'r1' }],
+        serverSideProps: {
+          totalNumberOfRecords: 12,
+          totalNumberOfPages: 3,
+          pageNumber: 4
+        }
+      }
+
+      AgenticAIActivitiesDrawer.methods.resetActivitiesTableState.call(ctx)
+
+      expect(ctx.pagedTableData).toEqual([])
+      expect(ctx.serverSideProps.totalNumberOfRecords).toBe(0)
+      expect(ctx.serverSideProps.totalNumberOfPages).toBe(0)
+      expect(ctx.serverSideProps.pageNumber).toBe(1)
+    })
+
+    it('handleCloseRequest closes the drawer only when closing is not locked', () => {
+      const closeDrawer = jest.fn()
+
+      AgenticAIActivitiesDrawer.methods.handleCloseRequest.call({
+        isDrawerCloseLocked: true,
+        closeDrawer
+      })
+      expect(closeDrawer).not.toHaveBeenCalled()
+
+      AgenticAIActivitiesDrawer.methods.handleCloseRequest.call({
+        isDrawerCloseLocked: false,
+        closeDrawer
+      })
+      expect(closeDrawer).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('formatActivityTypeDisplay', () => {
     it('removes Simulation suffix for phishing and quishing labels', () => {
       const ctx = {}
@@ -68,6 +291,19 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       const ctx = {}
       expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'unknownField')).toBe('unknownField')
     })
+
+    it('maps DataTable search field casing back to API field names', () => {
+      const ctx = {}
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'FirstName')).toBe(
+        'targetUserFirstName'
+      )
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'Email')).toBe(
+        'targetUserEmail'
+      )
+      expect(AgenticAIActivitiesDrawer.methods.getFilterFieldName.call(ctx, 'StartDate')).toBe(
+        'createTime'
+      )
+    })
   })
 
   describe('getSortFieldName', () => {
@@ -127,6 +363,18 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx)
       expect(result.Value).toBe('')
     })
+
+    it('normalizes DataTable search field casing before sending to API', () => {
+      const ctx = {
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
+      }
+      const result = AgenticAIActivitiesDrawer.methods.normalizeFilterItem.call(ctx, {
+        FieldName: 'FirstName',
+        Value: 'Damla'
+      })
+      expect(result.FieldName).toBe('targetUserFirstName')
+      expect(result.Value).toBe('Damla')
+    })
   })
 
   describe('resetPageNumber', () => {
@@ -138,6 +386,130 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       AgenticAIActivitiesDrawer.methods.resetPageNumber.call(ctx)
       expect(ctx.axiosPayload.pageNumber).toBe(1)
       expect(ctx.serverSideProps.pageNumber).toBe(1)
+    })
+  })
+
+  describe('saved filter persistence helpers', () => {
+    afterEach(() => {
+      localStorage.clear()
+    })
+
+    it('returns null when no saved filter key exists or JSON is invalid', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getSavedActivitiesTableFilters.call({
+          savedFiltersLocalStorageKey: ''
+        })
+      ).toBeNull()
+
+      localStorage.setItem('AgenticAIActivitiesTableSearchKeys', '{bad-json')
+      expect(
+        AgenticAIActivitiesDrawer.methods.getSavedActivitiesTableFilters.call({
+          savedFiltersLocalStorageKey: 'AgenticAIActivitiesTableSearchKeys'
+        })
+      ).toBeNull()
+    })
+
+    it('getSavedActivitiesTableFilters returns parsed localStorage data', () => {
+      localStorage.setItem(
+        'AgenticAIActivitiesTableSearchKeys',
+        JSON.stringify({ filter: { SearchInputTextValue: 'damla' } })
+      )
+
+      const result = AgenticAIActivitiesDrawer.methods.getSavedActivitiesTableFilters.call({
+        savedFiltersLocalStorageKey: 'AgenticAIActivitiesTableSearchKeys'
+      })
+
+      expect(result).toEqual({ filter: { SearchInputTextValue: 'damla' } })
+    })
+
+    it('applySavedActivitiesTableFilters hydrates axios payload filter from saved defaults', () => {
+      const ctx = {
+        axiosPayload: { filter: { SearchInputTextValue: '', FilterGroups: [] } },
+        $set: (obj, key, value) => {
+          obj[key] = value
+        },
+        getSavedActivitiesTableFilters: jest.fn(() => ({
+          filter: {
+            SearchInputTextValue: 'damla',
+            FilterGroups: [{ FilterItems: [{ FieldName: 'FirstName', Value: 'damla' }] }]
+          }
+        }))
+      }
+
+      AgenticAIActivitiesDrawer.methods.applySavedActivitiesTableFilters.call(ctx)
+
+      expect(ctx.axiosPayload.filter.SearchInputTextValue).toBe('damla')
+      expect(ctx.axiosPayload.filter.FilterGroups[0].FilterItems[0].FieldName).toBe('FirstName')
+    })
+
+    it('applySavedActivitiesTableFilters leaves payload untouched when no saved filter exists', () => {
+      const originalFilter = { SearchInputTextValue: '', FilterGroups: [] }
+      const ctx = {
+        axiosPayload: { filter: originalFilter },
+        $set: jest.fn(),
+        getSavedActivitiesTableFilters: jest.fn(() => null)
+      }
+
+      AgenticAIActivitiesDrawer.methods.applySavedActivitiesTableFilters.call(ctx)
+
+      expect(ctx.$set).not.toHaveBeenCalled()
+      expect(ctx.axiosPayload.filter).toBe(originalFilter)
+    })
+  })
+
+  describe('buildRequestPayload', () => {
+    it('normalizes saved search field names and removes duplicate batch filters before appending selected batch', () => {
+      const ctx = {
+        axiosPayload: {
+          pageNumber: 4,
+          pageSize: 10,
+          orderBy: 'firstName',
+          filter: {
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [
+                  { FieldName: 'batchResourceId', Operator: '=', Value: 'old-batch' },
+                  { FieldName: 'FirstName', Operator: 'Contains', Value: 'damla' }
+                ],
+                FilterGroups: []
+              },
+              {
+                Condition: 'OR',
+                FilterItems: [{ FieldName: 'Email', Operator: 'Contains', Value: 'damla@x.com' }],
+                FilterGroups: []
+              }
+            ]
+          }
+        },
+        serverSideProps: { pageNumber: 2, pageSize: 25 },
+        selectedBatchId: 'new-batch',
+        getSortFieldName: AgenticAIActivitiesDrawer.methods.getSortFieldName,
+        normalizeFilterItem: AgenticAIActivitiesDrawer.methods.normalizeFilterItem,
+        getFilterFieldName: AgenticAIActivitiesDrawer.methods.getFilterFieldName
+      }
+
+      const result = AgenticAIActivitiesDrawer.methods.buildRequestPayload.call(ctx)
+
+      expect(result.pageNumber).toBe(2)
+      expect(result.pageSize).toBe(25)
+      expect(result.orderBy).toBe('TargetUserFirstName')
+      expect(result.filter.FilterGroups[0].FilterItems).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            FieldName: 'targetUserFirstName',
+            Value: 'damla'
+          }),
+          expect.objectContaining({
+            FieldName: 'BatchResourceId',
+            Value: 'new-batch'
+          })
+        ])
+      )
+      expect(
+        result.filter.FilterGroups[0].FilterItems.some((item) => item.Value === 'old-batch')
+      ).toBe(false)
+      expect(result.filter.FilterGroups[1].FilterItems[0].FieldName).toBe('targetUserEmail')
     })
   })
 
@@ -308,7 +680,9 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       getActivityTypeName: AgenticAIActivitiesDrawer.methods.getActivityTypeName,
       normalizeStatus: AgenticAIActivitiesDrawer.methods.normalizeStatus,
       formatActivityTypeDisplay: AgenticAIActivitiesDrawer.methods.formatActivityTypeDisplay,
-      normalizeTargetUserIsDeletedFlag: AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag
+      normalizeTargetUserIsDeletedFlag: AgenticAIActivitiesDrawer.methods.normalizeTargetUserIsDeletedFlag,
+      normalizeActivityTooltipMessage: AgenticAIActivitiesDrawer.methods.normalizeActivityTooltipMessage,
+      getActivityErrorMessage: AgenticAIActivitiesDrawer.methods.getActivityErrorMessage
     }
 
     it('maps targetUserStatus and defaults empty to empty string', () => {
@@ -356,6 +730,50 @@ describe('AgenticAIActivitiesDrawer.vue (extra branch coverage)', () => {
       })
       expect(row.targetUserStatus).toBe('')
       expect(row.targetUserIsDeleted).toBe(false)
+    })
+
+    it('maps error tooltip text from fallback message fields', () => {
+      const row = AgenticAIActivitiesDrawer.methods.mapActivityToRow.call(methodCtx, {
+        resourceId: 'rid',
+        batchResourceId: 'bid',
+        activityType: 1,
+        statusName: 'Error',
+        message: '  Domain verification failed  '
+      })
+      expect(row.errorMessage).toBe('Domain verification failed')
+    })
+  })
+
+  describe('approval status tooltip helpers', () => {
+    const ctx = {
+      normalizeStatus: AgenticAIActivitiesDrawer.methods.normalizeStatus,
+      normalizeActivityTooltipMessage: AgenticAIActivitiesDrawer.methods.normalizeActivityTooltipMessage
+    }
+
+    it('normalizes arrays and message objects into a single tooltip string', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.normalizeActivityTooltipMessage.call(ctx, [
+          { Message: 'Domain is not verified.' },
+          { message: 'Try a verified sender.' }
+        ])
+      ).toBe('Domain is not verified., Try a verified sender.')
+    })
+
+    it('extracts validationDetail JSON when direct error message is absent', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getActivityErrorMessage.call(ctx, {
+          validationDetail: JSON.stringify([{ Message: 'Unverified domain detected.' }])
+        })
+      ).toBe('Unverified domain detected.')
+    })
+
+    it('returns empty string for unsupported statuses', () => {
+      expect(
+        AgenticAIActivitiesDrawer.methods.getApprovalStatusTooltipText.call(ctx, {
+          status: 'Approved',
+          errorMessage: 'ignored'
+        })
+      ).toBe('')
     })
   })
 

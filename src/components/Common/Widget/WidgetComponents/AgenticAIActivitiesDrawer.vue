@@ -216,6 +216,15 @@
                         {{ getBatchStatusCounts(batch).declined }} declined
                       </v-chip>
                       <v-chip
+                        v-if="getBatchStatusCounts(batch).error > 0"
+                        small
+                        label
+                        class="agentic-ai-activities-drawer__batch-card-chip agentic-ai-activities-drawer__batch-card-chip--error"
+                        outlined
+                      >
+                        {{ getBatchStatusCounts(batch).error }} error
+                      </v-chip>
+                      <v-chip
                         v-if="getBatchStatusCounts(batch).retried > 0"
                         small
                         label
@@ -246,6 +255,10 @@
                       <div
                         class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--declined"
                         :style="{ width: getBatchSegmentWidth(batch, 'declined') }"
+                      />
+                      <div
+                        class="agentic-ai-activities-drawer__batch-card-progress-bar agentic-ai-activities-drawer__batch-card-progress-bar--error"
+                        :style="{ width: getBatchSegmentWidth(batch, 'error') }"
                       />
                     </div>
                   </button>
@@ -320,6 +333,8 @@
                     :download-button="{ show: false }"
                     :is-settings-popup="true"
                     :axios-payload.sync="axiosPayload"
+                    :saved-filters-local-storage-key="savedFiltersLocalStorageKey"
+                    :saved-table-settings-local-storage-key="savedTableSettingsLocalStorageKey"
                     rowKey="resourceId"
                     filterable
                     options
@@ -335,6 +350,7 @@
                     @searchChangedEvent="handleSearchChange"
                     @columnFilterChanged="handleColumnFilterChanged"
                     @columnFilterCleared="handleColumnFilterCleared"
+                    @clear-filters="handleClearFilters"
                     @refreshAction="handleRefresh"
                   >
                     <template #datatable-custom-column="{ scope, col }">
@@ -357,7 +373,7 @@
                             </div>
                           </template>
                           <span class="agentic-ai-activities-drawer__approval-status-tooltip">{{
-                            scope.row.declineReason
+                            getApprovalStatusTooltipText(scope.row)
                           }}</span>
                         </v-tooltip>
                         <DataTableStatus
@@ -544,6 +560,9 @@ const BATCH_LIST_PAGE_SIZE = 100;
 
 const BATCH_LIST_SCROLL_LOAD_THRESHOLD_PX = 140;
 
+const ACTIVITIES_TABLE_SAVED_FILTERS_KEY = "AgenticAIActivitiesTableSearchKeys";
+const ACTIVITIES_TABLE_SAVED_SETTINGS_KEY = "AgenticAIActivitiesTableSettings";
+
 /** Shown when Approve / Retry must be blocked because `targetUserStatus` is not Active. */
 const INACTIVE_TARGET_USER_APPROVAL_TOOLTIP =
   "Approve and retry are unavailable when the target user status is not Active.";
@@ -591,6 +610,8 @@ export default {
     return {
       serverSideProps: new ServerSideProps("", false, 10, 1, 0, 0),
       serverSideEvents: { pagination: true, search: true, sort: true },
+      savedFiltersLocalStorageKey: ACTIVITIES_TABLE_SAVED_FILTERS_KEY,
+      savedTableSettingsLocalStorageKey: ACTIVITIES_TABLE_SAVED_SETTINGS_KEY,
       actionInProgress: false,
       axiosPayload: this.createDefaultPayload(),
       pagedTableData: [],
@@ -609,6 +630,7 @@ export default {
       batchTypeFilterOptions: [...DEFAULT_BATCH_PRODUCT_FILTER_OPTIONS],
       batchStatusFilterOptions: [],
       batchListLoading: false,
+      isClearingActivitiesFilters: false,
       selectedBatchId: null,
       leftSearch: "",
       leftSearchDebounceId: null,
@@ -917,6 +939,7 @@ export default {
       this.closeRejectDialog();
       this.serverSideProps = new ServerSideProps("", false, 10, 1, 0, 0);
       this.axiosPayload = this.createDefaultPayload(10, false);
+      this.applySavedActivitiesTableFilters();
       this.pagedTableData = [];
       this.batchList = [];
       this.batchListPageNumber = 1;
@@ -967,7 +990,28 @@ export default {
         status: "Status",
         startDate: "createTime"
       };
-      return fieldMap[property] || property;
+      const normalizedProperty =
+        typeof property === "string" && property.length
+          ? `${property.charAt(0).toLowerCase()}${property.slice(1)}`
+          : property;
+      return fieldMap[property] || fieldMap[normalizedProperty] || property;
+    },
+    getSavedActivitiesTableFilters() {
+      if (!this.savedFiltersLocalStorageKey) {
+        return null;
+      }
+      try {
+        return JSON.parse(localStorage.getItem(this.savedFiltersLocalStorageKey) || "null");
+      } catch {
+        return null;
+      }
+    },
+    applySavedActivitiesTableFilters() {
+      const savedFilters = this.getSavedActivitiesTableFilters();
+      if (!savedFilters?.filter) {
+        return;
+      }
+      this.$set(this.axiosPayload, "filter", savedFilters.filter);
     },
     getSortFieldName(property) {
       const fieldMap = {
@@ -1119,6 +1163,50 @@ export default {
       if (raw === false || raw === 0 || raw === null || raw === undefined) return false;
       return String(raw).trim().toLowerCase() === "true";
     },
+    normalizeActivityTooltipMessage(raw) {
+      if (raw == null) return "";
+      if (Array.isArray(raw)) {
+        return raw
+          .map((item) => this.normalizeActivityTooltipMessage(item))
+          .filter(Boolean)
+          .join(", ");
+      }
+      if (typeof raw === "object") {
+        return (
+          this.normalizeActivityTooltipMessage(raw.message) ||
+          this.normalizeActivityTooltipMessage(raw.Message) ||
+          ""
+        );
+      }
+      return String(raw).trim();
+    },
+    getActivityErrorMessage(activity = {}) {
+      const directMessage =
+        this.normalizeActivityTooltipMessage(activity.errorMessage) ||
+        this.normalizeActivityTooltipMessage(activity.errorReason) ||
+        this.normalizeActivityTooltipMessage(activity.error) ||
+        this.normalizeActivityTooltipMessage(activity.message) ||
+        this.normalizeActivityTooltipMessage(activity.failureReason) ||
+        this.normalizeActivityTooltipMessage(activity.failureMessage) ||
+        this.normalizeActivityTooltipMessage(activity.validationMessage) ||
+        this.normalizeActivityTooltipMessage(activity.explanationJson?.errorMessage) ||
+        this.normalizeActivityTooltipMessage(activity.explanationJson?.message);
+
+      if (directMessage) {
+        return directMessage;
+      }
+
+      if (typeof activity.validationDetail === "string" && activity.validationDetail.trim()) {
+        try {
+          const parsed = JSON.parse(activity.validationDetail);
+          return this.normalizeActivityTooltipMessage(parsed);
+        } catch {
+          return activity.validationDetail.trim();
+        }
+      }
+
+      return "";
+    },
     mapActivityToRow(activity) {
       const targetUserIsDeleted = this.normalizeTargetUserIsDeletedFlag(activity.targetUserIsDeleted);
       return {
@@ -1149,6 +1237,7 @@ export default {
         instanceGroup: activity.instanceGroup,
         explanationJson: activity.explanationJson || null,
         declineReason: (activity.declineReason ?? "").trim() || null,
+        errorMessage: this.getActivityErrorMessage(activity) || null,
         retryOfActivityResourceId: activity.retryOfActivityResourceId || null,
         retryActivityResourceId: activity.retryActivityResourceId || null
       };
@@ -1397,7 +1486,21 @@ export default {
       this.fetchActivities();
     },
     async handleRefresh() {
+      await this.$nextTick();
+      if (this.isClearingActivitiesFilters) {
+        return;
+      }
       await this.fetchActivities();
+    },
+    handleClearFilters() {
+      this.isClearingActivitiesFilters = true;
+      this.axiosPayload = this.createDefaultPayload(this.serverSideProps.pageSize, false);
+      this.resetPageNumber();
+      this.$nextTick(() => {
+        this.fetchActivities().finally(() => {
+          this.isClearingActivitiesFilters = false;
+        });
+      });
     },
     resetActivitiesTableState() {
       this.pagedTableData = [];
@@ -1510,12 +1613,19 @@ export default {
     agenticApprovalStatusColumnForCell(col = {}) {
       return { ...col, type: "status" };
     },
-    /** Hover tooltip for `declineReason` on Retried / Declined rows (same column slot). */
-    shouldShowApprovalStatusDeclineReasonTooltip(row = {}) {
+    getApprovalStatusTooltipText(row = {}) {
       const normalized = this.normalizeStatus(row.status || "").toLowerCase();
-      const reason = row.declineReason;
-      if (reason == null || String(reason).trim() === "") return false;
-      return normalized === "retried" || normalized === "declined";
+      if (normalized === "error") {
+        return this.normalizeActivityTooltipMessage(row.errorMessage);
+      }
+      if (normalized === "retried" || normalized === "declined") {
+        return this.normalizeActivityTooltipMessage(row.declineReason);
+      }
+      return "";
+    },
+    /** Hover tooltip for row-level decline or error reasons in Approval Status column. */
+    shouldShowApprovalStatusDeclineReasonTooltip(row = {}) {
+      return !!this.getApprovalStatusTooltipText(row);
     },
     formatApprovalStatusCellLabel(value) {
       return formatDataTableFieldLabel(value);
@@ -1525,15 +1635,16 @@ export default {
       const approved = counts.Approved ?? counts.approved ?? counts.Executed ?? counts.executed ?? 0;
       const declined = counts.Declined ?? counts.declined ?? counts.Rejected ?? counts.rejected ?? 0;
       const pending = counts.Pending ?? counts.pending ?? counts.WaitingForApproval ?? 0;
+      const error = counts.Error ?? counts.error ?? counts.Failed ?? counts.failed ?? 0;
       const retrying = counts.Retrying ?? counts.retrying ?? 0;
       const retried = counts.Retried ?? counts.retried ?? 0;
-      return { approved, pending, declined, retrying, retried };
+      return { approved, pending, declined, error, retrying, retried };
     },
     getBatchSegmentWidth(batch = {}, type = "pending") {
       const total = batch.userCount || 0;
       if (!total) return "0%";
-      const { approved, pending, declined, retrying, retried } = this.getBatchStatusCounts(batch);
-      const map = { approved, pending, declined, retrying, retried };
+      const { approved, pending, declined, error, retrying, retried } = this.getBatchStatusCounts(batch);
+      const map = { approved, pending, declined, error, retrying, retried };
       const pct = Math.round(((map[type] || 0) / total) * 100);
       return `${pct}%`;
     },

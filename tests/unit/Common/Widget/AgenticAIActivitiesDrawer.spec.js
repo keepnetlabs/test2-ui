@@ -104,6 +104,7 @@ describe("AgenticAIActivitiesDrawer", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
     CompanyAPI.searchAgenticAIActivities.mockResolvedValue(mockActivityResponse([]));
   });
 
@@ -255,6 +256,27 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(wrapper.vm.mapActivityToRow({ resourceId: "r3", statusName: "Pending" }).declineReason).toBeNull();
     });
 
+    it("maps errorMessage to trimmed string and falls back to validation detail", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.mapActivityToRow({
+          resourceId: "r1",
+          statusName: "Error",
+          errorMessage: "  Unverified domain  "
+        }).errorMessage
+      ).toBe("Unverified domain");
+
+      expect(
+        wrapper.vm.mapActivityToRow({
+          resourceId: "r2",
+          statusName: "Error",
+          validationDetail: JSON.stringify([{ Message: "Domain is not verified." }])
+        }).errorMessage
+      ).toBe("Domain is not verified.");
+
+      expect(wrapper.vm.mapActivityToRow({ resourceId: "r3", statusName: "Pending" }).errorMessage).toBeNull();
+    });
+
     it("maps retryOfActivityResourceId and retryActivityResourceId when present", () => {
       const wrapper = mountFactory();
       const row = wrapper.vm.mapActivityToRow({
@@ -276,15 +298,16 @@ describe("AgenticAIActivitiesDrawer", () => {
   });
 
   describe("getBatchStatusCounts", () => {
-    it("maps statusCounts keys to approved, pending, declined", () => {
+    it("maps statusCounts keys to approved, pending, declined, and error", () => {
       const wrapper = mountFactory();
       const batch = {
-        statusCounts: { Approved: 2, Pending: 3, Declined: 1 }
+        statusCounts: { Approved: 2, Pending: 3, Declined: 1, Error: 4 }
       };
       expect(wrapper.vm.getBatchStatusCounts(batch)).toEqual({
         approved: 2,
         pending: 3,
         declined: 1,
+        error: 4,
         retrying: 0,
         retried: 0
       });
@@ -296,6 +319,7 @@ describe("AgenticAIActivitiesDrawer", () => {
         approved: 0,
         pending: 0,
         declined: 0,
+        error: 0,
         retrying: 0,
         retried: 0
       });
@@ -311,17 +335,19 @@ describe("AgenticAIActivitiesDrawer", () => {
         approved: 1,
         pending: 0,
         declined: 0,
+        error: 0,
         retrying: 2,
         retried: 1
       });
       expect(
         wrapper.vm.getBatchStatusCounts({
-          statusCounts: { retrying: 3, retried: 4 }
+          statusCounts: { retrying: 3, retried: 4, failed: 2 }
         })
       ).toEqual({
         approved: 0,
         pending: 0,
         declined: 0,
+        error: 2,
         retrying: 3,
         retried: 4
       });
@@ -362,10 +388,11 @@ describe("AgenticAIActivitiesDrawer", () => {
       const wrapper = mountFactory();
       const batch = {
         userCount: 10,
-        statusCounts: { Approved: 2, Pending: 2, Declined: 2, Retrying: 2, Retried: 2 }
+        statusCounts: { Approved: 2, Pending: 2, Declined: 1, Error: 1, Retrying: 2, Retried: 2 }
       };
       expect(wrapper.vm.getBatchSegmentWidth(batch, "retrying")).toBe("20%");
       expect(wrapper.vm.getBatchSegmentWidth(batch, "retried")).toBe("20%");
+      expect(wrapper.vm.getBatchSegmentWidth(batch, "error")).toBe("10%");
     });
   });
 
@@ -447,6 +474,19 @@ describe("AgenticAIActivitiesDrawer", () => {
     it("should accept columns prop", () => {
       const wrapper = mountFactory({ columns: baseColumns });
       expect(wrapper.props("columns")).toEqual(baseColumns);
+    });
+
+    it("exposes stable saved filter persistence keys for the detail DataTable", async () => {
+      const wrapper = mountFactory({ value: true });
+      await wrapper.setData({
+        batchList: [makeGroupedBatchApiRow("b-1")],
+        selectedBatchId: "b-1"
+      });
+
+      const dataTable = wrapper.find("datatable-stub");
+      expect(dataTable.exists()).toBe(true);
+      expect(wrapper.vm.savedFiltersLocalStorageKey).toBe("AgenticAIActivitiesTableSearchKeys");
+      expect(wrapper.vm.savedTableSettingsLocalStorageKey).toBe("AgenticAIActivitiesTableSettings");
     });
   });
 
@@ -1186,6 +1226,23 @@ describe("AgenticAIActivitiesDrawer", () => {
       closeRejectSpy.mockRestore();
     });
 
+    it("initializeDrawerData applies saved activity table filters before fetching", () => {
+      const wrapper = mountFactory(
+        { value: false },
+        {
+          fetchBatches: jest.fn().mockResolvedValue(undefined),
+          fetchActivities: jest.fn(),
+          moveToBody: jest.fn()
+        }
+      );
+      const applySavedFiltersSpy = jest.spyOn(wrapper.vm, "applySavedActivitiesTableFilters");
+
+      wrapper.vm.initializeDrawerData();
+
+      expect(applySavedFiltersSpy).toHaveBeenCalledTimes(1);
+      applySavedFiltersSpy.mockRestore();
+    });
+
     it("handleApprove and handleDeclineAll clear reject dialog before opening confirm", () => {
       const wrapper = mountFactory();
       const batchRow = { batchResourceId: "b1", waitingCount: 2 };
@@ -1690,6 +1747,22 @@ describe("AgenticAIActivitiesDrawer", () => {
       ).toBe(true);
     });
 
+    it("shouldShowApprovalStatusDeclineReasonTooltip is true for Error with non-empty errorMessage", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
+          status: "Error",
+          errorMessage: "Unverified domain"
+        })
+      ).toBe(true);
+      expect(
+        wrapper.vm.getApprovalStatusTooltipText({
+          status: "Error",
+          errorMessage: "Unverified domain"
+        })
+      ).toBe("Unverified domain");
+    });
+
     it("shouldShowApprovalStatusDeclineReasonTooltip is false without reason or for other statuses", () => {
       const wrapper = mountFactory();
       expect(
@@ -1718,7 +1791,7 @@ describe("AgenticAIActivitiesDrawer", () => {
       ).toBe(false);
     });
 
-    it("shouldShowApprovalStatusDeclineReasonTooltip is false for Retrying or Error even with reason", () => {
+    it("shouldShowApprovalStatusDeclineReasonTooltip is false for Retrying or Error without errorMessage", () => {
       const wrapper = mountFactory();
       expect(
         wrapper.vm.shouldShowApprovalStatusDeclineReasonTooltip({
@@ -1732,6 +1805,23 @@ describe("AgenticAIActivitiesDrawer", () => {
           declineReason: "Failed"
         })
       ).toBe(false);
+    });
+
+    it("getApprovalStatusTooltipText prefers declineReason for Declined and ignores unsupported statuses", () => {
+      const wrapper = mountFactory();
+      expect(
+        wrapper.vm.getApprovalStatusTooltipText({
+          status: "Declined",
+          declineReason: "Policy block",
+          errorMessage: "Should not be used"
+        })
+      ).toBe("Policy block");
+      expect(
+        wrapper.vm.getApprovalStatusTooltipText({
+          status: "Pending",
+          declineReason: "Should not show"
+        })
+      ).toBe("");
     });
   });
 
@@ -2545,6 +2635,7 @@ describe("AgenticAIActivitiesDrawer", () => {
         approved: 2,
         pending: 0,
         declined: 1,
+        error: 0,
         retrying: 0,
         retried: 0
       });
@@ -3020,6 +3111,65 @@ describe("AgenticAIActivitiesDrawer", () => {
       expect(items.some((i) => i.FieldName === "Status")).toBe(false);
       expect(items.some((i) => i.FieldName === "email")).toBe(true);
       expect(fetchActivities).toHaveBeenCalled();
+    });
+
+    it("handleClearFilters resets page number and refetches on next tick", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchActivities });
+      wrapper.setData({
+        selectedBatchId: "RSjdR5NXzhes",
+        serverSideProps: { ...wrapper.vm.serverSideProps, pageNumber: 4 },
+        axiosPayload: {
+          ...wrapper.vm.axiosPayload,
+          filter: {
+            ...wrapper.vm.axiosPayload.filter,
+            SearchInputTextValue: "john",
+            FilterGroups: [
+              {
+                Condition: "AND",
+                FilterItems: [{ FieldName: "Status", Value: "1", Operator: "=" }],
+                FilterGroups: []
+              },
+              wrapper.vm.axiosPayload.filter.FilterGroups[1]
+            ]
+          }
+        }
+      });
+
+      wrapper.vm.handleClearFilters();
+      expect(wrapper.vm.serverSideProps.pageNumber).toBe(1);
+      expect(wrapper.vm.isClearingActivitiesFilters).toBe(true);
+      expect(wrapper.vm.axiosPayload.filter.SearchInputTextValue).toBe("");
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([]);
+      expect(wrapper.vm.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([]);
+      expect(fetchActivities).not.toHaveBeenCalled();
+
+      await wrapper.vm.$nextTick();
+      expect(fetchActivities).toHaveBeenCalled();
+      await Promise.resolve();
+      expect(wrapper.vm.isClearingActivitiesFilters).toBe(false);
+
+      const requestPayload = wrapper.vm.buildRequestPayload();
+      expect(requestPayload.filter.FilterGroups[0].FilterItems).toEqual([
+        {
+          FieldName: "BatchResourceId",
+          Operator: "=",
+          Value: "RSjdR5NXzhes"
+        }
+      ]);
+      expect(requestPayload.filter.FilterGroups[1].FilterItems).toEqual([]);
+    });
+
+    it("handleRefresh skips stale refresh while clear-filters flow is pending", async () => {
+      const fetchActivities = jest.fn().mockResolvedValue(undefined);
+      const wrapper = mountFactory({ value: true }, { fetchActivities });
+      wrapper.setData({ isClearingActivitiesFilters: true });
+
+      const refreshPromise = wrapper.vm.handleRefresh();
+      await wrapper.vm.$nextTick();
+      await refreshPromise;
+
+      expect(fetchActivities).not.toHaveBeenCalled();
     });
 
     it("refreshTableLayout calls elTableRef.doLayout when ref chain exists", () => {

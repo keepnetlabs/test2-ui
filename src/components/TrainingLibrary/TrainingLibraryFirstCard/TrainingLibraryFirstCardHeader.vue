@@ -66,21 +66,30 @@
           </template>
           <span class="tooltip-span">Refresh</span>
         </VTooltip>
-        <VMenu v-model="isDownloadMenuOpen" bottom offset-y>
+        <VMenu v-model="isDownloadMenuOpen" :disabled="isDownloadButtonDisabled" bottom offset-y>
           <template #activator="{ on: menu, attrs }">
             <VTooltip bottom opacity="1">
               <template #activator="{ on: tooltip }">
-                <VBtn
+                <span
                   v-bind="attrs"
-                  v-on="{ ...tooltip, ...menu }"
-                  id="btn-download--training-library"
-                  class="btn-hover"
-                  icon
+                  v-on="{ ...tooltip, ...(isDownloadButtonDisabled ? {} : menu) }"
+                  :class="[
+                    'training-library-list-view-first-card-header__download-activator',
+                    isDownloadButtonDisabled &&
+                      'training-library-list-view-first-card-header__download-activator--disabled'
+                  ]"
                 >
-                  <v-icon>mdi-download</v-icon>
-                </VBtn>
+                  <VBtn
+                    id="btn-download--training-library"
+                    class="btn-hover"
+                    icon
+                    :disabled="isDownloadButtonDisabled"
+                  >
+                    <v-icon>mdi-download</v-icon>
+                  </VBtn>
+                </span>
               </template>
-              <span class="tooltip-span">Download Options</span>
+              <span class="tooltip-span">{{ downloadButtonTooltipText }}</span>
             </VTooltip>
           </template>
           <VListItem
@@ -128,8 +137,21 @@ export default {
       search: 'trainingLibrary/getSearch',
       placeholder: 'trainingLibrary/getSearchPlaceholder',
       isListView: 'trainingLibrary/getIsListView',
-      axiosPayload: 'trainingLibrary/getAxiosPayload'
+      axiosPayload: 'trainingLibrary/getAxiosPayload',
+      tableData: 'trainingLibrary/getTableData',
+      serverSideProps: 'trainingLibrary/getServerSideProps'
     }),
+    hasDownloadableData() {
+      return (this.serverSideProps?.totalNumberOfRecords || 0) > 0 || !!this.tableData?.length
+    },
+    isDownloadButtonDisabled() {
+      return !this.hasDownloadableData
+    },
+    downloadButtonTooltipText() {
+      return this.hasDownloadableData
+        ? 'Download Options'
+        : 'No data available to export. Download will be enabled once data is available.'
+    },
     getBulletedIcon() {
       return this.isListView
         ? require('../../../assets/img/white-bulletin-list.svg')
@@ -153,6 +175,7 @@ export default {
       })
     },
     handleDownloadButtonClick(item = '') {
+      if (this.isDownloadButtonDisabled) return
       this.isShowDownloadModal = true
       this.downloadModalTitle = item
     },
