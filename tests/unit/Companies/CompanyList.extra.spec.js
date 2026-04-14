@@ -420,6 +420,10 @@ describe('CompanyList.vue (extra)', () => {
       const wrapper = createWrapper()
       await flushPromises()
       wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+      // Prove the fulfilled handler still assigns an empty catalog (not stale state)
+      wrapper.vm.licenseCatalogFromLookup = [
+        { name: 'StaleCatalogEntry', resourceId: 'stale-id', licenseModules: [] }
+      ]
       LookupLocalStorage.getMultiple.mockResolvedValueOnce([
         { genericCodeTypeId: 2, name: 'Industry X', resourceId: 'i-x' }
       ])
@@ -431,25 +435,34 @@ describe('CompanyList.vue (extra)', () => {
       expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([
         { text: 'Industry X', value: 'i-x' }
       ])
-      expect(wrapper.vm.tableOptions.columns[3].filterableConfig).toEqual({
-        exclusiveGroups: true,
-        groups: [
-          {
-            key: 'licenseType',
-            label: 'License Type',
-            fieldName: 'LicenseTypeResourceId',
-            operator: 'Include',
-            items: []
-          },
-          {
-            key: 'products',
-            label: 'Products',
-            fieldName: 'ModuleResourceId',
-            operator: 'Include',
-            items: []
-          }
-        ]
+      const filterableConfig = wrapper.vm.tableOptions.columns[3].filterableConfig
+      expect(filterableConfig.exclusiveGroups).toBe(true)
+      expect(filterableConfig.groups).toHaveLength(2)
+      expect(filterableConfig.groups[0]).toMatchObject({
+        key: 'licenseType',
+        label: 'License Type',
+        fieldName: 'LicenseTypeResourceId',
+        operator: 'Include',
+        items: []
       })
+      expect(filterableConfig.groups[1]).toMatchObject({
+        key: 'products',
+        label: 'Products',
+        fieldName: 'ModuleResourceId',
+        operator: 'Include',
+        items: []
+      })
+      expect(filterableConfig.groups[0].icon).toBe('mdi-certificate-outline')
+      expect(filterableConfig.groups[1].icon).toBe('mdi-package-variant-closed')
+
+      expect(wrapper.vm.licenseCatalogFromLookup).toEqual([])
+
+      const orphan = {
+        licenseTypeResourceId: 'license-enterprise',
+        licenseTypeName: 'Enterprise'
+      }
+      wrapper.vm.getManipulatedTableData([orphan])
+      expect(orphan.modules).toBeUndefined()
     })
 
     it('uses empty industry items when generic lookup fails but keeps license groups', async () => {
@@ -472,25 +485,24 @@ describe('CompanyList.vue (extra)', () => {
       await flushPromises()
 
       expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([])
-      expect(wrapper.vm.tableOptions.columns[3].filterableConfig).toEqual({
-        exclusiveGroups: true,
-        groups: [
-          {
-            key: 'licenseType',
-            label: 'License Type',
-            fieldName: 'LicenseTypeResourceId',
-            operator: 'Include',
-            items: [{ text: 'Awareness', value: 'license-awareness' }]
-          },
-          {
-            key: 'products',
-            label: 'Products',
-            fieldName: 'ModuleResourceId',
-            operator: 'Include',
-            items: [{ text: 'Phishing Simulator', value: 'module-1' }]
-          }
-        ]
+      const cfg = wrapper.vm.tableOptions.columns[3].filterableConfig
+      expect(cfg.exclusiveGroups).toBe(true)
+      expect(cfg.groups[0]).toMatchObject({
+        key: 'licenseType',
+        fieldName: 'LicenseTypeResourceId',
+        items: [{ text: 'Awareness', value: 'license-awareness' }]
       })
+      expect(cfg.groups[1]).toMatchObject({
+        key: 'products',
+        fieldName: 'ModuleResourceId',
+        items: [{ text: 'Phishing Simulator', value: 'module-1' }]
+      })
+      expect(wrapper.vm.licenseCatalogFromLookup).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Awareness', resourceId: 'license-awareness' })
+        ])
+      )
+      expect(wrapper.vm.licenseCatalogFromLookup).toHaveLength(1)
     })
   })
 
@@ -528,6 +540,69 @@ describe('CompanyList.vue (extra)', () => {
       expect(data[0].enrolledVendorNames).toBe(vendorArray)
       expect(data[0].isChild).toBe(true)
       expect(data[1].isChild).toBe(true)
+    })
+
+    it('enriches license modules at parent and child when both have packaged license types', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Enterprise',
+          resourceId: 'license-enterprise',
+          licenseModules: [{ name: 'Mod Root', resourceId: 'r1' }]
+        },
+        {
+          name: 'Gold',
+          resourceId: 'license-gold',
+          licenseModules: [{ name: 'Mod Child', resourceId: 'c1' }]
+        }
+      ]
+      const data = wrapper.vm.getManipulatedTableData([
+        {
+          companyName: 'RootCo',
+          licenseTypeResourceId: 'license-enterprise',
+          children: [
+            {
+              companyResourceId: 'child-1',
+              companyName: 'LeafCo',
+              licenseTypeResourceId: 'license-gold'
+            }
+          ]
+        }
+      ])
+      expect(data[0].modules).toEqual([{ name: 'Mod Root', resourceId: 'r1' }])
+      expect(data[0].children[0].modules).toEqual([{ name: 'Mod Child', resourceId: 'c1' }])
+    })
+
+    it('enriches licensed leaf across three nesting levels', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Enterprise',
+          resourceId: 'license-enterprise',
+          licenseModules: [{ name: 'Deep Mod', resourceId: 'dm' }]
+        }
+      ]
+      const data = wrapper.vm.getManipulatedTableData([
+        {
+          companyName: 'Level0',
+          children: [
+            {
+              companyName: 'Level1',
+              children: [
+                {
+                  companyResourceId: 'leaf-deep',
+                  licenseTypeResourceId: 'license-enterprise'
+                }
+              ]
+            }
+          ]
+        }
+      ])
+      const leaf = data[0].children[0].children[0]
+      expect(leaf.modules).toEqual([{ name: 'Deep Mod', resourceId: 'dm' }])
+      expect(leaf.isChild).toBe(true)
     })
   })
 
