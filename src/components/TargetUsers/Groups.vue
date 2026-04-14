@@ -194,6 +194,9 @@ import RowActionsMenu from '@/components/SmallComponents/RowActions/RowActionsMe
 import AddTargetGroupModal from '@/components/TargetUsers/AddTargetGroupModal.vue'
 import SendWithAIDialog from '@/components/GamificationReport/SendWithAIDialog'
 import { sendBatchAutonomous } from '@/api/agenticAIService'
+
+const TARGET_GROUP_USER_COUNT_KEYS = ['userCount', 'usersCount', 'count']
+
 export default {
   name: 'Groups',
   components: {
@@ -466,7 +469,25 @@ export default {
     },
     getSendWithAIButtonTooltipMessage(row) {
       if (!this.isSendWithAIActionDisabled(row)) return ''
+      if (this.isTargetGroupEmpty(row)) {
+        return 'Agentic AI actions cannot be run for groups with 0 user.'
+      }
       return 'Agentic AI actions cannot be run for this group.'
+    },
+    getTargetGroupUserCount(row) {
+      if (!row) return null
+
+      for (const key of TARGET_GROUP_USER_COUNT_KEYS) {
+        const value = Number(row?.[key])
+        if (Number.isFinite(value)) return value
+      }
+
+      const extraDataUserCount = Number(row?.extraDatas?.userCount)
+      return Number.isFinite(extraDataUserCount) ? extraDataUserCount : null
+    },
+    isTargetGroupEmpty(row) {
+      const userCount = this.getTargetGroupUserCount(row)
+      return userCount === 0
     },
     isTooltipRenderable(row, isCheckSCIM) {
       if (isCheckSCIM && row.isScimGroup) return true
@@ -482,7 +503,7 @@ export default {
       )
     },
     isSendWithAIActionDisabled(row) {
-      return this.isTooltipRenderable(row, true) && this.isTooltipRenderable(row)
+      return (this.isTooltipRenderable(row, true) && this.isTooltipRenderable(row)) || this.isTargetGroupEmpty(row)
     },
     handleRowIsSelectable(row) {
       return (
@@ -642,6 +663,7 @@ export default {
         })
     },
     handleSendWithAI(row) {
+      if (this.isSendWithAIActionDisabled(row)) return
       this.selectedRowForAI = row
       this.sendWithAIOptions = {
         training: true,
@@ -669,6 +691,15 @@ export default {
         : 'Failed to start the Agentic AI process. Please try again.'
     },
     async handleConfirmSendWithAI(options) {
+      if (this.isTargetGroupEmpty(this.selectedRowForAI)) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'Agentic AI actions cannot be run because the selected group has 0 user.',
+          icon: 'mdi-alert-circle',
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+        })
+        return
+      }
+
       const { resourceId } = this.selectedRowForAI
       const actions = []
 

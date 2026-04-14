@@ -151,7 +151,9 @@ describe('TargetUsers Groups.vue', () => {
 
   it('isSendWithAIActionDisabled returns true when add users and delete are both disabled', () => {
     const ctx = {
-      isTooltipRenderable: Groups.methods.isTooltipRenderable
+      isTooltipRenderable: Groups.methods.isTooltipRenderable,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     expect(Groups.methods.isSendWithAIActionDisabled.call(ctx, { name: 'Repeat Offenders' })).toBe(true)
@@ -159,7 +161,9 @@ describe('TargetUsers Groups.vue', () => {
 
   it('isSendWithAIActionDisabled returns false when only add users is disabled', () => {
     const ctx = {
-      isTooltipRenderable: Groups.methods.isTooltipRenderable
+      isTooltipRenderable: Groups.methods.isTooltipRenderable,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     expect(
@@ -167,10 +171,41 @@ describe('TargetUsers Groups.vue', () => {
     ).toBe(false)
   })
 
+  it('getTargetGroupUserCount reads usersCount values', () => {
+    expect(Groups.methods.getTargetGroupUserCount.call({}, { usersCount: 7 })).toBe(7)
+  })
+
+  it('getTargetGroupUserCount reads count values', () => {
+    expect(Groups.methods.getTargetGroupUserCount.call({}, { count: 3 })).toBe(3)
+  })
+
+  it('getTargetGroupUserCount falls back to extraDatas.userCount', () => {
+    expect(Groups.methods.getTargetGroupUserCount.call({}, { extraDatas: { userCount: 4 } })).toBe(4)
+  })
+
+  it('getTargetGroupUserCount returns null when no numeric count exists', () => {
+    expect(Groups.methods.getTargetGroupUserCount.call({}, { name: 'Custom Group' })).toBe(null)
+    expect(Groups.methods.getTargetGroupUserCount.call({}, { userCount: 'N/A' })).toBe(null)
+  })
+
+  it('isSendWithAIActionDisabled returns true for groups with 0 users', () => {
+    const ctx = {
+      isTooltipRenderable: Groups.methods.isTooltipRenderable,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
+    }
+
+    expect(Groups.methods.isSendWithAIActionDisabled.call(ctx, { name: 'Empty Group', userCount: 0 })).toBe(
+      true
+    )
+  })
+
   it('getSendWithAIButtonTooltipMessage returns AI-disabled tooltip only when AI action is disabled', () => {
     const ctx = {
       isSendWithAIActionDisabled: Groups.methods.isSendWithAIActionDisabled,
-      isTooltipRenderable: Groups.methods.isTooltipRenderable
+      isTooltipRenderable: Groups.methods.isTooltipRenderable,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     expect(Groups.methods.getSendWithAIButtonTooltipMessage.call(ctx, { name: 'Untrained Users' })).toBe(
@@ -181,6 +216,35 @@ describe('TargetUsers Groups.vue', () => {
     ).toBe('')
   })
 
+  it('getSendWithAIButtonTooltipMessage returns empty-group tooltip for groups with 0 users', () => {
+    const ctx = {
+      isSendWithAIActionDisabled: Groups.methods.isSendWithAIActionDisabled,
+      isTooltipRenderable: Groups.methods.isTooltipRenderable,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
+    }
+
+    expect(
+      Groups.methods.getSendWithAIButtonTooltipMessage.call(ctx, { name: 'Empty Group', userCount: 0 })
+    ).toBe('Agentic AI actions cannot be run for groups with 0 user.')
+  })
+
+  it('handleSendWithAI does not open dialog when AI action is disabled', () => {
+    const ctx = {
+      selectedRowForAI: null,
+      isSendWithAIDialogOpen: false,
+      sendWithAIOptions: { training: false, phishing: false },
+      isSendWithAIActionDisabled: jest.fn(() => true)
+    }
+
+    Groups.methods.handleSendWithAI.call(ctx, { name: 'Empty Group', userCount: 0 })
+
+    expect(ctx.isSendWithAIActionDisabled).toHaveBeenCalled()
+    expect(ctx.selectedRowForAI).toBe(null)
+    expect(ctx.isSendWithAIDialogOpen).toBe(false)
+    expect(ctx.sendWithAIOptions).toEqual({ training: false, phishing: false })
+  })
+
   it('handleConfirmSendWithAI closes dialog and dispatches success snackbar on success', async () => {
     const dispatch = jest.fn()
     const ctx = {
@@ -188,7 +252,9 @@ describe('TargetUsers Groups.vue', () => {
       agenticAIDialogMode: 'approval',
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAISuccessMessage: Groups.methods.getSendWithAISuccessMessage,
-      $store: { dispatch }
+      $store: { dispatch },
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     await Groups.methods.handleConfirmSendWithAI.call(ctx, {
@@ -222,7 +288,9 @@ describe('TargetUsers Groups.vue', () => {
       agenticAIDialogMode: 'autonomous',
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAIErrorMessage: Groups.methods.getSendWithAIErrorMessage,
-      $store: { dispatch }
+      $store: { dispatch },
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     await Groups.methods.handleConfirmSendWithAI.call(ctx, {
@@ -249,7 +317,9 @@ describe('TargetUsers Groups.vue', () => {
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAISuccessMessage: Groups.methods.getSendWithAISuccessMessage,
       $store: { dispatch: jest.fn() },
-      isSendWithAISubmitting: false
+      isSendWithAISubmitting: false,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     await Groups.methods.handleConfirmSendWithAI.call(ctx, {
@@ -270,7 +340,9 @@ describe('TargetUsers Groups.vue', () => {
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAIErrorMessage: Groups.methods.getSendWithAIErrorMessage,
       $store: { dispatch: jest.fn() },
-      isSendWithAISubmitting: false
+      isSendWithAISubmitting: false,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
 
     await Groups.methods.handleConfirmSendWithAI.call(ctx, {
@@ -281,6 +353,31 @@ describe('TargetUsers Groups.vue', () => {
 
     expect(ctx.isSendWithAISubmitting).toBe(false)
     consoleSpy.mockRestore()
+  })
+
+  it('handleConfirmSendWithAI does not call API and shows error snackbar for groups with 0 users', async () => {
+    const dispatch = jest.fn()
+    const previousCallCount = sendBatchAutonomous.mock.calls.length
+    const ctx = {
+      selectedRowForAI: { resourceId: 'g-empty', userCount: 0 },
+      $store: { dispatch },
+      isSendWithAISubmitting: false,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
+    }
+
+    await Groups.methods.handleConfirmSendWithAI.call(ctx, {
+      training: true,
+      phishing: false
+    })
+
+    expect(sendBatchAutonomous.mock.calls.length).toBe(previousCallCount)
+    expect(dispatch).toHaveBeenCalledWith('common/createSnackBar', {
+      message: 'Agentic AI actions cannot be run because the selected group has 0 user.',
+      icon: 'mdi-alert-circle',
+      color: '#f56c6c'
+    })
+    expect(ctx.isSendWithAISubmitting).toBe(false)
   })
 
   it('handleCloseSendWithAIDialog resets isSendWithAISubmitting', () => {
@@ -310,7 +407,9 @@ describe('TargetUsers Groups.vue', () => {
       handleCloseSendWithAIDialog: jest.fn(),
       getSendWithAISuccessMessage: Groups.methods.getSendWithAISuccessMessage,
       $store: { dispatch: jest.fn() },
-      isSendWithAISubmitting: false
+      isSendWithAISubmitting: false,
+      isTargetGroupEmpty: Groups.methods.isTargetGroupEmpty,
+      getTargetGroupUserCount: Groups.methods.getTargetGroupUserCount
     }
     const pending = Groups.methods.handleConfirmSendWithAI.call(ctx, {
       training: true,
