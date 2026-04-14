@@ -695,7 +695,8 @@ export default {
       defaultPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTargetUserCountExceedLimit: false,
-      limitExceededCompanyCount: 0
+      limitExceededCompanyCount: 0,
+      licenseCatalogFromLookup: []
     };
   },
   watch: {
@@ -892,6 +893,7 @@ export default {
             licensesResult.status === "fulfilled"
               ? licensesResult.value?.data?.data || {}
               : {};
+          this.licenseCatalogFromLookup = licenses;
           this.$set(
             this.tableOptions.columns[2],
             "filterableItems",
@@ -980,11 +982,35 @@ export default {
         })
         .finally(() => (this.loading = false));
     },
+    enrichRowLicenseModulesFromCatalog(item) {
+      const hasModules =
+        item.modules && Array.isArray(item.modules) && item.modules.length;
+      if (hasModules) return;
+
+      const catalog = this.licenseCatalogFromLookup || [];
+      let def = null;
+      if (item.licenseTypeResourceId) {
+        def = catalog.find((l) => l.resourceId === item.licenseTypeResourceId);
+      }
+      if (!def && item.licenseTypeName) {
+        def = catalog.find((l) => l.name === item.licenseTypeName);
+      }
+      if (!def || def.name === "Custom") return;
+
+      const licenseModules = def.licenseModules || [];
+      if (!licenseModules.length) return;
+
+      item.modules = licenseModules.map((m) => ({
+        name: m.name,
+        resourceId: m.resourceId
+      }));
+    },
     getManipulatedTableData(data, isChild = false) {
       data.forEach((item) => {
         if (isChild) {
           item.isChild = true;
         }
+        this.enrichRowLicenseModulesFromCatalog(item);
         if (item.enrolledVendorNames && typeof item.enrolledVendorNames === "string") {
           item.enrolledVendorNames = item.enrolledVendorNames.split(" , ").map((s) => s.trim()).filter(Boolean);
         }

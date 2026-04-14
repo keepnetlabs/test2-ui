@@ -141,6 +141,223 @@ describe('CompanyList.vue', () => {
     expect(searchCompanies).toHaveBeenCalled()
     expect(wrapper.vm.tableData).toHaveLength(1)
     expect(wrapper.vm.limitExceededCompanyCount).toBe(1)
+    expect(wrapper.vm.licenseCatalogFromLookup).toEqual([
+      { name: 'Awareness', resourceId: 'license-awareness' },
+      { name: 'Enterprise', resourceId: 'license-enterprise' }
+    ])
+  })
+
+  it('fills license modules from lookup catalog when API omits modules for a packaged (non-Custom) license', async () => {
+    getLicences.mockResolvedValueOnce({
+      data: {
+        data: {
+          licenses: [
+            {
+              name: 'Enterprise',
+              resourceId: 'license-enterprise',
+              licenseModules: [
+                { name: 'Phishing Simulator', resourceId: 'module-1' },
+                { name: 'Awareness Educator', resourceId: 'module-3' }
+              ]
+            }
+          ],
+          allLicenseModules: []
+        }
+      }
+    })
+    searchCompanies.mockResolvedValueOnce({
+      data: {
+        data: {
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1,
+          limitExceededCompanyCount: 0,
+          results: [
+            {
+              companyResourceId: 'c-1',
+              companyName: 'Acme',
+              numberOfUsers: 10,
+              targetUserCount: 5,
+              licenseTypeResourceId: 'license-enterprise',
+              licenseTypeName: 'Enterprise'
+            }
+          ]
+        }
+      }
+    })
+    const wrapper = createWrapper()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData[0].modules).toEqual([
+      { name: 'Phishing Simulator', resourceId: 'module-1' },
+      { name: 'Awareness Educator', resourceId: 'module-3' }
+    ])
+  })
+
+  describe('license row module enrichment (getManipulatedTableData)', () => {
+    it('does not overwrite modules when the API already returns a non-empty modules array', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Enterprise',
+          resourceId: 'license-enterprise',
+          licenseModules: [{ name: 'Catalog Only', resourceId: 'cat-1' }]
+        }
+      ]
+      const row = {
+        companyResourceId: 'c-1',
+        licenseTypeResourceId: 'license-enterprise',
+        modules: [{ name: 'From API', resourceId: 'api-1' }]
+      }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toEqual([{ name: 'From API', resourceId: 'api-1' }])
+    })
+
+    it('fills from catalog when API sends modules as empty array (treated as missing)', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Enterprise',
+          resourceId: 'license-enterprise',
+          licenseModules: [{ name: 'Phishing Simulator', resourceId: 'm-1' }]
+        }
+      ]
+      const row = {
+        licenseTypeResourceId: 'license-enterprise',
+        licenseTypeName: 'Enterprise',
+        modules: []
+      }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toEqual([{ name: 'Phishing Simulator', resourceId: 'm-1' }])
+    })
+
+    it('does not inject catalog modules for Custom license (selection comes from API only)', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Custom',
+          resourceId: 'license-custom',
+          licenseModules: [{ name: 'Should Not Appear', resourceId: 'x' }]
+        }
+      ]
+      const row = {
+        companyResourceId: 'c-2',
+        licenseTypeResourceId: 'license-custom',
+        licenseTypeName: 'Custom'
+      }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toBeUndefined()
+    })
+
+    it('resolves packaged modules by licenseTypeName when licenseTypeResourceId is missing', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Gold',
+          resourceId: 'license-gold',
+          licenseModules: [{ name: 'Phishing Simulator', resourceId: 'm-1' }]
+        }
+      ]
+      const row = { companyName: 'OnlyName', licenseTypeName: 'Gold' }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toEqual([{ name: 'Phishing Simulator', resourceId: 'm-1' }])
+    })
+
+    it('prefers licenseTypeResourceId over name when both match catalog', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Awareness',
+          resourceId: 'id-a',
+          licenseModules: [{ name: 'Mod A', resourceId: 'ma' }]
+        },
+        {
+          name: 'Other',
+          resourceId: 'id-b',
+          licenseModules: [{ name: 'Mod B', resourceId: 'mb' }]
+        }
+      ]
+      const row = {
+        licenseTypeResourceId: 'id-b',
+        licenseTypeName: 'Awareness'
+      }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toEqual([{ name: 'Mod B', resourceId: 'mb' }])
+    })
+
+    it('falls back to licenseTypeName when licenseTypeResourceId is not in catalog', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Gold',
+          resourceId: 'license-gold',
+          licenseModules: [{ name: 'Mod X', resourceId: 'mx' }]
+        }
+      ]
+      const row = {
+        licenseTypeResourceId: 'stale-or-unknown-id',
+        licenseTypeName: 'Gold'
+      }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toEqual([{ name: 'Mod X', resourceId: 'mx' }])
+    })
+
+    it('enriches nested child rows inside cluster children array', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        {
+          name: 'Enterprise',
+          resourceId: 'license-enterprise',
+          licenseModules: [{ name: 'Awareness Educator', resourceId: 'm-3' }]
+        }
+      ]
+      const rows = [
+        {
+          companyName: 'Parent',
+          children: [
+            {
+              companyResourceId: 'child-1',
+              licenseTypeResourceId: 'license-enterprise',
+              companyName: 'ChildCo'
+            }
+          ]
+        }
+      ]
+      wrapper.vm.getManipulatedTableData(rows)
+      expect(rows[0].children[0].modules).toEqual([
+        { name: 'Awareness Educator', resourceId: 'm-3' }
+      ])
+      expect(rows[0].children[0].isChild).toBe(true)
+    })
+
+    it('leaves modules unset when catalog entry has no licenseModules', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        { name: 'Bare', resourceId: 'bare-1', licenseModules: [] }
+      ]
+      const row = { licenseTypeResourceId: 'bare-1', licenseTypeName: 'Bare' }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toBeUndefined()
+    })
+
+    it('leaves row unchanged when license is not in catalog', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.licenseCatalogFromLookup = [
+        { name: 'Awareness', resourceId: 'a-1', licenseModules: [{ name: 'X', resourceId: 'x' }] }
+      ]
+      const row = { licenseTypeResourceId: 'unknown-id', licenseTypeName: 'Unknown' }
+      wrapper.vm.getManipulatedTableData([row])
+      expect(row.modules).toBeUndefined()
+    })
   })
 
   it('configures license type nested filter as exclusive groups', async () => {
