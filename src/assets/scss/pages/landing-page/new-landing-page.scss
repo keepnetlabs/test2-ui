@@ -12,6 +12,18 @@
     border: 1px solid #e0e0e0 !important;
     box-shadow: none !important;
   }
+
+  &.email-template__container--teams-notification-shell {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding-top: 0 !important;
+
+    .email-template-content {
+      margin: 0;
+    }
+  }
+
   .email-template-content {
     margin: 24px;
     border-radius: 8px;
