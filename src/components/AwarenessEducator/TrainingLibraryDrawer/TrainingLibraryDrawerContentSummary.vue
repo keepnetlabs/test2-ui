@@ -221,33 +221,46 @@
           <!-- Language Info Card with LanguagesPopover -->
           <div class="training-library-drawer-info-card">
             <div class="training-library-drawer-info-card__content">
-              <VIcon color="#757575">mdi-web</VIcon>
-              <VMenu
-                v-if="drawerLanguagesList.length > 1"
-                v-model="isLanguageInfoPopoverOpen"
-                offset-y
-                :min-width="248"
-                :close-on-content-click="false"
-                :attach="true"
-                content-class="training-library-card__language-popover"
-              >
-                <template #activator="{ on, attrs }">
-                  <span
-                    v-bind="attrs"
-                    v-on="on"
-                    class="training-library-drawer-info-card__clickable"
-                  >
+              <div class="training-library-drawer-info-card__icon-row">
+                <VIcon color="#757575">mdi-web</VIcon>
+              </div>
+              <div class="training-library-drawer-info-card__value-row">
+                <VMenu
+                  v-if="drawerLanguagesList.length > 1"
+                  v-model="isLanguageInfoPopoverOpen"
+                  offset-y
+                  :min-width="248"
+                  :close-on-content-click="false"
+                  :attach="true"
+                  content-class="training-library-card__language-popover"
+                >
+                  <template #activator="{ on, attrs }">
+                    <span
+                      v-bind="attrs"
+                      v-on="on"
+                      class="
+                        training-library-drawer-info-card__value
+                        training-library-drawer-info-card__value--interactive
+                      "
+                    >
+                      <span class="training-library-drawer-info-card__value-text">
+                        {{ getLanguagesText }}
+                      </span>
+                      <VIcon size="18" color="#383b41">mdi-menu-down</VIcon>
+                    </span>
+                  </template>
+                  <LanguagesPopover
+                    :preferred-languages="drawerPreferredLanguages"
+                    :non-preferred-languages="drawerNonPreferredLanguages"
+                    :on-close="handleCloseLanguageInfoPopover"
+                  />
+                </VMenu>
+                <span v-else class="training-library-drawer-info-card__value">
+                  <span class="training-library-drawer-info-card__value-text">
                     {{ getLanguagesText }}
-                    <VIcon size="18" color="#383b41">mdi-menu-down</VIcon>
                   </span>
-                </template>
-                <LanguagesPopover
-                  :preferred-languages="drawerPreferredLanguages"
-                  :non-preferred-languages="drawerNonPreferredLanguages"
-                  :on-close="handleCloseLanguageInfoPopover"
-                />
-              </VMenu>
-              <span v-else>{{ getLanguagesText }}</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -274,7 +287,7 @@ import TrainingLibraryDrawerLanguageMenu from './TrainingLibraryDrawerLanguageMe
 import TrainingLibraryDrawerActionsMenu from './TrainingLibraryDrawerActionsMenu.vue'
 import TrainingLibraryDrawerContentSteps from './TrainingLibraryDrawerContentSteps.vue'
 import LanguagesPopover from '@/components/Common/Simulator/LanguagesColumn/LanguagesPopover.vue'
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { TRAINING_LIBRARY_TYPES, getTrainingCategoryMeta } from '@/components/TrainingLibrary/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapGetters } from 'vuex'
 
@@ -435,7 +448,8 @@ export default {
       const cards = [
         {
           icon: 'mdi-shape-outline',
-          text: data.categoryName || data.category || 'No category'
+          text: this.getCategoryText(data),
+          popoverItems: this.getCategoryPopoverItems(data)
         },
         /*
         {
@@ -446,7 +460,7 @@ export default {
         {
           icon: 'mdi-account-outline',
           text: this.getTrainingRolesText(data),
-          tooltip: this.getTrainingRolesTooltip(data)
+          popoverItems: this.getTrainingRolesPopoverItems(data)
         },
         {
           icon: 'mdi-shield-check-outline',
@@ -671,6 +685,25 @@ export default {
       }
       return []
     },
+    getCategoryPopoverItems(data) {
+      const categoryMeta = getTrainingCategoryMeta(data)
+      const filtered = (categoryMeta.categoryBadges || []).filter(
+        (category) => category && typeof category === 'string' && category.trim() !== ''
+      )
+
+      if (filtered.length > 1) return filtered
+      return []
+    },
+    getCategoryText(data) {
+      const categoryMeta = getTrainingCategoryMeta(data)
+      const filtered = (categoryMeta.categoryBadges || []).filter(
+        (category) => category && typeof category === 'string' && category.trim() !== ''
+      )
+
+      if (filtered.length === 0) return 'No category'
+      if (filtered.length === 1) return filtered[0]
+      return `${filtered.length} categories`
+    },
     getLanguagesTooltip() {
       if (this.availableLanguages && this.availableLanguages.length > 1) {
         return this.availableLanguages.map((l) => l.text).join(', ')
@@ -706,15 +739,17 @@ export default {
       }
       return 'No compliance'
     },
-    getTrainingRolesTooltip(data) {
+    getTrainingRolesPopoverItems(data) {
       if (
         data.trainingRoles &&
         Array.isArray(data.trainingRoles) &&
         data.trainingRoles.length > 1
       ) {
-        return data.trainingRoles.map((r) => r.roleName).join(', ')
+        return data.trainingRoles
+          .map((role) => role?.roleName)
+          .filter((roleName) => roleName && typeof roleName === 'string' && roleName.trim() !== '')
       }
-      return ''
+      return []
     },
     getTrainingRolesText(data) {
       if (
@@ -784,10 +819,14 @@ export default {
               }
             })
           }
+          const normalizedTrainingData = {
+            ...this.trainingData,
+            ...data
+          }
+          const categoryMeta = getTrainingCategoryMeta(normalizedTrainingData)
           this.trainingDetails = {
-            ...data,
-            category: data.category || this.trainingData.category,
-            categoryName: data.categoryName || this.trainingData.categoryName,
+            ...normalizedTrainingData,
+            ...categoryMeta,
             languages: this.availableLanguages.map((lang) => lang.text).join(', '),
             compliances: Array.isArray(data.complianceNames)
               ? data.complianceNames

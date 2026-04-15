@@ -11,37 +11,62 @@
   position: relative;
 
   &__content {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 24px 1fr;
     align-items: flex-start;
-    justify-content: space-between;
+    gap: 10px;
     flex: 1;
     width: 100%;
 
     .v-menu {
       display: block;
+      width: 100%;
     }
   }
 
-  &__content > span {
+  &__icon-row {
+    display: flex;
+    align-items: center;
+    height: 24px;
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    min-height: 40px;
+  }
+
+  &__value {
+    font-family: 'Open Sans', sans-serif;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
     font-size: 14px;
     font-weight: 600;
     color: #383b41;
     text-align: left;
-    margin-top: 8px;
+    width: 100%;
+    min-height: 20px;
+    line-height: 20px;
+    white-space: nowrap;
   }
 
   .v-tooltip {
     flex: 1;
     display: flex;
+    width: 100%;
   }
 
-  &__clickable {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+  &__value--interactive {
     cursor: pointer;
-    margin-top: 8px;
+  }
+
+  &__value-text {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 20px;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   &__popover {

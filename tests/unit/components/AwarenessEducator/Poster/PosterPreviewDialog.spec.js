@@ -160,7 +160,12 @@ describe('PosterPreviewDialog.vue', () => {
     }
     PosterPreviewDialog.methods.callForPoster.call(ctx)
     await Promise.resolve()
-    expect(ctx.posterParams).toEqual({ name: 'Poster Name' })
+    expect(ctx.posterParams).toEqual(
+      expect.objectContaining({
+        name: 'Poster Name',
+        categoryName: ''
+      })
+    )
   })
 
   it('callForPoster handles missing response data safely', async () => {
@@ -171,7 +176,12 @@ describe('PosterPreviewDialog.vue', () => {
     }
     PosterPreviewDialog.methods.callForPoster.call(ctx)
     await Promise.resolve()
-    expect(ctx.posterParams).toBeUndefined()
+    expect(ctx.posterParams).toEqual({
+      trainingCategories: [],
+      category: '',
+      categoryName: '',
+      categoryBadges: []
+    })
   })
 
   it('callForData handles non-pdf flow and stops loading in finally', async () => {

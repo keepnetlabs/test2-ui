@@ -23,6 +23,28 @@ describe('TrainingLibraryDrawerContentRelated.vue', () => {
     expect(multi).toBe('Admin +2')
   })
 
+  it('category helpers format compact text and tooltip', () => {
+    const single = TrainingLibraryDrawerContentRelated.methods.getCategoryText({
+      categoryBadges: ['Remote Working Security']
+    })
+    expect(single).toBe('Remote Working Security')
+
+    const multi = TrainingLibraryDrawerContentRelated.methods.getCategoryText({
+      categoryBadges: ['Travel Security', 'Mobile Device Security', 'Remote Working Security']
+    })
+    expect(multi).toBe('Travel Security +2')
+
+    const tooltip = TrainingLibraryDrawerContentRelated.methods.getCategoryTooltip({
+      categoryBadges: ['Travel Security', 'Mobile Device Security', 'Remote Working Security']
+    })
+    expect(tooltip).toBe('Travel Security, Mobile Device Security, Remote Working Security')
+    expect(
+      TrainingLibraryDrawerContentRelated.methods.isCategoryTooltipEnabled({
+        categoryBadges: ['Travel Security', 'Mobile Device Security', 'Remote Working Security']
+      })
+    ).toBe(true)
+  })
+
   it('formatLanguages returns fallback for empty language list', () => {
     const text = TrainingLibraryDrawerContentRelated.methods.formatLanguages.call(
       { getLanguageNames: () => [] },

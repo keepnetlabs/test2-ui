@@ -187,6 +187,7 @@ export default {
       trainingPreviewData: {
         name: this?.selectedRow?.trainingName,
         category: this?.selectedRow?.category,
+        categoryName: this?.selectedRow?.categoryName || this?.selectedRow?.category,
         createdBy: this?.selectedRow?.createdBy,
         description: this?.selectedRow?.description,
         scormPlayerUrl: null,

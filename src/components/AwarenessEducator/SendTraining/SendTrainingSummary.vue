@@ -86,7 +86,7 @@
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              {{ formData.trainingData.category }} &#8226;
+              {{ getTrainingCategoryDisplay }} &#8226;
               <span class="template-list--item__sub-header--span">by</span>
               {{ formData.trainingData.createdBy }}
             </div>
@@ -270,6 +270,9 @@ export default {
     },
     isTrainingData() {
       return this?.formData?.trainingData
+    },
+    getTrainingCategoryDisplay() {
+      return this?.formData?.trainingData?.categoryName || this?.formData?.trainingData?.category || ''
     },
     isCertificateData() {
       return this?.formData?.certificateData
