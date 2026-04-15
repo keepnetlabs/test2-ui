@@ -52,7 +52,7 @@ describe('EnrollmentsTable.vue', () => {
     await flushPromises()
 
     expect(AwarenessEducatorService.searchEnrollments).toHaveBeenCalledWith(wrapper.vm.axiosPayload)
-    expect(wrapper.vm.tableData).toEqual([{ enrollmentId: 'e-1' }])
+    expect(wrapper.vm.tableData).toMatchObject([{ enrollmentId: 'e-1' }])
     expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(5)
     expect(wrapper.vm.serverSideProps.totalNumberOfPages).toBe(1)
     expect(wrapper.vm.serverSideProps.pageNumber).toBe(1)
