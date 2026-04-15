@@ -227,19 +227,24 @@
               :class="[
                 'nested-select-filter__group',
                 {
-                  'nested-select-filter__group--active': activeNestedGroup === group.key,
-                  'nested-select-filter__group--selected': hasAppliedNestedGroupSelection(group.key)
+                  'nested-select-filter__group--active': activeNestedGroup === group.key
                 }
               ]"
               tabindex="0"
               @click.stop="setActiveNestedGroup(group.key)"
               @keydown.enter.stop.prevent="setActiveNestedGroup(group.key)"
             >
-              <v-list-item-title class="nested-select-filter__group-title">
+              <v-list-item-title
+                class="nested-select-filter__group-title"
+                :style="{
+                  color: activeNestedGroup === group.key ? '#2196f3' : '#383b41'
+                }"
+              >
                 <div class="nested-select-filter__group-primary">
                   <v-icon
                     v-if="group.icon"
                     class="nested-select-filter__group-icon"
+                    :color="activeNestedGroup === group.key ? '#2196f3' : '#757575'"
                   >
                     {{ group.icon }}
                   </v-icon>
@@ -252,7 +257,10 @@
                   >
                     {{ getAppliedNestedGroupSelectionCount(group.key) }}
                   </span>
-                  <v-icon class="nested-select-filter__group-arrow">mdi-menu-right</v-icon>
+                  <v-icon
+                    class="nested-select-filter__group-arrow"
+                    :color="activeNestedGroup === group.key ? '#2196f3' : '#757575'"
+                  >mdi-menu-right</v-icon>
                 </div>
               </v-list-item-title>
             </v-list-item>
@@ -605,6 +613,7 @@ export default {
         this.$emit('update:isSettingsOpened', false)
         if (this.filterableType === 'nestedSelect') {
           this.syncNestedFilterConfig()
+          this.setActiveNestedGroupForMenuOpen()
         }
       }
     },
@@ -670,9 +679,7 @@ export default {
       this.isCloseOnClick = true
       this.menu = val
       if (this.filterableType === 'nestedSelect') {
-        if (val) {
-          this.activeNestedGroup = this.nestedFilterGroups[0]?.key || ''
-        } else {
+        if (!val) {
           this.activeNestedGroup = ''
           this.nestedSearchValues = this.getEmptyNestedSearchValues()
         }
@@ -854,6 +861,13 @@ export default {
       ) {
         this.activeNestedGroup = ''
       }
+    },
+    setActiveNestedGroupForMenuOpen() {
+      const groups = this.nestedFilterGroups
+      const groupWithSelection = groups.find(
+        (g) => (this.nestedFilterSelections[g.key] || []).length > 0
+      )
+      this.activeNestedGroup = groupWithSelection?.key || groups[0]?.key || ''
     },
     setActiveNestedGroup(groupKey = '') {
       if (!groupKey) return
