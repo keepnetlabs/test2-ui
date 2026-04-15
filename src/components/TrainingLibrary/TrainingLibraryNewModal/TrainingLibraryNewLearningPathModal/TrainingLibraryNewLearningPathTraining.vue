@@ -34,7 +34,7 @@
         <VTooltip :disabled="!isRenderCategoryTooltip" right :max-width="300">
           <template #activator="{ on }">
             <div v-on="on" class="learning-path-content__training--info-created-by">
-              {{ truncatedCategory || training.categoryName }}
+              {{ truncatedCategory || getCategoryDisplayName }}
             </div>
           </template>
           <span>{{ getCategoryName }}</span>
@@ -82,6 +82,8 @@
 </template>
 
 <script>
+import { getTrainingCategoryMeta } from '@/components/TrainingLibrary/utils'
+
 export default {
   name: 'TrainingLibraryNewLearningPathTraining',
   props: {
@@ -113,8 +115,17 @@ export default {
     getTrainingName() {
       return this.training?.trainingName || this.training?.name || ''
     },
+    getCategoryDisplayName() {
+      const categoryMeta = getTrainingCategoryMeta(this.training)
+      const categories = categoryMeta.categoryBadges || []
+
+      if (!categories.length) return categoryMeta.categoryName || categoryMeta.category || ''
+      if (categories.length === 1) return categories[0]
+      return `${categories[0]} +${categories.length - 1}`
+    },
     getCategoryName() {
-      return this.training?.categoryName || this.training?.category || ''
+      const categoryMeta = getTrainingCategoryMeta(this.training)
+      return categoryMeta.categoryName || categoryMeta.category || ''
     }
   },
   watch: {
@@ -156,7 +167,14 @@ export default {
         this.truncatedTrainingName = ''
         this.isRenderTitleTooltip = false
       }
-      if (this.getCategoryName?.length > 14) {
+      const categoryDisplayName = this.getCategoryDisplayName || ''
+      if (this.getCategoryName !== categoryDisplayName) {
+        this.truncatedCategory = ''
+        this.isRenderCategoryTooltip = true
+      } else if (categoryDisplayName.length > 14) {
+        this.truncatedCategory = categoryDisplayName.substring(0, 14) + '...'
+        this.isRenderCategoryTooltip = true
+      } else if (this.getCategoryName?.length > 14) {
         this.truncatedCategory = this.getCategoryName.substring(0, 14) + '...'
         this.isRenderCategoryTooltip = true
       } else {

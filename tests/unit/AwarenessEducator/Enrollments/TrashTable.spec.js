@@ -51,16 +51,24 @@ describe('TrashTable.vue', () => {
 
     expect(AwarenessEducatorService.searchTrash).toHaveBeenCalledWith(wrapper.vm.axiosPayload)
     expect(wrapper.vm.tableData).toEqual([
-      {
+      expect.objectContaining({
         enrollmentId: 'enr-1',
         trainingRoles: [{ roleName: 'Admins' }, { roleName: 'Users' }],
-        targetAudience: ['Admins', 'Users']
-      },
-      {
+        targetAudience: ['Admins', 'Users'],
+        trainingCategories: [],
+        category: '',
+        categoryName: '',
+        categoryBadges: []
+      }),
+      expect.objectContaining({
         enrollmentId: 'enr-2',
         trainingRoles: null,
-        targetAudience: []
-      }
+        targetAudience: [],
+        trainingCategories: [],
+        category: '',
+        categoryName: '',
+        categoryBadges: []
+      })
     ])
     expect(wrapper.vm.serverSideProps.totalNumberOfRecords).toBe(10)
     expect(wrapper.vm.serverSideProps.totalNumberOfPages).toBe(2)
