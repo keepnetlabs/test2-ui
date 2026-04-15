@@ -8,6 +8,38 @@ export const TRAINING_LIBRARY_TYPES = {
   SCREENSAVER: 'Screensaver',
   SURVEY: 'Survey'
 }
+
+export const getTrainingCategoryMeta = (item = {}) => {
+  const normalizedTrainingCategories = Array.isArray(item.trainingCategories)
+    ? item.trainingCategories.filter(Boolean)
+    : []
+  const categoryBadges = normalizedTrainingCategories
+    .map((category) => {
+      return (
+        category?.categoryName ||
+        category?.displayName ||
+        category?.name ||
+        category?.code ||
+        ''
+      )
+    })
+    .filter(Boolean)
+  const categoryCodes = normalizedTrainingCategories
+    .map((category) => category?.code || category?.name || category?.value || '')
+    .filter(Boolean)
+  const fallbackCategory = typeof item.category === 'string' ? item.category : ''
+  const fallbackCategoryName = typeof item.categoryName === 'string' ? item.categoryName : ''
+
+  return {
+    trainingCategories: normalizedTrainingCategories,
+    category: fallbackCategory || categoryCodes[0] || '',
+    categoryName: fallbackCategoryName || categoryBadges.join(', '),
+    categoryBadges: categoryBadges.length
+      ? categoryBadges
+      : [fallbackCategoryName || fallbackCategory].filter(Boolean)
+  }
+}
+
 export const TRAINING_LIBRARY_COLUMNS = {
   SCREENSAVER_NAME: {
     property: PROPERTY_STORE.SCREENSAVER_NAME,
@@ -129,10 +161,11 @@ export const TRAINING_LIBRARY_COLUMNS = {
     label: labels.Category,
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'smallBadge',
+    badgeProperty: 'categoryBadges',
     filterableType: 'select',
     filterableItems: [],
-    width: 200
+    width: 280
   },
   TARGET_AUDIENCE: {
     property: PROPERTY_STORE.TARGET_AUDIENCE,

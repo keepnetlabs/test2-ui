@@ -28,5 +28,36 @@ describe('TrainingLibraryTrainingPreviewDialog.vue', () => {
       status: true
     })
   })
+
+  it('callForTrainingDetail normalizes multi category display', async () => {
+    const AwarenessEducatorService = require('@/api/awarenessEducator')
+    AwarenessEducatorService.getTraining.mockResolvedValueOnce({
+      data: {
+        data: {
+          name: 'Training',
+          trainingCategories: [
+            { code: 'RemoteWorkingSecurity', categoryName: 'Remote Working Security' },
+            { code: 'TravelSecurity', categoryName: 'Travel Security' }
+          ]
+        }
+      }
+    })
+    const ctx = {
+      selectedRow: { trainingId: 't2' },
+      selectedLanguages: [{ text: 'English' }],
+      trainingDetails: null
+    }
+
+    TrainingLibraryTrainingPreviewDialog.methods.callForTrainingDetail.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(ctx.trainingDetails).toEqual(
+      expect.objectContaining({
+        categoryName: 'Remote Working Security, Travel Security',
+        languages: 'English'
+      })
+    )
+  })
 })
 

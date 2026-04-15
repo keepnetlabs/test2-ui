@@ -2,7 +2,7 @@
   <div class="small-badge">
     <v-btn style="display: none;"></v-btn>
     <div
-      v-if="scope.row && scope.row[col.property]"
+      v-if="scope.row && getBadgeSource()"
       class="small-badge__container"
       :style="[
         maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0 ? { textAlign: '' } : ''
@@ -83,18 +83,22 @@ export default {
     }
   },
   created() {
-    const badges = this.scope.row[this.col.property]
+    const badges = this.getBadgeSource()
     if (badges && badges.length) {
       this.getBadges()
     }
   },
 
   methods: {
+    getBadgeSource() {
+      const badgeProperty = this.col.badgeProperty || this.col.property
+      return this.scope?.row?.[badgeProperty]
+    },
     getKey(index) {
       return `${index}ab-${createRandomCryptStringNumber()}`
     },
     getBadges() {
-      const item = this.scope.row[this.col.property] || []
+      const item = this.getBadgeSource() || []
       const badges = typeof item === 'string' ? [item] : item.filter(Boolean) || []
       const width = this.scope.column.width
       if (this.checkIsChanged(badges, width)) {
