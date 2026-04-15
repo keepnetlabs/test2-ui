@@ -91,11 +91,23 @@
               <span class="training-library-preview__desc">{{ posterParams.name }}</span>
             </div>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Category Name: </span>
-            <span class="training-library-preview__desc">{{
-              posterParams.categoryName || posterParams.category
-            }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Category Name: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="category in posterParams.categoryBadges"
+                :key="category"
+                class="training-library-preview__tag"
+                >{{ category }}</span
+              >
+              <span
+                v-if="!posterParams.categoryBadges || !posterParams.categoryBadges.length"
+                class="training-library-preview__desc"
+                >{{ posterParams.categoryName || posterParams.category }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>
@@ -231,7 +243,7 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions, mapGetters } from 'vuex'
-import { emptyPosterPreviewDialogObj } from '../utils'
+import { emptyPosterPreviewDialogObj, getTrainingCategoryMeta } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
@@ -368,7 +380,11 @@ export default {
       AwarenessEducatorService.getTraining(
         this.selectedRow?.trainingId || this.selectedRow?.detailTrainingId
       ).then((response) => {
-        this.posterParams = response?.data?.data
+        const data = response?.data?.data
+        this.posterParams = {
+          ...data,
+          ...getTrainingCategoryMeta(data)
+        }
       })
     },
     handleClose() {

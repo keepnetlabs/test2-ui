@@ -73,10 +73,10 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
     expect(TrainingLibraryDrawerContentSummary.methods.getComplianceText({})).toBe('No compliance')
 
     expect(
-      TrainingLibraryDrawerContentSummary.methods.getTrainingRolesTooltip({
+      TrainingLibraryDrawerContentSummary.methods.getTrainingRolesPopoverItems({
         trainingRoles: [{ roleName: 'Admin' }, { roleName: 'User' }]
       })
-    ).toBe('Admin, User')
+    ).toEqual(['Admin', 'User'])
     expect(
       TrainingLibraryDrawerContentSummary.methods.getTrainingRolesText({
         trainingRoles: [{ roleName: 'Admin' }, { roleName: 'User' }]
@@ -92,6 +92,75 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
         targetAudienceName: 'All Users'
       })
     ).toBe('All Users')
+    expect(
+      TrainingLibraryDrawerContentSummary.methods.getTrainingRolesText({
+        trainingRoles: [{}, { roleName: 'User' }]
+      })
+    ).toBe('2 roles')
+  })
+
+  it('category helpers return single value or popover count correctly', () => {
+    expect(
+      TrainingLibraryDrawerContentSummary.methods.getCategoryText({
+        trainingCategories: [{ categoryName: 'Remote Working Security' }]
+      })
+    ).toBe('Remote Working Security')
+
+    expect(
+      TrainingLibraryDrawerContentSummary.methods.getCategoryText({
+        trainingCategories: [
+          { categoryName: 'Travel Security' },
+          { categoryName: 'Mobile Device Security' },
+          { categoryName: 'Remote Working Security' }
+        ]
+      })
+    ).toBe('3 categories')
+
+    expect(
+      TrainingLibraryDrawerContentSummary.methods.getCategoryPopoverItems({
+        trainingCategories: [
+          { categoryName: 'Travel Security' },
+          { categoryName: 'Mobile Device Security' },
+          { categoryName: 'Remote Working Security' }
+        ]
+      })
+    ).toEqual(['Travel Security', 'Mobile Device Security', 'Remote Working Security'])
+  })
+
+  it('getInfoCards uses category popover text for multi categories', () => {
+    const value = TrainingLibraryDrawerContentSummary.computed.getInfoCards.call({
+      getCurrentTrainingData: {
+        trainingCategories: [
+          { categoryName: 'Travel Security' },
+          { categoryName: 'Mobile Device Security' },
+          { categoryName: 'Remote Working Security' }
+        ],
+        trainingRoles: [{ roleName: 'Admin' }, { roleName: 'User' }],
+        complianceNames: ['ISO', 'GDPR']
+      },
+      getCategoryText: TrainingLibraryDrawerContentSummary.methods.getCategoryText,
+      getCategoryPopoverItems: TrainingLibraryDrawerContentSummary.methods.getCategoryPopoverItems,
+      getTrainingRolesText: TrainingLibraryDrawerContentSummary.methods.getTrainingRolesText,
+      getTrainingRolesPopoverItems:
+        TrainingLibraryDrawerContentSummary.methods.getTrainingRolesPopoverItems,
+      getComplianceText: TrainingLibraryDrawerContentSummary.methods.getComplianceText,
+      getComplianceTooltip: TrainingLibraryDrawerContentSummary.methods.getComplianceTooltip,
+      getCompliancePopoverItems: TrainingLibraryDrawerContentSummary.methods.getCompliancePopoverItems,
+      isLearningPath: false
+    })
+
+    expect(value[0]).toEqual(
+      expect.objectContaining({
+        text: '3 categories',
+        popoverItems: ['Travel Security', 'Mobile Device Security', 'Remote Working Security']
+      })
+    )
+    expect(value[1]).toEqual(
+      expect.objectContaining({
+        text: '2 roles',
+        popoverItems: ['Admin', 'User']
+      })
+    )
   })
 
   it('getLearningPathDurationText returns empty for invalid or missing steps', () => {
@@ -454,6 +523,49 @@ describe('TrainingLibraryDrawerContentSummary.vue (extra)', () => {
     expect(ctx.$emit).not.toHaveBeenCalled()
     expect(ctx.isLoadingLanguages).toBe(false)
     errorSpy.mockRestore()
+  })
+
+  it('callForTrainingDetail normalizes multi categories from API detail', async () => {
+    AwarenessEducatorService.getTraining.mockResolvedValueOnce({
+      data: {
+        data: {
+          trainingId: 't-categories',
+          trainingCategories: [
+            { categoryId: 2, code: 'TravelSecurity', categoryName: 'Travel Security' },
+            {
+              categoryId: 3,
+              code: 'MobileDeviceSecurity',
+              categoryName: 'Mobile Device Security'
+            },
+            {
+              categoryId: 1,
+              code: 'RemoteWorkingSecurity',
+              categoryName: 'Remote Working Security'
+            }
+          ]
+        }
+      }
+    })
+    const ctx = {
+      trainingData: { trainingId: 't-categories' },
+      isLoadingLanguages: true,
+      availableLanguages: [],
+      allLanguagesFromApi: [],
+      isLearningPath: false,
+      $emit: jest.fn()
+    }
+
+    TrainingLibraryDrawerContentSummary.methods.callForTrainingDetail.call(ctx)
+    await flushPromises()
+
+    expect(ctx.trainingDetails).toEqual(
+      expect.objectContaining({
+        categoryName: 'Travel Security, Mobile Device Security, Remote Working Security',
+        categoryBadges: ['Travel Security', 'Mobile Device Security', 'Remote Working Security'],
+        category: 'TravelSecurity'
+      })
+    )
+    expect(ctx.$emit).toHaveBeenCalledWith('category-ready', 'TravelSecurity')
   })
 
   it('handlePreviewClick closes lightbox when pdf blob download fails', async () => {

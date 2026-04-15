@@ -618,14 +618,14 @@ describe('TrainingLibraryDrawerInfoCard.vue', () => {
 
     it('should render clickable span with text', () => {
       const wrapper = mountComponent(popoverProps)
-      const clickable = wrapper.find('.training-library-drawer-info-card__clickable')
+      const clickable = wrapper.find('.training-library-drawer-info-card__value--interactive')
       expect(clickable.exists()).toBe(true)
       expect(clickable.text()).toContain('3 compliance')
     })
 
     it('should render dropdown arrow icon in clickable span', () => {
       const wrapper = mountComponent(popoverProps)
-      const clickable = wrapper.find('.training-library-drawer-info-card__clickable')
+      const clickable = wrapper.find('.training-library-drawer-info-card__value--interactive')
       expect(clickable.exists()).toBe(true)
       expect(clickable.html()).toContain('mdi-menu-down')
     })

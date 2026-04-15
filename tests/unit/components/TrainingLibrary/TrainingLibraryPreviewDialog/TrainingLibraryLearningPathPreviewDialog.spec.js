@@ -4,6 +4,7 @@ jest.mock('@/api/awarenessEducator', () => ({
 }))
 
 import TrainingLibraryLearningPathPreviewDialog from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreviewDialog.vue'
+import AwarenessEducatorService from '@/api/awarenessEducator'
 
 describe('TrainingLibraryLearningPathPreviewDialog.vue', () => {
   it('handleSend opens send modal and closes', () => {
@@ -31,6 +32,36 @@ describe('TrainingLibraryLearningPathPreviewDialog.vue', () => {
       trainingDetails: null
     })
     expect(result).toEqual(params)
+  })
+
+  it('callForTrainingDetail normalizes multi category display', async () => {
+    AwarenessEducatorService.getTraining.mockResolvedValueOnce({
+      data: {
+        data: {
+          name: 'LP',
+          trainingGroups: [],
+          trainingCategories: [
+            { code: 'RemoteWorkingSecurity', categoryName: 'Remote Working Security' },
+            { code: 'TravelSecurity', categoryName: 'Travel Security' }
+          ]
+        }
+      }
+    })
+    const ctx = {
+      isPreviewLoading: true,
+      selectedRow: { trainingId: 'lp2' },
+      trainingDetails: null
+    }
+
+    TrainingLibraryLearningPathPreviewDialog.methods.callForTrainingDetail.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(ctx.trainingDetails).toEqual(
+      expect.objectContaining({
+        categoryName: 'Remote Working Security, Travel Security'
+      })
+    )
   })
 })
 

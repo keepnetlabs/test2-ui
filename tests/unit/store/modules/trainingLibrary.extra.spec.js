@@ -266,6 +266,10 @@ describe('trainingLibrary store module (real)', () => {
         expect(commit).toHaveBeenCalledWith('SET_TABLE_DATA', [
           {
             trainingId: 't1',
+            trainingCategories: [],
+            category: '',
+            categoryName: '',
+            categoryBadges: [],
             languages: ['English', 'Turkish'],
             languageCodes: ['EN', 'TR'],
             trainingRoles: [{ roleName: 'Admins' }],
@@ -363,8 +367,74 @@ describe('trainingLibrary store module (real)', () => {
         expect(commit).toHaveBeenCalledWith('SET_TABLE_DATA', [
           {
             trainingId: 'x1',
+            trainingCategories: [],
+            category: '',
+            categoryName: '',
+            categoryBadges: [],
             languages: ['ZZ', 'Turkish'],
             languageCodes: ['ZZ', 'TR'],
+            targetAudience: []
+          }
+        ])
+      })
+
+      it('callForTableData normalizes multi categories without breaking legacy fields', async () => {
+        const state = createState()
+        const commit = jest.fn()
+        const rootGetters = { 'trainingLibraryHelpers/getLanguages': [] }
+
+        AwarenessEducatorService.searchTraining.mockResolvedValue({
+          data: {
+            data: {
+              results: [
+                {
+                  trainingId: 'cat-1',
+                  trainingCategories: [
+                    {
+                      categoryId: 1,
+                      code: 'RemoteWorkingSecurity',
+                      categoryName: 'Remote Working Security'
+                    },
+                    {
+                      categoryId: 2,
+                      code: 'TravelSecurity',
+                      categoryName: 'Travel Security'
+                    }
+                  ],
+                  trainingRoles: []
+                }
+              ],
+              totalNumberOfRecords: 1,
+              totalNumberOfPages: 1,
+              pageNumber: 1
+            }
+          }
+        })
+
+        trainingLibrary.actions.callForTableData({ commit, state, rootGetters })
+        await flushPromises()
+
+        expect(commit).toHaveBeenCalledWith('SET_TABLE_DATA', [
+          {
+            trainingId: 'cat-1',
+            trainingCategories: [
+              {
+                categoryId: 1,
+                code: 'RemoteWorkingSecurity',
+                categoryName: 'Remote Working Security'
+              },
+              {
+                categoryId: 2,
+                code: 'TravelSecurity',
+                categoryName: 'Travel Security'
+              }
+            ],
+            category: 'RemoteWorkingSecurity',
+            categoryName: 'Remote Working Security, Travel Security',
+            categoryBadges: ['Remote Working Security', 'Travel Security'],
+            languageCodes: [],
+            languages: [],
+            trainingRoles: [],
             targetAudience: []
           }
         ])

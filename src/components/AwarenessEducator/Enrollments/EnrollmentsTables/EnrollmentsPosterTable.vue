@@ -65,7 +65,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { COLUMNS, ENROLLMENT_AUDIENCE } from '../../utils'
+import { COLUMNS, ENROLLMENT_AUDIENCE, ENROLLMENT_CATEGORY } from '../../utils'
 import EnrollmentsTableRowActions from '@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions'
 import LanguagesColumn from '@/components/Common/Simulator/LanguagesColumn/LanguagesColumn.vue'
 import {
@@ -74,7 +74,10 @@ import {
 } from '@/model/constants/commonConstants'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
-import { trashRowActions } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
+import {
+  enrichEnrollmentTableResults,
+  trashRowActions
+} from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 import useEnrollmentTableFilters from '@/hooks/enrollments/useEnrollmentTableFilters'
 export default {
@@ -138,7 +141,7 @@ export default {
         columns: [
           COLUMNS.ENROLLMENT_NAME,
           COLUMNS.POSTER_NAME,
-          COLUMNS.CATEGORY,
+          ENROLLMENT_CATEGORY,
           COLUMNS.LEVEL,
           ENROLLMENT_AUDIENCE,
           COLUMNS.DURATION,
@@ -228,17 +231,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const enrichedResults = results?.map((item) => {
-            return {
-              ...item,
-              languageCodes: item.languages, // Orijinal kodları sakla
-              languages: item.languages?.map((code) => {
-                const language = (this.languages || []).find((lang) => lang.code === code)
-                return language?.isoFriendlyName || code
-              }),
-              targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
-            }
-          })
+          const enrichedResults = enrichEnrollmentTableResults(results, this.languages)
           this.tableData = enrichedResults || []
         })
         .finally(this.setLoading)

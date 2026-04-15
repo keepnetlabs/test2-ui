@@ -79,7 +79,12 @@
               <span>{{ getTrainingRolesTooltip(card) }}</span>
             </VTooltip>
             <span class="dot">•</span>
-            <span>{{ card.category }}</span>
+            <VTooltip bottom max-width="300" :disabled="!isCategoryTooltipEnabled(card)">
+              <template #activator="{ on }">
+                <span v-on="on">{{ getCategoryText(card) }}</span>
+              </template>
+              <span>{{ getCategoryTooltip(card) }}</span>
+            </VTooltip>
             <template v-if="getLanguageNamesList(card.languages).length">
               <span class="dot">•</span>
               <VMenu
@@ -132,7 +137,7 @@
 
 <script>
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { getTrainingCategoryMeta, TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import LanguagesPopover from '@/components/Common/Simulator/LanguagesColumn/LanguagesPopover.vue'
@@ -264,17 +269,22 @@ export default {
               return itemId !== currentTrainingId
             })
             .slice(0, 3)
-            .map((item) => ({
-              ...item,
-              title: item.name || item.trainingName,
-              targetAudienceDisplay: item.targetAudience || 'All Users',
-              category: item.categoryName || item.category,
-              languagesFormatted: this.formatLanguages(item.languageCodes || item.languages),
-              languages: item.languageCodes || item.languages, // Keep original codes for nested drawer
-              languageCodes: item.languageCodes || item.languages, // Ensure languageCodes is available
-              coverImage: this.getCoverImage(item.coverImage),
-              trainingRoles: item.trainingRoles || []
-            }))
+            .map((item) => {
+              const categoryMeta = getTrainingCategoryMeta(item)
+
+              return {
+                ...item,
+                ...categoryMeta,
+                title: item.name || item.trainingName,
+                targetAudienceDisplay: item.targetAudience || 'All Users',
+                category: categoryMeta.categoryName || categoryMeta.category,
+                languagesFormatted: this.formatLanguages(item.languageCodes || item.languages),
+                languages: item.languageCodes || item.languages, // Keep original codes for nested drawer
+                languageCodes: item.languageCodes || item.languages, // Ensure languageCodes is available
+                coverImage: this.getCoverImage(item.coverImage),
+                trainingRoles: item.trainingRoles || []
+              }
+            })
         })
         .catch((error) => {
           console.error('❌ Error fetching related trainings:', error)
@@ -346,6 +356,23 @@ export default {
       const roles = card.trainingRoles || []
       if (!roles || roles.length <= 1) return ''
       return roles.map((r) => r.roleName).join(', ')
+    },
+    getCategoryText(card) {
+      const categories = card.categoryBadges || []
+      if (!categories || categories.length === 0) {
+        return card.category || 'No category'
+      }
+      if (categories.length === 1) return categories[0]
+      return `${categories[0]} +${categories.length - 1}`
+    },
+    getCategoryTooltip(card) {
+      const categories = card.categoryBadges || []
+      if (!categories || categories.length <= 1) return ''
+      return categories.join(', ')
+    },
+    isCategoryTooltipEnabled(card) {
+      const categories = card.categoryBadges || []
+      return categories.length > 1
     },
     isTrainingRolesTooltipEnabled(card) {
       const roles = card.trainingRoles || []

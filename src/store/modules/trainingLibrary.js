@@ -26,7 +26,8 @@ import {
   emptyInfographicSendModalObj,
   emptyScreensaverSendModalObj,
   emptyLearningPathSendModalObj,
-  TRAINING_LIBRARY_SEARCH_TYPES
+  TRAINING_LIBRARY_SEARCH_TYPES,
+  getTrainingCategoryMeta
 } from "@/components/TrainingLibrary/utils";
 import {
   cancellableAxiosRequest,
@@ -632,8 +633,10 @@ const trainingLibrary = {
           const languages =
             rootGetters["trainingLibraryHelpers/getLanguages"] || [];
           const enrichedResults = results.map((item) => {
+            const categoryMeta = getTrainingCategoryMeta(item);
             return {
               ...item,
+              ...categoryMeta,
               languageCodes: item.languages || [], // Orijinal kodları sakla
               languages: (item.languages || []).map((code) => {
                 const language = languages.find((lang) => lang.code === code);

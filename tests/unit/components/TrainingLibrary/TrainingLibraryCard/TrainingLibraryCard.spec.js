@@ -187,4 +187,16 @@ describe('TrainingLibraryCard.vue', () => {
       backgroundImage: "url('https://example.com/img.png')"
     })
   })
+
+  it('categoryDisplay prefers categoryName for multi category responses', () => {
+    const wrapper = createWrapper({
+      item: {
+        ...baseItem,
+        category: 'RemoteWorkingSecurity',
+        categoryName: 'Remote Working Security, Travel Security'
+      }
+    })
+
+    expect(wrapper.vm.categoryDisplay).toBe('Remote Working Security, Travel Security')
+  })
 })

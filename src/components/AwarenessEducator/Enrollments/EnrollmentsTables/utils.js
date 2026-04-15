@@ -1,4 +1,5 @@
 import labels from '@/model/constants/labels'
+import { getTrainingCategoryMeta } from '@/components/TrainingLibrary/utils'
 
 export const trashRowActions = [
   {
@@ -18,3 +19,18 @@ export const trashRowActions = [
     action: 'on-delete'
   }
 ]
+
+export const enrichEnrollmentTableResults = (results = [], languages = []) => {
+  return (results || []).map((item) => {
+    return {
+      ...item,
+      ...getTrainingCategoryMeta(item),
+      languageCodes: item.languages,
+      languages: item.languages?.map((code) => {
+        const language = (languages || []).find((lang) => lang.code === code)
+        return language?.isoFriendlyName || code
+      }),
+      targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
+    }
+  })
+}

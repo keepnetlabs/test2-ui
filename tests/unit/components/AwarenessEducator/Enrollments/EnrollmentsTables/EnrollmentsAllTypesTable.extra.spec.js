@@ -12,6 +12,25 @@ import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/Tra
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('EnrollmentsAllTypesTable.vue (extra branch coverage)', () => {
+  it('data uses smallBadge category column for enrollment tables', () => {
+    const data = EnrollmentsAllTypesTable.data.call({
+      isTrash: false,
+      showDownloadButton: true,
+      $store: {
+        getters: {
+          'permissions/getExportEnrollmentPermission': true,
+          'permissions/getEnrollmentEditPermission': true,
+          'permissions/getDeleteEnrollmentPermission': true
+        }
+      }
+    })
+
+    const categoryColumn = data.tableOptions.columns.find((column) => column.property === 'category')
+
+    expect(categoryColumn.type).toBe('smallBadge')
+    expect(categoryColumn.badgeProperty).toBe('categoryBadges')
+  })
+
   it('callForData handles null response with fallback', async () => {
     const apiFunc = jest.fn(() => Promise.resolve(null))
     const ctx = {
@@ -90,6 +109,56 @@ describe('EnrollmentsAllTypesTable.vue (extra branch coverage)', () => {
 
     expect(ctx.tableData[0].languages).toEqual(['English', 'xx'])
     expect(ctx.tableData[0].targetAudience).toEqual(['Admins'])
+  })
+
+  it('callForData normalizes category badges for multi categories', async () => {
+    const apiFunc = jest.fn(() =>
+      Promise.resolve({
+        data: {
+          data: {
+            results: [
+              {
+                enrollmentId: 'e3',
+                languages: [],
+                trainingRoles: [],
+                trainingCategories: [
+                  {
+                    categoryId: 1,
+                    code: 'RemoteWorkingSecurity',
+                    categoryName: 'Remote Working Security'
+                  },
+                  {
+                    categoryId: 2,
+                    code: 'TravelSecurity',
+                    categoryName: 'Travel Security'
+                  }
+                ]
+              }
+            ],
+            totalNumberOfRecords: 1,
+            totalNumberOfPages: 1,
+            pageNumber: 1
+          }
+        }
+      })
+    )
+    const ctx = {
+      apiFunc,
+      axiosPayload: {},
+      languages: [],
+      serverSideProps: {},
+      tableData: [],
+      setLoading: jest.fn()
+    }
+
+    EnrollmentsAllTypesTable.methods.callForData.call(ctx)
+    await flushPromises()
+
+    expect(ctx.tableData[0].categoryBadges).toEqual([
+      'Remote Working Security',
+      'Travel Security'
+    ])
+    expect(ctx.tableData[0].categoryName).toBe('Remote Working Security, Travel Security')
   })
 
   it('exportEnrollments uses CSV when item is not XLS', async () => {

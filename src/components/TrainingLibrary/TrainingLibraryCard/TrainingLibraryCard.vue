@@ -47,13 +47,13 @@
         <VTooltip v-if="isRenderCategoryTooltip" bottom>
           <template #activator="{ on }">
             <div ref="refBodyCategory" v-on="on" class="training-library-card__body-sub-category">
-              {{ item.category }}
+              {{ categoryDisplay }}
             </div>
           </template>
-          <span>{{ item.category }}</span>
+          <span>{{ categoryDisplay }}</span>
         </VTooltip>
         <div v-else ref="refBodyCategory" class="training-library-card__body-sub-category">
-          {{ item.category }}
+          {{ categoryDisplay }}
         </div>
         <template v-if="languagesList.length">
           <div class="training-library-card__body-sub-bull"></div>
@@ -254,6 +254,9 @@ export default {
       const langs = this.item?.languages
       if (Array.isArray(langs)) return langs.filter(Boolean)
       return langs ? [langs] : []
+    },
+    categoryDisplay() {
+      return this.item?.categoryName || this.item?.category || ''
     },
     preferredTexts() {
       const types = this.preferredLanguageTypes || []

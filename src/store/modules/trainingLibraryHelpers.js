@@ -211,8 +211,20 @@ const trainingLibraryHelpers = {
       AwarenessEducatorService.getCategories().then((response) => {
         const categories =
           response?.data?.data?.map((category) => ({
-            text: category.displayName || category.name,
-            value: category.name
+            id: category.categoryId || category.id || category.resourceId || "",
+            code: category.code || category.name || "",
+            categoryName:
+              category.categoryName ||
+              category.displayName ||
+              category.name ||
+              category.code ||
+              "",
+            text:
+              category.categoryName ||
+              category.displayName ||
+              category.name ||
+              category.code,
+            value: category.code || category.name || ""
           })) || [];
         commit("SET_CATEGORIES", categories);
         dispatch(
