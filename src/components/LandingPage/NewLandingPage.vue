@@ -609,6 +609,45 @@ import AppDialog from "@/components/AppDialog";
 import AppDialogFooterWithClose from "@/components/SmallComponents/AppDialogFooterWithClose";
 import "@/styles/landing-page-tabs.css";
 import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
+
+const getLandingPageNameByIndex = (index) =>
+  index === 0 ? "landing-page" : `Page ${index + 1}`;
+
+const AUTO_GENERATED_PAGE_NAME_REGEX = /^Page\s+\d+$/i;
+
+const normalizeLandingPages = (landingPages = []) => {
+  const usedPageNames = new Set();
+
+  return landingPages.map((page, index) => {
+    let normalizedName = typeof page?.name === "string" ? page.name.trim() : "";
+
+    if (!normalizedName) {
+      normalizedName = getLandingPageNameByIndex(index);
+    } else if (usedPageNames.has(normalizedName)) {
+      normalizedName = getLandingPageNameByIndex(index);
+    } else if (
+      index === 0 &&
+      AUTO_GENERATED_PAGE_NAME_REGEX.test(normalizedName)
+    ) {
+      normalizedName = getLandingPageNameByIndex(index);
+    }
+
+    usedPageNames.add(normalizedName);
+
+    return {
+      ...page,
+      name: normalizedName,
+      order: index + 1
+    };
+  });
+};
+
+const syncLandingPagesMetadata = (landingPages = []) => {
+  const normalizedLandingPages = normalizeLandingPages(landingPages);
+  landingPages.splice(0, landingPages.length, ...normalizedLandingPages);
+  return landingPages;
+};
+
 export default {
   name: "NewLandingPage",
   mixins: [useIsTestEnvironment],
@@ -1354,12 +1393,16 @@ export default {
     getAndUpdateFirstIndexForPageText() {
       let newPageText;
       if (this.formValues.landingPages.length === 1) {
-        const firstPageText = Number.parseInt(
-          this.formValues.landingPages[0].name.split(" ")[1]
-        );
-        if (firstPageText === 2) {
-          this.formValues.landingPages[0].name = "landing-page";
-        }
+        syncLandingPagesMetadata(this.formValues.landingPages);
+        this.languagesPayload?.forEach((language) => {
+          if (
+            language &&
+            Array.isArray(language.landingPages) &&
+            language.landingPages.length === 1
+          ) {
+            syncLandingPagesMetadata(language.landingPages);
+          }
+        });
         newPageText = this.formValues.landingPages.length + 1;
       }
       return newPageText;
@@ -1386,21 +1429,12 @@ export default {
         if (language && language.landingPages && language.landingPages[index]) {
           language.landingPages.splice(index, 1);
         }
-      });
-
-      // Silme sonrası order ve name'leri yeniden düzenle
-      this.formValues.landingPages.forEach((page, i) => {
-        page.order = i + 1;
-        page.name = i === 0 ? "landing-page" : `Page ${i + 1}`;
-      });
-      this.languagesPayload.forEach((language) => {
-        if (language && language.landingPages) {
-          language.landingPages.forEach((page, i) => {
-            page.order = i + 1;
-            page.name = i === 0 ? "landing-page" : `Page ${i + 1}`;
-          });
+        if (language && Array.isArray(language.landingPages)) {
+          syncLandingPagesMetadata(language.landingPages);
         }
       });
+
+      syncLandingPagesMetadata(this.formValues.landingPages);
 
       if (index === 1 || index === 0) {
         this.tab = "page1";
@@ -1610,8 +1644,15 @@ export default {
           (p) => p.languageTypeResourceId === mainLanguageId
         );
         if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
-          this.formValues.landingPages = structuredClone(newMainLanguagePayload.landingPages);
-          payload.landingPages = structuredClone(newMainLanguagePayload.landingPages);
+          const normalizedMainLanguageLandingPages = normalizeLandingPages(
+            newMainLanguagePayload.landingPages
+          );
+          this.formValues.landingPages = structuredClone(
+            normalizedMainLanguageLandingPages
+          );
+          payload.landingPages = structuredClone(
+            normalizedMainLanguageLandingPages
+          );
         }
       }
 
@@ -1625,10 +1666,12 @@ export default {
       );
 
       // Ana dilin landing pages'lerini al
-      const mainLandingPages = mainLanguagePayload.landingPages || [];
+      const mainLandingPages = normalizeLandingPages(
+        mainLanguagePayload.landingPages || payload.landingPages || []
+      );
 
       // Her sayfa için languages array'i oluştur
-      return mainLandingPages.map((mainPage) => {
+      return mainLandingPages.map((mainPage, pageIndex) => {
         const pagePayload = {
           name: mainPage.name || "",
           content: mainPage.content || "",
@@ -1639,10 +1682,14 @@ export default {
         // Bu sayfa için diğer dillerin çevirilerini bul
         const languages = otherLanguagesPayload
           .map((langPayload) => {
-            // Aynı order'a sahip sayfayı bul
-            const translatedPage = (langPayload.landingPages || []).find(
-              (page) => page.order === mainPage.order
+            const normalizedTranslatedLandingPages = normalizeLandingPages(
+              langPayload.landingPages || []
             );
+            // Aynı order'a sahip sayfayı bul
+            const translatedPage =
+              normalizedTranslatedLandingPages.find(
+                (page) => page.order === mainPage.order
+              ) || normalizedTranslatedLandingPages[pageIndex];
 
             if (!translatedPage) return null;
 
