@@ -82,7 +82,7 @@ describe('QuishingNewLandingPageModal.vue', () => {
     }
 
     methods.handleDeleteLandingPage.call(ctx, 1)
-    expect(ctx.formValues.landingPages).toEqual([{ name: 'Page 1', order: 1 }])
+    expect(ctx.formValues.landingPages).toEqual([{ name: 'landing-page', order: 1 }])
     expect(ctx.tab).toBe('page1')
   })
 

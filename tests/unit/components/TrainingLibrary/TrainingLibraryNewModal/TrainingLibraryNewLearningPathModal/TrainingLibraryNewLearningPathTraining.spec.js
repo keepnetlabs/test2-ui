@@ -20,6 +20,22 @@ describe('TrainingLibraryNewLearningPathTraining.vue', () => {
     ).toBe('Security')
   })
 
+  it('getCategoryDisplayName returns compact text for multi categories', () => {
+    const training = {
+      trainingCategories: [
+        { categoryName: 'Travel Security' },
+        { categoryName: 'Mobile Device Security' },
+        { categoryName: 'Remote Working Security' }
+      ]
+    }
+    expect(
+      TrainingLibraryNewLearningPathTraining.computed.getCategoryDisplayName.call({ training })
+    ).toBe('Travel Security +2')
+    expect(
+      TrainingLibraryNewLearningPathTraining.computed.getCategoryName.call({ training })
+    ).toBe('Travel Security, Mobile Device Security, Remote Working Security')
+  })
+
   it('checkTrainingInfoTooltips sets truncation for long text', () => {
     const training = {
       trainingName: 'A'.repeat(25),
@@ -40,10 +56,41 @@ describe('TrainingLibraryNewLearningPathTraining.vue', () => {
       get: () => training.categoryName,
       configurable: true
     })
+    Object.defineProperty(ctx, 'getCategoryDisplayName', {
+      get: () => training.categoryName,
+      configurable: true
+    })
     TrainingLibraryNewLearningPathTraining.methods.checkTrainingInfoTooltips.call(ctx)
     expect(ctx.truncatedTrainingName).toBe('A'.repeat(20) + '...')
     expect(ctx.isRenderTitleTooltip).toBe(true)
     expect(ctx.truncatedCategory).toBe('B'.repeat(14) + '...')
+    expect(ctx.isRenderCategoryTooltip).toBe(true)
+  })
+
+  it('checkTrainingInfoTooltips enables category tooltip for compact multi category text', () => {
+    const ctx = {
+      training: {},
+      truncatedTrainingName: '',
+      truncatedCategory: '',
+      isRenderTitleTooltip: false,
+      isRenderCategoryTooltip: false
+    }
+    Object.defineProperty(ctx, 'getTrainingName', {
+      get: () => 'Training',
+      configurable: true
+    })
+    Object.defineProperty(ctx, 'getCategoryName', {
+      get: () => 'Travel Security, Mobile Device Security, Remote Working Security',
+      configurable: true
+    })
+    Object.defineProperty(ctx, 'getCategoryDisplayName', {
+      get: () => 'Travel Security +2',
+      configurable: true
+    })
+
+    TrainingLibraryNewLearningPathTraining.methods.checkTrainingInfoTooltips.call(ctx)
+
+    expect(ctx.truncatedCategory).toBe('')
     expect(ctx.isRenderCategoryTooltip).toBe(true)
   })
 
