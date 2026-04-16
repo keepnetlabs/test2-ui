@@ -1714,6 +1714,16 @@
 
 }
 
+.grouped-select-filter__group-label {
+  color: var(--Primary-Primary-Dark, #1173C1);
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 21px;
+}
+
 .filter-options {
   margin-left: 16px;
   cursor: pointer;

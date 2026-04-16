@@ -52,4 +52,12 @@
       }
     }
   }
+
+  &--teams-notification-template {
+    .alert-box__default-content {
+      p {
+        line-height: 1.25;
+      }
+    }
+  }
 }

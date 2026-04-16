@@ -1,5 +1,11 @@
 <template>
-  <v-card class="email-template__container">
+  <v-card
+    :class="[
+      'email-template__container',
+      hideNotificationTemplatePreviewOuterShell &&
+        'email-template__container--teams-notification-shell'
+    ]"
+  >
     <v-dialog v-if="feedbackDialog" v-model="feedbackDialog" persistent :width="600">
       <feedback-popup></feedback-popup>
     </v-dialog>
@@ -362,8 +368,25 @@
       </transition>
     </div>
     <div
+      v-if="
+        !onlyGrapes &&
+        (
+          !hideNotificationTemplateSenderFields ||
+          showNameField ||
+          showLanguageField ||
+          isNotificationTemplate
+        )
+      "
       style="display: grid; grid-template-columns: 1fr 1fr;"
-      :class="!isAiAssistant && !showEditButton ? 'pt-6' : ''"
+      :class="[
+        !isAiAssistant && !showEditButton && (showNameField || showLanguageField) ? 'pt-6' : '',
+        !isAiAssistant &&
+        !showEditButton &&
+        !showNameField &&
+        !showLanguageField
+          ? 'pt-4'
+          : ''
+      ]"
     >
       <div v-if="!onlyGrapes && showNameField" :class="getTemplateNameFieldClass">
         <FormGroup
@@ -450,7 +473,7 @@
         </FormGroup>
       </div>
       <div
-        v-if="!onlyGrapes"
+        v-if="!onlyGrapes && !hideNotificationTemplateSenderFields"
         :class="['mx-6', getSubjectSubtitle ? 'mt-6' : '', isHorizontalFormGroups ? 'pt-2' : '']"
       >
         <FormGroup
@@ -483,7 +506,10 @@
           </div>
         </FormGroup>
       </div>
-      <div v-if="!onlyGrapes" :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']">
+      <div
+        v-if="!onlyGrapes && !hideNotificationTemplateSenderFields"
+        :class="['mx-6', isHorizontalFormGroups ? 'pt-2' : '']"
+      >
         <FormGroup
           title="From Email Address:"
           style="max-width: unset;"
@@ -517,7 +543,11 @@
         </FormGroup>
       </div>
       <div
-        v-if="!onlyGrapes && (isNotificationEnrollment || isEmailTemplate)"
+        v-if="
+          !onlyGrapes &&
+          !hideNotificationTemplateSenderFields &&
+          (isNotificationEnrollment || isEmailTemplate)
+        "
         :class="['mx-6', isHorizontalFormGroups ? 'pt-2 pb-4' : '']"
       >
         <FormGroup
@@ -816,6 +846,8 @@ export default {
     'isLearningPathEnrollmentSelected',
     'isNotificationEnrollment',
     'isEmailTemplate',
+    'hideNotificationTemplateSenderFields',
+    'hideNotificationTemplatePreviewOuterShell',
     'isHorizontalFormGroups',
     'showNameField',
     'isAiAssistant',

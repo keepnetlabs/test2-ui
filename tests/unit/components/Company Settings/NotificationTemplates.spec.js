@@ -13,5 +13,36 @@ describe('NotificationTemplates.vue', () => {
       expect(callForData).toHaveBeenCalled()
       expect(toggleNewNotificationTemplate).toHaveBeenCalled()
     })
+
+    it('groups template types for grouped filter UI', () => {
+      const ctx = {
+        getTemplateTypeFilterGroupLabel:
+          NotificationTemplates.methods.getTemplateTypeFilterGroupLabel
+      }
+
+      const config = NotificationTemplates.methods.getTemplateTypeFilterConfig.call(ctx, [
+        { name: 'Training Enrollment', resourceId: 'email-1' },
+        { name: 'Survey Enrollment', resourceId: 'email-2' },
+        { name: 'Teams Survey Enrollment Notification', resourceId: 'teams-1' }
+      ])
+
+      expect(config).toEqual({
+        groups: [
+          {
+            key: 'email',
+            label: 'Email',
+            items: [
+              { text: 'Training Enrollment', value: 'email-1' },
+              { text: 'Survey Enrollment', value: 'email-2' }
+            ]
+          },
+          {
+            key: 'microsoft-teams',
+            label: 'Microsoft Teams',
+            items: [{ text: 'Teams Survey Enrollment Notification', value: 'teams-1' }]
+          }
+        ]
+      })
+    })
   })
 })

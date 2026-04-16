@@ -185,3 +185,16 @@ export const scrollToEmailTemplateContent = () => {
     inline: 'end'
   })
 }
+
+export const TEAMS_NOTIFICATION_TEMPLATE_NAMES = [
+  'Teams Enrollment Notification',
+  'Teams Survey Enrollment Notification',
+  'Teams Phishing Enrollment Notification',
+  'Teams Poster Enrollment Notification',
+  'Teams Infographic Enrollment Notification',
+  'Teams Learning Path Enrollment Notification'
+]
+
+export const isTeamsNotificationTemplateName = (templateName = '') => {
+  return TEAMS_NOTIFICATION_TEMPLATE_NAMES.includes(templateName)
+}
