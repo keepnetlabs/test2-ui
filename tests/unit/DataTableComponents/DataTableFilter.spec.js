@@ -783,6 +783,24 @@ describe('DataTableFilter.vue', () => {
       expect(wrapper.vm.hasAppliedNestedGroupSelection('products')).toBe(false)
     })
 
+    it('opens nested filter on the group that has applied selections (e.g. Products only)', async () => {
+      const wrapper = mountNested({
+        value: {
+          textValue: '',
+          selectValue: '',
+          nestedSelections: {
+            licenseType: [],
+            products: ['module-1']
+          }
+        }
+      })
+
+      wrapper.vm.menu = true
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.activeNestedGroup).toBe('products')
+    })
+
     it('normalizes conflicting applied selections to one group in exclusive mode', () => {
       const wrapper = mountNested({
         value: {
@@ -866,7 +884,7 @@ describe('DataTableFilter.vue', () => {
       expect(wrapper.vm.getFilterButtonDisabled).toBe(false)
     })
 
-    it('handleMenuVisibilityChange initializes and resets nested panel state', () => {
+    it('handleMenuVisibilityChange initializes and resets nested panel state', async () => {
       const wrapper = mountNested()
       wrapper.vm.$refs = {
         refPicker: null,
@@ -880,6 +898,7 @@ describe('DataTableFilter.vue', () => {
       }
 
       wrapper.vm.handleMenuVisibilityChange(true)
+      await wrapper.vm.$nextTick()
       expect(wrapper.vm.activeNestedGroup).toBe('licenseType')
 
       wrapper.vm.handleMenuVisibilityChange(false)

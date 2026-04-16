@@ -132,6 +132,42 @@ describe('NewLandingPage.vue', () => {
     expect(result[0].languages[0].resourceId).toBeUndefined()
   })
 
+  it('buildLandingPagesPayload normalizes landing page names and orders before submit', () => {
+    const ctx = {
+      isEdit: false,
+      isDuplicate: false,
+      selectedLanguages: [{ value: 'en' }],
+      formValues: {
+        languageTypeResourceId: 'en',
+        landingPages: [
+          { name: 'Page 2', content: 'main-1', order: 4, prompt: '' },
+          { name: 'Page 2', content: 'main-2', order: 9, prompt: '' }
+        ]
+      },
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          landingPages: [
+            { name: 'Page 2', content: 'main-1', order: 4, prompt: '' },
+            { name: 'Page 2', content: 'main-2', order: 9, prompt: '' }
+          ],
+          isTranslated: true
+        }
+      ]
+    }
+    const payload = {
+      languageTypeResourceId: 'en',
+      landingPages: structuredClone(ctx.formValues.landingPages)
+    }
+
+    const result = methods.buildLandingPagesPayload.call(ctx, payload)
+
+    expect(result).toEqual([
+      { name: 'landing-page', content: 'main-1', order: 1, prompt: '' },
+      { name: 'Page 2', content: 'main-2', order: 2, prompt: '' }
+    ])
+  })
+
   it('getLanguageObject resolves from languageItems, languageOptions and fallback', () => {
     const fromItemsCtx = {
       languageItems: [{ children: [{ text: 'Turkish', value: 'tr' }] }],
@@ -416,6 +452,32 @@ describe('NewLandingPage.vue', () => {
 
     expect(result).toBe(2)
     expect(ctx.formValues.landingPages[0].name).toBe('landing-page')
+  })
+
+  it('getAndUpdateFirstIndexForPageText also normalizes single-page language payloads', () => {
+    const ctx = {
+      formValues: {
+        landingPages: [{ name: 'Page 2', order: 5 }]
+      },
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          landingPages: [{ name: 'Page 2', order: 5 }]
+        }
+      ]
+    }
+
+    const result = methods.getAndUpdateFirstIndexForPageText.call(ctx)
+
+    expect(result).toBe(2)
+    expect(ctx.formValues.landingPages[0]).toEqual({
+      name: 'landing-page',
+      order: 1
+    })
+    expect(ctx.languagesPayload[0].landingPages[0]).toEqual({
+      name: 'landing-page',
+      order: 1
+    })
   })
 
   it('getNewIndexForPageText returns incremented index from edited pages', () => {

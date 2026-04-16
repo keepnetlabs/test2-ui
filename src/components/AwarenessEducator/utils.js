@@ -504,6 +504,13 @@ export const COLUMNS = {
   }
 }
 
+export const ENROLLMENT_CATEGORY = {
+  ...COLUMNS.CATEGORY,
+  type: 'smallBadge',
+  badgeProperty: 'categoryBadges',
+  width: 280
+}
+
 export const ENROLLMENT_AUDIENCE = {
   ...COLUMNS.AUDIENCE,
   filterableCustomFieldName: PROPERTY_STORE.ROLES

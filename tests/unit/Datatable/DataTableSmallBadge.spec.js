@@ -138,6 +138,25 @@ describe('DataTableSmallBadge.vue', () => {
     expect(wrapper.vm.badges.length).toBe(0)
   })
 
+  it('uses badgeProperty as the badge data source', () => {
+    const wrapper = mountComponent({
+      scope: {
+        row: {
+          category: '',
+          categoryBadges: ['Remote Working Security', 'Travel Security']
+        },
+        column: { width: 300 }
+      },
+      col: {
+        property: 'category',
+        badgeProperty: 'categoryBadges',
+        label: 'Category'
+      }
+    })
+
+    expect(wrapper.vm.badges).toEqual(['Remote Working Security', 'Travel Security'])
+  })
+
   it('correctly handles small width', () => {
     const wrapper = mountComponent({
       scope: {

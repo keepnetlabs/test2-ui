@@ -21,5 +21,24 @@ describe('TrainingLibraryNewTrainingCourseInformation.vue', () => {
     TrainingLibraryNewTrainingCourseInformation.methods.setMakeAvailableForData.call(ctx, [{ id: 1 }])
     expect(ctx.formData.availableForRequests[0].type).toBe('MyCompanyOnly')
   })
+
+  it('setFormData normalizes multi categories for edit mode', () => {
+    const ctx = {
+      formData: { coverImageUrl: null, category: [] },
+      getCategories: [
+        { id: 1, text: 'Remote Working Security', value: 'RemoteWorkingSecurity' },
+        { id: 2, text: 'Travel Security', value: 'TravelSecurity' }
+      ]
+    }
+
+    TrainingLibraryNewTrainingCourseInformation.methods.setFormData.call(ctx, {
+      trainingCategories: [
+        { categoryId: 1, code: 'RemoteWorkingSecurity' },
+        { categoryId: 2, code: 'TravelSecurity' }
+      ]
+    })
+
+    expect(ctx.formData.category).toEqual([1, 2])
+  })
 })
 

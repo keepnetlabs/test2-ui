@@ -38,7 +38,10 @@ import AppDialog from '@/components/AppDialog.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingLibrarySurveyPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibrarySurveyPreview.vue'
-import { emptySurveyPreviewDialogObj } from '@/components/TrainingLibrary/utils'
+import {
+  emptySurveyPreviewDialogObj,
+  getTrainingCategoryMeta
+} from '@/components/TrainingLibrary/utils'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 export default {
@@ -132,6 +135,7 @@ export default {
         } = response
         this.trainingDetails = {
           ...data,
+          ...getTrainingCategoryMeta(data),
           languages: this.selectedLanguages.map((lang) => lang.text).join(', ')
         }
       })

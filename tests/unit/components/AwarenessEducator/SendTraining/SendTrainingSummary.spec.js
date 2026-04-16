@@ -17,5 +17,18 @@ describe('SendTrainingSummary.vue', () => {
     expect(emit).toHaveBeenCalledWith('on-show-training-summary')
     expect(ctx.isShowTrainingEmail).toBe(false)
   })
+
+  it('getTrainingCategoryDisplay prefers categoryName over category', () => {
+    const display = SendTrainingSummary.computed.getTrainingCategoryDisplay.call({
+      formData: {
+        trainingData: {
+          category: 'RemoteWorkingSecurity',
+          categoryName: 'Remote Working Security, Travel Security'
+        }
+      }
+    })
+
+    expect(display).toBe('Remote Working Security, Travel Security')
+  })
 })
 

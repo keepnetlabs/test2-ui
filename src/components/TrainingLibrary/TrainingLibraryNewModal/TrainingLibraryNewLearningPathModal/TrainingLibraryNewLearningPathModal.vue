@@ -101,6 +101,9 @@ import { TRAINING_LIBRARY_PAYLOAD_TYPES } from "@/components/TrainingLibrary/Tra
 import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
 import TrainingLibraryNewLearningPathCannotSaveModal from "./TrainingLibraryNewLearningPathCannotSaveModal";
 import { Fragment } from "vue-frag";
+import {
+  appendTrainingCategoryFormData
+} from "@/components/TrainingLibrary/trainingCategoryUtils";
 export default {
   name: "TrainingLibraryNewLearningPathModal",
   components: {
@@ -154,6 +157,8 @@ export default {
             availableForList,
             behaviours,
             category,
+            categoryIds,
+            trainingCategories,
             compliances,
             description,
             name,
@@ -195,6 +200,8 @@ export default {
             refTrainingCourseInformation.setFormData({
               behaviours: behaviours.map((b) => b.behaviourId),
               category,
+              categoryIds,
+              trainingCategories,
               compliances: compliances.map((c) => c.complianceId),
               description,
               name,
@@ -324,7 +331,12 @@ export default {
         payload.append("coverImage", coverImage);
         payload.append("TrainingDetail.name", name);
         payload.append("TrainingDetail.description", description);
-        payload.append("TrainingDetail.category", category);
+        appendTrainingCategoryFormData(
+          payload,
+          "TrainingDetail",
+          category,
+          refTrainingCourseInformation.getCategories
+        );
         payload.append("TrainingDetail.level", level);
         roleIds.forEach((roleId, index) => {
           payload.append(`TrainingDetail.RoleIds[${index}]`, roleId);
@@ -387,7 +399,12 @@ export default {
         payload.append("coverImage", coverImage);
         payload.append("name", name);
         payload.append("description", description);
-        payload.append("category", category);
+        appendTrainingCategoryFormData(
+          payload,
+          "",
+          category,
+          refTrainingCourseInformation.getCategories
+        );
         payload.append("level", level);
         roleIds.forEach((roleId, index) => {
           payload.append(`RoleIds[${index}]`, roleId);

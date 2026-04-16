@@ -1497,9 +1497,20 @@
     cursor: pointer;
     box-sizing: border-box;
 
-    &--active,
-    &--selected {
+    // Only the currently opened sidebar row is blue (training-style).
+    // Rows with applied filters show a blue count badge only; Vuetify list/icon
+    // primary color must be overridden on non-active rows.
+    &--active {
       background-color: #f7fbff;
+      color: #2196f3 !important;
+
+      &.primary--text {
+        color: #2196f3 !important;
+      }
+
+      .v-list-item__title {
+        color: #2196f3 !important;
+      }
 
       .nested-select-filter__group-label,
       .nested-select-filter__group-arrow,
@@ -1509,6 +1520,46 @@
 
       .nested-select-filter__group-label {
         font-weight: 600;
+      }
+
+      .nested-select-filter__group-meta .v-icon {
+        color: #2196f3 !important;
+      }
+    }
+
+    &:not(.nested-select-filter__group--active) {
+      background-color: #fff !important;
+      color: #383b41 !important;
+
+      &.primary--text {
+        color: #383b41 !important;
+      }
+
+      .v-list-item__title {
+        color: #383b41 !important;
+      }
+
+      .nested-select-filter__group-label {
+        color: #383b41 !important;
+        font-weight: 400;
+      }
+
+      .nested-select-filter__group-icon {
+        color: #757575 !important;
+      }
+
+      .nested-select-filter__group-arrow {
+        color: #757575 !important;
+      }
+
+      .nested-select-filter__group-meta .v-icon {
+        color: #757575 !important;
+      }
+
+      // Count pill stays blue; number stays white (not grey text from row reset)
+      .nested-select-filter__group-count {
+        background: #2196f3 !important;
+        color: #fff !important;
       }
     }
   }
@@ -1661,9 +1712,6 @@
     }
   }
 
-  &__group--selected:not(&__group--active) {
-    background-color: #fff;
-  }
 }
 
 .grouped-select-filter__group-label {

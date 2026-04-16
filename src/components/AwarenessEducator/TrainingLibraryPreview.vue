@@ -48,11 +48,23 @@
             <span class="training-library-preview__title">Training Name: </span>
             <span class="training-library-preview__desc">{{ trainingParams.name }}</span>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Category Name: </span>
-            <span class="training-library-preview__desc">{{
-              trainingParams.categoryName || trainingParams.category
-            }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Category Name: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="category in trainingParams.categoryBadges"
+                :key="category"
+                class="training-library-preview__tag"
+                >{{ category }}</span
+              >
+              <span
+                v-if="!trainingParams.categoryBadges || !trainingParams.categoryBadges.length"
+                class="training-library-preview__desc"
+                >{{ trainingParams.categoryName || trainingParams.category }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>

@@ -4,6 +4,7 @@ jest.mock('@/api/awarenessEducator', () => ({
   updateTraining: jest.fn()
 }))
 
+import AwarenessEducatorService from '@/api/awarenessEducator'
 import TrainingLibraryNewTrainingModal from '@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewTrainingModal/TrainingLibraryNewTrainingModal.vue'
 import labels from '@/model/constants/labels'
 
@@ -75,6 +76,62 @@ describe('TrainingLibraryNewTrainingModal.vue', () => {
 
     expect(validateAvailableFor).toHaveBeenCalledWith([])
     expect(ctx.step).toBe(1)
+  })
+
+  it('changeStep sends multi categories in backward compatible draft payload', async () => {
+    AwarenessEducatorService.createDraftTraining.mockResolvedValue({
+      data: { data: { resourceId: 'draft-1' } }
+    })
+
+    const validateAvailableFor = jest.fn()
+    const ctx = {
+      step: 1,
+      trainingId: '',
+      isEdit: false,
+      isActionButtonDisabled: false,
+      $refs: {
+        refTrainingCourseInformation: {
+          formData: {
+            name: 'Security 101',
+            description: 'Description',
+            category: [1, 2],
+            level: '1',
+            duration: '2',
+            roleIds: ['7'],
+            tagNames: [],
+            availableForRequests: [],
+            compliances: [],
+            behaviours: []
+          },
+          getCategories: [
+            { id: 1, text: 'Remote Working Security', value: 'RemoteWorkingSecurity' },
+            { id: 2, text: 'Travel Security', value: 'TravelSecurity' }
+          ],
+          validateForm: jest.fn(() => true),
+          $refs: {
+            refMakeAvailableFor: {
+              validateAvailableFor,
+              isAvailableForValid: true
+            }
+          }
+        },
+        refTrainingContent: {
+          formData: {
+            contentByLanguage: []
+          }
+        }
+      }
+    }
+
+    await TrainingLibraryNewTrainingModal.methods.changeStep.call(ctx, 1)
+
+    expect(AwarenessEducatorService.createDraftTraining).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categoryIds: [1, 2]
+      })
+    )
+    expect(ctx.trainingId).toBe('draft-1')
+    expect(ctx.step).toBe(2)
   })
 })
 
