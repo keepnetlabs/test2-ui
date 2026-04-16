@@ -108,7 +108,7 @@ export default {
       axiosPayload: getDefaultAxiosPayload({ pageSize: 1000 }),
       subdomainRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainBlacklist(v),
+        (v) => Validations.subdomainBlocklist(v),
         (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character'),
         (v) => Validations.startsOrEndsWithHyphen(v)
       ],

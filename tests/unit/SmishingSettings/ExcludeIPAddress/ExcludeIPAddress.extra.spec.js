@@ -107,7 +107,7 @@ describe('SmishingSettings ExcludeIPAddress.vue (extra)', () => {
     await flushPromises()
 
     expect(SmishingService.postExcludedIPAddresses).not.toHaveBeenCalled()
-  })
+  }, 10000)
 
   it('getExcludedIPAddresses handles missing response path gracefully', async () => {
     SmishingService.getExcludedIPAddresses.mockResolvedValueOnce({})

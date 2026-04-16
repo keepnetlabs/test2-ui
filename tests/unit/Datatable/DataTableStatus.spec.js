@@ -435,18 +435,18 @@ describe('DataTableStatus.vue', () => {
     })
   })
 
-  describe('Blacklist Skeleton Loading', () => {
+  describe('Blocklist Skeleton Loading', () => {
     it('shows skeleton when value is loading and badgeColorMap has loading key', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'loading' } },
+        scope: { row: { blocklistStatus: 'loading' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd', clean: '#217124' }
         }
       })
       expect(wrapper.vm.isSkeletonLoading).toBe(true)
-      expect(wrapper.find('.blacklist-skeleton-badge').exists()).toBe(true)
+      expect(wrapper.find('.blocklist-skeleton-badge').exists()).toBe(true)
     })
 
     it('does not show skeleton when value is loading but no badgeColorMap', () => {
@@ -459,22 +459,22 @@ describe('DataTableStatus.vue', () => {
 
     it('does not show skeleton when value is not loading', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'clean' } },
+        scope: { row: { blocklistStatus: 'clean' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd', clean: '#217124' }
         }
       })
       expect(wrapper.vm.isSkeletonLoading).toBe(false)
-      expect(wrapper.find('.blacklist-skeleton-badge').exists()).toBe(false)
+      expect(wrapper.find('.blocklist-skeleton-badge').exists()).toBe(false)
     })
 
     it('shows badge after loading completes', async () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'loading' } },
+        scope: { row: { blocklistStatus: 'loading' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd', clean: '#217124', malicious: '#b83a3a' }
         }
@@ -482,34 +482,34 @@ describe('DataTableStatus.vue', () => {
       expect(wrapper.vm.isSkeletonLoading).toBe(true)
 
       await wrapper.setProps({
-        scope: { row: { blacklistStatus: 'clean' } }
+        scope: { row: { blocklistStatus: 'clean' } }
       })
       expect(wrapper.vm.isSkeletonLoading).toBe(false)
       expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
     })
 
-    it('uses custom badgeColorMap for blacklist statuses', () => {
+    it('uses custom badgeColorMap for blocklist statuses', () => {
       const badgeColorMap = {
         clean: '#217124',
         malicious: '#b83a3a',
         suspicious: '#e67e22'
       }
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'malicious' } },
-        col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+        scope: { row: { blocklistStatus: 'malicious' } },
+        col: { property: 'blocklistStatus', type: 'status', badgeColorMap }
       })
       expect(wrapper.vm.getBadgeColor('malicious')).toBe('#b83a3a')
       expect(wrapper.vm.getBadgeColor('clean')).toBe('#217124')
       expect(wrapper.vm.getBadgeColor('suspicious')).toBe('#e67e22')
     })
 
-    it('shows tooltip from blacklistDetail via tooltipKey', () => {
+    it('shows tooltip from blocklistDetail via tooltipKey', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'malicious', blacklistDetail: 'Blocked by 3 vendors' } },
+        scope: { row: { blocklistStatus: 'malicious', blocklistDetail: 'Blocked by 3 vendors' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
-          tooltipKey: 'blacklistDetail',
+          tooltipKey: 'blocklistDetail',
           badgeColorMap: { malicious: '#b83a3a' }
         }
       })
@@ -519,18 +519,18 @@ describe('DataTableStatus.vue', () => {
 
     it('does not show tooltip when reason is null (clean domain)', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'clean', blacklistDetail: null } },
+        scope: { row: { blocklistStatus: 'clean', blocklistDetail: null } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
-          tooltipKey: 'blacklistDetail',
+          tooltipKey: 'blocklistDetail',
           badgeColorMap: { clean: '#217124' }
         }
       })
       expect(wrapper.vm.shouldRenderTooltip).toBe(false)
     })
 
-    it('renders badge for all blacklist status values', () => {
+    it('renders badge for all blocklist status values', () => {
       const statuses = ['clean', 'malicious', 'suspicious', 'pending', 'error', 'partial']
       const badgeColorMap = {
         clean: '#217124',
@@ -542,8 +542,8 @@ describe('DataTableStatus.vue', () => {
       }
       statuses.forEach((status) => {
         const wrapper = mountComponent({
-          scope: { row: { blacklistStatus: status } },
-          col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+          scope: { row: { blocklistStatus: status } },
+          col: { property: 'blocklistStatus', type: 'status', badgeColorMap }
         })
         expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
         expect(wrapper.vm.getBadgeColor(status)).toBe(badgeColorMap[status])
@@ -552,29 +552,29 @@ describe('DataTableStatus.vue', () => {
 
     it('skeleton has correct CSS class', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'loading' } },
+        scope: { row: { blocklistStatus: 'loading' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd' }
         }
       })
-      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(true)
+      expect(wrapper.find('.blocklist-skeleton-wrapper').exists()).toBe(true)
     })
 
-    it('does not show skeleton for non-blacklist status columns with loading value', () => {
+    it('does not show skeleton for non-blocklist status columns with loading value', () => {
       const wrapper = mountComponent({
         scope: { row: { healthStatus: 'loading' } },
         col: { property: 'healthStatus', type: 'status' }
       })
-      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(false)
+      expect(wrapper.find('.blocklist-skeleton-wrapper').exists()).toBe(false)
     })
 
     it('skeleton is not rendered when value changes from loading to actual status', async () => {
       const badgeColorMap = { loading: '#bdbdbd', clean: '#217124' }
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'clean' } },
-        col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+        scope: { row: { blocklistStatus: 'clean' } },
+        col: { property: 'blocklistStatus', type: 'status', badgeColorMap }
       })
       expect(wrapper.vm.isSkeletonLoading).toBe(false)
       expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
@@ -582,9 +582,9 @@ describe('DataTableStatus.vue', () => {
 
     it('handles loading value case-insensitively', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'Loading' } },
+        scope: { row: { blocklistStatus: 'Loading' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd' }
         }
@@ -594,9 +594,9 @@ describe('DataTableStatus.vue', () => {
 
     it('handles loading value with whitespace', () => {
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: '  loading  ' } },
+        scope: { row: { blocklistStatus: '  loading  ' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd' }
         }
@@ -607,16 +607,16 @@ describe('DataTableStatus.vue', () => {
     it('transitions from skeleton to badge on props change', async () => {
       const badgeColorMap = { loading: '#bdbdbd', malicious: '#b83a3a' }
       const wrapper = mountComponent({
-        scope: { row: { blacklistStatus: 'loading' } },
-        col: { property: 'blacklistStatus', type: 'status', badgeColorMap }
+        scope: { row: { blocklistStatus: 'loading' } },
+        col: { property: 'blocklistStatus', type: 'status', badgeColorMap }
       })
-      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(true)
+      expect(wrapper.find('.blocklist-skeleton-wrapper').exists()).toBe(true)
       expect(wrapper.find('.badge-stub').exists()).toBe(false)
 
       await wrapper.setProps({
-        scope: { row: { blacklistStatus: 'malicious', blacklistDetail: 'Blocked' } }
+        scope: { row: { blocklistStatus: 'malicious', blocklistDetail: 'Blocked' } }
       })
-      expect(wrapper.find('.blacklist-skeleton-wrapper').exists()).toBe(false)
+      expect(wrapper.find('.blocklist-skeleton-wrapper').exists()).toBe(false)
       expect(wrapper.vm.shouldRenderBadge).toBeTruthy()
       expect(wrapper.vm.getBadgeColor('malicious')).toBe('#b83a3a')
     })

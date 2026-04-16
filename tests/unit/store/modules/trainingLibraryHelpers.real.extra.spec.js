@@ -109,7 +109,13 @@ describe('trainingLibraryHelpers store module (real)', () => {
       await trainingLibraryHelpers.actions.callForCategories({ commit, dispatch })
 
       expect(commit).toHaveBeenCalledWith('SET_CATEGORIES', [
-        { text: 'Social Engineering', value: 'SocialEngineering' }
+        {
+          id: '',
+          code: 'SocialEngineering',
+          categoryName: 'Social Engineering',
+          text: 'Social Engineering',
+          value: 'SocialEngineering'
+        }
       ])
       expect(dispatch).toHaveBeenCalledWith(
         'trainingLibrary/setFilterItems',

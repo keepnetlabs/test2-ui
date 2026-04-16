@@ -1,4 +1,4 @@
-import blacklist from './subdomainBlacklist'
+import blocklist from './subdomainBlocklist'
 
 export function hasValue(value) {
   return value ? value : undefined
@@ -264,13 +264,13 @@ export function subdomainDashDot(value, message = 'Invalid Subdomain') {
   return /^[a-z0-9.-]*$/gi.test(value) || message
 }
 
-export function subdomainBlacklist(value) {
+export function subdomainBlocklist(value) {
   value = getValue(value)
-  const subdomainIndex = blacklist.findIndex((domain) =>
+  const subdomainIndex = blocklist.findIndex((domain) =>
     value.toLowerCase().includes(domain.toLowerCase())
   )
   if (subdomainIndex !== -1) {
-    return `"${blacklist[subdomainIndex]}" is a banned word for a subdomain`
+    return `"${blocklist[subdomainIndex]}" is a banned word for a subdomain`
   }
   return true
 }

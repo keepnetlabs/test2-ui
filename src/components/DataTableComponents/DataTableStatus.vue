@@ -1,8 +1,8 @@
 <template>
   <div v-if="col.type === 'status'">
     <v-btn style="display: none;"> </v-btn>
-    <div v-if="isSkeletonLoading" class="blacklist-skeleton-wrapper">
-      <div class="blacklist-skeleton-badge" />
+    <div v-if="isSkeletonLoading" class="blocklist-skeleton-wrapper">
+      <div class="blocklist-skeleton-badge" />
     </div>
     <v-tooltip
       v-else-if="shouldRenderTooltip"
@@ -109,11 +109,11 @@ export default {
 </script>
 
 <style scoped>
-.blacklist-skeleton-wrapper {
+.blocklist-skeleton-wrapper {
   display: flex;
   justify-content: center;
 }
-.blacklist-skeleton-badge {
+.blocklist-skeleton-badge {
   width: 90px;
   height: 24px;
   border-radius: 4px;

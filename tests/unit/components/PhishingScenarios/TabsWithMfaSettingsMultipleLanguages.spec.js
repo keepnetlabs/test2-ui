@@ -1,9 +1,9 @@
 import TabsWithMfaSettingsMultipleLanguages from '@/components/PhishingScenarios/TabsWithMfaSettingsMultipleLanguages.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
-import { getDomainBlacklistStatus } from '@/api/domainBlacklist'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 
-jest.mock('@/api/domainBlacklist', () => ({
-  getDomainBlacklistStatus: jest.fn().mockResolvedValue({ data: {} })
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} })
 }))
 
 describe('TabsWithMfaSettingsMultipleLanguages.vue', () => {
@@ -38,7 +38,7 @@ describe('TabsWithMfaSettingsMultipleLanguages.vue', () => {
     expect(ctx.languagePreview).toBe('en')
   })
 
-  describe('Blacklist Warning', () => {
+  describe('Blocklist Warning', () => {
     const { methods } = TabsWithMfaSettingsMultipleLanguages
 
     beforeEach(() => {
@@ -58,77 +58,77 @@ describe('TabsWithMfaSettingsMultipleLanguages.vue', () => {
       expect(methods.extractDomain(null)).toBeNull()
     })
 
-    it('checkDomainBlacklist calls API with correct domain', () => {
+    it('checkDomainBlocklist calls API with correct domain', () => {
       const ctx = {
         phishingUrl: 'https://www.test.com/login',
-        blacklistWarning: null,
+        blocklistWarning: null,
         extractDomain: methods.extractDomain
       }
-      methods.checkDomainBlacklist.call(ctx)
-      expect(getDomainBlacklistStatus).toHaveBeenCalledWith('test.com')
+      methods.checkDomainBlocklist.call(ctx)
+      expect(getDomainBlocklistStatus).toHaveBeenCalledWith('test.com')
     })
 
-    it('checkDomainBlacklist sets warning for suspicious domain', async () => {
+    it('checkDomainBlocklist sets warning for suspicious domain', async () => {
       const ctx = {
         phishingUrl: 'https://suspicious.com',
-        blacklistWarning: null,
+        blocklistWarning: null,
         extractDomain: methods.extractDomain
       }
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'suspicious', reason: 'Flagged by 2 vendors' }
       })
-      await methods.checkDomainBlacklist.call(ctx)
+      await methods.checkDomainBlocklist.call(ctx)
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toEqual({
+      expect(ctx.blocklistWarning).toEqual({
         status: 'suspicious',
         reason: 'Flagged by 2 vendors'
       })
     })
 
-    it('checkDomainBlacklist skips when phishingUrl is empty', () => {
-      const ctx = { phishingUrl: '', blacklistWarning: null, extractDomain: methods.extractDomain }
-      methods.checkDomainBlacklist.call(ctx)
-      expect(getDomainBlacklistStatus).not.toHaveBeenCalled()
+    it('checkDomainBlocklist skips when phishingUrl is empty', () => {
+      const ctx = { phishingUrl: '', blocklistWarning: null, extractDomain: methods.extractDomain }
+      methods.checkDomainBlocklist.call(ctx)
+      expect(getDomainBlocklistStatus).not.toHaveBeenCalled()
     })
 
-    it('checkDomainBlacklist handles API errors silently', async () => {
+    it('checkDomainBlocklist handles API errors silently', async () => {
       const ctx = {
         phishingUrl: 'https://error.com',
-        blacklistWarning: null,
+        blocklistWarning: null,
         extractDomain: methods.extractDomain
       }
-      getDomainBlacklistStatus.mockRejectedValueOnce(new Error('Network'))
-      await methods.checkDomainBlacklist.call(ctx)
+      getDomainBlocklistStatus.mockRejectedValueOnce(new Error('Network'))
+      await methods.checkDomainBlocklist.call(ctx)
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.blocklistWarning).toBeNull()
     })
 
-    it('checkDomainBlacklist sets warning for malicious domain', async () => {
+    it('checkDomainBlocklist sets warning for malicious domain', async () => {
       const ctx = {
         phishingUrl: 'https://malicious.com',
-        blacklistWarning: null,
+        blocklistWarning: null,
         extractDomain: methods.extractDomain
       }
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'malicious', reason: 'Blocked by browsers' }
       })
-      await methods.checkDomainBlacklist.call(ctx)
+      await methods.checkDomainBlocklist.call(ctx)
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning.status).toBe('malicious')
+      expect(ctx.blocklistWarning.status).toBe('malicious')
     })
 
-    it('checkDomainBlacklist ignores clean status', async () => {
+    it('checkDomainBlocklist ignores clean status', async () => {
       const ctx = {
         phishingUrl: 'https://clean.com',
-        blacklistWarning: null,
+        blocklistWarning: null,
         extractDomain: methods.extractDomain
       }
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'clean', reason: null }
       })
-      await methods.checkDomainBlacklist.call(ctx)
+      await methods.checkDomainBlocklist.call(ctx)
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.blocklistWarning).toBeNull()
     })
 
     it('extractDomain handles domain with hyphens', () => {
@@ -141,12 +141,12 @@ describe('TabsWithMfaSettingsMultipleLanguages.vue', () => {
 
     it('phishingUrl watch resets warning and rechecks', () => {
       const ctx = {
-        blacklistWarning: { status: 'malicious', reason: 'old' },
-        checkDomainBlacklist: jest.fn()
+        blocklistWarning: { status: 'malicious', reason: 'old' },
+        checkDomainBlocklist: jest.fn()
       }
       TabsWithMfaSettingsMultipleLanguages.watch.phishingUrl.call(ctx)
-      expect(ctx.blacklistWarning).toBeNull()
-      expect(ctx.checkDomainBlacklist).toHaveBeenCalled()
+      expect(ctx.blocklistWarning).toBeNull()
+      expect(ctx.checkDomainBlocklist).toHaveBeenCalled()
     })
   })
 })
