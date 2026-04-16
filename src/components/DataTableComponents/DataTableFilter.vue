@@ -48,7 +48,9 @@
     <div
       :class="[
         'filter__body-container',
-        { 'filter__body-container--nested-select': filterableType === 'nestedSelect' }
+        {
+          'filter__body-container--nested-select': filterableType === 'nestedSelect'
+        }
       ]"
     >
       <template v-if="filterableType === 'text'">
@@ -216,6 +218,37 @@
           :label="item.text"
         >
         </v-checkbox>
+      </template>
+      <template v-if="filterableType === 'groupedSelect'">
+        <div>
+          <v-text-field
+            v-if="isShowSearchTextField"
+            placeholder="Search"
+            class="filter__text"
+            outlined
+            dense
+            v-model="filterValue"
+            height="40"
+            style="margin-top: 1px;"
+          ></v-text-field>
+        </div>
+        <template v-for="(group, groupIndex) in groupedSearchGroups">
+          <div :key="group.key">
+            <div class="grouped-select-filter__group-label mb-1">
+              {{ group.label }}
+            </div>
+            <v-checkbox
+              v-for="item in group.items"
+              v-model="filterChecked"
+              :key="`${group.key}-${item.value}`"
+              color="#2196f3"
+              :value="item.value"
+              :label="item.text"
+            >
+            </v-checkbox>
+            <v-divider v-if="groupIndex !== groupedSearchGroups.length - 1" class="mb-2" />
+          </div>
+        </template>
       </template>
       <template v-if="filterableType === 'nestedSelect'">
         <div class="nested-select-filter">
@@ -508,7 +541,7 @@ export default {
         this.value.selectValue || this.defaultDate ? this.value.selectValue : '<='
     }
     let filterChecked = []
-    if (this.filterableType === 'select') {
+    if (['select', 'groupedSelect'].includes(this.filterableType)) {
       filterChecked = this.value.selectValue === '' ? [] : this.value.selectValue.split(',')
     }
     const filteredSingleValue =
@@ -532,7 +565,9 @@ export default {
       isFilterActive:
         this.filterableType === 'nestedSelect'
           ? this.hasAnyNestedSelection(nestedFilterSelections)
-          : ['select', 'singleSelect', 'compositeSelect'].includes(this.filterableType)
+          : ['select', 'groupedSelect', 'singleSelect', 'compositeSelect'].includes(
+              this.filterableType
+            )
           ? !!this.value.selectValue
           : !!this.value.textValue,
       activeNestedGroup: '',
@@ -1045,7 +1080,7 @@ export default {
           this.emitValue(this.filteredDateValue, this.filteredSelectValueDate, this.fieldName)
         }
       }
-      if (this.filterableType === 'select') {
+      if (['select', 'groupedSelect'].includes(this.filterableType)) {
         const Value = this.filterChecked.toString()
         const Operator = 'Include'
         this.$emit('handleFilterColumn', {
@@ -1090,10 +1125,43 @@ export default {
         : 'data-table-filter__menu-content'
     },
     getMenuMaxHeight() {
-      return this.filterableType === 'nestedSelect' ? 420 : 260
+      return ['nestedSelect', 'groupedSelect'].includes(this.filterableType) ? 420 : 260
     },
     isShowSearchTextField() {
-      return this.showSelectSearch && (this.filterValue || this.searchInItems.length > 4)
+      if (this.filterableType === 'groupedSelect') {
+        return true
+      }
+      return this.showSelectSearch && (this.filterValue || this.selectSearchableItemCount > 4)
+    },
+    groupedSelectGroups() {
+      if (this.filterableType !== 'groupedSelect') return []
+      return (this.filterableConfig?.groups || []).map((group) => ({
+        ...group,
+        items: (group.items || []).map((item) =>
+          typeof item === 'string' ? { text: item, value: item } : item
+        )
+      }))
+    },
+    groupedSearchGroups() {
+      if (this.filterableType !== 'groupedSelect') return []
+      const searchValue = this.filterValue.toLowerCase()
+      return this.groupedSelectGroups
+        .map((group) => {
+          const items = searchValue
+            ? group.items.filter((item) => item.text.toLowerCase().includes(searchValue))
+            : group.items
+          return {
+            ...group,
+            items
+          }
+        })
+        .filter((group) => group.items.length > 0)
+    },
+    selectSearchableItemCount() {
+      if (this.filterableType === 'groupedSelect') {
+        return this.groupedSelectGroups.reduce((acc, group) => acc + group.items.length, 0)
+      }
+      return this.searchInItems.length
     },
     nestedFilterGroups() {
       return this.getNormalizedNestedGroups()
@@ -1117,6 +1185,9 @@ export default {
     getWidth() {
       if (this.filterableType === 'nestedSelect') {
         return '606px'
+      }
+      if (this.filterableType === 'groupedSelect') {
+        return '360px'
       }
       return this.filteredSelectValueDate === 'between' ? '450px' : '260px'
     },
@@ -1147,6 +1218,9 @@ export default {
         return this.checkTextFilterButtonIsDisabled
       }
       if (this.filterableType === 'select') {
+        return !this?.filterChecked?.length
+      }
+      if (this.filterableType === 'groupedSelect') {
         return !this?.filterChecked?.length
       }
       if (this.filterableType === 'nestedSelect') {

@@ -1,3 +1,4 @@
+import { shallowMount } from '@vue/test-utils'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate.vue'
 
 describe('EmailTemplate.vue', () => {
@@ -61,5 +62,37 @@ describe('EmailTemplate.vue', () => {
     EmailTemplate.methods.changeGrapesModalStatus.call(ctx)
     expect(ctx.showGrapesModal).toBe(false)
     expect(ctx.$emit).toHaveBeenCalledWith('template-edit', false)
+  })
+
+  it('shows subject but hides sender fields for teams notification templates', () => {
+    const wrapper = shallowMount(EmailTemplate, {
+      propsData: {
+        template: '<div>Body</div>',
+        subject: 'Teams subject',
+        hideNotificationTemplateSenderFields: true,
+        isNotificationTemplate: true,
+        isNotificationEnrollment: true
+      },
+      mocks: {
+        $store: {
+          getters: {
+            'whitelabel/getEmailTemplateLogoUrl': '',
+            'dashboard/isPopupOpened': false,
+            'permissions/getEmailTemplatesAIGenerationOptionsPermissions': false
+          },
+          state: {
+            auth: {},
+            dashboard: {},
+            whitelabel: {}
+          },
+          dispatch: jest.fn()
+        }
+      }
+    })
+
+    expect(wrapper.find('#input--notification-template-subject').exists()).toBe(true)
+    expect(wrapper.find('#input--notification-template-sender-name').exists()).toBe(false)
+    expect(wrapper.find('#input--notification-template-from-email').exists()).toBe(false)
+    expect(wrapper.find('#input--threat-sharing-incident-share-email').exists()).toBe(false)
   })
 })

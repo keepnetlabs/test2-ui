@@ -182,6 +182,10 @@ export default {
       showNotificationTemplatePreviewDialog: false,
       isDuplicate: false,
       categories: [],
+      templateTypeItems: [],
+      templateTypeFilterConfig: {
+        groups: []
+      },
       languageItems: [],
       preferredLanguageTypes: [],
       companyLanguageTypeResourceId: '',
@@ -222,14 +226,17 @@ export default {
             show: true,
             type: 'text',
             width: 180,
-            filterableType: 'select',
+            filterableType: 'groupedSelect',
             filterableItems: [],
+            filterableConfig: {
+              groups: []
+            },
             filterableCustomFieldName: 'TypeResourceId'
           },
           {
             property: PROPERTY_STORE.SUBJECT,
             align: 'left',
-            label: labels.EmailSubject,
+            label: 'Subject',
             fixed: false,
             sortable: true,
             show: true,
@@ -484,6 +491,53 @@ export default {
     callForTemplateTypes() {
       return getTemplateTypes()
     },
+    getTemplateTypeFilterGroupLabel(templateType = {}) {
+      const groupName =
+        templateType.categoryName ||
+        templateType.groupName ||
+        templateType.templateCategoryName ||
+        ''
+      if (groupName) {
+        if (groupName.toLowerCase().includes('team')) return 'Microsoft Teams'
+        if (groupName.toLowerCase().includes('email')) return 'Email'
+        return groupName
+      }
+      return templateType.name?.startsWith('Teams ') ? 'Microsoft Teams' : 'Email'
+    },
+    getTemplateTypeFilterConfig(templateTypes = []) {
+      const groupedTemplateTypes = templateTypes.reduce((acc, templateType) => {
+        const groupLabel = this.getTemplateTypeFilterGroupLabel(templateType)
+        if (!acc[groupLabel]) {
+          acc[groupLabel] = []
+        }
+        acc[groupLabel].push({
+          text: templateType.name,
+          value: templateType.resourceId
+        })
+        return acc
+      }, {})
+
+      const orderedGroupLabels = Object.keys(groupedTemplateTypes).sort((first, second) => {
+        const labelOrder = ['Email', 'Microsoft Teams']
+        const firstIndex = labelOrder.indexOf(first)
+        const secondIndex = labelOrder.indexOf(second)
+
+        if (firstIndex === -1 && secondIndex === -1) {
+          return first.localeCompare(second)
+        }
+        if (firstIndex === -1) return 1
+        if (secondIndex === -1) return -1
+        return firstIndex - secondIndex
+      })
+
+      return {
+        groups: orderedGroupLabels.map((groupLabel) => ({
+          key: groupLabel.toLowerCase().replace(/\s+/g, '-'),
+          label: groupLabel,
+          items: groupedTemplateTypes[groupLabel]
+        }))
+      }
+    },
     callForLanguages() {
       return LookupLocalStorage.getSingle(21)
     },
@@ -525,6 +579,7 @@ export default {
           this.templateTypeItems = templateTypesData.map((type) => {
             return { text: type.name, value: type.resourceId }
           })
+          this.templateTypeFilterConfig = this.getTemplateTypeFilterConfig(templateTypesData)
           this.languageItems =
             languages?.map((language) => ({
               text: language.isoFriendlyName || language.name,
@@ -550,7 +605,8 @@ export default {
           })
           this.$set(this.tableOptions.columns, 2, {
             ...this.tableOptions.columns[2],
-            filterableItems: this.templateTypeItems
+            filterableItems: this.templateTypeItems,
+            filterableConfig: this.templateTypeFilterConfig
           })
           this.$set(this.tableOptions.columns, 4, {
             ...this.tableOptions.columns[4],

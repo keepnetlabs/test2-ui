@@ -39,29 +39,47 @@
           />
         </form-group>
         <form-group title="Template Type" has-hint>
-          <k-select
-            v-bind="commonRules"
-            v-model.trim="formValues.emailTemplateCategoryResourceId"
-            id="input--notification-template-type"
-            :items="categoryItems"
-            class="new-integration__select"
-            no-data-text="No template type available"
-            dense
-            :disabled="getIsTemplateTypeDisabled"
-            outlined
-            :placeholder="
-              formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'
-            "
-          />
+          <div
+            style="display: grid; grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.7fr); gap: 16px;"
+          >
+            <k-select
+              v-bind="templateTypeGroupProps"
+              v-model.trim="selectedTemplateTypeGroup"
+              id="input--notification-template-type-group"
+              :items="templateTypeGroupItems"
+              class="new-integration__select"
+              no-data-text="No template type group available"
+              dense
+              :disabled="getIsTemplateTypeDisabled"
+              outlined
+              placeholder="Select option"
+              @input="handleTemplateTypeGroupChange"
+            />
+            <k-select
+              v-bind="commonRules"
+              v-model.trim="formValues.emailTemplateCategoryResourceId"
+              id="input--notification-template-type"
+              :items="filteredCategoryItems"
+              class="new-integration__select"
+              no-data-text="No template type available"
+              dense
+              :disabled="getIsTemplateTypeOptionDisabled"
+              outlined
+              :placeholder="
+                formValues.emailTemplateCategoryResourceId ? '' : 'Select option'
+              "
+            />
+          </div>
         </form-group>
         <form-group
+          v-if="shouldRenderEmailDeliveryField"
           :title="labels.EmailDelivery"
           sub-title="Select email delivery configuration for this Notification Template"
           has-hint
         >
           <KSelect
             v-if="isAwarenessEducatorTemplateSelected"
-            v-bind="emailDeliveryProps"
+            v-bind="getEmailDeliveryProps"
             v-model.trim="emailDelivery"
             id="input--notification-template-email-delivery-awareness"
             class="new-integration__select"
@@ -72,6 +90,7 @@
             no-data-text="No Email Delivery configuration available"
             return-object
             :items="emailDeliveryItems"
+            :disabled="isTeamsNotificationTemplateSelected"
             :slots="{ item: true, selection: false }"
             @change="handleChangeEmailDelivery"
           >
@@ -88,7 +107,7 @@
           </KSelect>
           <KSelect
             v-else
-            v-bind="emailDeliveryProps"
+            v-bind="getEmailDeliveryProps"
             v-model.trim="formValues.smtpSettingResourceId"
             id="input--notification-template-email-delivery-smtp"
             class="new-integration__select"
@@ -97,8 +116,22 @@
             placeholder="Select configuration"
             no-data-text="No Email Delivery configuration available"
             :items="smtpItems"
+            :disabled="isTeamsNotificationTemplateSelected"
           />
         </form-group>
+        <div
+          v-if="canRenderTeamsNotificationAlertBox"
+          class="max-w-554 mb-4"
+          style="margin-top: -4px;"
+        >
+          <AlertBox
+            class="bg-aqua-light alert-box--teams-notification-template"
+            icon-color="#2196F3"
+            icon-name="mdi-information"
+            text="Email Delivery, From Name, From Email, and CC fields are not available for Microsoft Teams templates."
+            :slots="{ primaryAction: false, secondaryAction: false }"
+          />
+        </div>
         <FormGroup v-if="canRenderAlertBox">
           <AlertBox
             style="margin-top: -20px;"
@@ -145,6 +178,7 @@
             :is-notification-template="true"
             :is-notification-enrollment="isSelectedNotificationEnrollment"
             :cc-addresses.sync="getSelectedLanguagePayload.ccAddresses"
+            :hide-notification-template-sender-fields="isTeamsNotificationTemplateSelected"
             @handleEditHtmlTemplate="handleEditHtmlTemplate"
             @handleInitialTemplate="handleInitialTemplate"
             @on-save-template="handleSaveTemplate"
@@ -186,6 +220,9 @@
                 :is-from-address-valid="isFromAddressFieldValid"
                 :company-preferred-language-id="getCompanyPreferredLanguageId"
                 :is-notification-template="true"
+                :hide-notification-template-sender-fields="
+                  isTeamsNotificationTemplateSelected
+                "
                 @input="handleSelectedLanguagesChange"
                 @on-active-language-change="handleActiveLanguageChange"
                 @on-generate-with-ai="handleGenerateWithAI"
@@ -232,7 +269,8 @@ import InputTag from "@/components/Common/Inputs/InputTag";
 import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading";
 import {
   scrollToEmailTemplateContent,
-  MERGED_TEXTS_MAP
+  MERGED_TEXTS_MAP,
+  isTeamsNotificationTemplateName
 } from "@/components/Company Settings/utils";
 import { getDefaultEmailDeliverySetting } from "@/api/phishingsimulator";
 import { EMAIL_DELIVERY_TYPES } from "@/components/CampaignManager/AdvancedSettings/utils";
@@ -240,6 +278,7 @@ import { EMAIL_TEMPLATE_DETAIL_ACTION_TYPES } from "@/components/PhishingScenari
 import { mapGetters } from "vuex";
 import AlertBox from "@/components/AlertBox";
 import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
+
 export default {
   name: "NewNotificationTemplate",
   components: {
@@ -309,6 +348,11 @@ export default {
         persistentHint: true,
         rules: [(v) => Validations.required(v, labels.Required)]
       },
+      templateTypeGroupProps: {
+        hint: "*Required",
+        persistentHint: true,
+        rules: [(v) => Validations.required(v, labels.Required)]
+      },
       emailDelivery: null,
       initialFormValues: {},
       formValues: {
@@ -333,6 +377,11 @@ export default {
       activeLanguage: "",
       initialDisabledLanguageIds: [],
       groupedLanguageItems: [],
+      selectedTemplateTypeGroup: "",
+      templateTypeGroupItems: [
+        { text: "Email", value: "email" },
+        { text: "Microsoft Teams", value: "microsoft-teams" }
+      ],
       categoryItems: [],
       isEverythingLocalized: true,
       timeoutId: null,
@@ -385,13 +434,44 @@ export default {
         `First Use Company's DEC config then Fallback to default SMTP`
       );
     },
-    isAwarenessEducatorTemplateSelected() {
-      if (!this.formValues.emailTemplateCategoryResourceId) return false;
-      const selectedTemplateCategoryName =
+    canRenderTeamsNotificationAlertBox() {
+      return this.isTeamsNotificationTemplateSelected;
+    },
+    selectedTemplateCategoryName() {
+      return (
         this.categoryItems?.find?.(
           (template) =>
             template.value === this.formValues.emailTemplateCategoryResourceId
-        )?.text || "";
+        )?.text || ""
+      );
+    },
+    isTeamsNotificationTemplateSelected() {
+      return isTeamsNotificationTemplateName(this.selectedTemplateCategoryName);
+    },
+    filteredCategoryItems() {
+      if (!this.selectedTemplateTypeGroup) return [];
+      return this.categoryItems.filter((item) => {
+        return (
+          this.getTemplateTypeGroupValue(item.text) === this.selectedTemplateTypeGroup
+        );
+      });
+    },
+    getEmailDeliveryProps() {
+      return {
+        ...this.emailDeliveryProps,
+        rules: this.isTeamsNotificationTemplateSelected
+          ? []
+          : this.emailDeliveryProps.rules
+      };
+    },
+    getIsTemplateTypeOptionDisabled() {
+      return this.getIsTemplateTypeDisabled || !this.selectedTemplateTypeGroup;
+    },
+    shouldRenderEmailDeliveryField() {
+      return !this.isTeamsNotificationTemplateSelected;
+    },
+    isAwarenessEducatorTemplateSelected() {
+      if (!this.formValues.emailTemplateCategoryResourceId) return false;
       return [
         "Training Enrollment",
         "Survey Enrollment",
@@ -409,7 +489,7 @@ export default {
         "Investigation Expired",
         "Investigation Finished",
         "Security Growth Login"
-      ].includes(selectedTemplateCategoryName);
+      ].includes(this.selectedTemplateCategoryName);
     },
     getEnrollmentTemplateResourceId() {
       return this.categoryItems?.find(
@@ -553,6 +633,14 @@ export default {
     }
   },
   watch: {
+    isTeamsNotificationTemplateSelected(isTeamsNotificationTemplateSelected) {
+      if (isTeamsNotificationTemplateSelected) {
+        this.clearEmailDeliverySelection();
+        this.clearTeamsNotificationSenderFields();
+      } else {
+        this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP;
+      }
+    },
     languageItems: {
       immediate: true,
       handler(val) {
@@ -562,6 +650,11 @@ export default {
       }
     },
     "formValues.emailTemplateCategoryResourceId"(resourceId) {
+      this.syncSelectedTemplateTypeGroup(resourceId);
+      if (!resourceId) {
+        this.resetTemplateTypeDependentState();
+        return;
+      }
       this.handleCategoryChange(resourceId);
     },
     selectedLanguages(val) {
@@ -607,6 +700,10 @@ export default {
       ([formValues, emailDeliveryItems]) => {
         if (!formValues || !emailDeliveryItems.length || !this.selectedItem)
           return;
+        if (this.isTeamsNotificationTemplateSelected) {
+          this.clearEmailDeliverySelection();
+          return;
+        }
         if (formValues.emailDeliverySettingType === EMAIL_DELIVERY_TYPES.SMTP) {
           const selectedSMTPSettingIndex = emailDeliveryItems.findIndex(
             (item) => item.resourceId === formValues.smtpSettingResourceId
@@ -628,6 +725,68 @@ export default {
     );
   },
   methods: {
+    getTemplateTypeGroupValue(categoryName = "") {
+      return isTeamsNotificationTemplateName(categoryName)
+        ? "microsoft-teams"
+        : "email";
+    },
+    syncSelectedTemplateTypeGroup(resourceId = "") {
+      if (!resourceId) return;
+      const selectedCategory = this.categoryItems.find(
+        (item) => item.value === resourceId
+      );
+      if (!selectedCategory) return;
+      this.selectedTemplateTypeGroup = this.getTemplateTypeGroupValue(
+        selectedCategory.text
+      );
+    },
+    resetTemplateTypeDependentState() {
+      this.isSelectedNotificationEnrollment = false;
+      this.activeBlockManagerComponents = {};
+      this.formValues.template = "";
+      this.initialFormValues.template = "";
+      this.languagesPayload.forEach((payload) => {
+        payload.template = "";
+        payload.isTranslated = false;
+      });
+      if (this.selectedLanguagePayloadItemBeforeSave) {
+        this.selectedLanguagePayloadItemBeforeSave.template = "";
+      }
+    },
+    handleTemplateTypeGroupChange(groupValue = "") {
+      this.selectedTemplateTypeGroup = groupValue;
+      const selectedCategory = this.categoryItems.find(
+        (item) => item.value === this.formValues.emailTemplateCategoryResourceId
+      );
+      if (
+        selectedCategory &&
+        this.getTemplateTypeGroupValue(selectedCategory.text) === groupValue
+      ) {
+        return;
+      }
+      this.formValues.emailTemplateCategoryResourceId = "";
+    },
+    clearEmailDeliverySelection() {
+      this.emailDelivery = null;
+      this.formValues.emailDeliverySettingType = "";
+      this.formValues.smtpSettingResourceId = "";
+      this.formValues.directEmailSettingResourceId = "";
+    },
+    clearTeamsNotificationSenderFields() {
+      this.formValues.fromName = "";
+      this.formValues.fromAddress = "";
+      this.formValues.ccAddresses = [];
+      this.languagesPayload.forEach((payload) => {
+        payload.fromName = "";
+        payload.fromAddress = "";
+        payload.ccAddresses = [];
+      });
+      if (this.selectedLanguagePayloadItemBeforeSave) {
+        this.selectedLanguagePayloadItemBeforeSave.fromName = "";
+        this.selectedLanguagePayloadItemBeforeSave.fromAddress = "";
+        this.selectedLanguagePayloadItemBeforeSave.ccAddresses = [];
+      }
+    },
     callForSMTPSettings() {
       searchSmtpSettings(this.smtpAxiosPayload).then((response) => {
         const { data: { data: smtpSettingsData = {} } = {} } = response;
@@ -668,6 +827,14 @@ export default {
       });
     },
     handleChangeEmailDelivery(delivery = {}) {
+      if (
+        this.isTeamsNotificationTemplateSelected ||
+        !delivery ||
+        !delivery.resourceId
+      ) {
+        this.clearEmailDeliverySelection();
+        return;
+      }
       if (delivery.type === EMAIL_DELIVERY_TYPES.SMTP) {
         this.formValues.smtpSettingResourceId = delivery.resourceId;
         this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP;
@@ -782,6 +949,9 @@ export default {
             template: category?.template
           };
         });
+        this.syncSelectedTemplateTypeGroup(
+          this.formValues.emailTemplateCategoryResourceId
+        );
       });
     },
     setLanguageItems() {
@@ -911,21 +1081,28 @@ export default {
         (item) => item.value === resourceId
       );
       if (categoryIndex !== -1) {
+        const selectedCategoryName = this.categoryItems[categoryIndex].text;
+        if (isTeamsNotificationTemplateName(selectedCategoryName)) {
+          this.clearEmailDeliverySelection();
+        }
         this.isSelectedNotificationEnrollment = this.isNotificationEnrollmentCategory(
-          this.categoryItems[categoryIndex].text
+          selectedCategoryName
         );
         if (!this.isSelectedNotificationEnrollment)
           this.formValues.ccAddresses = [];
         const newTemplate = this.categoryItems[categoryIndex].template;
-        this.formValues.template = newTemplate;
-        // initialFormValues'a da set et (handleSelectedLanguagesChange için gerekli)
-        this.initialFormValues.template = newTemplate;
+        const existingTemplate = this.getSelectedLanguagePayload?.template;
+        const templateForLocalize = newTemplate || existingTemplate;
+        if (newTemplate) {
+          this.formValues.template = newTemplate;
+          this.initialFormValues.template = newTemplate;
+        }
         // Reset isTranslated flag for all languages when category changes
         this.languagesPayload.forEach((payload) => {
           payload.isTranslated = false;
         });
         // Update active language's template in languagesPayload if exists
-        if (this.activeLanguage && this.languagesPayload.length > 0) {
+        if (newTemplate && this.activeLanguage && this.languagesPayload.length > 0) {
           const activePayload = this.languagesPayload.find(
             (item) => item.languageTypeResourceId === this.activeLanguage
           );
@@ -938,11 +1115,11 @@ export default {
         }
 
         // Auto-localize for selected languages when template type changes
-        // Only if not in edit mode, there are selected languages, and company language is NOT English
+        // Only if not in edit mode, there are selected languages, and a template exists
         if (
           !this.selectedItem &&
           this.selectedLanguages.length > 0 &&
-          newTemplate
+          templateForLocalize
         ) {
           const companyLanguage = this.languageItems.find(
             (lang) => lang.value === this.companyLanguageTypeResourceId
@@ -950,9 +1127,13 @@ export default {
           const isEnglish = companyLanguage?.text
             ?.toLowerCase()
             .includes("english");
-          // Eğer sadece bir dil seçiliyse VE İngilizce ise, translate etme
-          // Birden fazla dil varsa, İngilizce olsa bile translate et
-          if (isEnglish && this.selectedLanguages.length === 1) {
+          const hasOnlyCompanyLanguageSelected =
+            this.selectedLanguages.length === 1 &&
+            this.selectedLanguages[0]?.value ===
+              this.companyLanguageTypeResourceId;
+          // Sadece company preferred language seçiliyse translate etme.
+          // Tek seçili dil farklıysa yine localization çalışmalı.
+          if (isEnglish && hasOnlyCompanyLanguageSelected) {
             return;
           }
           // Set states immediately to disable template type
@@ -965,7 +1146,7 @@ export default {
                 (lang) => lang.value === payload.languageTypeResourceId
               );
               if (isSelected) {
-                payload.template = newTemplate;
+                if (newTemplate) payload.template = newTemplate;
                 payload.isTranslated = false;
               }
             });
@@ -1078,6 +1259,15 @@ export default {
           ),
           languages: languagesPayload
         };
+        if (this.isTeamsNotificationTemplateSelected) {
+          delete payload.emailDeliverySettingType;
+          delete payload.smtpSettingResourceId;
+          delete payload.directEmailSettingResourceId;
+          delete payload.fromName;
+          delete payload.fromAddress;
+          delete payload.ccAddresses;
+          payload.languages = payload.languages.map(({ fromName, fromAddress, ccAddresses, ...rest }) => rest);
+        }
 
         // Edit modundaysa detailActionType'ları set et
         if (
@@ -1254,16 +1444,21 @@ export default {
     },
     setEmptyLanguagesPayload(languages = null) {
       const languagesToProcess = languages || this.languagesPayload;
-      const preferredLanguagePayload = this.getPreferredLanguagePayload();
+      const preferredLanguagePayload = this.getPreferredLanguagePayload() || {};
       return languagesToProcess.map((item) => {
         return {
           ...item,
-          fromName: item.fromName || preferredLanguagePayload.fromName,
-          fromAddress: item.fromAddress || preferredLanguagePayload.fromAddress,
+          fromName: this.isTeamsNotificationTemplateSelected
+            ? ""
+            : item.fromName || preferredLanguagePayload.fromName || "",
+          fromAddress: this.isTeamsNotificationTemplateSelected
+            ? ""
+            : item.fromAddress || preferredLanguagePayload.fromAddress || "",
           subject: item.subject || preferredLanguagePayload.subject,
           template: item.template || preferredLanguagePayload.template,
-          ccAddresses:
-            item.ccAddresses && item.ccAddresses.length
+          ccAddresses: this.isTeamsNotificationTemplateSelected
+            ? []
+            : item.ccAddresses && item.ccAddresses.length
               ? item.ccAddresses
               : preferredLanguagePayload.ccAddresses || []
         };

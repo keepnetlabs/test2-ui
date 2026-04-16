@@ -687,6 +687,38 @@ describe('InputLanguagesSettings.vue', () => {
     })
   })
 
+  describe('localize readiness', () => {
+    it('allows notification template localization with subject only when sender fields are hidden', () => {
+      expect(
+        InputLanguagesSettings.computed.isLocalizeReady.call({
+          isLandingPage: false,
+          isNotificationTemplate: true,
+          hideNotificationTemplateSenderFields: true,
+          subject: 'Teams Subject',
+          fromName: '',
+          fromAddress: '',
+          isFromAddressValid: false,
+          isTemplateTypeSelected: true
+        })
+      ).toBe(true)
+    })
+
+    it('still requires sender fields when notification sender fields are visible', () => {
+      expect(
+        InputLanguagesSettings.computed.isLocalizeReady.call({
+          isLandingPage: false,
+          isNotificationTemplate: true,
+          hideNotificationTemplateSenderFields: false,
+          subject: 'Email Subject',
+          fromName: '',
+          fromAddress: '',
+          isFromAddressValid: false,
+          isTemplateTypeSelected: true
+        })
+      ).toBe(false)
+    })
+  })
+
   describe('subject field validation', () => {
     it('should accept very long subject lines', () => {
       const longSubject = 'S'.repeat(200)

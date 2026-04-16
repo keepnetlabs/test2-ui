@@ -31,7 +31,8 @@ describe('DataTableFilter.vue', () => {
         VIcon: true,
         VList: true,
         VListItem: true,
-        VListItemTitle: true
+        VListItemTitle: true,
+        VDivider: true
       },
       mocks: {
         $store: {
@@ -119,12 +120,68 @@ describe('DataTableFilter.vue', () => {
     ])
   })
 
+  it('groups groupedSelect items and filters them by search text', async () => {
+    const wrapper = mountComponent({
+      filterableType: 'groupedSelect',
+      filterableConfig: {
+        groups: [
+          {
+            key: 'email',
+            label: 'Email',
+            items: [
+              { text: 'Training Enrollment', value: 'email-1' },
+              { text: 'Survey Enrollment', value: 'email-2' }
+            ]
+          },
+          {
+            key: 'microsoft-teams',
+            label: 'Microsoft Teams',
+            items: [{ text: 'Teams Survey Enrollment Notification', value: 'teams-1' }]
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.vm.groupedSearchGroups).toEqual([
+      {
+        key: 'email',
+        label: 'Email',
+        items: [
+          { text: 'Training Enrollment', value: 'email-1' },
+          { text: 'Survey Enrollment', value: 'email-2' }
+        ]
+      },
+      {
+        key: 'microsoft-teams',
+        label: 'Microsoft Teams',
+        items: [{ text: 'Teams Survey Enrollment Notification', value: 'teams-1' }]
+      }
+    ])
+
+    wrapper.vm.filterValue = 'teams'
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.groupedSearchGroups).toEqual([
+      {
+        key: 'microsoft-teams',
+        label: 'Microsoft Teams',
+        items: [{ text: 'Teams Survey Enrollment Notification', value: 'teams-1' }]
+      }
+    ])
+  })
+
   it('calculates getFilterButtonDisabled for select/singleSelect/numeric/date', async () => {
     const selectWrapper = mountComponent({ filterableType: 'select' })
     selectWrapper.vm.filterChecked = []
     expect(selectWrapper.vm.getFilterButtonDisabled).toBe(true)
     selectWrapper.vm.filterChecked = ['x']
     expect(selectWrapper.vm.getFilterButtonDisabled).toBe(false)
+
+    const groupedSelectWrapper = mountComponent({ filterableType: 'groupedSelect' })
+    groupedSelectWrapper.vm.filterChecked = []
+    expect(groupedSelectWrapper.vm.getFilterButtonDisabled).toBe(true)
+    groupedSelectWrapper.vm.filterChecked = ['x']
+    expect(groupedSelectWrapper.vm.getFilterButtonDisabled).toBe(false)
 
     const singleWrapper = mountComponent({ filterableType: 'singleSelect' })
     singleWrapper.vm.filteredSingleValue = null
@@ -263,6 +320,41 @@ describe('DataTableFilter.vue', () => {
     expect(wrapper.emitted('input')[0][0]).toEqual({
       textValue: 'ab',
       selectValue: 'a,b',
+      fieldName: 'companyName'
+    })
+  })
+
+  it('handleFilter emits include payload for groupedSelect filter', () => {
+    const wrapper = mountComponent({
+      filterableType: 'groupedSelect',
+      filterableConfig: {
+        groups: [
+          {
+            key: 'email',
+            label: 'Email',
+            items: [{ text: 'Training Enrollment', value: 'email-1' }]
+          },
+          {
+            key: 'microsoft-teams',
+            label: 'Microsoft Teams',
+            items: [{ text: 'Teams Training Enrollment Notification', value: 'teams-1' }]
+          }
+        ]
+      }
+    })
+    wrapper.vm.filterChecked = ['email-1', 'teams-1']
+    wrapper.vm.filterValue = 'teams'
+
+    wrapper.vm.handleFilter()
+
+    expect(wrapper.emitted('handleFilterColumn')[0][0]).toEqual({
+      Value: 'email-1,teams-1',
+      FieldName: 'companyName',
+      Operator: 'Include'
+    })
+    expect(wrapper.emitted('input')[0][0]).toEqual({
+      textValue: 'teams',
+      selectValue: 'email-1,teams-1',
       fieldName: 'companyName'
     })
   })
