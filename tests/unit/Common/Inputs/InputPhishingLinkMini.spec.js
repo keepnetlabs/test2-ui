@@ -1,12 +1,12 @@
 import InputPhishingLinkMini from '@/components/Common/Inputs/InputPhishingLinkMini.vue'
-import { getDomainBlacklistStatus, getCleanDomainSuggestions } from '@/api/domainBlacklist'
+import { getDomainBlocklistStatus, getCleanDomainSuggestions } from '@/api/domainBlocklist'
 
 jest.mock('@/utils/functions', () => ({
   createRandomCryptStringNumber: jest.fn(() => 'abc123')
 }))
 
-jest.mock('@/api/domainBlacklist', () => ({
-  getDomainBlacklistStatus: jest.fn().mockResolvedValue({ data: {} }),
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} }),
   getCleanDomainSuggestions: jest.fn().mockResolvedValue({ data: { suggestions: [] } })
 }))
 
@@ -42,7 +42,7 @@ describe('InputPhishingLinkMini.vue', () => {
     $emit: jest.fn(),
     disabledLabel: '',
     checkSchemaTypes: jest.fn(),
-    checkDomainBlacklist: jest.fn(),
+    checkDomainBlocklist: jest.fn(),
     handleInputChange: methods.handleInputChange,
     ...overrides
   })
@@ -152,63 +152,63 @@ describe('InputPhishingLinkMini.vue', () => {
     expect(ctx.$emit).toHaveBeenCalledWith('captcha-default-value', true)
   })
 
-  describe('Blacklist Domain Check', () => {
-    it('checkDomainBlacklist calls API with domain text', () => {
+  describe('Blocklist Domain Check', () => {
+    it('checkDomainBlocklist calls API with domain text', () => {
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
-      expect(getDomainBlacklistStatus).toHaveBeenCalledWith('example.com')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
+      expect(getDomainBlocklistStatus).toHaveBeenCalledWith('example.com')
     })
 
-    it('checkDomainBlacklist sets warning for malicious domain', async () => {
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+    it('checkDomainBlocklist sets warning for malicious domain', async () => {
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'malicious', reason: 'Blocked by browsers' }
       })
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toEqual({
+      expect(ctx.blocklistWarning).toEqual({
         status: 'malicious',
         reason: 'Blocked by browsers'
       })
     })
 
-    it('checkDomainBlacklist does not set warning for clean domain', async () => {
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+    it('checkDomainBlocklist does not set warning for clean domain', async () => {
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'clean', reason: null }
       })
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.blocklistWarning).toBeNull()
     })
 
-    it('checkDomainBlacklist resets state before checking', () => {
+    it('checkDomainBlocklist resets state before checking', () => {
       const ctx = buildContext({
-        blacklistWarning: { status: 'malicious', reason: 'old' },
+        blocklistWarning: { status: 'malicious', reason: 'old' },
         cleanSuggestions: [{ domain: 'old.com' }]
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       expect(ctx.cleanSuggestions).toEqual([])
     })
 
-    it('checkDomainBlacklist exits early for unknown domainRecordId', () => {
+    it('checkDomainBlocklist exits early for unknown domainRecordId', () => {
       jest.clearAllMocks()
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: [],
         domainRecords: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'nonexistent-id')
-      expect(getDomainBlacklistStatus).not.toHaveBeenCalled()
+      methods.checkDomainBlocklist.call(ctx, 'nonexistent-id')
+      expect(getDomainBlocklistStatus).not.toHaveBeenCalled()
     })
 
     it('handleSwitchDomain calls suggestions API', () => {
@@ -254,39 +254,39 @@ describe('InputPhishingLinkMini.vue', () => {
       expect(ctx.handleChangeDomainRecord).not.toHaveBeenCalled()
     })
 
-    it('handleChangeDomainRecord triggers blacklist check', () => {
+    it('handleChangeDomainRecord triggers blocklist check', () => {
       const ctx = buildContext()
-      ctx.checkDomainBlacklist = jest.fn()
+      ctx.checkDomainBlocklist = jest.fn()
       ctx.changeDisabledLabel = jest.fn()
       methods.handleChangeDomainRecord.call(ctx, 'domain-1')
-      expect(ctx.checkDomainBlacklist).toHaveBeenCalledWith('domain-1')
+      expect(ctx.checkDomainBlocklist).toHaveBeenCalledWith('domain-1')
     })
 
-    it('checkDomainBlacklist sets warning for suspicious domain', async () => {
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+    it('checkDomainBlocklist sets warning for suspicious domain', async () => {
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'suspicious', reason: 'Flagged by 2 vendors' }
       })
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toEqual({
+      expect(ctx.blocklistWarning).toEqual({
         status: 'suspicious',
         reason: 'Flagged by 2 vendors'
       })
     })
 
-    it('checkDomainBlacklist handles API error silently', async () => {
-      getDomainBlacklistStatus.mockRejectedValueOnce(new Error('Network'))
+    it('checkDomainBlocklist handles API error silently', async () => {
+      getDomainBlocklistStatus.mockRejectedValueOnce(new Error('Network'))
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.blocklistWarning).toBeNull()
     })
 
     it('handleSwitchDomain handles API error silently', async () => {
@@ -337,55 +337,55 @@ describe('InputPhishingLinkMini.vue', () => {
       expect(ctx.handleChangeDomainRecord).toHaveBeenCalledWith('domain-1')
     })
 
-    it('checkDomainBlacklist does not set warning for pending status', async () => {
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+    it('checkDomainBlocklist does not set warning for pending status', async () => {
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'pending', reason: null }
       })
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.blocklistWarning).toBeNull()
     })
 
-    it('checkDomainBlacklist does not set warning for error status', async () => {
-      getDomainBlacklistStatus.mockResolvedValueOnce({
+    it('checkDomainBlocklist does not set warning for error status', async () => {
+      getDomainBlocklistStatus.mockResolvedValueOnce({
         data: { status: 'error', reason: 'Check failed' }
       })
       const ctx = buildContext({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      methods.checkDomainBlacklist.call(ctx, 'domain-1')
+      methods.checkDomainBlocklist.call(ctx, 'domain-1')
       await new Promise((r) => setTimeout(r, 0))
-      expect(ctx.blacklistWarning).toBeNull()
+      expect(ctx.blocklistWarning).toBeNull()
     })
 
-    it('mounted calls checkDomainBlacklist in edit mode', () => {
+    it('mounted calls checkDomainBlocklist in edit mode', () => {
       const ctx = buildContext({
         isEdit: true,
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      ctx.checkDomainBlacklist = jest.fn()
+      ctx.checkDomainBlocklist = jest.fn()
       ctx.checkSchemaTypes = jest.fn()
       ctx.setDefaultValue = jest.fn()
       InputPhishingLinkMini.mounted.call(ctx)
-      expect(ctx.checkDomainBlacklist).toHaveBeenCalledWith('domain-1')
+      expect(ctx.checkDomainBlocklist).toHaveBeenCalledWith('domain-1')
     })
 
-    it('mounted does not call checkDomainBlacklist in create mode', () => {
+    it('mounted does not call checkDomainBlocklist in create mode', () => {
       const ctx = buildContext({
         isEdit: false,
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: []
       })
-      ctx.checkDomainBlacklist = jest.fn()
+      ctx.checkDomainBlocklist = jest.fn()
       ctx.setDefaultValue = jest.fn()
       InputPhishingLinkMini.mounted.call(ctx)
-      expect(ctx.checkDomainBlacklist).not.toHaveBeenCalled()
+      expect(ctx.checkDomainBlocklist).not.toHaveBeenCalled()
     })
   })
 

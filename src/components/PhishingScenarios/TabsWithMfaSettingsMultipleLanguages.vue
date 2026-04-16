@@ -91,9 +91,9 @@
               :page-index="Number.parseInt(landingPageTab) - 1"
               :show-toolbar="!!getCurrentLandingPageTemplate"
             />
-            <div v-if="blacklistWarning" class="blacklist-preview-bar" :class="'blacklist-preview-bar--' + blacklistWarning.status">
-              <VIcon x-small :color="blacklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
-              <span class="blacklist-preview-bar__text">{{ blacklistWarning.reason }}</span>
+            <div v-if="blocklistWarning" class="blocklist-preview-bar" :class="'blocklist-preview-bar--' + blocklistWarning.status">
+              <VIcon x-small :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
+              <span class="blocklist-preview-bar__text">{{ blocklistWarning.reason }}</span>
             </div>
             <KEmailPreview
               v-if="!!getCurrentPageTemplate(template)"
@@ -175,7 +175,7 @@ import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePrevie
 import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { openHtmlInNewWindow } from '@/utils/functions'
-import { getDomainBlacklistStatus } from '@/api/domainBlacklist'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 export default {
   name: 'TabsWithMfaSettingsMultipleLanguages',
   components: { KEmailPreview, InputLanguagePreview, BrowserToolbar },
@@ -225,7 +225,7 @@ export default {
     return {
       landingPageTab: '1',
       languagePreview: '',
-      blacklistWarning: null
+      blocklistWarning: null
     }
   },
   computed: {
@@ -283,8 +283,8 @@ export default {
       }
     },
     phishingUrl() {
-      this.blacklistWarning = null
-      this.checkDomainBlacklist()
+      this.blocklistWarning = null
+      this.checkDomainBlocklist()
     },
     landingPageParams: {
       handler() {
@@ -297,7 +297,7 @@ export default {
   },
   mounted() {
     this.initializeLanguagePreview()
-    this.checkDomainBlacklist()
+    this.checkDomainBlocklist()
   },
   methods: {
     initializeLanguagePreview() {
@@ -346,14 +346,14 @@ export default {
         return null
       }
     },
-    checkDomainBlacklist() {
+    checkDomainBlocklist() {
       const domain = this.extractDomain(this.phishingUrl)
       if (!domain) return
-      getDomainBlacklistStatus(domain)
+      getDomainBlocklistStatus(domain)
         .then((response) => {
           const data = response.data
           if (data.status === 'malicious' || data.status === 'suspicious') {
-            this.blacklistWarning = { status: data.status, reason: data.reason }
+            this.blocklistWarning = { status: data.status, reason: data.reason }
           }
         })
         .catch(() => {})

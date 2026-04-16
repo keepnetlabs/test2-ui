@@ -188,15 +188,32 @@ describe('TrainingLibraryCard.vue', () => {
     })
   })
 
-  it('categoryDisplay prefers categoryName for multi category responses', () => {
+  it('categoryBadgesList uses categoryBadges array when available', () => {
     const wrapper = createWrapper({
       item: {
         ...baseItem,
         category: 'RemoteWorkingSecurity',
-        categoryName: 'Remote Working Security, Travel Security'
+        categoryName: 'Remote Working Security, Travel Security',
+        categoryBadges: ['Remote Working Security', 'Travel Security']
       }
     })
 
-    expect(wrapper.vm.categoryDisplay).toBe('Remote Working Security, Travel Security')
+    expect(wrapper.vm.categoryBadgesList).toEqual(['Remote Working Security', 'Travel Security'])
+    expect(wrapper.vm.firstCategory).toBe('Remote Working Security')
+    expect(wrapper.vm.remainingCategories).toEqual(['Travel Security'])
+  })
+
+  it('categoryBadgesList falls back to categoryName when categoryBadges is empty', () => {
+    const wrapper = createWrapper({
+      item: {
+        ...baseItem,
+        category: 'RemoteWorkingSecurity',
+        categoryName: 'Remote Working Security'
+      }
+    })
+
+    expect(wrapper.vm.categoryBadgesList).toEqual(['Remote Working Security'])
+    expect(wrapper.vm.firstCategory).toBe('Remote Working Security')
+    expect(wrapper.vm.remainingCategories).toEqual([])
   })
 })

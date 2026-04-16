@@ -593,15 +593,18 @@ describe('NewNotificationTemplate.vue', () => {
     methods.submit.call(ctx)
     await flushPromises()
 
-    expect(createEmailTemplate).toHaveBeenCalledWith(
+    const calledPayload = createEmailTemplate.mock.calls[0][0]
+
+    expect(calledPayload).not.toHaveProperty('emailDeliverySettingType')
+    expect(calledPayload).not.toHaveProperty('smtpSettingResourceId')
+    expect(calledPayload).not.toHaveProperty('directEmailSettingResourceId')
+    expect(calledPayload).not.toHaveProperty('fromName')
+    expect(calledPayload).not.toHaveProperty('fromAddress')
+    expect(calledPayload).not.toHaveProperty('ccAddresses')
+
+    expect(calledPayload).toEqual(
       expect.objectContaining({
-        emailDeliverySettingType: '',
-        smtpSettingResourceId: '',
-        directEmailSettingResourceId: '',
-        fromName: '',
-        fromAddress: '',
         subject: 'Subject',
-        ccAddresses: [],
         languages: expect.arrayContaining([
           expect.objectContaining({
             fromName: '',

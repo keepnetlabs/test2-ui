@@ -778,7 +778,7 @@ export const labels = {
   IPAddressesSubtitle: 'Exclude IP addresses that are found inside email’s body from analysis',
   WhiteLabelingSubTitle:
     'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
-  WhiteListingSubTitle:
+  AllowListingSubTitle:
     'Allow emails to be received without being filtered by antispam and other applications',
   CreateFirstSystemUser: 'Create First System User',
   CreateFirstSystemUserSubTitle:
@@ -786,8 +786,8 @@ export const labels = {
   Keyword: 'Keyword',
   Notes: 'Notes',
   ConfigureNewCompanyTitle: 'Configure New Company?',
-  SendWhitelistingDirections: 'Send Whitelisting Directions',
-  SendWhitelistingDirectionsSubTitle: 'Send an email to customer with whitelisting directions',
+  SendAllowlistingDirections: 'Send Allowlisting Directions',
+  SendAllowlistingDirectionsSubTitle: 'Send an email to customer with allowlisting directions',
   ReleaseInformation: 'Release Information',
   SAMLDeletePopupBody: 'This SAML setting will be deleted. All data will be lost.',
   ReleaseInformationSubTitle:
@@ -1109,7 +1109,7 @@ export const labels = {
   Permissions: 'Permissions',
   ADDAPERMISSION: 'Add a permission',
   WhiteLabeling: 'White Labeling',
-  WhiteListing: 'Whitelisting',
+  AllowListing: 'Allowlisting',
   FirstSystemUser: 'First System User',
   EmptyMailConfiguration: 'You do not have any mail configurations',
   EmptyMailConfigurationSub: 'Create your first mail configuration',

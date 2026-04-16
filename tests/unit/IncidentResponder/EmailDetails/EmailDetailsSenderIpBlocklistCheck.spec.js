@@ -1,7 +1,7 @@
-import EmailDetailsSenderIpBlacklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlacklistCheck.vue'
+import EmailDetailsSenderIpBlocklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlocklistCheck.vue'
 
-describe('EmailDetailsSenderIpBlacklistCheck.vue', () => {
-  const { methods, created } = EmailDetailsSenderIpBlacklistCheck
+describe('EmailDetailsSenderIpBlocklistCheck.vue', () => {
+  const { methods, created } = EmailDetailsSenderIpBlocklistCheck
 
   it('created sets tableData from first ip analysis list', () => {
     const ctx = {

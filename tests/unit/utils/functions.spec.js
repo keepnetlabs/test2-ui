@@ -239,8 +239,8 @@ describe('Utils Functions', () => {
       expect(getDataTableFieldLabel('clean')).toBe('Clean')
     })
 
-    it('should return "Blacklisted" for malicious status', () => {
-      expect(getDataTableFieldLabel('malicious')).toBe('Blacklisted')
+    it('should return "Blocklisted" for malicious status', () => {
+      expect(getDataTableFieldLabel('malicious')).toBe('Blocklisted')
     })
 
     it('should return "Suspicious" for suspicious status', () => {
