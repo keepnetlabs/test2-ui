@@ -44,17 +44,17 @@
           {{ item.createdBy }}
         </div>
         <div class="training-library-card__body-sub-bull"></div>
-        <VTooltip v-if="isRenderCategoryTooltip" bottom>
+        <div ref="refBodyCategory" class="training-library-card__body-sub-category">
+          {{ firstCategory }}
+        </div>
+        <VTooltip v-if="remainingCategories.length" bottom>
           <template #activator="{ on }">
-            <div ref="refBodyCategory" v-on="on" class="training-library-card__body-sub-category">
-              {{ categoryDisplay }}
+            <div v-on="on" class="training-library-card__body-sub-category training-library-card__body-sub-category--more">
+              +{{ remainingCategories.length }}
             </div>
           </template>
-          <span>{{ categoryDisplay }}</span>
+          <span>{{ remainingCategories.join(', ') }}</span>
         </VTooltip>
-        <div v-else ref="refBodyCategory" class="training-library-card__body-sub-category">
-          {{ categoryDisplay }}
-        </div>
         <template v-if="languagesList.length">
           <div class="training-library-card__body-sub-bull"></div>
           <template v-if="languagesList.length === 1">
@@ -184,7 +184,6 @@ export default {
     return {
       isRenderTitleTooltip: true,
       isRenderCreatedByTooltip: true,
-      isRenderCategoryTooltip: true,
       isLanguagePopoverOpen: false
     }
   },
@@ -255,8 +254,17 @@ export default {
       if (Array.isArray(langs)) return langs.filter(Boolean)
       return langs ? [langs] : []
     },
-    categoryDisplay() {
-      return this.item?.categoryName || this.item?.category || ''
+    categoryBadgesList() {
+      const badges = this.item?.categoryBadges
+      if (Array.isArray(badges) && badges.length) return badges
+      const fallback = this.item?.categoryName || this.item?.category || ''
+      return fallback ? [fallback] : []
+    },
+    firstCategory() {
+      return this.categoryBadgesList[0] || ''
+    },
+    remainingCategories() {
+      return this.categoryBadgesList.slice(1)
     },
     preferredTexts() {
       const types = this.preferredLanguageTypes || []
@@ -314,9 +322,6 @@ export default {
         : false
       this.isRenderCreatedByTooltip = refBodyCreatedBy
         ? refBodyCreatedBy.offsetWidth < refBodyCreatedBy.scrollWidth
-        : false
-      this.isRenderCategoryTooltip = refBodyCategory
-        ? refBodyCategory.offsetWidth < refBodyCategory.scrollWidth
         : false
     },
     handleCloseLanguagePopover() {

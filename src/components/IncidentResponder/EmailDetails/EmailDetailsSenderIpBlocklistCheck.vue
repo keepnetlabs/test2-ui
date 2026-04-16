@@ -1,14 +1,14 @@
 <template>
-  <div class="sender-ip-blacklist-check">
+  <div class="sender-ip-blocklist-check">
     <h3
-      id="text--email-details-sender-ip-blacklist-check"
-      class="sender-ip-blacklist-check__header mb-4"
+      id="text--email-details-sender-ip-blocklist-check"
+      class="sender-ip-blocklist-check__header mb-4"
     >
-      Sender IP Blacklist Check
+      Sender IP Blocklist Check
     </h3>
     <data-table
-      id="email-details-sender-api-blacklist-check"
-      ref="refEmailDetailsSenderIpBlacklistCheck"
+      id="email-details-sender-api-blocklist-check"
+      ref="refEmailDetailsSenderIpBlocklistCheck"
       filterable
       options
       sizeable
@@ -67,7 +67,7 @@ import DataTable from '@/components/DataTable'
 import { getStoreValue, PROPERTY_STORE, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 export default {
-  name: 'EmailDetailsSenderIpBlacklistCheck',
+  name: 'EmailDetailsSenderIpBlocklistCheck',
   components: { DataTable },
   props: {
     loading: {

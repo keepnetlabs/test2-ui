@@ -1,0 +1,23 @@
+.sender-ip-blocklist-check {
+    margin-top: 32px;
+
+    &__header {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2196f3;
+    }
+}
+
+.single-wrapper .sender-ip-blocklist-check .v-btn:not(.v-btn--round).v-size--default,
+.single-wrapper .sender-ip-blocklist-check .v-btn--icon.v-size--default {
+    height: 24px !important;
+    border-radius: 4px !important;
+}
+
+.single-wrapper .sender-ip-blocklist-check .k-table__wrapper .card .table-wrapper .el-table td>.cell {
+    padding-left: 16px !important;
+}
+
+.single-wrapper .sender-ip-blocklist-check .k-table__wrapper .card .table-wrapper .el-table th>.cell {
+    padding-left: 16px !important;
+}

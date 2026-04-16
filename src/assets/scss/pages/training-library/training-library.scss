@@ -578,6 +578,12 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        &--more {
+          flex-shrink: 0;
+          overflow: visible;
+          color: #2196f3;
+          cursor: pointer;
+        }
       }
       &-language {
         color: #2196f3;

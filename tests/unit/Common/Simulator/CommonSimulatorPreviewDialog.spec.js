@@ -252,9 +252,9 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
     expect(ctx._removeFlaggedStylesFromTemplate).toHaveBeenCalled()
   })
 
-  it('passes landingPageParams.urlTemplate to landing page tab for blacklist check', () => {
+  it('passes landingPageParams.urlTemplate to landing page tab for blocklist check', () => {
     // CommonSimulatorPreviewDialog passes :phishing-url="landingPageParams.urlTemplate"
-    // to TabsWithMfaSettingsMultipleLanguages which performs the blacklist check
+    // to TabsWithMfaSettingsMultipleLanguages which performs the blocklist check
     const ctx = {
       landingPageParams: {
         urlTemplate: 'https://www.suspicious-domain.com/film.php'

@@ -60,12 +60,12 @@ describe('DataTableStatus.vue', () => {
     expect(wrapper.vm.getStatusTooltipText('Active')).toBe('Tooltip text')
   })
 
-  describe('Blacklist Skeleton Loading', () => {
+  describe('Blocklist Skeleton Loading', () => {
     it('isSkeletonLoading true when value is loading and badgeColorMap has loading key', () => {
       const wrapper = createWrapper({
-        scope: { row: { blacklistStatus: 'loading' } },
+        scope: { row: { blocklistStatus: 'loading' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd', clean: '#217124' }
         }
@@ -83,9 +83,9 @@ describe('DataTableStatus.vue', () => {
 
     it('isSkeletonLoading false when value is not loading', () => {
       const wrapper = createWrapper({
-        scope: { row: { blacklistStatus: 'clean' } },
+        scope: { row: { blocklistStatus: 'clean' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { loading: '#bdbdbd', clean: '#217124' }
         }
@@ -93,11 +93,11 @@ describe('DataTableStatus.vue', () => {
       expect(wrapper.vm.isSkeletonLoading).toBe(false)
     })
 
-    it('uses badgeColorMap for custom blacklist colors', () => {
+    it('uses badgeColorMap for custom blocklist colors', () => {
       const wrapper = createWrapper({
-        scope: { row: { blacklistStatus: 'malicious' } },
+        scope: { row: { blocklistStatus: 'malicious' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { malicious: '#b83a3a', clean: '#217124' }
         }
@@ -108,9 +108,9 @@ describe('DataTableStatus.vue', () => {
 
     it('falls back to getBtnStatusColor when status not in badgeColorMap', () => {
       const wrapper = createWrapper({
-        scope: { row: { blacklistStatus: 'unknown-val' } },
+        scope: { row: { blocklistStatus: 'unknown-val' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
           badgeColorMap: { clean: '#217124' }
         }
@@ -118,13 +118,13 @@ describe('DataTableStatus.vue', () => {
       expect(wrapper.vm.getBadgeColor('unknown-val')).toBe('#1173C1')
     })
 
-    it('shows tooltip from blacklistDetail via tooltipKey', () => {
+    it('shows tooltip from blocklistDetail via tooltipKey', () => {
       const wrapper = createWrapper({
-        scope: { row: { blacklistStatus: 'malicious', blacklistDetail: 'Blocked by 3 vendors' } },
+        scope: { row: { blocklistStatus: 'malicious', blocklistDetail: 'Blocked by 3 vendors' } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
-          tooltipKey: 'blacklistDetail',
+          tooltipKey: 'blocklistDetail',
           badgeColorMap: { malicious: '#b83a3a' }
         }
       })
@@ -132,13 +132,13 @@ describe('DataTableStatus.vue', () => {
       expect(wrapper.vm.getStatusTooltipText('malicious')).toBe('Blocked by 3 vendors')
     })
 
-    it('no tooltip when blacklistDetail is null (clean domain)', () => {
+    it('no tooltip when blocklistDetail is null (clean domain)', () => {
       const wrapper = createWrapper({
-        scope: { row: { blacklistStatus: 'clean', blacklistDetail: null } },
+        scope: { row: { blocklistStatus: 'clean', blocklistDetail: null } },
         col: {
-          property: 'blacklistStatus',
+          property: 'blocklistStatus',
           type: 'status',
-          tooltipKey: 'blacklistDetail',
+          tooltipKey: 'blocklistDetail',
           badgeColorMap: { clean: '#217124' }
         }
       })

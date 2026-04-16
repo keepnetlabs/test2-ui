@@ -121,7 +121,7 @@
         {{ mailDetails && mailDetails.geoLocation }}
       </div>
     </div>
-    <email-details-sender-ip-blacklist-check
+    <email-details-sender-ip-blocklist-check
       :mail-details="mailDetails"
       :loading="loading"
       @on-refresh-click="$emit('on-re-analyze-click')"
@@ -131,11 +131,11 @@
 
 <script>
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
-import EmailDetailsSenderIpBlacklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlacklistCheck'
+import EmailDetailsSenderIpBlocklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlocklistCheck'
 import { mapGetters } from 'vuex'
 export default {
   name: 'EmailDetailsContentDetails',
-  components: { EmailDetailsSenderIpBlacklistCheck, ReAnalyzeIncidentDialog },
+  components: { EmailDetailsSenderIpBlocklistCheck, ReAnalyzeIncidentDialog },
   props: {
     mailDetails: {
       type: Object,

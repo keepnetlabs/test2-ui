@@ -4,8 +4,8 @@ jest.mock('@/utils/functions', () => ({
   createRandomCryptStringNumber: jest.fn(() => 'rnd999')
 }))
 
-jest.mock('@/api/domainBlacklist', () => ({
-  getDomainBlacklistStatus: jest.fn().mockResolvedValue({ data: {} }),
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} }),
   getCleanDomainSuggestions: jest.fn().mockResolvedValue({ data: { suggestions: [] } })
 }))
 
@@ -46,7 +46,7 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     $emit: jest.fn(),
     changeDisabledLabel: jest.fn(),
     checkSchemaTypes: jest.fn(),
-    checkDomainBlacklist: jest.fn(),
+    checkDomainBlocklist: jest.fn(),
     handleInputChange: jest.fn(),
     getUrlSchemaTypesModified: computed.getUrlSchemaTypesModified.call({
       urlSchemaTypesModified: [],
@@ -63,24 +63,24 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
       isEdit: false,
       setDefaultValue: jest.fn(),
       checkSchemaTypes: jest.fn(),
-      checkDomainBlacklist: jest.fn()
+      checkDomainBlocklist: jest.fn()
     })
     mounted.call(createModeCtx)
     expect(createModeCtx.setDefaultValue).toHaveBeenCalledTimes(1)
     expect(createModeCtx.checkSchemaTypes).not.toHaveBeenCalled()
-    expect(createModeCtx.checkDomainBlacklist).not.toHaveBeenCalled()
+    expect(createModeCtx.checkDomainBlocklist).not.toHaveBeenCalled()
 
     const editModeCtx = createCtx({
       isEdit: true,
       value: { domainRecordId: 'd1' },
       setDefaultValue: jest.fn(),
       checkSchemaTypes: jest.fn(),
-      checkDomainBlacklist: jest.fn()
+      checkDomainBlocklist: jest.fn()
     })
     mounted.call(editModeCtx)
     expect(editModeCtx.setDefaultValue).not.toHaveBeenCalled()
     expect(editModeCtx.checkSchemaTypes).toHaveBeenCalledWith('d1', false)
-    expect(editModeCtx.checkDomainBlacklist).toHaveBeenCalledWith('d1')
+    expect(editModeCtx.checkDomainBlocklist).toHaveBeenCalledWith('d1')
   })
 
   it('mounted in edit mode does not call schema check when domainRecordId is missing', () => {
@@ -89,22 +89,22 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
       value: { domainRecordId: '' },
       setDefaultValue: jest.fn(),
       checkSchemaTypes: jest.fn(),
-      checkDomainBlacklist: jest.fn()
+      checkDomainBlocklist: jest.fn()
     })
 
     mounted.call(editModeCtx)
 
     expect(editModeCtx.setDefaultValue).not.toHaveBeenCalled()
     expect(editModeCtx.checkSchemaTypes).not.toHaveBeenCalled()
-    expect(editModeCtx.checkDomainBlacklist).not.toHaveBeenCalled()
+    expect(editModeCtx.checkDomainBlocklist).not.toHaveBeenCalled()
   })
 
-  it('handleChangeDomainRecord calls input change, schema check, relabel and blacklist check', () => {
+  it('handleChangeDomainRecord calls input change, schema check, relabel and blocklist check', () => {
     const ctx = createCtx({
       handleInputChange: jest.fn(),
       checkSchemaTypes: jest.fn(),
       changeDisabledLabel: jest.fn(),
-      checkDomainBlacklist: jest.fn()
+      checkDomainBlocklist: jest.fn()
     })
 
     methods.handleChangeDomainRecord.call(ctx, 'd1')
@@ -112,7 +112,7 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     expect(ctx.handleInputChange).toHaveBeenCalledWith('d1', 'domainRecordId')
     expect(ctx.checkSchemaTypes).toHaveBeenCalledWith('d1', true)
     expect(ctx.changeDisabledLabel).toHaveBeenCalled()
-    expect(ctx.checkDomainBlacklist).toHaveBeenCalledWith('d1')
+    expect(ctx.checkDomainBlocklist).toHaveBeenCalledWith('d1')
   })
 
   it('value watcher triggers label refresh and ref validation', () => {
@@ -176,16 +176,16 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
   it('field watchers call relabel and schema check when needed', () => {
     const changeDisabledLabel = jest.fn()
     const checkSchemaTypes = jest.fn()
-    const checkDomainBlacklist = jest.fn()
-    const ctx = { changeDisabledLabel, checkSchemaTypes, checkDomainBlacklist, isEdit: false }
+    const checkDomainBlocklist = jest.fn()
+    const ctx = { changeDisabledLabel, checkSchemaTypes, checkDomainBlocklist, isEdit: false }
 
     watch['value.domainRecordId'].call(ctx, 'd1')
     expect(changeDisabledLabel).toHaveBeenCalledTimes(1)
     expect(checkSchemaTypes).toHaveBeenCalledWith('d1')
-    expect(checkDomainBlacklist).not.toHaveBeenCalled()
+    expect(checkDomainBlocklist).not.toHaveBeenCalled()
 
     watch['value.domainRecordId'].call({ ...ctx, isEdit: true }, 'd1')
-    expect(checkDomainBlacklist).toHaveBeenCalledWith('d1')
+    expect(checkDomainBlocklist).toHaveBeenCalledWith('d1')
 
     watch['value.parameterTypeId'].call(ctx)
     watch['value.subDomain'].call(ctx)
@@ -215,7 +215,7 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
 
     it('create mode: [] -> items calls setDefaultValue when domainRecordId is empty', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
+      const checkDomainBlocklist = jest.fn()
       const ctx = createCtx({
         isEdit: false,
         value: {
@@ -227,16 +227,16 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
           parameterTypeId: 'pm1'
         },
         setDefaultValue,
-        checkDomainBlacklist
+        checkDomainBlocklist
       })
       watch.domainRecords.call(ctx, records, [])
       expect(setDefaultValue).toHaveBeenCalledTimes(1)
-      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+      expect(checkDomainBlocklist).not.toHaveBeenCalled()
     })
 
-    it('edit mode: [] -> items calls checkDomainBlacklist when domainRecordId is set', () => {
+    it('edit mode: [] -> items calls checkDomainBlocklist when domainRecordId is set', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
+      const checkDomainBlocklist = jest.fn()
       const ctx = createCtx({
         isEdit: true,
         value: {
@@ -249,16 +249,16 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
         },
         domainRecords: records,
         setDefaultValue,
-        checkDomainBlacklist
+        checkDomainBlocklist
       })
       watch.domainRecords.call(ctx, records, [])
       expect(setDefaultValue).not.toHaveBeenCalled()
-      expect(checkDomainBlacklist).toHaveBeenCalledWith('d1')
+      expect(checkDomainBlocklist).toHaveBeenCalledWith('d1')
     })
 
-    it('create mode: [] -> items calls checkDomainBlacklist when domainRecordId already set', () => {
+    it('create mode: [] -> items calls checkDomainBlocklist when domainRecordId already set', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
+      const checkDomainBlocklist = jest.fn()
       const ctx = createCtx({
         isEdit: false,
         value: {
@@ -271,31 +271,31 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
         },
         domainRecords: records,
         setDefaultValue,
-        checkDomainBlacklist
+        checkDomainBlocklist
       })
       watch.domainRecords.call(ctx, records, [])
       expect(setDefaultValue).not.toHaveBeenCalled()
-      expect(checkDomainBlacklist).toHaveBeenCalledWith('late-1')
+      expect(checkDomainBlocklist).toHaveBeenCalledWith('late-1')
     })
 
     it('returns early when new list is empty', () => {
       const setDefaultValue = jest.fn()
-      const ctx = createCtx({ setDefaultValue, checkDomainBlacklist: jest.fn() })
+      const ctx = createCtx({ setDefaultValue, checkDomainBlocklist: jest.fn() })
       watch.domainRecords.call(ctx, [], [])
       expect(setDefaultValue).not.toHaveBeenCalled()
     })
 
     it('does nothing when list was already non-empty (no empty->full transition)', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
+      const checkDomainBlocklist = jest.fn()
       const ctx = createCtx({
         setDefaultValue,
-        checkDomainBlacklist,
+        checkDomainBlocklist,
         domainRecords: records
       })
       watch.domainRecords.call(ctx, records, records)
       expect(setDefaultValue).not.toHaveBeenCalled()
-      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+      expect(checkDomainBlocklist).not.toHaveBeenCalled()
     })
   })
 
@@ -508,56 +508,56 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     expect(ctx.disabledLabel).toBe('http://portal.example.com/login.html?id=rnd999')
   })
 
-  describe('Blacklist Domain Check (extra)', () => {
-    const { getDomainBlacklistStatus, getCleanDomainSuggestions } = require('@/api/domainBlacklist')
+  describe('Blocklist Domain Check (extra)', () => {
+    const { getDomainBlocklistStatus, getCleanDomainSuggestions } = require('@/api/domainBlocklist')
 
     beforeEach(() => jest.clearAllMocks())
 
-    it('checkDomainBlacklist resets blacklistWarning and cleanSuggestions before API call', () => {
+    it('checkDomainBlocklist resets blocklistWarning and cleanSuggestions before API call', () => {
       const ctx = createCtx({
-        blacklistWarning: { status: 'malicious', reason: 'old' },
+        blocklistWarning: { status: 'malicious', reason: 'old' },
         cleanSuggestions: [{ domain: 'stale.com' }]
       })
-      methods.checkDomainBlacklist.call(ctx, 'd1')
-      expect(ctx.blacklistWarning).toBeNull()
+      methods.checkDomainBlocklist.call(ctx, 'd1')
+      expect(ctx.blocklistWarning).toBeNull()
       expect(ctx.cleanSuggestions).toEqual([])
     })
 
-    it('checkDomainBlacklist resolves domain text from domainRecords', () => {
+    it('checkDomainBlocklist resolves domain text from domainRecords', () => {
       const ctx = createCtx({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: [],
         domainRecords: [
           { text: 'special-domain.co', value: 'sd1', extraDatas: [{ value: '2' }, { value: true }] }
         ]
       })
-      methods.checkDomainBlacklist.call(ctx, 'sd1')
-      expect(getDomainBlacklistStatus).toHaveBeenCalledWith('special-domain.co')
+      methods.checkDomainBlocklist.call(ctx, 'sd1')
+      expect(getDomainBlocklistStatus).toHaveBeenCalledWith('special-domain.co')
     })
 
-    it('checkDomainBlacklist matches record when id is number in list and string argument', () => {
+    it('checkDomainBlocklist matches record when id is number in list and string argument', () => {
       jest.clearAllMocks()
       const ctx = createCtx({
-        blacklistWarning: null,
+        blocklistWarning: null,
         cleanSuggestions: [],
         domainRecords: [
           { text: 'numeric-id.test', value: 42, extraDatas: [{ value: '2' }, { value: true }] }
         ]
       })
-      methods.checkDomainBlacklist.call(ctx, '42')
-      expect(getDomainBlacklistStatus).toHaveBeenCalledWith('numeric-id.test')
+      methods.checkDomainBlocklist.call(ctx, '42')
+      expect(getDomainBlocklistStatus).toHaveBeenCalledWith('numeric-id.test')
     })
 
-    it('checkDomainBlacklist sets warning only for malicious or suspicious', async () => {
+    it('checkDomainBlocklist sets warning only for malicious or suspicious', async () => {
       const ignoredStatuses = ['clean', 'pending', 'error', 'partial']
       for (const status of ignoredStatuses) {
-        getDomainBlacklistStatus.mockResolvedValueOnce({
+        getDomainBlocklistStatus.mockResolvedValueOnce({
           data: { status, reason: status === 'clean' ? null : 'Some reason' }
         })
-        const ctx = createCtx({ blacklistWarning: null, cleanSuggestions: [] })
-        methods.checkDomainBlacklist.call(ctx, 'd1')
+        const ctx = createCtx({ blocklistWarning: null, cleanSuggestions: [] })
+        methods.checkDomainBlocklist.call(ctx, 'd1')
         await new Promise((r) => setTimeout(r, 0))
-        expect(ctx.blacklistWarning).toBeNull()
+        expect(ctx.blocklistWarning).toBeNull()
       }
     })
 

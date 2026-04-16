@@ -1,4 +1,4 @@
-import * as BlacklistAPI from '@/api/domainBlacklist'
+import * as BlocklistAPI from '@/api/domainBlocklist'
 import axios from 'axios'
 
 jest.mock('axios', () => {
@@ -13,28 +13,28 @@ jest.mock('axios', () => {
 
 const mockClient = axios.__mockInstance
 
-describe('Domain Blacklist API', () => {
+describe('Domain Blocklist API', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   describe('axios client configuration', () => {
     it('should use external API base URL, not testRequest', () => {
-      // domainBlacklist uses its own axios instance, not the internal testRequest
+      // domainBlocklist uses its own axios instance, not the internal testRequest
       // Verify by checking that mockClient.get is used (not testRequest)
-      BlacklistAPI.getAllDomainBlacklistStatuses()
+      BlocklistAPI.getAllDomainBlocklistStatuses()
       expect(mockClient.get).toHaveBeenCalled()
     })
   })
 
-  describe('getAllDomainBlacklistStatuses', () => {
+  describe('getAllDomainBlocklistStatuses', () => {
     it('should call GET /domains', async () => {
-      await BlacklistAPI.getAllDomainBlacklistStatuses()
+      await BlocklistAPI.getAllDomainBlocklistStatuses()
       expect(mockClient.get).toHaveBeenCalledWith('/domains')
     })
 
     it('should return thenable', () => {
-      const result = BlacklistAPI.getAllDomainBlacklistStatuses()
+      const result = BlocklistAPI.getAllDomainBlocklistStatuses()
       expect(typeof result.then).toBe('function')
     })
 
@@ -49,34 +49,34 @@ describe('Domain Blacklist API', () => {
         }
       }
       mockClient.get.mockResolvedValueOnce(mockResponse)
-      const response = await BlacklistAPI.getAllDomainBlacklistStatuses()
+      const response = await BlocklistAPI.getAllDomainBlocklistStatuses()
       expect(response.data.domains).toHaveLength(2)
       expect(response.data.domains[1].status).toBe('malicious')
     })
   })
 
-  describe('getDomainBlacklistStatus', () => {
+  describe('getDomainBlocklistStatus', () => {
     it('should always delegate to the worker API (no client-side static override)', async () => {
       mockClient.get.mockResolvedValueOnce({
         data: { status: 'malicious', reason: 'This domain is blocked by major browsers.' }
       })
-      await BlacklistAPI.getDomainBlacklistStatus('sirketiciduyuruonline.com')
+      await BlocklistAPI.getDomainBlocklistStatus('sirketiciduyuruonline.com')
       expect(mockClient.get).toHaveBeenCalledTimes(1)
       expect(mockClient.get).toHaveBeenCalledWith('/domains/sirketiciduyuruonline.com')
     })
 
     it('should call GET /domains/{domain}', async () => {
-      await BlacklistAPI.getDomainBlacklistStatus('example.com')
+      await BlocklistAPI.getDomainBlocklistStatus('example.com')
       expect(mockClient.get).toHaveBeenCalledWith('/domains/example.com')
     })
 
     it('should pass domain name correctly', async () => {
-      await BlacklistAPI.getDomainBlacklistStatus('digitalsecurelogin.co')
+      await BlocklistAPI.getDomainBlocklistStatus('digitalsecurelogin.co')
       expect(mockClient.get).toHaveBeenCalledWith('/domains/digitalsecurelogin.co')
     })
 
     it('should return thenable', () => {
-      const result = BlacklistAPI.getDomainBlacklistStatus('test.com')
+      const result = BlocklistAPI.getDomainBlocklistStatus('test.com')
       expect(typeof result.then).toBe('function')
     })
 
@@ -91,7 +91,7 @@ describe('Domain Blacklist API', () => {
         }
       }
       mockClient.get.mockResolvedValueOnce(mockResponse)
-      const response = await BlacklistAPI.getDomainBlacklistStatus('malicious.com')
+      const response = await BlocklistAPI.getDomainBlocklistStatus('malicious.com')
       expect(response.data.status).toBe('malicious')
       expect(response.data.reason).toBeTruthy()
     })
@@ -101,7 +101,7 @@ describe('Domain Blacklist API', () => {
         data: { domain: 'clean.com', status: 'clean', reason: null }
       }
       mockClient.get.mockResolvedValueOnce(mockResponse)
-      const response = await BlacklistAPI.getDomainBlacklistStatus('clean.com')
+      const response = await BlocklistAPI.getDomainBlocklistStatus('clean.com')
       expect(response.data.status).toBe('clean')
       expect(response.data.reason).toBeNull()
     })
@@ -109,12 +109,12 @@ describe('Domain Blacklist API', () => {
 
   describe('getCleanDomainSuggestions', () => {
     it('should call GET /domains/suggestions/clean', async () => {
-      await BlacklistAPI.getCleanDomainSuggestions()
+      await BlocklistAPI.getCleanDomainSuggestions()
       expect(mockClient.get).toHaveBeenCalledWith('/domains/suggestions/clean')
     })
 
     it('should return thenable', () => {
-      const result = BlacklistAPI.getCleanDomainSuggestions()
+      const result = BlocklistAPI.getCleanDomainSuggestions()
       expect(typeof result.then).toBe('function')
     })
 
@@ -129,50 +129,50 @@ describe('Domain Blacklist API', () => {
         }
       }
       mockClient.get.mockResolvedValueOnce(mockResponse)
-      const response = await BlacklistAPI.getCleanDomainSuggestions()
+      const response = await BlocklistAPI.getCleanDomainSuggestions()
       expect(response.data.suggestions).toHaveLength(2)
       expect(response.data.suggestions[0].domain).toBe('clean1.com')
     })
   })
 
   describe('Error Handling', () => {
-    it('getAllDomainBlacklistStatuses should propagate errors', async () => {
+    it('getAllDomainBlocklistStatuses should propagate errors', async () => {
       mockClient.get.mockRejectedValueOnce(new Error('Network Error'))
-      await expect(BlacklistAPI.getAllDomainBlacklistStatuses()).rejects.toThrow('Network Error')
+      await expect(BlocklistAPI.getAllDomainBlocklistStatuses()).rejects.toThrow('Network Error')
     })
 
-    it('getDomainBlacklistStatus should propagate 404 errors', async () => {
+    it('getDomainBlocklistStatus should propagate 404 errors', async () => {
       mockClient.get.mockRejectedValueOnce({ response: { status: 404, data: { error: 'Domain not found' } } })
-      await expect(BlacklistAPI.getDomainBlacklistStatus('unknown.com')).rejects.toEqual(
+      await expect(BlocklistAPI.getDomainBlocklistStatus('unknown.com')).rejects.toEqual(
         expect.objectContaining({ response: expect.objectContaining({ status: 404 }) })
       )
     })
 
     it('getCleanDomainSuggestions should propagate errors', async () => {
       mockClient.get.mockRejectedValueOnce(new Error('Timeout'))
-      await expect(BlacklistAPI.getCleanDomainSuggestions()).rejects.toThrow('Timeout')
+      await expect(BlocklistAPI.getCleanDomainSuggestions()).rejects.toThrow('Timeout')
     })
   })
 
   describe('All Exported Functions', () => {
-    it('should export getAllDomainBlacklistStatuses', () => {
-      expect(typeof BlacklistAPI.getAllDomainBlacklistStatuses).toBe('function')
+    it('should export getAllDomainBlocklistStatuses', () => {
+      expect(typeof BlocklistAPI.getAllDomainBlocklistStatuses).toBe('function')
     })
 
-    it('should export getDomainBlacklistStatus', () => {
-      expect(typeof BlacklistAPI.getDomainBlacklistStatus).toBe('function')
+    it('should export getDomainBlocklistStatus', () => {
+      expect(typeof BlocklistAPI.getDomainBlocklistStatus).toBe('function')
     })
 
     it('should export getCleanDomainSuggestions', () => {
-      expect(typeof BlacklistAPI.getCleanDomainSuggestions).toBe('function')
+      expect(typeof BlocklistAPI.getCleanDomainSuggestions).toBe('function')
     })
   })
 
   describe('HTTP Method Consistency', () => {
     it('all functions should use GET method', async () => {
-      await BlacklistAPI.getAllDomainBlacklistStatuses()
-      await BlacklistAPI.getDomainBlacklistStatus('test.com')
-      await BlacklistAPI.getCleanDomainSuggestions()
+      await BlocklistAPI.getAllDomainBlocklistStatuses()
+      await BlocklistAPI.getDomainBlocklistStatus('test.com')
+      await BlocklistAPI.getCleanDomainSuggestions()
       expect(mockClient.get).toHaveBeenCalledTimes(3)
     })
   })
@@ -192,7 +192,7 @@ describe('Domain Blacklist API', () => {
         mockClient.get.mockResolvedValueOnce({
           data: { domain: 'test.com', status, reason }
         })
-        const response = await BlacklistAPI.getDomainBlacklistStatus('test.com')
+        const response = await BlocklistAPI.getDomainBlocklistStatus('test.com')
         expect(response.data.status).toBe(status)
         if (reason) {
           expect(response.data.reason).toBeTruthy()
@@ -205,12 +205,12 @@ describe('Domain Blacklist API', () => {
 
   describe('Edge Cases', () => {
     it('should handle domain with special characters', async () => {
-      await BlacklistAPI.getDomainBlacklistStatus('global-cloud-llc.com')
+      await BlocklistAPI.getDomainBlocklistStatus('global-cloud-llc.com')
       expect(mockClient.get).toHaveBeenCalledWith('/domains/global-cloud-llc.com')
     })
 
     it('should handle subdomain-like domain names', async () => {
-      await BlacklistAPI.getDomainBlacklistStatus('insan-kaynaklari.me')
+      await BlocklistAPI.getDomainBlocklistStatus('insan-kaynaklari.me')
       expect(mockClient.get).toHaveBeenCalledWith('/domains/insan-kaynaklari.me')
     })
 
@@ -218,7 +218,7 @@ describe('Domain Blacklist API', () => {
       mockClient.get.mockResolvedValueOnce({
         data: { suggestions: [], total: 0 }
       })
-      const response = await BlacklistAPI.getCleanDomainSuggestions()
+      const response = await BlocklistAPI.getCleanDomainSuggestions()
       expect(response.data.suggestions).toHaveLength(0)
     })
 
@@ -229,7 +229,7 @@ describe('Domain Blacklist API', () => {
         reason: null
       }))
       mockClient.get.mockResolvedValueOnce({ data: { domains, total: 52 } })
-      const response = await BlacklistAPI.getAllDomainBlacklistStatuses()
+      const response = await BlocklistAPI.getAllDomainBlocklistStatuses()
       expect(response.data.domains).toHaveLength(52)
       expect(response.data.total).toBe(52)
     })

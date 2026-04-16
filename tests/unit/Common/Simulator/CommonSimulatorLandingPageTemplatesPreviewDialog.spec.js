@@ -120,7 +120,7 @@ describe('CommonSimulatorLandingPageTemplatesPreviewDialog.vue', () => {
     setTimeoutSpy.mockRestore()
   })
 
-  it('callForData passes urlTemplate to landingPageParams for blacklist check in child', async () => {
+  it('callForData passes urlTemplate to landingPageParams for blocklist check in child', async () => {
     const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
       fn()
       return 1
@@ -139,8 +139,8 @@ describe('CommonSimulatorLandingPageTemplatesPreviewDialog.vue', () => {
         Promise.resolve({
           data: {
             data: {
-              urlTemplate: 'https://www.blacklisted-domain.com/login.php',
-              name: 'Blacklisted LP',
+              urlTemplate: 'https://www.blocklisted-domain.com/login.php',
+              name: 'Blocklisted LP',
               languageTypeResourceId: 'lang-en',
               languageTypeName: 'English',
               landingPages: [
@@ -156,9 +156,9 @@ describe('CommonSimulatorLandingPageTemplatesPreviewDialog.vue', () => {
     await flushPromises()
     await flushPromises()
 
-    expect(ctx.landingPageParams.urlTemplate).toBe('https://www.blacklisted-domain.com/login.php')
+    expect(ctx.landingPageParams.urlTemplate).toBe('https://www.blocklisted-domain.com/login.php')
     // This urlTemplate is passed as :phishing-url to LandingPageTemplateModalPreview
-    // which then runs checkDomainBlacklist internally
+    // which then runs checkDomainBlocklist internally
 
     setTimeoutSpy.mockRestore()
   })
