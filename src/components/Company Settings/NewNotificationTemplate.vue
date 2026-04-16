@@ -637,6 +637,8 @@ export default {
       if (isTeamsNotificationTemplateSelected) {
         this.clearEmailDeliverySelection();
         this.clearTeamsNotificationSenderFields();
+      } else {
+        this.formValues.emailDeliverySettingType = EMAIL_DELIVERY_TYPES.SMTP;
       }
     },
     languageItems: {
@@ -1089,15 +1091,18 @@ export default {
         if (!this.isSelectedNotificationEnrollment)
           this.formValues.ccAddresses = [];
         const newTemplate = this.categoryItems[categoryIndex].template;
-        this.formValues.template = newTemplate;
-        // initialFormValues'a da set et (handleSelectedLanguagesChange için gerekli)
-        this.initialFormValues.template = newTemplate;
+        const existingTemplate = this.getSelectedLanguagePayload?.template;
+        const templateForLocalize = newTemplate || existingTemplate;
+        if (newTemplate) {
+          this.formValues.template = newTemplate;
+          this.initialFormValues.template = newTemplate;
+        }
         // Reset isTranslated flag for all languages when category changes
         this.languagesPayload.forEach((payload) => {
           payload.isTranslated = false;
         });
         // Update active language's template in languagesPayload if exists
-        if (this.activeLanguage && this.languagesPayload.length > 0) {
+        if (newTemplate && this.activeLanguage && this.languagesPayload.length > 0) {
           const activePayload = this.languagesPayload.find(
             (item) => item.languageTypeResourceId === this.activeLanguage
           );
@@ -1110,11 +1115,11 @@ export default {
         }
 
         // Auto-localize for selected languages when template type changes
-        // Only if not in edit mode, there are selected languages, and company language is NOT English
+        // Only if not in edit mode, there are selected languages, and a template exists
         if (
           !this.selectedItem &&
           this.selectedLanguages.length > 0 &&
-          newTemplate
+          templateForLocalize
         ) {
           const companyLanguage = this.languageItems.find(
             (lang) => lang.value === this.companyLanguageTypeResourceId
@@ -1141,7 +1146,7 @@ export default {
                 (lang) => lang.value === payload.languageTypeResourceId
               );
               if (isSelected) {
-                payload.template = newTemplate;
+                if (newTemplate) payload.template = newTemplate;
                 payload.isTranslated = false;
               }
             });
@@ -1255,12 +1260,13 @@ export default {
           languages: languagesPayload
         };
         if (this.isTeamsNotificationTemplateSelected) {
-          payload.emailDeliverySettingType = "";
-          payload.smtpSettingResourceId = "";
-          payload.directEmailSettingResourceId = "";
-          payload.fromName = "";
-          payload.fromAddress = "";
-          payload.ccAddresses = [];
+          delete payload.emailDeliverySettingType;
+          delete payload.smtpSettingResourceId;
+          delete payload.directEmailSettingResourceId;
+          delete payload.fromName;
+          delete payload.fromAddress;
+          delete payload.ccAddresses;
+          payload.languages = payload.languages.map(({ fromName, fromAddress, ccAddresses, ...rest }) => rest);
         }
 
         // Edit modundaysa detailActionType'ları set et
