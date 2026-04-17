@@ -124,7 +124,8 @@ describe('Quishing/CampaignManagerReportSubmittedMfaCodeTable.vue (extra)', () =
       id: 'job-1',
       instanceGroup: 'ig-1',
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportSubmittedMfaCodeTable.methods.callForData.call(ctx)

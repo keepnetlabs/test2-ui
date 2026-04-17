@@ -894,12 +894,19 @@ export default {
               ? licensesResult.value?.data?.data || {}
               : {};
           this.licenseCatalogFromLookup = licenses;
+          const industryItems = res
+            .filter((item) => item.genericCodeTypeId === 2)
+            .map((item) => ({ text: item.name, value: item.resourceId }));
+          const industryByResourceId = new Map();
+          industryItems.forEach((item) => {
+            if (item.value != null && !industryByResourceId.has(item.value)) {
+              industryByResourceId.set(item.value, item);
+            }
+          });
           this.$set(
             this.tableOptions.columns[2],
             "filterableItems",
-            res
-              .filter((item) => item.genericCodeTypeId === 2)
-              .map((item) => ({ text: item.name, value: item.resourceId }))
+            [...industryByResourceId.values()]
           );
           this.$set(this.tableOptions.columns[3], "filterableConfig", {
             exclusiveGroups: true,

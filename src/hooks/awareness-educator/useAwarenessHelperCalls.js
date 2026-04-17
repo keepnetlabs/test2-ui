@@ -22,7 +22,7 @@ export default {
         this.categories =
           response?.data?.data?.map((category) => ({
             text: category.displayName || category.name,
-            value: category.name
+            value: category.categoryId || category.id || category.resourceId
           })) || []
       })
     },

@@ -85,7 +85,8 @@ describe('CampaignManagerReportNoResponseTable.vue (extra)', () => {
       id: 'cmp-1',
       instanceGroup: 'ig-1',
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportNoResponseTable.methods.callForData.call(ctx)

@@ -7,6 +7,7 @@
       :is-duplicate="isDuplicate"
       :is-edit="isEdit"
       :email-template-id="getSelectedEmailTemplateId"
+      :scenario-details-lookup="scenarioDetailsLookup"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
@@ -17,10 +18,11 @@
       :is-duplicate="isDuplicate"
       :is-edit="isEdit"
       :email-template-id="getSelectedEmailTemplateId"
+      :scenario-details-lookup="scenarioDetailsLookup"
       @changeNewIndividualPrintoutModalStatus="changeNewIndividualPrintoutModalStatus"
       @showRenameAttachmentModal="onShowRenameAttachmentModal"
     />
-    <CommonSimulatorEmailTemplatePreviewDialog
+    <EmailTemplateMultipleLanguagePreviewDialog
       v-if="isShowPreviewDialog"
       :type="SCENARIO_TYPES.QUISHING"
       :status="isShowPreviewDialog"
@@ -31,6 +33,8 @@
       is-nested
       :should-control-html-overflow="true"
       @on-close="togglePreviewDialog"
+      @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <CommonSimulatorAttachmentRenameDialog
       v-if="isShowRenameAttachmentDialog"
@@ -64,7 +68,7 @@
 </template>
 <script>
 import QuishingEmailTemplatesTable from '@/components/QuishingEmailTemplates/QuishingEmailTemplatesTable'
-import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import CommonSimulatorEmailTemplateDeleteDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplateDeleteDialog.vue'
 import CommonSimulatorAttachmentRenameDialog from '@/components/Common/Simulator/CommonSimulatorAttachmentRenameDialog.vue'
 import NewQuishingEmailTemplatesModal from '@/components/QuishingEmailTemplates/NewQuishingEmailTemplatesModal.vue'
@@ -83,7 +87,7 @@ export default {
     NewQuishingEmailTemplatesModal,
     CommonSimulatorAttachmentRenameDialog,
     CommonSimulatorEmailTemplateDeleteDialog,
-    CommonSimulatorEmailTemplatePreviewDialog,
+    EmailTemplateMultipleLanguagePreviewDialog,
     QuishingEmailTemplatesTable
   },
   data() {
@@ -237,6 +241,28 @@ export default {
       this.isDuplicate = isDuplicate
       this.isEdit = !!row
       this.isShowIndividualPrintoutTemplateModal = !this.isShowIndividualPrintoutTemplateModal
+    },
+    handleEditFromPreview(row) {
+      this.isShowPreviewDialog = false
+      if (
+        row?.quishingType?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      ) {
+        this.toggleIndividualPrintoutTemplateModal(row, false)
+      } else {
+        this.toggleNewEmailTemplateModal(row, false)
+      }
+    },
+    handleDuplicateFromPreview(row) {
+      this.isShowPreviewDialog = false
+      if (
+        row?.quishingType?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      ) {
+        this.toggleIndividualPrintoutTemplateModal(row, true)
+      } else {
+        this.toggleNewEmailTemplateModal(row, true)
+      }
     }
   }
 }

@@ -97,7 +97,8 @@ describe('CampaignManagerReportSendingReportTable.vue', () => {
       axiosPayload: { orderBy: 'lastSendingTime', ascending: true, filter: {} },
       setLoading: jest.fn(),
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportSendingReportTable.methods.callForData.call(ctx)
@@ -131,7 +132,8 @@ describe('CampaignManagerReportSendingReportTable.vue', () => {
       axiosPayload: { orderBy: 'lastSendingTime', ascending: true, filter: {} },
       setLoading: jest.fn(),
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportSendingReportTable.methods.callForData.call(ctx)

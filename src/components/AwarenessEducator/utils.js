@@ -202,7 +202,8 @@ export const COLUMNS = {
     type: 'text',
     width: 200,
     filterableType: 'select',
-    filterableItems: []
+    filterableItems: [],
+    filterableCustomFieldName: 'categories'
   },
   LEVEL: {
     property: PROPERTY_STORE.LEVEL,

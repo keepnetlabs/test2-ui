@@ -68,7 +68,8 @@ describe('CampaignManagerReportClickedTable.vue (extra)', () => {
       instanceGroup: 'ig-1',
       serverSideProps: {},
       tableData: [],
-      botActivityCount: 99
+      botActivityCount: 99,
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportClickedTable.methods.callForData.call(ctx)

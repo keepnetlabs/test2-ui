@@ -56,7 +56,11 @@ import { enrichEnrollmentTableResults } from '@/components/AwarenessEducator/Enr
 export default {
   name: 'TrashTable',
   components: { DataTable },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi
+  ],
   data() {
     return {
       CONSTANTS: {

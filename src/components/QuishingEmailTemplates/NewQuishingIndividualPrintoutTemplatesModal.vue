@@ -245,6 +245,10 @@ export default {
     },
     emailTemplateId: {
       type: String
+    },
+    scenarioDetailsLookup: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {

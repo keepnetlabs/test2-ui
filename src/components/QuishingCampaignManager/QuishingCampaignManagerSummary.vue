@@ -1,9 +1,11 @@
 <template>
   <div class="campaign-manager-last-step">
-    <CommonSimulatorEmailTemplatePreviewDialog
+    <EmailTemplateMultipleLanguagePreviewDialog
       v-if="isShowEmailTemplateDrawer && emailTemplatePreviewSelectedRow"
+      ref="emailTemplatePreviewDialog"
       :status="isShowEmailTemplateDrawer"
       :selected-row="emailTemplatePreviewSelectedRow"
+      :api-func="QuishingService.getEmailTemplatePreviewContent"
       :type="type"
       :languages="languageOptions"
       is-nested
@@ -192,7 +194,7 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import { mapGetters } from 'vuex'
-import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 export default {
   name: 'CampaignManagerSummary',
@@ -202,7 +204,7 @@ export default {
     CampaignManagerSummaryCard,
     AlertBox,
     CampaignManagerScheduleDialog,
-    CommonSimulatorEmailTemplatePreviewDialog,
+    EmailTemplateMultipleLanguagePreviewDialog,
     CommonSimulatorLandingPageTemplatesPreviewDialog
   },
   props: {

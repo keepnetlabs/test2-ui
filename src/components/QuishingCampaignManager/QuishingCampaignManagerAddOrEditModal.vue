@@ -68,7 +68,11 @@
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
               :is-action-button-disabled.sync="isActionButtonDisabled"
+              :form-details="formDetails"
+              is-phishing
+              :hyper-personalization="sendUserPreferredLanguage"
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
+              @hyperPersonalizationChange="handleHyperPersonalizationChanged"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -108,6 +112,10 @@
               :form-details="formDetails"
               :is-call-api-when-created="!isEdit"
               :isMFAScenarioSelected="isMFAScenarioSelected"
+              :is-phishing="true"
+              :send-user-preferred-language="sendUserPreferredLanguage"
+              :target-group-resource-ids="targetGroupResourceIds"
+              :scenario-resource-ids="getSelectedScenariosResourceIds"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -237,6 +245,7 @@ export default {
       SCENARIO_TYPES,
       isActionButtonDisabled: false,
       isPhishingScenariosValid: true,
+      sendUserPreferredLanguage: '0',
       labels,
       totalTargetUserCount: 0,
       step: 1,
@@ -296,6 +305,9 @@ export default {
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
+    },
+    getSelectedScenariosResourceIds() {
+      return (this.selectedPhishingScenarios || []).map((scenario) => scenario.resourceId)
     },
     getSelectedPhishingScenario() {
       let selectedScenario = {}
@@ -488,6 +500,9 @@ export default {
     getInitialCampaignManagerCampaignInfo(values) {
       this.initialFormValues = { ...this.initialFormValues, ...values }
     },
+    handleHyperPersonalizationChanged(sendUserPreferredLanguage) {
+      this.sendUserPreferredLanguage = sendUserPreferredLanguage
+    },
     callForData() {
       QuishingService.getCampaignManager(this.getCampaignResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
@@ -497,6 +512,10 @@ export default {
         data.phishingScenarios = data.quishingScenarios
         delete data.quishingScenarios
         this.selectedRowFormData = data
+        this.sendUserPreferredLanguage =
+          data?.sendUserPreferredLanguage !== undefined && data?.sendUserPreferredLanguage !== null
+            ? data.sendUserPreferredLanguage.toString()
+            : '0'
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
           name: tGroup.text,
           resourceId: tGroup.value
@@ -747,7 +766,8 @@ export default {
             distributionStartTypeId: deliverySettingsFormData.distributionStartTypeId,
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
-            templateType: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL
+            templateType: QUISHING_EMAIL_TEMPLATE_TYPES.EMAIL,
+            sendUserPreferredLanguage: Number.parseInt(this.sendUserPreferredLanguage)
           }
           this.setActionButtonDisability(true)
           if (this.isEdit) {

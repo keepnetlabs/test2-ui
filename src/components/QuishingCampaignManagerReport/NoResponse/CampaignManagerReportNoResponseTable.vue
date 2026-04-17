@@ -64,11 +64,12 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import QuishingService from '@/api/quishing'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import useReportLanguageColumns from '@/hooks/useReportLanguageColumns'
 
 export default {
   name: 'CampaignManagerReportNoResponseTable',
   components: { DataTable, DefaultButtonRowAction },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useReportLanguageColumns],
   props: {
     id: {
       type: String
@@ -94,12 +95,12 @@ export default {
     const rowActions = []
     const columns = [COLUMNS.FIRST_NAME, COLUMNS.LAST_NAME, COLUMNS.EMAIL, COLUMNS.DEPARTMENT]
     if (isQuishingTypePrintout) {
-      columns.push({
+      columns.push(COLUMNS.PREFERREDLANGUAGE, {
         ...COLUMNS.PHISHING_SCENARIO_NAME,
         fixed: 'right',
         width: 'auto',
         minWidth: 'auto'
-      })
+      }, COLUMNS.EMAIL_TEMPLATE_LANGUAGE)
     } else {
       rowActions.push({
         name: labels.Resend,
@@ -108,7 +109,12 @@ export default {
         action: 'on-resend',
         disabled: false
       })
-      columns.push(COLUMNS.PHISHING_SCENARIO_NAME, COLUMNS.EMAIL_SEND_DATE)
+      columns.push(
+        COLUMNS.PREFERREDLANGUAGE,
+        COLUMNS.PHISHING_SCENARIO_NAME,
+        COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
+        COLUMNS.EMAIL_SEND_DATE
+      )
     }
     return {
       CONSTANTS: {
@@ -138,6 +144,9 @@ export default {
         rowActions
       }
     }
+  },
+  created() {
+    this.callForLanguages()
   },
   mounted() {
     this.callForData()
@@ -183,7 +192,7 @@ export default {
             row.customFieldValues.forEach((field) => {
               customFields[`${field.name}`] = field?.value
             })
-            return { ...row, ...customFields }
+            return this.mapPreferredLanguage({ ...row, ...customFields })
           })
         })
         .finally(this.setLoading)
