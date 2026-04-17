@@ -12,6 +12,7 @@
       :is-edit="isEdit"
       :is-duplicate="isDuplicate"
       :landing-page-data="landingPageData"
+      :scenario-details-lookup="scenarioDetailsLookup"
       @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
     />
     <CommonSimulatorLandingPageTemplatesPreviewDialog
@@ -23,6 +24,7 @@
       :languages="languageOptions"
       @on-close="togglePreviewDialog"
       @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <CommonSimulatorEmailTemplateDeleteDialog
       v-if="isShowDeleteDialog"
@@ -84,7 +86,8 @@ export default {
       multipleDeletedScenariosCount: 0,
       multipleScenariosPayload: {},
       isEdit: false,
-      languageOptions: []
+      languageOptions: [],
+      scenarioDetailsLookup: {}
     }
   },
   created() {
@@ -113,6 +116,12 @@ export default {
       this.isShowPreviewDialog = false
       this.$nextTick(() => {
         this.toggleNewLandingPageTemplateModal(row, false)
+      })
+    },
+    handleDuplicateFromPreview(row) {
+      this.isShowPreviewDialog = false
+      this.$nextTick(() => {
+        this.toggleNewLandingPageTemplateModal(row, true)
       })
     },
     toggleDeleteDialog(row = null, forceUpdate = false) {
@@ -176,6 +185,13 @@ export default {
             ...data,
             domainRecords,
             preferredLanguageTypes
+          }
+          const phishingData = phishingResponse?.data?.data || {}
+          this.scenarioDetailsLookup = {
+            languageTypes: this.languageOptions,
+            preferredLanguageTypes,
+            companyLanguageTypeResourceId:
+              phishingData.companyLanguageTypeResourceId || ''
           }
         })
     },

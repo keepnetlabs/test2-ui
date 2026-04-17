@@ -60,7 +60,8 @@ describe('CampaignManagerReportPhishingReportTable.vue', () => {
       id: 'c1',
       instanceGroup: 'ig1',
       serverSideProps: { totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 0 },
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
     CampaignManagerReportPhishingReportTable.methods.callForData.call(ctx)
     await flushPromises()

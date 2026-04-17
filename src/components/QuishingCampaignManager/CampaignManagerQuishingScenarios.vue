@@ -9,8 +9,9 @@
       :landing-page-templates="landingPageTemplates"
       @on-close="toggleTemplateDialog"
     />
-    <CommonSimulatorEmailTemplatePreviewDialog
+    <EmailTemplateMultipleLanguagePreviewDialog
       v-if="isShowEmailTemplateDrawer && type === SCENARIO_TYPES.QUISHING"
+      ref="emailTemplatePreviewDialog"
       :status="isShowEmailTemplateDrawer"
       :selected-row="emailTemplateSelectedRow"
       :api-func="QuishingService.getEmailTemplatePreviewContent"
@@ -365,7 +366,7 @@ import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCod
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
-import CommonSimulatorEmailTemplatePreviewDialog from '@/components/Common/Simulator/EmailTemplates/CommonSimulatorEmailTemplatePreviewDialog.vue'
+import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
@@ -381,7 +382,7 @@ export default {
     Multipane,
     MultipaneResizer,
     AttachmentsPreview,
-    CommonSimulatorEmailTemplatePreviewDialog,
+    EmailTemplateMultipleLanguagePreviewDialog,
     CommonSimulatorLandingPageTemplatesPreviewDialog
   },
   mixins: [useDebounce],

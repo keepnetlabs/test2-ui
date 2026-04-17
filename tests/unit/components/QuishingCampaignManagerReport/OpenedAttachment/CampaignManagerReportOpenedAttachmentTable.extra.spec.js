@@ -74,7 +74,8 @@ describe('CampaignManagerReportOpenedAttachmentTable.vue (extra)', () => {
       id: 'c1',
       instanceGroup: 'ig1',
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportOpenedAttachmentTable.methods.callForData.call(ctx)

@@ -1940,4 +1940,326 @@ describe('quishing API', () => {
       expect(testRequest.patch).toHaveBeenCalled()
     })
   })
+
+  describe('translation endpoints (localization)', () => {
+    it('should call generateQuishingTemplateTranslation with correct endpoint and payload', async () => {
+      const payload = { sourceLanguage: 'en', targetLanguages: ['de'] }
+      await quishingApi.generateQuishingTemplateTranslation(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates/translate',
+        payload
+      )
+    })
+
+    it('should call getQuishingTemplateTranslation with correct endpoint', async () => {
+      await quishingApi.getQuishingTemplateTranslation()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'quishing-simulator/translated-email-templates'
+      )
+    })
+
+    it('should call generateQuishingPrintoutTemplateTranslation with correct endpoint and payload', async () => {
+      const payload = { sourceLanguage: 'en', targetLanguages: ['fr'] }
+      await quishingApi.generateQuishingPrintoutTemplateTranslation(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-templates/translate',
+        payload
+      )
+    })
+
+    it('should call getQuishingPrintoutTemplateTranslation with correct endpoint', async () => {
+      await quishingApi.getQuishingPrintoutTemplateTranslation()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'quishing-simulator/translated-quishing-templates'
+      )
+    })
+
+    it('should call generateQuishingLandingPageTranslation with correct endpoint and payload', async () => {
+      const payload = { sourceLanguage: 'en', targetLanguages: ['es'] }
+      await quishingApi.generateQuishingLandingPageTranslation(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/landing-page-template/translate-content',
+        payload
+      )
+    })
+
+    it('should call getQuishingLandingPageTranslation with temporaryKey', async () => {
+      await quishingApi.getQuishingLandingPageTranslation('tmp-key-123')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'quishing-simulator/landing-page-template/translated-content/tmp-key-123'
+      )
+    })
+
+    it('should call getQuishingLandingPageTranslation with undefined temporaryKey', async () => {
+      await quishingApi.getQuishingLandingPageTranslation()
+      expect(testRequest.get).toHaveBeenCalledWith(
+        'quishing-simulator/landing-page-template/translated-content/undefined'
+      )
+    })
+  })
+
+  describe('appendAdditionalLanguagesToFormData (multi-language helper)', () => {
+    let appendSpy
+    let originalAppend
+
+    beforeEach(() => {
+      originalAppend = FormData.prototype.append
+      appendSpy = jest.fn()
+      FormData.prototype.append = appendSpy
+    })
+
+    afterEach(() => {
+      FormData.prototype.append = originalAppend
+    })
+
+    const baseEmailPayload = {
+      name: 'Template',
+      description: 'Desc',
+      categoryResourceId: 'cat-1',
+      tags: [],
+      difficultyResourceId: 'diff-1',
+      availableForRequests: [],
+      fromAddress: 'from@example.com',
+      fromName: 'From',
+      subject: 'Subject',
+      template: '<html></html>',
+      languageTypeResourceId: 'lang-1',
+      isDuplicated: false,
+      duplicatedTemplateResourceId: null
+    }
+
+    const collectAppendCalls = () =>
+      appendSpy.mock.calls.map(([key, value]) => ({ key, value }))
+
+    it('should not append additional languages when payload.languages is undefined', async () => {
+      await quishingApi.createQuishingEmailTemplate({ ...baseEmailPayload })
+      const calls = collectAppendCalls()
+      expect(calls.some((c) => c.key.startsWith('languages['))).toBe(false)
+    })
+
+    it('should not append additional languages when payload.languages has only one entry (length <= 1)', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [{ languageTypeResourceId: 'lang-1', subject: 'Only' }]
+      })
+      const calls = collectAppendCalls()
+      expect(calls.some((c) => c.key.startsWith('languages['))).toBe(false)
+    })
+
+    it('should not append additional languages when payload.languages is not an array', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: 'not-an-array'
+      })
+      const calls = collectAppendCalls()
+      expect(calls.some((c) => c.key.startsWith('languages['))).toBe(false)
+    })
+
+    it('should append plain string fields for additional languages with reindexed [i-1]', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [
+          { languageTypeResourceId: 'lang-1', subject: 'EN' },
+          { languageTypeResourceId: 'lang-2', subject: 'DE' },
+          { languageTypeResourceId: 'lang-3', subject: 'FR' }
+        ]
+      })
+      const calls = collectAppendCalls()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'languages[0].languageTypeResourceId', value: 'lang-2' },
+          { key: 'languages[0].subject', value: 'DE' },
+          { key: 'languages[1].languageTypeResourceId', value: 'lang-3' },
+          { key: 'languages[1].subject', value: 'FR' }
+        ])
+      )
+    })
+
+    it('should append ccAddresses array entries with bracket notation', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [
+          { languageTypeResourceId: 'lang-1' },
+          { languageTypeResourceId: 'lang-2', ccAddresses: ['a@x.com', 'b@x.com'] }
+        ]
+      })
+      const calls = collectAppendCalls()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'languages[0].ccAddresses[0]', value: 'a@x.com' },
+          { key: 'languages[0].ccAddresses[1]', value: 'b@x.com' }
+        ])
+      )
+    })
+
+    it('should skip ccAddresses when value is not an array', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [
+          { languageTypeResourceId: 'lang-1' },
+          { languageTypeResourceId: 'lang-2', ccAddresses: 'not-array', subject: 'DE' }
+        ]
+      })
+      const calls = collectAppendCalls()
+      expect(calls.some((c) => c.key.startsWith('languages[0].ccAddresses'))).toBe(false)
+      expect(calls).toEqual(
+        expect.arrayContaining([{ key: 'languages[0].subject', value: 'DE' }])
+      )
+    })
+
+    it('should fall back to empty string when a field value is falsy', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [
+          { languageTypeResourceId: 'lang-1' },
+          { languageTypeResourceId: 'lang-2', subject: '', fromName: null }
+        ]
+      })
+      const calls = collectAppendCalls()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'languages[0].subject', value: '' },
+          { key: 'languages[0].fromName', value: '' }
+        ])
+      )
+    })
+
+    it('should treat null entry in languages array as empty object (lang || {})', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [
+          { languageTypeResourceId: 'lang-1' },
+          null
+        ]
+      })
+      const calls = collectAppendCalls()
+      expect(calls.some((c) => c.key.startsWith('languages[0]'))).toBe(false)
+    })
+
+    it('should append detailActionType when isEdit=true and primary.detailActionType is set (email)', async () => {
+      await quishingApi.updateQuishingEmailTemplate(
+        {
+          ...baseEmailPayload,
+          languages: [
+            {
+              languageTypeResourceId: 'lang-1',
+              template: '<html></html>',
+              prompt: 'p',
+              toneResourceId: 'tone',
+              localizationResourceId: 'loc',
+              detailActionType: 1
+            }
+          ]
+        },
+        'tpl-1'
+      )
+      const calls = appendSpy.mock.calls.map(([key, value]) => ({ key, value }))
+      expect(calls).toEqual(
+        expect.arrayContaining([{ key: 'detailActionType', value: '1' }])
+      )
+    })
+
+    it('should NOT append detailActionType when isEdit=false (create path)', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...baseEmailPayload,
+        languages: [
+          {
+            languageTypeResourceId: 'lang-1',
+            template: '<html></html>',
+            detailActionType: 1
+          }
+        ]
+      })
+      const calls = appendSpy.mock.calls.map(([key]) => key)
+      expect(calls).not.toContain('detailActionType')
+    })
+
+    it('should NOT append detailActionType when value is null', async () => {
+      await quishingApi.updateQuishingEmailTemplate(
+        {
+          ...baseEmailPayload,
+          languages: [
+            {
+              languageTypeResourceId: 'lang-1',
+              template: '<html></html>',
+              detailActionType: null
+            }
+          ]
+        },
+        'tpl-1'
+      )
+      const calls = appendSpy.mock.calls.map(([key]) => key)
+      expect(calls).not.toContain('detailActionType')
+    })
+
+    it('should NOT append detailActionType when value is undefined', async () => {
+      await quishingApi.updateQuishingEmailTemplate(
+        {
+          ...baseEmailPayload,
+          languages: [
+            {
+              languageTypeResourceId: 'lang-1',
+              template: '<html></html>'
+            }
+          ]
+        },
+        'tpl-1'
+      )
+      const calls = appendSpy.mock.calls.map(([key]) => key)
+      expect(calls).not.toContain('detailActionType')
+    })
+
+    it('should append detailActionType for printout template (isEdit=true)', async () => {
+      await quishingApi.updateQuishingPrintoutTemplate(
+        {
+          name: 'Printout',
+          description: 'Desc',
+          categoryResourceId: 'cat-1',
+          tags: [],
+          difficultyResourceId: 'diff-1',
+          availableForRequests: [],
+          templateName: 'Default',
+          languageTypeResourceId: 'lang-1',
+          languages: [
+            {
+              languageTypeResourceId: 'lang-1',
+              templateName: 'EN',
+              detailActionType: 2
+            }
+          ]
+        },
+        'printout-1'
+      )
+      const calls = appendSpy.mock.calls.map(([key, value]) => ({ key, value }))
+      expect(calls).toEqual(
+        expect.arrayContaining([{ key: 'detailActionType', value: '2' }])
+      )
+    })
+
+    it('should also work for printout templates (createCommonFormDataForQuishingPrintoutTemplate path)', async () => {
+      const printoutBase = {
+        name: 'Printout',
+        description: 'Desc',
+        categoryResourceId: 'cat-1',
+        tags: [],
+        difficultyResourceId: 'diff-1',
+        availableForRequests: [],
+        templateName: 'Default',
+        languageTypeResourceId: 'lang-1',
+        type: 'printout',
+        languages: [
+          { languageTypeResourceId: 'lang-1' },
+          { languageTypeResourceId: 'lang-2', templateName: 'DE' }
+        ]
+      }
+      await quishingApi.createQuishingPrintoutTemplate(printoutBase)
+      const calls = collectAppendCalls()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'languages[0].languageTypeResourceId', value: 'lang-2' },
+          { key: 'languages[0].templateName', value: 'DE' }
+        ])
+      )
+    })
+  })
 })
