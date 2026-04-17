@@ -215,12 +215,11 @@ export default {
       )
     },
     getCategoryFilterValue(category = '') {
+      const val = String(category ?? '')
       return (
-        this.categories.find((cat) => {
-          if (cat.value === category) {
-            return cat
-          }
-        })?.text || category
+        this.categories?.find(
+          (cat) => String(cat?.value ?? '') === val || String(cat?.id ?? '') === val
+        )?.text || category
       )
     },
     getBehaviourFilterValue(filterVal) {

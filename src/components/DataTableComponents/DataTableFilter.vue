@@ -210,9 +210,9 @@
           ></v-text-field>
         </div>
         <v-checkbox
-          v-for="item in searchInItems"
+          v-for="(item, idx) in searchInItems"
           v-model="filterChecked"
-          :key="item.value"
+          :key="String(item.value) + '-' + idx"
           color="#2196f3"
           :value="item.value"
           :label="item.text"
