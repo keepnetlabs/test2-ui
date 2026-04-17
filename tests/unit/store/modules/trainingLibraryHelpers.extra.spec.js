@@ -251,7 +251,7 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
           code: 'OnlyNameCategory',
           categoryName: 'OnlyNameCategory',
           text: 'OnlyNameCategory',
-          value: 'OnlyNameCategory'
+          value: ''
         }
       ])
     })

@@ -235,15 +235,21 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'Or',
-              FilterItems: [
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: [
                 {
-                  FieldName: 'category',
-                  Value: category,
-                  Operator: 'Include'
+                  Condition: 'Or',
+                  FilterItems: [
+                    {
+                      FieldName: 'categories',
+                      Value: category,
+                      Operator: 'Include'
+                    }
+                  ],
+                  FilterGroups: []
                 }
-              ],
-              FilterGroups: []
+              ]
             }
           ]
         },

@@ -292,7 +292,25 @@ const getQuishingFileType = (payload) => {
   }
   return payload?.phishingFileName?.split('.')?.[1] || null
 }
-const createCommonFormDataForQuishingTemplate = (payload) => {
+// Append additional language entries (index 1+) to FormData. Index 0 is flattened to root.
+const appendAdditionalLanguagesToFormData = (formData, languages = []) => {
+  if (!Array.isArray(languages) || languages.length <= 1) return
+  for (let i = 1; i < languages.length; i++) {
+    const lang = languages[i] || {}
+    for (const [key, value] of Object.entries(lang)) {
+      if (key === 'ccAddresses') {
+        if (Array.isArray(value)) {
+          for (let j = 0; j < value.length; j++) {
+            formData.append(`languages[${[i - 1]}].${key}[${[j]}]`, value[j])
+          }
+        }
+      } else {
+        formData.append(`languages[${[i - 1]}].${key}`, value || '')
+      }
+    }
+  }
+}
+const createCommonFormDataForQuishingTemplate = (payload, isEdit = false) => {
   const formData = new FormData()
   formData.append('name', payload.name)
   formData.append('description', payload.description)
@@ -308,11 +326,28 @@ const createCommonFormDataForQuishingTemplate = (payload) => {
       payload.availableForRequests[i].resourceId
     )
   }
-  formData.append('fromAddress', payload.fromAddress)
-  formData.append('fromName', payload.fromName)
-  formData.append('subject', payload.subject)
-  formData.append('template', payload.template)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  // Backward-compatible: if payload.languages[] exists, use index 0 for root fields and
+  // serialize the rest under languages[i]. Otherwise fall back to legacy single-language fields.
+  const hasLanguagesArray = Array.isArray(payload?.languages) && payload.languages.length > 0
+  const primary = hasLanguagesArray ? payload.languages[0] : payload
+  if (primary?.ccAddresses?.length) {
+    for (let i = 0; i < primary.ccAddresses.length; i++) {
+      formData.append(`ccAddresses[${[i]}]`, primary.ccAddresses[i])
+    }
+  }
+  formData.append('fromAddress', primary.fromAddress || '')
+  formData.append('fromName', primary.fromName || '')
+  formData.append('subject', primary.subject || '')
+  formData.append('template', primary.template || '')
+  formData.append('languageTypeResourceId', primary.languageTypeResourceId || '')
+  if (hasLanguagesArray) {
+    formData.append('prompt', primary.prompt || '')
+    formData.append('toneResourceId', primary.toneResourceId || '')
+    formData.append('localizationResourceId', primary.localizationResourceId || '')
+    if (isEdit && primary?.detailActionType !== undefined && primary?.detailActionType !== null) {
+      formData.append('detailActionType', primary.detailActionType.toString())
+    }
+  }
   if (payload.type) formData.append('type', payload.type)
   if (payload.isAttachmentBasedTemplate) {
     const phishingFileType = getQuishingFileType(payload)
@@ -325,9 +360,10 @@ const createCommonFormDataForQuishingTemplate = (payload) => {
     formData.append('isPhishingFileModified', payload.isPhishingFileModified)
     formData.append('phishingFileName', payload.phishingFileName)
   }
+  appendAdditionalLanguagesToFormData(formData, hasLanguagesArray ? payload.languages : [])
   return formData
 }
-const createCommonFormDataForQuishingPrintoutTemplate = (payload) => {
+const createCommonFormDataForQuishingPrintoutTemplate = (payload, isEdit = false) => {
   const formData = new FormData()
   formData.append('name', payload.name)
   formData.append('description', payload.description)
@@ -343,13 +379,24 @@ const createCommonFormDataForQuishingPrintoutTemplate = (payload) => {
       payload.availableForRequests[i].resourceId
     )
   }
-  formData.append('template', payload.template)
-  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
+  const hasLanguagesArray = Array.isArray(payload?.languages) && payload.languages.length > 0
+  const primary = hasLanguagesArray ? payload.languages[0] : payload
+  formData.append('template', primary.template || '')
+  formData.append('languageTypeResourceId', primary.languageTypeResourceId || '')
+  if (hasLanguagesArray) {
+    formData.append('prompt', primary.prompt || '')
+    formData.append('toneResourceId', primary.toneResourceId || '')
+    formData.append('localizationResourceId', primary.localizationResourceId || '')
+    if (isEdit && primary?.detailActionType !== undefined && primary?.detailActionType !== null) {
+      formData.append('detailActionType', primary.detailActionType.toString())
+    }
+  }
   if (payload.type) formData.append('type', payload.type)
+  appendAdditionalLanguagesToFormData(formData, hasLanguagesArray ? payload.languages : [])
   return formData
 }
 const createQuishingEmailTemplate = (payload = {}) => {
-  const formData = createCommonFormDataForQuishingTemplate(payload)
+  const formData = createCommonFormDataForQuishingTemplate(payload, false)
   formData.append('isDuplicated', payload.isDuplicated)
   formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
   return testRequest.post(`quishing-simulator/email-templates`, formData, {
@@ -358,14 +405,14 @@ const createQuishingEmailTemplate = (payload = {}) => {
   })
 }
 export function updateQuishingEmailTemplate(payload = {}, id = '') {
-  const formData = createCommonFormDataForQuishingTemplate(payload)
+  const formData = createCommonFormDataForQuishingTemplate(payload, true)
   return testRequest.put(`quishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
   })
 }
 const createQuishingPrintoutTemplate = (payload = {}) => {
-  const formData = createCommonFormDataForQuishingPrintoutTemplate(payload)
+  const formData = createCommonFormDataForQuishingPrintoutTemplate(payload, false)
   formData.append('isDuplicated', payload.isDuplicated)
   formData.append('duplicatedTemplateResourceId', payload.duplicatedTemplateResourceId)
   return testRequest.post(`quishing-simulator/quishing-templates`, formData, {
@@ -374,7 +421,7 @@ const createQuishingPrintoutTemplate = (payload = {}) => {
   })
 }
 const updateQuishingPrintoutTemplate = (payload = {}, id = '') => {
-  const formData = createCommonFormDataForQuishingPrintoutTemplate(payload)
+  const formData = createCommonFormDataForQuishingPrintoutTemplate(payload, true)
   return testRequest.put(`quishing-simulator/quishing-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
@@ -686,6 +733,32 @@ export const translateQuishingRedFlagsTexts = (payload) => {
   })
 }
 
+export const generateQuishingTemplateTranslation = (payload) => {
+  return testRequest.post(`quishing-simulator/email-templates/translate`, payload)
+}
+
+export const getQuishingTemplateTranslation = () => {
+  return testRequest.get(`quishing-simulator/translated-email-templates`)
+}
+
+export const generateQuishingPrintoutTemplateTranslation = (payload) => {
+  return testRequest.post(`quishing-simulator/quishing-templates/translate`, payload)
+}
+
+export const getQuishingPrintoutTemplateTranslation = () => {
+  return testRequest.get(`quishing-simulator/translated-quishing-templates`)
+}
+
+export const generateQuishingLandingPageTranslation = (payload) => {
+  return testRequest.post(`quishing-simulator/landing-page-template/translate-content`, payload)
+}
+
+export const getQuishingLandingPageTranslation = (temporaryKey) => {
+  return testRequest.get(
+    `quishing-simulator/landing-page-template/translated-content/${temporaryKey}`
+  )
+}
+
 export default {
   exportScenarios,
   searchScenarios,
@@ -794,5 +867,11 @@ export default {
   getCampaignManagerQuishingTemplatePreviewContent,
   getQuishingPdfCampaignDownloadContent,
   searchCampaignJobPrintoutUserSendingReport,
-  getQuishingScenariosPhoneNumber
+  getQuishingScenariosPhoneNumber,
+  generateQuishingTemplateTranslation,
+  getQuishingTemplateTranslation,
+  generateQuishingPrintoutTemplateTranslation,
+  getQuishingPrintoutTemplateTranslation,
+  generateQuishingLandingPageTranslation,
+  getQuishingLandingPageTranslation
 }

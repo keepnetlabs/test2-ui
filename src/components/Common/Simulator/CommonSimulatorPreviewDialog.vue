@@ -165,11 +165,11 @@
                   }}</span>
                 </div>
                 <div
-                  v-if="isPhishing"
+                  v-if="isPhishing || isQuishing"
                   class="email-template-preview__header d-flex align-center justify-space-between mb-4"
                 >
                   <InputLanguagePreview
-                    v-if="isPhishing"
+                    v-if="isPhishing || isQuishing"
                     :value="languagePreview"
                     :items="selectedTemplateLanguages"
                     :label="templateLanguageLabel"
@@ -217,7 +217,7 @@
                 </div>
                 <hr
                   class="ml-n4 mb-3 mr-n4"
-                  v-if="!!emailTemplate && isPhishing"
+                  v-if="!!emailTemplate && (isPhishing || isQuishing)"
                 />
                 <div
                   class="d-flex align-start justify-space-between"
@@ -819,7 +819,7 @@ export default {
             languageTypeResourceId,
             languageTypeName
           };
-          if (this.isPhishing) {
+          if (this.isPhishing || this.isQuishing) {
             this.phishingEmailTemplates.push({
               fromName,
               fromAddress,
@@ -880,8 +880,8 @@ export default {
             languageTypeResourceId: landingPageLanguageTypeResourceId
           } = landingPageTemplate || [];
 
-          // Phishing durumunda backend'den gelen yapı farklı - languages array'i içinde
-          if (this.isPhishing) {
+          // Phishing/Quishing durumunda backend'den gelen yapı farklı - languages array'i içinde
+          if (this.isPhishing || this.isQuishing) {
             // Tüm dilleri topla (ana dil + diğer diller)
             const allLanguagesMap = new Map();
 

@@ -110,7 +110,8 @@ describe('CampaignManagerReportSubmittedTable.vue (extra)', () => {
       id: 'c1',
       instanceGroup: 'ig1',
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportSubmittedTable.methods.callForData.call(ctx)

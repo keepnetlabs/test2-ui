@@ -200,13 +200,45 @@ describe('trainingLibrary store (branch extra coverage)', () => {
   it('REMOVE_FILTER_FROM_PAYLOAD splices non-search filter', () => {
     const state = createState()
     state.axiosPayload.filter.FilterGroups[0].FilterItems = [
-      { FieldName: 'category', Value: 'A', Operator: 'Include' }
+      { FieldName: 'vendor', Value: 'A', Operator: 'Contains' }
     ]
     trainingLibrary.mutations.REMOVE_FILTER_FROM_PAYLOAD(state, {
-      key: 'category',
+      key: 'vendor',
       filterType: 'select',
       activeValue: 'x'
     })
+    expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
+  it('SET_FILTER_TO_PAYLOAD maps category key to FieldName=categories in FilterItems', () => {
+    const state = createState()
+    trainingLibrary.mutations.SET_FILTER_TO_PAYLOAD(state, {
+      key: 'category',
+      activeValue: ['TravelSecurity', 'MobileDeviceSecurity'],
+      activeOperator: 'Include'
+    })
+
+    const items = state.axiosPayload.filter.FilterGroups[0].FilterItems
+    expect(items).toHaveLength(1)
+    expect(items[0]).toEqual({
+      FieldName: 'categories',
+      Value: 'TravelSecurity,MobileDeviceSecurity',
+      Operator: 'Include'
+    })
+  })
+
+  it('REMOVE_FILTER_FROM_PAYLOAD removes categories filter when key is category', () => {
+    const state = createState()
+    state.axiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'categories', Value: 'A', Operator: 'Include' }
+    ]
+
+    trainingLibrary.mutations.REMOVE_FILTER_FROM_PAYLOAD(state, {
+      key: 'category',
+      filterType: 'select',
+      activeValue: []
+    })
+
     expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
   })
 

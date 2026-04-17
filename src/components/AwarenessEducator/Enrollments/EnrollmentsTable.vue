@@ -79,7 +79,11 @@ export default {
       required: true
     }
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi
+  ],
   data() {
     return {
       CONSTANTS: {

@@ -224,7 +224,11 @@ const trainingLibraryHelpers = {
               category.displayName ||
               category.name ||
               category.code,
-            value: category.code || category.name || ""
+            value:
+              category.categoryId ||
+              category.id ||
+              category.resourceId ||
+              ""
           })) || [];
         commit("SET_CATEGORIES", categories);
         dispatch(

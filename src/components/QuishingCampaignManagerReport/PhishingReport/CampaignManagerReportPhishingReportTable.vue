@@ -72,11 +72,12 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import QuishingService from '@/api/quishing'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import useReportLanguageColumns from '@/hooks/useReportLanguageColumns'
 
 export default {
   name: 'CampaignManagerReportPhishingReportTable',
   components: { DataTable, DefaultButtonRowAction },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useReportLanguageColumns],
   props: {
     id: {
       type: String
@@ -120,7 +121,9 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
           COLUMNS.LAST_REPORTED,
           COLUMNS.TIMES_REPORTED
         ],
@@ -150,6 +153,9 @@ export default {
         ]
       }
     }
+  },
+  created() {
+    this.callForLanguages()
   },
   mounted() {
     this.callForData()
@@ -194,7 +200,7 @@ export default {
             row.customFieldValues.forEach((field) => {
               customFields[`${field.name}`] = field?.value
             })
-            return { ...row, ...customFields }
+            return this.mapPreferredLanguage({ ...row, ...customFields })
           })
         })
         .finally(this.setLoading)

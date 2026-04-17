@@ -129,6 +129,7 @@ import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import Badge from '@/components/Badge'
 import QuishingService from '@/api/quishing'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
+import useReportLanguageColumns from '@/hooks/useReportLanguageColumns'
 
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
@@ -141,7 +142,7 @@ export default {
     Badge,
     DefaultButtonRowAction
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, useReportLanguageColumns],
   props: {
     id: {
       type: String
@@ -177,7 +178,9 @@ export default {
         COLUMNS.LAST_NAME,
         COLUMNS.EMAIL,
         COLUMNS.DEPARTMENT,
+        COLUMNS.PREFERREDLANGUAGE,
         COLUMNS.PHISHING_SCENARIO_NAME,
+        COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
         COLUMNS.EMAIL_DELIVERY,
         COLUMNS.DATE_SENT,
         COLUMNS.DELIVERY_STATUS
@@ -187,7 +190,9 @@ export default {
         COLUMNS.FIRST_NAME_PRINTOUT,
         COLUMNS.LAST_NAME_PRINTOUT,
         COLUMNS.EMAIL_PRINTOUT,
-        COLUMNS.DEPARTMENT_PRINTOUT
+        COLUMNS.DEPARTMENT_PRINTOUT,
+        COLUMNS.PREFERREDLANGUAGE,
+        COLUMNS.EMAIL_TEMPLATE_LANGUAGE
       )
     }
     return {
@@ -294,6 +299,9 @@ export default {
       isErrorState: false
     }
   },
+  created() {
+    this.callForLanguages()
+  },
   computed: {
     getEvents() {
       const { events = [] } = this.extendedViewValue[0] || { events: [] }
@@ -361,14 +369,14 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           if (this.isQuishingTypePrintout) {
-            this.tableData = results
+            this.tableData = (results || []).map((row) => this.mapPreferredLanguage(row))
           } else {
             this.tableData = results.map((row) => {
               let customFields = {}
               row.customFieldValues.forEach((field) => {
                 customFields[`${field.name}`] = field?.value
               })
-              return { ...row, ...customFields }
+              return this.mapPreferredLanguage({ ...row, ...customFields })
             })
           }
         })

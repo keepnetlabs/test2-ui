@@ -74,7 +74,8 @@ describe('CampaignManagerReportPhishingReportTable.vue (extra)', () => {
       id: 'cmp-1',
       instanceGroup: 'ig-1',
       serverSideProps: {},
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
 
     CampaignManagerReportPhishingReportTable.methods.callForData.call(ctx)

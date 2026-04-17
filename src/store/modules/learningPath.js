@@ -8,6 +8,12 @@ import {
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLibraryFilters/utils'
+
+const resolvePayloadKey = (key) => {
+  if (key === 'targetAudience') return 'roles'
+  if (key === 'category') return 'categories'
+  return key
+}
 const learningPath = {
   namespaced: true,
   state: {
@@ -246,7 +252,7 @@ const learningPath = {
     },
     SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, payload) {
       const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
-      const payloadKey = payload.key === 'targetAudience' ? 'roles' : payload.key
+      const payloadKey = resolvePayloadKey(payload.key)
       const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey)
       let value
       if (typeof payload.activeValue === 'string') {
@@ -281,7 +287,7 @@ const learningPath = {
     },
     REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, payload) {
       const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
-      const payloadKey = payload.key === 'targetAudience' ? 'roles' : payload.key
+      const payloadKey = resolvePayloadKey(payload.key)
       if (payload.filterType === 'date' && payload.activeOperator === 'between') {
         const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey)
         if (fIndex !== -1) filterItems.splice(fIndex, 2)

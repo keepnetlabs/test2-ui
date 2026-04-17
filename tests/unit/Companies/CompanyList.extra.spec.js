@@ -415,6 +415,51 @@ describe('CompanyList.vue (extra)', () => {
     })
   })
 
+  describe('getLookUpDatas industry dedupe', () => {
+    it('deduplicates industry items by resourceId (keeps first occurrence)', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+      LookupLocalStorage.getMultiple.mockResolvedValueOnce([
+        { genericCodeTypeId: 2, name: 'Finance', resourceId: 'i-1' },
+        { genericCodeTypeId: 2, name: 'Finance Duplicate', resourceId: 'i-1' },
+        { genericCodeTypeId: 2, name: 'Healthcare', resourceId: 'i-2' },
+        { genericCodeTypeId: 2, name: 'Healthcare Again', resourceId: 'i-2' },
+        { genericCodeTypeId: 2, name: 'Education', resourceId: 'i-3' }
+      ])
+
+      wrapper.vm.getLookUpDatas()
+      await flushPromises()
+
+      const items = wrapper.vm.tableOptions.columns[2].filterableItems
+      expect(items).toEqual([
+        { text: 'Finance', value: 'i-1' },
+        { text: 'Healthcare', value: 'i-2' },
+        { text: 'Education', value: 'i-3' }
+      ])
+      const ids = items.map((x) => x.value)
+      expect(new Set(ids).size).toBe(ids.length)
+    })
+
+    it('skips industry entries with nullish resourceId during dedupe', async () => {
+      const wrapper = createWrapper()
+      await flushPromises()
+      wrapper.vm.$refs.refDataList = { reRenderFilters: jest.fn() }
+      LookupLocalStorage.getMultiple.mockResolvedValueOnce([
+        { genericCodeTypeId: 2, name: 'Finance', resourceId: 'i-1' },
+        { genericCodeTypeId: 2, name: 'Missing Id', resourceId: null },
+        { genericCodeTypeId: 2, name: 'Also Missing', resourceId: undefined }
+      ])
+
+      wrapper.vm.getLookUpDatas()
+      await flushPromises()
+
+      expect(wrapper.vm.tableOptions.columns[2].filterableItems).toEqual([
+        { text: 'Finance', value: 'i-1' }
+      ])
+    })
+  })
+
   describe('getLookUpDatas fallback branches', () => {
     it('uses empty license groups when licenses lookup fails', async () => {
       const wrapper = createWrapper()

@@ -101,7 +101,7 @@ describe('trainingLibraryHelpers store module (real)', () => {
       AwarenessEducatorService.getCategories.mockResolvedValue({
         data: {
           data: [
-            { name: 'SocialEngineering', displayName: 'Social Engineering' }
+            { id: 42, name: 'SocialEngineering', displayName: 'Social Engineering' }
           ]
         }
       })
@@ -110,11 +110,11 @@ describe('trainingLibraryHelpers store module (real)', () => {
 
       expect(commit).toHaveBeenCalledWith('SET_CATEGORIES', [
         {
-          id: '',
+          id: 42,
           code: 'SocialEngineering',
           categoryName: 'Social Engineering',
           text: 'Social Engineering',
-          value: 'SocialEngineering'
+          value: 42
         }
       ])
       expect(dispatch).toHaveBeenCalledWith(

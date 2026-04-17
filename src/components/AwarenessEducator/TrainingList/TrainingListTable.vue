@@ -166,7 +166,11 @@ export default {
     DefaultButtonRowAction,
     DataTable
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi
+  ],
   data() {
     return {
       TRAINING_TYPES,

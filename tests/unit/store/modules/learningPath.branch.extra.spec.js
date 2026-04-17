@@ -94,12 +94,12 @@ describe('learningPath store (branch extra coverage)', () => {
   it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD handles non-string non-array activeValue', () => {
     const state = createState()
     learningPath.mutations.SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, {
-      key: 'category',
+      key: 'vendor',
       activeValue: 123,
       activeOperator: '='
     })
     const items = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
-    const item = items.find((f) => f.FieldName === 'category')
+    const item = items.find((f) => f.FieldName === 'vendor')
     expect(item).toBeDefined()
     expect(item.Value).toBeUndefined()
     expect(item.Operator).toBe('=')
@@ -108,13 +108,46 @@ describe('learningPath store (branch extra coverage)', () => {
   it('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD removes non-search filter by splice', () => {
     const state = createState()
     state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems = [
-      { FieldName: 'category', Value: 'A', Operator: 'Include' }
+      { FieldName: 'vendor', Value: 'A', Operator: 'Contains' }
+    ]
+
+    learningPath.mutations.REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, {
+      key: 'vendor',
+      filterType: 'select',
+      activeValue: 'x'
+    })
+
+    expect(state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
+  it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD maps category key to FieldName=categories', () => {
+    const state = createState()
+    learningPath.mutations.SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, {
+      key: 'category',
+      activeValue: ['SocialEngineering', 'TravelSecurity'],
+      activeOperator: 'Include'
+    })
+
+    const items = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
+    const categoriesItem = items.find((f) => f.FieldName === 'categories')
+    expect(categoriesItem).toEqual({
+      FieldName: 'categories',
+      Value: 'SocialEngineering,TravelSecurity',
+      Operator: 'Include'
+    })
+    expect(items.find((f) => f.FieldName === 'category')).toBeUndefined()
+  })
+
+  it('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD removes categories filter when key is category', () => {
+    const state = createState()
+    state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'categories', Value: 'A', Operator: 'Include' }
     ]
 
     learningPath.mutations.REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, {
       key: 'category',
       filterType: 'select',
-      activeValue: 'x'
+      activeValue: []
     })
 
     expect(state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
