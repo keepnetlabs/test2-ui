@@ -2262,4 +2262,231 @@ describe('quishing API', () => {
       )
     })
   })
+
+  describe('backwards compatibility (legacy single-language payloads)', () => {
+    let appendSpy
+    let originalAppend
+
+    beforeEach(() => {
+      originalAppend = FormData.prototype.append
+      appendSpy = jest.fn()
+      FormData.prototype.append = appendSpy
+    })
+
+    afterEach(() => {
+      FormData.prototype.append = originalAppend
+    })
+
+    const collectAppendCalls = () =>
+      appendSpy.mock.calls.map(([key, value]) => ({ key, value }))
+
+    const collectAppendKeys = () => appendSpy.mock.calls.map(([key]) => key)
+
+    const legacyEmailPayload = {
+      name: 'Legacy Template',
+      description: 'Desc',
+      categoryResourceId: 'cat-1',
+      tags: ['tag-a'],
+      difficultyResourceId: 'diff-1',
+      availableForRequests: [
+        { type: 'company', resourceId: 'company-1' }
+      ],
+      ccAddresses: ['cc1@example.com', 'cc2@example.com'],
+      fromAddress: 'legacy@example.com',
+      fromName: 'Legacy Sender',
+      subject: 'Legacy Subject',
+      template: '<p>Legacy body</p>',
+      languageTypeResourceId: 'lang-en',
+      isDuplicated: false,
+      duplicatedTemplateResourceId: null
+    }
+
+    it('createQuishingEmailTemplate writes legacy root fields when payload.languages is missing', async () => {
+      await quishingApi.createQuishingEmailTemplate({ ...legacyEmailPayload })
+      const calls = collectAppendCalls()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'name', value: 'Legacy Template' },
+          { key: 'description', value: 'Desc' },
+          { key: 'categoryResourceId', value: 'cat-1' },
+          { key: 'difficultyResourceId', value: 'diff-1' },
+          { key: 'fromAddress', value: 'legacy@example.com' },
+          { key: 'fromName', value: 'Legacy Sender' },
+          { key: 'subject', value: 'Legacy Subject' },
+          { key: 'template', value: '<p>Legacy body</p>' },
+          { key: 'languageTypeResourceId', value: 'lang-en' },
+          { key: 'ccAddresses[0]', value: 'cc1@example.com' },
+          { key: 'ccAddresses[1]', value: 'cc2@example.com' }
+        ])
+      )
+    })
+
+    it('createQuishingEmailTemplate does NOT add multi-language fields when payload.languages is missing (legacy backend safe)', async () => {
+      await quishingApi.createQuishingEmailTemplate({ ...legacyEmailPayload })
+      const keys = collectAppendKeys()
+      expect(keys.some((k) => k.startsWith('languages['))).toBe(false)
+      expect(keys).not.toContain('prompt')
+      expect(keys).not.toContain('toneResourceId')
+      expect(keys).not.toContain('localizationResourceId')
+      expect(keys).not.toContain('detailActionType')
+    })
+
+    it('createQuishingEmailTemplate hits the legacy email-templates endpoint', async () => {
+      await quishingApi.createQuishingEmailTemplate({ ...legacyEmailPayload })
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      )
+    })
+
+    it('updateQuishingEmailTemplate works with legacy payload and correct PUT endpoint', async () => {
+      await quishingApi.updateQuishingEmailTemplate(
+        { ...legacyEmailPayload },
+        'tpl-legacy-1'
+      )
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'quishing-simulator/email-templates/tpl-legacy-1',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      )
+      const keys = collectAppendKeys()
+      expect(keys.some((k) => k.startsWith('languages['))).toBe(false)
+      expect(keys).not.toContain('detailActionType')
+    })
+
+    it('createQuishingEmailTemplate with single-entry languages array still skips additional languages', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...legacyEmailPayload,
+        languages: [
+          {
+            languageTypeResourceId: 'lang-en',
+            fromAddress: 'legacy@example.com',
+            fromName: 'Legacy Sender',
+            subject: 'Legacy Subject',
+            template: '<p>Legacy body</p>',
+            ccAddresses: ['cc1@example.com'],
+            prompt: '',
+            toneResourceId: '',
+            localizationResourceId: ''
+          }
+        ]
+      })
+      const keys = collectAppendKeys()
+      expect(keys.some((k) => k.startsWith('languages['))).toBe(false)
+    })
+
+    it('createQuishingEmailTemplate with single-entry languages array still writes legacy root fields', async () => {
+      await quishingApi.createQuishingEmailTemplate({
+        ...legacyEmailPayload,
+        languages: [
+          {
+            languageTypeResourceId: 'lang-en',
+            fromAddress: 'legacy@example.com',
+            fromName: 'Legacy Sender',
+            subject: 'Legacy Subject',
+            template: '<p>Legacy body</p>',
+            ccAddresses: ['cc1@example.com']
+          }
+        ]
+      })
+      const calls = collectAppendCalls()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'fromAddress', value: 'legacy@example.com' },
+          { key: 'fromName', value: 'Legacy Sender' },
+          { key: 'subject', value: 'Legacy Subject' },
+          { key: 'template', value: '<p>Legacy body</p>' },
+          { key: 'languageTypeResourceId', value: 'lang-en' },
+          { key: 'ccAddresses[0]', value: 'cc1@example.com' }
+        ])
+      )
+    })
+
+    const legacyPrintoutPayload = {
+      name: 'Legacy Printout',
+      description: 'Desc',
+      categoryResourceId: 'cat-1',
+      tags: [],
+      difficultyResourceId: 'diff-1',
+      availableForRequests: [],
+      template: '<printout/>',
+      languageTypeResourceId: 'lang-en'
+    }
+
+    it('createQuishingPrintoutTemplate writes legacy root fields without multi-language artefacts', async () => {
+      await quishingApi.createQuishingPrintoutTemplate({ ...legacyPrintoutPayload })
+      const calls = collectAppendCalls()
+      const keys = collectAppendKeys()
+      expect(calls).toEqual(
+        expect.arrayContaining([
+          { key: 'template', value: '<printout/>' },
+          { key: 'languageTypeResourceId', value: 'lang-en' }
+        ])
+      )
+      expect(keys.some((k) => k.startsWith('languages['))).toBe(false)
+      expect(keys).not.toContain('prompt')
+      expect(keys).not.toContain('toneResourceId')
+      expect(keys).not.toContain('localizationResourceId')
+      expect(keys).not.toContain('detailActionType')
+    })
+
+    it('updateQuishingPrintoutTemplate hits the legacy printout endpoint with id', async () => {
+      await quishingApi.updateQuishingPrintoutTemplate(
+        { ...legacyPrintoutPayload },
+        'printout-legacy-1'
+      )
+      expect(testRequest.put).toHaveBeenCalledWith(
+        'quishing-simulator/quishing-templates/printout-legacy-1',
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      )
+    })
+  })
+
+  describe('campaign manager hyper-personalization payload (forward-compatible)', () => {
+    it('createCampaignManager forwards full payload as-is, including sendUserPreferredLanguage default', async () => {
+      const payload = {
+        name: 'Quishing Campaign',
+        templateType: 'Email',
+        sendUserPreferredLanguage: 0
+      }
+      await quishingApi.createCampaignManager(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign',
+        payload,
+        expect.objectContaining({ snackbar: COMMON_SNACKBAR })
+      )
+    })
+
+    it('createCampaignManager preserves sendUserPreferredLanguage=1 when toggled', async () => {
+      const payload = {
+        name: 'Quishing Campaign',
+        templateType: 'Email',
+        sendUserPreferredLanguage: 1
+      }
+      await quishingApi.createCampaignManager(payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign',
+        expect.objectContaining({ sendUserPreferredLanguage: 1 }),
+        expect.any(Object)
+      )
+    })
+
+    it('updateCampaignManager forwards sendUserPreferredLanguage in update payload', async () => {
+      const payload = { sendUserPreferredLanguage: 1 }
+      await quishingApi.updateCampaignManager('camp-1', payload)
+      expect(testRequest.put).toHaveBeenCalledWith(
+        '/quishing-simulator/quishing-campaign/camp-1',
+        expect.objectContaining({ sendUserPreferredLanguage: 1 }),
+        expect.any(Object)
+      )
+    })
+  })
 })
