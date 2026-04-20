@@ -71,7 +71,7 @@ describe('useAwarenessHelperCalls', () => {
     methods.callForTargetAudiences.call(ctx)
     await flushPromises()
 
-    expect(ctx.categories).toEqual([{ text: 'Cat 1', value: 7 }])
+    expect(ctx.categories).toEqual([{ text: 'Cat 1', value: '7' }])
     expect(ctx.scormTypes).toEqual([{ text: 'SCORM 1', value: 'scorm-1' }])
     expect(ctx.languages).toEqual([{ isoFriendlyName: 'English', code: 'en' }])
     expect(ctx.tableLanguageFilter).toEqual([{ text: 'English', value: 'en' }])

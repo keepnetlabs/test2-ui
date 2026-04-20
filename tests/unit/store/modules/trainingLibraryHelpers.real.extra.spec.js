@@ -114,7 +114,7 @@ describe('trainingLibraryHelpers store module (real)', () => {
           code: 'SocialEngineering',
           categoryName: 'Social Engineering',
           text: 'Social Engineering',
-          value: 42
+          value: '42'
         }
       ])
       expect(dispatch).toHaveBeenCalledWith(
