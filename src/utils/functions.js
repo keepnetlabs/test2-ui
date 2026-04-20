@@ -165,7 +165,7 @@ export function getDataTableFieldLabel(field = "") {
     "waiting for approval": "Waiting for Approval",
     loading: "Checking...",
     clean: "Clean",
-    malicious: "Blacklisted",
+    malicious: "Malicious",
     suspicious: "Suspicious",
     pending: "Pending",
     partial: "Partial",
