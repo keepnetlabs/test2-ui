@@ -23,7 +23,7 @@ describe('EmailDetailsContentDetails.vue', () => {
           }
         }
       },
-      stubs: { ReAnalyzeIncidentDialog: true, EmailDetailsSenderIpBlacklistCheck: true }
+      stubs: { ReAnalyzeIncidentDialog: true, EmailDetailsSenderIpBlocklistCheck: true }
     })
 
   it('renders as Vue component', () => {
@@ -70,7 +70,7 @@ describe('EmailDetailsContentDetails.vue', () => {
         $route: { params: { id: 'inc-1' } },
         $store: { getters: { 'permissions/getIncidentResponderNotifiedEmailReAnalyze': false } }
       },
-      stubs: { ReAnalyzeIncidentDialog: true, EmailDetailsSenderIpBlacklistCheck: true }
+      stubs: { ReAnalyzeIncidentDialog: true, EmailDetailsSenderIpBlocklistCheck: true }
     })
     expect(wrapper.vm.isReAnalyzeDisabled).toBe(true)
   })

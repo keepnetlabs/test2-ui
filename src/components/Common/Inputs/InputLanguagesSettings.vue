@@ -419,6 +419,10 @@ export default {
       type: Boolean,
       default: false
     },
+    hideNotificationTemplateSenderFields: {
+      type: Boolean,
+      default: false
+    },
     isLandingPage: {
       type: Boolean,
       default: false
@@ -486,6 +490,9 @@ export default {
     isLocalizeReady() {
       if (this.isLandingPage) {
         return this.isTemplateTypeSelected
+      }
+      if (this.isNotificationTemplate && this.hideNotificationTemplateSenderFields) {
+        return Boolean(this.subject) && this.isTemplateTypeSelected
       }
       return (
         Boolean(this.subject) &&

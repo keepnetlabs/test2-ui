@@ -89,26 +89,26 @@
         @input="handleInputChange($event, 'parameterTypeId')"
       ></KSelect>
     </div>
-    <div v-if="blacklistWarning" class="blacklist-hint mb-2" style="max-width: 980px;">
+    <div v-if="blocklistWarning" class="blocklist-hint mb-2" style="max-width: 980px;">
       <span
-        class="blacklist-hint__text"
-        :style="{ color: blacklistWarning.status === 'malicious' ? '#f44336' : '#ff9800' }"
+        class="blocklist-hint__text"
+        :style="{ color: blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800' }"
       >
-        {{ blacklistWarning.reason }}
+        {{ blocklistWarning.reason }}
         <a
-          class="blacklist-hint__link"
-          :class="{ 'blacklist-hint__link--loading': isSuggestionsLoading }"
+          class="blocklist-hint__link"
+          :class="{ 'blocklist-hint__link--loading': isSuggestionsLoading }"
           @click.prevent="handleSwitchDomain"
         >{{ isSuggestionsLoading ? 'Loading...' : 'Suggest clean domain' }}</a>
       </span>
-      <div v-if="cleanSuggestions.length > 0" class="blacklist-hint__suggestions">
+      <div v-if="cleanSuggestions.length > 0" class="blocklist-hint__suggestions">
         <v-btn
           v-for="suggestion in cleanSuggestions.slice(0, 5)"
           :key="suggestion.domain"
           outlined
           x-small
           color="#217124"
-          class="blacklist-hint__suggestion-btn"
+          class="blocklist-hint__suggestion-btn"
           @click="selectCleanDomain(suggestion.domain)"
         >
           <VIcon x-small class="mr-1">mdi-swap-horizontal</VIcon>
@@ -136,7 +136,7 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
-import { getDomainBlacklistStatus, getCleanDomainSuggestions } from '@/api/domainBlacklist'
+import { getDomainBlocklistStatus, getCleanDomainSuggestions } from '@/api/domainBlocklist'
 export default {
   name: 'InputPhishingLink',
   components: { KSelect, FormGroup },
@@ -193,19 +193,19 @@ export default {
       labels,
       urlSchemaTypesModified: [],
       disabledLabel: '',
-      blacklistWarning: null,
+      blocklistWarning: null,
       cleanSuggestions: [],
       isSuggestionsLoading: false,
       subdomainRules: [],
       httpRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainBlacklist(v),
+        (v) => Validations.subdomainBlocklist(v),
         (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character'),
         (v) => Validations.startsOrEndsWithHyphen(v)
       ],
       httpsRules: [
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.subdomainBlacklist(v),
+        (v) => Validations.subdomainBlocklist(v),
         (v) => Validations.subdomainDash(v, 'Only (-) is allowed as special character'),
         (v) => Validations.startsOrEndsWithHyphen(v)
       ]
@@ -250,7 +250,7 @@ export default {
       this.changeDisabledLabel()
       if (val) {
         this.checkSchemaTypes(val)
-        if (this.isEdit) this.checkDomainBlacklist(val)
+        if (this.isEdit) this.checkDomainBlocklist(val)
       }
     },
     'value.parameterTypeId'() {
@@ -271,7 +271,7 @@ export default {
         return
       }
       if (this.value.domainRecordId) {
-        this.checkDomainBlacklist(this.value.domainRecordId)
+        this.checkDomainBlocklist(this.value.domainRecordId)
       }
     }
   },
@@ -279,7 +279,7 @@ export default {
     if (!this.isEdit) this.setDefaultValue()
     if (this.isEdit && this.value?.domainRecordId) {
       this.checkSchemaTypes(this.value.domainRecordId)
-      this.checkDomainBlacklist(this.value.domainRecordId)
+      this.checkDomainBlocklist(this.value.domainRecordId)
     }
   },
   methods: {
@@ -302,7 +302,7 @@ export default {
       this.$emit('invisible-captcha', !this.domainRecords[0]?.extraDatas[1]?.value)
       this.$emit('captcha-default-value', this.domainRecords[0]?.extraDatas[1]?.value)
       this.checkSchemaTypes(this.domainRecords[0]?.value)
-      this.checkDomainBlacklist(this.domainRecords[0]?.value)
+      this.checkDomainBlocklist(this.domainRecords[0]?.value)
     },
     changeDisabledLabel() {
       this.disabledLabel = `${
@@ -330,21 +330,21 @@ export default {
       this.handleInputChange(value, 'domainRecordId')
       this.checkSchemaTypes(value)
       this.changeDisabledLabel()
-      this.checkDomainBlacklist(value)
+      this.checkDomainBlocklist(value)
     },
-    checkDomainBlacklist(domainRecordId) {
-      this.blacklistWarning = null
+    checkDomainBlocklist(domainRecordId) {
+      this.blocklistWarning = null
       this.cleanSuggestions = []
       const domainRecord = this.domainRecords.find(
         (item) => String(item.value) === String(domainRecordId)
       )
       if (!domainRecord) return
       const domainName = domainRecord.text
-      getDomainBlacklistStatus(domainName)
+      getDomainBlocklistStatus(domainName)
         .then((response) => {
           const data = response.data
           if (data.status === 'malicious' || data.status === 'suspicious') {
-            this.blacklistWarning = { status: data.status, reason: data.reason }
+            this.blocklistWarning = { status: data.status, reason: data.reason }
           }
         })
         .catch(() => {})

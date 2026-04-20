@@ -208,12 +208,12 @@ describe('validations.js (extra coverage)', () => {
     expect(validations.verifiedDomains('user@other.com', verified, 'Unverified')).toBe('Unverified')
   })
 
-  it('subdomainBlacklist returns banned message when match', () => {
-    const result = validations.subdomainBlacklist('google')
+  it('subdomainBlocklist returns banned message when match', () => {
+    const result = validations.subdomainBlocklist('google')
     expect(result).toContain('banned')
   })
-  it('subdomainBlacklist returns true when no banned word', () => {
-    expect(validations.subdomainBlacklist('myvalidsubdomain')).toBe(true)
+  it('subdomainBlocklist returns true when no banned word', () => {
+    expect(validations.subdomainBlocklist('myvalidsubdomain')).toBe(true)
   })
 
   it('subdomainDash and subdomainDashDot branch coverage', () => {

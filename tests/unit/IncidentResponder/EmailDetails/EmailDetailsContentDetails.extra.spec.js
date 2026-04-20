@@ -78,8 +78,8 @@ describe('EmailDetailsContentDetails.vue (extra branch coverage)', () => {
               />
             `
           },
-          EmailDetailsSenderIpBlacklistCheck: {
-            template: '<div class="sender-ip-blacklist-check-stub" @click="$emit(\'on-refresh-click\')" />'
+          EmailDetailsSenderIpBlocklistCheck: {
+            template: '<div class="sender-ip-blocklist-check-stub" @click="$emit(\'on-refresh-click\')" />'
           }
         }
       })
@@ -103,10 +103,10 @@ describe('EmailDetailsContentDetails.vue (extra branch coverage)', () => {
       expect(dialog.attributes('data-resource-id')).toBe('mail-22')
     })
 
-    it('re-emits re-analyze event when sender IP blacklist child requests refresh', async () => {
+    it('re-emits re-analyze event when sender IP blocklist child requests refresh', async () => {
       const wrapper = createWrapper()
 
-      await wrapper.find('.sender-ip-blacklist-check-stub').trigger('click')
+      await wrapper.find('.sender-ip-blocklist-check-stub').trigger('click')
 
       expect(wrapper.emitted('on-re-analyze-click')).toEqual([[]])
     })
@@ -137,7 +137,7 @@ describe('EmailDetailsContentDetails.vue (extra branch coverage)', () => {
               </div>
             `
           },
-          EmailDetailsSenderIpBlacklistCheck: true
+          EmailDetailsSenderIpBlocklistCheck: true
         }
       })
 

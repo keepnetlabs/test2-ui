@@ -98,11 +98,23 @@
               <span class="training-library-preview__desc">{{ screensaverParams.name }}</span>
             </div>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Category Name: </span>
-            <span class="training-library-preview__desc">{{
-              screensaverParams.categoryName || screensaverParams.category
-            }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Category Name: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="category in screensaverParams.categoryBadges"
+                :key="category"
+                class="training-library-preview__tag"
+                >{{ category }}</span
+              >
+              <span
+                v-if="!screensaverParams.categoryBadges || !screensaverParams.categoryBadges.length"
+                class="training-library-preview__desc"
+                >{{ screensaverParams.categoryName || screensaverParams.category }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>
@@ -243,7 +255,7 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { mapActions, mapGetters } from 'vuex'
-import { emptyScreensaverPreviewDialogObj } from '../utils'
+import { emptyScreensaverPreviewDialogObj, getTrainingCategoryMeta } from '../utils'
 import TrainingLibraryNewBadge from '../TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '../TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
@@ -374,7 +386,11 @@ export default {
     },
     callForScreensaver() {
       AwarenessEducatorService.getTraining(this.selectedRow.trainingId).then((response) => {
-        this.screensaverParams = response?.data?.data
+        const data = response?.data?.data
+        this.screensaverParams = {
+          ...data,
+          ...getTrainingCategoryMeta(data)
+        }
       })
     },
     handleClose() {

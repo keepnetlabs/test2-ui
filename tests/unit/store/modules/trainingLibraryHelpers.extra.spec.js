@@ -246,7 +246,13 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
       await trainingLibraryHelpers.actions.callForCategories({ commit, dispatch })
 
       expect(commit).toHaveBeenCalledWith('SET_CATEGORIES', [
-        { text: 'OnlyNameCategory', value: 'OnlyNameCategory' }
+        {
+          id: '',
+          code: 'OnlyNameCategory',
+          categoryName: 'OnlyNameCategory',
+          text: 'OnlyNameCategory',
+          value: ''
+        }
       ])
     })
 

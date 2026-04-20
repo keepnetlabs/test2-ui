@@ -93,6 +93,7 @@ import CampaignManagerReportActivityColumn from '@/components/CampaignManagerRep
 import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import CampaignManagerReportBotActivityAlertBox from '@/components/CampaignManagerReport/CampaignManagerReportBotActivityAlertBox.vue'
+import useReportLanguageColumns from '@/hooks/useReportLanguageColumns'
 export default {
   name: 'CampaignManagerReportClickedTable',
   components: {
@@ -101,7 +102,12 @@ export default {
     DefaultButtonRowAction,
     CampaignManagerReportBotActivityAlertBox
   },
-  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useSandboxTableActionLabel,
+    useReportLanguageColumns
+  ],
   props: {
     id: {
       type: String
@@ -181,7 +187,9 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
+          COLUMNS.PREFERREDLANGUAGE,
           COLUMNS.PHISHING_SCENARIO_NAME,
+          COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
           COLUMNS.LAST_SCANNED,
           COLUMNS.TIMES_SCANNED,
           isQuishingTypePrintout ? null : { ...COLUMNS.ACTIVITY_TYPE }
@@ -208,6 +216,9 @@ export default {
         rowActions
       }
     }
+  },
+  created() {
+    this.callForLanguages()
   },
   mounted() {
     this.callForData()
@@ -262,7 +273,7 @@ export default {
             row.customFieldValues.forEach((field) => {
               customFields[`${field.name}`] = field?.value
             })
-            return { ...row, ...customFields }
+            return this.mapPreferredLanguage({ ...row, ...customFields })
           })
           this.botActivityCount = totalSandBoxActivityCount || 0
         })

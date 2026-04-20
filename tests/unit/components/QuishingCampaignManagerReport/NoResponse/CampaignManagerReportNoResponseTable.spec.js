@@ -55,7 +55,8 @@ describe('CampaignManagerReportNoResponseTable.vue', () => {
       id: 'camp-1',
       instanceGroup: 'ig-1',
       serverSideProps: { totalNumberOfRecords: 0, totalNumberOfPages: 0, pageNumber: 0 },
-      tableData: []
+      tableData: [],
+      mapPreferredLanguage: (row) => row
     }
     CampaignManagerReportNoResponseTable.methods.callForData.call(ctx)
     await flushPromises()

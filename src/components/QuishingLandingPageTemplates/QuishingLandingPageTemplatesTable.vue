@@ -265,10 +265,16 @@ export default {
           this.tableData =
             results?.map((item) => ({
               ...item,
-              languageTypeName:
-                this.languageFilterOptions.find(
-                  (lang) => lang.languageName === item.languageTypeName
-                )?.text || item.languageTypeName
+              languageTypeName: Array.isArray(item.languageTypeName)
+                ? item.languageTypeName.map((code) => {
+                    const language = this.languageFilterOptions.find(
+                      (lang) => lang.languageName === code
+                    )
+                    return language?.text || code
+                  })
+                : this.languageFilterOptions.find(
+                    (lang) => lang.languageName === item.languageTypeName
+                  )?.text || item.languageTypeName
             })) || []
         })
         .finally(this.setLoading)

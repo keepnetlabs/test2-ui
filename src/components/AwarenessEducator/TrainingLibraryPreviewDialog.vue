@@ -35,6 +35,7 @@ import { EMITS } from '@/components/AwarenessEducator/utils'
 import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import { getTrainingCategoryMeta } from '@/components/TrainingLibrary/utils'
 export default {
   name: 'TrainingLibraryPreviewDialog',
   components: {
@@ -109,6 +110,7 @@ export default {
         } = response
         this.trainingDetails = {
           ...data,
+          ...getTrainingCategoryMeta(data),
           languages: this.selectedLanguages.map((lang) => lang.text).join(', ')
         }
       })

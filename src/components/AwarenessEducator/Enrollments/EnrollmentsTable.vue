@@ -54,7 +54,7 @@ import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
-import { COLUMNS, ENROLLMENT_AUDIENCE } from '../utils'
+import { COLUMNS, ENROLLMENT_AUDIENCE, ENROLLMENT_CATEGORY } from '../utils'
 import EnrollmentsTableRowActions from '@/components/AwarenessEducator/Enrollments/EnrollmentsTableRowActions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -62,6 +62,7 @@ import {
 } from '@/model/constants/commonConstants'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import useAwarenessColumnBindsFromApi from '@/hooks/awareness-educator/useAwarenessColumnBindsFromApi'
+import { enrichEnrollmentTableResults } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
 export default {
   name: 'EnrollmentsTable',
   components: {
@@ -78,7 +79,11 @@ export default {
       required: true
     }
   },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi
+  ],
   data() {
     return {
       CONSTANTS: {
@@ -99,7 +104,7 @@ export default {
         columns: [
           COLUMNS.ENROLLMENT_NAME,
           COLUMNS.TRAINING_NAME_UNFIXED,
-          COLUMNS.CATEGORY,
+          ENROLLMENT_CATEGORY,
           COLUMNS.LEVEL,
           ENROLLMENT_AUDIENCE,
           COLUMNS.DURATION,
@@ -187,7 +192,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results || []
+          this.tableData = enrichEnrollmentTableResults(results, this.mainLanguages) || []
         })
         .catch(() => {})
         .finally(this.setLoading)

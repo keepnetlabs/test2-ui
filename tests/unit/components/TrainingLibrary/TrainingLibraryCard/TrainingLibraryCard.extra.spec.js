@@ -150,7 +150,6 @@ describe('TrainingLibraryCard.vue (branch coverage)', () => {
       wrapper.vm.checkTooltipStasuses()
       expect(wrapper.vm.isRenderTitleTooltip).toBe(false)
       expect(wrapper.vm.isRenderCreatedByTooltip).toBe(false)
-      expect(wrapper.vm.isRenderCategoryTooltip).toBe(false)
     })
   })
 

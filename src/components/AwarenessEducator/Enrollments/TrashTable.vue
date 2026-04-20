@@ -46,12 +46,21 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { COLUMNS, ENROLLMENT_AUDIENCE } from '@/components/AwarenessEducator/utils'
+import {
+  COLUMNS,
+  ENROLLMENT_AUDIENCE,
+  ENROLLMENT_CATEGORY
+} from '@/components/AwarenessEducator/utils'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { enrichEnrollmentTableResults } from '@/components/AwarenessEducator/Enrollments/EnrollmentsTables/utils'
 export default {
   name: 'TrashTable',
   components: { DataTable },
-  mixins: [useLoading, useDefaultTableFunctions, useAwarenessColumnBindsFromApi],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useAwarenessColumnBindsFromApi
+  ],
   data() {
     return {
       CONSTANTS: {
@@ -72,7 +81,7 @@ export default {
         columns: [
           COLUMNS.ENROLLMENT_NAME,
           COLUMNS.TRAINING_NAME_UNFIXED,
-          COLUMNS.CATEGORY,
+          ENROLLMENT_CATEGORY,
           ENROLLMENT_AUDIENCE,
           COLUMNS.LANGUAGES,
           COLUMNS.ENROLLMENT_TYPE,
@@ -129,12 +138,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const enrichedResults = results?.map((item) => {
-            return {
-              ...item,
-              targetAudience: item.trainingRoles?.map((role) => role.roleName) || []
-            }
-          })
+          const enrichedResults = enrichEnrollmentTableResults(results)
           this.tableData = enrichedResults || []
         })
         .finally(this.setLoading)

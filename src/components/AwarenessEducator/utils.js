@@ -202,7 +202,8 @@ export const COLUMNS = {
     type: 'text',
     width: 200,
     filterableType: 'select',
-    filterableItems: []
+    filterableItems: [],
+    filterableCustomFieldName: 'categories'
   },
   LEVEL: {
     property: PROPERTY_STORE.LEVEL,
@@ -502,6 +503,13 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   }
+}
+
+export const ENROLLMENT_CATEGORY = {
+  ...COLUMNS.CATEGORY,
+  type: 'smallBadge',
+  badgeProperty: 'categoryBadges',
+  width: 280
 }
 
 export const ENROLLMENT_AUDIENCE = {

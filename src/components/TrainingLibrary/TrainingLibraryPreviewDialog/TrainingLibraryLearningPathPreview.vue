@@ -22,11 +22,23 @@
               />
             </div>
           </div>
-          <div class="training-library-preview__details-item">
-            <span class="training-library-preview__title">Category Name: </span>
-            <span class="training-library-preview__desc">{{
-              learningPathParams.categoryName || learningPathParams.category
-            }}</span>
+          <div class="training-library-preview__details-item align-baseline">
+            <div>
+              <span class="training-library-preview__title">Category Name: </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 ml-2">
+              <span
+                v-for="category in learningPathParams.categoryBadges"
+                :key="category"
+                class="training-library-preview__tag"
+                >{{ category }}</span
+              >
+              <span
+                v-if="!learningPathParams.categoryBadges || !learningPathParams.categoryBadges.length"
+                class="training-library-preview__desc"
+                >{{ learningPathParams.categoryName || learningPathParams.category }}</span
+              >
+            </div>
           </div>
           <div class="training-library-preview__details-item">
             <span class="training-library-preview__title">Description: </span>
@@ -212,11 +224,28 @@
                 activeTrainingContentParams.vendor
               }}</span>
             </div>
-            <div class="training-library-preview__details-item">
-              <span class="training-library-preview__title">Category Name: </span>
-              <span class="training-library-preview__desc">{{
-                activeTrainingContentParams.categoryName || activeTrainingContentParams.category
-              }}</span>
+            <div class="training-library-preview__details-item align-baseline">
+              <div>
+                <span class="training-library-preview__title">Category Name: </span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 ml-2">
+                <span
+                  v-for="category in activeTrainingContentParams.categoryBadges"
+                  :key="category"
+                  class="training-library-preview__tag"
+                  >{{ category }}</span
+                >
+                <span
+                  v-if="
+                    !activeTrainingContentParams.categoryBadges ||
+                    !activeTrainingContentParams.categoryBadges.length
+                  "
+                  class="training-library-preview__desc"
+                  >{{
+                    activeTrainingContentParams.categoryName || activeTrainingContentParams.category
+                  }}</span
+                >
+              </div>
             </div>
             <div class="training-library-preview__details-item">
               <span class="training-library-preview__title">Description: </span>
@@ -306,6 +335,7 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import TrainingLibraryNewBadge from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryNewBadge.vue'
 import TrainingLibraryFavoriteButton from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryFavoriteButton.vue'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { getTrainingCategoryMeta } from '@/components/TrainingLibrary/utils'
 import { mapGetters } from 'vuex'
 export default {
   name: 'TrainingLibraryLearningPathPreview',
@@ -423,7 +453,11 @@ export default {
     callForActiveTrainingDetail() {
       this.isTemplateLoading = true
       AwarenessEducatorService.getTraining(this.activeTrainingContentId).then((response) => {
-        this.activeTrainingContentParams = response?.data?.data
+        const data = response?.data?.data
+        this.activeTrainingContentParams = {
+          ...data,
+          ...getTrainingCategoryMeta(data)
+        }
         this.isSurvey = this.activeTrainingContentParams?.hasQuiz
         this.activeTrainingContentButtonKey = `key-${createRandomCryptStringNumber()}`
         this.activeTrainingContentLanguages = this.activeTrainingContentLanguageCodes

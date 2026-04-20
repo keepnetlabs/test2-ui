@@ -87,6 +87,7 @@ import { createRandomCryptStringNumber } from '@/utils/functions'
 import PhoneNumber from 'awesome-phonenumber'
 import { TrainingReportDialogModel } from '@/components/CampaignManagerReport/Summary/utils'
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
+import { collectScenarioLanguages } from '@/components/Common/Report/utils'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
@@ -196,14 +197,7 @@ export default {
         endDate: '0',
         totalTargetUserCount: 0
       }
-      const languages = new Set()
-      this?.phishingScenarios?.forEach((scenario) => {
-        const languageCode = scenario.scenarioInfo.languageShortCode
-        const language = this.languageOptions.find(
-          (lang) => lang.languageShortCode === languageCode
-        )
-        languages.add(language?.text || languageCode)
-      })
+      const languages = collectScenarioLanguages(this.phishingScenarios, this.languageOptions)
       const { duration = '0' } = this.campaignSummary?.settings || {
         duration: '0'
       }
@@ -211,7 +205,7 @@ export default {
         'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
-        Languages: languages.size ? [...languages].join(', ') : ''
+        Languages: languages
       }
     },
     getCampaignSummaryHelperData() {

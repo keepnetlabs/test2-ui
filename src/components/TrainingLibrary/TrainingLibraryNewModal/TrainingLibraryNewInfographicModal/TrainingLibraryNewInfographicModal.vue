@@ -90,6 +90,10 @@ import TrainingLibraryNewInfographicInformation from "@/components/TrainingLibra
 import TrainingLibraryNewInfographicContent from "@/components/TrainingLibrary/TrainingLibraryNewModal/TrainingLibraryNewInfographicModal/TrainingLibraryNewInfographicContent.vue";
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from "@/components/TrainingLibrary/TrainingLibraryFirstCard/utils";
 import { normalizeRoleId } from "@/utils/helperFunctions";
+import {
+  appendTrainingCategoryFormData,
+  buildTrainingCategoryPayload
+} from "@/components/TrainingLibrary/trainingCategoryUtils";
 
 export default {
   name: "TrainingLibraryNewInfographicModal",
@@ -147,6 +151,8 @@ export default {
           trainingContents,
           availableForList,
           category,
+          categoryIds,
+          trainingCategories,
           level,
           duration,
           type,
@@ -193,6 +199,8 @@ export default {
             tags: tagNames,
             roleIds: resolvedRoleIds,
             category,
+            categoryIds,
+            trainingCategories,
             level: resolvedLevel?.id || level || "",
             duration: resolvedDuration?.id || duration || "",
             compliances: compliances.map(({ complianceId }) => complianceId),
@@ -264,16 +272,20 @@ export default {
             compliances,
             behaviours
           } = formData;
+          const categoryPayload = buildTrainingCategoryPayload(
+            category,
+            refTrainingCourseInformation.getCategories
+          );
           this.isActionButtonDisabled = true;
           AwarenessEducatorService.createDraftTraining({
             name,
             description,
-            category,
             level,
             duration,
             roleIds,
             tagNames,
             availableForRequests,
+            ...categoryPayload,
             type: TRAINING_LIBRARY_PAYLOAD_TYPES.INFOGRAPHIC,
             compliances: compliances.map((compliance) => ({
               complianceId: compliance
@@ -335,7 +347,12 @@ export default {
       payload.append("coverImage", coverImage);
       payload.append("trainingDetail.name", name);
       payload.append("trainingDetail.description", description);
-      payload.append("trainingDetail.category", category);
+      appendTrainingCategoryFormData(
+        payload,
+        "trainingDetail",
+        category,
+        refTrainingCourseInformation.getCategories
+      );
       payload.append("trainingDetail.level", level);
       payload.append("trainingDetail.duration", duration);
       roleIds.forEach((roleId, index) => {

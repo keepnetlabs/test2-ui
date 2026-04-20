@@ -240,6 +240,12 @@
             </div>
           </VTooltip>
         </template>
+        <template v-else-if="scope.column.property === 'licenseTypeName'">
+          <CompanyLicenseTypeCell
+            :license-type-name="scope.row.licenseTypeName"
+            :modules="scope.row.modules"
+          />
+        </template>
       </template>
       <template #extended-custom-view-slot>
         <company-list-extend
@@ -317,6 +323,7 @@ import {
 } from "@/model/constants/commonConstants";
 import CompanyListExtend from "@/components/Companies/CompanyListExtend";
 import CompanyCreateOrEdit from "@/components/Companies/CompanyCreateOrEdit";
+import CompanyLicenseTypeCell from "@/components/Companies/CompanyLicenseTypeCell";
 import AddGroupToModal from "@/components/Companies/AddToGroupModal";
 import CreateItemModal from "@/components/CompanyGroups/CreateItemModal";
 import AppModal from "@/components/AppModal";
@@ -328,10 +335,8 @@ import {
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import ConfigureNewCompanyModal from "@/components/Companies/ConfigureNewCompanyModal";
 import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
-import {
-  columnFilterChanged,
-  columnFilterCleared
-} from "@/utils/helperFunctions";
+import { getLicences } from "@/api/common";
+import { columnFilterChanged } from "@/utils/helperFunctions";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
 import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
@@ -345,6 +350,7 @@ export default {
     CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,
+    CompanyLicenseTypeCell,
     CompanyListExtend,
     Datatable,
     DeleteModal,
@@ -424,11 +430,13 @@ export default {
             label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "select",
-            filterableItems: [],
+            type: "slot",
+            filterableType: "nestedSelect",
+            filterableConfig: {
+              groups: []
+            },
             filterableCustomFieldName: "LicenseTypeResourceId",
-            width: 150
+            width: 230
           },
           {
             property: "targetUserCount",
@@ -687,7 +695,8 @@ export default {
       defaultPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTargetUserCountExceedLimit: false,
-      limitExceededCompanyCount: 0
+      limitExceededCompanyCount: 0,
+      licenseCatalogFromLookup: []
     };
   },
   watch: {
@@ -876,23 +885,58 @@ export default {
         .catch(() => {});
     },
     getLookUpDatas() {
-      LookupLocalStorage.getMultiple([2, 3])
-        .then((response) => {
-          const res = response;
+      Promise.allSettled([LookupLocalStorage.getMultiple([2]), getLicences()])
+        .then(([lookupResult, licensesResult]) => {
+          const res =
+            lookupResult.status === "fulfilled" ? lookupResult.value : [];
+          const { licenses = [], allLicenseModules = [] } =
+            licensesResult.status === "fulfilled"
+              ? licensesResult.value?.data?.data || {}
+              : {};
+          this.licenseCatalogFromLookup = licenses;
+          const industryItems = res
+            .filter((item) => item.genericCodeTypeId === 2)
+            .map((item) => ({ text: item.name, value: item.resourceId }));
+          const industryByResourceId = new Map();
+          industryItems.forEach((item) => {
+            if (item.value != null && !industryByResourceId.has(item.value)) {
+              industryByResourceId.set(item.value, item);
+            }
+          });
           this.$set(
             this.tableOptions.columns[2],
             "filterableItems",
-            res
-              .filter((item) => item.genericCodeTypeId === 2)
-              .map((item) => ({ text: item.name, value: item.resourceId }))
+            [...industryByResourceId.values()]
           );
-          this.$set(
-            this.tableOptions.columns[3],
-            "filterableItems",
-            res
-              .filter((item) => item.genericCodeTypeId === 3)
-              .map((item) => ({ text: item.name, value: item.resourceId }))
-          );
+          this.$set(this.tableOptions.columns[3], "filterableConfig", {
+            exclusiveGroups: true,
+            groups: [
+              {
+                key: "licenseType",
+                label: "License Type",
+                icon: "mdi-certificate-outline",
+                fieldName: "LicenseTypeResourceId",
+                operator: "Include",
+                items: licenses.map((item) => ({
+                  text: item.name,
+                  value: item.resourceId
+                }))
+              },
+              {
+                key: "products",
+                label: "Products",
+                icon: "mdi-package-variant-closed",
+                fieldName: "ModuleResourceId",
+                operator: "Include",
+                items: allLicenseModules
+                  .filter((item) => item.isAvailable)
+                  .map((item) => ({
+                    text: item.name,
+                    value: item.resourceId
+                  }))
+              }
+            ]
+          });
           this?.$refs?.refDataList?.reRenderFilters();
         })
         .finally(() => this.getTableData());
@@ -945,11 +989,35 @@ export default {
         })
         .finally(() => (this.loading = false));
     },
+    enrichRowLicenseModulesFromCatalog(item) {
+      const hasModules =
+        item.modules && Array.isArray(item.modules) && item.modules.length;
+      if (hasModules) return;
+
+      const catalog = this.licenseCatalogFromLookup || [];
+      let def = null;
+      if (item.licenseTypeResourceId) {
+        def = catalog.find((l) => l.resourceId === item.licenseTypeResourceId);
+      }
+      if (!def && item.licenseTypeName) {
+        def = catalog.find((l) => l.name === item.licenseTypeName);
+      }
+      if (!def || def.name === "Custom") return;
+
+      const licenseModules = def.licenseModules || [];
+      if (!licenseModules.length) return;
+
+      item.modules = licenseModules.map((m) => ({
+        name: m.name,
+        resourceId: m.resourceId
+      }));
+    },
     getManipulatedTableData(data, isChild = false) {
       data.forEach((item) => {
         if (isChild) {
           item.isChild = true;
         }
+        this.enrichRowLicenseModulesFromCatalog(item);
         if (item.enrolledVendorNames && typeof item.enrolledVendorNames === "string") {
           item.enrolledVendorNames = item.enrolledVendorNames.split(" , ").map((s) => s.trim()).filter(Boolean);
         }
@@ -1193,9 +1261,16 @@ export default {
       this.showCreateNewGroupWithCompany = status;
     },
     columnFilterChanged(filter) {
-      const transformedFilter = this.normalizeFilterForBackend(filter);
+      const sourceFilter = filter?.filters || filter;
+      const transformedFilter = this.normalizeFilterForBackend(sourceFilter);
+      const clearFieldNames = filter?.clearFieldNames || [];
       if (Array.isArray(transformedFilter)) {
-        const fieldNames = transformedFilter.map((f) => f.FieldName);
+        const fieldNames = [
+          ...new Set([
+            ...clearFieldNames,
+            ...transformedFilter.map((f) => f.FieldName)
+          ])
+        ];
         this.payload.filter.FilterGroups[0].FilterItems =
           this.payload.filter.FilterGroups[0].FilterItems.filter(
             (item) => !fieldNames.includes(item.FieldName)
@@ -1224,16 +1299,14 @@ export default {
         : setOperator(filter);
     },
     columnFilterCleared(fieldName) {
-      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-        fieldName,
-        this.payload
-      );
-      if (fieldName === "TrainingConsumptionMonth") {
-        this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
-          "TrainingConsumptionStatus",
-          this.payload
-        );
+      const fieldNames = Array.isArray(fieldName) ? [...fieldName] : [fieldName];
+      if (fieldNames.includes("TrainingConsumptionMonth")) {
+        fieldNames.push("TrainingConsumptionStatus");
       }
+      const fieldNameSet = new Set(fieldNames);
+      this.payload.filter.FilterGroups[0].FilterItems = this.payload.filter.FilterGroups[0].FilterItems.filter(
+        (item) => !fieldNameSet.has(item.FieldName)
+      );
       this.getTableData();
     }
   }

@@ -14,6 +14,23 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import { DELIVERY_METHODS } from '@/components/Common/DeliveryMethod/utils'
 
 describe('TrainingLibraryTrainingSendModal.vue', () => {
+  it('data uses categoryName for preview display when available', () => {
+    const data = TrainingLibraryTrainingSendModal.data.call({
+      selectedRow: {
+        trainingName: 'Security 101',
+        category: 'RemoteWorkingSecurity',
+        categoryName: 'Remote Working Security, Travel Security',
+        createdBy: 'Admin',
+        description: 'Desc'
+      }
+    })
+
+    expect(data.trainingPreviewData.category).toBe('RemoteWorkingSecurity')
+    expect(data.trainingPreviewData.categoryName).toBe(
+      'Remote Working Security, Travel Security'
+    )
+  })
+
   it('getTitle returns selected training name', () => {
     const title = TrainingLibraryTrainingSendModal.computed.getTitle.call({
       selectedRow: { trainingName: 'Security 101' }

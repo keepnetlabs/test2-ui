@@ -3,12 +3,12 @@ jest.mock('@/utils/functions', () => ({
   createRandomCryptStringNumber: jest.fn(() => 'RND123')
 }))
 
-jest.mock('@/api/domainBlacklist', () => ({
-  getDomainBlacklistStatus: jest.fn().mockResolvedValue({ data: {} })
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} })
 }))
 
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
-import { getDomainBlacklistStatus } from '@/api/domainBlacklist'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 
 const { watch } = InputPhishingLink
 
@@ -61,7 +61,7 @@ describe('InputPhishingLink.vue', () => {
       extensionTypes: [{ value: 'e1' }],
       parameterTypes: [{ value: 'q1' }],
       checkSchemaTypes: jest.fn(),
-      checkDomainBlacklist: jest.fn()
+      checkDomainBlocklist: jest.fn()
     }
     InputPhishingLink.methods.setDefaultValue.call(ctx)
     expect($emit).toHaveBeenCalledWith(
@@ -107,60 +107,60 @@ describe('InputPhishingLink.vue', () => {
 
     it('create mode: [] -> items calls setDefaultValue when domainRecordId is empty', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
+      const checkDomainBlocklist = jest.fn()
       const ctx = {
         isEdit: false,
         value: { domainRecordId: '' },
         setDefaultValue,
-        checkDomainBlacklist
+        checkDomainBlocklist
       }
       watch.domainRecords.call(ctx, records, [])
       expect(setDefaultValue).toHaveBeenCalledTimes(1)
-      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+      expect(checkDomainBlocklist).not.toHaveBeenCalled()
     })
 
-    it('edit mode: [] -> items calls checkDomainBlacklist when domainRecordId is set', () => {
+    it('edit mode: [] -> items calls checkDomainBlocklist when domainRecordId is set', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
+      const checkDomainBlocklist = jest.fn()
       const ctx = {
         isEdit: true,
         value: { domainRecordId: 'd1' },
         setDefaultValue,
-        checkDomainBlacklist
+        checkDomainBlocklist
       }
       watch.domainRecords.call(ctx, records, [])
       expect(setDefaultValue).not.toHaveBeenCalled()
-      expect(checkDomainBlacklist).toHaveBeenCalledWith('d1')
+      expect(checkDomainBlocklist).toHaveBeenCalledWith('d1')
     })
 
     it('returns early when new list is empty', () => {
       const setDefaultValue = jest.fn()
-      const ctx = { setDefaultValue, checkDomainBlacklist: jest.fn() }
+      const ctx = { setDefaultValue, checkDomainBlocklist: jest.fn() }
       watch.domainRecords.call(ctx, [], [])
       expect(setDefaultValue).not.toHaveBeenCalled()
     })
 
     it('does nothing when list was already non-empty', () => {
       const setDefaultValue = jest.fn()
-      const checkDomainBlacklist = jest.fn()
-      const ctx = { setDefaultValue, checkDomainBlacklist }
+      const checkDomainBlocklist = jest.fn()
+      const ctx = { setDefaultValue, checkDomainBlocklist }
       watch.domainRecords.call(ctx, records, records)
       expect(setDefaultValue).not.toHaveBeenCalled()
-      expect(checkDomainBlacklist).not.toHaveBeenCalled()
+      expect(checkDomainBlocklist).not.toHaveBeenCalled()
     })
   })
 
-  it('checkDomainBlacklist matches numeric id to string id via String coercion', async () => {
+  it('checkDomainBlocklist matches numeric id to string id via String coercion', async () => {
     jest.clearAllMocks()
     const ctx = {
-      blacklistWarning: null,
+      blocklistWarning: null,
       cleanSuggestions: [],
       domainRecords: [
         { text: 'coerce.test', value: 99, extraDatas: [{ value: '2' }, { value: true }] }
       ]
     }
-    InputPhishingLink.methods.checkDomainBlacklist.call(ctx, '99')
+    InputPhishingLink.methods.checkDomainBlocklist.call(ctx, '99')
     await new Promise((r) => setTimeout(r, 0))
-    expect(getDomainBlacklistStatus).toHaveBeenCalledWith('coerce.test')
+    expect(getDomainBlocklistStatus).toHaveBeenCalledWith('coerce.test')
   })
 })

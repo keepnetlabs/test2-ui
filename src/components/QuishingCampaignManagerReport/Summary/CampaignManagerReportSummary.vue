@@ -114,6 +114,7 @@ import { TrainingReportDialogModel } from '@/components/QuishingCampaignManagerR
 import QuishingService from '@/api/quishing'
 import CampaignManagerPrintoutReportSummaryCards from '@/components/QuishingCampaignManagerReport/Summary/CampaignManagerPrintoutReportSummaryCards.vue'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
+import { collectScenarioLanguages } from '@/components/Common/Report/utils'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 export default {
@@ -238,19 +239,12 @@ export default {
         endDate: '0',
         totalTargetUserCount: 0
       }
-      const languages = new Set()
-      this?.phishingScenarios?.forEach((scenario) => {
-        const languageCode = scenario.scenarioInfo.languageShortCode
-        const language = this.languageOptions.find(
-          (lang) => lang.languageShortCode === languageCode
-        )
-        languages.add(language?.text || languageCode)
-      })
+      const languages = collectScenarioLanguages(this.phishingScenarios, this.languageOptions)
       const { duration = '0' } = this.campaignSummary?.settings || { duration: '0' }
       return {
         'Target Groups': this?.targetGroups || [],
         'Target Users': totalTargetUserCount,
-        Languages: languages.size ? [...languages].join(', ') : '',
+        Languages: languages,
         'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Duration: duration
       }
@@ -490,11 +484,15 @@ export default {
     }
   },
   watch: {
-    apiResponse(value = {}) {
-      this.setCampaignSummary(value)
-      setTimeout(() => {
-        this.setLoading(false)
-      }, 300)
+    apiResponse: {
+      immediate: true,
+      handler(value = {}) {
+        if (!Object.keys(value).length) return
+        this.setCampaignSummary(value)
+        setTimeout(() => {
+          this.setLoading(false)
+        }, 300)
+      }
     }
   },
   mounted() {
@@ -517,11 +515,7 @@ export default {
       })
     },
     callForData() {
-      if (Object.keys(this.apiResponse)?.length) this.callApis(true)
-      else {
-        this.setLoading(true)
-        this.callForTargetGroups()
-      }
+      this.callApis(true)
       this.interval = setInterval(() => {
         this.callApis()
       }, 15000)

@@ -62,6 +62,33 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  EMAIL_TEMPLATE_LANGUAGE: {
+    property: PROPERTY_STORE.EMAIL_TEMPLATE_LANGUAGE,
+    align: 'left',
+    label: labels.ScenarioLanguage,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: []
+  },
+  PREFERREDLANGUAGE: {
+    property: 'preferredLanguage',
+    align: 'left',
+    label: labels.PreferredLanguage,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 200,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [],
+    filterableCustomFieldName: 'preferredLanguageId'
+  },
   EMAIL: {
     property: PROPERTY_STORE.EMAIL,
     align: 'left',

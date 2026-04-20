@@ -1,5 +1,5 @@
 <template>
-  <Fragment>
+  <div style="display: contents;">
     <CreateNewUserGroupModal
       v-if="isTargetGroupModalVisible"
       :status="isTargetGroupModalVisible"
@@ -105,7 +105,7 @@
         </div>
       </FormGroup>
     </v-form>
-  </Fragment>
+  </div>
 </template>
 <script>
 import labels from '@/model/constants/labels'
@@ -118,7 +118,6 @@ import {
   getSelectSearchPayload
 } from '@/utils/functions'
 import { searchTargetGroups, createTargetGroup } from '@/api/targetUsers'
-import { Fragment } from 'vue-frag'
 import CreateNewUserGroupModal from '@/components/TargetUsers/CreateNewUserGroupModal'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InfiniteScroll from '@/directives/infinite-scroll'
@@ -133,7 +132,6 @@ export default {
     InputEntityName,
     CreateNewUserGroupModal,
     KSelect,
-    Fragment,
     InputDuration
   },
   props: {

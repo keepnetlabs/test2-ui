@@ -21,8 +21,17 @@ export default {
       AwarenessEducatorService.getCategories().then((response) => {
         this.categories =
           response?.data?.data?.map((category) => ({
-            text: category.displayName || category.name,
-            value: category.name
+            text:
+              category.categoryName ||
+              category.displayName ||
+              category.name ||
+              category.code,
+            value: String(
+              category.categoryId ||
+                category.id ||
+                category.resourceId ||
+                ''
+            )
           })) || []
       })
     },

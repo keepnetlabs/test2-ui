@@ -75,9 +75,9 @@
         :show-toolbar="!!getCurrentLandingPageTemplate"
       />
 
-      <div v-if="blacklistWarning" class="blacklist-preview-bar" :class="'blacklist-preview-bar--' + blacklistWarning.status">
-        <VIcon x-small :color="blacklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
-        <span class="blacklist-preview-bar__text">{{ blacklistWarning.reason }}</span>
+      <div v-if="blocklistWarning" class="blocklist-preview-bar" :class="'blocklist-preview-bar--' + blocklistWarning.status">
+        <VIcon x-small :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
+        <span class="blocklist-preview-bar__text">{{ blocklistWarning.reason }}</span>
       </div>
 
       <KEmailPreview
@@ -98,7 +98,7 @@ import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import labels from '../../model/constants/labels'
 import { openHtmlInNewWindow } from '@/utils/functions'
-import { getDomainBlacklistStatus } from '@/api/domainBlacklist'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 
 export default {
   name: 'LandingPageTemplateModalPreview',
@@ -160,7 +160,7 @@ export default {
       PREVIEW_DIALOG_TYPES,
       selectedLandingPageIndex: 0,
       selectedLanguageId: null,
-      blacklistWarning: null
+      blocklistWarning: null
     }
   },
   mounted() {
@@ -168,7 +168,7 @@ export default {
       this.selectedLanguageId =
         this.languages[0].value || this.languages[0].languageTypeResourceId || this.languages[0].id
     }
-    this.checkDomainBlacklist()
+    this.checkDomainBlocklist()
   },
   computed: {
     hasLandingPageTemplate() {
@@ -232,8 +232,8 @@ export default {
       }
     },
     phishingUrl() {
-      this.blacklistWarning = null
-      this.checkDomainBlacklist()
+      this.blocklistWarning = null
+      this.checkDomainBlocklist()
     }
   },
   methods: {
@@ -258,14 +258,14 @@ export default {
         return null
       }
     },
-    checkDomainBlacklist() {
+    checkDomainBlocklist() {
       const domain = this.extractDomain(this.phishingUrl)
       if (!domain) return
-      getDomainBlacklistStatus(domain)
+      getDomainBlocklistStatus(domain)
         .then((response) => {
           const data = response.data
           if (data.status === 'malicious' || data.status === 'suspicious') {
-            this.blacklistWarning = { status: data.status, reason: data.reason }
+            this.blocklistWarning = { status: data.status, reason: data.reason }
           }
         })
         .catch(() => {})

@@ -129,6 +129,29 @@ describe('NotificationTemplatesPreviewDialog.vue', () => {
     expect(wrapper.emitted('on-edit')).toBeTruthy()
   })
 
+  it('detects teams template metadata from selected row type name', () => {
+    const wrapper = createWrapper({
+      selectedRow: {
+        resourceId: 'tpl-1',
+        name: 'Training Enrollment',
+        isOwner: true,
+        typeName: 'Microsoft Teams - Training Enrollment'
+      },
+      templateData: {
+        template: '<p>MAIN</p>',
+        subject: 'Subject should be hidden',
+        fromName: 'Sender',
+        fromAddress: 'sender@mail.com',
+        ccAddresses: ['cc@mail.com'],
+        selectedLanguageResourceId: 1,
+        languages: [{ languageTypeResourceId: 1, languageTypeName: 'English', template: '<p>EN</p>' }]
+      }
+    })
+
+    expect(wrapper.vm.templateTypeName).toBe('Microsoft Teams - Training Enrollment')
+    expect(wrapper.vm.isTeamsNotificationTemplate).toBe(true)
+  })
+
   it('computes language label and edit permission state', async () => {
     const wrapper = createWrapper({
       templateData: {

@@ -26,7 +26,8 @@ import {
   emptyInfographicSendModalObj,
   emptyScreensaverSendModalObj,
   emptyLearningPathSendModalObj,
-  TRAINING_LIBRARY_SEARCH_TYPES
+  TRAINING_LIBRARY_SEARCH_TYPES,
+  getTrainingCategoryMeta
 } from "@/components/TrainingLibrary/utils";
 import {
   cancellableAxiosRequest,
@@ -531,8 +532,7 @@ const trainingLibrary = {
     },
     SET_FILTER_TO_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems;
-      const payloadKey =
-        payload.key === "targetAudience" ? "roles" : payload.key;
+      const payloadKey = resolvePayloadKey(payload.key);
       const fIndex = filterItems.findIndex((f) => f.FieldName === payloadKey);
       let value;
       if (typeof payload.activeValue === "string") {
@@ -573,8 +573,7 @@ const trainingLibrary = {
     },
     REMOVE_FILTER_FROM_PAYLOAD(state, payload) {
       const filterItems = state.axiosPayload.filter.FilterGroups[0].FilterItems;
-      const payloadKey =
-        payload.key === "targetAudience" ? "roles" : payload.key;
+      const payloadKey = resolvePayloadKey(payload.key);
       if (
         payload.filterType === "date" &&
         payload.activeOperator === "between"
@@ -632,8 +631,10 @@ const trainingLibrary = {
           const languages =
             rootGetters["trainingLibraryHelpers/getLanguages"] || [];
           const enrichedResults = results.map((item) => {
+            const categoryMeta = getTrainingCategoryMeta(item);
             return {
               ...item,
+              ...categoryMeta,
               languageCodes: item.languages || [], // Orijinal kodları sakla
               languages: (item.languages || []).map((code) => {
                 const language = languages.find((lang) => lang.code === code);
@@ -923,6 +924,11 @@ const trainingLibrary = {
       commit("SET_DELETE_DIALOG", emptyTrainingDeleteDialogObj);
     }
   }
+};
+const resolvePayloadKey = (key) => {
+  if (key === "targetAudience") return "roles";
+  if (key === "category") return "categories";
+  return key;
 };
 const getTotalCountByType = (data, key) => {
   return data.find((item) => item.trainingType === key)?.trainingCount || 0;

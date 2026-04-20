@@ -89,7 +89,7 @@ import { mapGetters } from 'vuex'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 import QuishingService from '@/api/quishing'
-import { getAllDomainBlacklistStatuses } from '@/api/domainBlacklist'
+import { getAllDomainBlocklistStatuses } from '@/api/domainBlocklist'
 export default {
   name: 'DomainList',
   components: {
@@ -180,16 +180,16 @@ export default {
             width: 150
           },
           {
-            property: 'blacklistStatus',
+            property: 'blocklistStatus',
             align: 'center',
             editable: false,
-            label: 'Blacklist Status',
+            label: 'Blocklist Status',
             fixed: false,
             sortable: false,
             hideSort: true,
             show: true,
             type: 'status',
-            tooltipKey: 'blacklistDetail',
+            tooltipKey: 'blocklistDetail',
             badgeColorMap: {
               loading: '#bdbdbd',
               clean: '#217124',
@@ -300,8 +300,8 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
-            this.tableData = results.map((row) => ({ ...row, blacklistStatus: 'loading' }))
-            this.enrichWithBlacklistStatus(results)
+            this.tableData = results.map((row) => ({ ...row, blocklistStatus: 'loading' }))
+            this.enrichWithBlocklistStatus(results)
           })
           .catch(() => {
             this.tableData = []
@@ -309,27 +309,27 @@ export default {
           .finally(() => (this.loading = false))
       }
     },
-    enrichWithBlacklistStatus(results) {
-      getAllDomainBlacklistStatuses()
+    enrichWithBlocklistStatus(results) {
+      getAllDomainBlocklistStatuses()
         .then((response) => {
-          const blacklistDomains = response.data.domains || []
-          const blacklistMap = {}
-          blacklistDomains.forEach((d) => {
-            blacklistMap[d.domain] = d
+          const blocklistDomains = response.data.domains || []
+          const blocklistMap = {}
+          blocklistDomains.forEach((d) => {
+            blocklistMap[d.domain] = d
           })
           this.tableData = results.map((row) => {
-            const match = blacklistMap[row.domain]
+            const match = blocklistMap[row.domain]
             if (match) {
               return {
                 ...row,
-                blacklistStatus: match.status,
-                blacklistDetail: match.reason || null
+                blocklistStatus: match.status,
+                blocklistDetail: match.reason || null
               }
             }
             return {
               ...row,
-              blacklistStatus: 'pending',
-              blacklistDetail: null
+              blocklistStatus: 'pending',
+              blocklistDetail: null
             }
           })
         })

@@ -14,6 +14,7 @@ jest.mock('@/helper-classes/lookup-local-storage', () => ({
 jest.mock('@/api/quishing', () => ({
   createLandingPage: jest.fn(() => Promise.resolve()),
   updateLandingPage: jest.fn(() => Promise.resolve()),
+  getLandingPageTemplate: jest.fn(() => Promise.resolve({ data: { data: {} } })),
   getMergedTextForQuishing: jest.fn(() =>
     Promise.resolve({
       data: { data: { mergeTags: ['userName'] } }
@@ -265,7 +266,7 @@ describe('QuishingNewLandingPageModal.vue (extra branches)', () => {
     expect(ctx.step).toBe(1)
   })
 
-  it('handleDeleteLandingPage keeps tab for non-first/second index', () => {
+  it('handleDeleteLandingPage moves tab to the nearest existing page', () => {
     const ctx = {
       formValues: {
         landingPages: [
@@ -279,11 +280,14 @@ describe('QuishingNewLandingPageModal.vue (extra branches)', () => {
 
     methods.handleDeleteLandingPage.call(ctx, 2)
 
-    expect(ctx.formValues.landingPages).toHaveLength(2)
-    expect(ctx.tab).toBe('page3')
+    expect(ctx.formValues.landingPages).toEqual([
+      { name: 'landing-page', order: 1 },
+      { name: 'Page 2', order: 2 }
+    ])
+    expect(ctx.tab).toBe('page2')
   })
 
-  it('handleDeleteLandingPage resets tab to page1 for first and second index', () => {
+  it('handleDeleteLandingPage keeps the active tab aligned after deleting earlier pages', () => {
     const ctxFirst = {
       formValues: {
         landingPages: [
@@ -307,7 +311,61 @@ describe('QuishingNewLandingPageModal.vue (extra branches)', () => {
       tab: 'page3'
     }
     methods.handleDeleteLandingPage.call(ctxSecond, 1)
-    expect(ctxSecond.tab).toBe('page1')
+    expect(ctxSecond.tab).toBe('page2')
+  })
+
+  it('created normalizes duplicate landing page metadata from API response', async () => {
+    QuishingService.getLandingPageTemplate.mockResolvedValueOnce({
+      data: {
+        data: {
+          subDomain: 'demo',
+          urlSchemaTypeId: 1,
+          pathTypeId: 2,
+          extensionTypeId: 3,
+          parameterTypeId: 4,
+          domainRecordId: 5,
+          methodTypeId: 1,
+          difficultyTypeId: 2,
+          name: 'Broken template',
+          landingPages: [
+            { name: 'Page 2', order: 2, content: '<p>first</p>' },
+            { name: 'Page 2', order: 2, content: '<p>second</p>' }
+          ],
+          availableForList: []
+        }
+      }
+    })
+
+    const ctx = {
+      isEdit: true,
+      isDuplicate: false,
+      emailTemplateId: 'template-1',
+      landingPageData: { domainRecords: [] },
+      getCurrentCompany: {},
+      footerButtonsIds: {},
+      formValues: {},
+      initialFormValues: {},
+      availableForRequests: [],
+      callForMergedTags: jest.fn(),
+      callForLanguages: jest.fn(),
+      $refs: {
+        refInputPhishingLink: {
+          checkSchemaTypes: jest.fn()
+        }
+      },
+      $set: (target, key, value) => {
+        target[key] = value
+      }
+    }
+
+    created.call(ctx)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(ctx.formValues.landingPages).toEqual([
+      { name: 'landing-page', order: 1, content: '<p>first</p>' },
+      { name: 'Page 2', order: 2, content: '<p>second</p>' }
+    ])
   })
 
   it('submit calls createLandingPage when not edit mode', async () => {
@@ -320,7 +378,11 @@ describe('QuishingNewLandingPageModal.vue (extra branches)', () => {
       availableForRequests: [{ id: 1 }],
       formValues: {
         phishingLink: { subDomain: 'x' },
-        name: 'Landing'
+        name: 'Landing',
+        landingPages: [
+          { name: 'Page 2', order: 4, content: '<p>first</p>' },
+          { name: 'Page 2', order: 9, content: '<p>second</p>' }
+        ]
       },
       $refs: {
         refEmailTemplateContent: { validate: jest.fn(() => true) },
@@ -338,7 +400,13 @@ describe('QuishingNewLandingPageModal.vue (extra branches)', () => {
     await Promise.resolve()
 
     expect(QuishingService.createLandingPage).toHaveBeenCalledWith(
-      expect.objectContaining({ availableForRequests: ['mapped'] })
+      expect.objectContaining({
+        availableForRequests: ['mapped'],
+        landingPages: [
+          { name: 'landing-page', order: 1, content: '<p>first</p>' },
+          { name: 'Page 2', order: 2, content: '<p>second</p>' }
+        ]
+      })
     )
     expect(emit).toHaveBeenCalledWith('changeNewEmailTemplateModalStatus', false, true)
     expect(ctx.isSubmitDisabled).toBe(false)
@@ -541,8 +609,29 @@ describe('QuishingNewLandingPageModal.vue (extra branches)', () => {
     methods.handleAddBlankPage.call(ctx)
 
     expect(ctx.formValues.landingPages).toHaveLength(1)
-    expect(ctx.formValues.landingPages[0].name).toBe('Page 1')
+    expect(ctx.formValues.landingPages[0].name).toBe('landing-page')
     expect(ctx.tab).toBe('page1')
+  })
+
+  it('handleAddBlankPage switches to the newly added page', () => {
+    const ctx = {
+      emailTemplateLogo: 'logo.png',
+      formValues: {
+        landingPages: [
+          { name: 'landing-page', order: 1, content: 'x' },
+          { name: 'Page 2', order: 2, content: 'y' }
+        ]
+      },
+      tab: 'page2'
+    }
+
+    methods.handleAddBlankPage.call(ctx)
+
+    expect(ctx.formValues.landingPages).toHaveLength(3)
+    expect(ctx.formValues.landingPages[2]).toEqual(
+      expect.objectContaining({ name: 'Page 3', order: 3 })
+    )
+    expect(ctx.tab).toBe('page3')
   })
 
   it('handleHTMLUploadChange dispatches invalid file type error', () => {

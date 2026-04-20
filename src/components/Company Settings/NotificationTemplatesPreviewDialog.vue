@@ -83,19 +83,26 @@
             </div>
             <hr class="mt-4 ml-n4 mr-n4" v-if="!!emailTemplate" />
             <div v-if="!!emailTemplate" class="email-template-preview__text mt-4">
-              <div>
+              <div v-if="isTeamsNotificationTemplate && templateTypeName">
+                <span class="email-template-preview__text--title">Template Type: </span>
+                <span class="email-template-preview__text--body">{{ templateTypeName }}</span>
+              </div>
+              <div v-else>
                 <span class="email-template-preview__text--title">Subject: </span>
                 <span class="email-template-preview__text--body">{{ subject }}</span>
               </div>
-              <div v-if="fromName" style="margin-top: 2px;">
+              <div v-if="!isTeamsNotificationTemplate && fromName" style="margin-top: 2px;">
                 <span class="email-template-preview__text--title">From Name: </span>
                 <span class="email-template-preview__text--body">{{ fromName }}</span>
               </div>
-              <div v-if="fromAddress" style="margin-top: 2px;">
+              <div v-if="!isTeamsNotificationTemplate && fromAddress" style="margin-top: 2px;">
                 <span class="email-template-preview__text--title">From Email: </span>
                 <span class="email-template-preview__text--body">{{ fromAddress }}</span>
               </div>
-              <div v-if="ccAddresses && ccAddresses.length > 0" style="margin-top: 2px;">
+              <div
+                v-if="!isTeamsNotificationTemplate && ccAddresses && ccAddresses.length > 0"
+                style="margin-top: 2px;"
+              >
                 <span class="email-template-preview__text--title">CC: </span>
                 <span class="email-template-preview__text--body">{{ ccAddresses.join(', ') }}</span>
               </div>
@@ -152,7 +159,8 @@ export default {
       fromName: '',
       fromAddress: '',
       ccAddresses: [],
-      subject: ''
+      subject: '',
+      templateTypeName: ''
     }
   },
   computed: {
@@ -175,6 +183,9 @@ export default {
       return `Template Language${this.selectedLanguages.length > 1 ? 's' : ''} (${
         this.selectedLanguages.length
       })`
+    },
+    isTeamsNotificationTemplate() {
+      return this.templateTypeName.toLowerCase().includes('teams')
     },
     isEditDisabled() {
       return !this.selectedRow?.isOwner
@@ -215,6 +226,7 @@ export default {
       this.fromName = data.fromName || ''
       this.fromAddress = data.fromAddress || ''
       this.ccAddresses = Array.isArray(data.ccAddresses) ? data.ccAddresses : []
+      this.templateTypeName = data.typeName || this.selectedRow?.typeName || ''
 
       // Languages data array'ini oluştur (ana dil + ek diller)
       this.languagesData = []
@@ -255,6 +267,7 @@ export default {
           this.fromName = data.fromName || ''
           this.fromAddress = data.fromAddress || ''
           this.ccAddresses = Array.isArray(data.ccAddresses) ? data.ccAddresses : []
+          this.templateTypeName = data.typeName || this.selectedRow?.typeName || ''
 
           // Languages data array'ini oluştur (ana dil + ek diller)
           this.languagesData = [

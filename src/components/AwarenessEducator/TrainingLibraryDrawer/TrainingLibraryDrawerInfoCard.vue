@@ -3,62 +3,69 @@
     <!-- Popover mode: multiple items with dropdown -->
     <template v-if="hasPopover">
       <div class="training-library-drawer-info-card__content">
-        <VIcon color="#757575">{{ icon }}</VIcon>
-        <VMenu
-          v-model="isPopoverOpen"
-          offset-y
-          :min-width="200"
-          :close-on-content-click="false"
-          :attach="true"
-          content-class="training-library-drawer-info-card__popover"
-        >
-          <template #activator="{ on, attrs }">
-            <span
-              v-bind="attrs"
-              v-on="on"
-              class="training-library-drawer-info-card__clickable"
-            >
-              {{ text }}
-              <VIcon size="18" color="#383b41">mdi-menu-down</VIcon>
-            </span>
-          </template>
-          <div class="training-library-drawer-info-card__popover-content">
-            <div class="training-library-drawer-info-card__popover-header">
-              <VTextField
-                v-model="searchQuery"
-                placeholder="Search"
-                outlined
-                dense
-                hide-details
-                prepend-inner-icon="mdi-magnify"
-                class="training-library-drawer-info-card__popover-search"
-              />
-              <VIcon
-                size="20"
-                class="training-library-drawer-info-card__popover-close"
-                @click="isPopoverOpen = false"
+        <div class="training-library-drawer-info-card__icon-row">
+          <VIcon color="#757575">{{ icon }}</VIcon>
+        </div>
+        <div class="training-library-drawer-info-card__value-row">
+          <VMenu
+            v-model="isPopoverOpen"
+            offset-y
+            :min-width="200"
+            :close-on-content-click="false"
+            :attach="true"
+            content-class="training-library-drawer-info-card__popover"
+          >
+            <template #activator="{ on, attrs }">
+              <span
+                v-bind="attrs"
+                v-on="on"
+                class="
+                  training-library-drawer-info-card__value
+                  training-library-drawer-info-card__value--interactive
+                "
               >
-                mdi-close
-              </VIcon>
-            </div>
-            <div class="training-library-drawer-info-card__popover-divider" />
-            <div class="training-library-drawer-info-card__popover-list">
-              <div
-                v-for="(item, idx) in filteredPopoverItems"
-                :key="idx"
-                class="training-library-drawer-info-card__popover-item"
-              >
-                {{ item }}
+                <span class="training-library-drawer-info-card__value-text">{{ text }}</span>
+                <VIcon size="18" color="#383b41">mdi-menu-down</VIcon>
+              </span>
+            </template>
+            <div class="training-library-drawer-info-card__popover-content">
+              <div class="training-library-drawer-info-card__popover-header">
+                <VTextField
+                  v-model="searchQuery"
+                  placeholder="Search"
+                  outlined
+                  dense
+                  hide-details
+                  prepend-inner-icon="mdi-magnify"
+                  class="training-library-drawer-info-card__popover-search"
+                />
+                <VIcon
+                  size="20"
+                  class="training-library-drawer-info-card__popover-close"
+                  @click="isPopoverOpen = false"
+                >
+                  mdi-close
+                </VIcon>
               </div>
-              <div
-                v-if="filteredPopoverItems.length === 0"
-                class="training-library-drawer-info-card__popover-empty"
-              >
-                No results found
+              <div class="training-library-drawer-info-card__popover-divider" />
+              <div class="training-library-drawer-info-card__popover-list">
+                <div
+                  v-for="(item, idx) in filteredPopoverItems"
+                  :key="idx"
+                  class="training-library-drawer-info-card__popover-item"
+                >
+                  {{ item }}
+                </div>
+                <div
+                  v-if="filteredPopoverItems.length === 0"
+                  class="training-library-drawer-info-card__popover-empty"
+                >
+                  No results found
+                </div>
               </div>
             </div>
-          </div>
-        </VMenu>
+          </VMenu>
+        </div>
       </div>
     </template>
     <!-- Tooltip mode -->
@@ -66,8 +73,16 @@
       <VTooltip bottom>
         <template #activator="{ on }">
           <div class="training-library-drawer-info-card__content" v-on="on">
-            <VIcon color="#757575">{{ icon }}</VIcon>
-            <span>{{ text }}</span>
+            <div class="training-library-drawer-info-card__icon-row">
+              <VIcon color="#757575">{{ icon }}</VIcon>
+            </div>
+            <div class="training-library-drawer-info-card__value-row">
+              <span class="training-library-drawer-info-card__value">
+                <span class="training-library-drawer-info-card__value-text">
+                  {{ text }}
+                </span>
+              </span>
+            </div>
           </div>
         </template>
         <span>{{ tooltip }}</span>
@@ -75,8 +90,16 @@
     </template>
     <!-- Default mode -->
     <div v-else class="training-library-drawer-info-card__content">
-      <VIcon color="#757575">{{ icon }}</VIcon>
-      <span>{{ text }}</span>
+      <div class="training-library-drawer-info-card__icon-row">
+        <VIcon color="#757575">{{ icon }}</VIcon>
+      </div>
+      <div class="training-library-drawer-info-card__value-row">
+        <span class="training-library-drawer-info-card__value">
+          <span class="training-library-drawer-info-card__value-text">
+            {{ text }}
+          </span>
+        </span>
+      </div>
     </div>
   </div>
 </template>

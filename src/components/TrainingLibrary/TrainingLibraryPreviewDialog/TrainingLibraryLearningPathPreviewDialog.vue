@@ -35,7 +35,10 @@
 import AppDialog from '@/components/AppDialog.vue'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
-import { emptyLearningPathPreviewDialogObj } from '@/components/TrainingLibrary/utils'
+import {
+  emptyLearningPathPreviewDialogObj,
+  getTrainingCategoryMeta
+} from '@/components/TrainingLibrary/utils'
 import { mapActions, mapGetters } from 'vuex'
 import TrainingLibraryPreviewDialogFooter from '@/components/TrainingLibrary/TrainingLibraryCommonComponents/TrainingLibraryPreviewDialogFooter.vue'
 import TrainingLibraryLearningPathPreview from '@/components/TrainingLibrary/TrainingLibraryPreviewDialog/TrainingLibraryLearningPathPreview.vue'
@@ -97,7 +100,8 @@ export default {
           if (data.trainingGroups)
             data.trainingGroups.sort((a, b) => a.trainingOrder - b.trainingOrder)
           this.trainingDetails = {
-            ...data
+            ...data,
+            ...getTrainingCategoryMeta(data)
           }
         })
         .finally(() => {

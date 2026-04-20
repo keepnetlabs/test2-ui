@@ -47,12 +47,31 @@ jest.mock('@/utils/helperFunctions', () => ({
 
 jest.mock('@/components/Company Settings/utils', () => ({
   scrollToEmailTemplateContent: jest.fn(),
+  TEAMS_NOTIFICATION_TEMPLATE_NAMES: [
+    'Teams Enrollment Notification',
+    'Teams Survey Enrollment Notification',
+    'Teams Phishing Enrollment Notification',
+    'Teams Poster Enrollment Notification',
+    'Teams Infographic Enrollment Notification',
+    'Teams Learning Path Enrollment Notification'
+  ],
+  isTeamsNotificationTemplateName: jest.fn((templateName = '') =>
+    [
+      'Teams Enrollment Notification',
+      'Teams Survey Enrollment Notification',
+      'Teams Phishing Enrollment Notification',
+      'Teams Poster Enrollment Notification',
+      'Teams Infographic Enrollment Notification',
+      'Teams Learning Path Enrollment Notification'
+    ].includes(templateName)
+  ),
   MERGED_TEXTS_MAP: {
     COMPANYNAME: '{COMPANYNAME}'
   }
 }))
 
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate.vue'
+import { createEmailTemplate } from '@/api/company'
 import { getDefaultEmailDeliverySetting } from '@/api/phishingsimulator'
 import { searchSmtpSettings } from '@/api/smtpSettings'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
@@ -82,6 +101,46 @@ describe('NewNotificationTemplate.vue', () => {
         emailDelivery: { name: "First Use Company's DEC config then Fallback to default SMTP" }
       })
     ).toBe(true)
+
+    expect(
+      computed.isTeamsNotificationTemplateSelected.call({
+        selectedTemplateCategoryName: 'Teams Survey Enrollment Notification'
+      })
+    ).toBe(true)
+
+    expect(
+      computed.getEmailDeliveryProps.call({
+        emailDeliveryProps: {
+          hint: '*Required',
+          persistentHint: true,
+          rules: [jest.fn()]
+        },
+        isTeamsNotificationTemplateSelected: true
+      }).rules
+    ).toEqual([])
+
+    expect(
+      computed.shouldRenderEmailDeliveryField.call({
+        isTeamsNotificationTemplateSelected: true
+      })
+    ).toBe(false)
+
+    expect(
+      computed.shouldRenderEmailDeliveryField.call({
+        isTeamsNotificationTemplateSelected: false
+      })
+    ).toBe(true)
+
+    expect(
+      computed.filteredCategoryItems.call({
+        selectedTemplateTypeGroup: 'microsoft-teams',
+        categoryItems: [
+          { text: 'Training Enrollment', value: 'email-1' },
+          { text: 'Teams Survey Enrollment Notification', value: 'teams-1' }
+        ],
+        getTemplateTypeGroupValue: methods.getTemplateTypeGroupValue
+      })
+    ).toEqual([{ text: 'Teams Survey Enrollment Notification', value: 'teams-1' }])
 
     expect(
       computed.getIsGenerateWithAIDisabled.call({
@@ -131,6 +190,176 @@ describe('NewNotificationTemplate.vue', () => {
     expect(ctx.formValues.directEmailSettingResourceId).toBe('dec-1')
     expect(ctx.formValues.smtpSettingResourceId).toBe(null)
     expect(ctx.formValues.emailDeliverySettingType).toBe(EMAIL_DELIVERY_TYPES.DIRECT_EMAIL)
+  })
+
+  it('handleTemplateTypeGroupChange clears mismatched selected template type', () => {
+    const ctx = {
+      selectedTemplateTypeGroup: '',
+      categoryItems: [
+        { text: 'Training Enrollment', value: 'email-1' },
+        { text: 'Teams Survey Enrollment Notification', value: 'teams-1' }
+      ],
+      formValues: {
+        emailTemplateCategoryResourceId: 'email-1'
+      },
+      getTemplateTypeGroupValue: methods.getTemplateTypeGroupValue
+    }
+
+    methods.handleTemplateTypeGroupChange.call(ctx, 'microsoft-teams')
+
+    expect(ctx.selectedTemplateTypeGroup).toBe('microsoft-teams')
+    expect(ctx.formValues.emailTemplateCategoryResourceId).toBe('')
+  })
+
+  it('syncSelectedTemplateTypeGroup keeps manual group selection when template type is cleared', () => {
+    const ctx = {
+      selectedTemplateTypeGroup: 'microsoft-teams',
+      categoryItems: [],
+      getTemplateTypeGroupValue: methods.getTemplateTypeGroupValue
+    }
+
+    methods.syncSelectedTemplateTypeGroup.call(ctx, '')
+
+    expect(ctx.selectedTemplateTypeGroup).toBe('microsoft-teams')
+  })
+
+  it('template type watcher resets dependent state when selection is cleared', () => {
+    const ctx = {
+      selectedTemplateTypeGroup: 'microsoft-teams',
+      formValues: {
+        emailTemplateCategoryResourceId: '',
+        template: 'Old template'
+      },
+      initialFormValues: {
+        template: 'Old template'
+      },
+      activeBlockManagerComponents: {
+        COMPANYNAME: '{COMPANYNAME}'
+      },
+      isSelectedNotificationEnrollment: true,
+      languagesPayload: [
+        {
+          template: 'Lang template',
+          isTranslated: true
+        }
+      ],
+      selectedLanguagePayloadItemBeforeSave: {
+        template: 'Lang template'
+      },
+      syncSelectedTemplateTypeGroup: methods.syncSelectedTemplateTypeGroup,
+      resetTemplateTypeDependentState: methods.resetTemplateTypeDependentState,
+      handleCategoryChange: jest.fn()
+    }
+
+    watch['formValues.emailTemplateCategoryResourceId'].call(ctx, '')
+
+    expect(ctx.selectedTemplateTypeGroup).toBe('microsoft-teams')
+    expect(ctx.formValues.template).toBe('')
+    expect(ctx.initialFormValues.template).toBe('')
+    expect(ctx.activeBlockManagerComponents).toEqual({})
+    expect(ctx.isSelectedNotificationEnrollment).toBe(false)
+    expect(ctx.languagesPayload[0].template).toBe('')
+    expect(ctx.languagesPayload[0].isTranslated).toBe(false)
+    expect(ctx.selectedLanguagePayloadItemBeforeSave.template).toBe('')
+    expect(ctx.handleCategoryChange).not.toHaveBeenCalled()
+  })
+
+  it('handleCategoryChange auto-localizes when single selected language is not company language', () => {
+    const handleGenerateWithAI = jest.fn()
+    const nextTick = jest.fn((cb) => cb())
+    const ctx = {
+      categoryItems: [
+        {
+          text: 'Training Enrollment',
+          value: 'email-1',
+          template: '<div>Email template</div>'
+        }
+      ],
+      formValues: {
+        ccAddresses: [],
+        template: ''
+      },
+      initialFormValues: {
+        template: ''
+      },
+      activeLanguage: 'tr',
+      companyLanguageTypeResourceId: 'en',
+      languageItems: [
+        { value: 'en', text: 'English' },
+        { value: 'tr', text: 'Turkish' }
+      ],
+      selectedLanguages: [{ value: 'tr', text: 'Turkish' }],
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'tr',
+          template: '',
+          isTranslated: true
+        }
+      ],
+      selectedLanguagePayloadItemBeforeSave: {
+        template: ''
+      },
+      selectedItem: null,
+      isSelectedNotificationEnrollment: false,
+      isNotificationEnrollmentCategory: methods.isNotificationEnrollmentCategory,
+      blockManagerComponents: {},
+      callForMergedTags: jest.fn(),
+      setActiveBlockManagerComponents: jest.fn(),
+      $nextTick: nextTick,
+      handleGenerateWithAI,
+      isDefault: false,
+      isGenerateWithAIDisabled: false,
+      isEmailGenerating: false
+    }
+
+    methods.handleCategoryChange.call(ctx, 'email-1')
+
+    expect(nextTick).toHaveBeenCalled()
+    expect(handleGenerateWithAI).toHaveBeenCalled()
+    expect(ctx.isDefault).toBe(true)
+    expect(ctx.languagesPayload[0].template).toBe('<div>Email template</div>')
+    expect(ctx.languagesPayload[0].isTranslated).toBe(false)
+  })
+
+  it('clears email delivery and sender fields when teams template is selected', () => {
+    const ctx = {
+      emailDelivery: { resourceId: 'dec-1' },
+      formValues: {
+        smtpSettingResourceId: 'smtp-1',
+        directEmailSettingResourceId: 'dec-1',
+        emailDeliverySettingType: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL,
+        fromName: 'Keepnet',
+        fromAddress: 'from@example.com',
+        ccAddresses: ['cc@example.com']
+      },
+      languagesPayload: [
+        {
+          fromName: 'Keepnet',
+          fromAddress: 'from@example.com',
+          ccAddresses: ['cc@example.com']
+        }
+      ],
+      selectedLanguagePayloadItemBeforeSave: {
+        fromName: 'Keepnet',
+        fromAddress: 'from@example.com',
+        ccAddresses: ['cc@example.com']
+      },
+      clearEmailDeliverySelection: methods.clearEmailDeliverySelection,
+      clearTeamsNotificationSenderFields: methods.clearTeamsNotificationSenderFields
+    }
+
+    watch.isTeamsNotificationTemplateSelected.call(ctx, true)
+
+    expect(ctx.emailDelivery).toBe(null)
+    expect(ctx.formValues.smtpSettingResourceId).toBe('')
+    expect(ctx.formValues.directEmailSettingResourceId).toBe('')
+    expect(ctx.formValues.emailDeliverySettingType).toBe('')
+    expect(ctx.formValues.fromName).toBe('')
+    expect(ctx.formValues.fromAddress).toBe('')
+    expect(ctx.formValues.ccAddresses).toEqual([])
+    expect(ctx.languagesPayload[0].fromName).toBe('')
+    expect(ctx.languagesPayload[0].fromAddress).toBe('')
+    expect(ctx.languagesPayload[0].ccAddresses).toEqual([])
   })
 
   it('callForDefaultEmailDeliverySetting skips edit mode and sets default ids in create mode', async () => {
@@ -216,6 +445,44 @@ describe('NewNotificationTemplate.vue', () => {
     )
   })
 
+  it('setEmptyLanguagesPayload keeps subject and template but clears sender fields for teams templates', () => {
+    const ctx = {
+      isTeamsNotificationTemplateSelected: true,
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          fromName: 'From EN',
+          fromAddress: 'from@en.com',
+          subject: 'Subject EN',
+          template: 'Template EN',
+          ccAddresses: ['a@en.com']
+        }
+      ],
+      companyLanguageTypeResourceId: 'en',
+      getPreferredLanguagePayload: methods.getPreferredLanguagePayload
+    }
+    const output = methods.setEmptyLanguagesPayload.call(ctx, [
+      {
+        languageTypeResourceId: 'tr',
+        fromName: 'Old From',
+        fromAddress: 'old@tr.com',
+        subject: '',
+        template: '',
+        ccAddresses: ['old@cc.com']
+      }
+    ])
+
+    expect(output[0]).toEqual(
+      expect.objectContaining({
+        fromName: '',
+        fromAddress: '',
+        subject: 'Subject EN',
+        template: 'Template EN',
+        ccAddresses: []
+      })
+    )
+  })
+
   it('showLocalizationSuccessMessage handles relocalize/single/multiple cases', () => {
     const dispatch = jest.fn()
     const baseCtx = {
@@ -270,5 +537,83 @@ describe('NewNotificationTemplate.vue', () => {
     expect(ctx.formValues.languageTypeResourceId).toBe('lang-company')
     expect(ctx.callForCategories).toHaveBeenCalled()
     expect(ctx.callForNotificationTemplate).toHaveBeenCalled()
+  })
+
+  it('submit sends teams payload with subject but empty sender and delivery fields', async () => {
+    const ctx = {
+      $refs: {
+        refForm: {
+          validate: jest.fn(() => true)
+        },
+        refMakeAvailableFor: {
+          validateAvailableFor: jest.fn(),
+          isAvailableForValid: true,
+          getAvailableForValues: jest.fn((values) => values)
+        }
+      },
+      saveDisable: false,
+      selectedItem: null,
+      isDuplicate: false,
+      isTeamsNotificationTemplateSelected: true,
+      formValues: {
+        availableForRequests: [],
+        tags: ['tag-1'],
+        name: 'Teams template',
+        emailTemplateCategoryResourceId: 'teams-category',
+        emailDeliverySettingType: EMAIL_DELIVERY_TYPES.SMTP,
+        smtpSettingResourceId: 'smtp-1',
+        directEmailSettingResourceId: 'dec-1',
+        fromAddress: '',
+        fromName: '',
+        subject: '',
+        template: '',
+        ccAddresses: [],
+        canRemoveLanguages: true,
+        languageTypeResourceId: 'en'
+      },
+      languagesPayload: [
+        {
+          languageTypeResourceId: 'en',
+          languageTypeName: 'English',
+          fromAddress: 'from@example.com',
+          fromName: 'Keepnet',
+          subject: 'Subject',
+          template: '<div>Body</div>',
+          ccAddresses: ['cc@example.com']
+        }
+      ],
+      setEmptyLanguagesPayload: methods.setEmptyLanguagesPayload,
+      getPreferredLanguagePayload: methods.getPreferredLanguagePayload,
+      companyLanguageTypeResourceId: 'en',
+      editedLanguages: [],
+      $emit: jest.fn(),
+      $nextTick: jest.fn()
+    }
+
+    methods.submit.call(ctx)
+    await flushPromises()
+
+    const calledPayload = createEmailTemplate.mock.calls[0][0]
+
+    expect(calledPayload).not.toHaveProperty('emailDeliverySettingType')
+    expect(calledPayload).not.toHaveProperty('smtpSettingResourceId')
+    expect(calledPayload).not.toHaveProperty('directEmailSettingResourceId')
+    expect(calledPayload).not.toHaveProperty('fromName')
+    expect(calledPayload).not.toHaveProperty('fromAddress')
+    expect(calledPayload).not.toHaveProperty('ccAddresses')
+
+    expect(calledPayload).toEqual(
+      expect.objectContaining({
+        subject: 'Subject',
+        languages: expect.arrayContaining([
+          expect.objectContaining({
+            fromName: '',
+            fromAddress: '',
+            subject: 'Subject',
+            ccAddresses: []
+          })
+        ])
+      })
+    )
   })
 })
