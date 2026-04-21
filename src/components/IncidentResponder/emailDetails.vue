@@ -949,7 +949,9 @@ export default {
         "Aksigorta",
         "Sahibinden",
         "BDO UK",
-        "KITH"
+        "KITH",
+        "Keepnet Labs LTS",
+        "Binalyze"
       ];
       const isDevEnv = this.isTestEnvironment;
       const companyName = this.$store.state.auth.selectedCompanyName || "";
