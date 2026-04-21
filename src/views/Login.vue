@@ -1313,11 +1313,19 @@ export default {
       }
     },
     getLoginErrorMessage(error) {
-      if (error?.response?.data?.error_description)
-        return error?.response?.data?.error_description;
-      return error?.response?.data?.Message
-        ? error.response.data.Message
-        : labels.ServiceUnavailable;
+      const data = error?.response?.data;
+      // Backend IP restriction katmanı 403 + { status: 'IP_RESTRICTED', message: '...' }
+      // şeklinde döner. message küçük 'm' ile geldiği için aşağıdaki Message
+      // (büyük M) fallback'leri yetmez; özel olarak ele al.
+      if (data?.status === "IP_RESTRICTED") {
+        return data?.message || labels.IpRestricted;
+      }
+      return (
+        data?.error_description ||
+        data?.Message ||
+        data?.message ||
+        labels.ServiceUnavailable
+      );
     },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false;
