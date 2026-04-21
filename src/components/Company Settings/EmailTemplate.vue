@@ -769,7 +769,10 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
-import { scrollToEmailTemplateContent } from '@/components/Company Settings/utils'
+import {
+  scrollToEmailTemplateContent,
+  setCompanyLogoSrc
+} from '@/components/Company Settings/utils'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapActions, mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -1068,7 +1071,17 @@ export default {
       hasAIGenerationOptionsPermission: 'permissions/getEmailTemplatesAIGenerationOptionsPermissions'
     }),
     editorHtml() {
-      return this.injectLogo(this.template)
+      // GrapesJS editöründe Company Logo merge tag'i {COMPANYLOGO} placeholder'ı
+      // ile gösterilmeli. Sebepleri:
+      //  - Sidebar'dan yeni sürüklenen Company Logo block'unun src'si zaten
+      //    '{COMPANYLOGO}' (companyLogo block tanımına bak). injectLogo ile
+      //    URL'ye çevirmek eski/yeni merge tag'ler arasında tutarsızlık yaratır.
+      //  - GrapesJS toolbar'ındaki Preview butonu içeriği alıp {COMPANYLOGO}'yu
+      //    URL ile değiştirerek yeni sekmede gösteriyor. Editor zaten URL ile
+      //    açılırsa Preview butonu no-op olur.
+      //  - Asıl WYSIWYG preview KEmailPreview'da gerçekleşiyor; orada watcher
+      //    {COMPANYLOGO} → URL dönüşümünü yapıyor.
+      return this.template
     },
     getEmailTemplateCCSelectClasses() {
       return {
@@ -1241,7 +1254,12 @@ export default {
         } else {
           url = this?.$store?.state?.whitelabel.emailTemplateLogoUrl || ''
         }
-        this.previewTemplate = val?.replaceAll('{COMPANYLOGO}', url) || ''
+        // Önce literal {COMPANYLOGO} placeholder'ını temizle, ardından
+        // data-title="Company Logo" olan tüm img'lerin src'sini gerçek URL ile zorla.
+        // Bu sayede template kayıtta placeholder yerine eski/farklı URL ile gelse bile
+        // preview'da güncel logo görünür.
+        const replaced = (val || '').replaceAll('{COMPANYLOGO}', url)
+        this.previewTemplate = setCompanyLogoSrc(replaced, url)
       },
       immediate: true
     },
@@ -1265,22 +1283,12 @@ export default {
   },
   methods: {
     ...mapActions({ changeFeedbackPopup: 'dashboard/changeFeedbackPopup' }),
-    injectLogo(html = '') {
-      let logo =
-        localStorage.getItem('isSelectCompany') === 'true'
-          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl || ''
-      if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
-      return (html || '').replaceAll('{COMPANYLOGO}', logo)
-    },
     restoreLogo(html = '') {
-      let logo =
-        localStorage.getItem('isSelectCompany') === 'true'
-          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl || ''
-      if (!logo) logo = this?.$store?.state?.whitelabel.mainLogoUrl || ''
-      const esc = logo.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      return (html || '').replaceAll(new RegExp(esc, 'g'), '{COMPANYLOGO}')
+      // data-title="Company Logo" olan img'lerin src'sini koşulsuz olarak
+      // {COMPANYLOGO} placeholder'ına çevirir. Eski mantık yalnızca o anki logo
+      // URL'sini arıyordu; URL değişirse veya farklı bir URL kayıtlıysa
+      // çalışmıyordu. Yeni mantık attribute'a bakarak güvenle restore eder.
+      return setCompanyLogoSrc(html || '', '{COMPANYLOGO}')
     },
     onCustomHeadScriptsChange(value, pageIndex) {
       this.$emit('on-custom-head-scripts-change', value, pageIndex)
@@ -1510,7 +1518,12 @@ export default {
           return this.$emit('showErrorDialog')
         }
       }
-      if (this.templateType === 'landing') {
+      // GrapesJS editöründen çıkan template'te company logo gerçek URL ile
+      // yer alıyor. Backend'e {COMPANYLOGO} placeholder'ı gitmesi için landing
+      // ve notification template'lerinde restore et. Diğer tipler (phishing,
+      // quishing, callback vs.) için davranışı değiştirme - kendi yerlerinde
+      // farklı placeholder/URL stratejisi olabilir.
+      if (this.templateType === 'landing' || this.isNotificationTemplate) {
         const htmlToSave = this.restoreLogo(template)
         this.$emit('on-save-template', htmlToSave)
         this.$emit('update:template', htmlToSave)
