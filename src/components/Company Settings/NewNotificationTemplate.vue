@@ -270,7 +270,8 @@ import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading";
 import {
   scrollToEmailTemplateContent,
   MERGED_TEXTS_MAP,
-  isTeamsNotificationTemplateName
+  isTeamsNotificationTemplateName,
+  setCompanyLogoSrc
 } from "@/components/Company Settings/utils";
 import { getDefaultEmailDeliverySetting } from "@/api/phishingsimulator";
 import { EMAIL_DELIVERY_TYPES } from "@/components/CampaignManager/AdvancedSettings/utils";
@@ -1224,30 +1225,20 @@ export default {
             EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.DELETE;
         }
 
-        // Company Logo kontrolü - formValues.template'de
-        if (
-          document.querySelectorAll('[data-title="Company Logo"]') &&
-          document.querySelectorAll('[data-title="Company Logo"]').length
-        ) {
-          for (
-            let i =
-              document.querySelectorAll('[data-title="Company Logo"]').length -
-              1;
-            i >= 0;
-            i--
-          ) {
-            document.querySelectorAll('[data-title="Company Logo"]')[i].src =
-              "{COMPANYLOGO}";
-          }
+        // Backend'e {COMPANYLOGO} placeholder'ı göndermek için template
+        // string'lerinde data-title="Company Logo" olan img'lerin src'sini
+        // (attribute sırasından bağımsız olarak) {COMPANYLOGO}'ya çevir.
+        if (this.formValues.template) {
+          this.formValues.template = setCompanyLogoSrc(
+            this.formValues.template,
+            "{COMPANYLOGO}"
+          );
         }
-
-        // Company Logo kontrolü - her language objesinin template'inde
         languagesPayload.forEach((language) => {
           if (language.template && typeof language.template === "string") {
-            // Regex ile [data-title="Company Logo"] içeren img src'lerini {COMPANYLOGO} ile değiştir
-            language.template = language.template.replaceAll(
-              /<img([^>]*data-title=["']Company Logo["'][^>]*)src=["'][^"']*["']/gi,
-              '<img$1src="{COMPANYLOGO}"'
+            language.template = setCompanyLogoSrc(
+              language.template,
+              "{COMPANYLOGO}"
             );
           }
         });
@@ -1540,7 +1531,13 @@ export default {
                   language.languageTypeResourceId === item.languageResourceId
               );
               if (!languagePayload) return;
-              languagePayload.template = item.template;
+              // AI'den dönen template'te company logo src'si gerçek URL olarak
+              // gelmiş veya placeholder kaybolmuş olabilir. Placeholder'a normalize
+              // et ki hem preview hem submit doğru çalışsın.
+              languagePayload.template = setCompanyLogoSrc(
+                item.template || "",
+                "{COMPANYLOGO}"
+              );
               languagePayload.subject = item.subject || languagePayload.subject;
               languagePayload.fromName =
                 item.fromName || languagePayload.fromName;

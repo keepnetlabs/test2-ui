@@ -63,8 +63,8 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @downloadEvent="exportNotificationTemplate"
-        @handleAddNotificationTemplates="toggleNewNotificationTemplate"
-        @onEmptyBtnClicked="toggleNewNotificationTemplate"
+        @handleAddNotificationTemplates="handleAddNew"
+        @onEmptyBtnClicked="handleAddNew"
         @refreshAction="callForData"
         @server-side-page-number-changed="serverSidePageNumberChanged"
         @server-side-size-changed="serverSideSizeChanged"
@@ -476,10 +476,17 @@ export default {
       if (this.newNotificationTemplateStatus) {
         if (clearSelection) {
           this.selectedItem = null
+          this.isDuplicate = false
         }
         this.editItemsDisabled = false
       }
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
+    },
+    handleAddNew() {
+      this.selectedItem = null
+      this.isDuplicate = false
+      this.editItemsDisabled = false
+      this.toggleNewNotificationTemplate()
     },
 
     callForSearchEmailTemplate() {
