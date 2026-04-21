@@ -47,6 +47,22 @@ jest.mock('@/utils/helperFunctions', () => ({
 
 jest.mock('@/components/Company Settings/utils', () => ({
   scrollToEmailTemplateContent: jest.fn(),
+  // setCompanyLogoSrc, NewNotificationTemplate.vue içinde submit ve
+  // askForNotificationTemplateTranslation aşamalarında çağrılıyor.
+  // Burada gerçek davranışın hafif bir taklidini veriyoruz: HTML string'inde
+  // data-title="Company Logo" olan img'lerin src'sini verilen değere çevir.
+  setCompanyLogoSrc: jest.fn((html = '', newSrc = '') => {
+    if (!html || typeof html !== 'string') return html || ''
+    return html.replace(
+      /<img\b[^>]*\bdata-title=(["'])Company Logo\1[^>]*>/gi,
+      (imgTag) => {
+        if (/\bsrc\s*=\s*["'][^"']*["']/i.test(imgTag)) {
+          return imgTag.replace(/\bsrc\s*=\s*["'][^"']*["']/i, `src="${newSrc}"`)
+        }
+        return imgTag.replace(/^<img\b/i, `<img src="${newSrc}"`)
+      }
+    )
+  }),
   TEAMS_NOTIFICATION_TEMPLATE_NAMES: [
     'Teams Enrollment Notification',
     'Teams Survey Enrollment Notification',

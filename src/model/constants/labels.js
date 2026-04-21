@@ -303,6 +303,8 @@ export const labels = {
   EmailDateRange: 'Email Date Range',
   EmailDateRangeSub: 'Select range of emails’ sending date',
   ServiceUnavailable: 'The service is unavailable, please contact our support team.',
+  IpRestricted:
+    'Your network is not authorized to access this platform. Please contact your administrator.',
   EmptyTrainingReportUsers: 'No one has taken the training, yet',
   EmptyTrainingReportNoResponse: 'Everyone has interacted with the training email',
   EmptyTrainingNoResponsePoster: 'Everyone has interacted with the poster email',
