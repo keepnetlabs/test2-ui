@@ -198,3 +198,25 @@ export const TEAMS_NOTIFICATION_TEMPLATE_NAMES = [
 export const isTeamsNotificationTemplateName = (templateName = '') => {
   return TEAMS_NOTIFICATION_TEMPLATE_NAMES.includes(templateName)
 }
+
+/**
+ * `data-title="Company Logo"` attribute'u olan tüm `<img>` etiketlerinin `src`
+ * değerini verilen değer ile günceller. Attribute sırasından bağımsızdır
+ * (data-title src'den önce de sonra da olabilir). Eğer img'in src attribute'u
+ * yoksa eklenir.
+ *
+ * - Preview için `newSrc` = gerçek logo URL
+ * - Backend'e kaydederken `newSrc` = `'{COMPANYLOGO}'`
+ */
+export const setCompanyLogoSrc = (html = '', newSrc = '') => {
+  if (!html || typeof html !== 'string') return html || ''
+  return html.replace(
+    /<img\b[^>]*\bdata-title=(["'])Company Logo\1[^>]*>/gi,
+    (imgTag) => {
+      if (/\bsrc\s*=\s*["'][^"']*["']/i.test(imgTag)) {
+        return imgTag.replace(/\bsrc\s*=\s*["'][^"']*["']/i, `src="${newSrc}"`)
+      }
+      return imgTag.replace(/^<img\b/i, `<img src="${newSrc}"`)
+    }
+  )
+}
