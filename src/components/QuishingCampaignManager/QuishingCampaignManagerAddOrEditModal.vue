@@ -70,6 +70,7 @@
               :is-action-button-disabled.sync="isActionButtonDisabled"
               :form-details="formDetails"
               is-phishing
+              :show-hyper-personalization="false"
               :hyper-personalization="sendUserPreferredLanguage"
               @initialFormValues="getInitialCampaignManagerCampaignInfo"
               @hyperPersonalizationChange="handleHyperPersonalizationChanged"

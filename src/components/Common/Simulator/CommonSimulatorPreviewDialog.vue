@@ -156,7 +156,7 @@
                 class="common-simulator-preview__text"
                 v-if="!!emailTemplate && !isRedFlagsLoading"
               >
-                <div v-if="isQuishing">
+                <div v-if="isQuishing" class="mb-3">
                   <span class="template-preview__text--title"
                     >Quishing Type:
                   </span>
