@@ -6,6 +6,7 @@ jest.mock('@/api/phishingsimulator', () => ({
 import EmailTemplateMultipleLanguagePreviewDialog from '@/components/Common/Simulator/EmailTemplates/EmailTemplateMultipleLanguagePreviewDialog.vue'
 import labels from '@/model/constants/labels'
 import { checkRedFlags } from '@/api/phishingsimulator'
+import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 
 describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
   it('computes drawer class, red flags text and title', () => {
@@ -118,7 +119,8 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
         { languageTypeResourceId: 'tr', template: '<p>TR</p>', fromName: 'B' }
       ],
       updateTemplateWithFlaggedStyles,
-      isFlaggedStylesEnabled: false
+      isFlaggedStylesEnabled: false,
+      _renderTemplateForPreview: EmailTemplateMultipleLanguagePreviewDialog.methods._renderTemplateForPreview
     }
 
     EmailTemplateMultipleLanguagePreviewDialog.methods.handleLanguageChange.call(ctx, 'tr')
@@ -226,6 +228,21 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
     expect(withFlags).not.toBe(original)
     expect(removed).toContain('<html')
     expect(removed).not.toContain('<script>')
+  })
+
+  it('_renderTemplateForPreview replaces QR placeholder only for quishing type', () => {
+    const method = EmailTemplateMultipleLanguagePreviewDialog.methods._renderTemplateForPreview
+
+    expect(method.call({ type: SCENARIO_TYPES.PHISHING }, null)).toBeNull()
+    expect(method.call({ type: SCENARIO_TYPES.PHISHING }, '')).toBe('')
+
+    const tpl = '<img src="{QRCODEURLIMAGE}" />'
+
+    expect(method.call({ type: SCENARIO_TYPES.PHISHING }, tpl)).toBe(tpl)
+
+    const quishingResult = method.call({ type: SCENARIO_TYPES.QUISHING }, tpl)
+    expect(quishingResult).not.toContain('{QRCODEURLIMAGE}')
+    expect(quishingResult.startsWith('<img src="')).toBe(true)
   })
 
   it('updateTemplateWithFlaggedStyles applies add/remove logic by toggle', () => {

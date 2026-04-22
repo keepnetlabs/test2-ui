@@ -266,6 +266,7 @@ import EmailTemplatesAILoader from '@/components/EmailTemplates/EmailTemplatesAI
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
 import { openHtmlInNewWindow, FLAGGED_AREA_CSS } from '@/utils/functions'
+import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 export default {
   name: 'EmailTemplateMultipleLanguagePreviewDialog',
   components: {
@@ -472,7 +473,7 @@ export default {
               : null,
             isAssistedByAI: data.isAssistedByAI
           }
-          this.templateHTML = this.templates[0].template
+          this.templateHTML = this._renderTemplateForPreview(this.templates[0].template)
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
@@ -506,7 +507,9 @@ export default {
             this.lastRedFlags[this.activeLanguage].templates &&
             this.lastRedFlags[this.activeLanguage].templates[0]
           ) {
-            this.templateHTML = this.lastRedFlags[this.activeLanguage].templates[0]
+            this.templateHTML = this._renderTemplateForPreview(
+              this.lastRedFlags[this.activeLanguage].templates[0]
+            )
           }
           this.updateTemplateWithFlaggedStyles()
           return
@@ -543,7 +546,7 @@ export default {
             }
 
             // Update template HTML and store red flags data
-            this.templateHTML = template
+            this.templateHTML = this._renderTemplateForPreview(template)
             this.lastRedFlags[this.activeLanguage] = {
               flags: structuredClone(redFlags),
               templates: [template],
@@ -623,7 +626,7 @@ export default {
         ...this.emailTemplateParams,
         ...this.templates.find((item) => item.languageTypeResourceId === val)
       }
-      this.templateHTML = this.emailTemplateParams.template
+      this.templateHTML = this._renderTemplateForPreview(this.emailTemplateParams.template)
 
       // Yeni dil için red flags durumunu kontrol et
       if (this.isShowRedFlags) {
@@ -633,7 +636,9 @@ export default {
           this.isFlaggedStylesEnabled = true
 
           if (this.lastRedFlags[val].templates && this.lastRedFlags[val].templates[0]) {
-            this.templateHTML = this.lastRedFlags[val].templates[0]
+            this.templateHTML = this._renderTemplateForPreview(
+              this.lastRedFlags[val].templates[0]
+            )
           }
 
           this.updateTemplateWithFlaggedStyles()
@@ -830,6 +835,13 @@ export default {
     },
     _escapeRegExp(string) {
       return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
+    },
+    _renderTemplateForPreview(template) {
+      if (!template) return template
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        return template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+      }
+      return template
     }
   }
 }
