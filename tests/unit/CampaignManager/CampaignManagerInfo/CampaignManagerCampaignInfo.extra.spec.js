@@ -50,6 +50,12 @@ describe('CampaignManagerCampaignInfo.vue (extra branch coverage)', () => {
     })
   })
 
+  describe('props', () => {
+    it('showHyperPersonalization defaults to true', () => {
+      expect(CampaignManagerCampaignInfo.props.showHyperPersonalization.default).toBe(true)
+    })
+  })
+
   describe('getItemTitle', () => {
     it('returns manual text for value 0', () => {
       expect(CampaignManagerCampaignInfo.methods.getItemTitle.call({}, '0')).toBe(
