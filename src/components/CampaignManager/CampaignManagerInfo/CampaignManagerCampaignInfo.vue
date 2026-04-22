@@ -18,7 +18,7 @@
         />
       </FormGroup>
       <FormGroup
-        v-if="isPhishing"
+        v-if="isPhishing && showHyperPersonalization"
         title="Hyper-Personalization"
         sub-title="Tailor scenarios to the user’s language."
       >
@@ -156,6 +156,10 @@ export default {
     isPhishing: {
       type: Boolean,
       default: false
+    },
+    showHyperPersonalization: {
+      type: Boolean,
+      default: true
     },
     clickedUserGroupResourceId: {
       type: String
