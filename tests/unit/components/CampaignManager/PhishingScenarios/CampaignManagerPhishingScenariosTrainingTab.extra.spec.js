@@ -70,18 +70,53 @@ describe('CampaignManagerPhishingScenariosTrainingTab.vue (extra)', () => {
     const ctx = {
       trainingPayload: { pageNumber: 1 },
       totalNumberOfPagesOfTrainings: 1,
-      isTrainingLoading: false
+      isTrainingLoading: false,
+      getTrainingSearchPermission: true
     }
     CampaignManagerPhishingScenariosTrainingTab.methods.callForTrainingItems.call(ctx, true)
     expect(AwarenessEducatorService.getTrainingItems).not.toHaveBeenCalled()
   })
 
+  it('callForTrainingItems skips API call when training search permission is missing', () => {
+    const ctx = {
+      trainingPayload: { pageNumber: 1, pageSize: 10 },
+      totalNumberOfPagesOfTrainings: 1,
+      isTrainingLoading: false,
+      getTrainingSearchPermission: false,
+      setTrainings: jest.fn()
+    }
+    CampaignManagerPhishingScenariosTrainingTab.methods.callForTrainingItems.call(ctx, false)
+    expect(AwarenessEducatorService.getTrainingItems).not.toHaveBeenCalled()
+    expect(ctx.isTrainingLoading).toBe(false)
+  })
+
+  it('callForAELanguages skips API call when training search permission is missing', () => {
+    const ctx = {
+      languages: [],
+      getTrainingSearchPermission: false
+    }
+    CampaignManagerPhishingScenariosTrainingTab.methods.callForAELanguages.call(ctx)
+    expect(AwarenessEducatorService.getLanguages).not.toHaveBeenCalled()
+    expect(ctx.languages).toEqual([])
+  })
+
   it('callForTrainingItemsSearch delegates to callForTrainingItems when search is empty', () => {
     const ctx = {
+      getTrainingSearchPermission: true,
       callForTrainingItems: jest.fn()
     }
     CampaignManagerPhishingScenariosTrainingTab.methods.callForTrainingItemsSearch.call(ctx, '')
     expect(ctx.callForTrainingItems).toHaveBeenCalled()
+  })
+
+  it('callForTrainingItemsSearch skips when training search permission is missing', () => {
+    const ctx = {
+      getTrainingSearchPermission: false,
+      callForTrainingItems: jest.fn()
+    }
+    CampaignManagerPhishingScenariosTrainingTab.methods.callForTrainingItemsSearch.call(ctx, 'abc')
+    expect(AwarenessEducatorService.getTrainingItems).not.toHaveBeenCalled()
+    expect(ctx.callForTrainingItems).not.toHaveBeenCalled()
   })
 
   it('handleTrainingItemSelect with Survey removes quiz-related end types', () => {
