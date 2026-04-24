@@ -1,10 +1,21 @@
 import TrainingLibraryPosterTable from '@/components/TrainingLibrary/TrainingLibraryTables/TrainingLibraryPosterTable.vue'
 import labels from '@/model/constants/labels'
 import { TRAINING_LIBRARY_MAIN_TABS } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('TrainingLibraryPosterTable.vue', () => {
   it('has correct component name', () => {
     expect(TrainingLibraryPosterTable.name).toBe('TrainingLibraryPosterTable')
+  })
+
+  it('keeps the legacy duration property and never adopts totalDuration', () => {
+    const columns = TrainingLibraryPosterTable.data().tableOptions.columns
+    expect(
+      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
+    ).toBeDefined()
+    expect(
+      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
+    ).toBeUndefined()
   })
 
   it('handleAddPoster dispatches setNewPosterModal', () => {

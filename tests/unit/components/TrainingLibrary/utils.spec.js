@@ -1,12 +1,14 @@
 import {
   TRAINING_LIBRARY_TYPES,
   TRAINING_LIBRARY_SEARCH_TYPES,
+  TRAINING_LIBRARY_COLUMNS,
   distributionDelayTimeTypes,
   addTrainingItems,
   emptyTrainingDeleteDialogObj,
   isInavailable,
   getAutoEnrollText
 } from '@/components/TrainingLibrary/utils'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('TrainingLibrary utils', () => {
   describe('TRAINING_LIBRARY_TYPES', () => {
@@ -35,6 +37,25 @@ describe('TrainingLibrary utils', () => {
       expect(distributionDelayTimeTypes[0]).toEqual({ text: 'seconds', value: '1' })
       expect(distributionDelayTimeTypes[1]).toEqual({ text: 'minutes', value: '2' })
       expect(distributionDelayTimeTypes[2]).toEqual({ text: 'hours', value: '3' })
+    })
+  })
+
+  describe('TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION', () => {
+    it('points to the totalDuration backend field while keeping the Duration label', () => {
+      expect(TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION.property).toBe(
+        PROPERTY_STORE.TOTAL_DURATION
+      )
+      expect(TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION.label).toBe(
+        TRAINING_LIBRARY_COLUMNS.DURATION.label
+      )
+    })
+
+    it('mirrors the legacy DURATION column shape except for the property key (drift guard)', () => {
+      const { property: lpProp, ...lpRest } = TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION
+      const { property: legacyProp, ...legacyRest } = TRAINING_LIBRARY_COLUMNS.DURATION
+
+      expect(lpProp).not.toBe(legacyProp)
+      expect(lpRest).toEqual(legacyRest)
     })
   })
 

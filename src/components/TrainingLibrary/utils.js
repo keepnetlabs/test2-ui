@@ -154,6 +154,18 @@ export const TRAINING_LIBRARY_COLUMNS = {
     filterableType: 'select',
     filterableItems: []
   },
+  LEARNING_PATH_DURATION: {
+    property: PROPERTY_STORE.TOTAL_DURATION,
+    align: 'left',
+    editable: false,
+    label: labels.Duration,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'select',
+    filterableItems: []
+  },
   CATEGORY: {
     property: PROPERTY_STORE.CATEGORY,
     align: 'left',

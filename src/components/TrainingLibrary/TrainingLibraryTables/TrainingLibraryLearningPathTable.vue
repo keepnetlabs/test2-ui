@@ -88,7 +88,7 @@ export default {
           TRAINING_LIBRARY_COLUMNS.CATEGORY,
           TRAINING_LIBRARY_COLUMNS.LEVEL,
           TRAINING_LIBRARY_COLUMNS.TARGET_AUDIENCE,
-          TRAINING_LIBRARY_COLUMNS.DURATION,
+          TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION,
           TRAINING_LIBRARY_COLUMNS.LANGUAGES,
           TRAINING_LIBRARY_COLUMNS.CREATED_BY,
           TRAINING_LIBRARY_COLUMNS.COMPLIANCE,
@@ -136,7 +136,11 @@ export default {
             col.show = true
             return
           }
-          col.show = renderedCols.includes(col.property)
+          const visibilityKey =
+            col.property === PROPERTY_STORE.TOTAL_DURATION
+              ? PROPERTY_STORE.DURATION
+              : col.property
+          col.show = renderedCols.includes(visibilityKey)
         })
       }
     },
