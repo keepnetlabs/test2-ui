@@ -295,6 +295,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission',
       getSelectedTimeZoneName: 'common/getSelectedTimeZoneName'
     }),
     getTextMessageTitle() {
@@ -316,7 +317,7 @@ export default {
       return activeItems
     },
     isRenderTrainingCard() {
-      return this.trainingParams
+      return this.getTrainingSearchPermission && this.trainingParams
     },
     getScheduledDialogItems() {
       return this?.formData?.scheduleItems || []
@@ -582,14 +583,14 @@ export default {
     }
   },
   created() {
-    this.callForTrainingLanguages()
+    if (this.getTrainingSearchPermission) this.callForTrainingLanguages()
   },
   methods: {
     callForScenarioDetail(event = {}) {
       const resourceId = event?.name || ''
       if (!resourceId) return
       const training = this?.formData?.trainings?.[resourceId]
-      if (training && training.trainingId) {
+      if (this.getTrainingSearchPermission && training && training.trainingId) {
         this.selectedTraining = training
         this.callForTrainingDetail(training.trainingId)
       } else this.trainingParams = null

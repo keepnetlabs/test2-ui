@@ -358,6 +358,7 @@ import CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal from './C
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import { getSelectSearchPayload, createRandomCryptStringNumber } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: {
@@ -488,6 +489,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getDisabledLabelStyle() {
       const style = {}
       if (!this.isInputsEditable || this.isInputLanguageDisabled || this.isEdit)
@@ -564,11 +568,13 @@ export default {
     }
   },
   created() {
+    if (!this.getTrainingSearchPermission) return
     this.callForTrainingItems()
     this.callForAELanguages()
   },
   methods: {
     callForAELanguages() {
+      if (!this.getTrainingSearchPermission) return
       AwarenessEducatorService.getLanguages().then((response) => {
         this.languages = response?.data?.data || []
       })
@@ -580,6 +586,7 @@ export default {
       this.isPagePreviewModalVisible = false
     },
     callForTrainingItems(addPage) {
+      if (!this.getTrainingSearchPermission) return
       if (addPage) {
         this.trainingPayload.pageNumber += 1
         if (this.trainingPayload.pageNumber > this.totalNumberOfPagesOfTrainings) return
@@ -595,6 +602,7 @@ export default {
         })
     },
     callForTrainingItemsSearch(search = '') {
+      if (!this.getTrainingSearchPermission) return
       if (search) {
         AwarenessEducatorService.getTrainingItems(
           getSelectSearchPayload(this.trainingPayload, search, 'trainingName')

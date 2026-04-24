@@ -63,6 +63,7 @@ describe('CampaignManagerPhishingScenariosTrainingTab.vue', () => {
       trainingPayload: { pageNumber: 1, pageSize: 10 },
       totalNumberOfPagesOfTrainings: 1,
       isTrainingLoading: false,
+      getTrainingSearchPermission: true,
       setTrainings: jest.fn()
     }
     CampaignManagerPhishingScenariosTrainingTab.methods.callForTrainingItems.call(ctx, false)
