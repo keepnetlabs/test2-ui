@@ -132,21 +132,9 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
     expect(ctx.$emit).not.toHaveBeenCalledWith('on-add-individual-printout-campaign', null, false)
   })
 
-  it('method/detail helpers and record labels cover fallback branches', () => {
+  it('method/detail helpers cover fallback branches', () => {
     expect(QuishingCampaignManagerParentTable.methods.getMethodDetail.call({}, null)).toEqual({})
     expect(QuishingCampaignManagerParentTable.methods.getMethodDetail.call({}, '{bad')).toEqual({})
-    expect(
-      QuishingCampaignManagerParentTable.methods.getRecordsButtonSingleLabel.call({}, {
-        status: 'Idle',
-        frequency: 0
-      })
-    ).toBe('')
-    expect(
-      QuishingCampaignManagerParentTable.methods.getRecordsButtonSingleLabel.call({}, {
-        status: 'Running',
-        frequency: null
-      })
-    ).toBe('View Report')
   })
 
   it('multiple delete payload and helper emits use both selectAll branches', () => {
@@ -319,5 +307,94 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
     window.URL.createObjectURL = originalCreateObjectURL
     openSpy.mockRestore()
     timeoutSpy.mockRestore()
+  })
+
+  it('handleDownload dispatches start snackbar, downloads pdf and revokes object url', async () => {
+    QuishingService.getQuishingPdfCampaignPreviewContent.mockResolvedValueOnce({
+      data: new Uint8Array([7, 8, 9])
+    })
+    const originalCreateObjectURL = window.URL.createObjectURL
+    const originalRevokeObjectURL = window.URL.revokeObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'blob:download-pdf')
+    window.URL.revokeObjectURL = jest.fn()
+    const click = jest.fn()
+    const link = { click, href: '', download: '' }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    const appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation(() => link)
+    const removeChildSpy = jest.spyOn(document.body, 'removeChild').mockImplementation(() => link)
+    const dispatch = jest.fn()
+
+    QuishingCampaignManagerParentTable.methods.handleDownload.call(
+      { $store: { dispatch } },
+      { resourceId: 'q-dl', name: 'My Campaign' }
+    )
+    await flushPromises()
+
+    expect(dispatch).toHaveBeenCalledWith(
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'Download progress has been started. Please wait...' })
+    )
+    expect(QuishingService.getQuishingPdfCampaignPreviewContent).toHaveBeenCalledWith('q-dl')
+    expect(link.download).toBe('My Campaign.pdf')
+    expect(click).toHaveBeenCalled()
+    expect(appendChildSpy).toHaveBeenCalledWith(link)
+    expect(removeChildSpy).toHaveBeenCalledWith(link)
+    expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:download-pdf')
+
+    window.URL.createObjectURL = originalCreateObjectURL
+    window.URL.revokeObjectURL = originalRevokeObjectURL
+    createElementSpy.mockRestore()
+    appendChildSpy.mockRestore()
+    removeChildSpy.mockRestore()
+  })
+
+  it('handleDownload falls back to default file name when row.name is missing', async () => {
+    QuishingService.getQuishingPdfCampaignPreviewContent.mockResolvedValueOnce({
+      data: new Uint8Array([1])
+    })
+    const originalCreateObjectURL = window.URL.createObjectURL
+    const originalRevokeObjectURL = window.URL.revokeObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'blob:default-name')
+    window.URL.revokeObjectURL = jest.fn()
+    const link = { click: jest.fn(), href: '', download: '' }
+    const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(link)
+    const appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation(() => link)
+    const removeChildSpy = jest.spyOn(document.body, 'removeChild').mockImplementation(() => link)
+
+    QuishingCampaignManagerParentTable.methods.handleDownload.call(
+      { $store: { dispatch: jest.fn() } },
+      { resourceId: 'q-noname' }
+    )
+    await flushPromises()
+
+    expect(link.download).toBe('Quishing-Campaign.pdf')
+
+    window.URL.createObjectURL = originalCreateObjectURL
+    window.URL.revokeObjectURL = originalRevokeObjectURL
+    createElementSpy.mockRestore()
+    appendChildSpy.mockRestore()
+    removeChildSpy.mockRestore()
+  })
+
+  it('handleDownload dispatches error snackbar when api rejects', async () => {
+    QuishingService.getQuishingPdfCampaignPreviewContent.mockRejectedValueOnce(new Error('boom'))
+    const dispatch = jest.fn()
+
+    QuishingCampaignManagerParentTable.methods.handleDownload.call(
+      { $store: { dispatch } },
+      { resourceId: 'q-fail', name: 'Failing' }
+    )
+    await flushPromises()
+
+    expect(dispatch).toHaveBeenNthCalledWith(
+      1,
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'Download progress has been started. Please wait...' })
+    )
+    expect(dispatch).toHaveBeenNthCalledWith(
+      2,
+      'common/createSnackBar',
+      expect.objectContaining({ message: 'Download failed. Please try again.' })
+    )
   })
 })

@@ -46,6 +46,40 @@ describe('SmishingCampaignManager/CampaignManagerRowActions.vue', () => {
     expect(quishing.vm.getItems.some((x) => x.action === 'on-duplicate')).toBe(false)
   })
 
+  it('adds download item only in quishing print preview mode across all status branches', () => {
+    const normalIdle = createWrapper({ status: ACTION_STATUSES.IDLE, isQuishingPrintPreview: false })
+    const quishingIdle = createWrapper({ status: ACTION_STATUSES.IDLE, isQuishingPrintPreview: true })
+    const quishingComplete = createWrapper({
+      status: ACTION_STATUSES.COMPLETE,
+      isQuishingPrintPreview: true
+    })
+    const quishingError = createWrapper({
+      status: ACTION_STATUSES.ERROR,
+      isQuishingPrintPreview: true
+    })
+    const normalError = createWrapper({
+      status: ACTION_STATUSES.ERROR,
+      isQuishingPrintPreview: false
+    })
+
+    expect(normalIdle.vm.getItems.some((x) => x.action === 'on-download')).toBe(false)
+    expect(quishingIdle.vm.getItems.some((x) => x.action === 'on-download')).toBe(true)
+    expect(quishingComplete.vm.getItems.some((x) => x.action === 'on-download')).toBe(true)
+    expect(quishingError.vm.getItems.some((x) => x.action === 'on-download')).toBe(true)
+    expect(normalError.vm.getItems.some((x) => x.action === 'on-download')).toBe(false)
+  })
+
+  it('handleItemClick emits on-download with the row payload', () => {
+    const wrapper = createWrapper({ status: ACTION_STATUSES.IDLE, isQuishingPrintPreview: true })
+    wrapper.vm.handleItemClick({ action: 'on-download' })
+
+    expect(wrapper.emitted('on-download')[0][0]).toEqual({
+      status: ACTION_STATUSES.IDLE,
+      frequency: 0,
+      resourceId: 'sm-1'
+    })
+  })
+
   it('disables edit action when frequency > 0 or edit permission is false', () => {
     const byFrequency = createWrapper({ frequency: 2, editPerm: true })
     const byPermission = createWrapper({ frequency: 0, editPerm: false })
