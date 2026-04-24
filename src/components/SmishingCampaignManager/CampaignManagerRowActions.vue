@@ -95,6 +95,12 @@ export default {
         action: 'on-print-preview',
         id: 'btn-preview--email-templates-row-actions'
       }
+      const downloadItem = {
+        name: labels.Download,
+        icon: 'mdi-download',
+        action: 'on-download',
+        id: 'btn-download--row-actions-campaign-manager'
+      }
       const newInstanceItem = {
         name: labels.CreateNewInstance,
         isNotShow: true,
@@ -132,7 +138,7 @@ export default {
         this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem, newInstanceItem)
-        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem, downloadItem)
         if (!this.isQuishingPrintPreview) copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
       } else if (
@@ -141,11 +147,11 @@ export default {
         this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem, newInstanceItem)
-        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem, downloadItem)
         copyOfRowActions.push(deleteItem)
       } else {
         copyOfRowActions.push(editItem)
-        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem, downloadItem)
         copyOfRowActions.push(deleteItem)
       }
 

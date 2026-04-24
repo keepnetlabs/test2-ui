@@ -77,7 +77,7 @@
           <TheRecordsButton
             label="Run"
             plural-label="Runs"
-            :single-label="getRecordsButtonSingleLabel(scope.row)"
+            single-label="View Report"
             zero-label="No Run"
             width="140px"
             variant="primary"
@@ -132,6 +132,7 @@
         @on-duplicate="handleDuplicate"
         @on-launch="handleLaunch"
         @on-print-preview="handlePrintPreview"
+        @on-download="handleDownload"
       />
     </template>
   </DataTable>
@@ -142,6 +143,7 @@ import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS, getStatusBadgeProps, METHOD_TYPES } from '@/components/CampaignManager/utils'
 import {
+  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -337,11 +339,6 @@ export default {
         return {}
       }
     },
-    getRecordsButtonSingleLabel(row = {}) {
-      const isIdle = row.status === 'Idle'
-      const isRecurring = row.frequency != null && row.frequency !== 0
-      return isIdle || isRecurring ? '' : 'View Report'
-    },
     setLoading(flag = false) {
       this.$emit('update:is-loading', flag)
     },
@@ -446,6 +443,32 @@ export default {
           }, 250)
         }
       })
+    },
+    handleDownload(row = {}) {
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'Download progress has been started. Please wait...',
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
+      QuishingService.getQuishingPdfCampaignPreviewContent(row.resourceId)
+        .then((response) => {
+          const blob = new Blob([response.data], { type: 'application/pdf' })
+          const fileURL = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = fileURL
+          link.download = `${row.name || 'Quishing-Campaign'}.pdf`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          URL.revokeObjectURL(fileURL)
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Download failed. Please try again.',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
     }
   }
 }
