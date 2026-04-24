@@ -202,6 +202,45 @@ describe('TargetUsers/People.vue', () => {
     expect(ctx.multipleDeletedUserCount).toBe(0)
   })
 
+  describe('deleted users — activity timeline access', () => {
+    it('userTimelineDisabledTooltip returns null when user has timeline permission', () => {
+      const ctx = { userTimelineAction: { disabled: false } }
+      expect(People.computed.userTimelineDisabledTooltip.call(ctx)).toBeNull()
+    })
+
+    it('userTimelineDisabledTooltip returns unauthorized message when permission is missing', () => {
+      const ctx = { userTimelineAction: { disabled: true } }
+      expect(People.computed.userTimelineDisabledTooltip.call(ctx)).toBe(
+        'You are not authorized to view user activity timeline'
+      )
+    })
+
+    it('isRowTypeDeleted detects deleted users via isDeleted flag and status string', () => {
+      expect(People.methods.isRowTypeDeleted({ isDeleted: true })).toBe(true)
+      expect(People.methods.isRowTypeDeleted({ status: 'Deleted' })).toBe(true)
+      expect(People.methods.isRowTypeDeleted({ status: ' deleted ' })).toBe(true)
+      expect(People.methods.isRowTypeDeleted({ status: 'Active' })).toBe(false)
+      expect(People.methods.isRowTypeDeleted({})).toBe(false)
+      expect(People.methods.isRowTypeDeleted()).toBe(false)
+    })
+
+    it('handleUserTimeline opens the drawer for deleted users (historical access)', () => {
+      const ctx = { selectedRow: null, isUserDetailsDrawerOpen: false }
+      const deletedRow = { resourceId: 'u-1', isDeleted: true, status: 'Deleted' }
+
+      People.methods.handleUserTimeline.call(ctx, deletedRow)
+
+      expect(ctx.selectedRow).toBe(deletedRow)
+      expect(ctx.isUserDetailsDrawerOpen).toBe(true)
+    })
+
+    it('getDeletedRowActionsTooltipText clarifies that timeline is still accessible', () => {
+      const text = People.methods.getDeletedRowActionsTooltipText()
+      expect(text).toMatch(/historical activity timeline/i)
+      expect(text).not.toMatch(/upcoming update/i)
+    })
+  })
+
   describe('managerFullName fallback in callForTargetUsers', () => {
     it('sets managerFullName from managerFirstName+managerLastName when managerFullName is missing', async () => {
       const { getTargetUsers } = require('@/api/targetUsers')
