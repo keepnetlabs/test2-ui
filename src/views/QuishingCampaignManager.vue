@@ -258,7 +258,10 @@ export default {
     },
     handleOnRecordButtonClick(row) {
       const isOneTime = row.frequency == null || row.frequency === 0
-      if (row.total === 1 && row.status !== 'Idle' && isOneTime) {
+      const isIndividualPrintout =
+        row?.templateType?.toLowerCase() ===
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+      if (row.total === 1 && row.status !== 'Idle' && isOneTime && !isIndividualPrintout) {
         this.$router.push({
           name: 'Quishing Report',
           params: {

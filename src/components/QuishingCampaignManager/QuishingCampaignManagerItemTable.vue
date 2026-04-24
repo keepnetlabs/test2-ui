@@ -505,13 +505,27 @@ export default {
       QuishingService.getQuishingPdfCampaignDownloadContent(
         this.item.resourceId,
         row.instanceGroup
-      ).then((response) => {
-        const link = document.createElement('a')
-        link.href = globalThis.URL.createObjectURL(response.data)
-        link.download = `Quishing Campaign - ${this.item.name} - ${row.startDate}.pdf`
-        link.click()
-        this.$set(row, 'isDownloading', false)
-      })
+      )
+        .then((response) => {
+          const fileURL = globalThis.URL.createObjectURL(response.data)
+          const link = document.createElement('a')
+          link.href = fileURL
+          link.download = `Quishing Campaign - ${this.item.name} - ${row.startDate}.pdf`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          globalThis.URL.revokeObjectURL(fileURL)
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Download failed. Please try again.',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
+        .finally(() => {
+          this.$set(row, 'isDownloading', false)
+        })
     },
     handleViewReport(row) {
       this.$router.push({
