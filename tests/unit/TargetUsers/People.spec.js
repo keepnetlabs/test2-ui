@@ -239,6 +239,107 @@ describe('TargetUsers/People.vue', () => {
       expect(text).toMatch(/historical activity timeline/i)
       expect(text).not.toMatch(/upcoming update/i)
     })
+
+    it('getDeletedRowCellClass keeps actions and status cells fully visible for deleted rows', () => {
+      const ctx = { isRowTypeDeleted: People.methods.isRowTypeDeleted }
+      const deletedRow = { isDeleted: true }
+
+      expect(
+        People.methods.getDeletedRowCellClass.call(ctx, {
+          row: deletedRow,
+          column: { property: 'firstName' }
+        })
+      ).toBe('people__deleted-row-cell')
+
+      expect(
+        People.methods.getDeletedRowCellClass.call(ctx, {
+          row: deletedRow,
+          column: { property: 'status' }
+        })
+      ).toBe('')
+
+      expect(
+        People.methods.getDeletedRowCellClass.call(ctx, {
+          row: deletedRow,
+          column: {}
+        })
+      ).toBe('')
+
+      expect(
+        People.methods.getDeletedRowCellClass.call(ctx, {
+          row: { isDeleted: false },
+          column: { property: 'firstName' }
+        })
+      ).toBe('')
+    })
+
+    it('getDeletedRowClassName tags deleted rows and skips active ones', () => {
+      const ctx = { isRowTypeDeleted: People.methods.isRowTypeDeleted }
+
+      expect(
+        People.methods.getDeletedRowClassName.call(ctx, {
+          row: { isDeleted: true }
+        })
+      ).toBe(' people__deleted-row')
+
+      expect(
+        People.methods.getDeletedRowClassName.call(ctx, {
+          row: { status: 'Active' }
+        })
+      ).toBe('')
+
+      expect(People.methods.getDeletedRowClassName.call(ctx)).toBe('')
+    })
+
+    it('getDeletedRowTooltipText shows the deletion notice only on data cells', () => {
+      const ctx = { isRowTypeDeleted: People.methods.isRowTypeDeleted }
+      const deletedRow = { status: 'Deleted' }
+
+      expect(
+        People.methods.getDeletedRowTooltipText.call(ctx, {
+          row: deletedRow,
+          column: { property: 'firstName' }
+        })
+      ).toBe('This user has been deleted')
+
+      expect(
+        People.methods.getDeletedRowTooltipText.call(ctx, {
+          row: deletedRow,
+          column: { property: 'status' }
+        })
+      ).toBe('')
+
+      expect(
+        People.methods.getDeletedRowTooltipText.call(ctx, {
+          row: deletedRow,
+          column: {}
+        })
+      ).toBe('')
+
+      expect(
+        People.methods.getDeletedRowTooltipText.call(ctx, {
+          row: { isDeleted: false },
+          column: { property: 'firstName' }
+        })
+      ).toBe('')
+    })
+
+    it('handleCloseDrawer clears selection and closes the drawer after the animation', () => {
+      jest.useFakeTimers()
+      const ctx = {
+        selectedRow: { resourceId: 'u-1', isDeleted: true },
+        isUserDetailsDrawerOpen: true
+      }
+
+      People.methods.handleCloseDrawer.call(ctx)
+      expect(ctx.isUserDetailsDrawerOpen).toBe(true)
+
+      jest.runAllTimers()
+      expect(ctx.selectedRow).toBeNull()
+      expect(ctx.isUserDetailsDrawerOpen).toBe(false)
+
+      jest.useRealTimers()
+    })
   })
 
   describe('managerFullName fallback in callForTargetUsers', () => {
