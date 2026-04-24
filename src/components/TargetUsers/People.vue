@@ -380,16 +380,8 @@
           :id="userTimelineAction.id"
           :text="userTimelineAction.name"
           :scope="scope"
-          :disabled="
-            userTimelineAction.disabled || isRowTypeDeleted(scope.row)
-          "
-          :disabledTooltipText="
-            isRowTypeDeleted(scope.row)
-              ? getDeletedRowActionsTooltipText()
-              : userTimelineAction.disabled
-                ? 'You are not authorized to view user activity timeline'
-                : null
-          "
+          :disabled="userTimelineAction.disabled"
+          :disabledTooltipText="userTimelineDisabledTooltip"
           @on-click="handleUserTimeline(scope.row)"
         />
 
@@ -493,6 +485,10 @@ import ActiveTargetUserIcon from "@/assets/img/target-users/Active.svg";
 import InactiveTargetUserIcon from "@/assets/img/target-users/Inactive.svg";
 import DeletedTargetUserIcon from "@/assets/img/target-users/Deleted.svg";
 import MonthlyTargetUserIcon from "@/assets/img/target-users/Monthly.svg";
+
+const USER_TIMELINE_UNAUTHORIZED_TOOLTIP =
+  "You are not authorized to view user activity timeline";
+
 export default {
   name: "People",
   components: {
@@ -873,6 +869,11 @@ export default {
     viewUserGroupsAction() {
       return this.tableOptions.rowActions[4];
     },
+    userTimelineDisabledTooltip() {
+      return this.userTimelineAction.disabled
+        ? USER_TIMELINE_UNAUTHORIZED_TOOLTIP
+        : null;
+    },
     summaryCardItems() {
       const { active, inactive, deleted, monthly } = this.summaryCounts;
       const monthlyOptions = this.monthlyActiveUsers || [];
@@ -1035,7 +1036,7 @@ export default {
       return String(row?.status || "").trim().toLowerCase() === "deleted";
     },
     getDeletedRowActionsTooltipText() {
-      return "Historical activity data is retained and will be available here in an upcoming update.";
+      return "Edit, group and delete actions are not available for deleted users. You can still view their historical activity timeline.";
     },
     handleSummaryCardSelect(key) {
       if (this.activeSummaryKeys.includes(key)) {
