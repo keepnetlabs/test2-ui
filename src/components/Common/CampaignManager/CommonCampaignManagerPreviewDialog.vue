@@ -205,7 +205,7 @@
             />
           </ElTabPane>
           <ElTabPane
-            v-if="isTrainingScenario"
+            v-if="isTrainingScenario && getTrainingSearchPermission"
             :label="labels.Training"
             name="training"
             id="campaign-manager-info--training-content"
@@ -249,6 +249,7 @@ import InputLanguagePreview from '../Inputs/InputLanguagePreview.vue'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 import useHtmlOverflowControl from '@/hooks/useHtmlOverflowControl'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CommonCampaignManagerPreviewDialog',
@@ -308,6 +309,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getNavigationDrawerClass() {
       return {
         'k-navigation-drawer k-navigation-drawer--campaign-manager-preview': true,
@@ -376,9 +380,11 @@ export default {
   },
   methods: {
     callForLanguages() {
-      AwarenessEducatorService.getLanguages().then((res) => {
-        this.languages = res?.data?.data || []
-      })
+      if (this.getTrainingSearchPermission) {
+        AwarenessEducatorService.getLanguages().then((res) => {
+          this.languages = res?.data?.data || []
+        })
+      }
       LookupLocalStorage.getSingle(21).then((response) => {
         this.globalLanguages =
           response?.map((language) => ({
@@ -423,7 +429,8 @@ export default {
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
         template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
       this.emailTemplate = template
-      this.isTrainingScenario = !!phishingScenarioPreviewDto?.trainingDetail
+      this.isTrainingScenario =
+        this.getTrainingSearchPermission && !!phishingScenarioPreviewDto?.trainingDetail
       this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
       this.category = phishingScenarioPreviewDto?.category
       // Reset training languages array before populating
