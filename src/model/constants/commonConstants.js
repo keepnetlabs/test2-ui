@@ -216,6 +216,7 @@ export const PROPERTY_STORE = {
   CATEGORY: 'category',
   LEVEL: 'level',
   DURATION: 'duration',
+  TOTAL_DURATION: 'totalDuration',
   DISTRIBUTED: 'distributed',
   CAMPAIGN_STATUS: 'campaignStatus',
   LANGUAGES: 'languages',
