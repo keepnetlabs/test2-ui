@@ -1021,7 +1021,9 @@ export default {
     },
     getDeletedRowCellClass({ row, column } = {}) {
       if (!this.isRowTypeDeleted(row)) return "";
-      if (column?.property === PROPERTY_STORE.STATUS) return "";
+      if (!column?.property || column.property === PROPERTY_STORE.STATUS) {
+        return "";
+      }
       return "people__deleted-row-cell";
     },
     getDeletedRowTooltipText({ row, column } = {}) {
