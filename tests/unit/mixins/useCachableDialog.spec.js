@@ -447,15 +447,17 @@ describe('useCachableDialog mixin', () => {
   describe('time boundary conditions', () => {
     const canShowCachableDialog = useCachableDialog.methods.canShowCachableDialog
 
-    it('should return true at exactly 24 hours', () => {
+    it('should return false at exactly 24 hours', () => {
       const key = 'test-boundary'
       const now = new Date().getTime()
       const exactlyTwentyFourHoursAgo = now - (24 * 60 * 60 * 1000)
+      const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(now)
 
       mockLocalStorage.setItem(key, exactlyTwentyFourHoursAgo.toString())
 
       const result = canShowCachableDialog.call({}, key)
       expect(result).toBe(false)
+      dateNowSpy.mockRestore()
     })
 
     it('should handle different time intervals consistently', () => {

@@ -443,6 +443,23 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'number'
   },
+  FEEDBACK_STATUS: {
+    property: 'feedbackText',
+    align: 'left',
+    label: 'Feedback',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Has Feedback', value: 'HasFeedback' },
+      { text: 'No Feedback', value: 'NoFeedback' }
+    ],
+    filterableCustomFieldName: 'FeedbackStatus'
+  },
   PASSWORD_COMPLEXITY: {
     property: 'minPasswordComplexity',
     align: 'center',

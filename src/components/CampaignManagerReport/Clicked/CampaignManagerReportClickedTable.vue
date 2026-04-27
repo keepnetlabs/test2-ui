@@ -180,6 +180,7 @@ export default {
           COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
           COLUMNS.LAST_CLICKED,
           COLUMNS.TIMES_CLICKED,
+          COLUMNS.FEEDBACK_STATUS,
           { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
