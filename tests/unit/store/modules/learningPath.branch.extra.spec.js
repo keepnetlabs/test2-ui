@@ -153,6 +153,40 @@ describe('learningPath store (branch extra coverage)', () => {
     expect(state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
   })
 
+  it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD maps totalDuration key to FieldName=DurationMinutes', () => {
+    const state = createState()
+    learningPath.mutations.SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, {
+      key: 'totalDuration',
+      activeValue: ['1-2', '90+'],
+      activeOperator: 'Include'
+    })
+
+    const items = state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems
+    const durationItem = items.find((f) => f.FieldName === 'DurationMinutes')
+    expect(durationItem).toEqual({
+      FieldName: 'DurationMinutes',
+      Value: '1-2,90+',
+      Operator: 'Include'
+    })
+    expect(items.find((f) => f.FieldName === 'totalDuration')).toBeUndefined()
+    expect(items.find((f) => f.FieldName === 'duration')).toBeUndefined()
+  })
+
+  it('REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD removes DurationMinutes when key is totalDuration', () => {
+    const state = createState()
+    state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'DurationMinutes', Value: '1-2', Operator: 'Include' }
+    ]
+
+    learningPath.mutations.REMOVE_LEARNING_PATH_FILTER_FROM_PAYLOAD(state, {
+      key: 'totalDuration',
+      filterType: 'search',
+      activeValue: []
+    })
+
+    expect(state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
   it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD updates existing value', () => {
     const state = createState()
     state.learningPathAxiosPayload.filter.FilterGroups[0].FilterItems = [

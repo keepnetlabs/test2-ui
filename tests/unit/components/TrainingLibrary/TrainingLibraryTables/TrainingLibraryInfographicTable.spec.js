@@ -2,14 +2,14 @@ import TrainingLibraryInfographicTable from '@/components/TrainingLibrary/Traini
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('TrainingLibraryInfographicTable.vue', () => {
-  it('keeps the legacy duration property and never adopts totalDuration', () => {
+  it('uses the totalDuration column property like learning path', () => {
     const ctx = { $store: { getters: new Proxy({}, { get: () => false }) } }
     const columns = TrainingLibraryInfographicTable.data.call(ctx).tableOptions.columns
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
     ).toBeDefined()
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
     ).toBeUndefined()
   })
 

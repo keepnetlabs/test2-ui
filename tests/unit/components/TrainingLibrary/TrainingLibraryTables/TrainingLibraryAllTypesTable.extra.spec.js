@@ -71,14 +71,13 @@ describe('TrainingLibraryAllTypesTable.vue (extra)', () => {
     expect(ctx.tableOptions.columns[1].show).toBe(true)
   })
 
-  it('language/level/duration watchers update filter items and rerender filters', () => {
+  it('language/level watchers update filter items and rerender filters', () => {
     const refTable = { reRenderFilters: jest.fn() }
     const ctx = {
       tableOptions: {
         columns: [
           { property: PROPERTY_STORE.LANGUAGES, filterableItems: [] },
-          { property: PROPERTY_STORE.LEVEL, filterableItems: [] },
-          { property: PROPERTY_STORE.DURATION, filterableItems: [] }
+          { property: PROPERTY_STORE.LEVEL, filterableItems: [] }
         ]
       },
       $set: (obj, key, value) => {
@@ -91,12 +90,27 @@ describe('TrainingLibraryAllTypesTable.vue (extra)', () => {
       { isoFriendlyName: 'English', code: 'en' }
     ])
     TrainingLibraryAllTypesTable.watch.getLevels.call(ctx, ['L1'])
-    TrainingLibraryAllTypesTable.watch.getDurations.call(ctx, ['10 min'])
 
     expect(ctx.tableOptions.columns[0].filterableItems).toEqual([{ text: 'English', value: 'en' }])
     expect(ctx.tableOptions.columns[1].filterableItems).toEqual(['L1'])
-    expect(ctx.tableOptions.columns[2].filterableItems).toEqual(['10 min'])
-    expect(refTable.reRenderFilters).toHaveBeenCalledTimes(3)
+    expect(refTable.reRenderFilters).toHaveBeenCalledTimes(2)
+  })
+
+  it('duration column ships with the static UI buckets baked in (no getDurations watcher)', () => {
+    expect(TrainingLibraryAllTypesTable.watch.getDurations).toBeUndefined()
+
+    const durationColumn = TrainingLibraryAllTypesTable.data().tableOptions.columns.find(
+      (col) => col.property === PROPERTY_STORE.TOTAL_DURATION
+    )
+    expect(durationColumn).toBeDefined()
+    expect(durationColumn.filterableItems.map((item) => item.value)).toEqual([
+      '1-5',
+      '5-15',
+      '15-30',
+      '30-60',
+      '60-90',
+      '90+'
+    ])
   })
 
   it('serverSideSizeChanged resets paging and learning path detection handles both type formats', () => {

@@ -34,12 +34,14 @@ describe('TrainingLibraryTrainingTable.vue (extra)', () => {
       tableOptions: {
         columns: [
           { property: PROPERTY_STORE.TRAINING_NAME, show: false },
-          { property: PROPERTY_STORE.DURATION, show: false }
+          { property: PROPERTY_STORE.TOTAL_DURATION, show: false }
         ]
       }
     }
 
-    TrainingLibraryTrainingTable.watch.renderedColumns.handler.call(ctx, [PROPERTY_STORE.DURATION])
+    TrainingLibraryTrainingTable.watch.renderedColumns.handler.call(ctx, [
+      PROPERTY_STORE.TOTAL_DURATION
+    ])
 
     expect(ctx.tableOptions.columns[0].show).toBe(true)
     expect(ctx.tableOptions.columns[1].show).toBe(true)
@@ -69,14 +71,11 @@ describe('TrainingLibraryTrainingTable.vue (extra)', () => {
     expect(ctx.$refs.refTable.lastColFixed).toBe('right')
   })
 
-  it('level and duration watchers update filter items and rerender filters', () => {
+  it('level watcher updates filter items and rerenders filters', () => {
     const refTable = { reRenderFilters: jest.fn() }
     const ctx = {
       tableOptions: {
-        columns: [
-          { property: PROPERTY_STORE.LEVEL, filterableItems: [] },
-          { property: PROPERTY_STORE.DURATION, filterableItems: [] }
-        ]
+        columns: [{ property: PROPERTY_STORE.LEVEL, filterableItems: [] }]
       },
       $set: (obj, key, value) => {
         obj[key] = value
@@ -85,11 +84,26 @@ describe('TrainingLibraryTrainingTable.vue (extra)', () => {
     }
 
     TrainingLibraryTrainingTable.watch.getLevels.call(ctx, ['L1'])
-    TrainingLibraryTrainingTable.watch.getDurations.call(ctx, ['15 min'])
 
     expect(ctx.tableOptions.columns[0].filterableItems).toEqual(['L1'])
-    expect(ctx.tableOptions.columns[1].filterableItems).toEqual(['15 min'])
-    expect(refTable.reRenderFilters).toHaveBeenCalledTimes(2)
+    expect(refTable.reRenderFilters).toHaveBeenCalledTimes(1)
+  })
+
+  it('duration column ships with the static UI buckets baked in (no getDurations watcher)', () => {
+    expect(TrainingLibraryTrainingTable.watch.getDurations).toBeUndefined()
+
+    const durationColumn = TrainingLibraryTrainingTable.data().tableOptions.columns.find(
+      (col) => col.property === PROPERTY_STORE.TOTAL_DURATION
+    )
+    expect(durationColumn).toBeDefined()
+    expect(durationColumn.filterableItems.map((item) => item.value)).toEqual([
+      '1-5',
+      '5-15',
+      '15-30',
+      '30-60',
+      '60-90',
+      '90+'
+    ])
   })
 
   it('mounted syncs fixed columns and sorts descending when sortOrder is false', () => {

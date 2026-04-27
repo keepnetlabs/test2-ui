@@ -28,6 +28,7 @@ import AwarenessEducatorService from '@/api/awarenessEducator'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { getScenarioDataDetails } from '@/api/scenarios'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { TRAINING_DURATION_FILTER_ITEMS } from '@/components/TrainingLibrary/utils'
 
 describe('trainingLibraryHelpers store module (extra coverage)', () => {
   let commit
@@ -312,6 +313,26 @@ describe('trainingLibraryHelpers store module (extra coverage)', () => {
       expect(commit).toHaveBeenCalledWith('SET_DURATIONS', [
         { id: 11, name: '11 min', text: '11 min', value: '' }
       ])
+    })
+
+    it('callForDurations dispatches static UI duration buckets to filter items (1-5 .. 90+)', async () => {
+      AwarenessEducatorService.getTrainingDurations.mockResolvedValue({
+        data: { data: [] }
+      })
+
+      await trainingLibraryHelpers.actions.callForDurations({ commit, dispatch })
+
+      const expectedBuckets = TRAINING_DURATION_FILTER_ITEMS.map((item) => ({ ...item }))
+      expect(dispatch).toHaveBeenCalledWith(
+        'trainingLibrary/setFilterItems',
+        { key: PROPERTY_STORE.TOTAL_DURATION, items: expectedBuckets },
+        { root: true }
+      )
+      expect(dispatch).toHaveBeenCalledWith(
+        'learningPath/setLearningPathFilterItems',
+        { key: PROPERTY_STORE.TOTAL_DURATION, items: expectedBuckets },
+        { root: true }
+      )
     })
 
   })
