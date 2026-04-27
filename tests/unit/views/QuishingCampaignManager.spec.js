@@ -65,7 +65,7 @@ describe('QuishingCampaignManager.vue', () => {
     expect(ctx.$router.replace).not.toHaveBeenCalled()
   })
 
-  it('handleOnRecordButtonClick routes for one-time active rows and opens item table otherwise', () => {
+  it('handleOnRecordButtonClick routes for single active rows and opens item table otherwise', () => {
     const ctx = {
       selectedParentItem: null,
       $router: { push: jest.fn() },
@@ -92,7 +92,30 @@ describe('QuishingCampaignManager.vue', () => {
       status: 'Running',
       frequency: 2
     })
-    expect(ctx.selectedParentItem).toEqual({ resourceId: 'r2', total: 1, status: 'Running', frequency: 2 })
+    expect(ctx.$router.push).toHaveBeenLastCalledWith({
+      name: 'Quishing Report',
+      params: { id: 'r2', instanceGroup: 1 }
+    })
+    expect(ctx.selectedParentItem).toBe(null)
+
+    ctx.$router.push.mockClear()
+    QuishingCampaignManager.methods.handleOnRecordButtonClick.call(ctx, {
+      resourceId: 'r3',
+      total: 1,
+      status: 'Idle'
+    })
+    expect(ctx.$router.push).not.toHaveBeenCalled()
+    expect(ctx.selectedParentItem).toEqual({ resourceId: 'r3', total: 1, status: 'Idle' })
+
+    ctx.selectedParentItem = null
+    ctx.isItemTableShowing = false
+    QuishingCampaignManager.methods.handleOnRecordButtonClick.call(ctx, {
+      resourceId: 'r4',
+      total: 2,
+      status: 'Running',
+      frequency: 2
+    })
+    expect(ctx.selectedParentItem).toEqual({ resourceId: 'r4', total: 2, status: 'Running', frequency: 2 })
     expect(ctx.$refs.campaignManagerItemTable.resetTable).toHaveBeenCalled()
     expect(ctx.isItemTableShowing).toBe(true)
   })
