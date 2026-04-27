@@ -3,7 +3,8 @@ jest.mock('@/api/quishing', () => ({
   default: {
     searchCampaignManager: jest.fn(),
     exportCampaignManager: jest.fn(),
-    getQuishingPdfCampaignPreviewContent: jest.fn()
+    getQuishingPdfCampaignPreviewContent: jest.fn(),
+    getQuishingPdfCampaignDownloadContent: jest.fn()
   }
 }))
 
@@ -328,7 +329,7 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
   })
 
   it('handleDownload dispatches start snackbar, downloads pdf and revokes object url', async () => {
-    QuishingService.getQuishingPdfCampaignPreviewContent.mockResolvedValueOnce({
+    QuishingService.getQuishingPdfCampaignDownloadContent.mockResolvedValueOnce({
       data: new Uint8Array([7, 8, 9])
     })
     const originalCreateObjectURL = window.URL.createObjectURL
@@ -344,7 +345,7 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
 
     QuishingCampaignManagerParentTable.methods.handleDownload.call(
       { $store: { dispatch } },
-      { resourceId: 'q-dl', name: 'My Campaign' }
+      { resourceId: 'q-dl', instanceGroup: 3, name: 'My Campaign' }
     )
     await flushPromises()
 
@@ -352,7 +353,7 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
       'common/createSnackBar',
       expect.objectContaining({ message: 'Download progress has been started. Please wait...' })
     )
-    expect(QuishingService.getQuishingPdfCampaignPreviewContent).toHaveBeenCalledWith('q-dl')
+    expect(QuishingService.getQuishingPdfCampaignDownloadContent).toHaveBeenCalledWith('q-dl', 3)
     expect(link.download).toBe('My Campaign.pdf')
     expect(click).toHaveBeenCalled()
     expect(appendChildSpy).toHaveBeenCalledWith(link)
@@ -367,7 +368,7 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
   })
 
   it('handleDownload falls back to default file name when row.name is missing', async () => {
-    QuishingService.getQuishingPdfCampaignPreviewContent.mockResolvedValueOnce({
+    QuishingService.getQuishingPdfCampaignDownloadContent.mockResolvedValueOnce({
       data: new Uint8Array([1])
     })
     const originalCreateObjectURL = window.URL.createObjectURL
@@ -385,6 +386,10 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
     )
     await flushPromises()
 
+    expect(QuishingService.getQuishingPdfCampaignDownloadContent).toHaveBeenCalledWith(
+      'q-noname',
+      1
+    )
     expect(link.download).toBe('Quishing-Campaign.pdf')
 
     window.URL.createObjectURL = originalCreateObjectURL
@@ -395,7 +400,7 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
   })
 
   it('handleDownload dispatches error snackbar when api rejects', async () => {
-    QuishingService.getQuishingPdfCampaignPreviewContent.mockRejectedValueOnce(new Error('boom'))
+    QuishingService.getQuishingPdfCampaignDownloadContent.mockRejectedValueOnce(new Error('boom'))
     const dispatch = jest.fn()
 
     QuishingCampaignManagerParentTable.methods.handleDownload.call(
