@@ -155,6 +155,7 @@ describe('CampaignManagerReportClickedTable.vue', () => {
             {
               resourceId: 'r1',
               preferredLanguage: 'English',
+              feedbackText: 'çok iyi',
               customFieldValues: [{ name: 'Region', value: 'EU' }]
             },
             {
@@ -188,7 +189,12 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     expect(searchCampaignJobUserEmailClicked).toHaveBeenCalledWith(ctx.axiosPayload, 'campaign-1', 'ig-1')
     expect(ctx.serverSideProps.totalNumberOfRecords).toBe(2)
     expect(ctx.tableData[0]).toEqual(
-      expect.objectContaining({ resourceId: 'r1', Region: 'EU', preferredLanguage: 'EN' })
+      expect.objectContaining({
+        resourceId: 'r1',
+        Region: 'EU',
+        preferredLanguage: 'EN',
+        feedbackText: 'çok iyi'
+      })
     )
     expect(ctx.tableData[1].preferredLanguage).toBe('Unknown')
     expect(ctx.botActivityCount).toBe(5)
@@ -326,6 +332,28 @@ describe('CampaignManagerReportClickedTable.vue', () => {
       $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': true } }
     })
     expect(dataWithPermission.tableOptions.rowActions[1].disabled).toBe(false)
+  })
+
+  it('data() includes feedback column with backend field and status filter mapping', () => {
+    const data = CampaignManagerReportClickedTable.data.call({
+      $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': true } }
+    })
+
+    const feedbackColumn = data.tableOptions.columns.find(
+      (column) => column.property === 'feedbackText'
+    )
+
+    expect(feedbackColumn).toEqual(
+      expect.objectContaining({
+        label: 'Feedback',
+        filterableType: 'select',
+        filterableCustomFieldName: 'FeedbackStatus'
+      })
+    )
+    expect(feedbackColumn.filterableItems).toEqual([
+      { text: 'Has Feedback', value: 'HasFeedback' },
+      { text: 'No Feedback', value: 'NoFeedback' }
+    ])
   })
 
   it('callForLanguages fallback branch handles empty lookup response', async () => {
