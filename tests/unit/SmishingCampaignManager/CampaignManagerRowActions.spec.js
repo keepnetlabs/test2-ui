@@ -11,6 +11,7 @@ describe('SmishingCampaignManager/CampaignManagerRowActions.vue', () => {
     status = ACTION_STATUSES.IDLE,
     frequency = 0,
     isQuishingPrintPreview = false,
+    isQuishingPrintDownloadVisible = true,
     createPerm = true,
     deletePerm = true,
     editPerm = true
@@ -19,7 +20,8 @@ describe('SmishingCampaignManager/CampaignManagerRowActions.vue', () => {
       propsData: {
         scope: { row: { status, frequency, resourceId: 'sm-1' }, $index: 0 },
         rowActions: [],
-        isQuishingPrintPreview
+        isQuishingPrintPreview,
+        isQuishingPrintDownloadVisible
       },
       computed: {
         getSmishingCampaignManagerPreviewPermissions: () => true,
@@ -67,6 +69,14 @@ describe('SmishingCampaignManager/CampaignManagerRowActions.vue', () => {
     expect(quishingComplete.vm.getItems.some((x) => x.action === 'on-download')).toBe(true)
     expect(quishingError.vm.getItems.some((x) => x.action === 'on-download')).toBe(true)
     expect(normalError.vm.getItems.some((x) => x.action === 'on-download')).toBe(false)
+
+    const quishingDownloadHidden = createWrapper({
+      status: ACTION_STATUSES.IDLE,
+      isQuishingPrintPreview: true,
+      isQuishingPrintDownloadVisible: false
+    })
+    expect(quishingDownloadHidden.vm.getItems.some((x) => x.action === 'on-print-preview')).toBe(true)
+    expect(quishingDownloadHidden.vm.getItems.some((x) => x.action === 'on-download')).toBe(false)
   })
 
   it('handleItemClick emits on-download with the row payload', () => {

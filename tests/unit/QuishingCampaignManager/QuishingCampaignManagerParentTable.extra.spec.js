@@ -185,6 +185,24 @@ describe('QuishingCampaignManagerParentTable.vue (extra branch coverage)', () =>
       })
     ).toBe(true)
     expect(QuishingCampaignManagerParentTable.methods.checkIsQuishingTypePrintout({})).toBe(false)
+    expect(
+      QuishingCampaignManagerParentTable.methods.isQuishingPrintoutDownloadVisible.call(
+        QuishingCampaignManagerParentTable.methods,
+        {
+          templateType: QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT,
+          total: 1
+        }
+      )
+    ).toBe(true)
+    expect(
+      QuishingCampaignManagerParentTable.methods.isQuishingPrintoutDownloadVisible.call(
+        QuishingCampaignManagerParentTable.methods,
+        {
+          templateType: QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT,
+          total: 2
+        }
+      )
+    ).toBe(false)
     expect(QuishingCampaignManagerParentTable.methods.getDataTableFieldLabel('status')).toBe(
       'label:status'
     )
