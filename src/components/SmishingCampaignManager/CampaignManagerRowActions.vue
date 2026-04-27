@@ -68,6 +68,10 @@ export default {
     isQuishingPrintPreview: {
       type: Boolean,
       default: false
+    },
+    isQuishingPrintDownloadVisible: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -138,7 +142,10 @@ export default {
         this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem, newInstanceItem)
-        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem, downloadItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintDownloadVisible && this.isQuishingPrintPreview) {
+          copyOfRowActions.push(downloadItem)
+        }
         if (!this.isQuishingPrintPreview) copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
       } else if (
@@ -147,11 +154,17 @@ export default {
         this.actionStatus === ACTION_STATUSES.INDIVIDUAL
       ) {
         copyOfRowActions.push(editItem, newInstanceItem)
-        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem, downloadItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintDownloadVisible && this.isQuishingPrintPreview) {
+          copyOfRowActions.push(downloadItem)
+        }
         copyOfRowActions.push(deleteItem)
       } else {
         copyOfRowActions.push(editItem)
-        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem, downloadItem)
+        if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintDownloadVisible && this.isQuishingPrintPreview) {
+          copyOfRowActions.push(downloadItem)
+        }
         copyOfRowActions.push(deleteItem)
       }
 
