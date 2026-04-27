@@ -92,6 +92,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { TRAINING_DURATION_FILTER_ITEMS } from '@/components/TrainingLibrary/utils'
 import { Fragment } from 'vue-frag'
 
 export default {
@@ -117,8 +118,7 @@ export default {
       types: 'trainingLibraryHelpers/getTrainingTypes',
       targetAudiences: 'trainingLibraryHelpers/getTargetAudiences',
       vendors: 'trainingLibraryHelpers/getTrainingVendors',
-      levels: 'trainingLibraryHelpers/getLevels',
-      durations: 'trainingLibraryHelpers/getDurations'
+      levels: 'trainingLibraryHelpers/getLevels'
     }),
     PROPERTY_STORE() {
       return PROPERTY_STORE
@@ -173,7 +173,8 @@ export default {
         return this.getTargetAudienceFilterValue(filterVal)
       else if (filter.key === PROPERTY_STORE.VENDOR) return this.getVendorFilterValue(filterVal)
       else if (filter.key === PROPERTY_STORE.LEVEL) return this.getLevelFilterValue(filterVal)
-      else if (filter.key === PROPERTY_STORE.DURATION) return this.getDurationFilterValue(filterVal)
+      else if (filter.key === PROPERTY_STORE.TOTAL_DURATION)
+        return this.getDurationFilterValue(filterVal)
       return filterVal
     },
     removeSelectFilter() {
@@ -269,7 +270,7 @@ export default {
     getDurationFilterValue(filterVal) {
       const val = String(filterVal ?? '')
       return (
-        this.durations?.find(
+        TRAINING_DURATION_FILTER_ITEMS.find(
           (item) => String(item?.value ?? '') === val || String(item?.id ?? '') === val
         )?.text || filterVal
       )

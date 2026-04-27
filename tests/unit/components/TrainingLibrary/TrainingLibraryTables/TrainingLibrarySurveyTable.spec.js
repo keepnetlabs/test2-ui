@@ -2,13 +2,13 @@ import TrainingLibrarySurveyTable from '@/components/TrainingLibrary/TrainingLib
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('TrainingLibrarySurveyTable.vue', () => {
-  it('keeps the legacy duration property and never adopts totalDuration', () => {
+  it('uses the totalDuration column property like learning path', () => {
     const columns = TrainingLibrarySurveyTable.data().tableOptions.columns
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
     ).toBeDefined()
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
     ).toBeUndefined()
   })
 

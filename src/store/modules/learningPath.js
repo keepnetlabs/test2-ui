@@ -12,6 +12,7 @@ import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLib
 const resolvePayloadKey = (key) => {
   if (key === 'targetAudience') return 'roles'
   if (key === 'category') return 'categories'
+  if (key === 'totalDuration') return 'DurationMinutes'
   return key
 }
 const learningPath = {

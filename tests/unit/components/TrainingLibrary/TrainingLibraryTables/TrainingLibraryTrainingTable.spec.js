@@ -13,15 +13,15 @@ describe('TrainingLibraryTrainingTable.vue', () => {
     })
   })
 
-  it('non-learning-path tables keep the legacy duration column property', () => {
+  it('uses the totalDuration column property like learning path', () => {
     const columns = TrainingLibraryTrainingTable.data().tableOptions.columns
-    const durationColumn = columns.find(
-      (col) => col.property === PROPERTY_STORE.DURATION
-    )
     const totalDurationColumn = columns.find(
       (col) => col.property === PROPERTY_STORE.TOTAL_DURATION
     )
-    expect(durationColumn).toBeDefined()
-    expect(totalDurationColumn).toBeUndefined()
+    const legacyDurationColumn = columns.find(
+      (col) => col.property === PROPERTY_STORE.DURATION
+    )
+    expect(totalDurationColumn).toBeDefined()
+    expect(legacyDurationColumn).toBeUndefined()
   })
 })

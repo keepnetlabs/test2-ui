@@ -20,6 +20,7 @@ jest.mock('@/helper-classes/lookup-local-storage', () => ({
 import trainingLibraryHelpers from '@/store/modules/trainingLibraryHelpers'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { TRAINING_DURATION_FILTER_ITEMS } from '@/components/TrainingLibrary/utils'
 
 describe('trainingLibraryHelpers store module (real)', () => {
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('trainingLibraryHelpers store module (real)', () => {
   })
 
   describe('actions', () => {
-    it('callForDurations maps durations and dispatches filter items', async () => {
+    it('callForDurations maps API durations into state and dispatches static filter buckets', async () => {
       const commit = jest.fn()
       const dispatch = jest.fn()
 
@@ -42,20 +43,47 @@ describe('trainingLibraryHelpers store module (real)', () => {
 
       await trainingLibraryHelpers.actions.callForDurations({ commit, dispatch })
 
+      expect(AwarenessEducatorService.getTrainingDurations).toHaveBeenCalled()
       expect(commit).toHaveBeenCalledWith('SET_DURATIONS', [
         { id: 1, name: 'Minute30', text: '30 minutes', value: '1' },
         { id: 2, name: '1 hour', text: '1 hour', value: '' }
       ])
-      expect(dispatch).toHaveBeenCalledWith(
-        'trainingLibrary/setFilterItems',
-        { key: PROPERTY_STORE.DURATION, items: expect.any(Array) },
-        { root: true }
+
+      const trainingDispatch = dispatch.mock.calls.find(
+        ([type]) => type === 'trainingLibrary/setFilterItems'
       )
-      expect(dispatch).toHaveBeenCalledWith(
-        'learningPath/setLearningPathFilterItems',
-        { key: PROPERTY_STORE.DURATION, items: expect.any(Array) },
-        { root: true }
+      const learningPathDispatch = dispatch.mock.calls.find(
+        ([type]) => type === 'learningPath/setLearningPathFilterItems'
       )
+      const expectedBuckets = TRAINING_DURATION_FILTER_ITEMS.map((item) => ({ ...item }))
+
+      expect(trainingDispatch).toBeDefined()
+      expect(trainingDispatch[1]).toEqual({
+        key: PROPERTY_STORE.TOTAL_DURATION,
+        items: expectedBuckets
+      })
+      expect(learningPathDispatch[1]).toEqual({
+        key: PROPERTY_STORE.TOTAL_DURATION,
+        items: expectedBuckets
+      })
+    })
+
+    it('callForDurations dispatched filter items match the static UI buckets (1-5 .. 90+)', async () => {
+      const commit = jest.fn()
+      const dispatch = jest.fn()
+
+      AwarenessEducatorService.getTrainingDurations.mockResolvedValue({
+        data: { data: [] }
+      })
+
+      await trainingLibraryHelpers.actions.callForDurations({ commit, dispatch })
+
+      const filterDispatch = dispatch.mock.calls.find(
+        ([type]) => type === 'trainingLibrary/setFilterItems'
+      )
+      expect(filterDispatch).toBeDefined()
+      const dispatchedItems = filterDispatch[1].items.map((item) => item.value)
+      expect(dispatchedItems).toEqual(['1-5', '5-15', '15-30', '30-60', '60-90', '90+'])
     })
 
     it('callForTypes sets types and filters learningPathTrainingTypes', async () => {
@@ -515,7 +543,7 @@ describe('trainingLibraryHelpers store module (real)', () => {
 
       const dispatchCall = dispatch.mock.calls[0]
       expect(dispatchCall[1]).toHaveProperty('key')
-      expect(dispatchCall[1].key).toBe(PROPERTY_STORE.DURATION)
+      expect(dispatchCall[1].key).toBe(PROPERTY_STORE.TOTAL_DURATION)
     })
 
     it('should dispatch with correct property keys for each filter', async () => {
@@ -526,7 +554,7 @@ describe('trainingLibraryHelpers store module (real)', () => {
         {
           action: 'callForDurations',
           mock: 'getTrainingDurations',
-          key: PROPERTY_STORE.DURATION
+          key: PROPERTY_STORE.TOTAL_DURATION
         },
         {
           action: 'callForTypes',
