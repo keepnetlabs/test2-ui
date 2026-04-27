@@ -57,6 +57,22 @@
                   subtitle="Select the quishing technique for this template"
                   :items="methodItems"
                 />
+                <FormGroup
+                  title="Language"
+                  sub-title="Select the language you are writing this email template in"
+                  has-hint
+                >
+                  <InputSelectLanguage
+                    :value="primaryLanguageResourceId"
+                    v-bind="commonRules"
+                    item-text="text"
+                    item-value="value"
+                    required
+                    :items="getTemplateLanguageOptions"
+                    :menu-props="{ offsetY: true }"
+                    @input="handlePrimaryLanguageChange"
+                  />
+                </FormGroup>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
                     ref="refTags"
@@ -284,6 +300,7 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import { parseEmailOrMessageFile } from '@/api/file'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import {
@@ -321,7 +338,8 @@ export default {
     EmailTemplate,
     InputTag,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    InputSelectLanguage
   },
   mixins: [useSetAttachmentFile],
   props: {
@@ -516,6 +534,17 @@ export default {
     },
     getCompanyPreferredLanguageId() {
       return this.scenarioDetailsLookup?.companyLanguageTypeResourceId || ''
+    },
+    getTemplateLanguageOptions() {
+      return this.languageOptions.length ? this.languageOptions : this.scenarioDetailsLookup?.languageTypes || []
+    },
+    primaryLanguageResourceId() {
+      return (
+        this.selectedLanguages[0]?.value ||
+        this.activeLanguage ||
+        this.formValues.languageTypeResourceId ||
+        this.getCompanyPreferredLanguageId
+      )
     },
     getDisabledStatuses() {
       return {
@@ -854,6 +883,34 @@ export default {
         }
       })
     },
+    handlePrimaryLanguageChange(languageResourceId) {
+      const selectedLanguage = this.getTemplateLanguageOptions.find(
+        (language) => language.value === languageResourceId
+      )
+      if (!selectedLanguage) return
+
+      this.selectedLanguages = [selectedLanguage]
+      this.activeLanguage = languageResourceId
+      this.formValues.languageTypeResourceId = languageResourceId
+      this.handleSelectedLanguagesChange(this.selectedLanguages)
+      this.selectedLanguagePayloadItemBeforeSave = JSON.parse(
+        JSON.stringify(this.getSelectedLanguagePayload)
+      )
+    },
+    ensurePrimaryLanguageSelection() {
+      const primaryLanguageId = this.primaryLanguageResourceId
+      if (!primaryLanguageId) return
+
+      const hasSelectedLanguage = this.selectedLanguages.some(
+        (language) => language.value === primaryLanguageId
+      )
+      const hasLanguagePayload = this.languagesPayload.some(
+        (language) => language.languageTypeResourceId === primaryLanguageId
+      )
+
+      if (hasSelectedLanguage && hasLanguagePayload) return
+      this.handlePrimaryLanguageChange(primaryLanguageId)
+    },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
       this.isAvailableForValid = !!value.length
@@ -873,6 +930,7 @@ export default {
     },
     nextStep() {
       let isMakeAvailableForValid = true
+      this.ensurePrimaryLanguageSelection()
       if (this.$refs.refMakeAvailableFor) {
         this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isMakeAvailableForValid = this.$refs.refMakeAvailableFor.isAvailableForValid
@@ -888,6 +946,7 @@ export default {
       this.step -= 1
     },
     submit() {
+      this.ensurePrimaryLanguageSelection()
       if (this.isAttachmentBasedTemplate && this?.formValues?.attachmentFiles?.length === 0) {
         this.isAttachmentError = 'Templates with attachment method must have an attachment file.'
         return
