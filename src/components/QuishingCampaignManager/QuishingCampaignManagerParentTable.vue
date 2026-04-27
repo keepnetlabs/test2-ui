@@ -454,7 +454,10 @@ export default {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
         icon: 'mdi-check-circle'
       })
-      QuishingService.getQuishingPdfCampaignPreviewContent(row.resourceId)
+      QuishingService.getQuishingPdfCampaignDownloadContent(
+        row.resourceId,
+        row.instanceGroup ?? 1
+      )
         .then((response) => {
           const blob = new Blob([response.data], { type: 'application/pdf' })
           const fileURL = URL.createObjectURL(blob)
