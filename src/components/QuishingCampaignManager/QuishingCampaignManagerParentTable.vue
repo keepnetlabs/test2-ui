@@ -126,6 +126,7 @@
         :scope="scope"
         :row-actions="tableOptions.rowActions"
         :is-quishing-print-preview="checkIsQuishingTypePrintout(scope.row)"
+        :is-quishing-print-download-visible="isQuishingPrintoutDownloadVisible(scope.row)"
         @on-edit="handleEdit"
         @on-preview="handlePreview"
         @on-delete="handleDelete"
@@ -429,6 +430,9 @@ export default {
         row?.templateType?.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
       )
+    },
+    isQuishingPrintoutDownloadVisible(row = {}) {
+      return this.checkIsQuishingTypePrintout(row) && row.total === 1
     },
     handlePrintPreview(row = {}) {
       QuishingService.getQuishingPdfCampaignPreviewContent(row.resourceId).then((response) => {
