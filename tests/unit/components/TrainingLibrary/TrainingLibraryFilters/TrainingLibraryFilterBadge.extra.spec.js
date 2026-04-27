@@ -42,7 +42,6 @@ describe('TrainingLibraryFilterBadge.vue (extra)', () => {
       targetAudiences: [],
       vendors: [],
       levels: [{ id: 2, text: 'Intermediate' }],
-      durations: [{ value: '15', text: '15 min' }],
       getLanguageFilterValue: TrainingLibraryFilterBadge.methods.getLanguageFilterValue,
       getComplianceFilterValue: TrainingLibraryFilterBadge.methods.getComplianceFilterValue,
       getCategoryFilterValue: TrainingLibraryFilterBadge.methods.getCategoryFilterValue,
@@ -78,10 +77,17 @@ describe('TrainingLibraryFilterBadge.vue (extra)', () => {
     expect(
       TrainingLibraryFilterBadge.methods.getFilterValue.call(
         ctx,
-        { key: PROPERTY_STORE.DURATION },
-        '15'
+        { key: PROPERTY_STORE.TOTAL_DURATION },
+        '1-5'
       )
-    ).toBe('15 min')
+    ).toBe('1 – 5 min')
+    expect(
+      TrainingLibraryFilterBadge.methods.getFilterValue.call(
+        ctx,
+        { key: PROPERTY_STORE.TOTAL_DURATION },
+        '90+'
+      )
+    ).toBe('+90 min')
   })
 
   it('getFilterValue falls back to raw values when lookup items are missing', () => {
@@ -94,7 +100,6 @@ describe('TrainingLibraryFilterBadge.vue (extra)', () => {
       targetAudiences: [],
       vendors: [],
       levels: [],
-      durations: [],
       getLanguageFilterValue: TrainingLibraryFilterBadge.methods.getLanguageFilterValue,
       getComplianceFilterValue: TrainingLibraryFilterBadge.methods.getComplianceFilterValue,
       getCategoryFilterValue: TrainingLibraryFilterBadge.methods.getCategoryFilterValue,

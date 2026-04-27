@@ -3,13 +3,13 @@ import labels from '@/model/constants/labels'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('TrainingLibraryAllTypesTable.vue', () => {
-  it('keeps the legacy duration property and never adopts totalDuration', () => {
+  it('uses the totalDuration column property like learning path', () => {
     const columns = TrainingLibraryAllTypesTable.data().tableOptions.columns
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
     ).toBeDefined()
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
     ).toBeUndefined()
   })
 

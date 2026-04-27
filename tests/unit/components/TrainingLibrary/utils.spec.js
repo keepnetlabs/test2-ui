@@ -40,22 +40,18 @@ describe('TrainingLibrary utils', () => {
     })
   })
 
-  describe('TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION', () => {
-    it('points to the totalDuration backend field while keeping the Duration label', () => {
+  describe('TRAINING_LIBRARY_COLUMNS duration columns', () => {
+    it('DURATION column points to the totalDuration backend field', () => {
+      expect(TRAINING_LIBRARY_COLUMNS.DURATION.property).toBe(PROPERTY_STORE.TOTAL_DURATION)
+    })
+
+    it('LEARNING_PATH_DURATION mirrors DURATION (both use totalDuration)', () => {
       expect(TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION.property).toBe(
         PROPERTY_STORE.TOTAL_DURATION
       )
-      expect(TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION.label).toBe(
-        TRAINING_LIBRARY_COLUMNS.DURATION.label
+      expect(TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION).toEqual(
+        TRAINING_LIBRARY_COLUMNS.DURATION
       )
-    })
-
-    it('mirrors the legacy DURATION column shape except for the property key (drift guard)', () => {
-      const { property: lpProp, ...lpRest } = TRAINING_LIBRARY_COLUMNS.LEARNING_PATH_DURATION
-      const { property: legacyProp, ...legacyRest } = TRAINING_LIBRARY_COLUMNS.DURATION
-
-      expect(lpProp).not.toBe(legacyProp)
-      expect(lpRest).toEqual(legacyRest)
     })
   })
 

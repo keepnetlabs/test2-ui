@@ -9,6 +9,18 @@ export const TRAINING_LIBRARY_TYPES = {
   SURVEY: 'Survey'
 }
 
+// Static duration filter buckets used by the Training Library / Learning Path
+// filters. Values match the backend `DurationMinutes` field expectations
+// (e.g. `1-5`, `90+`); display text follows the agreed UI design.
+export const TRAINING_DURATION_FILTER_ITEMS = [
+  { id: '1-5', value: '1-5', name: '1 – 5 min', text: '1 – 5 min' },
+  { id: '5-15', value: '5-15', name: '5 – 15 min', text: '5 – 15 min' },
+  { id: '15-30', value: '15-30', name: '15 – 30 min', text: '15 – 30 min' },
+  { id: '30-60', value: '30-60', name: '30 – 60 min', text: '30 – 60 min' },
+  { id: '60-90', value: '60-90', name: '60 – 90 min', text: '60 – 90 min' },
+  { id: '90+', value: '90+', name: '+90 min', text: '+90 min' }
+]
+
 export const getTrainingCategoryMeta = (item = {}) => {
   const normalizedTrainingCategories = Array.isArray(item.trainingCategories)
     ? item.trainingCategories.filter(Boolean)
@@ -143,7 +155,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     filterableItems: []
   },
   DURATION: {
-    property: PROPERTY_STORE.DURATION,
+    property: PROPERTY_STORE.TOTAL_DURATION,
     align: 'left',
     editable: false,
     label: labels.Duration,
@@ -152,7 +164,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: []
+    filterableItems: TRAINING_DURATION_FILTER_ITEMS
   },
   LEARNING_PATH_DURATION: {
     property: PROPERTY_STORE.TOTAL_DURATION,
@@ -164,7 +176,7 @@ export const TRAINING_LIBRARY_COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: []
+    filterableItems: TRAINING_DURATION_FILTER_ITEMS
   },
   CATEGORY: {
     property: PROPERTY_STORE.CATEGORY,

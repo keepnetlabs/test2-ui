@@ -58,7 +58,7 @@ describe('TrainingLibraryLearningPathTable.vue (extra)', () => {
     expect(legacyDurationColumn).toBeUndefined()
   })
 
-  it('renderedColumns watcher maps the shared duration toggle onto the totalDuration column', () => {
+  it('renderedColumns watcher shows totalDuration when included in renderedCols', () => {
     const ctx = {
       tableOptions: {
         columns: [
@@ -70,7 +70,7 @@ describe('TrainingLibraryLearningPathTable.vue (extra)', () => {
     }
 
     TrainingLibraryLearningPathTable.watch.renderedColumns.handler.call(ctx, [
-      PROPERTY_STORE.DURATION
+      PROPERTY_STORE.TOTAL_DURATION
     ])
 
     const totalDurationCol = ctx.tableOptions.columns.find(
@@ -83,7 +83,7 @@ describe('TrainingLibraryLearningPathTable.vue (extra)', () => {
     expect(categoryCol.show).toBe(false)
   })
 
-  it('renderedColumns watcher hides totalDuration when shared duration toggle is off', () => {
+  it('renderedColumns watcher hides totalDuration when not in renderedCols', () => {
     const ctx = {
       tableOptions: {
         columns: [

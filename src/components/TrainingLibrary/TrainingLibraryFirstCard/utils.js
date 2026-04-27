@@ -43,7 +43,7 @@ export const TRAINING_LIBRARY_SETTINGS_COLUMNS = {
   },
   DURATION: {
     label: 'Duration',
-    property: PROPERTY_STORE.DURATION,
+    property: PROPERTY_STORE.TOTAL_DURATION,
     show: true
   },
   CATEGORY: {
@@ -105,7 +105,7 @@ export const TRAINING_LIBRARY_FILTER_OPTIONS_FILTERS = {
   },
   DURATION: {
     label: 'Duration',
-    property: PROPERTY_STORE.DURATION,
+    property: PROPERTY_STORE.TOTAL_DURATION,
     show: true
   },
   CATEGORY: {

@@ -118,7 +118,7 @@ export const trainingLibraryFilters = [
   {
     text: 'Duration',
     icon: 'mdi-clock-outline',
-    key: PROPERTY_STORE.DURATION,
+    key: PROPERTY_STORE.TOTAL_DURATION,
     show: true,
     filterType: 'search',
     operator: 'Include',
