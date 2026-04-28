@@ -7,6 +7,8 @@ import {
   ENROLLMENT_AUDIENCE,
   DISTRIBUTION_DELAY_TIME_TYPES
 } from '@/components/AwarenessEducator/utils'
+import { TRAINING_DURATION_FILTER_ITEMS } from '@/components/TrainingLibrary/utils'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('AwarenessEducator utils', () => {
   it('exports emits and status constants', () => {
@@ -45,6 +47,12 @@ describe('AwarenessEducator utils', () => {
     expect(COLUMNS.LANGUAGES.hasTooltip).toBe(true)
     expect(COLUMNS.STATUS.type).toBe('badge')
     expect(COLUMNS.STATUS.filterableItems).toBe(ENROLLMENT_STATUSES_FILTER)
+  })
+
+  it('uses Training Library duration buckets for enrollment duration filter', () => {
+    expect(COLUMNS.DURATION.property).toBe(PROPERTY_STORE.TOTAL_DURATION)
+    expect(COLUMNS.DURATION.filterableItems).toBe(TRAINING_DURATION_FILTER_ITEMS)
+    expect(COLUMNS.DURATION.filterableCustomFieldName).toBe('DurationMinutes')
   })
 
   it('defines enrollment type and delivery type column filters', () => {

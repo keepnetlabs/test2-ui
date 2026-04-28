@@ -25,15 +25,13 @@ describe('Enrollments.vue', () => {
     const callForTargetAudiences = jest.fn()
     const callForTypes = jest.fn()
     const callForLevels = jest.fn()
-    const callForDurations = jest.fn()
     const ctx = {
       callForFormDetails,
       callForLanguages,
       callForCategories,
       callForTargetAudiences,
       callForTypes,
-      callForLevels,
-      callForDurations
+      callForLevels
     }
     Enrollments.created.call(ctx)
     expect(callForFormDetails).toHaveBeenCalled()
@@ -42,7 +40,6 @@ describe('Enrollments.vue', () => {
     expect(callForTargetAudiences).toHaveBeenCalled()
     expect(callForTypes).toHaveBeenCalled()
     expect(callForLevels).toHaveBeenCalled()
-    expect(callForDurations).toHaveBeenCalled()
   })
 
   it('callForFormDetails sets enrollmentStatusEnum from API response', async () => {
