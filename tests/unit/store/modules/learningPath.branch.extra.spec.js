@@ -91,6 +91,17 @@ describe('learningPath store (branch extra coverage)', () => {
     expect(state.learningPathAxiosPayload.orderBy).toBe('trainingName')
   })
 
+  it('SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD maps totalDuration orderBy to DurationMinutes', () => {
+    const state = createState()
+    learningPath.mutations.SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD(state, {
+      ascending: true,
+      orderBy: 'totalDuration'
+    })
+
+    expect(state.learningPathAxiosPayload.ascending).toBe(true)
+    expect(state.learningPathAxiosPayload.orderBy).toBe('DurationMinutes')
+  })
+
   it('SET_LEARNING_PATH_FILTER_TO_PAYLOAD handles non-string non-array activeValue', () => {
     const state = createState()
     learningPath.mutations.SET_LEARNING_PATH_FILTER_TO_PAYLOAD(state, {

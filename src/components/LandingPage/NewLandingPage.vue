@@ -247,6 +247,7 @@
                           :domain-records="getDomainRecordTypes"
                           :url-schema-types="getUrlSchemaTypes"
                           :is-edit="isEdit"
+                          :is-duplicate="isDuplicate"
                           :show-captcha-option="!isInvisibleCaptchaDisabled"
                           :captcha-enabled="
                             formValues.isInvisibleCaptchaEnabled

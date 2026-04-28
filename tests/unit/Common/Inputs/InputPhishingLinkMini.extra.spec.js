@@ -48,6 +48,13 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     checkSchemaTypes: jest.fn(),
     checkDomainBlocklist: jest.fn(),
     handleInputChange: jest.fn(),
+    getDomainRecord: methods.getDomainRecord,
+    getDomainSchemaInfo: methods.getDomainSchemaInfo,
+    getSchemaValueByProtocol: methods.getSchemaValueByProtocol,
+    isCreateMode: methods.isCreateMode,
+    getProtocolValueForDomain: methods.getProtocolValueForDomain,
+    isSchemaDisabled: methods.isSchemaDisabled,
+    syncProtocolWithDomain: methods.syncProtocolWithDomain,
     getUrlSchemaTypesModified: computed.getUrlSchemaTypesModified.call({
       urlSchemaTypesModified: [],
       urlSchemaTypes: [
@@ -56,6 +63,61 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
       ]
     }),
     ...overrides
+  })
+
+  describe('schema helpers', () => {
+    it('getDomainSchemaInfo returns empty info when domain schema data is missing', () => {
+      expect(methods.getDomainSchemaInfo.call(createCtx(), undefined)).toEqual({
+        activeVal: undefined,
+        isBothSchema: false,
+        isHttpsSchema: false
+      })
+    })
+
+    it('isSchemaDisabled keeps all schemas enabled for both-protocol domains', () => {
+      const ctx = createCtx({ isDuplicate: true })
+
+      expect(
+        methods.isSchemaDisabled.call(ctx, { value: '1' }, {
+          activeVal: '3',
+          isBothSchema: true,
+          isHttpsSchema: false
+        })
+      ).toBe(false)
+    })
+
+    it('syncProtocolWithDomain exits after duplicate protocol sync', () => {
+      const ctx = createCtx({
+        isDuplicate: true,
+        isEdit: true,
+        value: { urlSchemaTypeId: '1' },
+        handleInputChange: jest.fn()
+      })
+
+      methods.syncProtocolWithDomain.call(ctx, {
+        activeVal: '2',
+        isBothSchema: false
+      })
+
+      expect(ctx.handleInputChange).toHaveBeenCalledTimes(1)
+      expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
+    })
+
+    it('syncProtocolWithDomain applies create-mode default in duplicate mode', () => {
+      const ctx = createCtx({
+        isDuplicate: true,
+        isEdit: true,
+        value: { urlSchemaTypeId: '2' },
+        handleInputChange: jest.fn()
+      })
+
+      methods.syncProtocolWithDomain.call(ctx, {
+        activeVal: '2',
+        isBothSchema: false
+      })
+
+      expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
+    })
   })
 
   it('mounted calls setDefaultValue in create mode and checkSchemaTypes in edit mode', () => {
@@ -99,18 +161,40 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     expect(editModeCtx.checkDomainBlocklist).not.toHaveBeenCalled()
   })
 
-  it('handleChangeDomainRecord calls input change, schema check, relabel and blocklist check', () => {
+  it('handleChangeDomainRecord emits domain and create-mode protocol together before schema check in duplicate mode', () => {
     const ctx = createCtx({
-      handleInputChange: jest.fn(),
       checkSchemaTypes: jest.fn(),
       changeDisabledLabel: jest.fn(),
-      checkDomainBlocklist: jest.fn()
+      checkDomainBlocklist: jest.fn(),
+      isEdit: true,
+      isDuplicate: true,
+      value: {
+        urlSchemaTypeId: '1',
+        subDomain: 'www',
+        domainRecordId: 'old-domain',
+        pathTypeId: 'p1',
+        extensionTypeId: 'e1',
+        parameterTypeId: 'pm1'
+      },
+      domainRecords: [
+        {
+          text: 'https-only.test',
+          value: 'd1',
+          extraDatas: [{ value: '2', text: 'HTTPS' }, { value: true }]
+        }
+      ]
     })
 
     methods.handleChangeDomainRecord.call(ctx, 'd1')
 
-    expect(ctx.handleInputChange).toHaveBeenCalledWith('d1', 'domainRecordId')
-    expect(ctx.checkSchemaTypes).toHaveBeenCalledWith('d1', true)
+    expect(ctx.$emit).toHaveBeenCalledWith(
+      'input',
+      expect.objectContaining({
+        domainRecordId: 'd1',
+        urlSchemaTypeId: '2'
+      })
+    )
+    expect(ctx.checkSchemaTypes).toHaveBeenCalledWith('d1', true, { syncProtocol: false })
     expect(ctx.changeDisabledLabel).toHaveBeenCalled()
     expect(ctx.checkDomainBlocklist).toHaveBeenCalledWith('d1')
   })
@@ -419,6 +503,71 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     expect(emit).not.toHaveBeenCalledWith('captcha-default-value', true)
   })
 
+  it('checkSchemaTypes in duplicate mode selects HTTPS for HTTPS-only domains like create mode', () => {
+    const ctx = createCtx({
+      isEdit: true,
+      isDuplicate: true,
+      value: { urlSchemaTypeId: '1', domainRecordId: 'd-https' },
+      domainRecords: [
+        {
+          text: 'https-only.test',
+          value: 'd-https',
+          extraDatas: [{ value: '2', text: 'HTTPS' }, { value: true }]
+        }
+      ],
+      handleInputChange: jest.fn()
+    })
+
+    methods.checkSchemaTypes.call(ctx, 'd-https')
+
+    expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
+    expect(ctx.urlSchemaTypesModified.find((item) => item.value === '1').disabled).toBe(false)
+    expect(ctx.urlSchemaTypesModified.find((item) => item.value === '2').disabled).toBe(false)
+  })
+
+  it('checkSchemaTypes in duplicate mode uses schema text when HTTPS-only id is not the protocol id', () => {
+    const ctx = createCtx({
+      isEdit: true,
+      isDuplicate: true,
+      value: { urlSchemaTypeId: '1', domainRecordId: 'd-https-3' },
+      domainRecords: [
+        {
+          text: 'https-only-with-id-3.test',
+          value: 'd-https-3',
+          extraDatas: [{ value: '3', text: 'HTTPS' }, { value: true }]
+        }
+      ],
+      handleInputChange: jest.fn()
+    })
+
+    methods.checkSchemaTypes.call(ctx, 'd-https-3')
+
+    expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
+    expect(ctx.urlSchemaTypesModified.find((item) => item.value === '1').disabled).toBe(false)
+    expect(ctx.urlSchemaTypesModified.find((item) => item.value === '2').disabled).toBe(false)
+  })
+
+  it('checkSchemaTypes in duplicate mode uses create default for domains supporting both', () => {
+    const ctx = createCtx({
+      isEdit: true,
+      isDuplicate: true,
+      value: { urlSchemaTypeId: '1', domainRecordId: 'd-both' },
+      domainRecords: [
+        {
+          text: 'both.test',
+          value: 'd-both',
+          extraDatas: [{ value: '3', text: 'Both' }, { value: true }]
+        }
+      ],
+      handleInputChange: jest.fn()
+    })
+
+    methods.checkSchemaTypes.call(ctx, 'd-both')
+
+    expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
+    expect(ctx.urlSchemaTypesModified.every((item) => item.disabled === false)).toBe(true)
+  })
+
   it('checkSchemaTypes emits captcha default on domain change even in edit mode', () => {
     const ctx = createCtx({
       isEdit: true,
@@ -485,7 +634,7 @@ describe('InputPhishingLinkMini.vue (extra)', () => {
     methods.checkSchemaTypes.call(ctx, 'unknown-domain')
 
     expect(ctx.urlSchemaTypesModified.every((item) => item.disabled === true)).toBe(true)
-    expect(ctx.handleInputChange).toHaveBeenCalledWith(undefined, 'urlSchemaTypeId')
+    expect(ctx.handleInputChange).not.toHaveBeenCalled()
     expect(ctx.$emit).toHaveBeenCalledWith('invisible-captcha', true)
     expect(ctx.$emit).toHaveBeenCalledWith('captcha-default-value', undefined)
   })

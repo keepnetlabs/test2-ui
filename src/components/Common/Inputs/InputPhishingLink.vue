@@ -185,6 +185,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -327,8 +331,14 @@ export default {
       }=${createRandomCryptStringNumber()}`
     },
     handleChangeDomainRecord(value) {
-      this.handleInputChange(value, 'domainRecordId')
-      this.checkSchemaTypes(value)
+      const schemaInfo = this.getDomainSchemaInfo(this.getDomainRecord(value))
+      const protocolValue = this.getProtocolValueForDomain(schemaInfo)
+      this.$emit('input', {
+        ...this.value,
+        domainRecordId: value?.trim?.() || '',
+        ...(protocolValue ? { urlSchemaTypeId: protocolValue } : {})
+      })
+      this.checkSchemaTypes(value, { syncProtocol: false })
       this.changeDisabledLabel()
       this.checkDomainBlocklist(value)
     },
@@ -369,32 +379,69 @@ export default {
         this.handleChangeDomainRecord(match.value)
       }
     },
-    checkSchemaTypes(value) {
+    getDomainRecord(value) {
+      return this.domainRecords.find((item) => item.value === value)
+    },
+    getDomainSchemaInfo(domainRecord) {
+      const activeSchema = domainRecord?.extraDatas?.[0] || {}
+      const schemaText = activeSchema?.text?.toLowerCase?.() || ''
+      const rawActiveVal = activeSchema?.value?.toString()
+      const isBothSchema = schemaText === 'both'
+      const isHttpsSchema = schemaText.includes('https')
+      const isHttpSchema = schemaText.includes('http') && !isHttpsSchema
+      const activeVal = isHttpsSchema
+        ? this.getSchemaValueByProtocol('https') || rawActiveVal
+        : isHttpSchema
+        ? this.getSchemaValueByProtocol('http') || rawActiveVal
+        : rawActiveVal
+
+      return { activeVal, isBothSchema, isHttpsSchema }
+    },
+    getSchemaValueByProtocol(protocol) {
+      const schema = this.getUrlSchemaTypesModified.find((item) =>
+        item.text?.toLowerCase?.().startsWith(`${protocol}://`)
+      )
+      return schema?.value?.toString()
+    },
+    isCreateMode() {
+      return !this.isEdit || this.isDuplicate
+    },
+    isSchemaDisabled(schema, { activeVal, isBothSchema, isHttpsSchema }) {
+      if (isBothSchema || (this.isCreateMode() && isHttpsSchema)) return false
+      return activeVal !== schema.value?.toString()
+    },
+    getProtocolValueForDomain({ activeVal, isBothSchema }) {
+      if (
+        !this.isDuplicate &&
+        this.isEdit &&
+        activeVal === '1' &&
+        this.value?.urlSchemaTypeId?.toString() !== '1'
+      ) {
+        return '1'
+      }
+
+      if (this.isCreateMode()) {
+        return isBothSchema ? '2' : activeVal
+      }
+
+      return ''
+    },
+    syncProtocolWithDomain({ activeVal, isBothSchema }) {
+      const protocolValue = this.getProtocolValueForDomain({ activeVal, isBothSchema })
+      if (protocolValue) this.handleInputChange(protocolValue, 'urlSchemaTypeId')
+    },
+    checkSchemaTypes(value, options = {}) {
       this.$nextTick(() => {
-        const domainRecord = this.domainRecords.find((item) => item.value === value)
+        const domainRecord = this.getDomainRecord(value)
+        const schemaInfo = this.getDomainSchemaInfo(domainRecord)
         this.urlSchemaTypesModified = this.getUrlSchemaTypesModified.map((schema) => {
-          const activeVal = domainRecord?.extraDatas[0]?.value
-          if (activeVal === '3' || activeVal === '2') {
-            schema.disabled = false
-          } else {
-            schema.disabled = domainRecord?.extraDatas[0]?.value !== schema.value
-          }
+          schema.disabled = this.isSchemaDisabled(schema, schemaInfo)
           return schema
         })
-        // Edit mode: if domain is HTTP-only, force schema to HTTP
-        const activeVal = domainRecord?.extraDatas[0]?.value
-        if (this.isEdit && activeVal === '1' && this.value?.urlSchemaTypeId?.toString() !== '1') {
-          this.handleInputChange('1', 'urlSchemaTypeId')
-        }
-        if (!this.isEdit) {
-          this.handleInputChange(
-            domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value,
-            'urlSchemaTypeId'
-          )
-        }
+        if (options.syncProtocol !== false) this.syncProtocolWithDomain(schemaInfo)
         if (this.isEdit) return
-        this.$emit('invisible-captcha', !domainRecord?.extraDatas[1]?.value)
-        this.$emit('captcha-default-value', domainRecord?.extraDatas[1]?.value)
+        this.$emit('invisible-captcha', !domainRecord?.extraDatas?.[1]?.value)
+        this.$emit('captcha-default-value', domainRecord?.extraDatas?.[1]?.value)
       })
     }
   }
