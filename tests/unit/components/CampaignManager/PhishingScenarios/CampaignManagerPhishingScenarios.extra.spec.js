@@ -4,17 +4,15 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 
 describe('CampaignManagerPhishingScenarios.vue (extra)', () => {
-  it('data exposes explicit Agentic AI user-scenario mapping as a distribution option', () => {
-    const data = CampaignManagerPhishingScenarios.data.call({
-      type: SCENARIO_TYPES.PHISHING
-    })
+  it('getScenarioDistributionItems excludes explicit Agentic AI user-scenario mapping option', () => {
+    const result = CampaignManagerPhishingScenarios.computed.getScenarioDistributionItems.call({})
 
-    expect(data.scenarioDistributionItems).toEqual(
-      expect.arrayContaining([
-        {
+    expect(result).toEqual(
+      expect.not.arrayContaining([
+        expect.objectContaining({
           text: 'Agentic AI explicit user-scenario mapping',
           value: SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
-        }
+        })
       ])
     )
   })
