@@ -188,7 +188,7 @@
                       <div v-on="on">
                         <KSelect
                           v-model="scenarioDistribution"
-                          :items="scenarioDistributionItems"
+                          :items="getScenarioDistributionItems"
                           placeholder="Select scenarios manually"
                           item-text="text"
                           item-value="value"
@@ -753,7 +753,6 @@ export default {
     return {
       isAIAllyHighlightVisible: true,
       SCENARIO_DISTRIBUTION,
-      scenarioDistributionItems,
       tab: 'email',
       upperTab: 'scenarios',
       axiosPayload: getDefaultAxiosPayload(),
@@ -816,6 +815,11 @@ export default {
     },
     getCategoryItems() {
       return this.formDetails?.categories?.map((item) => item.text) || []
+    },
+    getScenarioDistributionItems() {
+      return scenarioDistributionItems.filter(
+        (item) => item.value !== SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+      )
     },
     isShowTrainingTab() {
       return (

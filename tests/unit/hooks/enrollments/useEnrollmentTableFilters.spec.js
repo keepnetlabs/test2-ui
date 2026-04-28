@@ -68,4 +68,5 @@ describe('useEnrollmentTableFilters', () => {
     ])
     expect(reRenderFilters).toHaveBeenCalledTimes(1)
   })
+
 })

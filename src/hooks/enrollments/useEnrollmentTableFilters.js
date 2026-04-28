@@ -5,10 +5,6 @@ export default {
     levels: {
       type: Array,
       default: () => []
-    },
-    durations: {
-      type: Array,
-      default: () => []
     }
   },
   watch: {
@@ -64,15 +60,6 @@ export default {
       )
       if (levelColumn) {
         this.$set(levelColumn, 'filterableItems', val || [])
-        this?.$refs?.refTable?.reRenderFilters()
-      }
-    },
-    durations(val) {
-      const durationColumn = this.tableOptions.columns.find(
-        (col) => col.property === PROPERTY_STORE.DURATION
-      )
-      if (durationColumn) {
-        this.$set(durationColumn, 'filterableItems', val || [])
         this?.$refs?.refTable?.reRenderFilters()
       }
     }

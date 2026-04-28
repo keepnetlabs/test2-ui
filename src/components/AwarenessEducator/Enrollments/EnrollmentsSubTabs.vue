@@ -62,7 +62,6 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           :levels="levels"
-          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -87,7 +86,6 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           :levels="levels"
-          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -112,7 +110,6 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           :levels="levels"
-          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -136,7 +133,6 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           :levels="levels"
-          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -161,7 +157,6 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           :levels="levels"
-          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -186,7 +181,6 @@
           :categories="categories"
           :target-audiences="targetAudiences"
           :levels="levels"
-          :durations="durations"
           @on-restore="handleRestoreRowClick"
           @on-permanent-delete="handlePermanentlyDeleteRowClick"
           @on-stop-reminder="handleStopReminder"
@@ -261,10 +255,6 @@ export default {
       default: () => []
     },
     levels: {
-      type: Array,
-      default: () => []
-    },
-    durations: {
       type: Array,
       default: () => []
     },

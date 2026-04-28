@@ -126,6 +126,18 @@ describe('CampaignManagerPhishingScenarios.vue', () => {
       expect(CampaignManagerPhishingScenarios.computed.getCategoryItems.call(ctx)).toEqual(['Cat1', 'Cat2'])
     })
 
+    it('getScenarioDistributionItems excludes Agentic AI mapping option', () => {
+      const result = CampaignManagerPhishingScenarios.computed.getScenarioDistributionItems.call(ctx)
+
+      expect(result).toEqual(
+        expect.not.arrayContaining([
+          expect.objectContaining({
+            value: SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+          })
+        ])
+      )
+    })
+
     it('isShowTrainingTab returns true when training permission is true and distribution is manually', () => {
       ctx.getTrainingSearchPermission = true
       ctx.scenarioDistribution = SCENARIO_DISTRIBUTION.MANUALLY
