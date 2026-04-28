@@ -958,7 +958,18 @@ export default {
       const isAllowedCompany = AI_ANALYZE_COMPANIES.some(
         (name) => name.toLowerCase() === companyName.toLowerCase()
       );
-      return isDevEnv || isAllowedCompany;
+      const selectedCompany =
+        this.$store.state.dashboard?.selectedCompanyObject || {};
+      const countryName = (
+        selectedCompany.countryName || ''
+      ).toLowerCase();
+      const countryCode = (
+        selectedCompany.countryCode || ''
+      ).toLowerCase();
+      const isTurkeyCompany =
+        ["turkey", "türkiye", "turkiye"].includes(countryName) ||
+        ["tr", "tur", "tr-tr"].includes(countryCode);
+      return isDevEnv || isAllowedCompany || isTurkeyCompany;
     }
   },
   watch: {
