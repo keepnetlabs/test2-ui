@@ -179,6 +179,7 @@
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
                       :is-edit="isEdit"
+                      :is-duplicate="isDuplicate"
                       @invisible-captcha="isInvisibleCaptchaDisabled = $event"
                       @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                     />
