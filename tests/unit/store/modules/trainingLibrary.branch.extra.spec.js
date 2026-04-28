@@ -291,6 +291,17 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     expect(state.axiosPayload.orderBy).toBe('trainingName')
   })
 
+  it('SET_SORT_BY_TO_PAYLOAD maps totalDuration orderBy to DurationMinutes', () => {
+    const state = createState()
+    trainingLibrary.mutations.SET_SORT_BY_TO_PAYLOAD(state, {
+      ascending: true,
+      orderBy: 'totalDuration'
+    })
+
+    expect(state.axiosPayload.ascending).toBe(true)
+    expect(state.axiosPayload.orderBy).toBe('DurationMinutes')
+  })
+
   it('RESET_PAGINATION resets page numbers', () => {
     const state = createState()
     state.axiosPayload.pageNumber = 5

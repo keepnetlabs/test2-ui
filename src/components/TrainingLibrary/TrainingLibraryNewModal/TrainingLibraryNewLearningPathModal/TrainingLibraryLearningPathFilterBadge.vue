@@ -164,8 +164,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      callForTrainingLibrary: 'trainingLibrary/callForTrainingLibrary',
-      removeFilterFromPayload: 'trainingLibrary/removeFilterFromPayload'
+      removeFilterFromPayload: 'learningPath/removeLearningPathFilterFromPayload'
     }),
     getOperatorLabel(operator) {
       const operatorMap = {
