@@ -79,7 +79,7 @@ describe('TrainingLibraryLearningPathFilterBadge.vue', () => {
     expect(wrapper.vm.filter.activeValue).toBe('')
     expect(wrapper.vm.filter.value).toBe('')
     expect(wrapper.vm.filter.isFilterActive).toBe(false)
-    expect(dispatch).toHaveBeenCalledWith('trainingLibrary/removeFilterFromPayload', wrapper.vm.filter)
+    expect(dispatch).toHaveBeenCalledWith('learningPath/removeLearningPathFilterFromPayload', wrapper.vm.filter)
   })
 
   it('removes search value and keeps filter active when values remain', () => {
@@ -95,7 +95,7 @@ describe('TrainingLibraryLearningPathFilterBadge.vue', () => {
     expect(wrapper.vm.filter.activeValue).toEqual(['cat2'])
     expect(wrapper.vm.filter.value).toEqual(['cat2'])
     expect(wrapper.vm.filter.isFilterActive).toBe(true)
-    expect(dispatch).toHaveBeenCalledWith('trainingLibrary/removeFilterFromPayload', wrapper.vm.filter)
+    expect(dispatch).toHaveBeenCalledWith('learningPath/removeLearningPathFilterFromPayload', wrapper.vm.filter)
   })
 
   it('removes last search value and deactivates filter', () => {
