@@ -1,6 +1,9 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import {
+  TRAINING_DURATION_FILTER_ITEMS,
+  TRAINING_LIBRARY_TYPES
+} from '@/components/TrainingLibrary/utils'
 import { TRAINING_LIBRARY_PAYLOAD_TYPES } from '@/components/TrainingLibrary/TrainingLibraryFirstCard/utils'
 
 export const EMITS = {
@@ -218,7 +221,7 @@ export const COLUMNS = {
     filterableItems: []
   },
   DURATION: {
-    property: PROPERTY_STORE.DURATION,
+    property: PROPERTY_STORE.TOTAL_DURATION,
     align: 'left',
     editable: false,
     label: labels.Duration,
@@ -227,7 +230,8 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: []
+    filterableItems: TRAINING_DURATION_FILTER_ITEMS,
+    filterableCustomFieldName: 'DurationMinutes'
   },
   AUDIENCE: {
     property: PROPERTY_STORE.TARGET_AUDIENCE,
