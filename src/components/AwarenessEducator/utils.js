@@ -230,7 +230,8 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: TRAINING_DURATION_FILTER_ITEMS
+    filterableItems: TRAINING_DURATION_FILTER_ITEMS,
+    filterableCustomFieldName: 'DurationMinutes'
   },
   AUDIENCE: {
     property: PROPERTY_STORE.TARGET_AUDIENCE,

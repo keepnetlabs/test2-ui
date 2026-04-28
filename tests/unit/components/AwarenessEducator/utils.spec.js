@@ -52,6 +52,7 @@ describe('AwarenessEducator utils', () => {
   it('uses Training Library duration buckets for enrollment duration filter', () => {
     expect(COLUMNS.DURATION.property).toBe(PROPERTY_STORE.TOTAL_DURATION)
     expect(COLUMNS.DURATION.filterableItems).toBe(TRAINING_DURATION_FILTER_ITEMS)
+    expect(COLUMNS.DURATION.filterableCustomFieldName).toBe('DurationMinutes')
   })
 
   it('defines enrollment type and delivery type column filters', () => {
