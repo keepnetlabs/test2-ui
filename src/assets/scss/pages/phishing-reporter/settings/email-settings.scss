@@ -201,14 +201,15 @@
     position: relative;
   }
 
-  &__subject-helper {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 18px;
-    color: rgba(0, 0, 0, 0.6);
-    text-align: right;
-    margin-top: -18px;
-    margin-bottom: 8px;
+  &__subject-merge-tags {
+    max-width: 100%;
+  }
+
+  &__subject-input {
+    .v-input__slot {
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+    }
   }
 
   &__switch-description {

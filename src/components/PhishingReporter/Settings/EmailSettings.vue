@@ -159,11 +159,26 @@
           :rules="ccEmailRules"
         />
         <div class="email-settings__subject-field">
+          <div class="input-merge-tag__tags email-settings__subject-merge-tags">
+            <v-btn
+              v-for="mergeTag in subjectMergeTags"
+              :key="mergeTag.value"
+              class="input-merge-tag__tag ma-1"
+              elevation="0"
+              small
+              :disabled="!showForm"
+              @click="handleSubjectMergeTagClick(mergeTag.value)"
+            >
+              {{ mergeTag.text }}
+            </v-btn>
+          </div>
           <InputEmail
+            ref="refEmailSubject"
             v-model.trim="formValues.subject"
+            class="email-settings__subject-input rounded-t-0"
             id="input--phishing-reporter-email-subject"
             label="Email Subject"
-            placeholder="Suspicious Email: {SUBJECT}"
+            placeholder="Suspicious Email: {SUBJECT} - {REPORTER_EMAIL} - {DATE_AND_TIME}"
             persistent-placeholder
             :required="isRecipientEmailRequired"
             :persistent-hint="isRecipientEmailRequired"
@@ -171,9 +186,6 @@
             :rules="emailSubjectRules"
             :readonly="!showForm"
           />
-          <div class="email-settings__subject-helper">
-            Use {SUBJECT} merge tag as a variable for reported emails' subject
-          </div>
         </div>
         <InputEmail
           v-model.trim="formValues.content"
@@ -248,6 +260,20 @@ export default {
     return {
       labels,
       validations,
+      subjectMergeTags: [
+        {
+          text: 'Subject',
+          value: '{SUBJECT}'
+        },
+        {
+          text: "Reporter's Email Address",
+          value: '{REPORTER_EMAIL}'
+        },
+        {
+          text: 'Date & Time',
+          value: '{DATE_AND_TIME}'
+        }
+      ],
       formValues: {
         to: '',
         cc: '',
@@ -449,6 +475,21 @@ export default {
       } else {
         return false
       }
+    },
+    handleSubjectMergeTagClick(mergeTag) {
+      if (!this.showForm) return
+
+      const subjectInput = this.$refs.refEmailSubject?.$el?.querySelector('input')
+      const subject = this.formValues.subject || ''
+      const start = subjectInput?.selectionStart ?? subject.length
+      const end = subjectInput?.selectionEnd ?? subject.length
+
+      this.formValues.subject = `${subject.slice(0, start)}${mergeTag}${subject.slice(end)}`
+      this.$nextTick(() => {
+        const cursorPosition = start + mergeTag.length
+        subjectInput?.focus()
+        subjectInput?.setSelectionRange(cursorPosition, cursorPosition)
+      })
     },
     validateDefenderEmailNotSameAsInformationEmail(value) {
       const defenderEmail = (value || '').trim().toLowerCase()
