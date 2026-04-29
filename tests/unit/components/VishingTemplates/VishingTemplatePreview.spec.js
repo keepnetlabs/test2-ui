@@ -57,6 +57,24 @@ describe('VishingTemplatePreview.vue', () => {
     expect(emit).toHaveBeenCalledWith('on-close')
   })
 
+  it('handleEdit emits on-edit-template when enabled', () => {
+    const emit = jest.fn()
+    VishingTemplatePreview.methods.handleEdit.call({ $emit: emit, editDisabled: false })
+    expect(emit).toHaveBeenCalledWith('on-edit-template')
+  })
+
+  it('handleEdit returns early when disabled', () => {
+    const emit = jest.fn()
+    VishingTemplatePreview.methods.handleEdit.call({ $emit: emit, editDisabled: true })
+    expect(emit).not.toHaveBeenCalled()
+  })
+
+  it('handleDuplicate emits on-duplicate-template when enabled', () => {
+    const emit = jest.fn()
+    VishingTemplatePreview.methods.handleDuplicate.call({ $emit: emit, duplicateDisabled: false })
+    expect(emit).toHaveBeenCalledWith('on-duplicate-template')
+  })
+
   it('callForData fetches template when not campaign', async () => {
     const ctx = {
       isLoading: false,

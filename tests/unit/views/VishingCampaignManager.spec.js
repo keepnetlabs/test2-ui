@@ -321,6 +321,40 @@ describe('VishingCampaignManager.vue', () => {
     expect(wrapper.vm.getStatusBadgeProps('Running')).toEqual(getStatusBadgePropsUtil('Running'))
   })
 
+  it('exposes preview edit and duplicate actions based on campaign status', () => {
+    const wrapper = createWrapper()
+
+    wrapper.setData({ selectedRow: { status: 'Scheduled' } })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBe(true)
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(true)
+
+    wrapper.setData({ selectedRow: { status: 'Running' } })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBe(false)
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(true)
+
+    wrapper.setData({ selectedRow: { status: 'Completed' } })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBe(false)
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(false)
+  })
+
+  it('handles preview edit and duplicate transitions', () => {
+    const wrapper = createWrapper()
+    const row = { resourceId: 'preview-row', status: 'Scheduled' }
+    const handleEditSpy = jest.spyOn(wrapper.vm, 'handleEdit')
+
+    wrapper.setData({ selectedRow: row, isPreviewVisible: true })
+    wrapper.vm.handlePreviewEdit()
+    expect(wrapper.vm.isPreviewVisible).toBe(false)
+    expect(handleEditSpy).toHaveBeenCalledWith(row, false)
+
+    wrapper.setData({ selectedRow: row, isPreviewVisible: true })
+    wrapper.vm.handlePreviewDuplicate()
+    expect(wrapper.vm.isPreviewVisible).toBe(false)
+    expect(handleEditSpy).toHaveBeenCalledWith(row, true)
+
+    handleEditSpy.mockRestore()
+  })
+
   it('checkIfCanCloseVishingTemplateModal safely handles missing ref', () => {
     const wrapper = createWrapper()
     wrapper.vm.$refs = {}
