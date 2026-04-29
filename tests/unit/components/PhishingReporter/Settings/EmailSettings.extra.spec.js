@@ -581,6 +581,28 @@ describe('EmailSettings.vue (extra coverage)', () => {
       expect(wrapper.vm.formValues.subject).toBe('Suspicious Email: {SUBJECT}')
     })
 
+    it('appends merge tag when subject input element is unavailable', async () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {
+        refEmailSubject: {
+          $el: {
+            querySelector: jest.fn(() => null)
+          }
+        }
+      }
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Reported: '
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{REPORTER_EMAIL}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Reported: {REPORTER_EMAIL}')
+    })
+
     it('inserts merge tag into an empty subject', async () => {
       const wrapper = createWrapper()
       wrapper.vm.$refs = {}
