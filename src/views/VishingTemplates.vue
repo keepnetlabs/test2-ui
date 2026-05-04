@@ -9,7 +9,13 @@
       :voiceResourceId="voiceResourceId"
       :language="selectedTemplateLanguage"
       :voice="selectedTemplateVoice"
+      show-edit-button
+      show-duplicate-button
+      :edit-disabled="tableOptions.rowActions[1].disabled"
+      :duplicate-disabled="tableOptions.rowActions[3].disabled"
       @on-close="onToggleShowPreviewModal"
+      @on-edit-template="handlePreviewEdit"
+      @on-duplicate-template="handlePreviewDuplicate"
     />
     <DeleteVishingTemplateDialog
       v-if="isDeleteModalVisible"
@@ -395,6 +401,16 @@ export default {
       this.vishingTemplateId = row.resourceId
       this.selectedTemplate = row
       this.onToggleShowPreviewModal()
+    },
+    handlePreviewEdit() {
+      const selectedTemplate = this.selectedTemplate
+      this.isPreviewVisible = false
+      this.handleEdit(selectedTemplate, false)
+    },
+    handlePreviewDuplicate() {
+      const selectedTemplate = this.selectedTemplate
+      this.isPreviewVisible = false
+      this.handleEdit(selectedTemplate, true)
     },
     handleEdit(row, isDuplicate) {
       this.selectedTemplate = row
