@@ -61,6 +61,8 @@
         padding: 24px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        gap: 16px;
         .k-badge {
           height: 24px !important;
           border-radius: 18px;
@@ -70,10 +72,14 @@
           font-weight: 600;
           font-size: 16px;
           color: #383b41;
+          min-width: 0;
+          flex: 1 1 auto;
+          overflow-wrap: anywhere;
         }
         &-right {
           display: flex;
           align-items: center;
+          flex-shrink: 0;
           .badge-middle {
             margin-left: 8px;
             padding: 8px;
@@ -158,5 +164,25 @@
   .campaign-manager-summary-card__body-item {
     padding-bottom: 16px;
     border-bottom: 1px solid #f2f2f2;
+  }
+}
+
+.callback-template-preview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+
+  &-left {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow-wrap: anywhere;
+  }
+
+  &-right {
+    flex-shrink: 0;
   }
 }

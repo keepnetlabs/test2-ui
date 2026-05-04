@@ -49,8 +49,6 @@
       />
     </ElTabs>
     <CampaignManagerReportSummaryEmail
-      :difficulties="difficulties"
-      :methods="methods"
       :form-data="getEmailTemplateData"
       :isFetchingSummary="isLoading || !getEmailTemplateData"
     />
@@ -68,7 +66,7 @@ import CampaignManagerReportSummaryCards from '@/components/CallbackReport/Summa
 import CampaignManagerReportSummaryCampaignInfo from '@/components/CallbackReport/Summary/CampaignManagerReportSummaryCampaignInfo'
 import CampaignManagerReportSummaryEmail from '@/components/CallbackReport/Summary/CampaignManagerReportSummaryEmail'
 import CallbackService from '@/api/callback'
-import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportEmailDelivery from '@/components/CallbackReport/Summary/CampaignManagerReportEmailDelivery'
 import { createRandomCryptStringNumber } from '@/utils/functions'
@@ -122,8 +120,6 @@ export default {
       callbackTemplate: null,
       isFetchingCallbackTemplate: false,
       isFetchingEmailTemplate: false,
-      difficulties,
-      methods,
       languageOptions: []
     }
   },

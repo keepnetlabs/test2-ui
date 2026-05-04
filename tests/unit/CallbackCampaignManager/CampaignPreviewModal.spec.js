@@ -15,12 +15,14 @@ jest.mock('@/api/awarenessEducator', () => ({
 }))
 
 jest.mock('@/utils/functions', () => ({
-  createRandomCryptStringNumber: jest.fn(() => 'rnd-1')
+  createRandomCryptStringNumber: jest.fn(() => 'rnd-1'),
+  openHtmlInNewWindow: jest.fn()
 }))
 
 import CampaignPreviewModal from '@/components/CallbackCampaignManager/CampaignPreviewModal.vue'
 import CallbackService from '@/api/callback'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import { openHtmlInNewWindow } from '@/utils/functions'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -35,12 +37,39 @@ describe('CallbackCampaignManager/CampaignPreviewModal.vue', () => {
     ).toBe('Campaign A')
     expect(CampaignPreviewModal.computed.getSubtitle.call({ selectedRow: null })).toBe('')
 
-    const emit = jest.fn()
-    const ctx = { isLoading: true, $emit: emit }
+    const closeDrawer = jest.fn()
+    const ctx = { isLoading: true, closeDrawer }
     CampaignPreviewModal.methods.setLoading.call(ctx)
     expect(ctx.isLoading).toBe(false)
     CampaignPreviewModal.methods.handleClose.call(ctx)
-    expect(emit).toHaveBeenCalledWith('on-close')
+    expect(closeDrawer).toHaveBeenCalled()
+  })
+
+  it('handleEditCampaign emits on-edit-campaign with selectedRow', () => {
+    const emit = jest.fn()
+    const selectedRow = { resourceId: 'cm-1', name: 'Campaign A' }
+    CampaignPreviewModal.methods.handleEditCampaign.call({ $emit: emit, selectedRow })
+    expect(emit).toHaveBeenCalledWith('on-edit-campaign', selectedRow)
+  })
+
+  it('handleExternalLink opens current emailTemplate html in new window', () => {
+    CampaignPreviewModal.methods.handleExternalLink.call({ emailTemplate: '<html>x</html>' })
+    expect(openHtmlInNewWindow).toHaveBeenCalledWith('<html>x</html>')
+  })
+
+  it('getNavigationDrawerClass toggles nested-drawer via isNested', () => {
+    expect(
+      CampaignPreviewModal.computed.getNavigationDrawerClass.call({ isNested: false })
+    ).toEqual({
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': false
+    })
+    expect(
+      CampaignPreviewModal.computed.getNavigationDrawerClass.call({ isNested: true })
+    ).toEqual({
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': true
+    })
   })
 
   it('callForLanguages fills trainingLanguages from api', async () => {
