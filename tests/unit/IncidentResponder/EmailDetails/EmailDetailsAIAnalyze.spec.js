@@ -152,7 +152,9 @@ describe('EmailDetailsAIAnalyze.vue', () => {
       openEvidenceSteps: [99],
       report: null,
       $emit: emit,
-      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
     }
 
     await methods.fetchReport.call(ctx)
@@ -178,7 +180,9 @@ describe('EmailDetailsAIAnalyze.vue', () => {
       isAgentDeterminationExpanded: false,
       openEvidenceSteps: [],
       $emit: jest.fn(),
-      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
     }
 
     await methods.fetchReport.call(ctx)

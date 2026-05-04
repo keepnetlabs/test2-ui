@@ -1,115 +1,149 @@
 <template>
-  <AppDialog
-    icon="mdi-eye"
-    custom-size="1600"
-    :status="status"
-    :title="getTitle"
-    :subtitle="getSubtitle"
-    max-height
-    max-height-size="900"
-    class-name="callback-scenario-preview-dialog"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <ElTabs v-show="!isLoading" v-model="tab">
-        <ElTabPane
-          id="callback-scenario-info--email-content"
-          name="email"
-          :label="labels.JustEmail"
+  <div v-if="isVisible">
+    <div
+      class="common-simulator-preview-overlay"
+      @click="handleOverlayClick"
+    ></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="[
+        getNavigationDrawerClass,
+        'common-simulator-preview-dialog'
+      ]"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div
+          class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header"
         >
-          <div class="template-preview pt-4">
-            <div class="template-preview__text" v-if="!!emailTemplate">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">From Email Address: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.fromAddress
-                }}</span>
-              </div>
-              <div>
-                <span
-                  class="template-preview__text--title"
-                  style="
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 20px;
-                    line-height: 24px;
-                    color: #383b41;
-                  "
-                  >Subject:
-                </span>
-                <span
-                  class="template-preview__text--body"
-                  style="
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 20px;
-                    line-height: 24px;
-                    color: #383b41;
-                  "
-                  >{{ emailTemplateParams.subject }}</span
-                >
-              </div>
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
+      </div>
+      <div
+        class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body"
+      >
+        <div
+          class="d-flex align-center justify-space-between mt-4 mb-1"
+          style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+        >
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{
+              selectedRow.name
+            }}</span>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <VTooltip v-if="showEditButton" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEdit">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+            <VTooltip v-if="showDuplicateButton" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn
+                    icon
+                    outlined
+                    color="#2196F3"
+                    small
+                    @click="handleDuplicate"
+                  >
+                    <VIcon small>mdi-content-copy</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Duplicate</span>
+            </VTooltip>
+          </div>
+        </div>
+        <DatatableLoading v-if="isLoading" :loading="isLoading" />
+        <ElTabs v-show="!isLoading" v-model="tab">
+          <ElTabPane
+            id="callback-scenario-info--email-content"
+            name="email"
+            :label="labels.JustEmail"
+          >
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ emailTemplateParams.name }}
             </div>
             <div
-              v-if="emailTemplateParams.attachment"
-              class="attachment-wrapper mt-2"
-              style="position: relative;"
+              class="template-preview"
+              style="
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 16px;
+              "
             >
-              <div class="attachment blue-attach mb-0">
-                <AttachmentsPreview
-                  :deletable="false"
-                  :att="emailTemplateParams.attachment"
-                  :isEmailTemplate="true"
-                />
+              <div class="common-simulator-preview__text" v-if="!!emailTemplate">
+                <div>
+                  <span class="template-preview__text--title text-primary-color">Subject: </span>
+                  <span class="template-preview__text--body text-primary-color">{{ emailTemplateParams.subject }}</span>
+                </div>
+                <div>
+                  <span class="template-preview__text--title text-primary-color">From Name: </span>
+                  <span class="template-preview__text--body text-primary-color">{{ emailTemplateParams.fromName }}</span>
+                </div>
+                <div>
+                  <span class="template-preview__text--title text-primary-color">From Email: </span>
+                  <span class="template-preview__text--body text-primary-color">{{ emailTemplateParams.fromAddress }}</span>
+                </div>
               </div>
+              <div
+                v-if="emailTemplateParams.attachment"
+                class="attachment-wrapper mt-2 position-relative"
+              >
+                <div class="attachment blue-attach mb-0">
+                  <AttachmentsPreview
+                    :deletable="false"
+                    :att="emailTemplateParams.attachment"
+                    :isEmailTemplate="true"
+                  />
+                </div>
+              </div>
+              <hr class="mt-4 ml-n4 mr-n4 mb-2" v-if="!!emailTemplate" />
+              <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
             </div>
-            <hr class="mt-2" v-if="!!emailTemplate" />
-            <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
-          </div>
-        </ElTabPane>
-        <ElTabPane label="Callback Template" name="callbackTemplate">
-          <div class="template-preview pt-4">
-            <div class="template-preview__text mb-4">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ callbackTemplateParams.name }}</span>
-              </div>
+          </ElTabPane>
+          <ElTabPane label="Callback Template" name="callbackTemplate">
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ callbackTemplateParams.name }}
             </div>
             <CallbackTemplatePreviewSteps
               :template="callbackTemplateParams"
               :isTextToSpeechCompatible="isTextToSpeechCompatible"
               :voiceResourceId="callbackTemplateParams.vishingLanguageResourceId"
             />
-          </div>
-        </ElTabPane>
-      </ElTabs>
-    </template>
-    <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn
-          id="btn-close--scenario-preview"
-          class="pa-0 k-dialog__button"
-          text
-          color="#2196f3"
-          @click="handleClose"
-          >CLOSE
-        </v-btn>
+          </ElTabPane>
+        </ElTabs>
       </div>
-    </template>
-  </AppDialog>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
 import CallbackService from '@/api/callback'
 import labels from '@/model/constants/labels'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
@@ -117,15 +151,16 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'CallbackScenarioPreview',
   components: {
     KEmailPreview,
     DatatableLoading,
-    AppDialog,
     AttachmentsPreview,
     CallbackTemplatePreviewSteps
   },
+  mixins: [useDrawerAnimation],
   props: {
     status: {
       type: Boolean
@@ -136,6 +171,10 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -154,11 +193,23 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+        'nested-drawer': this.isNested
+      }
+    },
     getTitle() {
       return 'Callback Scenario Preview'
     },
     getSubtitle() {
       return this.selectedRow?.name || ''
+    },
+    showEditButton() {
+      return !!this.selectedRow
+    },
+    showDuplicateButton() {
+      return !!this.selectedRow
     }
   },
   created() {
@@ -228,7 +279,13 @@ export default {
       this.isLoading = flag
     },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
+    },
+    handleEdit() {
+      this.$emit('on-edit-template')
+    },
+    handleDuplicate() {
+      this.$emit('on-duplicate-template')
     },
     handlePreviousTemplate() {
       this.selectedLandingPageIndex--

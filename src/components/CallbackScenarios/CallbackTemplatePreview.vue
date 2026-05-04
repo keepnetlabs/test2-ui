@@ -1,50 +1,104 @@
 <template>
-  <AppDialog
-    icon="mdi-eye"
-    custom-size="900"
-    :status="status"
-    :title="getTitle"
-    :subtitle="getSubtitle"
-    max-height
-    max-height-size="900"
-    class-name="callback-template-preview"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <div v-else :class="['template-preview']">
-        <CallbackTemplatePreviewSteps
-          :template="templateData"
-          :isTextToSpeechCompatible="isTextToSpeechCompatible"
-          :voiceResourceId="templateData.vishingLanguageResourceId"
-        />
+  <div v-if="isVisible">
+    <div
+      class="common-simulator-preview-overlay"
+      @click="handleOverlayClick"
+    ></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="[
+        getNavigationDrawerClass,
+        'common-simulator-preview-dialog'
+      ]"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div
+          class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header"
+        >
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
       </div>
-    </template>
-    <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
-          >CLOSE
-        </v-btn>
+      <div
+        class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body"
+      >
+        <div class="callback-template-preview__header mt-4 mb-1">
+          <div class="callback-template-preview__header-left">
+            <span class="text-primary-color fs-5 fw-600">{{
+              getSubtitle
+            }}</span>
+          </div>
+          <div v-if="!isCampaign" class="callback-template-preview__header-right d-flex align-center gap-2">
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEdit">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleDuplicate">
+                    <VIcon small>mdi-content-copy</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Duplicate</span>
+            </VTooltip>
+          </div>
+        </div>
+        <DatatableLoading v-if="isLoading" :loading="isLoading" />
+        <div v-show="!isLoading" class="mt-4">
+          <CallbackTemplatePreviewSteps
+            v-if="templateData"
+            :template="templateData"
+            :isTextToSpeechCompatible="isTextToSpeechCompatible"
+            :voiceResourceId="templateData.vishingLanguageResourceId"
+          />
+        </div>
       </div>
-    </template>
-  </AppDialog>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
 import { getVishingCampaignPreview } from '@/api/vishing'
 import CallbackService from '@/api/callback'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 
 export default {
   name: 'CallbackTemplatePreview',
   components: {
     DatatableLoading,
-    AppDialog,
     CallbackTemplatePreviewSteps
   },
+  mixins: [useDrawerAnimation],
   props: {
     isCampaign: {
       type: Boolean
@@ -61,6 +115,10 @@ export default {
     },
     languageItems: {
       type: Array
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -73,6 +131,12 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+        'nested-drawer': this.isNested
+      }
+    },
     getTitle() {
       if (this.isCampaign) {
         return 'Callback Campaign Preview'
@@ -119,7 +183,13 @@ export default {
         })
     },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
+    },
+    handleEdit() {
+      this.$emit('on-edit', this.selectedRow)
+    },
+    handleDuplicate() {
+      this.$emit('on-duplicate', this.selectedRow)
     },
     handleAudioPlay(index) {
       for (let i = 0; i < this.templateData.steps.length; i++) {
