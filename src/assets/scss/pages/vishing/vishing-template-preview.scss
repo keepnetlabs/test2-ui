@@ -1,14 +1,48 @@
-.template-preview__text{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+.vishing-template-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.17);
+  cursor: pointer;
+  z-index: 1001;
 }
-.template-preview__text--body,.template-preview__text--title{
+
+.k-navigation-drawer.vishing-template-preview-drawer {
+  z-index: 1002 !important;
+}
+
+.vishing-template-preview-drawer__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 16px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.vishing-template-preview-drawer__summary-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.template-preview__text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.template-preview__text--body,
+.template-preview__text--title {
   font-weight: 400;
   font-size: 16px;
-  color:#383B41;
+  color: #383B41;
 }
-.template-preview__text--subject{
+
+.template-preview__text--subject {
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
