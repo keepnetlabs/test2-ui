@@ -1,0 +1,114 @@
+/* Migrate modal: explicit spacing only — no reliance on .v-application p defaults */
+
+.sovereignty-migrate-modal__body--submitting {
+    opacity: 0.58;
+    pointer-events: none;
+}
+
+.sovereignty-migrate-modal__footer--locked {
+    opacity: 0.58;
+    pointer-events: none;
+}
+
+.sovereignty-migrate-modal__notice {
+    margin-top: 4px !important;
+    margin-bottom: 12px !important;
+}
+
+.sovereignty-migrate-modal__summary {
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+    padding: 10px 12px;
+    background-color: #f7f9fc;
+    border-radius: 4px;
+
+    /* Already-assigned state: no form below, so collapse the bottom gap. */
+    &:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+
+.sovereignty-migrate-modal__current-line {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.sovereignty-migrate-modal__current-line + .sovereignty-migrate-modal__current-line {
+    margin-top: 4px !important;
+}
+
+.sovereignty-migrate-modal__current-key {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.sovereignty-migrate-modal__current-val {
+    color: rgba(0, 0, 0, 0.62);
+    word-break: break-word;
+}
+
+.sovereignty-migrate-modal__form .sovereignty-migrate-modal__field-group.k-form-group.v-list-item {
+    max-width: none !important;
+}
+
+.sovereignty-migrate-modal__target-select {
+    &.v-input,
+    .v-input {
+        margin-top: 0 !important;
+    }
+
+    .v-select__selections {
+        align-items: center;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+}
+
+.sovereignty-migrate-modal__skeleton {
+    background: transparent;
+
+    & + .sovereignty-migrate-modal__skeleton {
+        margin-top: 12px;
+    }
+
+    &--notice .v-skeleton-loader__image {
+        height: 56px;
+        border-radius: 4px;
+    }
+
+    &--summary .v-skeleton-loader__paragraph {
+        padding: 0;
+    }
+
+    &--field .v-skeleton-loader__image {
+        height: 40px;
+        border-radius: 4px;
+    }
+
+    &--field .v-skeleton-loader__text {
+        max-width: 140px;
+        margin-bottom: 8px;
+    }
+}
+
+.sovereignty-migrate-dialog {
+    .k-dialog__header.v-list-item {
+        padding-bottom: 10px !important;
+        min-height: auto !important;
+    }
+
+    .k-dialog__sub-title {
+        margin-top: 2px !important;
+        line-height: 1.35 !important;
+    }
+}
+
+.sovereignty-migrate-dialog__body.k-dialog__body {
+    max-height: none !important;
+    min-height: 0 !important;
+    padding-top: 4px !important;
+    padding-bottom: 24px !important;
+}
