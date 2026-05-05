@@ -54,11 +54,11 @@
             <!-- STEP 1 -->
             <v-stepper-content step="1">
               <ConfigureCompanyStepHeader
-                class="mb-6"
+                class="mb-4"
                 title="Company Information"
                 subtitle="Enter company information"
               />
-              <v-form ref="refStep1Form" lazy-validation>
+              <v-form ref="refStep1Form" class="company-step1-form-compact" lazy-validation>
                 <FormGroup :title="labels.CompanyName" has-hint>
                   <InputEntityName
                     v-model.trim="formData.Name"
@@ -93,7 +93,7 @@
                     :rules="[(v) => validations.required(v)]"
                   ></k-select>
                 </FormGroup>
-                <FormGroup title="Country" has-hint>
+                <FormGroup title="Country" has-hint class-name="company-step1-country-group">
                   <k-select
                     type="autocomplete"
                     v-model="formData.CountryResourceId"
@@ -110,7 +110,45 @@
                     :rules="[(v) => validations.required(v)]"
                   ></k-select>
                 </FormGroup>
-                <FormGroup title="Timezone" has-hint>
+                <FormGroup
+                  v-if="edit && isRootOrReseller"
+                  class-name="company-step1-data-residency-group"
+                  title="Data residency"
+                  sub-title="To change the region, use 'Migrate data residency' from the company list actions."
+                >
+                  <v-text-field
+                    id="input--company-data-residency-display-edit"
+                    :value="editDataResidencyDisplayLabel"
+                    outlined
+                    dense
+                    disabled
+                    tabindex="-1"
+                    hide-details="auto"
+                    class="company-data-residency-display-field"
+                  />
+                </FormGroup>
+                <FormGroup
+                  v-if="!edit && isRootOrReseller"
+                  class-name="company-step1-data-residency-group"
+                  title="Data residency"
+                  sub-title="Defaults to central. Pick a region to store this company's user data regionally."
+                >
+                  <v-select
+                    v-model="formData.RegionCode"
+                    id="input--company-data-residency-region"
+                    :items="dataResidencyRegionItems"
+                    outlined
+                    dense
+                    hide-details="auto"
+                    item-text="displayName"
+                    item-value="value"
+                    placeholder="Central (no region)"
+                    no-data-text="No regions are configured yet."
+                    :menu-props="{ offsetY: true }"
+                    class="company-data-residency-region-select"
+                  />
+                </FormGroup>
+                <FormGroup title="Timezone" has-hint class-name="company-step1-timezone-group">
                   <InputTimezone
                     v-model="formData.timeZoneId"
                     hint="*Required"
@@ -615,6 +653,7 @@ import {
   searchCompanyGroupsWithParents,
   updateCompany
 } from '@/api/company'
+import { getRegions } from '@/api/regions'
 import CallbackService from '@/api/callback'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import {
@@ -727,7 +766,8 @@ export default {
         DateFormat: 'dd/MM/yyyy',
         TimeFormat: '24h',
         timeZoneId: '',
-        tags: []
+        tags: [],
+        RegionCode: ''
       },
       dateFormatList: [
         {
@@ -772,10 +812,41 @@ export default {
       companyGroupPayload: getDefaultAxiosPayload({ pageSize: 100 }),
       callbackNumberItems: [],
       isWarningModalVisible: false,
-      countryTimezones: []
+      countryTimezones: [],
+      sovereigntyRegionsList: []
     }
   },
   computed: {
+    isRootOrReseller() {
+      return this.$store.getters['auth/isRootOrReseller']
+    },
+    editCompanyRegionCode() {
+      if (!this.edit || !this.selectedExtend) return ''
+      return this.pickCompanyRegionCodeFromExtend(this.selectedExtend)
+    },
+    editDataResidencyDisplayLabel() {
+      if (!this.edit || !this.selectedExtend) return ''
+      const preset = this.pickPresetRegionDisplayFromExtend(this.selectedExtend)
+      if (preset) return preset
+      const code = this.editCompanyRegionCode
+      if (!code) return 'Central (no region)'
+      const match = (this.sovereigntyRegionsList || []).find((r) => r.code === code)
+      if (match && (match.displayName || match.code)) {
+        return match.displayName || match.code
+      }
+      return code
+    },
+    dataResidencyRegionItems() {
+      const central = {
+        displayName: 'Central (no region)',
+        value: ''
+      }
+      const fromApi = (this.sovereigntyRegionsList || []).map((r) => ({
+        displayName: r.displayName || r.code,
+        value: r.code
+      }))
+      return [central, ...fromApi]
+    },
     getSelectedCountry() {
       if (this.formData.CountryResourceId) {
         const selectedCountryIndex = this.countries.findIndex(
@@ -1015,6 +1086,7 @@ export default {
     this.getLookupContents()
     this.getCompanyGroups()
     this.fetchCountryTimezones()
+    this.fetchSovereigntyRegions()
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId =
         this.selectedExtend.preferredLanguageTypeResourceId === ''
@@ -1061,6 +1133,58 @@ export default {
     }
   },
   methods: {
+    pickCompanyRegionCodeFromExtend(ext) {
+      if (!ext || typeof ext !== 'object') return ''
+      const nested =
+        ext.region ||
+        ext.Region ||
+        ext.dataResidencyRegion ||
+        ext.DataResidencyRegion ||
+        ext.sovereigntyRegion ||
+        ext.SovereigntyRegion
+      const fromNested =
+        nested &&
+        (nested.code ??
+          nested.Code ??
+          nested.regionCode ??
+          nested.RegionCode ??
+          nested.azureRegionCode)
+      if (fromNested != null && String(fromNested).trim()) return String(fromNested).trim()
+
+      const flat = [
+        ext.regionCode,
+        ext.RegionCode,
+        ext.regionResourceCode,
+        ext.RegionResourceCode,
+        ext.azureRegionCode,
+        ext.AzureRegionCode,
+        ext.dataResidencyRegionCode
+      ]
+      for (let i = 0; i < flat.length; i++) {
+        const v = flat[i]
+        if (v != null && String(v).trim()) return String(v).trim()
+      }
+      return ''
+    },
+    pickPresetRegionDisplayFromExtend(ext) {
+      if (!ext || typeof ext !== 'object') return ''
+      const nested = ext.region || ext.Region
+      const nestedName =
+        nested &&
+        (nested.displayName ?? nested.DisplayName ?? nested.name ?? nested.Name ?? nested.regionName)
+      const candidates = [
+        ext.regionDisplayName,
+        ext.RegionDisplayName,
+        ext.regionName,
+        ext.RegionName,
+        nestedName
+      ]
+      for (let i = 0; i < candidates.length; i++) {
+        const v = candidates[i]
+        if (v != null && String(v).trim()) return String(v).trim()
+      }
+      return ''
+    },
     normalizeDateFormat(format) {
       if (!format) return 'dd/MM/yyyy'
 
@@ -1080,6 +1204,17 @@ export default {
       normalized = normalized.replaceAll(/\byy\b/g, 'yyyy')
 
       return normalized
+    },
+    fetchSovereigntyRegions() {
+      if (!this.isRootOrReseller) return
+      getRegions({ loading: false })
+        .then((res) => {
+          const list = res?.data?.data
+          this.sovereigntyRegionsList = Array.isArray(list) ? list : []
+        })
+        .catch(() => {
+          this.sovereigntyRegionsList = []
+        })
     },
     fetchCountryTimezones() {
       getCountryTimezones().then((response) => {
@@ -1320,6 +1455,11 @@ export default {
         if (!this.isCallbackSelected) {
           delete payload.CallBackNumberBookingCount
         }
+        if (this.edit) {
+          delete payload.RegionCode
+        } else if (!payload.RegionCode) {
+          delete payload.RegionCode
+        }
 
         if (this.edit) {
           updateCompany(this.selectedExtend.resourceId, payload)
@@ -1461,3 +1601,64 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/*
+ * Step 1 vertical rhythm: global FormGroup adds margin-top on __content (8px)
+ * and margin-bottom on __content-hint (13px) — stacks into huge gaps.
+ */
+::v-deep .company-step1-form-compact > .k-form-group .k-form-group__content {
+  margin-top: 4px !important;
+}
+
+::v-deep .company-step1-form-compact > .k-form-group .k-form-group__content-hint {
+  margin-bottom: 4px !important;
+}
+
+::v-deep .company-step1-form-compact > .k-form-group .k-form-group__sub-title {
+  line-height: 1.38 !important;
+  margin-top: 2px !important;
+}
+
+/* Country → Data residency → Timezone: no extra list-item padding */
+::v-deep .company-step1-country-group.k-form-group.v-list-item {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  min-height: unset !important;
+}
+
+::v-deep .company-step1-data-residency-group.k-form-group.v-list-item {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  min-height: unset !important;
+  margin-bottom: 16px !important;
+}
+
+::v-deep .company-step1-timezone-group.k-form-group.v-list-item {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Keep selects from adding phantom margin below hints */
+::v-deep .company-step1-country-group .v-input,
+::v-deep .company-step1-timezone-group .v-input {
+  margin-bottom: 0 !important;
+}
+
+::v-deep .company-step1-data-residency-group .v-input {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.company-data-residency-display-field.v-input--is-disabled ::v-deep .v-input__slot {
+  background-color: #f5f5f5 !important;
+}
+
+.company-data-residency-display-field.v-input--is-disabled ::v-deep fieldset {
+  border-color: rgba(0, 0, 0, 0.14) !important;
+}
+
+.company-data-residency-display-field.v-input--is-disabled ::v-deep input {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+</style>

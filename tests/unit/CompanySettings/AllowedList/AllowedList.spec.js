@@ -36,7 +36,7 @@ describe('AllowedList.vue', () => {
             'permissions/getAllowListPermissionsExport': true,
             'permissions/getAllowListPermissionsCreate': true,
             'permissions/getSMTPSettingsDeletePermissions': true,
-            'auth/userGetter': { role: { name: roleName } }
+            'auth/isRootOrReseller': roleName === 'Root' || roleName === 'Reseller'
           }
         }
       },

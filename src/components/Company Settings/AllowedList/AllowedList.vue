@@ -346,12 +346,8 @@ export default {
   computed: {
     ...mapGetters({
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
-      getUserData: 'auth/userGetter'
-    }),
-    isRootOrReseller() {
-      const roleName = this.getUserData?.role?.name
-      return roleName && ['Root', 'Reseller'].includes(roleName)
-    }
+      isRootOrReseller: 'auth/isRootOrReseller'
+    })
   },
   created() {
     this.callForLanguages('refAllowList')

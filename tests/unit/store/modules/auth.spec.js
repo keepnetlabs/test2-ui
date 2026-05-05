@@ -21,6 +21,8 @@ describe('auth.js store module', () => {
       getters: {
         getUserRole: (state) => state.userRoleName,
         userGetter: (state) => state.user,
+        isRootOrReseller: (state) =>
+          state.userRoleName === 'Root' || state.userRoleName === 'Reseller',
         getTimezoneFormat: (state) => {
           return {
             timeFormat: state.timeFormat,
@@ -154,6 +156,25 @@ describe('auth.js store module', () => {
     it('userGetter returns user object', () => {
       state.user = { id: 1, name: 'John Doe' }
       expect(authStore.getters.userGetter(state)).toEqual({ id: 1, name: 'John Doe' })
+    })
+
+    it('isRootOrReseller is true for Root', () => {
+      state.userRoleName = 'Root'
+      expect(authStore.getters.isRootOrReseller(state)).toBe(true)
+    })
+
+    it('isRootOrReseller is true for Reseller', () => {
+      state.userRoleName = 'Reseller'
+      expect(authStore.getters.isRootOrReseller(state)).toBe(true)
+    })
+
+    it('isRootOrReseller is false for any other role', () => {
+      state.userRoleName = 'CompanyAdmin'
+      expect(authStore.getters.isRootOrReseller(state)).toBe(false)
+    })
+
+    it('isRootOrReseller is false when role is unset', () => {
+      expect(authStore.getters.isRootOrReseller(state)).toBe(false)
     })
 
     it('getTimezoneFormat returns timezone format object', () => {
