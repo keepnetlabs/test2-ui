@@ -93,6 +93,17 @@ export function updateCompany(id, payload) {
   })
 }
 
+export function migrateCompanySovereignty(companyResourceId, payload) {
+  return testRequest.post(`/companies/${companyResourceId}/sovereignty/migrate`, payload)
+}
+
+export function getPiiResidencyReport(companyResourceId, options = {}) {
+  const { loading = false } = options
+  return testRequest.get(`/companies/${companyResourceId}/sovereignty/pii-residency-report`, {
+    loading
+  })
+}
+
 export function updateInitializeCompany(payload) {
   return testRequest.put(`/companies/limited`, payload, {
     snackbar: COMMON_SNACKBAR
