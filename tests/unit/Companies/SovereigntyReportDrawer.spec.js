@@ -110,6 +110,37 @@ describe('SovereigntyReportDrawer.vue', () => {
       await flushPromises()
       expect(wrapper.vm.loading).toBe(false)
     })
+
+    it('discards a stale response when state was reset before it resolved', async () => {
+      let resolveStale
+      getPiiResidencyReport.mockImplementationOnce(
+        () => new Promise((resolve) => (resolveStale = resolve))
+      )
+      const wrapper = createWrapper()
+      wrapper.vm.fetchReport()
+      // Simulate the user closing the drawer before the response arrives.
+      wrapper.vm.resetState()
+      // The stale request now resolves — it must NOT repopulate state.
+      resolveStale({ data: { data: SAMPLE_REPORT } })
+      await flushPromises()
+      expect(wrapper.vm.report).toBeNull()
+      expect(wrapper.vm.loading).toBe(false)
+      expect(wrapper.vm.errorMessage).toBe('')
+    })
+
+    it('discards a stale failure when state was reset before it rejected', async () => {
+      let rejectStale
+      getPiiResidencyReport.mockImplementationOnce(
+        () => new Promise((_resolve, reject) => (rejectStale = reject))
+      )
+      const wrapper = createWrapper()
+      wrapper.vm.fetchReport()
+      wrapper.vm.resetState()
+      rejectStale({ response: { data: { message: 'Server error' } } })
+      await flushPromises()
+      expect(wrapper.vm.errorMessage).toBe('')
+      expect(wrapper.vm.loading).toBe(false)
+    })
   })
 
   describe('error handling', () => {
@@ -150,6 +181,32 @@ describe('SovereigntyReportDrawer.vue', () => {
     })
   })
 
+  describe('headerSubtitle', () => {
+    it('joins companyName and expectedRegion with a separator when both exist', () => {
+      const wrapper = createWrapper({ companyName: 'Acme' })
+      wrapper.vm.report = { expectedRegion: 'canadacentral' }
+      expect(wrapper.vm.headerSubtitle).toBe('Acme · canadacentral')
+    })
+
+    it('returns companyName when expectedRegion is missing', () => {
+      const wrapper = createWrapper({ companyName: 'Acme' })
+      wrapper.vm.report = null
+      expect(wrapper.vm.headerSubtitle).toBe('Acme')
+    })
+
+    it('returns expectedRegion when companyName is missing', () => {
+      const wrapper = createWrapper({ companyName: '' })
+      wrapper.vm.report = { expectedRegion: 'canadacentral' }
+      expect(wrapper.vm.headerSubtitle).toBe('canadacentral')
+    })
+
+    it('returns empty string when both companyName and expectedRegion are missing', () => {
+      const wrapper = createWrapper({ companyName: '' })
+      wrapper.vm.report = {}
+      expect(wrapper.vm.headerSubtitle).toBe('')
+    })
+  })
+
   describe('verdictTone', () => {
     it('returns "pass" for PASS verdict', () => {
       const wrapper = createWrapper()
@@ -163,6 +220,12 @@ describe('SovereigntyReportDrawer.vue', () => {
       expect(wrapper.vm.verdictTone).toBe('fail')
     })
 
+    it('returns "regionless" for REGIONLESS verdict (informational, not failure)', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { verdict: 'REGIONLESS' }
+      expect(wrapper.vm.verdictTone).toBe('regionless')
+    })
+
     it('returns "fail" when verdict is missing or unknown', () => {
       const wrapper = createWrapper()
       wrapper.vm.report = {}
@@ -171,8 +234,40 @@ describe('SovereigntyReportDrawer.vue', () => {
 
     it('is case-insensitive', () => {
       const wrapper = createWrapper()
-      wrapper.vm.report = { verdict: 'pass' }
-      expect(wrapper.vm.verdictTone).toBe('pass')
+      wrapper.vm.report = { verdict: 'regionless' }
+      expect(wrapper.vm.verdictTone).toBe('regionless')
+    })
+  })
+
+  describe('verdictAlert', () => {
+    it('uses the green/check theme for PASS', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { verdict: 'PASS' }
+      expect(wrapper.vm.verdictAlert).toEqual({
+        bg: 'bg-green-light',
+        color: '#43a047',
+        icon: 'mdi-check-circle'
+      })
+    })
+
+    it('uses the aqua/info theme for REGIONLESS (not an error)', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { verdict: 'REGIONLESS' }
+      expect(wrapper.vm.verdictAlert).toEqual({
+        bg: 'bg-aqua-light',
+        color: '#2196f3',
+        icon: 'mdi-information'
+      })
+    })
+
+    it('uses the red/alert theme for FAIL or unknown verdicts', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { verdict: 'FAIL' }
+      expect(wrapper.vm.verdictAlert).toEqual({
+        bg: 'bg-red-light',
+        color: '#f56c6c',
+        icon: 'mdi-alert-circle'
+      })
     })
   })
 
@@ -200,6 +295,37 @@ describe('SovereigntyReportDrawer.vue', () => {
     })
   })
 
+  describe('databaseChecks ordering', () => {
+    it('puts expected-region first, then central, then other-region, then unknown', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = {
+        databaseChecks: [
+          { databaseName: 'central', role: 'central' },
+          { databaseName: 'eu-west', role: 'other-region' },
+          { databaseName: 'canadacentral', role: 'expected-region' },
+          { databaseName: 'mystery', role: 'unknown-role' }
+        ]
+      }
+      expect(wrapper.vm.databaseChecks.map((db) => db.role)).toEqual([
+        'expected-region',
+        'central',
+        'other-region',
+        'unknown-role'
+      ])
+    })
+
+    it('does not mutate the original report.databaseChecks array', () => {
+      const wrapper = createWrapper()
+      const original = [
+        { databaseName: 'central', role: 'central' },
+        { databaseName: 'canadacentral', role: 'expected-region' }
+      ]
+      wrapper.vm.report = { databaseChecks: original }
+      wrapper.vm.databaseChecks
+      expect(original.map((db) => db.role)).toEqual(['central', 'expected-region'])
+    })
+  })
+
   describe('arrays defaulting to empty', () => {
     it('returns empty arrays when report fields are missing or non-array', () => {
       const wrapper = createWrapper()
@@ -207,6 +333,7 @@ describe('SovereigntyReportDrawer.vue', () => {
       expect(wrapper.vm.databaseChecks).toEqual([])
       expect(wrapper.vm.violations).toEqual([])
       expect(wrapper.vm.evidenceTrail).toEqual([])
+      expect(wrapper.vm.piiFieldsConsidered).toEqual([])
     })
 
     it('returns null when audit metadata or conclusion is missing', () => {
@@ -214,6 +341,40 @@ describe('SovereigntyReportDrawer.vue', () => {
       wrapper.vm.report = {}
       expect(wrapper.vm.auditMetadata).toBeNull()
       expect(wrapper.vm.auditConclusion).toBeNull()
+    })
+  })
+
+  describe('piiFieldsConsidered', () => {
+    it('returns the array of PII field names from validationLogic', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = {
+        validationLogic: {
+          piiFieldsConsidered: ['Email', 'FirstName', 'LastName']
+        }
+      }
+      expect(wrapper.vm.piiFieldsConsidered).toEqual(['Email', 'FirstName', 'LastName'])
+    })
+
+    it('returns an empty array when piiFieldsConsidered is missing or non-array', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { validationLogic: { piiFieldsConsidered: 'not-an-array' } }
+      expect(wrapper.vm.piiFieldsConsidered).toEqual([])
+    })
+  })
+
+  describe('overallPassCondition', () => {
+    it('returns the compound pass condition from validationLogic', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = {
+        validationLogic: { overallPassCondition: 'R1 AND R2 AND R3' }
+      }
+      expect(wrapper.vm.overallPassCondition).toBe('R1 AND R2 AND R3')
+    })
+
+    it('returns an empty string when missing', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { validationLogic: {} }
+      expect(wrapper.vm.overallPassCondition).toBe('')
     })
   })
 
@@ -225,7 +386,7 @@ describe('SovereigntyReportDrawer.vue', () => {
 
     it('humanizeRole maps known roles and passes others through', () => {
       expect(wrapper.vm.humanizeRole('central')).toBe('Central')
-      expect(wrapper.vm.humanizeRole('expected-region')).toBe('Expected region')
+      expect(wrapper.vm.humanizeRole('expected-region')).toBe('Selected region')
       expect(wrapper.vm.humanizeRole('other-region')).toBe('Other region')
       expect(wrapper.vm.humanizeRole('something-else')).toBe('something-else')
       expect(wrapper.vm.humanizeRole('')).toBe('')
