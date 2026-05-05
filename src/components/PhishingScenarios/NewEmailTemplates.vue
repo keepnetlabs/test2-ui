@@ -875,6 +875,15 @@ export default {
     handleUploadEmailButtonClick() {
       this?.$refs?.refInputFileUpload?.click()
     },
+    replaceImportedEmailAnchorHrefs(template = '') {
+      if (!template || typeof template !== 'string') return template
+      return template.replace(/<a\b[^>]*>/gi, (anchorTag) =>
+        anchorTag.replace(/\s+href\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/i, (hrefAttribute) => {
+          const [, prefix = ' href='] = hrefAttribute.match(/^(\s+href\s*=\s*)/i) || []
+          return `${prefix}"{PHISHINGURL}"`
+        })
+      )
+    },
     handleFileUpload(e) {
       const { files } = e.target
       if (files.length) {
@@ -885,6 +894,7 @@ export default {
             data: { data }
           } = response
           let { from, fromName, subject, attachments, body } = data
+          body = this.replaceImportedEmailAnchorHrefs(body)
           this.languagesPayload.forEach((item) => {
             item.template = body
             item.subject = subject
