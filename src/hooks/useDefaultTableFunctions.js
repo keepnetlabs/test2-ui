@@ -1,5 +1,5 @@
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
-import { columnFilterChanged, columnFilterCleared, normalizeSearchFilterItems } from '@/utils/helperFunctions'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { normalizeSearchFilterItems, resolveApiDurationFieldName } from '@/utils/searchFilterNormalize'
 
 export default {
   methods: {
@@ -29,8 +29,7 @@ export default {
     },
     sortChanged({ order, prop } = {}) {
       this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy =
-        prop === PROPERTY_STORE.TOTAL_DURATION ? 'DurationMinutes' : prop
+      this.axiosPayload.orderBy = resolveApiDurationFieldName(prop)
       this.callForData()
     },
     resetPageNumber() {
