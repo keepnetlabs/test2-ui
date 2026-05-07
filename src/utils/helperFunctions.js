@@ -1,4 +1,6 @@
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { resolveApiDurationFieldName } from '@/utils/searchFilterNormalize'
+
+export { resolveApiDurationFieldName, normalizeSearchFilterItems } from '@/utils/searchFilterNormalize'
 
 export function getAvailableForListFromBackend(list = []) {
   return list.map((item) => {
@@ -55,21 +57,6 @@ export function getAvailableForValues(data) {
   })
 }
 
-/** API expects DurationMinutes; never send totalDuration / TotalDuration on the wire. */
-export function resolveApiDurationFieldName(fieldName) {
-  if (fieldName == null) return fieldName
-  const n = String(fieldName)
-  if (n === PROPERTY_STORE.TOTAL_DURATION || n === 'TotalDuration') return 'DurationMinutes'
-  return fieldName
-}
-
-export function normalizeSearchFilterItems(filterItems = []) {
-  return filterItems.map((item) => ({
-    ...item,
-    FieldName: resolveApiDurationFieldName(item.FieldName)
-  }))
-}
-
 export function getAvailableForValueFromList(list = []) {
   let makeAvailableForValue = [
     {
@@ -97,7 +84,7 @@ export function columnFilterChanged(filter = {}, axiosPayload = {}) {
       }))
     : {
         ...filter,
-        FieldName: resolveApiDurationFieldName(filter.FieldName)
+        FieldName: resolveApiDurationFieldName(filter.FieldName ?? filter.fieldName)
       }
 
   let items = []

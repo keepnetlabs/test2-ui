@@ -1,9 +1,5 @@
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
-
-const resolveEnrollmentPayloadKey = (key) => {
-  if (key === PROPERTY_STORE.TOTAL_DURATION) return 'DurationMinutes'
-  return key
-}
+import { resolveApiDurationFieldName } from '@/utils/searchFilterNormalize'
 
 export default {
   props: {
@@ -72,7 +68,7 @@ export default {
   methods: {
     sortChanged({ order, prop } = {}) {
       this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = resolveEnrollmentPayloadKey(prop)
+      this.axiosPayload.orderBy = resolveApiDurationFieldName(prop)
       this.callForData()
     }
   }
