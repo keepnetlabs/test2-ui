@@ -1,3 +1,5 @@
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+
 export function getAvailableForListFromBackend(list = []) {
   return list.map((item) => {
     let { typeName, targetName, targetResourceId } = item
@@ -53,6 +55,21 @@ export function getAvailableForValues(data) {
   })
 }
 
+/** API expects DurationMinutes; never send totalDuration / TotalDuration on the wire. */
+export function resolveApiDurationFieldName(fieldName) {
+  if (fieldName == null) return fieldName
+  const n = String(fieldName)
+  if (n === PROPERTY_STORE.TOTAL_DURATION || n === 'TotalDuration') return 'DurationMinutes'
+  return fieldName
+}
+
+export function normalizeSearchFilterItems(filterItems = []) {
+  return filterItems.map((item) => ({
+    ...item,
+    FieldName: resolveApiDurationFieldName(item.FieldName)
+  }))
+}
+
 export function getAvailableForValueFromList(list = []) {
   let makeAvailableForValue = [
     {
@@ -69,31 +86,42 @@ export function getAvailableForValueFromList(list = []) {
   return makeAvailableForValue
 }
 export function columnFilterChanged(filter = {}, axiosPayload = {}) {
+  if (Array.isArray(filter) && filter.length === 0) {
+    return []
+  }
+
+  const normalizedFilter = Array.isArray(filter)
+    ? filter.map((item) => ({
+        ...item,
+        FieldName: resolveApiDurationFieldName(item.FieldName ?? item.fieldName)
+      }))
+    : {
+        ...filter,
+        FieldName: resolveApiDurationFieldName(filter.FieldName)
+      }
+
   let items = []
   let requestBody = axiosPayload.filter.FilterGroups[0].FilterItems
   requestBody.map((x) => {
-    if (Array.isArray(filter)) {
-      filter.forEach((i) => {
-        if (x.FieldName !== i.FieldName) {
-          items.push(x)
-        }
-      })
-    } else if (x.FieldName !== filter.FieldName) {
+    if (Array.isArray(normalizedFilter)) {
+      const replacedFields = new Set(
+        normalizedFilter.map((i) => resolveApiDurationFieldName(i.FieldName))
+      )
+      if (!replacedFields.has(resolveApiDurationFieldName(x.FieldName))) {
+        items.push(x)
+      }
+    } else if (resolveApiDurationFieldName(x.FieldName) !== normalizedFilter.FieldName) {
       items.push(x)
     }
   })
 
   requestBody = [...items]
-  if (Array.isArray(filter)) {
-    filter.forEach((x, i) => {
-      const elem = filter[i]
-      elem.FieldName = filter[i].FieldName
+  if (Array.isArray(normalizedFilter)) {
+    normalizedFilter.forEach((elem) => {
       requestBody.push(elem)
     })
   } else {
-    const elem = filter
-    elem.FieldName = filter.FieldName
-    requestBody.push(elem)
+    requestBody.push(normalizedFilter)
   }
 
   return requestBody
@@ -102,9 +130,10 @@ export function columnFilterChanged(filter = {}, axiosPayload = {}) {
 export function columnFilterCleared(fieldName = '', axiosPayload = {}) {
   let items = []
   let filterPayload = axiosPayload.filter.FilterGroups[0].FilterItems
+  const resolvedClearName = resolveApiDurationFieldName(fieldName)
 
   filterPayload.map((x) => {
-    if (x.FieldName !== fieldName) {
+    if (resolveApiDurationFieldName(x.FieldName) !== resolvedClearName) {
       items.push(x)
     }
   })

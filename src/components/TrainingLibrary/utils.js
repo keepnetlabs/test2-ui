@@ -164,7 +164,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: TRAINING_DURATION_FILTER_ITEMS
+    filterableItems: TRAINING_DURATION_FILTER_ITEMS,
+    filterableCustomFieldName: 'DurationMinutes'
   },
   LEARNING_PATH_DURATION: {
     property: PROPERTY_STORE.TOTAL_DURATION,
@@ -176,7 +177,8 @@ export const TRAINING_LIBRARY_COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'select',
-    filterableItems: TRAINING_DURATION_FILTER_ITEMS
+    filterableItems: TRAINING_DURATION_FILTER_ITEMS,
+    filterableCustomFieldName: 'DurationMinutes'
   },
   CATEGORY: {
     property: PROPERTY_STORE.CATEGORY,
