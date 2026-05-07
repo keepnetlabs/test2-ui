@@ -87,6 +87,24 @@ describe('useEnrollmentTableFilters', () => {
     expect(ctx.callForData).toHaveBeenCalledTimes(1)
   })
 
+  it('sortChanged maps TotalDuration (PascalCase) orderBy to DurationMinutes', () => {
+    const ctx = {
+      axiosPayload: {},
+      callForData: jest.fn()
+    }
+
+    methods.sortChanged.call(ctx, {
+      order: 'descending',
+      prop: 'TotalDuration'
+    })
+
+    expect(ctx.axiosPayload).toEqual({
+      ascending: false,
+      orderBy: 'DurationMinutes'
+    })
+    expect(ctx.callForData).toHaveBeenCalledTimes(1)
+  })
+
   it('sortChanged keeps non-duration orderBy unchanged', () => {
     const ctx = {
       axiosPayload: {},
