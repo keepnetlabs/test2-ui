@@ -1,4 +1,5 @@
 import tableFilterMixin from '@/components/TrainingLibrary/mixins/tableFilterMixin'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('tableFilterMixin methods', () => {
   const methods = tableFilterMixin.methods
@@ -6,10 +7,12 @@ describe('tableFilterMixin methods', () => {
   it('maps filter keys both directions', () => {
     expect(methods.getFilterKey('vendorName')).toBe('vendor')
     expect(methods.getFilterKey('roles')).toBe('targetAudience')
+    expect(methods.getFilterKey('DurationMinutes')).toBe(PROPERTY_STORE.TOTAL_DURATION)
     expect(methods.getFilterKey('status')).toBe('status')
 
     expect(methods.getTableFieldName('vendor')).toBe('vendorName')
     expect(methods.getTableFieldName('targetAudience')).toBe('roles')
+    expect(methods.getTableFieldName(PROPERTY_STORE.TOTAL_DURATION)).toBe('DurationMinutes')
     expect(methods.getTableFieldName('status')).toBe('status')
   })
 
@@ -34,6 +37,32 @@ describe('tableFilterMixin methods', () => {
     expect(activeFilter.activeValue).toBe('Acme')
     expect(activeFilter.activeOperator).toBe('Contains')
     expect(ctx.setFilterToPayload).toHaveBeenCalledWith(activeFilter)
+  })
+
+  it('columnFilterChanged resolves DurationMinutes to totalDuration filter key', () => {
+    const durationFilter = {
+      key: PROPERTY_STORE.TOTAL_DURATION,
+      filterType: 'search',
+      activeValue: []
+    }
+    const ctx = {
+      filters: [durationFilter],
+      getFilterKey: methods.getFilterKey,
+      setFilterToPayload: jest.fn(),
+      $set: (obj, key, value) => {
+        obj[key] = value
+      }
+    }
+
+    methods.columnFilterChanged.call(ctx, {
+      FieldName: 'DurationMinutes',
+      Value: '5-15,15-30',
+      Operator: 'Include'
+    })
+
+    expect(durationFilter.isFilterActive).toBe(true)
+    expect(durationFilter.activeValue).toEqual(['5-15', '15-30'])
+    expect(ctx.setFilterToPayload).toHaveBeenCalledWith(durationFilter)
   })
 
   it('columnFilterChanged maps Include operator to array and supports filter array input', () => {
@@ -141,6 +170,104 @@ describe('tableFilterMixin methods', () => {
     expect(ctx.removeFilterFromPayload).not.toHaveBeenCalled()
   })
 
+  it('columnFilterChanged resolves TotalDuration FieldName to duration store filter', () => {
+    const durationFilter = {
+      key: PROPERTY_STORE.TOTAL_DURATION,
+      filterType: 'search',
+      activeValue: []
+    }
+    const ctx = {
+      filters: [durationFilter],
+      getFilterKey: methods.getFilterKey,
+      setFilterToPayload: jest.fn(),
+      $set: (obj, key, value) => {
+        obj[key] = value
+      }
+    }
+
+    methods.columnFilterChanged.call(ctx, {
+      FieldName: 'TotalDuration',
+      Value: '30-60',
+      Operator: 'Include'
+    })
+
+    expect(durationFilter.isFilterActive).toBe(true)
+    expect(ctx.setFilterToPayload).toHaveBeenCalledWith(durationFilter)
+  })
+
+  it('columnFilterCleared clears duration filter when FieldName is DurationMinutes', () => {
+    const durationFilter = {
+      key: PROPERTY_STORE.TOTAL_DURATION,
+      filterType: 'search',
+      value: ['5-15'],
+      activeValue: ['5-15'],
+      operator: 'Include',
+      activeOperator: 'Include',
+      isFilterActive: true
+    }
+    const ctx = {
+      filters: [durationFilter],
+      getFilterKey: methods.getFilterKey,
+      removeFilterFromPayload: jest.fn(),
+      $set: (obj, key, value) => {
+        obj[key] = value
+      }
+    }
+
+    methods.columnFilterCleared.call(ctx, 'DurationMinutes')
+
+    expect(durationFilter.isFilterActive).toBe(false)
+    expect(durationFilter.activeValue).toEqual([])
+    expect(ctx.removeFilterFromPayload).toHaveBeenCalledWith(durationFilter)
+  })
+
+  it('columnFilterCleared clears duration filter when clear field is TotalDuration', () => {
+    const durationFilter = {
+      key: PROPERTY_STORE.TOTAL_DURATION,
+      filterType: 'search',
+      value: ['5-15'],
+      activeValue: ['5-15'],
+      operator: 'Include',
+      activeOperator: 'Include',
+      isFilterActive: true
+    }
+    const ctx = {
+      filters: [durationFilter],
+      getFilterKey: methods.getFilterKey,
+      removeFilterFromPayload: jest.fn(),
+      $set: (obj, key, value) => {
+        obj[key] = value
+      }
+    }
+
+    methods.columnFilterCleared.call(ctx, 'TotalDuration')
+
+    expect(durationFilter.isFilterActive).toBe(false)
+    expect(ctx.removeFilterFromPayload).toHaveBeenCalledWith(durationFilter)
+  })
+
+  it('addFilterToTable maps duration Contains branch to DurationMinutes key', () => {
+    const reRenderFilters = jest.fn()
+    const ctx = {
+      filters: [
+        {
+          key: PROPERTY_STORE.TOTAL_DURATION,
+          activeOperator: 'Contains',
+          activeValue: 'typed'
+        }
+      ],
+      getTableFieldName: methods.getTableFieldName,
+      $refs: { refTable: { reRenderFilters } }
+    }
+
+    methods.addFilterToTable.call(ctx)
+
+    const payload = reRenderFilters.mock.calls[0][0]
+    expect(payload.DurationMinutes.fieldName).toBe('DurationMinutes')
+    expect(payload.DurationMinutes.selectValue).toBe('Contains')
+    expect(payload.DurationMinutes.textValue).toBe('typed')
+  })
+
   it('addFilterToTable sends mapped filter object to refTable', () => {
     const reRenderFilters = jest.fn()
     const ctx = {
@@ -159,6 +286,27 @@ describe('tableFilterMixin methods', () => {
     expect(payload.vendorName.fieldName).toBe('vendorName')
     expect(payload.vendorName.selectValue).toBe('Contains')
     expect(payload.status.selectValue).toBe('Active')
+  })
+
+  it('addFilterToTable maps totalDuration filter key to DurationMinutes for table state', () => {
+    const reRenderFilters = jest.fn()
+    const ctx = {
+      filters: [
+        {
+          key: PROPERTY_STORE.TOTAL_DURATION,
+          activeOperator: 'Include',
+          activeValue: ['5-15']
+        }
+      ],
+      getTableFieldName: methods.getTableFieldName,
+      $refs: { refTable: { reRenderFilters } }
+    }
+
+    methods.addFilterToTable.call(ctx)
+
+    const payload = reRenderFilters.mock.calls[0][0]
+    expect(payload.DurationMinutes.fieldName).toBe('DurationMinutes')
+    expect(payload.DurationMinutes.selectValue).toBe('5-15')
   })
 
   it('addFilterToTable handles unknown operator and missing refTable safely', () => {

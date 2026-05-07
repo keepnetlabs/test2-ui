@@ -429,7 +429,7 @@ describe('Helper Functions Utility', () => {
       const newFilter = { FieldName: 'Type', Value: 'Admin' }
 
       const result = columnFilterChanged(newFilter, axiosPayload)
-      expect(result).toContain(newFilter)
+      expect(result).toContainEqual(newFilter)
     })
 
     it('should replace existing filter with same field name', () => {
