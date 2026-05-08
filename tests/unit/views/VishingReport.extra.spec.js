@@ -17,6 +17,20 @@ describe('VishingReport.vue (extra)', () => {
     expect(VishingReport.computed.getVishingName.call(ctx)).toBe('Vishing Name')
   })
 
+  it('getVishingName uses store common activePageRouterName when set', () => {
+    const ctx = {
+      $store: {
+        state: { common: { activePageRouterName: 'Q4 Vishing Report' } }
+      }
+    }
+    expect(VishingReport.computed.getVishingName.call(ctx)).toBe('Q4 Vishing Report')
+  })
+
+  it('computed id returns campaign id from route params', () => {
+    const ctx = { $route: { params: { id: 'campaign-resource-42' } } }
+    expect(VishingReport.computed.id.call(ctx)).toBe('campaign-resource-42')
+  })
+
   it('callForCustomFields maps response into customFields', async () => {
     getTargetUserCustomFieldsByCompanyId.mockResolvedValueOnce({ data: { data: [{ key: 'x' }] } })
     const ctx = { customFields: [] }

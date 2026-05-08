@@ -50,10 +50,25 @@ describe('VishingReportSummaryHeader.vue', () => {
     expect(wrapper.emitted('on-resend')).toBeTruthy()
   })
 
+  it('handleOnConfirmResend uses id prop for resend request', async () => {
+    const wrapper = mountComponent({ id: 'report-id-xyz' })
+    wrapper.vm.handleOnConfirmResend([9])
+    await Promise.resolve()
+    expect(resendVishingReport).toHaveBeenCalledWith('report-id-xyz', { types: [9] })
+  })
+
   it('handleDownloadReport calls export and creates download link', async () => {
     const wrapper = mountComponent()
     wrapper.vm.handleDownloadReport()
     await wrapper.vm.$nextTick()
     expect(exportVishingReportSummary).toHaveBeenCalledWith('v1')
+  })
+
+  it('handleDownloadReport uses id prop for export request', async () => {
+    const wrapper = mountComponent({ id: 'export-campaign-7' })
+    wrapper.vm.handleDownloadReport()
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+    expect(exportVishingReportSummary).toHaveBeenCalledWith('export-campaign-7')
   })
 })

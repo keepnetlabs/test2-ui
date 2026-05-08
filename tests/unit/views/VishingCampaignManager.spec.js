@@ -85,10 +85,35 @@ describe('VishingCampaignManager.vue', () => {
     expect(wrapper.vm.serverSideProps.pageNumber).toBe(2)
   })
 
+  it('callForData clears table and loading when getVishingCampaigns rejects', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    getVishingCampaigns.mockRejectedValueOnce(new Error('fail'))
+    wrapper.setData({ tableData: [{ resourceId: 'stale' }], loading: false })
+
+    wrapper.vm.callForData()
+    await flushPromises()
+
+    expect(wrapper.vm.tableData).toEqual([])
+    expect(wrapper.vm.loading).toBe(false)
+  })
+
   it('callForLanguages falls back to empty array when api payload is missing', async () => {
     const wrapper = createWrapper()
     wrapper.setData({ languages: [{ language: 'old', code: 'old' }] })
     getVishingTemplateLanguages.mockResolvedValueOnce({ data: {} })
+
+    await wrapper.vm.callForLanguages()
+    await flushPromises()
+
+    expect(wrapper.vm.languages).toEqual([])
+  })
+
+  it('callForLanguages clears languages when getVishingTemplateLanguages rejects', async () => {
+    const wrapper = createWrapper()
+    await flushPromises()
+    getVishingTemplateLanguages.mockRejectedValueOnce(new Error('fail'))
+    wrapper.setData({ languages: [{ language: 'L', code: 'l' }] })
 
     await wrapper.vm.callForLanguages()
     await flushPromises()
@@ -109,6 +134,29 @@ describe('VishingCampaignManager.vue', () => {
 
     wrapper.vm.callForData()
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/')
+  })
+
+  it('onToggleShowPreviewModal clears selectedRow when closing preview', () => {
+    const wrapper = createWrapper()
+    wrapper.setData({
+      isPreviewVisible: true,
+      selectedRow: { resourceId: 'close-me', status: 'Running' }
+    })
+    wrapper.vm.onToggleShowPreviewModal()
+    expect(wrapper.vm.isPreviewVisible).toBe(false)
+    expect(wrapper.vm.selectedRow).toBe(null)
+  })
+
+  it('onToggleShowPreviewModal keeps selectedRow when opening from closed', () => {
+    const wrapper = createWrapper()
+    const row = { resourceId: 'keep-me', status: 'Scheduled' }
+    wrapper.setData({
+      isPreviewVisible: false,
+      selectedRow: row
+    })
+    wrapper.vm.onToggleShowPreviewModal()
+    expect(wrapper.vm.isPreviewVisible).toBe(true)
+    expect(wrapper.vm.selectedRow).toEqual(row)
   })
 
   it('handles launch/stop/preview toggle flows and row selection', () => {
@@ -308,6 +356,21 @@ describe('VishingCampaignManager.vue', () => {
     expect(wrapper.vm.isMultipleDelete).toBe(false)
   })
 
+  it('onToggleShowDeleteModal opening from closed keeps selected row and multiple flag', () => {
+    const wrapper = createWrapper()
+    const row = { resourceId: 'row-keep' }
+    wrapper.setData({
+      isDeleteModalVisible: false,
+      selectedRow: row,
+      isMultipleDelete: true
+    })
+
+    wrapper.vm.onToggleShowDeleteModal()
+    expect(wrapper.vm.isDeleteModalVisible).toBe(true)
+    expect(wrapper.vm.selectedRow).toEqual(row)
+    expect(wrapper.vm.isMultipleDelete).toBe(true)
+  })
+
   it('handles duplicate edit mode and status badge passthrough', () => {
     const wrapper = createWrapper()
     const row = { resourceId: 'dup-1' }
@@ -335,6 +398,36 @@ describe('VishingCampaignManager.vue', () => {
     wrapper.setData({ selectedRow: { status: 'Completed' } })
     expect(wrapper.vm.isPreviewEditButtonVisible).toBe(false)
     expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(false)
+
+    wrapper.setData({ selectedRow: { status: 'Idle' } })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBe(true)
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(true)
+
+    wrapper.setData({ selectedRow: null })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBeFalsy()
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBeFalsy()
+
+    wrapper.setData({ selectedRow: { status: 'Cancelled' } })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBe(false)
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(false)
+
+    wrapper.setData({ selectedRow: { status: 'Error' } })
+    expect(wrapper.vm.isPreviewEditButtonVisible).toBe(false)
+    expect(wrapper.vm.isPreviewDuplicateButtonVisible).toBe(false)
+  })
+
+  it('handlePreview when drawer already open clears row and closes (toggle + clear)', () => {
+    const wrapper = createWrapper()
+    const row1 = { resourceId: 'r-open-1', status: 'Running' }
+    const row2 = { resourceId: 'r-open-2', status: 'Scheduled' }
+
+    wrapper.vm.handlePreview(row1)
+    expect(wrapper.vm.isPreviewVisible).toBe(true)
+    expect(wrapper.vm.selectedRow).toEqual(row1)
+
+    wrapper.vm.handlePreview(row2)
+    expect(wrapper.vm.isPreviewVisible).toBe(false)
+    expect(wrapper.vm.selectedRow).toBe(null)
   })
 
   it('handles preview edit and duplicate transitions', () => {

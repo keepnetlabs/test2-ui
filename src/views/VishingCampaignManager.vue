@@ -419,15 +419,22 @@ export default {
             const { results = [] } = data
             this.tableData = results
           })
+          .catch(() => {
+            this.tableData = []
+          })
           .finally(() => (this.loading = false))
       } else {
         this.$router.push('/')
       }
     },
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
-        this.languages = response?.data?.data || []
-      })
+      getVishingTemplateLanguages()
+        .then((response) => {
+          this.languages = response?.data?.data || []
+        })
+        .catch(() => {
+          this.languages = []
+        })
     },
     toggleShowLaunchDialog(forceUpdate = false) {
       if (forceUpdate) this.callForData()

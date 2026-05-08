@@ -22,6 +22,8 @@ describe('VishingCampaignManager utils', () => {
     it('returns undefined for unknown status', () => {
       expect(getStatusBadgeProps('Unknown')).toBeUndefined()
       expect(getStatusBadgeProps('')).toBeUndefined()
+      expect(getStatusBadgeProps(null)).toBeUndefined()
+      expect(getStatusBadgeProps(undefined)).toBeUndefined()
     })
   })
 

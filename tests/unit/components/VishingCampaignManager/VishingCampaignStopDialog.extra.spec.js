@@ -27,6 +27,20 @@ describe('VishingCampaignStopDialog.vue (extra coverage)', () => {
     expect(wrapper.emitted('on-cancel')).toEqual([[true]])
   })
 
+  it('handleClose emits on-cancel with false when argument omitted', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.handleClose()
+    expect(wrapper.emitted('on-cancel')).toEqual([[false]])
+  })
+
+  it('handleStop does not emit on-cancel when stopVishingCampaign rejects', async () => {
+    stopVishingCampaign.mockRejectedValueOnce(new Error('network'))
+    const wrapper = createWrapper({ selectedRow: { resourceId: 'r-fail' } })
+    wrapper.vm.handleStop()
+    await new Promise((r) => setTimeout(r, 0))
+    expect(wrapper.emitted('on-cancel')).toBeFalsy()
+  })
+
   it('handleStop calls stopVishingCampaign and emits on-cancel', async () => {
     const wrapper = createWrapper({ selectedRow: { resourceId: 'r1' } })
     wrapper.vm.handleStop()

@@ -69,16 +69,17 @@
         <DatatableLoading v-if="isLoading" :loading="isLoading" />
         <div v-else class="template-preview">
           <div v-if="showTemplateInfo" class="template-preview__text mb-4">
-            <div v-if="showTemplateName">
+            <div v-if="showTemplateName && templateData">
               <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
             </div>
-            <div v-if="templateData.senderPhoneNumber">
+            <div v-if="templateData && templateData.senderPhoneNumber">
               <span class="template-preview__text--body">
                 Sender Phone Number: {{ templateData.senderPhoneNumber }}
               </span>
             </div>
           </div>
           <VishingTemplatePreviewSteps
+            v-if="templateData"
             :template="templateData"
             :isTextToSpeechCompatible="isTextToSpeechCompatible || campaignTextToSpeechCompatible"
             :voiceResourceId="voiceResourceId || campaignVoiceResourceId"
@@ -227,6 +228,7 @@ export default {
             }
           }
         })
+        .catch(() => {})
         .finally(() => {
           this.isLoading = false
         })

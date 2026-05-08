@@ -13,6 +13,7 @@ describe('VishingRoute.vue', () => {
     expect(wrapper.exists()).toBe(true)
     expect(wrapper.vm.$options.name).toBe('VishingRoute')
     expect(push).toHaveBeenCalledWith({ name: 'Vishing Templates' })
+    expect(push).toHaveBeenCalledTimes(1)
 
     wrapper.destroy()
   })
