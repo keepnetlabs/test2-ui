@@ -7,7 +7,8 @@ jest.mock('@/api/phishingsimulator', () => ({
   calculateSendingInfo: jest.fn(),
   getDefaultCompanySmtpSetting: jest.fn(),
   getDefaultEmailDeliverySetting: jest.fn(),
-  getEmailDeliveries: jest.fn()
+  getEmailDeliveries: jest.fn(),
+  getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId: jest.fn()
 }))
 
 jest.mock('@/api/callback', () => ({
@@ -15,7 +16,8 @@ jest.mock('@/api/callback', () => ({
   default: {
     calculateSendingInfo: jest.fn(),
     getDefaultCompanySmtpSetting: jest.fn(),
-    getEmailDeliverySettings: jest.fn()
+    getEmailDeliverySettings: jest.fn(),
+    getCallbackScenarioPreview: jest.fn()
   }
 }))
 
@@ -24,7 +26,8 @@ jest.mock('@/api/quishing', () => ({
   default: {
     calculateSendingInfo: jest.fn(),
     getDefaultCompanySmtpSetting: jest.fn(),
-    getEmailDeliveries: jest.fn()
+    getEmailDeliveries: jest.fn(),
+    getQuishingScenarioLandingPageAndEmailTemplate: jest.fn()
   }
 }))
 
@@ -50,7 +53,8 @@ import {
   calculateSendingInfo,
   getDefaultCompanySmtpSetting,
   getDefaultEmailDeliverySetting,
-  getEmailDeliveries
+  getEmailDeliveries,
+  getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
 } from '@/api/phishingsimulator'
 import CallbackService from '@/api/callback'
 import QuishingService from '@/api/quishing'
@@ -59,6 +63,7 @@ import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSetti
 import { DISTRIBUTION_START_TYPES, DISTRIBUTION_TYPES } from '@/components/SmishingCampaignManager/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -241,6 +246,152 @@ describe('CampaignManagerDeliverySettings.vue', () => {
     expect(qCtx.formData.emailDeliverySettingType).toBe(EMAIL_DELIVERY_TYPES.SMTP)
   })
 
+  describe('resolveTestEmailContentForScenario', () => {
+    it('returns null when resourceId is missing', async () => {
+      const r = await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.PHISHING },
+        {}
+      )
+      expect(r).toBeNull()
+    })
+
+    it('phishing: maps emailTemplate fields', async () => {
+      getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId.mockResolvedValueOnce({
+        data: {
+          data: {
+            emailTemplate: {
+              template: '<p>x</p>',
+              fromName: 'Fn',
+              fromAddress: 'fa@test.com'
+            }
+          }
+        }
+      })
+      const r = await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.PHISHING },
+        { resourceId: 'ph-1' }
+      )
+      expect(getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId).toHaveBeenCalledWith(
+        'ph-1'
+      )
+      expect(r).toEqual({
+        template: '<p>x</p>',
+        fromName: 'Fn',
+        fromAddress: 'fa@test.com'
+      })
+    })
+
+    it('phishing: falls back to quishingTemplate when emailTemplate absent', async () => {
+      getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId.mockResolvedValueOnce({
+        data: {
+          data: {
+            quishingTemplate: {
+              template: 'qt',
+              fromName: 'Q',
+              fromAddress: 'q@test.com'
+            }
+          }
+        }
+      })
+      const r = await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.PHISHING },
+        { resourceId: 'ph-2' }
+      )
+      expect(r).toEqual({ template: 'qt', fromName: 'Q', fromAddress: 'q@test.com' })
+    })
+
+    it('quishing: replaces QRCODE placeholder and calls preview API', async () => {
+      QuishingService.getQuishingScenarioLandingPageAndEmailTemplate.mockResolvedValueOnce({
+        data: {
+          data: {
+            emailTemplate: {
+              template: '<img src="{QRCODEURLIMAGE}" />',
+              fromName: 'Qn',
+              fromAddress: 'qn@test.com'
+            }
+          }
+        }
+      })
+      const r = await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.QUISHING },
+        { resourceId: 'qu-1' }
+      )
+      expect(QuishingService.getQuishingScenarioLandingPageAndEmailTemplate).toHaveBeenCalledWith(
+        'qu-1'
+      )
+      expect(r?.template).toBe(`<img src="${qrCodeString}" />`)
+      expect(r?.fromName).toBe('Qn')
+    })
+
+    it('quishing: falls back to quishingTemplate when emailTemplate absent', async () => {
+      QuishingService.getQuishingScenarioLandingPageAndEmailTemplate.mockResolvedValueOnce({
+        data: {
+          data: {
+            quishingTemplate: {
+              template: 'qt-body',
+              fromName: 'QF',
+              fromAddress: 'qf@test.com'
+            }
+          }
+        }
+      })
+      const r = await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.QUISHING },
+        { resourceId: 'qu-fallback' }
+      )
+      expect(r).toEqual({
+        template: 'qt-body',
+        fromName: 'QF',
+        fromAddress: 'qf@test.com'
+      })
+    })
+
+    it('quishing: individual printout passes template type to preview API', async () => {
+      QuishingService.getQuishingScenarioLandingPageAndEmailTemplate.mockResolvedValueOnce({
+        data: {
+          data: {
+            emailTemplate: { template: 'p', fromName: 'a', fromAddress: 'b@c.com' }
+          }
+        }
+      })
+      await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.QUISHING },
+        {
+          resourceId: 'qu-print',
+          quishingType: QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+        }
+      )
+      expect(QuishingService.getQuishingScenarioLandingPageAndEmailTemplate).toHaveBeenCalledWith(
+        'qu-print',
+        QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT
+      )
+    })
+
+    it('callback: uses getCallbackScenarioPreview emailTemplate', async () => {
+      CallbackService.getCallbackScenarioPreview.mockResolvedValueOnce({
+        data: {
+          data: {
+            emailTemplate: {
+              template: 'cb-html',
+              fromName: 'Cb',
+              fromAddress: 'cb@test.com'
+            }
+          }
+        }
+      })
+      const r = await CampaignManagerDeliverySettings.methods.resolveTestEmailContentForScenario.call(
+        { type: SCENARIO_TYPES.CALLBACK },
+        { resourceId: 'cb-1' }
+      )
+      expect(CallbackService.getCallbackScenarioPreview).toHaveBeenCalledWith('cb-1')
+      expect(r).toEqual({
+        template: 'cb-html',
+        fromName: 'Cb',
+        fromAddress: 'cb@test.com'
+      })
+    })
+  })
+
   it('callForGetSmtpSetting maps response fields', async () => {
     getSmtpSettings.mockResolvedValueOnce({
       data: {
@@ -268,6 +419,26 @@ describe('CampaignManagerDeliverySettings.vue', () => {
     })
   })
 
+  it('callForTestConnection returns false and skips SMTP when no scenarios selected', async () => {
+    const ctx = {
+      emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
+      selectedPhishingScenarios: [],
+      formData: { smtpSettingResourceId: 'smtp-1' },
+      $emit: jest.fn(),
+      $nextTick: (cb) => cb(),
+      callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      isTestingConnection: false,
+      testEmailErrorMessage: '',
+      isShowSmtpInputError: false
+    }
+    const result = await CampaignManagerDeliverySettings.methods.callForTestConnection.call(ctx)
+    expect(result).toBe(false)
+    expect(ctx.testEmailErrorMessage).toMatch(/Select at least one phishing scenario/i)
+    expect(ctx.isShowSmtpInputError).toBe(true)
+    expect(testSmtpConnection).not.toHaveBeenCalled()
+    expect(ctx.$emit).toHaveBeenLastCalledWith('set-action-button-disability', false)
+  })
+
   it('callForTestConnection handles direct-email early return and smtp success', async () => {
     const directCtx = {
       emailDelivery: { type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL },
@@ -279,21 +450,30 @@ describe('CampaignManagerDeliverySettings.vue', () => {
     expect(directResult).toBeUndefined()
     expect(directCtx.$emit).not.toHaveBeenCalled()
 
+    QuishingService.getQuishingScenarioLandingPageAndEmailTemplate.mockResolvedValueOnce({
+      data: {
+        data: {
+          emailTemplate: {
+            fromAddress: 'from@x.com',
+            fromName: 'From Name',
+            template: `<div>${qrCodeString}</div>`
+          }
+        }
+      }
+    })
     testSmtpConnection.mockResolvedValueOnce({})
     const smtpCtx = {
       emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
       formData: { smtpSettingResourceId: 'smtp-1' },
-      selectedPhishingScenario: {
-        fromAddress: 'from@x.com',
-        fromName: 'From Name',
-        template: `<div>${qrCodeString}</div>`
-      },
+      selectedPhishingScenarios: [{ resourceId: 'sc-1' }],
       type: SCENARIO_TYPES.QUISHING,
       phishingTypeId: 2,
       $store: { state: { auth: { user: { email: 'to@x.com' } } } },
       $emit: jest.fn(),
       $nextTick: (cb) => cb(),
       callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
       isTestingConnection: false,
       isTestMailSend: false,
       isShowSmtpInputError: true,
@@ -318,19 +498,169 @@ describe('CampaignManagerDeliverySettings.vue', () => {
     expect(smtpCtx.$emit).toHaveBeenLastCalledWith('set-action-button-disability', false)
   })
 
+  it('callForTestConnection sends only one test email when multiple scenarios are selected', async () => {
+    getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId.mockResolvedValue({
+      data: { data: { emailTemplate: { fromAddress: 'a@x.com', fromName: 'A', template: 't' } } }
+    })
+    testSmtpConnection.mockResolvedValue({})
+    const ctx = {
+      emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
+      formData: { smtpSettingResourceId: 'smtp-1' },
+      selectedPhishingScenarios: [{ resourceId: 'first' }, { resourceId: 'second' }],
+      type: SCENARIO_TYPES.PHISHING,
+      phishingTypeId: 1,
+      $store: { state: { auth: { user: { email: 'to@x.com' } } } },
+      $emit: jest.fn(),
+      $nextTick: (cb) => cb(),
+      callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
+      isTestingConnection: false,
+      isTestMailSend: false,
+      isShowSmtpInputError: false,
+      testEmailErrorMessage: ''
+    }
+    await CampaignManagerDeliverySettings.methods.callForTestConnection.call(ctx)
+    expect(getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId).toHaveBeenCalledTimes(1)
+    expect(getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId).toHaveBeenCalledWith('first')
+    expect(testSmtpConnection).toHaveBeenCalledTimes(1)
+  })
+
+  it('callForTestConnection surfaces error when phishing preview API rejects', async () => {
+    getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId.mockRejectedValueOnce(
+      new Error('preview failed')
+    )
+    const ctx = {
+      emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
+      selectedPhishingScenarios: [{ resourceId: 'sc-1' }],
+      type: SCENARIO_TYPES.PHISHING,
+      phishingTypeId: 1,
+      $store: { state: { auth: { user: { email: 'to@x.com' } } } },
+      $emit: jest.fn(),
+      $nextTick: (cb) => cb(),
+      callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
+      isTestingConnection: false,
+      isTestMailSend: false,
+      isShowSmtpInputError: false,
+      testEmailErrorMessage: ''
+    }
+    await CampaignManagerDeliverySettings.methods.callForTestConnection.call(ctx)
+    expect(ctx.isShowSmtpInputError).toBe(true)
+    expect(ctx.testEmailErrorMessage).toMatch(/preview failed|SMTP setting|errors in the campaign/i)
+    expect(testSmtpConnection).not.toHaveBeenCalled()
+  })
+
+  it('callForTestConnection surfaces error when quishing preview API rejects', async () => {
+    QuishingService.getQuishingScenarioLandingPageAndEmailTemplate.mockRejectedValueOnce(
+      new Error('quishing preview timeout')
+    )
+    const ctx = {
+      emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
+      selectedPhishingScenarios: [{ resourceId: 'qu-x' }],
+      type: SCENARIO_TYPES.QUISHING,
+      phishingTypeId: 3,
+      $store: { state: { auth: { user: { email: 'to@x.com' } } } },
+      $emit: jest.fn(),
+      $nextTick: (cb) => cb(),
+      callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
+      isTestingConnection: false,
+      isTestMailSend: false,
+      isShowSmtpInputError: false,
+      testEmailErrorMessage: ''
+    }
+    await CampaignManagerDeliverySettings.methods.callForTestConnection.call(ctx)
+    expect(ctx.isShowSmtpInputError).toBe(true)
+    expect(testSmtpConnection).not.toHaveBeenCalled()
+  })
+
+  it('callForTestConnection surfaces error when callback preview API rejects', async () => {
+    CallbackService.getCallbackScenarioPreview.mockRejectedValueOnce(new Error('cb preview down'))
+    const ctx = {
+      emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
+      selectedPhishingScenarios: [{ resourceId: 'cb-x' }],
+      type: SCENARIO_TYPES.CALLBACK,
+      phishingTypeId: 4,
+      $store: { state: { auth: { user: { email: 'to@x.com' } } } },
+      $emit: jest.fn(),
+      $nextTick: (cb) => cb(),
+      callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
+      isTestingConnection: false,
+      isTestMailSend: false,
+      isShowSmtpInputError: false,
+      testEmailErrorMessage: ''
+    }
+    await CampaignManagerDeliverySettings.methods.callForTestConnection.call(ctx)
+    expect(ctx.isShowSmtpInputError).toBe(true)
+    expect(testSmtpConnection).not.toHaveBeenCalled()
+  })
+
+  it('callForTestConnection succeeds for CALLBACK using first selected scenario', async () => {
+    CallbackService.getCallbackScenarioPreview.mockResolvedValueOnce({
+      data: {
+        data: {
+          emailTemplate: {
+            fromAddress: 'cb@x.com',
+            fromName: 'Callback',
+            template: '<b>cb</b>'
+          }
+        }
+      }
+    })
+    testSmtpConnection.mockResolvedValueOnce({})
+    const ctx = {
+      emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
+      formData: { smtpSettingResourceId: 'smtp-1' },
+      selectedPhishingScenarios: [{ resourceId: 'cb-scen' }],
+      type: SCENARIO_TYPES.CALLBACK,
+      phishingTypeId: 4,
+      $store: { state: { auth: { user: { email: 'user@test.com' } } } },
+      $emit: jest.fn(),
+      $nextTick: (cb) => cb(),
+      callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
+      isTestingConnection: false,
+      isTestMailSend: false,
+      isShowSmtpInputError: false,
+      testEmailErrorMessage: ''
+    }
+    const result = await CampaignManagerDeliverySettings.methods.callForTestConnection.call(ctx)
+    expect(result).toBe(true)
+    expect(CallbackService.getCallbackScenarioPreview).toHaveBeenCalledWith('cb-scen')
+    expect(testSmtpConnection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        from: 'cb@x.com',
+        fromName: 'Callback',
+        phishingTypeId: 4
+      }),
+      'smtp-1'
+    )
+  })
+
   it('callForTestConnection handles smtp test failure and smtp setting retrieval failure', async () => {
+    getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId.mockResolvedValueOnce({
+      data: { data: { emailTemplate: { fromAddress: 'a', fromName: 'b', template: 'tpl' } } }
+    })
     testSmtpConnection.mockRejectedValueOnce({
       response: { data: { message: 'smtp send failed' } }
     })
     const failCtx = {
       emailDelivery: { type: EMAIL_DELIVERY_TYPES.SMTP },
-      selectedPhishingScenario: { fromAddress: 'a', fromName: 'b', template: 'tpl' },
+      selectedPhishingScenarios: [{ resourceId: 'sc-1' }],
       type: SCENARIO_TYPES.PHISHING,
       phishingTypeId: null,
       $store: { state: { auth: { user: { email: 'to@x.com' } } } },
       $emit: jest.fn(),
       $nextTick: (cb) => cb(),
       callForGetSmtpSetting: jest.fn().mockResolvedValue({ resourceId: 'smtp-1' }),
+      resolveTestEmailContentForScenario: CampaignManagerDeliverySettings.methods
+        .resolveTestEmailContentForScenario,
       isTestingConnection: false,
       isTestMailSend: false,
       isShowSmtpInputError: false,

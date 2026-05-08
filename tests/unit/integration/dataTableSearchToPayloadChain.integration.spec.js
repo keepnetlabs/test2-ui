@@ -5,6 +5,7 @@
 import DataTable from '@/components/DataTable.vue'
 import { normalizeSearchFilterItems } from '@/utils/searchFilterNormalize'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import useEnrollmentTableFilters from '@/hooks/enrollments/useEnrollmentTableFilters'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('DataTable search → normalize → enrollment-style payload (integration)', () => {
@@ -44,5 +45,60 @@ describe('DataTable search → normalize → enrollment-style payload (integrati
     expect(
       axiosPayload.filter.FilterGroups[1].FilterItems.every((i) => i.FieldName !== 'TotalDuration')
     ).toBe(true)
+  })
+
+  it('DataTable search → normalize → enrollment sortChanged maps totalDuration orderBy to DurationMinutes', () => {
+    const axiosPayload = getDefaultAxiosPayload({ pageSize: 25, orderBy: 'enrollmentName' })
+
+    const searchItems = DataTable.methods.getSearchFilterItems.call({
+      columns: [
+        { property: PROPERTY_STORE.TOTAL_DURATION },
+        { property: 'trainingName' }
+      ],
+      renderedColumns: [PROPERTY_STORE.TOTAL_DURATION, 'trainingName'],
+      search: 'mix'
+    })
+
+    axiosPayload.filter.FilterGroups[1].FilterItems = normalizeSearchFilterItems(searchItems)
+    axiosPayload.filter.SearchInputTextValue = 'mix'
+
+    useEnrollmentTableFilters.methods.sortChanged.call(
+      { axiosPayload, callForData: jest.fn() },
+      { order: 'ascending', prop: PROPERTY_STORE.TOTAL_DURATION }
+    )
+
+    expect(axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'DurationMinutes', Operator: 'Contains', Value: 'mix' },
+      { FieldName: 'TrainingName', Operator: 'Contains', Value: 'mix' }
+    ])
+    expect(axiosPayload.orderBy).toBe('DurationMinutes')
+    expect(axiosPayload.ascending).toBe(true)
+    expect(
+      axiosPayload.filter.FilterGroups[1].FilterItems.every((i) => i.FieldName !== 'TotalDuration')
+    ).toBe(true)
+  })
+
+  it('DataTable search → normalize → enrollment sortChanged with null prop clears orderBy', () => {
+    const axiosPayload = getDefaultAxiosPayload({ pageSize: 25, orderBy: 'trainingName' })
+
+    const searchItems = DataTable.methods.getSearchFilterItems.call({
+      columns: [{ property: PROPERTY_STORE.TOTAL_DURATION }, { property: 'trainingName' }],
+      renderedColumns: [PROPERTY_STORE.TOTAL_DURATION, 'trainingName'],
+      search: 'z'
+    })
+
+    axiosPayload.filter.FilterGroups[1].FilterItems = normalizeSearchFilterItems(searchItems)
+
+    useEnrollmentTableFilters.methods.sortChanged.call(
+      { axiosPayload, callForData: jest.fn() },
+      { order: 'descending', prop: null }
+    )
+
+    expect(axiosPayload.orderBy).toBeNull()
+    expect(axiosPayload.ascending).toBe(false)
+    expect(axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'DurationMinutes', Operator: 'Contains', Value: 'z' },
+      { FieldName: 'TrainingName', Operator: 'Contains', Value: 'z' }
+    ])
   })
 })
