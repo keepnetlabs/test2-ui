@@ -98,8 +98,9 @@ export default {
     defaultValues: {
       type: Object
     },
-    selectedPhishingScenario: {
-      type: Object
+    selectedPhishingScenarios: {
+      type: Array,
+      default: () => []
     },
     isEdit: {
       type: Boolean

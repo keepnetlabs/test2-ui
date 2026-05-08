@@ -132,7 +132,7 @@
               :target-group-resource-ids="targetGroupResourceIds"
               :total-target-user-count="totalTargetUserCount"
               :user-target-audience-data="getUserTargetAudienceData"
-              :selected-phishing-scenario="getSelectedPhishingScenario"
+              :selected-phishing-scenarios="selectedPhishingScenarios"
               :is-edit="isEdit"
               :isDuplicate="isDuplicate"
               :type="SCENARIO_TYPES.CALLBACK"
@@ -311,15 +311,6 @@ export default {
     },
     targetGroupResourceIds() {
       return this.selectedTargetGroupsMapped.map((group) => group.value)
-    },
-    getSelectedPhishingScenario() {
-      let selectedScenario = {}
-      if (this.step === 4) {
-        const { refCampaignManagerPhishingScenarios } = this.$refs
-        selectedScenario = refCampaignManagerPhishingScenarios?.emailTemplateParams || {}
-        selectedScenario.template = refCampaignManagerPhishingScenarios?.emailTemplate || ''
-      }
-      return selectedScenario
     },
     getFormDataForCampaignSummary() {
       let formData = {}
