@@ -143,6 +143,22 @@ export default {
       this.$refs.refTelInput.phone = val
       this.$emit('input', val)
     },
+    isNanpPhoneNumberPossible(phoneObject = {}) {
+      const candidates = [
+        this.value,
+        this.$refs.refTelInput?.phone,
+        phoneObject?.number?.e164,
+        phoneObject?.number?.international,
+        phoneObject?.number?.input
+      ]
+
+      return candidates.some((phoneNumber = '') => {
+        const digits = phoneNumber.toString().replace(/\D/g, '')
+        const nationalNumber = digits.startsWith('1') ? digits.substring(1) : ''
+
+        return digits.length === 11 && /^([2-9]\d{2})([2-9]\d{6})$/.test(nationalNumber)
+      })
+    },
     validatePhoneNumber() {
       this.$nextTick(() => {
         try {
@@ -159,7 +175,7 @@ export default {
             this.isPhoneNumberValid = true
             return
           }
-          this.isPhoneNumberValid = phoneObject.isValid
+          this.isPhoneNumberValid = phoneObject.isValid || this.isNanpPhoneNumberPossible(phoneObject)
         } catch {
           this.isPhoneNumberValid = false
         }

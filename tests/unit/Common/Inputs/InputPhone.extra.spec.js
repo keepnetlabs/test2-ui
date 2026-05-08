@@ -64,6 +64,44 @@ describe('InputPhone.vue (extra branch coverage)', () => {
     expect(wrapper.vm.isPhoneNumberValid).toBe(false)
   })
 
+  it('validatePhoneNumber allows possible NANP numbers even when library rejects area code allocation', async () => {
+    const wrapper = shallowMount(InputPhone, {
+      propsData: { value: '+1 (557) 236-5614' }
+    })
+    wrapper.vm.$refs.refTelInput = {
+      phone: '+1 (557) 236-5614',
+      phoneObject: {
+        isValid: false,
+        regionCode: 'US',
+        possibility: 'is-possible'
+      }
+    }
+
+    wrapper.vm.validatePhoneNumber()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.isPhoneNumberValid).toBe(true)
+  })
+
+  it('validatePhoneNumber keeps malformed NANP numbers invalid', async () => {
+    const wrapper = shallowMount(InputPhone, {
+      propsData: { value: '+1 (157) 236-5614' }
+    })
+    wrapper.vm.$refs.refTelInput = {
+      phone: '+1 (157) 236-5614',
+      phoneObject: {
+        isValid: false,
+        regionCode: 'US',
+        possibility: 'is-possible'
+      }
+    }
+
+    wrapper.vm.validatePhoneNumber()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.isPhoneNumberValid).toBe(false)
+  })
+
   it('validatePhoneNumber sets isPhoneNumberValid false on catch', async () => {
     const wrapper = shallowMount(InputPhone)
     wrapper.vm.$refs.refTelInput = {
