@@ -2,6 +2,10 @@ import { shallowMount } from '@vue/test-utils'
 import VishingReportTemplate from '@/components/VishingReport/VishingReportTemplate'
 
 describe('VishingReportTemplate.vue', () => {
+  it('has correct component name', () => {
+    expect(VishingReportTemplate.name).toBe('VishingReportTemplate')
+  })
+
   it('renders summary template child with formData', () => {
     const formData = { name: 'Template 1' }
     const wrapper = shallowMount(VishingReportTemplate, {
@@ -32,6 +36,13 @@ describe('VishingReportTemplate.vue', () => {
     })
 
     expect(wrapper.vm.isFormData).toBe(0)
+  })
+
+  it('isFormData counts keys for single-field formData', () => {
+    const wrapper = shallowMount(VishingReportTemplate, {
+      propsData: { formData: { name: 'Only' } }
+    })
+    expect(wrapper.vm.isFormData).toBe(1)
   })
 
   it('passes formData to child as form-values prop', () => {

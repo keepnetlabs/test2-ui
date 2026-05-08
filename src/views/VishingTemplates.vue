@@ -486,30 +486,45 @@ export default {
       }
     },
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
-        this.languageItems = response?.data?.data || []
-        const voiceFilterableItems = response?.data?.data
-          ? response.data.data.map((language) => language.name)
-          : []
-        const uniqueVoiceFilterableItems = [...new Set(voiceFilterableItems)]
-        this.voices = uniqueVoiceFilterableItems
-        this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'voice'),
-          'filterableItems',
-          uniqueVoiceFilterableItems
-        )
-        const languageFilterableItems = response?.data?.data
-          ? response.data.data.map((language) => language.language)
-          : []
-        const uniqueLanguageFilterableItems = [...new Set(languageFilterableItems)]
-        this.languages = uniqueLanguageFilterableItems
-        this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'language'),
-          'filterableItems',
-          uniqueLanguageFilterableItems
-        )
-        this?.$refs?.refVishingTemplatesList?.reRenderFilters()
-      })
+      getVishingTemplateLanguages()
+        .then((response) => {
+          this.languageItems = response?.data?.data || []
+          const voiceFilterableItems = response?.data?.data
+            ? response.data.data.map((language) => language.name)
+            : []
+          const uniqueVoiceFilterableItems = [...new Set(voiceFilterableItems)]
+          this.voices = uniqueVoiceFilterableItems
+          this.$set(
+            this.tableOptions.columns.find((col) => col.property === 'voice'),
+            'filterableItems',
+            uniqueVoiceFilterableItems
+          )
+          const languageFilterableItems = response?.data?.data
+            ? response.data.data.map((language) => language.language)
+            : []
+          const uniqueLanguageFilterableItems = [...new Set(languageFilterableItems)]
+          this.languages = uniqueLanguageFilterableItems
+          this.$set(
+            this.tableOptions.columns.find((col) => col.property === 'language'),
+            'filterableItems',
+            uniqueLanguageFilterableItems
+          )
+          this?.$refs?.refVishingTemplatesList?.reRenderFilters()
+        })
+        .catch(() => {
+          this.languageItems = []
+          this.voices = []
+          this.languages = []
+          const voiceColumn = this.tableOptions.columns.find((col) => col.property === 'voice')
+          const languageColumn = this.tableOptions.columns.find((col) => col.property === 'language')
+          if (voiceColumn) {
+            this.$set(voiceColumn, 'filterableItems', [])
+          }
+          if (languageColumn) {
+            this.$set(languageColumn, 'filterableItems', [])
+          }
+          this?.$refs?.refVishingTemplatesList?.reRenderFilters()
+        })
     },
     handleSuccessDeleteAction(row) {
       this.$refs.refVishingTemplatesList?.resetSelectableParams()

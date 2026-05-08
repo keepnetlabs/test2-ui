@@ -89,4 +89,27 @@ describe('VishingTemplateSelectList.vue (extra coverage)', () => {
     wrapper.vm.bodyData.filter.FilterGroups[0].FilterItems[0].value = ''
     expect(wrapper.vm.getVoiceItems).toEqual([])
   })
+
+  it('getItemDescription returns nbsp when description is empty string', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.vm.getItemDescription({ description: '' })).toBe('\xa0')
+  })
+
+  it('getSelectedLanguage and getSelectedVoice read filter values', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.bodyData.filter.FilterGroups[0].FilterItems[0].value = 'tr'
+    wrapper.vm.bodyData.filter.FilterGroups[0].FilterItems[1].value = 'Ses1'
+    expect(wrapper.vm.getSelectedLanguage).toBe('tr')
+    expect(wrapper.vm.getSelectedVoice).toBe('Ses1')
+  })
+
+  it('setSelectedTemplate returns early when item is null without new selection emit', async () => {
+    const wrapper = createWrapper()
+    await wrapper.vm.$nextTick()
+    await new Promise((r) => setTimeout(r, 0))
+    const before = wrapper.emitted('selectedTemplateResourceId')?.length ?? 0
+    wrapper.vm.setSelectedTemplate(null, 0)
+    const after = wrapper.emitted('selectedTemplateResourceId')?.length ?? 0
+    expect(after).toBe(before)
+  })
 })

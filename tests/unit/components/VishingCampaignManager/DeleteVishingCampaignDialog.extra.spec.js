@@ -70,4 +70,21 @@ describe('DeleteVishingCampaignDialog.vue (extra coverage)', () => {
     expect(deleteVishingCampaign).toHaveBeenCalledWith('r1')
     expect(wrapper.emitted('onCancel')).toEqual([[true]])
   })
+
+  it('closeModal emits onCancel with false when argument omitted', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.closeModal()
+    expect(wrapper.emitted('onCancel')).toEqual([[false]])
+  })
+
+  it('handleDelete does not emit onCancel when deleteVishingCampaign rejects', async () => {
+    deleteVishingCampaign.mockRejectedValueOnce(new Error('network'))
+    const wrapper = createWrapper({
+      isMultiple: false,
+      selectedRow: { resourceId: 'r-fail', name: 'X' }
+    })
+    wrapper.vm.handleDelete()
+    await new Promise((r) => setTimeout(r, 0))
+    expect(wrapper.emitted('onCancel')).toBeFalsy()
+  })
 })

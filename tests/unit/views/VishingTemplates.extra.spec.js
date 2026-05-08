@@ -57,6 +57,23 @@ describe('VishingTemplates.vue (extra)', () => {
     expect(ctx.selectedTemplateVoice).toBe('Amy')
   })
 
+  it('selectedTemplate watcher leaves voice fields unchanged when languageItems has no match', () => {
+    const ctx = {
+      languageItems: [
+        { language: 'French', name: 'Pierre', resourceId: 'r-fr', voiceProviderTypeId: 1 }
+      ],
+      voiceResourceId: 'prior-voice',
+      isTextToSpeechCompatible: true,
+      selectedTemplateLanguage: 'PriorLang',
+      selectedTemplateVoice: 'PriorVoice'
+    }
+    watch.selectedTemplate.handler.call(ctx, { language: 'English', voice: 'Amy' })
+    expect(ctx.voiceResourceId).toBe('prior-voice')
+    expect(ctx.isTextToSpeechCompatible).toBe(true)
+    expect(ctx.selectedTemplateLanguage).toBe('PriorLang')
+    expect(ctx.selectedTemplateVoice).toBe('PriorVoice')
+  })
+
   it('beforeRouteLeave blocks when modal is open and allows otherwise', () => {
     const next = jest.fn()
     const changeVishingTemplateModalStatus = jest.fn()
@@ -76,6 +93,33 @@ describe('VishingTemplates.vue (extra)', () => {
     expect(next2).toHaveBeenCalledWith()
   })
 
+  it('beforeRouteLeave allows navigation when template modal ref exists but is closed', () => {
+    const next = jest.fn()
+    const changeVishingTemplateModalStatus = jest.fn()
+    beforeRouteLeave.call(
+      {
+        $refs: { refVishingTemplateModal: { status: false, changeVishingTemplateModalStatus } }
+      },
+      {},
+      {},
+      next
+    )
+    expect(changeVishingTemplateModalStatus).not.toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('checkIfCanCloseVishingTemplateModal delegates to template modal ref when present', () => {
+    const changeVishingTemplateModalStatus = jest.fn()
+    methods.checkIfCanCloseVishingTemplateModal.call({
+      $refs: { refVishingTemplateModal: { changeVishingTemplateModalStatus } }
+    })
+    expect(changeVishingTemplateModalStatus).toHaveBeenCalledTimes(1)
+  })
+
+  it('checkIfCanCloseVishingTemplateModal does not throw when template modal ref is missing', () => {
+    expect(() => methods.checkIfCanCloseVishingTemplateModal.call({ $refs: {} })).not.toThrow()
+  })
+
   it('changeNewVishingTemplateModalStatus resets fields and refreshes when restart=true', () => {
     const ctx = {
       modalStatus: true,
@@ -92,6 +136,24 @@ describe('VishingTemplates.vue (extra)', () => {
     expect(ctx.isDuplicate).toBe(false)
     expect(ctx.selectedTemplate).toBeNull()
     expect(ctx.callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('changeNewVishingTemplateModalStatus closes without restart and preserves selectedTemplate', () => {
+    const ctx = {
+      modalStatus: true,
+      vishingTemplateId: 'tid',
+      isEdit: true,
+      isDuplicate: true,
+      selectedTemplate: { resourceId: 'preserve-me' },
+      callForData: jest.fn()
+    }
+    methods.changeNewVishingTemplateModalStatus.call(ctx, false, false)
+    expect(ctx.modalStatus).toBe(false)
+    expect(ctx.vishingTemplateId).toBeNull()
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.selectedTemplate).toEqual({ resourceId: 'preserve-me' })
+    expect(ctx.callForData).not.toHaveBeenCalled()
   })
 
   it('callForData pushes home route when no search permission', () => {
@@ -145,6 +207,33 @@ describe('VishingTemplates.vue (extra)', () => {
     expect(ctx.voices).toEqual(['Amy', 'Brian', 'Cem'])
     expect(ctx.languages).toEqual(['English', 'Turkish'])
     expect(reRenderFilters).toHaveBeenCalledTimes(1)
+  })
+
+  it('callForLanguages resets lists and filter columns when API rejects', async () => {
+    getVishingTemplateLanguages.mockRejectedValueOnce(new Error('fail'))
+    const columns = [
+      { property: 'voice', filterableItems: ['Amy'] },
+      { property: 'language', filterableItems: ['English'] }
+    ]
+    const reRenderFilters = jest.fn()
+    const ctx = {
+      languageItems: [{ language: 'X', name: 'Y' }],
+      voices: ['old-v'],
+      languages: ['old-l'],
+      tableOptions: { columns },
+      $set: jest.fn((obj, key, value) => {
+        obj[key] = value
+      }),
+      $refs: { refVishingTemplatesList: { reRenderFilters } }
+    }
+    methods.callForLanguages.call(ctx)
+    await flushPromises()
+    expect(ctx.languageItems).toEqual([])
+    expect(ctx.voices).toEqual([])
+    expect(ctx.languages).toEqual([])
+    expect(columns[0].filterableItems).toEqual([])
+    expect(columns[1].filterableItems).toEqual([])
+    expect(reRenderFilters).toHaveBeenCalled()
   })
 
   it('handleMultipleDelete builds payload for selectAll and opens modal', () => {

@@ -50,6 +50,7 @@ export default {
         .then(() => {
           this.handleClose(true)
         })
+        .catch(() => {})
         .finally(() => {
           this.isActionButtonDisabled = false
         })

@@ -80,4 +80,27 @@ describe('DeleteVishingTemplateDialog.vue (extra coverage)', () => {
     wrapper.vm.closeModal()
     expect(wrapper.emitted('handleCloseModal')).toBeTruthy()
   })
+
+  it('handleDelete single does not emit success when deleteVishingTemplate rejects', async () => {
+    deleteVishingTemplate.mockRejectedValueOnce(new Error('network'))
+    const wrapper = createWrapper({
+      isMultiple: false,
+      selectedTemplate: { resourceId: 't-fail', name: 'F' }
+    })
+    wrapper.vm.handleDelete()
+    await new Promise((r) => setTimeout(r, 0))
+    expect(wrapper.emitted('handleSuccessDeleteAction')).toBeFalsy()
+  })
+
+  it('handleDelete multiple does not emit on-success-multiple when bulk API rejects', async () => {
+    bulkDeleteVishingTemplates.mockRejectedValueOnce(new Error('network'))
+    const wrapper = createWrapper({
+      isMultiple: true,
+      multipleDeletePayload: { items: ['a'] },
+      templateCount: 2
+    })
+    wrapper.vm.handleDelete()
+    await new Promise((r) => setTimeout(r, 0))
+    expect(wrapper.emitted('on-success-multiple')).toBeFalsy()
+  })
 })

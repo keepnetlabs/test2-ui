@@ -180,7 +180,7 @@
                 :target-group-resource-ids="targetGroupResourceIds"
                 :total-target-user-count="totalTargetUserCount"
                 :user-target-audience-data="getUserTargetAudienceData"
-                :selected-phishing-scenario="getSelectedPhishingScenario"
+                :selected-phishing-scenarios="selectedPhishingScenarios"
                 :is-edit="isEdit"
                 :isDuplicate="isDuplicate"
                 :phishing-type-id="1"
@@ -360,7 +360,9 @@ export default {
         : true
     },
     hasEmailTemplateMultipleLanguage() {
-      return this.selectedPhishingScenarios.some((scenario) => scenario.languageTypeCode.length > 1)
+      return this.selectedPhishingScenarios.some(
+        (scenario) => Array.isArray(scenario.languageTypeCode) && scenario.languageTypeCode.length > 1
+      )
     },
     isSendUserPreferredLanguage() {
       return this.sendUserPreferredLanguage.toString() === '1'
@@ -417,15 +419,6 @@ export default {
       return Array.from(
         new Set(this.selectedTargetGroupsMapped.map((tg) => tg?.extraDatas?.companyName))
       )
-    },
-    getSelectedPhishingScenario() {
-      let selectedScenario = {}
-      if (this.step === 4) {
-        const { refCampaignManagerPhishingScenarios } = this.$refs
-        selectedScenario = refCampaignManagerPhishingScenarios?.emailTemplateParams || {}
-        selectedScenario.template = refCampaignManagerPhishingScenarios?.emailTemplate || ''
-      }
-      return selectedScenario
     },
     getFormDataForCampaignSummary() {
       let formData = {}

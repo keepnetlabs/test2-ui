@@ -49,6 +49,47 @@ describe('VishingTemplatePreviewSteps.vue', () => {
     expect(VishingTemplatePreviewSteps.computed.hasAudioFile.call(ctx)).toBe(true)
   })
 
+  it('hasAudioFile returns false when template has no FileUpload anywhere', () => {
+    const ctx = {
+      template: {
+        steps: [{ inputType: 'TextToSpeech' }],
+        callGreeting: { inputType: 'Pause' },
+        invalidDialingNotice: { inputType: 'Pause' }
+      }
+    }
+    expect(VishingTemplatePreviewSteps.computed.hasAudioFile.call(ctx)).toBe(false)
+  })
+
+  it('getSelectedStepObject returns null when template is missing', () => {
+    expect(
+      VishingTemplatePreviewSteps.computed.getSelectedStepObject.call({
+        template: null,
+        selectedStep: 'Step - 0'
+      })
+    ).toBeNull()
+  })
+
+  it('getSelectedStepObject returns callGreeting when selectedStep is Call Greeting', () => {
+    const greeting = { inputType: 'TextToSpeech', inputText: 'Welcome' }
+    const ctx = {
+      template: {
+        steps: baseTemplate.steps,
+        invalidDialingNotice: baseTemplate.invalidDialingNotice,
+        callGreeting: greeting
+      },
+      selectedStep: 'Call Greeting'
+    }
+    expect(VishingTemplatePreviewSteps.computed.getSelectedStepObject.call(ctx)).toEqual(greeting)
+  })
+
+  it('getSelectedStepCategory returns Call Greeting for call greeting selection', () => {
+    expect(
+      VishingTemplatePreviewSteps.computed.getSelectedStepCategory.call({
+        selectedStep: 'Call Greeting'
+      })
+    ).toBe('Call Greeting')
+  })
+
   it('getSelectedStepObject returns step by index for Step - N', () => {
     const ctx = {
       template: baseTemplate,
@@ -90,6 +131,41 @@ describe('VishingTemplatePreviewSteps.vue', () => {
         'TextToSpeech'
       )
     ).toBe('Text to Speech')
+  })
+
+  it('getInputTypeName falls back to default label when type is unknown', () => {
+    expect(
+      VishingTemplatePreviewSteps.methods.getInputTypeName.call(
+        { inputTypeItems: [{ value: 'TextToSpeech', text: 'Text to Speech' }] },
+        'UnknownInput'
+      )
+    ).toBe('Text to Speech')
+  })
+
+  it('isSelectedStepVishingStep returns true when getSelectedStepObject is a vishing step', () => {
+    expect(
+      VishingTemplatePreviewSteps.computed.isSelectedStepVishingStep.call({
+        getSelectedStepObject: { isVishingStep: true }
+      })
+    ).toBe(true)
+  })
+
+  it('isSelectedStepVishingStep returns false when step is not vishing or object missing', () => {
+    expect(
+      VishingTemplatePreviewSteps.computed.isSelectedStepVishingStep.call({
+        getSelectedStepObject: { isVishingStep: false }
+      })
+    ).toBe(false)
+    expect(
+      VishingTemplatePreviewSteps.computed.isSelectedStepVishingStep.call({
+        getSelectedStepObject: {}
+      })
+    ).toBe(false)
+    expect(
+      VishingTemplatePreviewSteps.computed.isSelectedStepVishingStep.call({
+        getSelectedStepObject: null
+      })
+    ).toBe(false)
   })
 
   it('getStepName returns formatted step name for Step category', () => {

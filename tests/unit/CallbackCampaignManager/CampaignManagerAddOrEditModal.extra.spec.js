@@ -58,7 +58,7 @@ describe('CallbackCampaignManager/CampaignManagerAddOrEditModal.vue (extra)', ()
     expect(schedule).toBe(labels.Schedule)
   })
 
-  it('covers default computed fallbacks and selected scenario payload branch', () => {
+  it('covers default computed fallbacks', () => {
     expect(
       CampaignManagerAddOrEditModal.computed.getDefaultValuesOfCampaignInfo.call({
         selectedRowFormData: {}
@@ -76,17 +76,6 @@ describe('CallbackCampaignManager/CampaignManagerAddOrEditModal.vue (extra)', ()
         selectedRowFormData: {}
       })
     ).toEqual({})
-
-    const selectedScenario = CampaignManagerAddOrEditModal.computed.getSelectedPhishingScenario.call({
-      step: 4,
-      $refs: {
-        refCampaignManagerPhishingScenarios: {
-          emailTemplateParams: { method: 'Click-Only' },
-          emailTemplate: '<p>Template</p>'
-        }
-      }
-    })
-    expect(selectedScenario).toEqual({ method: 'Click-Only', template: '<p>Template</p>' })
   })
 
   it('callForData duplicates name and hydrates selected target group table refs', async () => {
