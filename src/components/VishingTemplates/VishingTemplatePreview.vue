@@ -37,7 +37,7 @@
             <span class="text-primary-color fs-5 fw-600">{{ getSubtitle }}</span>
           </div>
           <div class="vishing-template-preview-drawer__summary-actions">
-            <VTooltip v-if="showEditButton" bottom>
+            <VTooltip v-if="canShowEditButton" bottom>
               <template #activator="{ on }">
                 <div v-on="on">
                   <VBtn icon outlined color="#2196F3" small :disabled="editDisabled" @click="handleEdit">
@@ -180,6 +180,9 @@ export default {
     },
     showTemplateName() {
       return !this.isCampaign
+    },
+    canShowEditButton() {
+      return this.showEditButton && this.selectedRow?.isOwner !== false
     }
   },
   created() {
@@ -241,6 +244,7 @@ export default {
       this.$emit('on-close')
     },
     handleEdit() {
+      if (this.selectedRow?.isOwner === false) return
       if (this.editDisabled) return
       this.$emit('on-edit-template')
     },
