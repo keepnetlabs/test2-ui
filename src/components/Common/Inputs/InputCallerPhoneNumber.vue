@@ -44,6 +44,7 @@ import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
 import { getSmishingScenariosPhoneNumber } from '@/api/smishing'
 import { getQuishingScenariosPhoneNumber } from '@/api/quishing'
 import { mapGetters } from 'vuex'
+import { getPhoneCountryName } from '@/utils/phoneCountryName'
 export default {
   name: 'InputCallerPhoneNumber',
   components: { KSelect, FormGroup },
@@ -225,10 +226,7 @@ export default {
         }
       }
       const phoneNumberObj = this.createPhoneNumberObj(phoneNumberPayload)
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
-        type: 'region'
-      })
-      return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
+      return getPhoneCountryName(phoneNumberObj?.getRegionCode())
     },
     createPhoneNumberObj(phoneNumber = '') {
       return new PhoneNumber(phoneNumber)
