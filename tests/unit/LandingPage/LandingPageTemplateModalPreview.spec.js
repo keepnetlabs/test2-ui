@@ -299,7 +299,8 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     const emit = jest.fn()
     const ctx = {
       previewHtml: '<p>Preview</p>',
-      $emit: emit
+      $emit: emit,
+      showEditButton: true
     }
 
     methods.handleLanguageChange.call(ctx, 'en')
@@ -309,5 +310,21 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     expect(emit).toHaveBeenCalledWith('language-change', 'en')
     expect(emit).toHaveBeenCalledWith('edit')
     expect(openHtmlInNewWindow).toHaveBeenCalledWith('<p>Preview</p>')
+  })
+
+  it('does not emit edit when edit button is hidden by ownership or disabled state', () => {
+    const emit = jest.fn()
+
+    methods.handleEdit.call({ $emit: emit, showEditButton: false })
+
+    expect(emit).not.toHaveBeenCalled()
+  })
+
+  it('does not emit duplicate when duplicate button is hidden', () => {
+    const emit = jest.fn()
+
+    methods.handleDuplicate.call({ $emit: emit, showDuplicateButton: false })
+
+    expect(emit).not.toHaveBeenCalled()
   })
 })

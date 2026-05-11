@@ -244,9 +244,11 @@ export default {
       openHtmlInNewWindow(this.previewHtml)
     },
     handleEdit() {
+      if (!this.showEditButton) return
       this.$emit('edit')
     },
     handleDuplicate() {
+      if (!this.showDuplicateButton) return
       this.$emit('duplicate')
     },
     extractDomain(url) {
