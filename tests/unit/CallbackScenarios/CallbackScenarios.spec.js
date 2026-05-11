@@ -92,7 +92,49 @@ describe('CallbackScenarios.vue methods', () => {
   })
 
   it('handleEdit sets modal/edit/duplicate flags and scenario id', () => {
-    const row = { resourceId: 'sc-1', name: 'Scenario' }
+    const row = { resourceId: 'sc-1', name: 'Scenario', isOwner: true }
+    const ctx = {
+      selectedRow: null,
+      editableFormValues: {},
+      modalStatus: false,
+      isEdit: false,
+      isDuplicate: false,
+      scenarioId: null
+    }
+
+    CallbackScenarios.methods.handleEdit.call(ctx, row, true)
+
+    expect(ctx.selectedRow).toEqual(row)
+    expect(ctx.editableFormValues).toEqual(row)
+    expect(ctx.modalStatus).toBe(true)
+    expect(ctx.isEdit).toBe(true)
+    expect(ctx.isDuplicate).toBe(true)
+    expect(ctx.scenarioId).toBe('sc-1')
+  })
+
+  it('handleEdit does not open edit modal for non-owner rows', () => {
+    const row = { resourceId: 'sc-1', name: 'Scenario', isOwner: false }
+    const ctx = {
+      selectedRow: null,
+      editableFormValues: {},
+      modalStatus: false,
+      isEdit: false,
+      isDuplicate: false,
+      scenarioId: null
+    }
+
+    CallbackScenarios.methods.handleEdit.call(ctx, row, false)
+
+    expect(ctx.selectedRow).toBe(null)
+    expect(ctx.editableFormValues).toEqual({})
+    expect(ctx.modalStatus).toBe(false)
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.scenarioId).toBe(null)
+  })
+
+  it('handleEdit still opens duplicate modal for non-owner rows', () => {
+    const row = { resourceId: 'sc-1', name: 'Scenario', isOwner: false }
     const ctx = {
       selectedRow: null,
       editableFormValues: {},
