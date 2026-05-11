@@ -75,4 +75,42 @@ describe('VishingTemplates.vue', () => {
     expect(ctx.isPreviewVisible).toBe(false)
     expect(ctx.handleEdit).toHaveBeenCalledWith(selectedTemplate, true)
   })
+
+  it('handleEdit does not open edit modal for non-owner templates', () => {
+    const row = { resourceId: 'tpl-1', isOwner: false }
+    const ctx = {
+      selectedTemplate: null,
+      modalStatus: false,
+      isEdit: false,
+      isDuplicate: false,
+      vishingTemplateId: null
+    }
+
+    VishingTemplates.methods.handleEdit.call(ctx, row, false)
+
+    expect(ctx.selectedTemplate).toBe(null)
+    expect(ctx.modalStatus).toBe(false)
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.vishingTemplateId).toBe(null)
+  })
+
+  it('handleEdit still opens duplicate modal for non-owner templates', () => {
+    const row = { resourceId: 'tpl-1', isOwner: false }
+    const ctx = {
+      selectedTemplate: null,
+      modalStatus: false,
+      isEdit: false,
+      isDuplicate: false,
+      vishingTemplateId: null
+    }
+
+    VishingTemplates.methods.handleEdit.call(ctx, row, true)
+
+    expect(ctx.selectedTemplate).toEqual(row)
+    expect(ctx.modalStatus).toBe(true)
+    expect(ctx.isEdit).toBe(true)
+    expect(ctx.isDuplicate).toBe(true)
+    expect(ctx.vishingTemplateId).toBe('tpl-1')
+  })
 })

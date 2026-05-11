@@ -102,13 +102,31 @@ describe('VishingTemplatePreview.vue', () => {
 
   it('handleEdit emits on-edit-template when enabled', () => {
     const emit = jest.fn()
-    VishingTemplatePreview.methods.handleEdit.call({ $emit: emit, editDisabled: false })
+    VishingTemplatePreview.methods.handleEdit.call({
+      $emit: emit,
+      editDisabled: false,
+      selectedRow: { isOwner: true }
+    })
     expect(emit).toHaveBeenCalledWith('on-edit-template')
   })
 
   it('handleEdit returns early when disabled', () => {
     const emit = jest.fn()
-    VishingTemplatePreview.methods.handleEdit.call({ $emit: emit, editDisabled: true })
+    VishingTemplatePreview.methods.handleEdit.call({
+      $emit: emit,
+      editDisabled: true,
+      selectedRow: { isOwner: true }
+    })
+    expect(emit).not.toHaveBeenCalled()
+  })
+
+  it('handleEdit returns early when selected row is not owned', () => {
+    const emit = jest.fn()
+    VishingTemplatePreview.methods.handleEdit.call({
+      $emit: emit,
+      editDisabled: false,
+      selectedRow: { isOwner: false }
+    })
     expect(emit).not.toHaveBeenCalled()
   })
 
@@ -130,6 +148,27 @@ describe('VishingTemplatePreview.vue', () => {
 
   it('showTemplateName is true for template preview', () => {
     expect(VishingTemplatePreview.computed.showTemplateName.call({ isCampaign: false })).toBe(true)
+  })
+
+  it('canShowEditButton follows prop and selected row ownership', () => {
+    expect(
+      VishingTemplatePreview.computed.canShowEditButton.call({
+        showEditButton: true,
+        selectedRow: { isOwner: true }
+      })
+    ).toBe(true)
+    expect(
+      VishingTemplatePreview.computed.canShowEditButton.call({
+        showEditButton: true,
+        selectedRow: { isOwner: false }
+      })
+    ).toBe(false)
+    expect(
+      VishingTemplatePreview.computed.canShowEditButton.call({
+        showEditButton: false,
+        selectedRow: { isOwner: true }
+      })
+    ).toBe(false)
   })
 
   it('getSubtitle returns empty string when selectedRow is missing', () => {
