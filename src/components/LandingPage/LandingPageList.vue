@@ -484,6 +484,7 @@ export default {
       this.isTemplateDetails = true
     },
     handleEdit(row, isDuplicate) {
+      if (!isDuplicate && row?.isOwner === false) return
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate

@@ -1337,7 +1337,41 @@ export default {
           "filterableItems",
           this.languageFilterOptions
         );
+        if (this.tableData.length) {
+          this.tableData = this.tableData.map((item) => ({
+            ...item,
+            preferredLanguage: this.getPreferredLanguageText(item)
+          }));
+        }
       });
+    },
+    getPreferredLanguageText(item = {}) {
+      const preferredLanguage =
+        item.preferredLanguage ||
+        item.preferredLanguageName ||
+        item.languageTypeName ||
+        "";
+      const preferredLanguageId =
+        item.preferredLanguageId ||
+        item.preferredLanguageTypeResourceId ||
+        item.languageTypeResourceId ||
+        "";
+      const languageById = preferredLanguageId
+        ? this.languageFilterOptions.find(
+            (language) =>
+              language.value === preferredLanguageId ||
+              language.resourceId === preferredLanguageId
+          )
+        : null;
+      const languageByName = this.languageFilterOptions.find(
+        (language) =>
+          language.name === preferredLanguage ||
+          language.languageTypeName === preferredLanguage ||
+          language.text === preferredLanguage
+      );
+      const language = languageById || languageByName;
+
+      return language?.text || preferredLanguage;
     },
     callForFormDetails() {
       if (!this.getGamificationReportFormDetailsPermissions) return
@@ -1864,9 +1898,7 @@ export default {
               ...item,
               managerFullName,
               status: item.isDeleted ? "Deleted" : item.status,
-              preferredLanguage: this.languageFilterOptions.find(
-                (language) => language.name === item.preferredLanguage
-              )?.text
+              preferredLanguage: this.getPreferredLanguageText(item)
             };
           });
         })
