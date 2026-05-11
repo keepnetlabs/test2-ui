@@ -70,6 +70,12 @@ describe('InputPhone.vue', () => {
   })
 
   describe('vue-tel-input props', () => {
+    it('should localize Turkey country option as Türkiye', () => {
+      const turkeyCountry = wrapper.vm.localizedPhoneCountries.find((country) => country.iso2 === 'TR')
+
+      expect(turkeyCountry.name).toBe('Türkiye')
+    })
+
     it('should pass validCharactersOnly to VueTelInput', () => {
       expect(wrapper.vm).toBeDefined()
     })
