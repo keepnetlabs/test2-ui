@@ -412,6 +412,7 @@ export default {
       this.isShowFastLaunch = !this.isShowFastLaunch
     },
     handleEdit(row, isDuplicate) {
+      if (!isDuplicate && row?.isOwner === false) return
       this.selectedRow = row
       this.editableFormValues = row
       this.modalStatus = true

@@ -51,10 +51,17 @@ describe('CallbackScenarioPreview.vue methods', () => {
     expect(closeDrawer).toHaveBeenCalled()
   })
 
-  it('showEditButton and showDuplicateButton both reflect selectedRow presence', () => {
-    expect(CallbackScenarioPreview.computed.showEditButton.call({ selectedRow: { name: 'X' } })).toBe(
-      true
-    )
+  it('showEditButton follows selectedRow ownership and showDuplicateButton reflects selectedRow presence', () => {
+    expect(
+      CallbackScenarioPreview.computed.showEditButton.call({
+        selectedRow: { name: 'X', isOwner: true }
+      })
+    ).toBe(true)
+    expect(
+      CallbackScenarioPreview.computed.showEditButton.call({
+        selectedRow: { name: 'X', isOwner: false }
+      })
+    ).toBe(false)
     expect(
       CallbackScenarioPreview.computed.showDuplicateButton.call({ selectedRow: { name: 'X' } })
     ).toBe(true)
@@ -66,10 +73,21 @@ describe('CallbackScenarioPreview.vue methods', () => {
 
   it('handleEdit and handleDuplicate emit template-level events', () => {
     const emit = jest.fn()
-    CallbackScenarioPreview.methods.handleEdit.call({ $emit: emit })
+    CallbackScenarioPreview.methods.handleEdit.call({ $emit: emit, selectedRow: { isOwner: true } })
     expect(emit).toHaveBeenCalledWith('on-edit-template')
     CallbackScenarioPreview.methods.handleDuplicate.call({ $emit: emit })
     expect(emit).toHaveBeenCalledWith('on-duplicate-template')
+  })
+
+  it('handleEdit does not emit when selected row is not owned', () => {
+    const emit = jest.fn()
+
+    CallbackScenarioPreview.methods.handleEdit.call({
+      $emit: emit,
+      selectedRow: { isOwner: false }
+    })
+
+    expect(emit).not.toHaveBeenCalled()
   })
 
   it('getNavigationDrawerClass toggles nested-drawer class via isNested prop', () => {
