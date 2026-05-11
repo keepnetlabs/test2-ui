@@ -144,6 +144,7 @@ import AlertBox from '@/components/AlertBox.vue'
 import NotificationTemplatesPreviewDialog from '@/components/Company Settings/NotificationTemplatesPreviewDialog.vue'
 import { mapActions } from 'vuex'
 import PhoneNumber from 'awesome-phonenumber'
+import { getPhoneCountryName } from '@/utils/phoneCountryName'
 export default {
   name: 'TrainingLibrarySendSurveySummary',
   components: {
@@ -313,10 +314,7 @@ export default {
     getPhoneNumberCountry(phoneNumber) {
       if (!phoneNumber) return ''
       const phoneNumberObj = this.createPhoneNumberObj(phoneNumber)
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
-        type: 'region'
-      })
-      return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
+      return getPhoneCountryName(phoneNumberObj?.getRegionCode())
     },
     handleEnrollmentLanguageChange(languageResourceId) {
       this.formData.enrollmentData.selectedLanguageResourceId = languageResourceId

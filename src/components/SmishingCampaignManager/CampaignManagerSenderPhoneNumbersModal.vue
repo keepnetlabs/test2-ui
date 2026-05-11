@@ -38,6 +38,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'
 import PhoneNumber from 'awesome-phonenumber'
+import { getPhoneCountryName } from '@/utils/phoneCountryName'
 
 export default {
   name: 'CampaignManagerSenderPhoneNumbersModal',
@@ -65,8 +66,7 @@ export default {
     getPhoneNumberCountry(phoneNumber) {
       if (!phoneNumber) return ''
       const phoneNumberObj = this.createPhoneNumberObj(phoneNumber)
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' })
-      return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
+      return getPhoneCountryName(phoneNumberObj?.getRegionCode())
     },
     closeModal() {
       this.$emit('on-close')

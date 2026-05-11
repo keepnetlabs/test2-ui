@@ -3,6 +3,7 @@
     <vue-tel-input
       :value="value"
       validCharactersOnly
+      :allCountries="localizedPhoneCountries"
       defaultCountry="GB"
       :inputOptions="{
         showDialCode: true
@@ -37,6 +38,16 @@
 <script>
 import { VueTelInput } from 'vue-tel-input'
 import labels from '@/model/constants/labels'
+import { localizePhoneCountry } from '@/utils/phoneCountryName'
+
+const getDefaultPhoneCountries = () => {
+  const allCountriesProp =
+    VueTelInput?.props?.allCountries || VueTelInput?.options?.props?.allCountries
+  const getDefaultCountries = allCountriesProp?.default
+
+  return typeof getDefaultCountries === 'function' ? getDefaultCountries() : []
+}
+
 export default {
   name: 'InputPhone',
   components: {
@@ -60,6 +71,9 @@ export default {
     }
   },
   computed: {
+    localizedPhoneCountries() {
+      return getDefaultPhoneCountries().map(localizePhoneCountry)
+    },
     getErrorText() {
       if (this.value) {
         if (this.phonePossibility === 'too-short') {
