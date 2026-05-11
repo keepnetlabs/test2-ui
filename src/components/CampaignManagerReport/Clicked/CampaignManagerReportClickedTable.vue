@@ -1,14 +1,20 @@
 <template>
   <div>
-  <div>
-    <CommonReportViewTargetGroupsModal
-      v-if="isGroupsDialogOpen"
-      :status="isGroupsDialogOpen"
-      title="Groups"
-      subtitle="Groups the user has been added to"
-      :target-groups="selectedGroups"
-      @on-close="handleGroupsDialogClose"
+    <CampaignManagerReportFeedbackDetailsDialog
+      v-if="isFeedbackDialogOpen"
+      :status="isFeedbackDialogOpen"
+      :selected-row="selectedFeedbackRow"
+      @on-close="closeFeedbackDialog"
     />
+    <div>
+      <CommonReportViewTargetGroupsModal
+        v-if="isGroupsDialogOpen"
+        :status="isGroupsDialogOpen"
+        title="Groups"
+        subtitle="Groups the user has been added to"
+        :target-groups="selectedGroups"
+        @on-close="handleGroupsDialogClose"
+      />
       <CampaignManagerReportBotActivityAlertBox
         v-if="!isLoading && botActivityCount > 0"
         :bot-activity-count="botActivityCount"
@@ -88,6 +94,17 @@
           :value="(scope.row && scope.row.targetGroups)"
           @click="handleGroupsClick"
         />
+        <button
+          v-if="col.property === COLUMNS.FEEDBACK_STATUS.property && scope.row.feedbackText"
+          type="button"
+          class="campaign-manager-report-clicked-feedback-link"
+          @click="handleFeedbackClick(scope.row)"
+        >
+          View
+        </button>
+        <span v-if="col.property === COLUMNS.FEEDBACK_STATUS.property && !scope.row.feedbackText">
+          -
+        </span>
       </template>
     </DataTable>
   </div>
@@ -118,9 +135,11 @@ import useSandboxTableActionLabel from '@/hooks/useSandboxTableActionLabel'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import CampaignManagerReportBotActivityAlertBox from '@/components/CampaignManagerReport/CampaignManagerReportBotActivityAlertBox.vue'
+import CampaignManagerReportFeedbackDetailsDialog from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportFeedbackDetailsDialog.vue'
 export default {
   name: 'CampaignManagerReportClickedTable',
   components: {
+    CampaignManagerReportFeedbackDetailsDialog,
     CampaignManagerReportActivityColumn,
     CampaignManagerReportGroupsColumn,
     CommonReportViewTargetGroupsModal,
@@ -180,7 +199,7 @@ export default {
           COLUMNS.EMAIL_TEMPLATE_LANGUAGE,
           COLUMNS.LAST_CLICKED,
           COLUMNS.TIMES_CLICKED,
-          COLUMNS.FEEDBACK_STATUS,
+          { ...COLUMNS.FEEDBACK_STATUS, type: 'slot' },
           { ...COLUMNS.ACTIVITY_TYPE }
         ],
         addButton: {
@@ -219,7 +238,9 @@ export default {
       },
       languageOptions: [],
       isGroupsDialogOpen: false,
-      selectedGroups: []
+      selectedGroups: [],
+      isFeedbackDialogOpen: false,
+      selectedFeedbackRow: {}
     }
   },
   created() {
@@ -285,6 +306,14 @@ export default {
     handleGroupsDialogClose() {
       this.isGroupsDialogOpen = false
       this.selectedGroups = []
+    },
+    handleFeedbackClick(row) {
+      this.selectedFeedbackRow = row || {}
+      this.isFeedbackDialogOpen = true
+    },
+    closeFeedbackDialog() {
+      this.isFeedbackDialogOpen = false
+      this.selectedFeedbackRow = {}
     },
     callForData() {
       this.setLoading(true)
@@ -362,3 +391,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.campaign-manager-report-clicked-feedback-link {
+  background: transparent;
+  border: 0;
+  color: #2196f3;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+</style>
