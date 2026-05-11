@@ -206,7 +206,7 @@ export default {
       return this.selectedRow?.name || ''
     },
     showEditButton() {
-      return !!this.selectedRow
+      return !!this.selectedRow && this.selectedRow.isOwner !== false
     },
     showDuplicateButton() {
       return !!this.selectedRow
@@ -282,6 +282,7 @@ export default {
       this.closeDrawer()
     },
     handleEdit() {
+      if (this.selectedRow?.isOwner === false) return
       this.$emit('on-edit-template')
     },
     handleDuplicate() {
