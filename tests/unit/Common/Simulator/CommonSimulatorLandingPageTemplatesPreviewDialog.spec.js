@@ -46,6 +46,7 @@ describe('CommonSimulatorLandingPageTemplatesPreviewDialog.vue', () => {
     const ctx = {
       isHtmlOverflowControlManuallyDisabled: false,
       selectedRow: { resourceId: 'lp-1', name: 'Landing A' },
+      disableEdit: false,
       $emit: emit
     }
 
@@ -53,6 +54,36 @@ describe('CommonSimulatorLandingPageTemplatesPreviewDialog.vue', () => {
 
     expect(ctx.isHtmlOverflowControlManuallyDisabled).toBe(true)
     expect(emit).toHaveBeenCalledWith('on-edit', { resourceId: 'lp-1', name: 'Landing A' })
+  })
+
+  it('handleEdit does not emit for non-owner selectedRow', () => {
+    const emit = jest.fn()
+    const ctx = {
+      isHtmlOverflowControlManuallyDisabled: false,
+      selectedRow: { resourceId: 'lp-1', name: 'Landing A', isOwner: false },
+      disableEdit: false,
+      $emit: emit
+    }
+
+    CommonSimulatorLandingPageTemplatesPreviewDialog.methods.handleEdit.call(ctx)
+
+    expect(ctx.isHtmlOverflowControlManuallyDisabled).toBe(false)
+    expect(emit).not.toHaveBeenCalled()
+  })
+
+  it('handleEdit does not emit when edit is disabled', () => {
+    const emit = jest.fn()
+    const ctx = {
+      isHtmlOverflowControlManuallyDisabled: false,
+      selectedRow: { resourceId: 'lp-1', name: 'Landing A', isOwner: true },
+      disableEdit: true,
+      $emit: emit
+    }
+
+    CommonSimulatorLandingPageTemplatesPreviewDialog.methods.handleEdit.call(ctx)
+
+    expect(ctx.isHtmlOverflowControlManuallyDisabled).toBe(false)
+    expect(emit).not.toHaveBeenCalled()
   })
 
   it('callForData maps phishing landing page languages and transformed templates', async () => {

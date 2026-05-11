@@ -88,6 +88,42 @@ describe('TargetUsers/People.vue', () => {
     expect(ctx.callForGetTargetUserCustomFieldsByCompanyId).toHaveBeenCalled()
   })
 
+  it('getPreferredLanguageText resolves preferred language by id, name, text and keeps fallback text', () => {
+    const ctx = {
+      languageFilterOptions: [
+        { value: 'en-id', name: 'English', text: 'English (United States)' },
+        { value: 'tr-id', name: 'Turkish', text: 'Türkçe (Türkiye)' }
+      ]
+    }
+
+    expect(
+      People.methods.getPreferredLanguageText.call(ctx, {
+        preferredLanguageId: 'tr-id'
+      })
+    ).toBe('Türkçe (Türkiye)')
+    expect(
+      People.methods.getPreferredLanguageText.call(ctx, {
+        preferredLanguageId: 'tr-id',
+        preferredLanguage: 'English'
+      })
+    ).toBe('Türkçe (Türkiye)')
+    expect(
+      People.methods.getPreferredLanguageText.call(ctx, {
+        preferredLanguage: 'English'
+      })
+    ).toBe('English (United States)')
+    expect(
+      People.methods.getPreferredLanguageText.call(ctx, {
+        preferredLanguage: 'Türkçe (Türkiye)'
+      })
+    ).toBe('Türkçe (Türkiye)')
+    expect(
+      People.methods.getPreferredLanguageText.call(ctx, {
+        preferredLanguage: 'Spanish'
+      })
+    ).toBe('Spanish')
+  })
+
   it('handleMultipleDelete blocks when selection has deleted users', () => {
     const ctx = {
       isMultipleDelete: false,
@@ -370,6 +406,7 @@ describe('TargetUsers/People.vue', () => {
         serverSideProps: {},
         tableData: [],
         languageFilterOptions: [{ name: 'English', text: 'English' }],
+        getPreferredLanguageText: People.methods.getPreferredLanguageText,
         getUnverifiedDomains: jest.fn()
       }
 
@@ -407,6 +444,7 @@ describe('TargetUsers/People.vue', () => {
         serverSideProps: {},
         tableData: [],
         languageFilterOptions: [{ name: 'English', text: 'English' }],
+        getPreferredLanguageText: People.methods.getPreferredLanguageText,
         getUnverifiedDomains: jest.fn()
       }
 
@@ -440,6 +478,7 @@ describe('TargetUsers/People.vue', () => {
         serverSideProps: {},
         tableData: [],
         languageFilterOptions: [{ name: 'English', text: 'English' }],
+        getPreferredLanguageText: People.methods.getPreferredLanguageText,
         getUnverifiedDomains: jest.fn()
       }
 
