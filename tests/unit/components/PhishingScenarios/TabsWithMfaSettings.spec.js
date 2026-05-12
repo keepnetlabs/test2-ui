@@ -1,5 +1,10 @@
 import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
+
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} })
+}))
 
 describe('TabsWithMfaSettings.vue', () => {
   it('getUrlTitle returns Phishing URL for PHISHING type', () => {
@@ -34,5 +39,55 @@ describe('TabsWithMfaSettings.vue', () => {
     TabsWithMfaSettings.methods.handleLanguageChange.call(ctx, 'en')
     expect(ctx.$emit).toHaveBeenCalledWith('language-change', 'en')
     expect(ctx.internalLanguagePreview).toBe('en')
+  })
+
+  describe('Blocklist Warning', () => {
+    const { methods } = TabsWithMfaSettings
+
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it('extractDomain parses URL and strips www', () => {
+      expect(methods.extractDomain('https://www.example.com/path')).toBe('example.com')
+    })
+
+    it('checkDomainBlocklist calls API with the landing page domain', () => {
+      const ctx = {
+        isBlocklistCheckEnabled: true,
+        landingPageParams: { urlTemplate: 'https://www.test.com/login' },
+        blocklistWarning: null,
+        extractDomain: methods.extractDomain
+      }
+      methods.checkDomainBlocklist.call(ctx)
+      expect(getDomainBlocklistStatus).toHaveBeenCalledWith('test.com')
+    })
+
+    it('checkDomainBlocklist sets warning for malicious domains', async () => {
+      const ctx = {
+        isBlocklistCheckEnabled: true,
+        landingPageParams: { urlTemplate: 'https://malicious.com' },
+        blocklistWarning: null,
+        extractDomain: methods.extractDomain
+      }
+      getDomainBlocklistStatus.mockResolvedValueOnce({
+        data: { status: 'malicious', reason: 'Blocked by browsers' }
+      })
+      await methods.checkDomainBlocklist.call(ctx)
+      expect(ctx.blocklistWarning).toEqual({
+        status: 'malicious',
+        reason: 'Blocked by browsers'
+      })
+    })
+
+    it('checkDomainBlocklist skips non-phishing contexts', () => {
+      const ctx = {
+        isBlocklistCheckEnabled: false,
+        landingPageParams: { urlTemplate: 'https://test.com' },
+        extractDomain: methods.extractDomain
+      }
+      methods.checkDomainBlocklist.call(ctx)
+      expect(getDomainBlocklistStatus).not.toHaveBeenCalled()
+    })
   })
 })

@@ -483,6 +483,18 @@
                           </div>
                         </div>
                       </div>
+                      <div
+                        v-if="blocklistWarning"
+                        class="blocklist-preview-bar mx-4"
+                        :class="'blocklist-preview-bar--' + blocklistWarning.status"
+                      >
+                        <VIcon
+                          x-small
+                          :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'"
+                          >mdi-shield-alert</VIcon
+                        >
+                        <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                      </div>
                       <ElTabs
                         v-if="landingPageTemplates.length > 1"
                         v-model="selectedLandingPageTab"
@@ -854,6 +866,18 @@
                         }}</span>
                       </div>
                     </div>
+                    <div
+                      v-if="blocklistWarning"
+                      class="blocklist-preview-bar mx-4"
+                      :class="'blocklist-preview-bar--' + blocklistWarning.status"
+                    >
+                      <VIcon
+                        x-small
+                        :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'"
+                        >mdi-shield-alert</VIcon
+                      >
+                      <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                    </div>
                     <AlertBox
                       v-if="showPageAlert"
                       class="alert-box--info-custom mt-3 mx-4"
@@ -946,6 +970,7 @@ import { isDifferent, handleIsSafari } from '@/utils/functions'
 import AlertBox from '@/components/AlertBox'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 export default {
   name: 'LandingPageListPreview',
   mixins: [useDebounce],
@@ -1024,6 +1049,7 @@ export default {
       isTemplateDetails: null,
       loadingTemplates: true,
       templateURL: null,
+      blocklistWarning: null,
       isInvisibleCaptchaEnabled: false,
       selectedPreviousIndex: 0,
       mfaMessageRules: [
@@ -1159,6 +1185,10 @@ export default {
       return this.hasActiveFilters
         ? 'Search criteria has no results'
         : 'You do not have Landing Page Template'
+    },
+    blocklistWarningText() {
+      if (!this.blocklistWarning) return ''
+      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
     }
   },
   watch: {
@@ -1757,6 +1787,8 @@ export default {
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.isInvisibleCaptchaEnabled = response?.data?.data?.isInvisibleCaptchaEnabled || false
           this.newUrlTemplate = this.templateURL
+          this.blocklistWarning = null
+          this.checkDomainBlocklist()
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
           this.applyLandingPageTemplatePayload(this.landingPageTemplateData)
@@ -1781,6 +1813,28 @@ export default {
         this.selectedTab = 'mfaSettings'
       }
       return false
+    },
+    extractDomain(url) {
+      if (!url) return null
+      try {
+        const fullUrl = url.startsWith('http') ? url : 'https://' + url
+        return new URL(fullUrl).hostname.replace(/^www\./, '')
+      } catch {
+        return null
+      }
+    },
+    checkDomainBlocklist() {
+      if (this.type !== SCENARIO_TYPES.PHISHING) return
+      const domain = this.extractDomain(this.templateURL)
+      if (!domain) return
+      return getDomainBlocklistStatus(domain)
+        .then((response) => {
+          const data = response.data
+          if (data.status === 'malicious' || data.status === 'suspicious') {
+            this.blocklistWarning = { status: data.status, reason: data.reason }
+          }
+        })
+        .catch(() => {})
     }
   }
 }
