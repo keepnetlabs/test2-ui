@@ -587,6 +587,18 @@
                           </span>
                         </div>
                       </div>
+                      <div
+                        v-if="blocklistWarning"
+                        class="blocklist-preview-bar"
+                        :class="'blocklist-preview-bar--' + blocklistWarning.status"
+                      >
+                        <VIcon
+                          x-small
+                          :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'"
+                          >mdi-shield-alert</VIcon
+                        >
+                        <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                      </div>
                       <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
                         v-if="!!getSingleTemplateDetails"
@@ -676,6 +688,7 @@ import {
 import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -794,7 +807,8 @@ export default {
       isShowLandingPagePreview: false,
       landingPagePreviewSelectedRow: null,
       landingPageLanguagePreview: '',
-      selectedLandingPageLanguages: []
+      selectedLandingPageLanguages: [],
+      blocklistWarning: null
     }
   },
   computed: {
@@ -942,6 +956,10 @@ export default {
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
+    },
+    blocklistWarningText() {
+      if (!this.blocklistWarning) return ''
+      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
     }
   },
   watch: {
@@ -1436,6 +1454,8 @@ export default {
             isInvisibleCaptchaEnabled: isInvisibleCaptchaEnabled ? 'Enabled' : 'Disabled',
             resourceId: landingPageResourceId
           }
+          this.blocklistWarning = null
+          this.checkDomainBlocklist()
           this.applyLandingPageTemplatePayload({
             landingPages: landingPages || [],
             languageTypeResourceId,
@@ -1800,6 +1820,28 @@ export default {
     handleLandingPageLanguageChange(languageId) {
       if (!languageId) return
       this.landingPageLanguagePreview = languageId
+    },
+    extractDomain(url) {
+      if (!url) return null
+      try {
+        const fullUrl = url.startsWith('http') ? url : 'https://' + url
+        return new URL(fullUrl).hostname.replace(/^www\./, '')
+      } catch {
+        return null
+      }
+    },
+    checkDomainBlocklist() {
+      if (this.type !== SCENARIO_TYPES.PHISHING) return
+      const domain = this.extractDomain(this.landingPageParams?.urlTemplate)
+      if (!domain) return
+      return getDomainBlocklistStatus(domain)
+        .then((response) => {
+          const data = response.data
+          if (data.status === 'malicious' || data.status === 'suspicious') {
+            this.blocklistWarning = { status: data.status, reason: data.reason }
+          }
+        })
+        .catch(() => {})
     }
   }
 }

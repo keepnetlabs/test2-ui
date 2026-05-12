@@ -93,7 +93,7 @@
             />
             <div v-if="blocklistWarning" class="blocklist-preview-bar" :class="'blocklist-preview-bar--' + blocklistWarning.status">
               <VIcon x-small :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
-              <span class="blocklist-preview-bar__text">{{ blocklistWarning.reason }}</span>
+              <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
             </div>
             <KEmailPreview
               v-if="!!getCurrentPageTemplate(template)"
@@ -271,6 +271,10 @@ export default {
     },
     isMfaSettingsTab() {
       return this.landingPageTab === String(this.landingPageTemplates.length + 1)
+    },
+    blocklistWarningText() {
+      if (!this.blocklistWarning) return ''
+      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
     }
   },
   watch: {
