@@ -68,6 +68,24 @@ describe('CallbackTemplatePreview.vue (extra branch coverage)', () => {
         })
       ).toBe(false)
     })
+
+    it('showEditButton hides edit when selected row is not owner', () => {
+      expect(
+        CallbackTemplatePreview.computed.showEditButton.call({
+          selectedRow: { isOwner: false }
+        })
+      ).toBe(false)
+      expect(
+        CallbackTemplatePreview.computed.showEditButton.call({
+          selectedRow: { isOwner: true }
+        })
+      ).toBe(true)
+      expect(
+        CallbackTemplatePreview.computed.showEditButton.call({
+          selectedRow: null
+        })
+      ).toBe(true)
+    })
   })
 
   describe('handleClose', () => {
@@ -82,10 +100,20 @@ describe('CallbackTemplatePreview.vue (extra branch coverage)', () => {
     it('emit events with selectedRow payload', () => {
       const emit = jest.fn()
       const selectedRow = { resourceId: 't1', name: 'Template A' }
-      CallbackTemplatePreview.methods.handleEdit.call({ $emit: emit, selectedRow })
+      CallbackTemplatePreview.methods.handleEdit.call({ $emit: emit, selectedRow, showEditButton: true })
       expect(emit).toHaveBeenCalledWith('on-edit', selectedRow)
       CallbackTemplatePreview.methods.handleDuplicate.call({ $emit: emit, selectedRow })
       expect(emit).toHaveBeenCalledWith('on-duplicate', selectedRow)
+    })
+
+    it('does not emit edit when selected row is not owner', () => {
+      const emit = jest.fn()
+      CallbackTemplatePreview.methods.handleEdit.call({
+        $emit: emit,
+        selectedRow: { resourceId: 't1', isOwner: false },
+        showEditButton: false
+      })
+      expect(emit).not.toHaveBeenCalled()
     })
   })
 

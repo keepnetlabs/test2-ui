@@ -9,6 +9,11 @@ jest.mock('@/utils/functions', () => {
 
 import LandingPageTemplateListPreview from '@/components/workshop/LandingPageTemplateListPreview.vue'
 import { isDifferent } from '@/utils/functions'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
+
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} })
+}))
 
 describe('workshop/LandingPageTemplateListPreview.vue', () => {
   const { methods, computed } = LandingPageTemplateListPreview
@@ -181,6 +186,50 @@ describe('workshop/LandingPageTemplateListPreview.vue', () => {
     expect(ctx.languagePreview).toBe('en')
     methods.handleLandingPagePreviewLanguageChange.call(ctx, 'tr')
     expect(ctx.languagePreview).toBe('tr')
+  })
+
+  it('extractDomain parses landing page URL and strips www', () => {
+    expect(methods.extractDomain('https://www.example.com/path')).toBe('example.com')
+    expect(methods.extractDomain('example.com/path')).toBe('example.com')
+    expect(methods.extractDomain('')).toBeNull()
+  })
+
+  it('checkDomainBlocklist calls API for phishing landing page URLs', () => {
+    const ctx = {
+      type: 'Phishing',
+      templateURL: 'https://www.blocked.test/login',
+      blocklistWarning: null,
+      extractDomain: methods.extractDomain
+    }
+    methods.checkDomainBlocklist.call(ctx)
+    expect(getDomainBlocklistStatus).toHaveBeenCalledWith('blocked.test')
+  })
+
+  it('checkDomainBlocklist sets warning for suspicious phishing domains', async () => {
+    const ctx = {
+      type: 'Phishing',
+      templateURL: 'https://suspicious.test',
+      blocklistWarning: null,
+      extractDomain: methods.extractDomain
+    }
+    getDomainBlocklistStatus.mockResolvedValueOnce({
+      data: { status: 'suspicious', reason: 'Flagged by 2 vendors' }
+    })
+    await methods.checkDomainBlocklist.call(ctx)
+    expect(ctx.blocklistWarning).toEqual({
+      status: 'suspicious',
+      reason: 'Flagged by 2 vendors'
+    })
+  })
+
+  it('checkDomainBlocklist skips non-phishing template selections', () => {
+    const ctx = {
+      type: 'Quishing',
+      templateURL: 'https://blocked.test',
+      extractDomain: methods.extractDomain
+    }
+    methods.checkDomainBlocklist.call(ctx)
+    expect(getDomainBlocklistStatus).not.toHaveBeenCalled()
   })
 
   it('checkIsRedFlaggedTemplate and getPreviewLandingHtml handle logo replacements', () => {

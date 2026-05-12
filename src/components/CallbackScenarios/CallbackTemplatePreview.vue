@@ -48,7 +48,7 @@
             }}</span>
           </div>
           <div v-if="!isCampaign" class="callback-template-preview__header-right d-flex align-center gap-2">
-            <VTooltip bottom>
+            <VTooltip v-if="showEditButton" bottom>
               <template #activator="{ on }">
                 <div v-on="on">
                   <VBtn icon outlined color="#2196F3" small @click="handleEdit">
@@ -148,6 +148,9 @@ export default {
     },
     isRenderSteps() {
       return this.templateData?.steps?.length > 0
+    },
+    showEditButton() {
+      return this.selectedRow?.isOwner !== false
     }
   },
   created() {
@@ -186,6 +189,7 @@ export default {
       this.closeDrawer()
     },
     handleEdit() {
+      if (!this.showEditButton) return
       this.$emit('on-edit', this.selectedRow)
     },
     handleDuplicate() {
