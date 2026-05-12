@@ -576,6 +576,80 @@ describe('NewLandingPage.vue', () => {
     expect(ctx.getNewIndexForPageText).not.toHaveBeenCalled()
   })
 
+  it('handleClickOnlyPageAdded carries template custom scripts to the added page', async () => {
+    getLandingPageTemplatePreviewContent.mockResolvedValueOnce({
+      data: {
+        data: {
+          landingPages: [
+            {
+              content: '<html><body><div>learning</div></body></html>',
+              customHeadScripts: '<script>window.startTour = true</script>',
+              customHeadScriptsPlacement: 'body-end'
+            }
+          ]
+        }
+      }
+    })
+
+    const ctx = {
+      isSelectClickOnlyPageOpen: true,
+      isEdit: true,
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, prompt: '', content: 'existing' }]
+      },
+      languagesPayload: [],
+      customHeadScripts: {},
+      customHeadScriptsPlacement: {},
+      tab: 'page1',
+      $set: (target, key, value) => {
+        target[key] = value
+      },
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 2)
+    }
+
+    await methods.handleClickOnlyPageAdded.call(ctx, 'resource-with-script')
+
+    expect(ctx.formValues.landingPages[1].content).toContain(
+      'data-custom-landing-page-script="true"'
+    )
+    expect(ctx.formValues.landingPages[1].content).toContain(
+      'data-custom-landing-page-script-position="body-end"'
+    )
+    expect(ctx.customHeadScripts[1]).toBe('<script>window.startTour = true</script>')
+    expect(ctx.customHeadScriptsPlacement[1]).toBe('body-end')
+  })
+
+  it('handleClickOnlyPageAdded clears stale scripts when selected template has no custom scripts', async () => {
+    getLandingPageTemplatePreviewContent.mockResolvedValueOnce({
+      data: {
+        data: {
+          landingPages: [{ content: '<div>plain-template</div>' }]
+        }
+      }
+    })
+
+    const ctx = {
+      isSelectClickOnlyPageOpen: true,
+      isEdit: true,
+      formValues: {
+        landingPages: [{ name: 'landing-page', order: 1, prompt: '', content: 'existing' }]
+      },
+      languagesPayload: [],
+      customHeadScripts: { 1: '<script>stale()</script>' },
+      customHeadScriptsPlacement: { 1: 'body-end' },
+      tab: 'page1',
+      getAndUpdateFirstIndexForPageText: jest.fn(() => 2),
+      getNewIndexForPageText: jest.fn(() => 2)
+    }
+
+    await methods.handleClickOnlyPageAdded.call(ctx, 'resource-without-script')
+
+    expect(ctx.formValues.landingPages[1].content).toBe('<div>plain-template</div>')
+    expect(ctx.customHeadScripts[1]).toBeUndefined()
+    expect(ctx.customHeadScriptsPlacement[1]).toBeUndefined()
+  })
+
   it('handleClickOnlyPageAdded uses edit page index helper in edit flow', async () => {
     getLandingPageTemplatePreviewContent.mockResolvedValueOnce({
       data: {
