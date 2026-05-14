@@ -57,6 +57,9 @@
         @searchChangedEvent="handleSearchChange"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
       >
+        <template #datatable-custom-column="{ scope, col }">
+          <span>{{ getBooleanLabel(scope.row[col.property]) }}</span>
+        </template>
         <template #datatable-row-actions="{ scope }">
           <DefaultButtonRowAction
             :id="tableOptions.rowActions[0].id"
@@ -228,6 +231,30 @@ export default {
             filterableCustomFieldName: 'StatusId'
           },
           {
+            property: PROPERTY_STORE.BYPASS_SSO_REDIRECT,
+            align: 'center',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.BYPASS_SSO_REDIRECT),
+            sortable: false,
+            hideSort: true,
+            show: true,
+            fixed: false,
+            type: 'slot',
+            width: 220
+          },
+          {
+            property: PROPERTY_STORE.BYPASS_MFA,
+            align: 'center',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.BYPASS_MFA),
+            sortable: false,
+            hideSort: true,
+            show: true,
+            fixed: false,
+            type: 'slot',
+            width: 180
+          },
+          {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
@@ -317,6 +344,9 @@ export default {
           })
           .finally(() => (this.loading = false))
       }
+    },
+    getBooleanLabel(value) {
+      return value ? 'Yes' : 'No'
     },
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [

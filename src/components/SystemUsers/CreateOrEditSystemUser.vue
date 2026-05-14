@@ -26,6 +26,7 @@
         :role-items="roleItems"
         :status-items="statusItems"
         :isSameUser="isSameUser"
+        :is-sso-configured="isSsoConfigured"
         @on-status-change="handleChangeStatus"
       />
       <form-group v-if="selectedRow">
@@ -112,6 +113,17 @@ export default {
     },
     getBodyTitle() {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
+    },
+    isSsoConfigured() {
+      const row = this.selectedRow || {}
+      const ssoConfigured =
+        row.isSsoConfigured ??
+        row.ssoConfigured ??
+        row.hasSamlConfiguration ??
+        row.isSamlConfigured ??
+        row.enableSAMLSSO
+
+      return ssoConfigured !== false
     }
   },
   watch: {
@@ -146,13 +158,17 @@ export default {
           roles,
           statusName,
           email,
-          statusId
+          statusId,
+          bypassSsoRedirect,
+          bypassMfa
         } = this.selectedRow
         this.formValues.firstName = firstName
         this.formValues.lastName = lastName
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
+        this.formValues.bypassSsoRedirect = !!bypassSsoRedirect
+        this.formValues.bypassMfa = !!bypassMfa
         this.formValues.phoneNumber =
           typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber || ''
         const resourceId =
