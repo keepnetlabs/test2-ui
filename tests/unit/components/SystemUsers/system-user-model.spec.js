@@ -8,6 +8,8 @@ describe('SystemUserModel', () => {
     expect(model.email).toBe('')
     expect(model.roleResourceIdList).toEqual([])
     expect(model.statusId).toBe(1)
+    expect(model.bypassSsoRedirect).toBe(false)
+    expect(model.bypassMfa).toBe(false)
   })
 
   it('getFullName returns concatenated first and last name', () => {

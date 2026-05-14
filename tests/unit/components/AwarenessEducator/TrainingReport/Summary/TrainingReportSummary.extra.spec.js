@@ -53,6 +53,21 @@ describe('TrainingReportSummary.vue (extra branch coverage)', () => {
     expect(data[labels.Certificates]).toBeUndefined()
   })
 
+  it('getTrainingDeliveryData shows Distribution as No for Learning Path when description is missing', () => {
+    const data = TrainingReportSummary.computed.getTrainingDeliveryData.call({
+      isTrainingTypeLearningPath: true,
+      trainingSummary: {
+        reminderDescription: '',
+        startDate: '2026-02-01',
+        deliveryMethod: 'Email'
+      }
+    })
+
+    expect(data.Distribution.value).toBe('No')
+    expect(data['Reminder Options'].value).toBe('No')
+    expect(data['Delivery Status']).toBeUndefined()
+  })
+
   it('isCertificatesFieldVisible false for Poster type', () => {
     const ctx = {
       trainingSummary: {

@@ -39,6 +39,20 @@ describe('CreateOrEditSystemUser.vue', () => {
     ).toBe('Edit System User')
   })
 
+  it('isSsoConfigured only disables SSO override when backend explicitly returns false', () => {
+    expect(CreateOrEditSystemUser.computed.isSsoConfigured.call({ selectedRow: null })).toBe(true)
+    expect(
+      CreateOrEditSystemUser.computed.isSsoConfigured.call({
+        selectedRow: { isSsoConfigured: false }
+      })
+    ).toBe(false)
+    expect(
+      CreateOrEditSystemUser.computed.isSsoConfigured.call({
+        selectedRow: { hasSamlConfiguration: true }
+      })
+    ).toBe(true)
+  })
+
   it('country watcher sets phone/timezone defaults only when creating and country exists', () => {
     const ctx = {
       selectedRow: null,

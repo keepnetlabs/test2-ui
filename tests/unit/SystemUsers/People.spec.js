@@ -78,6 +78,12 @@ describe('SystemUsers/People.vue', () => {
     expect(ctx.callForData).toHaveBeenCalled()
   })
 
+  it('getBooleanLabel maps bypass flags to readable labels', () => {
+    expect(People.methods.getBooleanLabel(true)).toBe('Yes')
+    expect(People.methods.getBooleanLabel(false)).toBe('No')
+    expect(People.methods.getBooleanLabel(undefined)).toBe('No')
+  })
+
   it('callForData sets table and server side props on success', async () => {
     const ctx = {
       loading: false,
