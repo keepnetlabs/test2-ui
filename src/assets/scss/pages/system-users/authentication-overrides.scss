@@ -1,0 +1,136 @@
+.system-user-authentication-overrides {
+  max-width: 672px !important;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  background-color: #fff;
+
+  .v-list-item__content {
+    display: block;
+  }
+
+  .k-form-group__content {
+    margin-top: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 22px;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #fbfbfc;
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  &__heading-title {
+    color: #383b41;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  &__status {
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: #f3f4f6;
+    color: #8a8f98;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__status--active {
+    background-color: #e8f4fd;
+    color: #1976d2;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    min-height: 88px;
+    padding: 18px 22px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #e5e7eb;
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #90caf9;
+    border-radius: 14px;
+    background-color: #e3f2fd;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__title {
+    color: #383b41;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  &__description {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  &__warning {
+    margin-top: 2px;
+    color: #b7791f;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  &__switch {
+    flex: 0 0 auto;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+
+    .v-input__slot {
+      margin-bottom: 0 !important;
+    }
+
+    .v-input--selection-controls__input {
+      order: 2;
+      margin-right: 0;
+    }
+
+    .v-label {
+      order: 1;
+      min-width: 24px;
+      margin-right: 10px;
+      color: #383b41 !important;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: none;
+    }
+  }
+}
