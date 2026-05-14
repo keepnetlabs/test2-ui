@@ -373,11 +373,16 @@ export default {
       }
     },
     getTrainingDeliveryData() {
-      const { reminderDescription = 'No', startDate = '', deliveryMethod = '' } = this
-        .trainingSummary || {
+      const {
+        reminderDescription = 'No',
+        startDate = '',
+        deliveryMethod = '',
+        distributionDescription = 'No'
+      } = this.trainingSummary || {
         reminderDescription: 'No',
         startDate: '',
-        deliveryMethod: ''
+        deliveryMethod: '',
+        distributionDescription: 'No'
       }
       const dateKey = this.isTrainingTypeLearningPath ? 'Delivery Start' : 'Start Date'
       const obj = {
@@ -392,6 +397,12 @@ export default {
         'Reminder Options': {
           show: true,
           value: reminderDescription || 'No'
+        }
+      }
+      if (this.isTrainingTypeLearningPath) {
+        obj.Distribution = {
+          show: true,
+          value: distributionDescription || 'No'
         }
       }
       if (!this.isTrainingTypeLearningPath) {

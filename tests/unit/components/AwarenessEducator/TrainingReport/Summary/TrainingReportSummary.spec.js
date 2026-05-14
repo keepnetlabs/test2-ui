@@ -63,6 +63,7 @@ describe('TrainingReportSummary.vue', () => {
         groupCount: 2,
         isTest: true,
         reminderDescription: 'Daily',
+        distributionDescription: 'Every 2 days, weekends postponed',
         startDate: '2026-01-01',
         deliveryMethod: 'Email',
         languages: ['EN', 'TR'],
@@ -113,6 +114,7 @@ describe('TrainingReportSummary.vue', () => {
     })
     expect(deliveryData['Delivery Method'].value).toBe('Email')
     expect(deliveryData['Delivery Start'].value).toBe('2026-01-01')
+    expect(deliveryData.Distribution.value).toBe('Every 2 days, weekends postponed')
     expect(deliveryData['Delivery Status']).toBeUndefined()
 
     const deliveryData2 = TrainingReportSummary.computed.getTrainingDeliveryData.call({
@@ -120,6 +122,7 @@ describe('TrainingReportSummary.vue', () => {
       isTrainingTypeLearningPath: false
     })
     expect(deliveryData2['Start Date'].value).toBe('2026-01-01')
+    expect(deliveryData2.Distribution).toBeUndefined()
     expect(deliveryData2['Delivery Status'].show).toBe(true)
 
     expect(TrainingReportSummary.computed.getChartData.call(ctx)).toHaveLength(9)
