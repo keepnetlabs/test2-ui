@@ -27,14 +27,40 @@
     <div
       v-show="isExpanded"
       class="chat-sidebar"
-      :class="{ 'chat-sidebar-open': isExpanded, fullwidth: isFullWidth }"
+      :class="{
+        'chat-sidebar-open': isExpanded,
+        'chat-sidebar--resizing': isResizing,
+        fullwidth: isFullWidth
+      }"
+      :style="chatSidebarStyle"
     >
+      <div
+        v-if="!isFullWidth"
+        class="chat-resize-handle"
+        title="Resize chat panel"
+        @mousedown="startResize"
+        @dblclick="resetSidebarWidth"
+      ></div>
+
       <!-- Chat Header -->
       <div class="chat-header">
         <div class="d-flex align-center">
           <v-icon color="#2196F3">mdi-creation</v-icon>
         </div>
         <div class="d-flex gap-2">
+          <v-tooltip v-if="!isFullWidth" bottom>
+            <template #activator="{ on }">
+              <v-icon
+                v-on="on"
+                small
+                color="#757575"
+                class="chat-resize-hint"
+              >
+                mdi-arrow-left-right
+              </v-icon>
+            </template>
+            <span>Drag the left edge to resize</span>
+          </v-tooltip>
           <v-btn icon small @click="toggleFullWidth" color="#757575">
             <v-icon>{{
               isFullWidth ? "mdi-window-restore" : "mdi-window-maximize"
@@ -115,6 +141,30 @@
 <script>
 import { getAgentLoginUrl } from "@/api/auth";
 
+const CHAT_SIDEBAR_WIDTH_STORAGE_KEY = "agenticAIChatSidebarWidthPercent";
+const DEFAULT_CHAT_SIDEBAR_WIDTH_PERCENT = 35;
+const MIN_CHAT_SIDEBAR_WIDTH_PERCENT = 30;
+const MAX_CHAT_SIDEBAR_WIDTH_PERCENT = 85;
+
+const clampChatSidebarWidth = (value) => {
+  const width = Number(value);
+  if (!Number.isFinite(width)) return DEFAULT_CHAT_SIDEBAR_WIDTH_PERCENT;
+  return Math.min(
+    MAX_CHAT_SIDEBAR_WIDTH_PERCENT,
+    Math.max(MIN_CHAT_SIDEBAR_WIDTH_PERCENT, width)
+  );
+};
+
+const getInitialChatSidebarWidth = () => {
+  try {
+    return clampChatSidebarWidth(
+      localStorage.getItem(CHAT_SIDEBAR_WIDTH_STORAGE_KEY)
+    );
+  } catch {
+    return DEFAULT_CHAT_SIDEBAR_WIDTH_PERCENT;
+  }
+};
+
 export default {
   name: "ChatPanel",
   data() {
@@ -131,7 +181,8 @@ export default {
       isInitialHidden: true,
       chatPopupInterval: null,
       isHoveringButton: false,
-      buttonPosition: { right: 20, top: 20 },
+      sidebarWidthPercent: getInitialChatSidebarWidth(),
+      isResizing: false,
       sessionId
     };
   },
@@ -142,8 +193,11 @@ export default {
     agenticAISettingsPermission() {
       return this.$store.getters["permissions/getAgenticAISettingsGetPermissions"];
     },
-    iframeSrc() {
-      return `${this.chatUrl}?embedded=true&theme=${this.getCurrentTheme()}`;
+    chatSidebarStyle() {
+      if (this.isFullWidth) return {};
+      return {
+        width: `${this.sidebarWidthPercent}%`
+      };
     }
   },
   watch: {
@@ -275,6 +329,48 @@ export default {
       }
     },
 
+    startResize(event) {
+      event.preventDefault();
+      this.isResizing = true;
+      document.body.style.cursor = "ew-resize";
+      document.body.style.userSelect = "none";
+      globalThis.addEventListener("mousemove", this.handleResize);
+      globalThis.addEventListener("mouseup", this.stopResize);
+    },
+
+    handleResize(event) {
+      if (!this.isResizing || this.isFullWidth) return;
+      const viewportWidth = globalThis.innerWidth || 1;
+      const widthPercent = ((viewportWidth - event.clientX) / viewportWidth) * 100;
+      this.sidebarWidthPercent = clampChatSidebarWidth(widthPercent);
+    },
+
+    stopResize() {
+      const wasResizing = this.isResizing;
+      this.isResizing = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      globalThis.removeEventListener("mousemove", this.handleResize);
+      globalThis.removeEventListener("mouseup", this.stopResize);
+      if (wasResizing) this.persistSidebarWidth();
+    },
+
+    resetSidebarWidth() {
+      this.sidebarWidthPercent = DEFAULT_CHAT_SIDEBAR_WIDTH_PERCENT;
+      this.persistSidebarWidth();
+    },
+
+    persistSidebarWidth() {
+      try {
+        localStorage.setItem(
+          CHAT_SIDEBAR_WIDTH_STORAGE_KEY,
+          String(this.sidebarWidthPercent)
+        );
+      } catch {
+        // Ignore storage failures; resizing should still work for the current session.
+      }
+    },
+
     // İframe'den gelen mesajları dinle
     handleIframeMessage(event) {
       // Chat URL API endpoint'ine taşınmışsa iframe redirect edebilir ve origin değişir.
@@ -354,6 +450,8 @@ export default {
     // Event listener'ı kaldır
     globalThis.removeEventListener("message", this.handleIframeMessage);
     globalThis.removeEventListener("open-agentic-ai-chat", this.handleExternalOpen);
+    this.stopResize();
+    document.querySelector("html").style.overflowY = "";
     // Diğer chat-popup elemanını aç
     const otherChatPopup = document.querySelector(".chat-popup");
     if (otherChatPopup) {
@@ -455,6 +553,45 @@ export default {
   z-index: 1000;
 }
 
+.chat-resize-handle {
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 12px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 2;
+}
+
+.chat-resize-handle::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  width: 2px;
+  height: 64px;
+  border-radius: 2px;
+  background: rgba(117, 117, 117, 0.45);
+  opacity: 1;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, width 0.2s ease;
+}
+
+.chat-resize-handle:hover::before,
+.chat-sidebar--resizing .chat-resize-handle::before {
+  width: 3px;
+  background: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.12);
+}
+
+.chat-sidebar--resizing {
+  transition: none;
+}
+
+.chat-sidebar--resizing .chat-iframe {
+  pointer-events: none;
+}
+
 .chat-sidebar-open {
   right: 0; /* Açıkken görünür */
 }
@@ -536,6 +673,12 @@ export default {
 
 .chat-sidebar.fullwidth .chat-header {
   padding: 12px 24px 12px 16px;
+}
+
+.chat-resize-hint {
+  align-self: center;
+  cursor: help;
+  margin-right: 2px;
 }
 
 .chat-iframe-container {

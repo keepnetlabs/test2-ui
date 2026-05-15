@@ -10,6 +10,7 @@ describe('SystemUserModel', () => {
     expect(model.statusId).toBe(1)
     expect(model.bypassSsoRedirect).toBe(false)
     expect(model.bypassMfa).toBe(false)
+    expect(model.bypassIpRestriction).toBe(false)
   })
 
   it('getFullName returns concatenated first and last name', () => {
