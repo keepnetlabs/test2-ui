@@ -1,7 +1,7 @@
 <template>
   <WidgetLoading :loading="isLoading">
     <template #skeleton-content>
-      <ExecutiveWidgetContainer>
+      <ExecutiveWidgetContainer class="executive-report-total-reported-suspicious-container">
         <ExecutiveWidgetHeader
           :title="card.title"
           :subtitle="card.parentKey"
@@ -32,6 +32,9 @@
             </v-btn>
           </div>
         </ExecutiveWidgetBody>
+        <span v-if="!isEmpty" class="executive-report-total-reported-suspicious-note">
+          {{ simulationSourceNote }}
+        </span>
       </ExecutiveWidgetContainer>
     </template>
   </WidgetLoading>
@@ -44,7 +47,11 @@ import ExecutiveWidgetHeader from '@/components/ExecutiveReports/ExecutiveReport
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import HorizontalBarChart from '@/components/Common/Charts/HorizontalBar.vue'
 import { getExecutiveReportChartData } from '@/api/reports'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import {
+  CHART_COLORS,
+  SIMULATION_SOURCE_NOTE,
+  getSimulationSourceDetails
+} from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 export default {
   name: 'ExecutiveReportsTotalReportedSuspicious',
   components: {
@@ -89,6 +96,7 @@ export default {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: {},
+      simulationSourceNote: SIMULATION_SOURCE_NOTE,
       customPlugin: {
         id: 'customPlugin',
         afterDraw(chart) {
@@ -172,13 +180,19 @@ export default {
       }
       const yLabels = ['Undetected', 'Malicious', 'Phishing', 'Simulation']
       const dataSetsData = data[0].widgetDatas.map((obj) => {
+        const details = {
+          'Number of Reporting': obj.values[1].value,
+          'Percentage of Reporting': obj.values[0].value + '%'
+        }
+
+        if (obj.dataObject.ActionRange === 'Simulation') {
+          Object.assign(details, getSimulationSourceDetails(obj))
+        }
+
         return {
           x: obj.values[0].value,
           y: obj.dataObject.ActionRange,
-          details: {
-            'Number of Reporting': obj.values[1].value,
-            'Percentage of Reporting': obj.values[0].value + '%'
-          }
+          details
         }
       })
       let maxX = Math.max(...dataSetsData.map((obj) => obj.x))
