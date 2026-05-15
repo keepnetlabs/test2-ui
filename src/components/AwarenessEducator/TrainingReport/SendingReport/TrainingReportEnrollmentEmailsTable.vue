@@ -163,6 +163,11 @@ import { createCustomFieldColumns } from '@/utils/helperFunctions'
 const ENUMS = {
   SEND_GRID: 'Sendgrid'
 }
+const USER_STATUS_FILTER_ITEMS = [
+  { text: 'Active', value: 'Active' },
+  { text: 'Inactive', value: 'Inactive' },
+  { text: 'Deleted', value: 'Deleted' }
+]
 
 export default {
   name: 'TrainingReportEnrollmentEmailsTable',
@@ -323,7 +328,10 @@ export default {
             hideSort: true,
             show: true,
             type: 'slot',
-            width: 180
+            width: 180,
+            filterableType: 'select',
+            filterableItems: USER_STATUS_FILTER_ITEMS,
+            filterableCustomFieldName: 'UserStatus'
           },
           {
             property: PROPERTY_STORE.EMAIL_DELIVERY,

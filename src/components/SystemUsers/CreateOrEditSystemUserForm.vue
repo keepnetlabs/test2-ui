@@ -110,6 +110,32 @@
             hide-details
           />
         </div>
+        <div class="system-user-authentication-overrides__item">
+          <div class="system-user-authentication-overrides__icon">
+            <v-icon size="24" color="#2196f3">mdi-ip-network-outline</v-icon>
+          </div>
+          <div class="system-user-authentication-overrides__content">
+            <span class="system-user-authentication-overrides__title">
+              Bypass IP Restriction
+            </span>
+            <span class="system-user-authentication-overrides__description">
+              Allow this system user to sign in outside the company's allowed IP ranges.
+            </span>
+            <span v-if="!hasIpRestrictions" class="system-user-authentication-overrides__warning">
+              IP restriction is not configured for this company.
+            </span>
+          </div>
+          <v-switch
+            v-model="formValues.bypassIpRestriction"
+            id="input--system-user-bypass-ip-restriction"
+            :label="getSwitchLabel(formValues.bypassIpRestriction)"
+            class="k-switch system-user-authentication-overrides__switch"
+            color="#2196f3"
+            :disabled="!hasIpRestrictions"
+            inset
+            hide-details
+          />
+        </div>
       </div>
     </form-group>
   </v-form>
@@ -143,6 +169,10 @@ export default {
     isSsoConfigured: {
       type: Boolean,
       default: true
+    },
+    hasIpRestrictions: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -156,14 +186,20 @@ export default {
   },
   computed: {
     hasAuthenticationOverrides() {
-      return this.formValues.bypassSsoRedirect || this.formValues.bypassMfa
+      return (
+        this.formValues.bypassSsoRedirect ||
+        this.formValues.bypassMfa ||
+        this.formValues.bypassIpRestriction
+      )
     },
     authenticationOverrideStatus() {
-      const { bypassSsoRedirect, bypassMfa } = this.formValues
-      if (bypassSsoRedirect && bypassMfa) return 'SSO + MFA bypassed'
-      if (bypassSsoRedirect) return 'SSO bypassed'
-      if (bypassMfa) return 'MFA bypassed'
-      return 'No overrides active'
+      const { bypassSsoRedirect, bypassMfa, bypassIpRestriction } = this.formValues
+      const activeOverrides = []
+      if (bypassSsoRedirect) activeOverrides.push('SSO')
+      if (bypassMfa) activeOverrides.push('MFA')
+      if (bypassIpRestriction) activeOverrides.push('IP restriction')
+
+      return activeOverrides.length ? `${activeOverrides.join(' + ')} bypassed` : 'No overrides active'
     }
   },
   methods: {

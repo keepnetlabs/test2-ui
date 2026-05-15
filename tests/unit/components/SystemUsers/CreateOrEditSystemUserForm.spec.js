@@ -5,35 +5,50 @@ describe('CreateOrEditSystemUserForm.vue', () => {
     it('authenticationOverrideStatus returns the active override chip label', () => {
       expect(
         CreateOrEditSystemUserForm.computed.authenticationOverrideStatus.call({
-          formValues: { bypassSsoRedirect: false, bypassMfa: false }
+          formValues: { bypassSsoRedirect: false, bypassMfa: false, bypassIpRestriction: false }
         })
       ).toBe('No overrides active')
       expect(
         CreateOrEditSystemUserForm.computed.authenticationOverrideStatus.call({
-          formValues: { bypassSsoRedirect: true, bypassMfa: false }
+          formValues: { bypassSsoRedirect: true, bypassMfa: false, bypassIpRestriction: false }
         })
       ).toBe('SSO bypassed')
       expect(
         CreateOrEditSystemUserForm.computed.authenticationOverrideStatus.call({
-          formValues: { bypassSsoRedirect: false, bypassMfa: true }
+          formValues: { bypassSsoRedirect: false, bypassMfa: true, bypassIpRestriction: false }
         })
       ).toBe('MFA bypassed')
       expect(
         CreateOrEditSystemUserForm.computed.authenticationOverrideStatus.call({
-          formValues: { bypassSsoRedirect: true, bypassMfa: true }
+          formValues: { bypassSsoRedirect: true, bypassMfa: true, bypassIpRestriction: false }
         })
       ).toBe('SSO + MFA bypassed')
+      expect(
+        CreateOrEditSystemUserForm.computed.authenticationOverrideStatus.call({
+          formValues: { bypassSsoRedirect: true, bypassMfa: true, bypassIpRestriction: true }
+        })
+      ).toBe('SSO + MFA + IP restriction bypassed')
+      expect(
+        CreateOrEditSystemUserForm.computed.authenticationOverrideStatus.call({
+          formValues: { bypassSsoRedirect: false, bypassMfa: false, bypassIpRestriction: true }
+        })
+      ).toBe('IP restriction bypassed')
     })
 
     it('hasAuthenticationOverrides returns true when any override is enabled', () => {
       expect(
         CreateOrEditSystemUserForm.computed.hasAuthenticationOverrides.call({
-          formValues: { bypassSsoRedirect: false, bypassMfa: false }
+          formValues: { bypassSsoRedirect: false, bypassMfa: false, bypassIpRestriction: false }
         })
       ).toBe(false)
       expect(
         CreateOrEditSystemUserForm.computed.hasAuthenticationOverrides.call({
-          formValues: { bypassSsoRedirect: true, bypassMfa: false }
+          formValues: { bypassSsoRedirect: true, bypassMfa: false, bypassIpRestriction: false }
+        })
+      ).toBe(true)
+      expect(
+        CreateOrEditSystemUserForm.computed.hasAuthenticationOverrides.call({
+          formValues: { bypassSsoRedirect: false, bypassMfa: false, bypassIpRestriction: true }
         })
       ).toBe(true)
     })

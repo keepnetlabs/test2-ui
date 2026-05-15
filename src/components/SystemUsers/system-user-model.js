@@ -9,6 +9,7 @@ class SystemUserModel {
     this.statusId = 1
     this.bypassSsoRedirect = false
     this.bypassMfa = false
+    this.bypassIpRestriction = false
   }
   getFullName() {
     return `${this.firstName} ${this.lastName}`
