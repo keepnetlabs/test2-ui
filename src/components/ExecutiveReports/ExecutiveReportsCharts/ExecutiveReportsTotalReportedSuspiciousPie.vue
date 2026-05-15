@@ -1,7 +1,7 @@
 <template>
   <WidgetLoading :loading="isLoading">
     <template #skeleton-content>
-      <ExecutiveWidgetContainer>
+      <ExecutiveWidgetContainer class="executive-report-total-reported-suspicious-container">
         <ExecutiveWidgetHeader
           :title="card.title"
           :subtitle="card.parentKey"
@@ -32,6 +32,9 @@
             </v-btn>
           </div>
         </ExecutiveWidgetBody>
+        <span v-if="!isEmpty" class="executive-report-total-reported-suspicious-note">
+          {{ simulationSourceNote }}
+        </span>
       </ExecutiveWidgetContainer>
     </template>
   </WidgetLoading>
@@ -39,7 +42,11 @@
 <script>
 import PieChart from '@/components/Common/Charts/Pie.vue'
 import labels from '@/model/constants/labels'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import {
+  CHART_COLORS,
+  SIMULATION_SOURCE_NOTE,
+  getSimulationSourceDetails
+} from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
@@ -97,6 +104,7 @@ export default {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: [],
+      simulationSourceNote: SIMULATION_SOURCE_NOTE,
       customPlugins: [
         {
           afterDraw: (chart) => {
@@ -180,9 +188,11 @@ export default {
       const phishingPercentage = phishing ? phishing[0].value : 0
       const simulation = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Simulation'
-      )?.values
-      const simulationCount = simulation ? simulation[1].value : 0
-      const simulationPercentage = simulation ? simulation[0].value : 0
+      )
+      const simulationValues = simulation?.values
+      const simulationCount = simulationValues ? simulationValues[1].value : 0
+      const simulationPercentage = simulationValues ? simulationValues[0].value : 0
+      const simulationSourceDetails = getSimulationSourceDetails(simulation)
       const chartOptions = {
         devicePixelRatio: 2,
         elements: {
@@ -246,10 +256,15 @@ export default {
               } else if (type === 'Phishing') {
                 val = phishing[1].value
               } else if (type === 'Simulation') {
-                val = simulation[1].value
+                val = simulationValues ? simulationValues[1].value : 0
               }
               addTr('Number of Reporting', val, true)
-              addTr('Percentage of Reporting', valArr[1] + '%', false)
+              addTr('Percentage of Reporting', valArr[1] + '%', type !== 'Simulation')
+              if (type === 'Simulation') {
+                Object.entries(simulationSourceDetails).forEach(([label, value], index, arr) => {
+                  addTr(label, value, index < arr.length - 1)
+                })
+              }
             }
             const position = this._chart.canvas.getBoundingClientRect()
             tooltipEl.style.opacity = 1
