@@ -430,8 +430,20 @@ describe('CampaignManagerAddOrEditModal.handleSubmit', () => {
               enrollmentReminder: { sendReminderEvery: null },
               awardCertificate: false,
               certificateConfigSendType: null,
-              enrollmentSendTypeId: null,
-              trainingRedirectPage: null
+              enrollmentSendTypeId: '2',
+              trainingRedirectPage: null,
+              sendTemplatesInPreferredLanguage: true
+            },
+            's-2': {
+              trainingId: 't-2',
+              trainingLanguageIds: ['TR'],
+              isCheckboxSelected: true,
+              enrollmentReminder: { sendReminderEvery: null },
+              awardCertificate: false,
+              certificateConfigSendType: null,
+              enrollmentSendTypeId: '1',
+              trainingRedirectPage: null,
+              sendTemplatesInPreferredLanguage: true
             }
           }
         }
@@ -442,6 +454,16 @@ describe('CampaignManagerAddOrEditModal.handleSubmit', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(createCampaignManager).toHaveBeenCalled()
+    expect(createCampaignManager.mock.calls[0][0].phishingScenarios[0]).toEqual(
+      expect.objectContaining({
+        sendTemplatesInPreferredLanguage: true
+      })
+    )
+    expect(createCampaignManager.mock.calls[0][0].phishingScenarios[1]).toEqual(
+      expect.objectContaining({
+        sendTemplatesInPreferredLanguage: false
+      })
+    )
     expect(emit).toHaveBeenCalledWith('on-submit')
     expect(setActionButtonDisability).toHaveBeenCalledWith(true)
   })

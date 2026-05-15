@@ -141,6 +141,53 @@ describe('CampaignManagerReportSummary.vue (extra branch coverage)', () => {
     })
   })
 
+  it('getScenarioInfoItems omits enrollment notification language when active scenario has no training', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.campaignSummary = {
+      scenariosGeneralInfo: {
+        categories: ['General'],
+        methodTypeId: 1,
+        languageShortCodes: ['en'],
+        difficultyTypeIds: [1]
+      },
+      scenarios: [
+        {
+          scenarioInfo: { name: 'S1', languageShortCode: 'en' },
+          emailTemplateInfo: { languageShortCode: 'en' },
+          sendTemplatesInPreferredLanguage: true
+        }
+      ]
+    }
+
+    expect(wrapper.vm.getScenarioInfoItems['Enrollment Notification Language']).toBeUndefined()
+  })
+
+  it('getScenarioInfoItems shows company language for single scenario root false value', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.languageOptions = [{ languageShortCode: 'en', text: 'English' }]
+    wrapper.vm.campaignSummary = {
+      scenariosGeneralInfo: {
+        categories: ['General'],
+        methodTypeId: 1,
+        languageShortCodes: ['en'],
+        difficultyTypeIds: [1]
+      },
+      scenarios: [
+        {
+          scenarioInfo: { name: 'S1', languageShortCode: 'en' },
+          emailTemplateInfo: { languageShortCode: 'en' },
+          trainingInfo: { name: 'T1' },
+          sendTemplatesInPreferredLanguage: false
+        }
+      ]
+    }
+
+    expect(wrapper.vm.getScenarioInfoItems['Enrollment Notification Language']).toBe(
+      'Company Language'
+    )
+    expect(wrapper.vm.getScenarioInfoItems.Languages).toEqual(['English'])
+  })
+
   it('getEmailTemplateData maps multi-language emailTemplateInfos branch', () => {
     const wrapper = createWrapper()
     wrapper.vm.languageOptions = [
@@ -237,8 +284,10 @@ describe('CampaignManagerReportSummary.vue (extra branch coverage)', () => {
           scenarios: [
             {
               scenarioInfo: { name: 'S1' },
+              emailTemplateInfo: { languageShortCode: 'en' },
               trainingInfo: { name: 'T1', languageList: [{ languageShortCode: 'en' }] },
-              enrollmentInfo: { enrollmentId: 'e1' }
+              sendTemplatesInPreferredLanguage: true,
+              enrollmentInfo: { enrollmentId: 'e1', sendTemplatesInPreferredLanguage: true }
             }
           ]
         }
@@ -251,10 +300,78 @@ describe('CampaignManagerReportSummary.vue (extra branch coverage)', () => {
     const firstKeys = [...wrapper.vm.customKeys]
     expect(firstKeys).toHaveLength(1)
     expect(wrapper.vm.selectedScenarioTab).toBe(firstKeys[0])
+    expect(wrapper.vm.campaignSummary.scenarios[0].trainingInfo.sendTemplatesInPreferredLanguage).toBe(
+      true
+    )
 
     wrapper.vm.setCampaignSummary(response)
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.customKeys).toEqual(firstKeys)
+  })
+
+  it('activeScenarioEnrollmentNotificationLanguage prioritizes root scenario flag over trainingInfo fallback', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.campaignSummary = {
+      scenarios: [
+        {
+          scenarioInfo: { name: 'S1' },
+          emailTemplateInfo: { languageShortCode: 'en' },
+          trainingInfo: { name: 'T1', sendTemplatesInPreferredLanguage: true },
+          sendTemplatesInPreferredLanguage: false
+        }
+      ]
+    }
+
+    expect(wrapper.vm.activeScenarioEnrollmentNotificationLanguage).toBe('Company Language')
+  })
+
+  it('getScenarioInfoItems uses active scenario notification language when scenario tabs differ', () => {
+    const wrapper = createWrapper()
+    wrapper.vm.languageOptions = [
+      { languageShortCode: 'en', text: 'English' },
+      { languageShortCode: 'tr', text: 'Turkish' }
+    ]
+    wrapper.vm.campaignSummary = {
+      scenarios: [
+        {
+          scenarioInfo: {
+            name: 'S1',
+            category: 'Finance',
+            methodTypeId: 1,
+            difficultyTypeId: 1,
+            languageShortCode: 'en'
+          },
+          emailTemplateInfo: { languageShortCode: 'en' },
+          trainingInfo: { name: 'T1' },
+          sendTemplatesInPreferredLanguage: false
+        },
+        {
+          scenarioInfo: {
+            name: 'S2',
+            category: 'HR',
+            methodTypeId: 2,
+            difficultyTypeId: 2,
+            languageShortCode: 'tr'
+          },
+          emailTemplateInfo: { languageShortCode: 'tr' },
+          trainingInfo: { name: 'T2' },
+          sendTemplatesInPreferredLanguage: true
+        }
+      ]
+    }
+
+    wrapper.vm.activeScenarioIndex = 0
+    expect(wrapper.vm.getScenarioInfoItems['Enrollment Notification Language']).toBe(
+      'Company Language'
+    )
+    expect(wrapper.vm.getScenarioInfoItems.Category).toBe('Finance')
+
+    wrapper.vm.activeScenarioIndex = 1
+    expect(wrapper.vm.getScenarioInfoItems['Enrollment Notification Language']).toBe(
+      'Preferred Language'
+    )
+    expect(wrapper.vm.getScenarioInfoItems.Category).toBe('HR')
+    expect(wrapper.vm.getScenarioInfoItems.Languages).toEqual(['Turkish'])
   })
 
   it('setScenarioDetail updates active scenario index', () => {

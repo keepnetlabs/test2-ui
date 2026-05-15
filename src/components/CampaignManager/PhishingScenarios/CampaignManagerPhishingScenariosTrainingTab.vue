@@ -108,6 +108,14 @@
           </template>
         </k-select>
       </FormGroup>
+      <InputPreferredLanguage
+        v-if="isPreferredLanguageVisible"
+        v-model="value.sendTemplatesInPreferredLanguage"
+        class="ml-3 mt-3"
+        title="Preferred Language"
+        subtitle="Select how to send the enrollment notification template by language."
+        :disabled="!isInputsEditable || isInputLanguageDisabled || isEdit"
+      />
       <FormGroup
         v-if="isShowReminder"
         class="ml-3 mt-3"
@@ -352,6 +360,7 @@ import {
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputPreferredLanguage from '@/components/TrainingLibrary/TrainingLibrarySendModal/InputPreferredLanguage.vue'
 import * as Validations from '@/utils/validations'
 import { Fragment } from 'vue-frag'
 import CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal from './CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal.vue'
@@ -364,6 +373,7 @@ export default {
   components: {
     InputDate,
     InputContentLanguage,
+    InputPreferredLanguage,
     KSelect,
     AlertBox,
     FormGroup,
@@ -462,6 +472,11 @@ export default {
     }
   },
   watch: {
+    'value.enrollmentSendTypeId'() {
+      if (!this.isEnrollmentEmailNotificationSelected) {
+        this.$set(this.value, 'sendTemplatesInPreferredLanguage', false)
+      }
+    },
     value(val) {
       if (val?.trainingId && val?.trainingName) {
         const trainingItem = this?.trainingItems?.find((item) => item.value === val.trainingId)
@@ -553,6 +568,12 @@ export default {
     },
     isInputLanguageDisabled() {
       return !this.isInputsEditable || !this.value.trainingId
+    },
+    isEnrollmentEmailNotificationSelected() {
+      return ['2', '3'].includes(this.value?.enrollmentSendTypeId?.toString())
+    },
+    isPreferredLanguageVisible() {
+      return this.isShowReminder && this.isEnrollmentEmailNotificationSelected
     },
     isPreviewButtonDisabled() {
       return (
