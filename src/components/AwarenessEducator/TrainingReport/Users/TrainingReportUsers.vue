@@ -504,82 +504,16 @@ export default {
       immediate: true,
       handler(val) {
         if (!val) return
-        let filterableItems = []
-        if (
-          this.trainingSummary?.trainingDetails?.trainingTypeName ===
-          TRAINING_LIBRARY_TYPES.LEARNING_PATH
-        ) {
-          const learningPathIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
-            (type) => type.displayName === TRAINING_LIBRARY_TYPES.LEARNING_PATH
-          )
-          if (learningPathIndex === -1) return
-          filterableItems =
-            this?.formDetails?.targetUserEnrollmentStatusEnum?.[learningPathIndex]?.enumResults
-              ?.filter((item) => {
-                return !['OpenedEmail', 'ClickedLink', 'Downloaded'].includes(item.name)
-              })
-              ?.map((item) => {
-                return {
-                  text: item.displayName || item.name,
-                  value: item.name
-                }
-              }) || []
-        }
-        if (
-          this.trainingSummary?.trainingDetails?.trainingTypeName ===
-            TRAINING_LIBRARY_TYPES.TRAINING ||
-          this.trainingSummary?.trainingDetails?.trainingTypeName === 'SCORM'
-        ) {
-          const trainingIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
-            (type) =>
-              type.displayName === TRAINING_LIBRARY_TYPES.TRAINING || type.displayName === 'SCORM'
-          )
-          if (trainingIndex === -1) return
-          filterableItems =
-            this?.formDetails?.targetUserEnrollmentStatusEnum?.[trainingIndex]?.enumResults?.map(
-              (item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })
-            ) || []
-        }
-        if (
-          this.trainingSummary?.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.POSTER
-        ) {
-          const posterIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
-            (type) => type.displayName === TRAINING_LIBRARY_TYPES.POSTER
-          )
-          if (posterIndex === -1) return
-          filterableItems =
-            this?.formDetails?.targetUserEnrollmentStatusEnum?.[posterIndex]?.enumResults?.map(
-              (item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })
-            ) || []
-        }
-        if (
-          this.trainingSummary?.trainingDetails?.trainingTypeName ===
-          TRAINING_LIBRARY_TYPES.INFOGRAPHIC
-        ) {
-          const infographicIndex = this?.formDetails?.targetUserEnrollmentStatusEnum.findIndex(
-            (type) => type.displayName === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
-          )
-          if (infographicIndex === -1) return
-          filterableItems =
-            this?.formDetails?.targetUserEnrollmentStatusEnum?.[infographicIndex]?.enumResults?.map(
-              (item) => ({
-                text: item.displayName || item.name,
-                value: item.name
-              })
-            ) || []
-        }
-        this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'status'),
-          'filterableItems',
-          filterableItems
-        )
-        this?.$refs?.refTable?.reRenderFilters()
+        this.setStatusFilterableItems()
+      }
+    },
+    isSurvey() {
+      this.setStatusFilterableItems()
+    },
+    trainingSummary: {
+      deep: true,
+      handler() {
+        this.setStatusFilterableItems()
       }
     },
     isScormProxy: {
@@ -600,6 +534,64 @@ export default {
     this.callForData()
   },
   methods: {
+    getStatusFilterableItems() {
+      const enrollmentStatusEnums = this.formDetails?.targetUserEnrollmentStatusEnum || []
+      const toFilterableItems = (enumResults = []) =>
+        enumResults.map((item) => ({
+          text: item.displayName || item.name,
+          value: item.name
+        }))
+      const findStatusEnum = (displayNames) =>
+        enrollmentStatusEnums.find((type) => displayNames.includes(type.displayName))
+
+      let statusEnum = null
+      if (this.isSurvey) {
+        statusEnum = findStatusEnum([
+          TRAINING_LIBRARY_TYPES.SURVEY,
+          TRAINING_LIBRARY_PAYLOAD_TYPES.SURVEY,
+          TRAINING_LIBRARY_TYPES.TRAINING,
+          'SCORM'
+        ])
+      } else if (
+        this.trainingSummary?.trainingDetails?.trainingTypeName ===
+        TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        statusEnum = findStatusEnum([TRAINING_LIBRARY_TYPES.LEARNING_PATH])
+      } else if (
+        this.trainingSummary?.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.TRAINING ||
+        this.trainingSummary?.trainingDetails?.trainingTypeName === 'SCORM'
+      ) {
+        statusEnum = findStatusEnum([TRAINING_LIBRARY_TYPES.TRAINING, 'SCORM'])
+      } else if (
+        this.trainingSummary?.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.POSTER
+      ) {
+        statusEnum = findStatusEnum([TRAINING_LIBRARY_TYPES.POSTER])
+      } else if (
+        this.trainingSummary?.trainingDetails?.trainingTypeName === TRAINING_LIBRARY_TYPES.INFOGRAPHIC
+      ) {
+        statusEnum = findStatusEnum([TRAINING_LIBRARY_TYPES.INFOGRAPHIC])
+      }
+
+      const enumResults = statusEnum?.enumResults || []
+      if (
+        this.trainingSummary?.trainingDetails?.trainingTypeName ===
+        TRAINING_LIBRARY_TYPES.LEARNING_PATH
+      ) {
+        return toFilterableItems(
+          enumResults.filter((item) => !['OpenedEmail', 'ClickedLink', 'Downloaded'].includes(item.name))
+        )
+      }
+      return toFilterableItems(enumResults)
+    },
+    setStatusFilterableItems() {
+      if (!this.formDetails) return
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'status'),
+        'filterableItems',
+        this.getStatusFilterableItems()
+      )
+      this?.$refs?.refTable?.reRenderFilters()
+    },
     handleSelectionChange(selectionCount) {
       this.resendItemCount = selectionCount
     },
@@ -678,6 +670,7 @@ export default {
             return {
               ...row,
               ...customFields,
+              status: row.status || row.statusName,
               examStatus: row.examStatus || row.examStatusName
             }
           })
