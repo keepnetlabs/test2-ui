@@ -24,6 +24,28 @@ describe('TrainingReportEnrollmentEmailsTable.vue (extra)', () => {
     expect(TrainingReportEnrollmentEmailsTable.methods.getTargetUserStatusDisplay({})).toBe('')
   })
 
+  it('configures User Status as a multi-select API filter', () => {
+    const data = TrainingReportEnrollmentEmailsTable.data.call({
+      formDetails: { emailStatusEnum: [] },
+      isSurvey: false,
+      trainingSummary: {},
+      getEmptyTableTextMessage: jest.fn(() => '')
+    })
+    const userStatusColumn = data.tableOptions.columns.find(
+      (column) => column.property === 'targetUserStatus'
+    )
+
+    expect(userStatusColumn).toMatchObject({
+      filterableType: 'select',
+      filterableCustomFieldName: 'UserStatus',
+      filterableItems: [
+        { text: 'Active', value: 'Active' },
+        { text: 'Inactive', value: 'Inactive' },
+        { text: 'Deleted', value: 'Deleted' }
+      ]
+    })
+  })
+
   it('isRowTypeDeleted handles case/whitespace and non-deleted values', () => {
     expect(
       TrainingReportEnrollmentEmailsTable.methods.isRowTypeDeleted({
