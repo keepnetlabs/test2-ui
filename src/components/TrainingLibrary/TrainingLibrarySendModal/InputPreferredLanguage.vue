@@ -4,6 +4,7 @@
       v-model="internalValue"
       :items="computedItems"
       :placeholder="placeholder"
+      :disabled="disabled"
       outlined
       dense
       hint="*Required"
@@ -62,6 +63,10 @@ export default {
     useDefaultItems: {
       type: Boolean,
       default: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

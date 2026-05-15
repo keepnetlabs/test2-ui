@@ -31,7 +31,8 @@ export default class TrainingTabModel {
     awardCertificate = false,
     certificateConfigSendType = 'SendOnFirstAttempt',
     enrollmentReminder = null,
-    trainingRedirectPage = null
+    trainingRedirectPage = null,
+    sendTemplatesInPreferredLanguage = false
   ) {
     this.trainingId = trainingId
     this.trainingName = trainingName
@@ -42,6 +43,7 @@ export default class TrainingTabModel {
     this.certificateConfigSendType = certificateConfigSendType
     this.enrollmentReminder = enrollmentReminder ?? structuredClone(DEFAULT_ENROLLMENT_REMINDER)
     this.trainingRedirectPage = trainingRedirectPage ?? structuredClone(DEFAULT_TRAINING_REDIRECT_PAGE)
+    this.sendTemplatesInPreferredLanguage = sendTemplatesInPreferredLanguage
   }
   static getTrainingRedirectPage() {
     return {
@@ -63,7 +65,8 @@ export class QuishingTrainingTabModel extends TrainingTabModel {
     awardCertificate = false,
     certificateConfigSendType = 'SendOnFirstAttempt',
     enrollmentReminder = null,
-    trainingRedirectPage = null
+    trainingRedirectPage = null,
+    sendTemplatesInPreferredLanguage = false
   ) {
     super(
       trainingId,
@@ -74,7 +77,8 @@ export class QuishingTrainingTabModel extends TrainingTabModel {
       awardCertificate,
       certificateConfigSendType,
       enrollmentReminder,
-      trainingRedirectPage ?? structuredClone(DEFAULT_QUISHING_REDIRECT_PAGE)
+      trainingRedirectPage ?? structuredClone(DEFAULT_QUISHING_REDIRECT_PAGE),
+      sendTemplatesInPreferredLanguage
     )
   }
 }

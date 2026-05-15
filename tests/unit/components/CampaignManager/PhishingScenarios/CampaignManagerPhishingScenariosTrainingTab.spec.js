@@ -47,6 +47,69 @@ describe('CampaignManagerPhishingScenariosTrainingTab.vue', () => {
     ).toContain('phishing link')
   })
 
+  it('shows preferred language setting only for email notification enrollment', () => {
+    expect(
+      CampaignManagerPhishingScenariosTrainingTab.computed.isPreferredLanguageVisible.call({
+        isShowReminder: true,
+        isEnrollmentEmailNotificationSelected: true
+      })
+    ).toBe(true)
+    expect(
+      CampaignManagerPhishingScenariosTrainingTab.computed.isEnrollmentEmailNotificationSelected.call(
+        {
+          value: { enrollmentSendTypeId: '1' }
+        }
+      )
+    ).toBe(false)
+    expect(
+      CampaignManagerPhishingScenariosTrainingTab.computed.isEnrollmentEmailNotificationSelected.call(
+        {
+          value: { enrollmentSendTypeId: '2' }
+        }
+      )
+    ).toBe(true)
+    expect(
+      CampaignManagerPhishingScenariosTrainingTab.computed.isEnrollmentEmailNotificationSelected.call(
+        {
+          value: { enrollmentSendTypeId: 3 }
+        }
+      )
+    ).toBe(true)
+    expect(
+      CampaignManagerPhishingScenariosTrainingTab.computed.isPreferredLanguageVisible.call({
+        isShowReminder: false,
+        isEnrollmentEmailNotificationSelected: true
+      })
+    ).toBe(false)
+  })
+
+  it('clears preferred language flag when enrollment does not send email notification', () => {
+    const ctx = {
+      value: { enrollmentSendTypeId: '1', sendTemplatesInPreferredLanguage: true },
+      isEnrollmentEmailNotificationSelected: false,
+      $set: (obj, key, val) => {
+        obj[key] = val
+      }
+    }
+
+    CampaignManagerPhishingScenariosTrainingTab.watch['value.enrollmentSendTypeId'].call(ctx)
+
+    expect(ctx.value.sendTemplatesInPreferredLanguage).toBe(false)
+  })
+
+  it('keeps preferred language flag when enrollment sends email notification', () => {
+    const ctx = {
+      value: { enrollmentSendTypeId: '2', sendTemplatesInPreferredLanguage: true },
+      isEnrollmentEmailNotificationSelected: true,
+      $set: jest.fn()
+    }
+
+    CampaignManagerPhishingScenariosTrainingTab.watch['value.enrollmentSendTypeId'].call(ctx)
+
+    expect(ctx.$set).not.toHaveBeenCalled()
+    expect(ctx.value.sendTemplatesInPreferredLanguage).toBe(true)
+  })
+
   it('setTrainings appends non-selected training items', () => {
     const ctx = { value: { trainingId: 't2' }, trainingItems: [{ text: 'X', value: 'tX' }] }
     CampaignManagerPhishingScenariosTrainingTab.methods.setTrainings.call(ctx, {
