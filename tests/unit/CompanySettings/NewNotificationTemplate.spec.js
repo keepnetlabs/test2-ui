@@ -81,18 +81,156 @@ jest.mock('@/components/Company Settings/utils', () => ({
       'Teams Learning Path Enrollment Notification'
     ].includes(templateName)
   ),
+  DIRECT_EMAIL_DELIVERY_TEMPLATE_NAMES: [
+    'Training Enrollment',
+    'Survey Enrollment',
+    'Survey Reminder',
+    'Learning Path Enrollment Reminder',
+    'Poster Enrollment',
+    'Learning Path Enrollment',
+    'Infographic Enrollment',
+    'Enrollment after Failed in a Simulation',
+    'Enrollment Reminder',
+    'Certificate',
+    'Suspicious Email Analysis Report',
+    'Suspicious Email Analysis Report Update',
+    'Investigation Started',
+    'Investigation Expired',
+    'Investigation Finished',
+    'Security Growth Login',
+    'Welcome Email',
+    'Reset Password',
+    'Threat Sharing Post Shared',
+    'Multi-factor Authentication Activated',
+    'Scheduled Report',
+    'Scheduled Report Mail'
+  ],
+  isDirectEmailDeliveryTemplateName: jest.fn((templateName = '') =>
+    [
+      'Training Enrollment',
+      'Survey Enrollment',
+      'Survey Reminder',
+      'Learning Path Enrollment Reminder',
+      'Poster Enrollment',
+      'Learning Path Enrollment',
+      'Infographic Enrollment',
+      'Enrollment after Failed in a Simulation',
+      'Enrollment Reminder',
+      'Certificate',
+      'Suspicious Email Analysis Report',
+      'Suspicious Email Analysis Report Update',
+      'Investigation Started',
+      'Investigation Expired',
+      'Investigation Finished',
+      'Security Growth Login',
+      'Welcome Email',
+      'Reset Password',
+      'Threat Sharing Post Shared',
+      'Multi-factor Authentication Activated',
+      'Scheduled Report',
+      'Scheduled Report Mail'
+    ].includes(templateName)
+  ),
   MERGED_TEXTS_MAP: {
     COMPANYNAME: '{COMPANYNAME}'
   }
 }))
 
+import { shallowMount } from '@vue/test-utils'
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate.vue'
-import { createEmailTemplate } from '@/api/company'
+import {
+  createEmailTemplate,
+  getNotificationTemplatesDeliverySettings,
+  getTemplateTypes
+} from '@/api/company'
 import { getDefaultEmailDeliverySetting } from '@/api/phishingsimulator'
 import { searchSmtpSettings } from '@/api/smtpSettings'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+const KSelectStub = {
+  name: 'KSelect',
+  props: ['items'],
+  template: `
+    <div>
+      <span
+        v-for="item in items"
+        :key="item.resourceId || item.value || item.header"
+      >
+        {{ item.name || item.text || item.header }}
+      </span>
+    </div>
+  `
+}
+
+const mountNewNotificationTemplate = async (templateName) => {
+  getTemplateTypes.mockResolvedValueOnce({
+    data: {
+      data: [
+        { name: templateName, resourceId: 'category-1' },
+        { name: 'Legacy SMTP Only Template', resourceId: 'category-2' }
+      ]
+    }
+  })
+  getNotificationTemplatesDeliverySettings.mockResolvedValueOnce({
+    data: {
+      data: {
+        results: [
+          { name: 'SMTP A', resourceId: 'smtp-1', type: EMAIL_DELIVERY_TYPES.SMTP },
+          { name: 'Microsoft 365 DEC', resourceId: 'dec-1', type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL }
+        ]
+      }
+    }
+  })
+
+  const wrapper = shallowMount(NewNotificationTemplate, {
+    propsData: {
+      status: true,
+      languageItems: [{ value: 'en', text: 'English' }],
+      preferredLanguageTypes: [{ value: 'en', text: 'English' }],
+      companyLanguageTypeResourceId: 'en'
+    },
+    computed: {
+      getUser: () => ({ companyLanguageTypeResourceId: 'en' })
+    },
+    mocks: {
+      $store: { dispatch: jest.fn() }
+    },
+    stubs: {
+      AppModal: { template: '<div><slot name="overlay-body" /></div>' },
+      AppModalBodyHeader: true,
+      FormGroup: { template: '<div><slot /></div>' },
+      MakeAvailableFor: true,
+      InputEntityName: true,
+      InputTag: true,
+      EmailTemplate: true,
+      InputLanguagePreview: true,
+      InputLanguagesSettings: true,
+      EditLanguagesLeavingDialog: true,
+      AlertBox: true,
+      DatatableLoading: true,
+      KSelect: KSelectStub,
+      'k-select': KSelectStub,
+      'v-form': { template: '<form><slot /></form>' },
+      'v-list-item-content': { template: '<div><slot /></div>' },
+      'v-list-item-title': { template: '<div><slot /></div>' },
+      'v-list-item-subtitle': { template: '<div><slot /></div>' }
+    }
+  })
+
+  await flushPromises()
+  await wrapper.setData({
+    selectedTemplateTypeGroup: 'email',
+    formValues: {
+      ...wrapper.vm.formValues,
+      emailTemplateCategoryResourceId: 'category-1'
+    }
+  })
+  await wrapper.vm.$nextTick()
+
+  return wrapper
+}
 
 describe('NewNotificationTemplate.vue', () => {
   const { computed, methods, watch, created } = NewNotificationTemplate
@@ -147,6 +285,25 @@ describe('NewNotificationTemplate.vue', () => {
       })
     ).toBe(true)
 
+    const directEmailTemplateNames = [
+      'Welcome Email',
+      'Reset Password',
+      'Threat Sharing Post Shared',
+      'Multi-factor Authentication Activated',
+      'Scheduled Report'
+    ]
+
+    directEmailTemplateNames.forEach((selectedTemplateCategoryName) => {
+      expect(
+        computed.canUseDirectEmailDelivery.call({
+          isDirectEmailDeliveryTemplateSelected: computed.isDirectEmailDeliveryTemplateSelected.call({
+            formValues: { emailTemplateCategoryResourceId: 'category-1' },
+            selectedTemplateCategoryName
+          })
+        })
+      ).toBe(true)
+    })
+
     expect(
       computed.filteredCategoryItems.call({
         selectedTemplateTypeGroup: 'microsoft-teams',
@@ -174,6 +331,24 @@ describe('NewNotificationTemplate.vue', () => {
         isEmailGenerating: false
       })
     ).toBe(false)
+  })
+
+  it('renders the full SMTP and DEC delivery list for newly supported template types', async () => {
+    const wrapper = await mountNewNotificationTemplate('Welcome Email')
+
+    expect(wrapper.find('#input--notification-template-email-delivery-awareness').exists()).toBe(true)
+    expect(wrapper.find('#input--notification-template-email-delivery-smtp').exists()).toBe(false)
+    expect(wrapper.text()).toContain('SMTP A')
+    expect(wrapper.text()).toContain('Microsoft 365 DEC')
+  })
+
+  it('keeps unsupported notification template types on the SMTP-only delivery branch', async () => {
+    const wrapper = await mountNewNotificationTemplate('Legacy SMTP Only Template')
+
+    expect(wrapper.find('#input--notification-template-email-delivery-awareness').exists()).toBe(false)
+    expect(wrapper.find('#input--notification-template-email-delivery-smtp').exists()).toBe(true)
+    expect(wrapper.text()).toContain('SMTP A')
+    expect(wrapper.text()).not.toContain('Microsoft 365 DEC')
   })
 
   it('isNotificationEnrollmentCategory detects enrollment/scheduled report names', () => {
@@ -403,6 +578,53 @@ describe('NewNotificationTemplate.vue', () => {
     await flushPromises()
     expect(searchSmtpSettings).toHaveBeenCalled()
     expect(ctx.smtpItems).toEqual([{ text: 'SMTP A', value: 'smtp-1' }])
+  })
+
+  it('callForEmailDeliveries groups SMTP and DEC options for supported templates', async () => {
+    getNotificationTemplatesDeliverySettings.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [
+            { name: 'SMTP A', resourceId: 'smtp-1', type: EMAIL_DELIVERY_TYPES.SMTP },
+            {
+              name: 'Direct Email Creation',
+              resourceId: 'dec-default',
+              type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+            },
+            {
+              name: "First Use Company's DEC config then Fallback to default SMTP",
+              resourceId: 'dec-fallback',
+              type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+            },
+            { name: 'Microsoft 365 DEC', resourceId: 'dec-1', type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL }
+          ]
+        }
+      }
+    })
+
+    const ctx = {
+      emailDeliveryItems: []
+    }
+
+    methods.callForEmailDeliveries.call(ctx)
+    await flushPromises()
+
+    expect(ctx.emailDeliveryItems).toEqual([
+      { header: 'SMTP' },
+      { name: 'SMTP A', resourceId: 'smtp-1', type: EMAIL_DELIVERY_TYPES.SMTP },
+      { header: 'Direct Email Creation' },
+      {
+        name: 'Direct Email Creation',
+        resourceId: 'dec-default',
+        type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+      },
+      {
+        name: "First Use Company's DEC config then Fallback to default SMTP",
+        resourceId: 'dec-fallback',
+        type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
+      },
+      { name: 'Microsoft 365 DEC', resourceId: 'dec-1', type: EMAIL_DELIVERY_TYPES.DIRECT_EMAIL }
+    ])
   })
 
   it('selectedLanguages watcher manages active language transitions', () => {
