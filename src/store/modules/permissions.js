@@ -45,6 +45,7 @@ const {
   COMPANIES_PERMISSIONS,
   COMPANY_GROUPS_PERMISSIONS,
   SMTP_SETTINGS_PERMISSIONS,
+  COMPANY_IP_RESTRICTION_PERMISSIONS,
   NOTIFICATION_TEMPLATES_PERMISSIONS,
   REST_API_PERMISSIONS,
   WHITE_LABEL_PERMISSIONS,
@@ -137,6 +138,7 @@ const defaultState = {
   companiesPermissions: COMPANIES_PERMISSIONS,
   companyGroupsPermissions: COMPANY_GROUPS_PERMISSIONS,
   smtpSettingsPermissions: SMTP_SETTINGS_PERMISSIONS,
+  companyIpRestrictionPermissions: COMPANY_IP_RESTRICTION_PERMISSIONS,
   notificationTemplatesPermissions: NOTIFICATION_TEMPLATES_PERMISSIONS,
   restApiPermissions: REST_API_PERMISSIONS,
   whiteLabelingPermissions: WHITE_LABEL_PERMISSIONS,
@@ -1011,6 +1013,7 @@ const store = {
         getters?.getNotificationTemplatesSearchPermissions ||
         getters?.getWhiteLabelingGetPermissions ||
         getters?.getSMTPSettingsSearchPermissions ||
+        getters?.getCompanyIpRestrictionsGetPermissions ||
         getters?.getProxySettingsSearchPermissions ||
         getters?.getSAMLIntegrationSearchPermissions ||
         getters?.getSCIMSettingsSearchPermissions ||
@@ -1040,6 +1043,15 @@ const store = {
     },
     getSMTPSettingsExportPermissions(state) {
       return state?.smtpSettingsPermissions?.EXPORT?.hasPermission
+    },
+    getCompanyIpRestrictionsGetPermissions(state) {
+      return state?.companyIpRestrictionPermissions?.GET?.hasPermission
+    },
+    getCompanyIpRestrictionsCreatePermissions(state) {
+      return state?.companyIpRestrictionPermissions?.CREATE?.hasPermission
+    },
+    getCompanyIpRestrictionsDeletePermissions(state) {
+      return state?.companyIpRestrictionPermissions?.DELETE?.hasPermission
     },
     getDirectEmailCreationSearchPermissions(state) {
       return state?.directEmailCreationPermissions?.SEARCH?.hasPermission
@@ -1637,6 +1649,7 @@ const store = {
         'companiesPermissions',
         'companyGroupsPermissions',
         'smtpSettingsPermissions',
+        'companyIpRestrictionPermissions',
         'notificationTemplatesPermissions',
         'restApiPermissions',
         'aiAllySettingsPermissions',
@@ -1707,7 +1720,7 @@ const store = {
         'gamificationReportPermissions'
       ]
       statePermissionKeys.forEach((key) => {
-        const permissionObject = { ...state[key] }
+        const permissionObject = { ...(defaultState[key] || {}), ...(state[key] || {}) }
         const permissions = Object.keys(permissionObject).filter(
           (key) => key !== 'isOneOfThemPermitted'
         )

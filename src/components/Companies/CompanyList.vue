@@ -743,11 +743,6 @@ export default {
       licenseCatalogFromLookup: []
     };
   },
-  watch: {
-    isShowCreateOrEditModal() {
-      document.querySelector("html").classList.toggle("overflow-y-hidden");
-    }
-  },
   created() {
     this._selectingChildren = false;
     this.getLookUpDatas();

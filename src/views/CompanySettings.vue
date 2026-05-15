@@ -72,6 +72,14 @@
           ref="refGoogleUserProvisioning"
       /></el-tab-pane>
       <el-tab-pane
+        v-if="getCompanyIpRestrictionsGetPermissions"
+        label="IP Restrictions"
+        name="ip-restrictions"
+        id="ip-restrictions-content"
+      >
+        <IpRestrictions v-if="tab === 'ip-restrictions'" ref="refIpRestrictions" />
+      </el-tab-pane>
+      <el-tab-pane
         v-if="getRestApiSearchPermissions"
         label="Rest API"
         name="custom-api"
@@ -162,6 +170,7 @@ import AgenticAISettings from '@/components/Company Settings/AgenticAISettings.v
 import GoogleUserProvisioning from '@/components/Company Settings/GoogleUserProvisioning/GoogleUserProvisioning'
 import MicrosoftTeamsSettings from '@/components/Company Settings/MicrosoftTeamsSettings/MicrosoftTeamsSettings'
 import AIAllySettings from '../components/Company Settings/AiAllySettings.vue'
+import IpRestrictions from '@/components/Company Settings/IpRestrictions/IpRestrictions'
 
 export default {
   name: 'CompanySettings',
@@ -171,6 +180,7 @@ export default {
     AIAllySettings,
     AgenticAISettings,
     DirectEmailCreation,
+    IpRestrictions,
     LDAP,
     KContainer,
     SIEMIntegrations,
@@ -214,6 +224,8 @@ export default {
       getAllowListPermissionsSearch: 'permissions/getAllowListPermissionsSearch',
       getDirectEmailCreationSearchPermissions:
         'permissions/getDirectEmailCreationSearchPermissions',
+      getCompanyIpRestrictionsGetPermissions:
+        'permissions/getCompanyIpRestrictionsGetPermissions',
       getAccountPrivacyPermission: 'permissions/getAccountPrivacyPermission',
       getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions',
       getMicrosoftTeamsSettingsGetPermissions:
@@ -251,6 +263,10 @@ export default {
       {
         permission: this.getGoogleUserProvisionGetPermissions,
         name: 'google-user-provisioning'
+      },
+      {
+        permission: this.getCompanyIpRestrictionsGetPermissions,
+        name: 'ip-restrictions'
       },
       { permission: this.getRestApiSearchPermissions, name: 'custom-api' },
       {

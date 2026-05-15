@@ -1617,6 +1617,11 @@ export default {
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },
+    IP_RESTRICTIONS: {
+      url: `companies/ip-restrictions`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
     ACCOUNT_PRIVACY: {
       url: `companies/privacy`,
       hasPermission: false,
@@ -1985,6 +1990,23 @@ export default {
       url: `companies/email-templates/make-default/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.PUT
+    }
+  },
+  COMPANY_IP_RESTRICTION_PERMISSIONS: {
+    GET: {
+      url: `companies/ip-restrictions`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE: {
+      url: `companies/ip-restrictions`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `companies/ip-restrictions/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
     }
   },
   REST_API_PERMISSIONS: {
