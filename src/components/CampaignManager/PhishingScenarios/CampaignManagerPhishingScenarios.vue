@@ -1108,7 +1108,8 @@ export default {
             },
             {
               ...val.trainingRedirectPage
-            }
+            },
+            val.sendTemplatesInPreferredLanguage || false
           )
         )
       }

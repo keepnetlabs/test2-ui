@@ -622,8 +622,30 @@ export default {
     isAttachmentBasedScenario() {
       return this.emailTemplateParams?.method === 'Attachment' || false
     },
+    enrollmentNotificationLanguage() {
+      let trainingConfigs = []
+      if (
+        this.formData?.scenarioDistribution &&
+        this.formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+      ) {
+        if (this.formData.trainingForCategory?.trainingId) {
+          trainingConfigs = [this.formData.trainingForCategory]
+        }
+      } else {
+        trainingConfigs = Object.values(this.formData?.trainings || {}).filter(
+          (training) => training?.isCheckboxSelected && training?.trainingId
+        )
+      }
+      if (!trainingConfigs.length) return ''
+      const values = trainingConfigs.map((training) => !!training.sendTemplatesInPreferredLanguage)
+      const hasPreferredLanguage = values.includes(true)
+      const hasCompanyLanguage = values.includes(false)
+      if (hasPreferredLanguage && hasCompanyLanguage) return 'Mixed'
+      return hasPreferredLanguage ? 'Preferred Language' : 'Company Language'
+    },
     getCampaignInfoItems() {
       const { formData, phishingScenarios } = this
+      const enrollmentNotificationLanguage = this.enrollmentNotificationLanguage
       if (
         formData?.scenarioDistribution &&
         formData.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
@@ -638,6 +660,9 @@ export default {
           name: formData.name,
           'Hyper-Personalization':
             Number.parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
+          ...(enrollmentNotificationLanguage && {
+            'Enrollment Notification Language': enrollmentNotificationLanguage
+          }),
           'Smart Grouping': formData?.smartGroup?.name || 'Disabled',
           method: [...methodSet].join(', '),
           difficulty: [...difficultySet].join(', '),
@@ -656,6 +681,9 @@ export default {
         name: formData.name,
         'Hyper-Personalization':
           Number.parseInt(formData.sendUserPreferredLanguage) === 1 ? 'Preferred Language' : 'Manually',
+        ...(enrollmentNotificationLanguage && {
+          'Enrollment Notification Language': enrollmentNotificationLanguage
+        }),
         'Smart Grouping': formData?.smartGroup?.name || 'Disabled',
         method: [...methodSet].join(', '),
         difficulty: [...difficultySet].join(', '),

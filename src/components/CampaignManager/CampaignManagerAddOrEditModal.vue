@@ -914,11 +914,15 @@ export default {
               awardCertificate,
               certificateConfigSendType,
               enrollmentSendTypeId,
-              trainingRedirectPage
+              trainingRedirectPage,
+              sendTemplatesInPreferredLanguage
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
             const { sendReminderEvery } = enrollmentReminder
             const enrollmentReminderEveryValue = sendReminderEvery
+            const canSendTemplatesInPreferredLanguage = ['2', '3'].includes(
+              enrollmentSendTypeId?.toString()
+            )
             delete enrollmentReminder.sendReminderEvery
             phishingScenarios.push({
               trainingId,
@@ -928,7 +932,9 @@ export default {
               awardCertificate,
               certificateConfigSendType,
               enrollmentSendTypeId,
-              trainingRedirectPage
+              trainingRedirectPage,
+              sendTemplatesInPreferredLanguage:
+                canSendTemplatesInPreferredLanguage && sendTemplatesInPreferredLanguage
             })
           })
           const emailReplySettings = {
@@ -994,7 +1000,10 @@ export default {
                 ...this.trainingForCategory,
                 trainingLanguageIds: this.trainingForCategory.trainingLanguageIds.filter(
                   (lang) => lang !== labels.All
-                )
+                ),
+                sendTemplatesInPreferredLanguage:
+                  ['2', '3'].includes(this.trainingForCategory.enrollmentSendTypeId?.toString()) &&
+                  this.trainingForCategory.sendTemplatesInPreferredLanguage
               }
             }
           }
