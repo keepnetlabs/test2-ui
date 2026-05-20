@@ -46,6 +46,7 @@
       @success="onSovereigntyMigrateQueued"
     />
     <SovereigntyReportDrawer
+      v-if="showSovereigntyReportDrawer"
       :status="showSovereigntyReportDrawer"
       :company-resource-id="sovereigntyReportRow.companyResourceId || ''"
       :company-name="sovereigntyReportRow.companyName || ''"
