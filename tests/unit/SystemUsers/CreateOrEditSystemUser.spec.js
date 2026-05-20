@@ -13,6 +13,12 @@ jest.mock('@/api/systemUsers', () => ({
   getAvailableSystemUsersRole: jest.fn(() => Promise.resolve({ data: { data: [] } }))
 }))
 
+jest.mock('@/api/companyIpRestrictions', () => ({
+  getCompanyIpRestrictions: jest.fn(() => Promise.resolve({ data: { data: [] } })),
+  createCompanyIpRestrictions: jest.fn(() => Promise.resolve()),
+  deleteCompanyIpRestriction: jest.fn(() => Promise.resolve())
+}))
+
 jest.mock('@/utils/functions', () => ({
   scrollToComponent: jest.fn(),
   isDifferent: jest.fn(() => false),
