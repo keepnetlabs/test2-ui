@@ -48,7 +48,7 @@ export default {
         2,
         0,
         (v) => Validations.required(v, labels.Required),
-        (v) => Validations.minLength(v, 8, labels.getMinLengthMessage(labels.Email, 8))
+        (v) => Validations.minLength(v, 8, labels.getMinLengthMessage(this.label || labels.Email, 8))
       )
     } else {
       this.persistentHint = false
