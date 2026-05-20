@@ -48,19 +48,6 @@
           <v-icon color="#2196F3">mdi-creation</v-icon>
         </div>
         <div class="d-flex gap-2">
-          <v-tooltip v-if="!isFullWidth" bottom>
-            <template #activator="{ on }">
-              <v-icon
-                v-on="on"
-                small
-                color="#757575"
-                class="chat-resize-hint"
-              >
-                mdi-arrow-left-right
-              </v-icon>
-            </template>
-            <span>Drag the left edge to resize</span>
-          </v-tooltip>
           <v-btn icon small @click="toggleFullWidth" color="#757575">
             <v-icon>{{
               isFullWidth ? "mdi-window-restore" : "mdi-window-maximize"
@@ -673,12 +660,6 @@ export default {
 
 .chat-sidebar.fullwidth .chat-header {
   padding: 12px 24px 12px 16px;
-}
-
-.chat-resize-hint {
-  align-self: center;
-  cursor: help;
-  margin-right: 2px;
 }
 
 .chat-iframe-container {
