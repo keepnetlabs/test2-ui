@@ -111,7 +111,7 @@
                   ></k-select>
                 </FormGroup>
                 <FormGroup
-                  v-if="edit && isRootOrReseller"
+                  v-if="edit && isRootOrReseller && isTestEnvironment"
                   class-name="company-step1-data-residency-group"
                   title="Data residency"
                   sub-title="To change the region, use 'Migrate data residency' from the company list actions."
@@ -128,7 +128,7 @@
                   />
                 </FormGroup>
                 <FormGroup
-                  v-if="!edit && isRootOrReseller"
+                  v-if="!edit && isRootOrReseller && isTestEnvironment"
                   class-name="company-step1-data-residency-group"
                   title="Data residency"
                   sub-title="Defaults to central. Pick a region to store this company's user data regionally."
@@ -683,8 +683,10 @@ import moment from 'moment'
 import { getTimeZoneForMoment } from '../../utils/functions'
 import InputTag from '@/components/Common/Inputs/InputTag.vue'
 import { getLicences, getCountryTimezones } from '@/api/common'
+import useIsTestEnvironment from '@/hooks/useIsTestEnvironment'
 export default {
   name: 'CompanyCreateOrEdit',
+  mixins: [useIsTestEnvironment],
   props: {
     edit: { type: Boolean, default: false },
     selectedRow: { type: Object },
@@ -1086,7 +1088,9 @@ export default {
     this.getLookupContents()
     this.getCompanyGroups()
     this.fetchCountryTimezones()
-    this.fetchSovereigntyRegions()
+    if (this.isTestEnvironment) {
+      this.fetchSovereigntyRegions()
+    }
     if (this.edit) {
       this.formData.PreferredLanguageTypeResourceId =
         this.selectedExtend.preferredLanguageTypeResourceId === ''

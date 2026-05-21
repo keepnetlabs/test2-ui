@@ -380,8 +380,10 @@ import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/Defa
 import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
 import AlertBox from "@/components/AlertBox.vue";
+import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
 export default {
   name: "CompanyList",
+  mixins: [useIsTestEnvironment],
   components: {
     AlertBox,
     ConfigureNewCompanyModal,
@@ -862,7 +864,11 @@ export default {
       return !!this.companyRowRegionCode(row);
     },
     canShowSovereigntyMigrate(row = {}) {
-      return this.isRootOrReseller && !this.isClusterParentCompanyRow(row);
+      return (
+        this.isTestEnvironment &&
+        this.isRootOrReseller &&
+        !this.isClusterParentCompanyRow(row)
+      );
     },
     sovereigntyMigrateTooltip(row = {}) {
       if (this.companyRowHasDataRegion(row)) {
@@ -882,7 +888,11 @@ export default {
       this.getTableData();
     },
     canShowSovereigntyReport(row = {}) {
-      return this.isRootOrReseller && !this.isClusterParentCompanyRow(row);
+      return (
+        this.isTestEnvironment &&
+        this.isRootOrReseller &&
+        !this.isClusterParentCompanyRow(row)
+      );
     },
     openSovereigntyReportDrawer(row = {}) {
       this.sovereigntyReportRow = { ...row };
