@@ -95,7 +95,8 @@
     "babel-loader": "8.3.0",
     "nopt": "7.2.1",
     "minimatch": "3.1.2",
-    "js-cookie": "3.0.5"
+    "js-cookie": "3.0.5",
+    "node-releases": "2.0.19"
   },
   "eslintConfig": {
     "root": true,
