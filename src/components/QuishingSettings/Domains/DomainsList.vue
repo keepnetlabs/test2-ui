@@ -193,7 +193,7 @@ export default {
             badgeColorMap: {
               loading: '#bdbdbd',
               clean: '#217124',
-              malicious: '#b83a3a',
+              blocklisted: '#b83a3a',
               suspicious: '#e67e22',
               pending: '#9e9e9e',
               error: '#9e9e9e',
@@ -322,7 +322,7 @@ export default {
             if (match) {
               return {
                 ...row,
-                blocklistStatus: match.status,
+                blocklistStatus: match.status === 'malicious' ? 'blocklisted' : match.status,
                 blocklistDetail: match.reason || null
               }
             }
