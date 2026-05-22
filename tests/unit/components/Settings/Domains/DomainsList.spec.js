@@ -249,7 +249,7 @@ describe('Settings DomainsList.vue', () => {
 
       expect(wrapper.vm.tableData[0].blocklistStatus).toBe('clean')
       expect(wrapper.vm.tableData[0].blocklistDetail).toBeNull()
-      expect(wrapper.vm.tableData[1].blocklistStatus).toBe('malicious')
+      expect(wrapper.vm.tableData[1].blocklistStatus).toBe('blocklisted')
       expect(wrapper.vm.tableData[1].blocklistDetail).toBe('Blocked by browsers')
       expect(wrapper.vm.tableData[2].blocklistStatus).toBe('pending')
       expect(wrapper.vm.tableData[2].blocklistDetail).toBeNull()
@@ -352,7 +352,7 @@ describe('Settings DomainsList.vue', () => {
       expect(blocklistCol.hideSort).toBe(true)
       expect(blocklistCol.sortable).toBe(false)
       expect(blocklistCol.badgeColorMap).toBeDefined()
-      expect(blocklistCol.badgeColorMap.malicious).toBe('#b83a3a')
+      expect(blocklistCol.badgeColorMap.blocklisted).toBe('#b83a3a')
       expect(blocklistCol.badgeColorMap.clean).toBe('#217124')
       expect(blocklistCol.tooltipKey).toBe('blocklistDetail')
     })
