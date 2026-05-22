@@ -166,6 +166,7 @@ export function getDataTableFieldLabel(field = "") {
     loading: "Checking...",
     clean: "Clean",
     malicious: "Malicious",
+    blocklisted: "Blocklisted",
     suspicious: "Suspicious",
     pending: "Pending",
     partial: "Partial",
