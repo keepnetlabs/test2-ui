@@ -275,6 +275,18 @@ export default {
               newFormData?.dialogBoxSettings?.[i]?.languageResourceId || ''
             )
             formData.append(
+              `DialogBoxSettings[${i}].AddInName`,
+              newFormData?.dialogBoxSettings?.[i]?.addInName || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].BrandName`,
+              newFormData?.dialogBoxSettings?.[i]?.brandName || ''
+            )
+            formData.append(
+              `DialogBoxSettings[${i}].Description`,
+              newFormData?.dialogBoxSettings?.[i]?.description || ''
+            )
+            formData.append(
               `DialogBoxSettings[${i}].MsgBoxTitle`,
               newFormData?.dialogBoxSettings?.[i]?.msgBoxTitle || ''
             )
