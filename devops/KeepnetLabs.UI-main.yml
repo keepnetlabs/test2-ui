@@ -25,6 +25,14 @@ stages:
       - job: Build_UI
         steps:
           - template: sub-KeepnetLabs.UI-CI.yml
+  
+  # # BUILD TEST_2
+  - stage: CI_Test_2
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
+    jobs:
+      - job: Build_UI
+        steps:
+          - template: sub-KeepnetLabs.UI-CI.yml
 
   # # BUILD PROD
   - stage: CI_Prod
@@ -59,6 +67,20 @@ stages:
         parameters:
           repositoryName: GitHub_Test_Repo
           environment: TEST_UI
+          githubConnectionUrl: $(testGitHubConnectionURL)
+          githubBranchName: test
+
+  ## DEPLOY GITHUB TEST_2
+  - stage: GH_Repo_TEST_2
+    dependsOn: CI_Test_2
+    condition: and(in(dependencies.CI_Test_2.result, 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
+    variables:
+      - group: Test2-UI-Config
+    jobs:
+      - template: sub-KeepnetLabs.UI-GH.yml
+        parameters:
+          repositoryName: GitHub_Test_Repo
+          environment: TEST_2_UI
           githubConnectionUrl: $(testGitHubConnectionURL)
           githubBranchName: test
 
