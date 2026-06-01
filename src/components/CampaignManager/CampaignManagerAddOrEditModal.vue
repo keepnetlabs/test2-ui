@@ -181,6 +181,8 @@
                 :total-target-user-count="totalTargetUserCount"
                 :user-target-audience-data="getUserTargetAudienceData"
                 :selected-phishing-scenarios="selectedPhishingScenarios"
+                :scenario-distribution="scenarioDistribution"
+                :scenario-pool="phishingScenarioItems"
                 :is-edit="isEdit"
                 :isDuplicate="isDuplicate"
                 :phishing-type-id="1"

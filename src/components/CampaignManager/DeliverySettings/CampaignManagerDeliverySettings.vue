@@ -160,7 +160,7 @@ import CallbackService from '@/api/callback'
 import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { frequencyItems, SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
 import {
@@ -194,6 +194,14 @@ export default {
       type: Object
     },
     selectedPhishingScenarios: {
+      type: Array,
+      default: () => []
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: SCENARIO_DISTRIBUTION.MANUALLY
+    },
+    scenarioPool: {
       type: Array,
       default: () => []
     },
@@ -614,16 +622,26 @@ export default {
       try {
         this.isTestingConnection = true
         const smtpData = await this.callForGetSmtpSetting()
-        if (!this.selectedPhishingScenarios?.length) {
-          this.testEmailErrorMessage =
-            'Select at least one phishing scenario before sending a test email.'
+        // In manual distribution a scenario must be checkbox-selected. In AI Ally and
+        // other non-manual modes (random / same-for-all / agentic) selection is deferred
+        // per-user, so no scenario is manually selected; validate the SMTP setting with a
+        // representative scenario from the available pool instead.
+        const isNonManualDistribution =
+          this.scenarioDistribution != null &&
+          this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+        const scenario =
+          this.selectedPhishingScenarios?.[0] ||
+          (isNonManualDistribution ? this.scenarioPool?.[0] : null)
+        if (!scenario?.resourceId) {
+          this.testEmailErrorMessage = isNonManualDistribution
+            ? 'No phishing scenario is available for the selected category to send a test email.'
+            : 'Select at least one phishing scenario before sending a test email.'
           this.isShowSmtpInputError = true
           this.isTestingConnection = false
           return false
         }
         try {
-          // One test email is enough for SMTP validation; use first checkbox-selected scenario only.
-          const scenario = this.selectedPhishingScenarios[0]
+          // One test email is enough for SMTP validation; use a single representative scenario.
           let { fromAddress, fromName, template } =
             (await this.resolveTestEmailContentForScenario(scenario)) || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
