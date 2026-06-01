@@ -54,10 +54,18 @@ describe('AddinSettings.vue (extra coverage)', () => {
     jest.clearAllMocks()
   })
 
+  const seedValidBrandName = (wrapper) => {
+    wrapper.vm.formValues.brandName = 'Acme'
+    wrapper.vm.formValues.dialogBoxSettings.forEach((s) => {
+      s.brandName = 'Acme'
+    })
+  }
+
   describe('submit', () => {
     it('emits updateForm when validation passes', async () => {
       const wrapper = createWrapper()
       await wrapper.vm.$nextTick()
+      seedValidBrandName(wrapper)
       wrapper.vm.$refs = { refForm: { validate: () => true } }
       const result = wrapper.vm.submit({}, false)
       expect(wrapper.emitted('updateForm')).toBeTruthy()
@@ -68,6 +76,7 @@ describe('AddinSettings.vue (extra coverage)', () => {
     it('emits updateForm with isAddIn true', async () => {
       const wrapper = createWrapper()
       await wrapper.vm.$nextTick()
+      seedValidBrandName(wrapper)
       wrapper.vm.$refs = { refForm: { validate: () => true } }
       wrapper.vm.submit({}, true)
       expect(wrapper.emitted('updateForm')[0][0]).toMatchObject({ isAddIn: true })
@@ -76,6 +85,7 @@ describe('AddinSettings.vue (extra coverage)', () => {
     it('returns false and does not emit when validation fails', async () => {
       const wrapper = createWrapper()
       await wrapper.vm.$nextTick()
+      seedValidBrandName(wrapper)
       wrapper.vm.$refs = {
         refForm: {
           validate: () => false,
@@ -239,6 +249,9 @@ describe('AddinSettings.vue (extra coverage)', () => {
           dialogBoxSettings: [
             {
               languageName: 'English (United Kingdom)',
+              addInName: 'Reporter',
+              brandName: 'Acme',
+              description: 'Report suspicious emails',
               msgBoxTitle: 'Title',
               msgBoxBtnYesText: 'Yes',
               msgBoxBtnNoText: 'No',
