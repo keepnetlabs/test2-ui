@@ -1301,6 +1301,13 @@ export default {
         if (leavingDialogButton) {
           return
         }
+
+        // VMenu içeriğine (örn. "Import Email" menüsü) tıklanırsa ignore et;
+        // menü body'ye teleport edildiği için drawer dışında sayılıp drawer'ı kapatmasın
+        const menuContent = event.target.closest('.v-menu__content, .switch-account__container')
+        if (menuContent) {
+          return
+        }
       }
 
       if (this?.$refs?.newEmailTemplate?.$refs?.refEmailTemplate?.showGrapesModal) {

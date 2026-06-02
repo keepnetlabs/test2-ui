@@ -259,7 +259,10 @@
               title="4. Select Sync Method"
               sub-title="Select how you’d like to synchronize users"
               :class="
-                formValues.provisioningConfig.sync.method === SYNC_METHOD_TYPES.SOURCE_GROUP
+                [
+                  SYNC_METHOD_TYPES.SOURCE_GROUP,
+                  SYNC_METHOD_TYPES.SOURCE_ORGANIZATION_UNIT
+                ].includes(formValues.provisioningConfig.sync.method)
                   ? 'mb-2'
                   : 'mb-6'
               "
@@ -285,8 +288,35 @@
                   label="Sync users and create matching group"
                   :value="SYNC_METHOD_TYPES.SOURCE_GROUP"
                 />
+                <VTooltip bottom :disabled="isOrganizationSource">
+                  <template #activator="{ on, attrs }">
+                    <span v-on="on" v-bind="attrs">
+                      <VRadio
+                        color="#2196f3"
+                        label="Create Target Group per Organizational Unit"
+                        :value="SYNC_METHOD_TYPES.SOURCE_ORGANIZATION_UNIT"
+                        :disabled="!isOrganizationSource"
+                      />
+                    </span>
+                  </template>
+                  <span>
+                    Available only when “Sync Organizational Units (OU)” is selected as the sync
+                    source.
+                  </span>
+                </VTooltip>
               </VRadioGroup>
             </FormGroup>
+            <AlertBox
+              v-if="
+                formValues.provisioningConfig.sync.method ===
+                  SYNC_METHOD_TYPES.SOURCE_ORGANIZATION_UNIT
+              "
+              class="mb-4"
+              icon-color="#B6791D"
+              icon-name="mdi-information"
+              text="A Target Group will be created for each selected organizational unit. Users assigned directly to the unit will be synced into the matching group."
+              :slots="{ primaryAction: false, secondaryAction: false }"
+            />
             <FormGroup
               v-if="formValues.provisioningConfig.sync.method === SYNC_METHOD_TYPES.TARGET_GROUP"
               title="Select Target Group"
@@ -306,7 +336,7 @@
               v-if="formValues.provisioningConfig.sync.method === SYNC_METHOD_TYPES.SOURCE_GROUP"
             >
               <AlertBox
-                class="mb-2"
+                class="mb-4"
                 icon-color="#B6791D"
                 icon-name="mdi-information"
                 text="Users and groups under the selected organizational units will be created."
@@ -496,6 +526,9 @@ export default {
         )
       }
     },
+    isOrganizationSource() {
+      return this.formValues.provisioningConfig.source === SYNC_SOURCE_TYPES.ORGANIZATION
+    },
     isAllGroupsSelected() {
       return (
         this.formValues?.provisioningConfig?.source === SYNC_SOURCE_TYPES.GROUP &&
@@ -557,6 +590,17 @@ export default {
               this.isSomethingWentWrong = true
               this.isLoading = false
             })
+        }
+      }
+    },
+    'formValues.provisioningConfig.source': {
+      handler(val) {
+        if (
+          val === SYNC_SOURCE_TYPES.GROUP &&
+          this.formValues.provisioningConfig.sync.method ===
+            SYNC_METHOD_TYPES.SOURCE_ORGANIZATION_UNIT
+        ) {
+          this.formValues.provisioningConfig.sync.method = SYNC_METHOD_TYPES.TARGET_USER
         }
       }
     },
