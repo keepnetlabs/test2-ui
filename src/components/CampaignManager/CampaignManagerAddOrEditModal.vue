@@ -1063,6 +1063,13 @@ export default {
         if (leavingDialogButton) {
           return
         }
+
+        // VMenu/v-select içeriğine (örn. "Import Email", senaryo dropdown'ları) tıklanırsa ignore et;
+        // bu içerikler body'ye teleport edildiği için drawer dışında sayılıp drawer'ı kapatmasın
+        const menuContent = event.target.closest('.v-menu__content, .switch-account__container')
+        if (menuContent) {
+          return
+        }
       }
 
       this.handleCloseSimulatorDrawer()
