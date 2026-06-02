@@ -1,4 +1,13 @@
 .google-user-provisioning {
+  .v-radio--is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+
+    .v-label {
+      cursor: not-allowed;
+    }
+  }
+
   &__matching-groups {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

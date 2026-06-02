@@ -5,5 +5,6 @@ export const SYNC_SOURCE_TYPES = {
 export const SYNC_METHOD_TYPES = {
   TARGET_USER: 'User',
   TARGET_GROUP: 'TargetGroup',
-  SOURCE_GROUP: 'SourceGroup'
+  SOURCE_GROUP: 'SourceGroup',
+  SOURCE_ORGANIZATION_UNIT: 'SourceOrganizationUnit'
 }

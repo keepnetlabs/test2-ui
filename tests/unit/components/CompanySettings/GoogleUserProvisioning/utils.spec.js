@@ -9,7 +9,8 @@ describe('CompanySettings GoogleUserProvisioning utils', () => {
     expect(SYNC_METHOD_TYPES).toEqual({
       TARGET_USER: 'User',
       TARGET_GROUP: 'TargetGroup',
-      SOURCE_GROUP: 'SourceGroup'
+      SOURCE_GROUP: 'SourceGroup',
+      SOURCE_ORGANIZATION_UNIT: 'SourceOrganizationUnit'
     })
   })
 })
