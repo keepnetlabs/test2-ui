@@ -291,6 +291,50 @@ describe('CommonSimulatorNewScenario.vue (extra branch coverage)', () => {
       expect(closeMock).toHaveBeenCalledTimes(1)
     })
 
+    it('handleClickOutsideNewEmailTemplateModal ignores clicks on VMenu content (e.g. Import Email) and does not close drawer', () => {
+      const closeMock = jest.fn()
+      const ctx = {
+        $store: { state: { common: { isShowLeavingDialog: false } } },
+        $refs: {},
+        handleCloseNewEmailTemplateModal: closeMock
+      }
+
+      // VMenu body'ye teleport edildiği için drawer dışında sayılır;
+      // .v-menu__content guard'ı drawer'ın kapanmasını engellemeli
+      const menuContentEvent = {
+        target: {
+          closest: jest.fn((selector) =>
+            selector.includes('.v-menu__content') ? { className: 'v-menu__content' } : null
+          )
+        }
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewEmailTemplateModal.call(
+        ctx,
+        menuContentEvent
+      )
+
+      expect(closeMock).not.toHaveBeenCalled()
+
+      // switch-account__container menüsü için de aynı şekilde kapanmamalı
+      const switchAccountEvent = {
+        target: {
+          closest: jest.fn((selector) =>
+            selector.includes('.switch-account__container')
+              ? { className: 'switch-account__container' }
+              : null
+          )
+        }
+      }
+
+      CommonSimulatorNewScenario.methods.handleClickOutsideNewEmailTemplateModal.call(
+        ctx,
+        switchAccountEvent
+      )
+
+      expect(closeMock).not.toHaveBeenCalled()
+    })
+
 
     it('handleClickOutsideNewLandingPageTemplateModal respects menu-open branch and close branch', () => {
       const closeMock = jest.fn()

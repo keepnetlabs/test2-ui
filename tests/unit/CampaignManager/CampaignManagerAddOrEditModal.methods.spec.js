@@ -109,6 +109,26 @@ describe('CampaignManagerAddOrEditModal.methods', () => {
     expect(closeSpy).not.toHaveBeenCalled()
   })
 
+  it('handleClickOutsidePhishingDrawer ignores VMenu content clicks (e.g. Import Email) and does not close drawer', () => {
+    const closeSpy = jest.fn()
+    // closest: snackbar -> null, leaving-dialog -> null, menu-content -> match
+    const closest = jest
+      .fn()
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce({ className: 'v-menu__content' })
+    const ctx = {
+      $store: { state: { common: { isShowLeavingDialog: false } } },
+      handleCloseSimulatorDrawer: closeSpy
+    }
+
+    CampaignManagerAddOrEditModal.methods.handleClickOutsidePhishingDrawer.call(ctx, {
+      target: { closest }
+    })
+
+    expect(closeSpy).not.toHaveBeenCalled()
+  })
+
   it('handleClickOutsidePhishingDrawer closes drawer for normal outside click', () => {
     const closeSpy = jest.fn()
     const ctx = {
