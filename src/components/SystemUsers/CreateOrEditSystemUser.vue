@@ -26,6 +26,8 @@
         :role-items="roleItems"
         :status-items="statusItems"
         :isSameUser="isSameUser"
+        :is-sso-configured="isSsoConfigured"
+        :has-ip-restrictions="hasIpRestrictions"
         @on-status-change="handleChangeStatus"
       />
       <form-group v-if="selectedRow">
@@ -56,6 +58,7 @@ import {
   updateSystemUser,
   getAvailableSystemUsersRole
 } from '@/api/systemUsers'
+import { getCompanyIpRestrictions } from '@/api/companyIpRestrictions'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import jwt_decode from 'jwt-decode'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
@@ -93,6 +96,7 @@ export default {
       role: null,
       saveDisable: false,
       sendInformationEmailDisabled: false,
+      hasIpRestrictions: false,
       initialFormValues: null,
       formValues: new SystemUserModel(),
       showWelcomeEmailModal: false,
@@ -112,6 +116,17 @@ export default {
     },
     getBodyTitle() {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
+    },
+    isSsoConfigured() {
+      const row = this.selectedRow || {}
+      const ssoConfigured =
+        row.isSsoConfigured ??
+        row.ssoConfigured ??
+        row.hasSamlConfiguration ??
+        row.isSamlConfigured ??
+        row.enableSAMLSSO
+
+      return ssoConfigured !== false
     }
   },
   watch: {
@@ -135,7 +150,15 @@ export default {
       this.initialFormValues = structuredClone(this.formValues)
     }
     try {
-      const response = await getAvailableSystemUsersRole()
+      const [rolesResponse, ipRestrictionsResponse] = await Promise.allSettled([
+        getAvailableSystemUsersRole(),
+        getCompanyIpRestrictions()
+      ])
+      this.hasIpRestrictions = this.hasCompanyIpRestrictions(
+        ipRestrictionsResponse?.value?.data?.data
+      )
+      const response = rolesResponse?.value
+      if (!response) return
       let allRoles = response.data.data
       let availableRoles = allRoles
       if (this.selectedRow) {
@@ -146,13 +169,19 @@ export default {
           roles,
           statusName,
           email,
-          statusId
+          statusId,
+          bypassSsoRedirect,
+          bypassMfa,
+          bypassIpRestriction
         } = this.selectedRow
         this.formValues.firstName = firstName
         this.formValues.lastName = lastName
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
+        this.formValues.bypassSsoRedirect = !!bypassSsoRedirect
+        this.formValues.bypassMfa = !!bypassMfa
+        this.formValues.bypassIpRestriction = this.hasIpRestrictions && !!bypassIpRestriction
         this.formValues.phoneNumber =
           typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber || ''
         const resourceId =
@@ -215,6 +244,13 @@ export default {
     },
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val)?.name || ''
+    },
+    hasCompanyIpRestrictions(data) {
+      const items = Array.isArray(data)
+        ? data
+        : data?.results || data?.ipRestrictions || data?.ipRanges || []
+
+      return items.length > 0
     },
     submit() {
       const isNumberValid = this.$refs.refForm.validatePhoneNumber()

@@ -19,6 +19,8 @@ const auth = {
   getters: {
     getUserRole: (state) => state.userRoleName,
     userGetter: (state) => state.user,
+    isRootOrReseller: (state) =>
+      state.userRoleName === 'Root' || state.userRoleName === 'Reseller',
     getTimezoneFormat: (state) => {
       return {
         timeFormat: state.timeFormat,

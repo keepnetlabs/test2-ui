@@ -81,6 +81,7 @@ export default {
         .then(() => {
           this.closeModal(true)
         })
+        .catch(() => {})
         .finally(() => {
           this.isActionButtonDisabled = false
         })

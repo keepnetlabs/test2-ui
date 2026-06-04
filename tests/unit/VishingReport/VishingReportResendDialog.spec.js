@@ -54,4 +54,21 @@ describe('VishingReportResendDialog.vue', () => {
     expect(wrapper.emitted('on-confirm')).toBeTruthy()
     expect(wrapper.emitted('on-confirm')[0][0]).toEqual([1, 2])
   })
+
+  it('handleConfirm emits on-confirm with empty array when no types selected', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.types = []
+    wrapper.vm.handleConfirm()
+    expect(wrapper.emitted('on-confirm')[0][0]).toEqual([])
+  })
+
+  it('CONSTANTS exposes resend dialog icon', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.CONSTANTS.icon).toBe('mdi-refresh')
+  })
+
+  it('CONSTANTS exposes resend dialog title from labels', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.CONSTANTS.title).toBe('Resend Campaign')
+  })
 })

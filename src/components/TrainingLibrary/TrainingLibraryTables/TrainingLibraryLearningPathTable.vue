@@ -136,11 +136,7 @@ export default {
             col.show = true
             return
           }
-          const visibilityKey =
-            col.property === PROPERTY_STORE.TOTAL_DURATION
-              ? PROPERTY_STORE.DURATION
-              : col.property
-          col.show = renderedCols.includes(visibilityKey)
+          col.show = renderedCols.includes(col.property)
         })
       }
     },

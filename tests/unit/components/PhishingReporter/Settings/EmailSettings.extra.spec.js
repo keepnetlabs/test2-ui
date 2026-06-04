@@ -411,6 +411,223 @@ describe('EmailSettings.vue (extra coverage)', () => {
     })
   })
 
+  describe('subject merge tags', () => {
+    it('defines only the supported subject merge tags', () => {
+      const wrapper = createWrapper()
+      expect(wrapper.vm.subjectMergeTags).toEqual([
+        {
+          text: 'Subject',
+          value: '{SUBJECT}'
+        },
+        {
+          text: "Reporter's Email Address",
+          value: '{REPORTER_EMAIL}'
+        },
+        {
+          text: 'Date & Time',
+          value: '{DATE_AND_TIME}'
+        }
+      ])
+    })
+
+    it('renders merge tag buttons with disabled state when form is readonly', async () => {
+      const wrapper = createWrapper({ showForm: false })
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          isSendInformationEmail: true
+        }
+      })
+      await wrapper.vm.$nextTick()
+
+      const mergeTagButtons = wrapper.findAll('.input-merge-tag__tag')
+
+      expect(mergeTagButtons).toHaveLength(3)
+      mergeTagButtons.wrappers.forEach((button) => {
+        expect(button.attributes('disabled')).toBe('true')
+      })
+    })
+
+    it('renders enabled merge tag buttons and inserts tag on button click', async () => {
+      const wrapper = createWrapper({ showForm: true })
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          isSendInformationEmail: true,
+          subject: 'Reported: '
+        }
+      })
+      await wrapper.vm.$nextTick()
+
+      const mergeTagButtons = wrapper.findAll('.input-merge-tag__tag')
+
+      expect(mergeTagButtons).toHaveLength(3)
+      mergeTagButtons.wrappers.forEach((button) => {
+        expect(button.attributes('disabled')).toBeUndefined()
+      })
+
+      mergeTagButtons.at(1).vm.$emit('click')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Reported: {REPORTER_EMAIL}')
+    })
+
+    it('inserts selected merge tag at cursor position', async () => {
+      const wrapper = createWrapper()
+      const focus = jest.fn()
+      const setSelectionRange = jest.fn()
+      const subjectInput = {
+        selectionStart: 7,
+        selectionEnd: 7,
+        focus,
+        setSelectionRange
+      }
+
+      wrapper.vm.$refs = {
+        refEmailSubject: {
+          $el: {
+            querySelector: jest.fn(() => subjectInput)
+          }
+        }
+      }
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Report: '
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{REPORTER_EMAIL}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Report:{REPORTER_EMAIL} ')
+      expect(focus).toHaveBeenCalled()
+      expect(setSelectionRange).toHaveBeenCalledWith(23, 23)
+    })
+
+    it('replaces selected subject text with selected merge tag', async () => {
+      const wrapper = createWrapper()
+      const setSelectionRange = jest.fn()
+      const subjectInput = {
+        selectionStart: 10,
+        selectionEnd: 17,
+        focus: jest.fn(),
+        setSelectionRange
+      }
+
+      wrapper.vm.$refs = {
+        refEmailSubject: {
+          $el: {
+            querySelector: jest.fn(() => subjectInput)
+          }
+        }
+      }
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Reported: old tag'
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{DATE_AND_TIME}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Reported: {DATE_AND_TIME}')
+      expect(setSelectionRange).toHaveBeenCalledWith(25, 25)
+    })
+
+    it('appends merge tag when subject input has no selection positions', async () => {
+      const wrapper = createWrapper()
+      const setSelectionRange = jest.fn()
+      const subjectInput = {
+        focus: jest.fn(),
+        setSelectionRange
+      }
+
+      wrapper.vm.$refs = {
+        refEmailSubject: {
+          $el: {
+            querySelector: jest.fn(() => subjectInput)
+          }
+        }
+      }
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Prefix '
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{DATE_AND_TIME}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Prefix {DATE_AND_TIME}')
+      expect(setSelectionRange).toHaveBeenCalledWith(22, 22)
+    })
+
+    it('appends merge tag when subject input ref is unavailable', async () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {}
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Suspicious Email: '
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{SUBJECT}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Suspicious Email: {SUBJECT}')
+    })
+
+    it('appends merge tag when subject input element is unavailable', async () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {
+        refEmailSubject: {
+          $el: {
+            querySelector: jest.fn(() => null)
+          }
+        }
+      }
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Reported: '
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{REPORTER_EMAIL}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('Reported: {REPORTER_EMAIL}')
+    })
+
+    it('inserts merge tag into an empty subject', async () => {
+      const wrapper = createWrapper()
+      wrapper.vm.$refs = {}
+
+      wrapper.vm.handleSubjectMergeTagClick('{SUBJECT}')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.formValues.subject).toBe('{SUBJECT}')
+    })
+
+    it('does not update subject when form is readonly', () => {
+      const wrapper = createWrapper({ showForm: false })
+      wrapper.setData({
+        formValues: {
+          ...wrapper.vm.formValues,
+          subject: 'Existing subject'
+        }
+      })
+
+      wrapper.vm.handleSubjectMergeTagClick('{SUBJECT}')
+
+      expect(wrapper.vm.formValues.subject).toBe('Existing subject')
+    })
+  })
+
   describe('emailMessageRules', () => {
     it('includes required when isSendInformationEmail is true', () => {
       const wrapper = createWrapper({ showForm: true })

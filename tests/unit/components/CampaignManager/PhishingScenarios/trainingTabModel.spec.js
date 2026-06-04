@@ -11,6 +11,7 @@ describe('TrainingTabModel', () => {
     expect(model.trainingLanguageIds).toEqual([])
     expect(model.enrollmentSendTypeId).toBe('1')
     expect(model.awardCertificate).toBe(false)
+    expect(model.sendTemplatesInPreferredLanguage).toBe(false)
   })
 
   it('creates model with provided values', () => {
@@ -19,6 +20,23 @@ describe('TrainingTabModel', () => {
     expect(model.trainingName).toBe('Awareness')
     expect(model.trainingLanguageIds).toEqual([1, 2])
     expect(model.isCheckboxSelected).toBe(true)
+  })
+
+  it('sets preferred language notification delivery flag when provided', () => {
+    const model = new TrainingTabModel(
+      'id1',
+      'Awareness',
+      [1],
+      true,
+      '1',
+      false,
+      'SendOnFirstAttempt',
+      null,
+      null,
+      true
+    )
+
+    expect(model.sendTemplatesInPreferredLanguage).toBe(true)
   })
 
   it('returns default redirect page via static helper', () => {

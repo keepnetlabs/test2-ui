@@ -1,6 +1,9 @@
 export const defaultDialogBoxSettings = {
   languageName: 'English (United Kingdom)',
   languageResourceId: '862249c19aad',
+  addInName: 'Suspicious E-Mail Reporter',
+  brandName: '',
+  description: 'Report suspicious emails to your security team for analysis.',
   msgBoxTitle: 'Phishing Reporter',
   msgBoxBtnCancelText: 'Cancel',
   analysisConfirmationMessage:
@@ -41,6 +44,9 @@ export const deleteEmailOptions = [
 
 export const checkDialogBoxSettings = (settings) => {
   if (!settings.languageName) return false
+  if (!settings.addInName) return false
+  if (!settings.brandName) return false
+  if (!settings.description) return false
   if (!settings.msgBoxTitle) return false
   if (!settings.msgBoxBtnYesText) return false
   if (!settings.msgBoxBtnNoText) return false

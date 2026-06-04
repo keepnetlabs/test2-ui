@@ -30,6 +30,10 @@ jest.mock('@/api/common', () => ({
   getCountryTimezones: jest.fn(() => Promise.resolve({ data: { data: [] } }))
 }))
 
+jest.mock('@/api/regions', () => ({
+  getRegions: jest.fn(() => Promise.resolve({ data: { data: [] } }))
+}))
+
 jest.mock('@/helper-classes/lookup-local-storage', () => ({
   __esModule: true,
   default: {

@@ -257,8 +257,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnRecordButtonClick(row) {
-      const isOneTime = row.frequency == null || row.frequency === 0
-      if (row.total === 1 && row.status !== 'Idle' && isOneTime) {
+      if (row.total === 1 && row.status !== 'Idle') {
         this.$router.push({
           name: 'Quishing Report',
           params: {

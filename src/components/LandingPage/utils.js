@@ -199,3 +199,177 @@ export function processTemplateWithCustomScripts(templateString) {
     scriptsPlacement
   }
 }
+
+const CUSTOM_SCRIPT_FIELD_NAMES = [
+  'customHeadScripts',
+  'customScripts',
+  'customScript',
+  'scripts',
+  'script'
+]
+
+const CUSTOM_SCRIPT_PLACEMENT_FIELD_NAMES = [
+  'customHeadScriptsPlacement',
+  'customScriptsPlacement',
+  'scriptsPlacement',
+  'scriptPlacement'
+]
+
+const normalizeCustomScriptValue = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((script) => normalizeCustomScriptValue(script))
+      .filter(Boolean)
+      .join('\n')
+  }
+
+  if (value && typeof value === 'object') {
+    return normalizeCustomScriptValue(value.outerHTML || value.content || '')
+  }
+
+  if (typeof value !== 'string') return ''
+
+  const trimmedValue = value.trim()
+  if (!trimmedValue) return ''
+
+  return /<script[\s>]/i.test(trimmedValue)
+    ? trimmedValue
+    : '<script>' + trimmedValue + '</' + 'script>'
+}
+
+const getCustomScriptsFromTemplateFields = (templatePage = {}) => {
+  const scripts = CUSTOM_SCRIPT_FIELD_NAMES.map((fieldName) =>
+    normalizeCustomScriptValue(templatePage[fieldName])
+  ).filter(Boolean)
+
+  return [...new Set(scripts)].join('\n')
+}
+
+const getCustomScriptsPlacementFromTemplate = (templatePage = {}, fallback = 'body-start') => {
+  const placement = CUSTOM_SCRIPT_PLACEMENT_FIELD_NAMES.map(
+    (fieldName) => templatePage[fieldName]
+  ).find(Boolean)
+
+  return placement === 'body-end' ? 'body-end' : fallback
+}
+
+const buildMarkedScriptElements = (customScripts = '', placement = 'body-start') => {
+  const scriptsContainer = document.createElement('div')
+  scriptsContainer.innerHTML = customScripts
+
+  return Array.from(scriptsContainer.querySelectorAll('script')).map((script) => {
+    const newScript = document.createElement('script')
+    Array.from(script.attributes || []).forEach((attribute) => {
+      newScript.setAttribute(attribute.name, attribute.value)
+    })
+    newScript.setAttribute('data-custom-landing-page-script', 'true')
+    newScript.setAttribute('data-custom-landing-page-script-position', placement)
+    newScript.innerHTML = script.innerHTML
+    return newScript
+  })
+}
+
+const injectCustomScriptsIntoTemplate = (
+  content = '',
+  customScripts = '',
+  placement = 'body-start'
+) => {
+  const scriptElements = buildMarkedScriptElements(customScripts, placement)
+  if (!scriptElements.length) return content
+
+  const template = document.createElement('template')
+  template.innerHTML = content || ''
+  const target = template.content.querySelector('body') || template.content
+
+  scriptElements.forEach((script) => {
+    if (placement === 'body-end') {
+      target.appendChild(script)
+      return
+    }
+
+    target.insertBefore(script, target.firstChild)
+  })
+
+  return template.innerHTML
+}
+
+export const getTemplatePageWithCustomScripts = (templatePage = {}) => {
+  const content = templatePage?.content || ''
+  const { customScripts, scriptsPlacement } = processTemplateWithCustomScripts(content)
+
+  if (customScripts.length > 0) {
+    return {
+      content,
+      customHeadScripts: customScripts
+        .map((script) => script.outerHTML || script.content || '')
+        .filter(Boolean)
+        .join('\n'),
+      customHeadScriptsPlacement: scriptsPlacement || 'body-start'
+    }
+  }
+
+  const customHeadScripts = getCustomScriptsFromTemplateFields(templatePage)
+  const customHeadScriptsPlacement = getCustomScriptsPlacementFromTemplate(templatePage)
+
+  if (!customHeadScripts) {
+    return {
+      content,
+      customHeadScripts: '',
+      customHeadScriptsPlacement
+    }
+  }
+
+  return {
+    content: injectCustomScriptsIntoTemplate(
+      content,
+      customHeadScripts,
+      customHeadScriptsPlacement
+    ),
+    customHeadScripts,
+    customHeadScriptsPlacement
+  }
+}
+
+export const removeIndexedValue = (indexedValues = {}, removedIndex) => {
+  return Object.keys(indexedValues).reduce((nextValues, key) => {
+    const index = Number.parseInt(key)
+    if (Number.isNaN(index) || index === removedIndex) return nextValues
+
+    nextValues[index > removedIndex ? index - 1 : index] = indexedValues[key]
+    return nextValues
+  }, {})
+}
+
+export const syncCustomScriptsForPage = (
+  vm,
+  pageIndex,
+  customHeadScripts,
+  customHeadScriptsPlacement
+) => {
+  if (!vm.customHeadScripts) vm.customHeadScripts = {}
+  if (!vm.customHeadScriptsPlacement) vm.customHeadScriptsPlacement = {}
+
+  if (customHeadScripts) {
+    vm.$set
+      ? vm.$set(vm.customHeadScripts, pageIndex, customHeadScripts)
+      : (vm.customHeadScripts[pageIndex] = customHeadScripts)
+    vm.$set
+      ? vm.$set(
+          vm.customHeadScriptsPlacement,
+          pageIndex,
+          customHeadScriptsPlacement || 'body-start'
+        )
+      : (vm.customHeadScriptsPlacement[pageIndex] =
+          customHeadScriptsPlacement || 'body-start')
+    return
+  }
+
+  if (vm.$delete) {
+    vm.$delete(vm.customHeadScripts, pageIndex)
+    vm.$delete(vm.customHeadScriptsPlacement, pageIndex)
+    return
+  }
+
+  delete vm.customHeadScripts[pageIndex]
+  delete vm.customHeadScriptsPlacement[pageIndex]
+}

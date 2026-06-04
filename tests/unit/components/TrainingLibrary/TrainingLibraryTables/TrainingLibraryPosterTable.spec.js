@@ -8,13 +8,13 @@ describe('TrainingLibraryPosterTable.vue', () => {
     expect(TrainingLibraryPosterTable.name).toBe('TrainingLibraryPosterTable')
   })
 
-  it('keeps the legacy duration property and never adopts totalDuration', () => {
+  it('uses the totalDuration column property like learning path', () => {
     const columns = TrainingLibraryPosterTable.data().tableOptions.columns
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
     ).toBeDefined()
     expect(
-      columns.find((col) => col.property === PROPERTY_STORE.TOTAL_DURATION)
+      columns.find((col) => col.property === PROPERTY_STORE.DURATION)
     ).toBeUndefined()
   })
 

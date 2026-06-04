@@ -44,6 +44,13 @@ describe('InputPhishingLinkMini.vue', () => {
     checkSchemaTypes: jest.fn(),
     checkDomainBlocklist: jest.fn(),
     handleInputChange: methods.handleInputChange,
+    getDomainRecord: methods.getDomainRecord,
+    getDomainSchemaInfo: methods.getDomainSchemaInfo,
+    getSchemaValueByProtocol: methods.getSchemaValueByProtocol,
+    isCreateMode: methods.isCreateMode,
+    getProtocolValueForDomain: methods.getProtocolValueForDomain,
+    isSchemaDisabled: methods.isSchemaDisabled,
+    syncProtocolWithDomain: methods.syncProtocolWithDomain,
     ...overrides
   })
 
@@ -389,7 +396,7 @@ describe('InputPhishingLinkMini.vue', () => {
     })
   })
 
-  it('checkSchemaTypes enables all schemas for HTTPS-capable domains', () => {
+  it('checkSchemaTypes in create mode keeps HTTPS-capable domain schema options enabled', () => {
     const ctx = buildContext({
       isEdit: false,
       domainRecords: [
@@ -405,7 +412,8 @@ describe('InputPhishingLinkMini.vue', () => {
 
     methods.checkSchemaTypes.call(ctx, 'domain-https')
 
-    expect(ctx.urlSchemaTypesModified.every((item) => item.disabled === false)).toBe(true)
+    expect(ctx.urlSchemaTypesModified.find((item) => item.value === '1').disabled).toBe(false)
+    expect(ctx.urlSchemaTypesModified.find((item) => item.value === '2').disabled).toBe(false)
     expect(ctx.handleInputChange).toHaveBeenCalledWith('2', 'urlSchemaTypeId')
   })
 })

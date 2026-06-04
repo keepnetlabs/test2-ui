@@ -1,4 +1,5 @@
 import { mapActions, mapGetters } from 'vuex'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 export default {
   computed: {
@@ -24,11 +25,14 @@ export default {
     getFilterKey(fieldName) {
       if (fieldName === 'vendorName') return 'vendor'
       if (fieldName === 'roles') return 'targetAudience'
+      if (fieldName === 'DurationMinutes' || fieldName === 'TotalDuration')
+        return PROPERTY_STORE.TOTAL_DURATION
       return fieldName
     },
     getTableFieldName(filterKey) {
       if (filterKey === 'vendor') return 'vendorName'
       if (filterKey === 'targetAudience') return 'roles'
+      if (filterKey === PROPERTY_STORE.TOTAL_DURATION) return 'DurationMinutes'
       return filterKey
     },
     columnFilterChanged(filter) {

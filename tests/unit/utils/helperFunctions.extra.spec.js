@@ -7,10 +7,110 @@ import {
   normalizeRoleId,
   getAvailableForValues,
   getAvailableForValueFromList,
-  columnFilterChanged
+  columnFilterChanged,
+  resolveApiDurationFieldName,
+  normalizeSearchFilterItems
 } from '@/utils/helperFunctions'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('helperFunctions.js (extra coverage)', () => {
+  describe('resolveApiDurationFieldName', () => {
+    it('maps totalDuration and TotalDuration to DurationMinutes', () => {
+      expect(resolveApiDurationFieldName(PROPERTY_STORE.TOTAL_DURATION)).toBe('DurationMinutes')
+      expect(resolveApiDurationFieldName('TotalDuration')).toBe('DurationMinutes')
+      expect(resolveApiDurationFieldName('DurationMinutes')).toBe('DurationMinutes')
+      expect(resolveApiDurationFieldName('Name')).toBe('Name')
+    })
+
+    it('returns null and undefined unchanged', () => {
+      expect(resolveApiDurationFieldName(null)).toBeNull()
+      expect(resolveApiDurationFieldName(undefined)).toBeUndefined()
+    })
+  })
+
+  describe('normalizeSearchFilterItems', () => {
+    it('rewrites duration field names in search FilterItems', () => {
+      expect(
+        normalizeSearchFilterItems([
+          { FieldName: 'TotalDuration', Operator: 'Contains', Value: '5' },
+          { FieldName: 'trainingName', Operator: 'Contains', Value: 'x' }
+        ])
+      ).toEqual([
+        { FieldName: 'DurationMinutes', Operator: 'Contains', Value: '5' },
+        { FieldName: 'trainingName', Operator: 'Contains', Value: 'x' }
+      ])
+    })
+
+    it('maps camelCase totalDuration FieldName and handles empty list', () => {
+      expect(normalizeSearchFilterItems([{ FieldName: PROPERTY_STORE.TOTAL_DURATION, Operator: 'Contains', Value: '1' }])).toEqual([
+        { FieldName: 'DurationMinutes', Operator: 'Contains', Value: '1' }
+      ])
+      expect(normalizeSearchFilterItems([])).toEqual([])
+    })
+  })
+
+  describe('columnFilterChanged (duration)', () => {
+    it('maps TotalDuration filter to DurationMinutes and replaces same column', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [{ FieldName: 'DurationMinutes', Value: '1-5', Operator: 'Include' }]
+            }
+          ]
+        }
+      }
+      const result = columnFilterChanged(
+        { FieldName: 'TotalDuration', Value: '5-15', Operator: 'Include' },
+        axiosPayload
+      )
+      expect(result).toEqual([{ FieldName: 'DurationMinutes', Value: '5-15', Operator: 'Include' }])
+    })
+
+    it('array branch replaces targeted fields and keeps others', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'Status', Value: '1' },
+                { FieldName: 'Name', Value: 'old' },
+                { FieldName: 'DurationMinutes', Value: '1-5' }
+              ]
+            }
+          ]
+        }
+      }
+      const result = columnFilterChanged(
+        [
+          { FieldName: 'Name', Value: 'new' },
+          { FieldName: PROPERTY_STORE.TOTAL_DURATION, Value: '5-15', Operator: 'Include' }
+        ],
+        axiosPayload
+      )
+      expect(result).toEqual([
+        { FieldName: 'Status', Value: '1' },
+        { FieldName: 'Name', Value: 'new' },
+        { FieldName: 'DurationMinutes', Value: '5-15', Operator: 'Include' }
+      ])
+    })
+
+    it('array branch uses fieldName when FieldName is missing', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [{ FilterItems: [{ FieldName: 'Status', Value: 'x' }] }]
+        }
+      }
+      const result = columnFilterChanged([{ fieldName: 'TotalDuration', Value: '5', Operator: '=' }], axiosPayload)
+      expect(result.find((i) => i.FieldName === 'DurationMinutes')).toMatchObject({
+        FieldName: 'DurationMinutes',
+        Value: '5',
+        Operator: '='
+      })
+      expect(result.find((i) => i.FieldName === 'Status')).toEqual({ FieldName: 'Status', Value: 'x' })
+    })
+  })
+
   describe('columnFilterCleared', () => {
     it('removes filter by field name', () => {
       const axiosPayload = {
@@ -44,6 +144,35 @@ describe('helperFunctions.js (extra coverage)', () => {
       }
       const result = columnFilterCleared('Name', axiosPayload)
       expect(result).toEqual([])
+    })
+    it('clears DurationMinutes when clear key is totalDuration', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [{ FieldName: 'DurationMinutes', Value: '5-15', Operator: 'Include' }]
+            }
+          ]
+        }
+      }
+      expect(columnFilterCleared(PROPERTY_STORE.TOTAL_DURATION, axiosPayload)).toEqual([])
+    })
+
+    it('clears DurationMinutes when clear key is TotalDuration', () => {
+      const axiosPayload = {
+        filter: {
+          FilterGroups: [
+            {
+              FilterItems: [
+                { FieldName: 'DurationMinutes', Value: '5-15', Operator: 'Include' },
+                { FieldName: 'Status', Value: '1' }
+              ]
+            }
+          ]
+        }
+      }
+      const result = columnFilterCleared('TotalDuration', axiosPayload)
+      expect(result).toEqual([{ FieldName: 'Status', Value: '1' }])
     })
   })
 

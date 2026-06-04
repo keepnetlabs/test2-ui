@@ -240,6 +240,7 @@ export default {
         })
     },
     handleEdit() {
+      if (this.selectedRow?.isOwner === false || this.disableEdit) return
       this.isHtmlOverflowControlManuallyDisabled = true
       this.$emit('on-edit', this.selectedRow)
     },

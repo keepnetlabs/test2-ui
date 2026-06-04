@@ -122,7 +122,9 @@ describe('EmailDetailsAIAnalyze.vue (extra branch coverage)', () => {
       isAgentDeterminationExpanded: true,
       openEvidenceSteps: [99],
       $emit: emit,
-      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
     }
 
     await methods.runAnalysis.call(ctx)
@@ -151,7 +153,9 @@ describe('EmailDetailsAIAnalyze.vue (extra branch coverage)', () => {
       isAgentDeterminationExpanded: true,
       openEvidenceSteps: [1],
       $emit: emit,
-      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
     }
 
     await methods.runAnalysis.call(ctx)

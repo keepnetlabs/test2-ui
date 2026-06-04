@@ -77,7 +77,7 @@
 
       <div v-if="blocklistWarning" class="blocklist-preview-bar" :class="'blocklist-preview-bar--' + blocklistWarning.status">
         <VIcon x-small :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
-        <span class="blocklist-preview-bar__text">{{ blocklistWarning.reason }}</span>
+        <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
       </div>
 
       <KEmailPreview
@@ -223,6 +223,10 @@ export default {
     },
     showDuplicateButton() {
       return !this.isNested && !this.disableEdit && this.isOwner === false
+    },
+    blocklistWarningText() {
+      if (!this.blocklistWarning) return ''
+      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
     }
   },
   watch: {
@@ -244,9 +248,11 @@ export default {
       openHtmlInNewWindow(this.previewHtml)
     },
     handleEdit() {
+      if (!this.showEditButton) return
       this.$emit('edit')
     },
     handleDuplicate() {
+      if (!this.showDuplicateButton) return
       this.$emit('duplicate')
     },
     extractDomain(url) {

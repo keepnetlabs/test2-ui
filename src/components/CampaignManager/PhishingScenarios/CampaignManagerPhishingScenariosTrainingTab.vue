@@ -108,6 +108,14 @@
           </template>
         </k-select>
       </FormGroup>
+      <InputPreferredLanguage
+        v-if="isPreferredLanguageVisible"
+        v-model="value.sendTemplatesInPreferredLanguage"
+        class="ml-3 mt-3"
+        title="Preferred Language"
+        subtitle="Select how to send the enrollment notification template by language."
+        :disabled="!isInputsEditable || isInputLanguageDisabled || isEdit"
+      />
       <FormGroup
         v-if="isShowReminder"
         class="ml-3 mt-3"
@@ -352,17 +360,20 @@ import {
 import InputDate from '@/components/Common/Inputs/InputDate.vue'
 import { endTypeItems, periodTypeItems } from '@/components/AwarenessEducator/SendTraining/utils'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputPreferredLanguage from '@/components/TrainingLibrary/TrainingLibrarySendModal/InputPreferredLanguage.vue'
 import * as Validations from '@/utils/validations'
 import { Fragment } from 'vue-frag'
 import CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal from './CampaignManagerPhishingScenariosTrainingLandingPagePreviewModal.vue'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import { getSelectSearchPayload, createRandomCryptStringNumber } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManagerPhishingScenariosTrainingTab',
   components: {
     InputDate,
     InputContentLanguage,
+    InputPreferredLanguage,
     KSelect,
     AlertBox,
     FormGroup,
@@ -461,6 +472,11 @@ export default {
     }
   },
   watch: {
+    'value.enrollmentSendTypeId'() {
+      if (!this.isEnrollmentEmailNotificationSelected) {
+        this.$set(this.value, 'sendTemplatesInPreferredLanguage', false)
+      }
+    },
     value(val) {
       if (val?.trainingId && val?.trainingName) {
         const trainingItem = this?.trainingItems?.find((item) => item.value === val.trainingId)
@@ -488,6 +504,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTrainingSearchPermission: 'permissions/getTrainingSearchPermission'
+    }),
     getDisabledLabelStyle() {
       const style = {}
       if (!this.isInputsEditable || this.isInputLanguageDisabled || this.isEdit)
@@ -550,6 +569,12 @@ export default {
     isInputLanguageDisabled() {
       return !this.isInputsEditable || !this.value.trainingId
     },
+    isEnrollmentEmailNotificationSelected() {
+      return ['2', '3'].includes(this.value?.enrollmentSendTypeId?.toString())
+    },
+    isPreferredLanguageVisible() {
+      return this.isShowReminder && this.isEnrollmentEmailNotificationSelected
+    },
     isPreviewButtonDisabled() {
       return (
         !this.isInputsEditable || !this.value.trainingId || !this.value.trainingLanguageIds.length
@@ -564,11 +589,13 @@ export default {
     }
   },
   created() {
+    if (!this.getTrainingSearchPermission) return
     this.callForTrainingItems()
     this.callForAELanguages()
   },
   methods: {
     callForAELanguages() {
+      if (!this.getTrainingSearchPermission) return
       AwarenessEducatorService.getLanguages().then((response) => {
         this.languages = response?.data?.data || []
       })
@@ -580,6 +607,7 @@ export default {
       this.isPagePreviewModalVisible = false
     },
     callForTrainingItems(addPage) {
+      if (!this.getTrainingSearchPermission) return
       if (addPage) {
         this.trainingPayload.pageNumber += 1
         if (this.trainingPayload.pageNumber > this.totalNumberOfPagesOfTrainings) return
@@ -595,6 +623,7 @@ export default {
         })
     },
     callForTrainingItemsSearch(search = '') {
+      if (!this.getTrainingSearchPermission) return
       if (search) {
         AwarenessEducatorService.getTrainingItems(
           getSelectSearchPayload(this.trainingPayload, search, 'trainingName')

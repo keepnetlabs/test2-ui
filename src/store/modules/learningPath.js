@@ -12,6 +12,7 @@ import { trainingLibraryFilters } from '@/components/TrainingLibrary/TrainingLib
 const resolvePayloadKey = (key) => {
   if (key === 'targetAudience') return 'roles'
   if (key === 'category') return 'categories'
+  if (key === 'totalDuration') return 'DurationMinutes'
   return key
 }
 const learningPath = {
@@ -233,7 +234,7 @@ const learningPath = {
     },
     SET_LEARNING_PATH_SORT_BY_TO_PAYLOAD(state, payload) {
       state.learningPathAxiosPayload.ascending = payload.ascending
-      state.learningPathAxiosPayload.orderBy = payload.orderBy
+      state.learningPathAxiosPayload.orderBy = resolvePayloadKey(payload.orderBy)
     },
     SET_LEARNING_PATH_SEARCH_TO_PAYLOAD(state) {
       const filterItems = state.learningPathAxiosPayload.filter.FilterGroups[1].FilterItems

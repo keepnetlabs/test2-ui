@@ -1,58 +1,108 @@
 <template>
-  <AppDialog
-    icon="mdi-eye"
-    custom-size="900"
-    :status="status"
-    :title="getTitle"
-    :subtitle="getSubtitle"
-    max-height
-    max-height-size="900"
-    class-name="vishing-template-preview-dialog"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <DatatableLoading v-if="isLoading" :loading="isLoading" />
-      <div v-else :class="['template-preview']">
-        <div v-if="showTemplateInfo" class="template-preview__text mb-4">
+  <div v-if="isVisible">
+    <div class="vishing-template-preview-overlay" @click="handleOverlayClick"></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="[getNavigationDrawerClass, 'vishing-template-preview-drawer']"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header">
           <div>
-            <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  {{ getTitle }}
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
           </div>
-          <div v-if="templateData.senderPhoneNumber">
-            <span class="template-preview__text--body"
-              >Sender Phone Number: {{ templateData.senderPhoneNumber }}</span
-            >
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
           </div>
         </div>
-        <VishingTemplatePreviewSteps
-          :template="templateData"
-          :isTextToSpeechCompatible="isTextToSpeechCompatible || campaignTextToSpeechCompatible"
-          :voiceResourceId="voiceResourceId || campaignVoiceResourceId"
-        />
       </div>
-    </template>
-    <template #app-dialog-footer>
-      <div class="d-flex" style="justify-content: flex-end;">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="handleClose"
-          >CLOSE
-        </v-btn>
+
+      <div class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body">
+        <div class="vishing-template-preview-drawer__summary">
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{ getSubtitle }}</span>
+          </div>
+          <div class="vishing-template-preview-drawer__summary-actions">
+            <VTooltip v-if="canShowEditButton" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small :disabled="editDisabled" @click="handleEdit">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+            <VTooltip v-if="showDuplicateButton" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn
+                    icon
+                    outlined
+                    color="#2196F3"
+                    small
+                    :disabled="duplicateDisabled"
+                    @click="handleDuplicate"
+                  >
+                    <VIcon small>mdi-content-copy</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Duplicate</span>
+            </VTooltip>
+          </div>
+        </div>
+        <DatatableLoading v-if="isLoading" :loading="isLoading" />
+        <div v-else class="template-preview">
+          <div v-if="showTemplateInfo" class="template-preview__text mb-4">
+            <div v-if="showTemplateName && templateData">
+              <span class="template-preview__text--body">Template Name: {{ templateData.name }}</span>
+            </div>
+            <div v-if="templateData && templateData.senderPhoneNumber">
+              <span class="template-preview__text--body">
+                Sender Phone Number: {{ templateData.senderPhoneNumber }}
+              </span>
+            </div>
+          </div>
+          <VishingTemplatePreviewSteps
+            v-if="templateData"
+            :template="templateData"
+            :isTextToSpeechCompatible="isTextToSpeechCompatible || campaignTextToSpeechCompatible"
+            :voiceResourceId="voiceResourceId || campaignVoiceResourceId"
+          />
+        </div>
       </div>
-    </template>
-  </AppDialog>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
 import { getVishingCampaignPreview, getVishingTemplatePreview } from '@/api/vishing'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import VishingTemplatePreviewSteps from '@/components/VishingTemplates/VishingTemplatePreviewSteps'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 export default {
   name: 'VishingTemplatePreview',
   components: {
     DatatableLoading,
-    AppDialog,
     VishingTemplatePreviewSteps
   },
+  mixins: [useDrawerAnimation],
   props: {
     isCampaign: {
       type: Boolean
@@ -83,6 +133,26 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    isNested: {
+      type: Boolean,
+      default: false
+    },
+    showEditButton: {
+      type: Boolean,
+      default: false
+    },
+    showDuplicateButton: {
+      type: Boolean,
+      default: false
+    },
+    editDisabled: {
+      type: Boolean,
+      default: false
+    },
+    duplicateDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -103,10 +173,16 @@ export default {
       return 'Vishing Template Preview'
     },
     getSubtitle() {
-      return this.selectedRow.name
+      return this.selectedRow?.name || ''
     },
     isRenderSteps() {
       return this.templateData?.steps?.length > 0
+    },
+    showTemplateName() {
+      return !this.isCampaign
+    },
+    canShowEditButton() {
+      return this.showEditButton && this.selectedRow?.isOwner !== false
     }
   },
   created() {
@@ -155,12 +231,26 @@ export default {
             }
           }
         })
+        .catch(() => {})
         .finally(() => {
           this.isLoading = false
         })
     },
     handleClose() {
+      if (this.closeDrawer) {
+        this.closeDrawer()
+        return
+      }
       this.$emit('on-close')
+    },
+    handleEdit() {
+      if (this.selectedRow?.isOwner === false) return
+      if (this.editDisabled) return
+      this.$emit('on-edit-template')
+    },
+    handleDuplicate() {
+      if (this.duplicateDisabled) return
+      this.$emit('on-duplicate-template')
     },
     handleAudioPlay(index) {
       for (let i = 0; i < this.templateData.steps.length; i++) {

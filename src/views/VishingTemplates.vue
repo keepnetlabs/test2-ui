@@ -9,7 +9,13 @@
       :voiceResourceId="voiceResourceId"
       :language="selectedTemplateLanguage"
       :voice="selectedTemplateVoice"
+      show-edit-button
+      show-duplicate-button
+      :edit-disabled="tableOptions.rowActions[1].disabled"
+      :duplicate-disabled="tableOptions.rowActions[3].disabled"
       @on-close="onToggleShowPreviewModal"
+      @on-edit-template="handlePreviewEdit"
+      @on-duplicate-template="handlePreviewDuplicate"
     />
     <DeleteVishingTemplateDialog
       v-if="isDeleteModalVisible"
@@ -396,7 +402,18 @@ export default {
       this.selectedTemplate = row
       this.onToggleShowPreviewModal()
     },
+    handlePreviewEdit() {
+      const selectedTemplate = this.selectedTemplate
+      this.isPreviewVisible = false
+      this.handleEdit(selectedTemplate, false)
+    },
+    handlePreviewDuplicate() {
+      const selectedTemplate = this.selectedTemplate
+      this.isPreviewVisible = false
+      this.handleEdit(selectedTemplate, true)
+    },
     handleEdit(row, isDuplicate) {
+      if (!isDuplicate && row?.isOwner === false) return
       this.selectedTemplate = row
       this.modalStatus = true
       this.isEdit = true
@@ -470,30 +487,45 @@ export default {
       }
     },
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
-        this.languageItems = response?.data?.data || []
-        const voiceFilterableItems = response?.data?.data
-          ? response.data.data.map((language) => language.name)
-          : []
-        const uniqueVoiceFilterableItems = [...new Set(voiceFilterableItems)]
-        this.voices = uniqueVoiceFilterableItems
-        this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'voice'),
-          'filterableItems',
-          uniqueVoiceFilterableItems
-        )
-        const languageFilterableItems = response?.data?.data
-          ? response.data.data.map((language) => language.language)
-          : []
-        const uniqueLanguageFilterableItems = [...new Set(languageFilterableItems)]
-        this.languages = uniqueLanguageFilterableItems
-        this.$set(
-          this.tableOptions.columns.find((col) => col.property === 'language'),
-          'filterableItems',
-          uniqueLanguageFilterableItems
-        )
-        this?.$refs?.refVishingTemplatesList?.reRenderFilters()
-      })
+      getVishingTemplateLanguages()
+        .then((response) => {
+          this.languageItems = response?.data?.data || []
+          const voiceFilterableItems = response?.data?.data
+            ? response.data.data.map((language) => language.name)
+            : []
+          const uniqueVoiceFilterableItems = [...new Set(voiceFilterableItems)]
+          this.voices = uniqueVoiceFilterableItems
+          this.$set(
+            this.tableOptions.columns.find((col) => col.property === 'voice'),
+            'filterableItems',
+            uniqueVoiceFilterableItems
+          )
+          const languageFilterableItems = response?.data?.data
+            ? response.data.data.map((language) => language.language)
+            : []
+          const uniqueLanguageFilterableItems = [...new Set(languageFilterableItems)]
+          this.languages = uniqueLanguageFilterableItems
+          this.$set(
+            this.tableOptions.columns.find((col) => col.property === 'language'),
+            'filterableItems',
+            uniqueLanguageFilterableItems
+          )
+          this?.$refs?.refVishingTemplatesList?.reRenderFilters()
+        })
+        .catch(() => {
+          this.languageItems = []
+          this.voices = []
+          this.languages = []
+          const voiceColumn = this.tableOptions.columns.find((col) => col.property === 'voice')
+          const languageColumn = this.tableOptions.columns.find((col) => col.property === 'language')
+          if (voiceColumn) {
+            this.$set(voiceColumn, 'filterableItems', [])
+          }
+          if (languageColumn) {
+            this.$set(languageColumn, 'filterableItems', [])
+          }
+          this?.$refs?.refVishingTemplatesList?.reRenderFilters()
+        })
     },
     handleSuccessDeleteAction(row) {
       this.$refs.refVishingTemplatesList?.resetSelectableParams()

@@ -45,10 +45,60 @@ describe('CallbackScenarioPreview.vue methods', () => {
     expect(ctx.isLoading).toBe(false)
   })
 
-  it('handleClose emits on-close', () => {
+  it('handleClose delegates to closeDrawer', () => {
+    const closeDrawer = jest.fn()
+    CallbackScenarioPreview.methods.handleClose.call({ closeDrawer })
+    expect(closeDrawer).toHaveBeenCalled()
+  })
+
+  it('showEditButton follows selectedRow ownership and showDuplicateButton reflects selectedRow presence', () => {
+    expect(
+      CallbackScenarioPreview.computed.showEditButton.call({
+        selectedRow: { name: 'X', isOwner: true }
+      })
+    ).toBe(true)
+    expect(
+      CallbackScenarioPreview.computed.showEditButton.call({
+        selectedRow: { name: 'X', isOwner: false }
+      })
+    ).toBe(false)
+    expect(
+      CallbackScenarioPreview.computed.showDuplicateButton.call({ selectedRow: { name: 'X' } })
+    ).toBe(true)
+    expect(CallbackScenarioPreview.computed.showEditButton.call({ selectedRow: null })).toBe(false)
+    expect(CallbackScenarioPreview.computed.showDuplicateButton.call({ selectedRow: null })).toBe(
+      false
+    )
+  })
+
+  it('handleEdit and handleDuplicate emit template-level events', () => {
     const emit = jest.fn()
-    CallbackScenarioPreview.methods.handleClose.call({ $emit: emit })
-    expect(emit).toHaveBeenCalledWith('on-close')
+    CallbackScenarioPreview.methods.handleEdit.call({ $emit: emit, selectedRow: { isOwner: true } })
+    expect(emit).toHaveBeenCalledWith('on-edit-template')
+    CallbackScenarioPreview.methods.handleDuplicate.call({ $emit: emit })
+    expect(emit).toHaveBeenCalledWith('on-duplicate-template')
+  })
+
+  it('handleEdit does not emit when selected row is not owned', () => {
+    const emit = jest.fn()
+
+    CallbackScenarioPreview.methods.handleEdit.call({
+      $emit: emit,
+      selectedRow: { isOwner: false }
+    })
+
+    expect(emit).not.toHaveBeenCalled()
+  })
+
+  it('getNavigationDrawerClass toggles nested-drawer class via isNested prop', () => {
+    expect(CallbackScenarioPreview.computed.getNavigationDrawerClass.call({ isNested: false })).toEqual({
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': false
+    })
+    expect(CallbackScenarioPreview.computed.getNavigationDrawerClass.call({ isNested: true })).toEqual({
+      'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+      'nested-drawer': true
+    })
   })
 
   it('handlePreviousTemplate and handleNextTemplate update selected index', () => {

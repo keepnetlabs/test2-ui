@@ -48,6 +48,7 @@ describe('CompanySettings.vue', () => {
       getNotificationTemplatesSearchPermissions: true,
       getMicrosoftTeamsSettingsGetPermissions: true,
       getGoogleUserProvisionGetPermissions: true,
+      getCompanyIpRestrictionsGetPermissions: true,
       getRestApiSearchPermissions: true,
       getWhiteLabelingGetPermissions: true,
       getProxySettingsSearchPermissions: true,
@@ -61,6 +62,36 @@ describe('CompanySettings.vue', () => {
     CompanySettings.created.call(ctx)
 
     expect(ctx.tab).toBe('smtp-settings')
+    expect(changeTabByRoute).toHaveBeenCalledTimes(1)
+  })
+
+  it('created can select IP Restrictions as the first permitted tab', () => {
+    const changeTabByRoute = jest.fn()
+    const ctx = {
+      tab: 'smtp-settings',
+      changeTabByRoute,
+      getAccountPrivacyPermission: false,
+      hasAgenticAILicense: false,
+      getAIAllySettingsGetPermissions: false,
+      getSMTPSettingsSearchPermissions: false,
+      getDirectEmailCreationSearchPermissions: false,
+      getNotificationTemplatesSearchPermissions: false,
+      getMicrosoftTeamsSettingsGetPermissions: false,
+      getGoogleUserProvisionGetPermissions: false,
+      getCompanyIpRestrictionsGetPermissions: true,
+      getRestApiSearchPermissions: true,
+      getWhiteLabelingGetPermissions: true,
+      getProxySettingsSearchPermissions: true,
+      getSAMLIntegrationSearchPermissions: true,
+      getSCIMSettingsSearchPermissions: true,
+      getSIEMIntegrationSearchPermissions: true,
+      getLDAPDetailPermission: true,
+      getAllowListPermissionsSearch: true
+    }
+
+    CompanySettings.created.call(ctx)
+
+    expect(ctx.tab).toBe('ip-restrictions')
     expect(changeTabByRoute).toHaveBeenCalledTimes(1)
   })
 

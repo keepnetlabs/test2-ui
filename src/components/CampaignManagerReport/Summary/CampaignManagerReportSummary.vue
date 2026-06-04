@@ -30,14 +30,6 @@
         :isLoading="isLoading"
       />
     </div>
-    <div v-if="phishingScenarios.length === 1" class="mt-6">
-      <CampaignManagerReportSummaryScenarioInfo
-        :items="getScenarioInfoItems"
-        :categories="getCategories"
-        :isLoading="isLoading"
-        :campaignName="getCampaignName"
-      />
-    </div>
     <div class="my-6">
       <span class="campaign-manager-last-step__phishing-scenario-label">Phishing Scenarios</span>
       <VTooltip v-if="phishingScenarios.length > 5" bottom>
@@ -64,6 +56,14 @@
         :label="template.scenarioInfo.name"
       />
     </ElTabs>
+    <CampaignManagerReportSummaryScenarioInfo
+      v-if="phishingScenarios.length"
+      class="mt-4"
+      :items="getScenarioInfoItems"
+      :categories="getCategories"
+      :isLoading="isLoading"
+      :campaignName="getCampaignName"
+    />
     <CampaignManagerReportSummaryCategory
       :category="getScenarioCategory"
       :isFetchingSummary="isLoading"
@@ -216,6 +216,13 @@ export default {
       }
       return this?.getActiveScenario?.trainingInfo
     },
+    activeScenarioEnrollmentNotificationLanguage() {
+      if (!this.getActiveScenario?.trainingInfo) return ''
+      return (this.getActiveScenario?.sendTemplatesInPreferredLanguage ??
+        this.getActiveScenario?.trainingInfo?.sendTemplatesInPreferredLanguage)
+        ? 'Preferred Language'
+        : 'Company Language'
+    },
     getSelectedRowTrainingInfo() {
       return {
         trainingLanguageIds:
@@ -300,6 +307,29 @@ export default {
     },
     getScenarioInfoItems() {
       const { scenariosGeneralInfo = {}, scenarios = {} } = this.campaignSummary || {}
+      const activeScenario = this.getActiveScenario || {}
+      if (this.phishingScenarios.length > 1 && activeScenario.scenarioInfo) {
+        const { scenarioInfo = {}, emailTemplateInfo = {} } = activeScenario
+        const methodText =
+          this.formDetails?.methodTypes?.find(
+            (item) => Number.parseInt(item.value) === scenarioInfo.methodTypeId
+          )?.text || ''
+        const difficultyText =
+          this.formDetails?.difficultyTypes?.find(
+            (item) => Number.parseInt(item.value) === scenarioInfo.difficultyTypeId
+          )?.text || ''
+        const languageCode = emailTemplateInfo.languageShortCode || scenarioInfo.languageShortCode
+        const language = this.languageOptions.find((lang) => lang.languageShortCode === languageCode)
+        return {
+          Category: scenarioInfo.category,
+          Method: methodText,
+          Languages: [language?.text || languageCode].filter(Boolean),
+          Difficulty: difficultyText,
+          ...(this.activeScenarioEnrollmentNotificationLanguage && {
+            'Enrollment Notification Language': this.activeScenarioEnrollmentNotificationLanguage
+          })
+        }
+      }
       let languageShortCodesEmailTemplateInfos = new Set()
       if (scenarios?.length) {
         scenarios.forEach((item) => {
@@ -346,7 +376,10 @@ export default {
           Languages: languageShortCodesEmailTemplateInfos.size
             ? [...languageShortCodesEmailTemplateInfos]
             : mappedLanguageShortCodes,
-          Difficulty: difficultyText
+          Difficulty: difficultyText,
+          ...(this.activeScenarioEnrollmentNotificationLanguage && {
+            'Enrollment Notification Language': this.activeScenarioEnrollmentNotificationLanguage
+          })
         }
       }
       return {
@@ -658,6 +691,11 @@ export default {
       if (scenarios.length) {
         scenarios.forEach((scenario) => {
           if (scenario.trainingInfo && scenario.enrollmentInfo) {
+            scenario.trainingInfo.sendTemplatesInPreferredLanguage =
+              scenario.sendTemplatesInPreferredLanguage ??
+              scenario.enrollmentInfo.sendTemplatesInPreferredLanguage ??
+              scenario.trainingInfo.sendTemplatesInPreferredLanguage ??
+              false
             trainingReportDialogItems.push(
               new TrainingReportDialogModel(
                 scenario.scenarioInfo.name,

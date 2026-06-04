@@ -247,6 +247,7 @@
                           :domain-records="getDomainRecordTypes"
                           :url-schema-types="getUrlSchemaTypes"
                           :is-edit="isEdit"
+                          :is-duplicate="isDuplicate"
                           :show-captcha-option="!isInvisibleCaptchaDisabled"
                           :captcha-enabled="
                             formValues.isInvisibleCaptchaEnabled
@@ -594,7 +595,10 @@ import StepperFooter from "@/components/Stepper/StepperFooter";
 import InputTag from "@/components/Common/Inputs/InputTag";
 import {
   MERGED_TEXTS_MAP,
-  processTemplateWithCustomScripts
+  getTemplatePageWithCustomScripts,
+  processTemplateWithCustomScripts,
+  removeIndexedValue,
+  syncCustomScriptsForPage
 } from "@/components/LandingPage/utils";
 import { getAvailableForValueFromList } from "@/utils/helperFunctions";
 import InputPhishingMethod from "@/components/Common/Inputs/InputPhishingMethod.vue";
@@ -1366,8 +1370,12 @@ export default {
       this.isSelectClickOnlyPageOpen = false;
       const response = await getLandingPageTemplatePreviewContent(resourceId);
       const landingPages = response?.data?.data?.landingPages || [];
-      const templateContent =
-        landingPages[pageIndex]?.content || landingPages[0]?.content || "";
+      const selectedTemplatePage = landingPages[pageIndex] || landingPages[0] || {};
+      const {
+        content: templateContent,
+        customHeadScripts,
+        customHeadScriptsPlacement
+      } = getTemplatePageWithCustomScripts(selectedTemplatePage);
       let newPageText;
       if (this.isEdit) newPageText = this.getNewIndexForPageText();
       else newPageText = this.getAndUpdateFirstIndexForPageText();
@@ -1384,6 +1392,12 @@ export default {
       this.tab = this.formValues.landingPages.length === 1 ? "page1" : "page2";
       const lastPageIndex = this.formValues.landingPages.length - 1;
       const newPageData = this.formValues.landingPages[lastPageIndex];
+      syncCustomScriptsForPage(
+        this,
+        lastPageIndex,
+        customHeadScripts,
+        customHeadScriptsPlacement
+      );
       this.languagesPayload.forEach((language) => {
         if (language && language.landingPages) {
           language.landingPages.push(structuredClone(newPageData));
@@ -1423,6 +1437,11 @@ export default {
     },
     handleDeleteLandingPage(index) {
       this.formValues.landingPages.splice(index, 1);
+      this.customHeadScripts = removeIndexedValue(this.customHeadScripts, index);
+      this.customHeadScriptsPlacement = removeIndexedValue(
+        this.customHeadScriptsPlacement,
+        index
+      );
 
       // Tüm dillerin sayfa listesinden de sayfayı sil
       this.languagesPayload.forEach((language) => {

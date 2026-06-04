@@ -44,6 +44,8 @@
       :selected-row="selectedPhishingScenario"
       :languages="languages"
       @on-close="toggleShowPreviewDialog"
+      @on-edit-template="handleEditTemplate"
+      @on-duplicate-template="handleDuplicateTemplate"
     />
     <DataTable
       v-if="getCallbackScenariosSearchPermissions"
@@ -393,11 +395,24 @@ export default {
       this.selectedPhishingScenario = row
       this.toggleShowPreviewDialog()
     },
+    handleEditTemplate() {
+      this.handleEdit(this.selectedPhishingScenario, false)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
+    },
+    handleDuplicateTemplate() {
+      this.handleEdit(this.selectedPhishingScenario, true)
+      if (this.isShowPreviewDialog) {
+        this.toggleShowPreviewDialog()
+      }
+    },
     toggleShowFastLaunch() {
       if (this.isShowFastLaunch) this.selectedRow = null
       this.isShowFastLaunch = !this.isShowFastLaunch
     },
     handleEdit(row, isDuplicate) {
+      if (!isDuplicate && row?.isOwner === false) return
       this.selectedRow = row
       this.editableFormValues = row
       this.modalStatus = true

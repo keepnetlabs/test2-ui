@@ -153,13 +153,14 @@ import {
   calculateSendingInfo,
   getDefaultCompanySmtpSetting,
   getDefaultEmailDeliverySetting,
-  getEmailDeliveries
+  getEmailDeliveries,
+  getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId
 } from '@/api/phishingsimulator'
 import CallbackService from '@/api/callback'
 import { createRandomCryptStringNumber, scrollToComponent } from '@/utils/functions'
 import useDebounce from '@/hooks/useDebounce'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
-import { frequencyItems, SCHEDULE_TYPES } from '@/components/CampaignManager/utils'
+import { frequencyItems, SCHEDULE_TYPES, SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
 import {
@@ -172,6 +173,7 @@ import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import AlertBox from '@/components/AlertBox'
+import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 
 export default {
   name: 'CampaignManagerDeliverySettings',
@@ -191,8 +193,17 @@ export default {
     defaultValues: {
       type: Object
     },
-    selectedPhishingScenario: {
-      type: Object
+    selectedPhishingScenarios: {
+      type: Array,
+      default: () => []
+    },
+    scenarioDistribution: {
+      type: Number,
+      default: SCENARIO_DISTRIBUTION.MANUALLY
+    },
+    scenarioPool: {
+      type: Array,
+      default: () => []
     },
     isEdit: {
       type: Boolean
@@ -565,23 +576,83 @@ export default {
         }
       })
     },
+    async resolveTestEmailContentForScenario(scenario = {}) {
+      const resourceId = scenario.resourceId
+      if (!resourceId) return null
+
+      if (this.type === SCENARIO_TYPES.CALLBACK) {
+        const response = await CallbackService.getCallbackScenarioPreview(resourceId)
+        const { data: { data = {} } = {} } = response || {}
+        const { emailTemplate } = data
+        const { template, fromName, fromAddress } = emailTemplate || {}
+        return { fromAddress, fromName, template }
+      }
+
+      if (this.type === SCENARIO_TYPES.QUISHING) {
+        const params = [resourceId]
+        if (
+          scenario.quishingType?.toLowerCase() ===
+          QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
+        ) {
+          params.push(QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT)
+        }
+        const response = await QuishingService.getQuishingScenarioLandingPageAndEmailTemplate(
+          ...params
+        )
+        const { data: { data = {} } = {} } = response || {}
+        let { emailTemplate, quishingTemplate } = data
+        if (!emailTemplate) emailTemplate = quishingTemplate
+        let { template, fromName, fromAddress } = emailTemplate || {}
+        template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+        return { fromAddress, fromName, template }
+      }
+
+      const response = await getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(
+        resourceId
+      )
+      const { data: { data = {} } = {} } = response || {}
+      let { emailTemplate, quishingTemplate } = data
+      if (!emailTemplate) emailTemplate = quishingTemplate
+      const { template, fromName, fromAddress } = emailTemplate || {}
+      return { fromAddress, fromName, template }
+    },
     async callForTestConnection() {
       if (this?.emailDelivery?.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL) return
       this.$emit('set-action-button-disability', true)
       try {
         this.isTestingConnection = true
         const smtpData = await this.callForGetSmtpSetting()
-        let { fromAddress, fromName, template } = this.selectedPhishingScenario
-        if (this.type === SCENARIO_TYPES.QUISHING)
-          template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
-        const payload = {
-          to: this.$store.state.auth.user.email,
-          from: fromAddress,
-          fromName,
-          message: template
+        // In manual distribution a scenario must be checkbox-selected. In AI Ally and
+        // other non-manual modes (random / same-for-all / agentic) selection is deferred
+        // per-user, so no scenario is manually selected; validate the SMTP setting with a
+        // representative scenario from the available pool instead.
+        const isNonManualDistribution =
+          this.scenarioDistribution != null &&
+          this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+        const scenario =
+          this.selectedPhishingScenarios?.[0] ||
+          (isNonManualDistribution ? this.scenarioPool?.[0] : null)
+        if (!scenario?.resourceId) {
+          this.testEmailErrorMessage = isNonManualDistribution
+            ? 'No phishing scenario is available for the selected category to send a test email.'
+            : 'Select at least one phishing scenario before sending a test email.'
+          this.isShowSmtpInputError = true
+          this.isTestingConnection = false
+          return false
         }
-        if (this.phishingTypeId) payload.phishingTypeId = this.phishingTypeId
         try {
+          // One test email is enough for SMTP validation; use a single representative scenario.
+          let { fromAddress, fromName, template } =
+            (await this.resolveTestEmailContentForScenario(scenario)) || {}
+          if (this.type === SCENARIO_TYPES.QUISHING)
+            template = template?.replaceAll(qrCodeString, 'cid:QRCodeImage')
+          const payload = {
+            to: this.$store.state.auth.user.email,
+            from: fromAddress,
+            fromName,
+            message: template
+          }
+          if (this.phishingTypeId) payload.phishingTypeId = this.phishingTypeId
           await testSmtpConnection(payload, smtpData.resourceId)
           this.isTestMailSend = true
           this.isShowSmtpInputError = false
@@ -592,7 +663,7 @@ export default {
         } catch (error) {
           if (!error) return
           const { response } = error
-          const { data: { message = '', Message = '' } = {} } = response
+          const { data: { message = '', Message = '' } = {} } = response || {}
           const errorMessage = message || Message
           this.testEmailErrorMessage =
             errorMessage ||

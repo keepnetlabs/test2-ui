@@ -286,9 +286,182 @@
           </div>
         </div>
 
-        <div class="email-details-ai-analyze__section">
+        <div
+          v-if="hasUrlEvidenceArtifacts"
+          class="email-details-ai-analyze__section"
+        >
           <div class="email-details-ai-analyze__section-title">
             <span class="email-details-ai-analyze__section-index">5</span>
+            Rendered URL Evidence
+          </div>
+          <p class="email-details-ai-analyze__section-subtitle">
+            Browser-rendered screenshots and visual AI signals for URLs found in the email.
+          </p>
+          <div class="email-details-ai-analyze__url-evidence-grid">
+            <div
+              v-for="artifact in urlEvidenceArtifacts"
+              :key="getEvidenceArtifactKey(artifact)"
+              class="email-details-ai-analyze__url-evidence-card"
+            >
+              <div class="email-details-ai-analyze__url-evidence-preview">
+                <img
+                  v-if="urlEvidenceImageUrls[getEvidenceArtifactKey(artifact)]"
+                  :src="urlEvidenceImageUrls[getEvidenceArtifactKey(artifact)]"
+                  :alt="getEvidenceArtifactTitle(artifact)"
+                  class="email-details-ai-analyze__url-evidence-image"
+                  role="button"
+                  tabindex="0"
+                  @click="openUrlEvidencePreview(artifact)"
+                  @keyup.enter="openUrlEvidencePreview(artifact)"
+                />
+                <div
+                  v-else
+                  class="email-details-ai-analyze__url-evidence-placeholder"
+                >
+                  <v-progress-circular
+                    v-if="urlEvidenceImageLoading[getEvidenceArtifactKey(artifact)]"
+                    indeterminate
+                    size="22"
+                    width="2"
+                    color="#1e88e5"
+                  />
+                  <v-icon v-else color="#90a4ae">mdi-image-off-outline</v-icon>
+                </div>
+              </div>
+              <div class="email-details-ai-analyze__url-evidence-content">
+                <div class="email-details-ai-analyze__url-evidence-header">
+                  <Badge
+                    class-name="email-details-ai-analyze__badge"
+                    :text="formatEvidenceStatus(artifact.status)"
+                    :color="getEvidenceStatusColor(artifact.status)"
+                    size="small"
+                    :outline="false"
+                    :fullWidth="false"
+                  />
+                  <Badge
+                    v-if="artifact.vision_verdict"
+                    class-name="email-details-ai-analyze__badge"
+                    :text="formatVisionVerdict(artifact.vision_verdict)"
+                    :color="getVisionVerdictColor(artifact.vision_verdict)"
+                    size="small"
+                    :outline="false"
+                    :fullWidth="false"
+                  />
+                  <Badge
+                    v-if="artifact.vision_confidence"
+                    class-name="email-details-ai-analyze__badge"
+                    :text="formatVisionConfidence(artifact.vision_confidence)"
+                    :color="getVisionConfidenceColor(artifact.vision_confidence)"
+                    size="small"
+                    :outline="false"
+                    :fullWidth="false"
+                  />
+                </div>
+                <div class="email-details-ai-analyze__url-evidence-url">
+                  {{ artifact.normalized_url || artifact.original_url }}
+                </div>
+                <div
+                  v-if="hasDistinctOriginalUrl(artifact)"
+                  class="email-details-ai-analyze__url-evidence-original-url"
+                >
+                  Original: {{ artifact.original_url }}
+                </div>
+                <p
+                  v-if="artifact.evidence_summary"
+                  class="email-details-ai-analyze__body-text email-details-ai-analyze__url-evidence-summary"
+                >
+                  {{ artifact.evidence_summary }}
+                </p>
+                <p
+                  v-if="isInsufficientDataEvidence(artifact)"
+                  class="email-details-ai-analyze__url-evidence-muted"
+                >
+                  AI could not determine a reliable visual verdict from this screenshot. Manual review is recommended.
+                </p>
+                <div
+                  v-if="getEvidenceSignalFlags(artifact).length"
+                  class="email-details-ai-analyze__url-evidence-flags"
+                >
+                  <span
+                    v-for="flag in getEvidenceSignalFlags(artifact)"
+                    :key="`${getEvidenceArtifactKey(artifact)}-${flag}`"
+                    class="email-details-ai-analyze__url-evidence-flag"
+                  >
+                    {{ flag }}
+                  </span>
+                </div>
+                <div
+                  v-if="Array.isArray(artifact.visual_signals) && artifact.visual_signals.length"
+                  class="email-details-ai-analyze__url-evidence-signals"
+                >
+                  <div class="email-details-ai-analyze__url-evidence-subhead">
+                    Visual Signals
+                  </div>
+                  <ul class="email-details-ai-analyze__url-evidence-signal-list">
+                    <li
+                      v-for="signal in artifact.visual_signals.slice(0, 5)"
+                      :key="`${getEvidenceArtifactKey(artifact)}-${signal}`"
+                    >
+                      {{ signal }}
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  v-if="artifact.recommended_action"
+                  class="email-details-ai-analyze__url-evidence-action"
+                >
+                  <strong>Recommended action:</strong>
+                  {{ artifact.recommended_action }}
+                </div>
+                <p
+                  v-if="!artifact.evidence_summary && !artifact.screenshot_url"
+                  class="email-details-ai-analyze__url-evidence-muted"
+                >
+                  Screenshot was rendered, but no stored preview is available.
+                </p>
+                <p
+                  v-if="urlEvidenceImageErrors[getEvidenceArtifactKey(artifact)] || artifact.error"
+                  class="email-details-ai-analyze__url-evidence-error"
+                >
+                  {{ formatEvidenceError(urlEvidenceImageErrors[getEvidenceArtifactKey(artifact)] || artifact.error) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <v-dialog
+          v-model="isUrlEvidencePreviewOpen"
+          max-width="1100"
+          overlay-opacity="0.72"
+        >
+          <v-card v-if="selectedUrlEvidenceArtifact" light class="email-details-ai-analyze__preview-dialog">
+            <div class="email-details-ai-analyze__preview-header">
+              <div>
+                <div class="email-details-ai-analyze__preview-title">
+                  Rendered URL Evidence
+                </div>
+                <div class="email-details-ai-analyze__preview-url">
+                  {{ selectedUrlEvidenceArtifact.normalized_url || selectedUrlEvidenceArtifact.original_url }}
+                </div>
+              </div>
+              <v-btn icon small @click="closeUrlEvidencePreview">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+            <div class="email-details-ai-analyze__preview-body">
+              <img
+                :src="getEvidenceImageObjectUrl(selectedUrlEvidenceArtifact)"
+                :alt="getEvidenceArtifactTitle(selectedUrlEvidenceArtifact)"
+                class="email-details-ai-analyze__preview-image"
+              />
+            </div>
+          </v-card>
+        </v-dialog>
+
+        <div class="email-details-ai-analyze__section">
+          <div class="email-details-ai-analyze__section-title">
+            <span class="email-details-ai-analyze__section-index">{{ actionsSectionIndex }}</span>
             Actions Recommended
           </div>
           <div class="email-details-ai-analyze__actions-group">
@@ -337,7 +510,7 @@
           class="email-details-ai-analyze__section email-details-ai-analyze__section--last"
         >
           <div class="email-details-ai-analyze__section-title">
-            <span class="email-details-ai-analyze__section-index">6</span>
+            <span class="email-details-ai-analyze__section-index">{{ metadataSectionIndex }}</span>
             Confidence & Metadata
           </div>
           <div class="email-details-ai-analyze__callout">
@@ -443,6 +616,11 @@ export default {
       loadError: "",
       report: null,
       reportCreatedAt: null,
+      urlEvidenceImageUrls: {},
+      urlEvidenceImageLoading: {},
+      urlEvidenceImageErrors: {},
+      selectedUrlEvidenceArtifact: null,
+      isUrlEvidencePreviewOpen: false,
       isMetadataExpanded: true,
       isAgentDeterminationExpanded: false,
       openEvidenceSteps: [],
@@ -571,6 +749,19 @@ export default {
     whyThisMatters() {
       return this.report?.executive_summary?.why_this_matters || "";
     },
+    urlEvidenceArtifacts() {
+      const artifacts = this.report?.url_evidence_artifacts;
+      return Array.isArray(artifacts) ? artifacts : [];
+    },
+    hasUrlEvidenceArtifacts() {
+      return this.urlEvidenceArtifacts.length > 0;
+    },
+    actionsSectionIndex() {
+      return this.hasUrlEvidenceArtifacts ? 6 : 5;
+    },
+    metadataSectionIndex() {
+      return this.hasUrlEvidenceArtifacts ? 7 : 6;
+    },
     agentDeterminationText() {
       return this.report?.agent_determination || "";
     },
@@ -656,6 +847,7 @@ export default {
   methods: {
     async runAnalysis() {
       if (!this.id) return;
+      this.revokeUrlEvidenceImageUrls();
       this.isRunningAnalysis = true;
       this.isLoadingReport = true;
       this.loadError = "";
@@ -685,10 +877,12 @@ export default {
         this.report = payload.report || payload.data?.report || null;
         this.reportCreatedAt = new Date();
         this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
+        this.loadUrlEvidenceImages();
       } catch (error) {
         console.error("Error running AI analysis:", error);
         this.loadError = "Unable to run AI analysis at this time.";
         this.report = null;
+        this.revokeUrlEvidenceImageUrls();
       } finally {
         this.isRunningAnalysis = false;
         this.isLoadingReport = false;
@@ -697,6 +891,7 @@ export default {
     },
     async fetchReport() {
       if (!this.id) return;
+      this.revokeUrlEvidenceImageUrls();
       this.isLoadingReport = true;
       this.loadError = "";
       this.reportCreatedAt = null;
@@ -724,10 +919,12 @@ export default {
         this.report = payload.report || payload.data?.report || null;
         this.reportCreatedAt = new Date();
         this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
+        this.loadUrlEvidenceImages();
       } catch (error) {
         console.error("Error fetching AI analyze report:", error);
         this.loadError = "Unable to load AI analysis report at this time.";
         this.report = null;
+        this.revokeUrlEvidenceImageUrls();
       } finally {
         this.isLoadingReport = false;
         this.$emit("update:loading", false);
@@ -769,6 +966,167 @@ export default {
         return getBtnStatusColor("in progress");
       if (normalized.includes("pending")) return getBtnStatusColor("pending");
       return getBtnStatusColor(normalized);
+    },
+    getEvidenceArtifactKey(artifact) {
+      return (
+        artifact?.screenshot_key ||
+        artifact?.screenshot_url ||
+        artifact?.normalized_url ||
+        artifact?.original_url ||
+        "url-evidence"
+      );
+    },
+    getEvidenceArtifactTitle(artifact) {
+      return `Rendered evidence for ${artifact?.normalized_url || artifact?.original_url || "URL"}`;
+    },
+    getEvidenceImageObjectUrl(artifact) {
+      return this.urlEvidenceImageUrls[this.getEvidenceArtifactKey(artifact)] || "";
+    },
+    openUrlEvidencePreview(artifact) {
+      if (!this.getEvidenceImageObjectUrl(artifact)) return;
+      this.selectedUrlEvidenceArtifact = artifact;
+      this.isUrlEvidencePreviewOpen = true;
+    },
+    closeUrlEvidencePreview() {
+      this.isUrlEvidencePreviewOpen = false;
+      this.selectedUrlEvidenceArtifact = null;
+    },
+    getAgentBaseUrl() {
+      const isLocalhost = globalThis.location.hostname.includes("localhost");
+      return isLocalhost
+        ? "http://localhost:4111"
+        : "https://agentic-ai-agent.keepnetlabs.com";
+    },
+    resolveEvidenceImageUrl(artifact) {
+      const screenshotUrl = artifact?.screenshot_url;
+      if (!screenshotUrl) return "";
+      if (/^https?:\/\//i.test(screenshotUrl)) return screenshotUrl;
+      return `${this.getAgentBaseUrl()}${screenshotUrl}`;
+    },
+    async loadUrlEvidenceImages() {
+      const artifacts = this.urlEvidenceArtifacts.filter(
+        (artifact) => artifact.screenshot_url
+      );
+      if (!artifacts.length) return;
+
+      await Promise.all(
+        artifacts.map(async (artifact) => {
+          const key = this.getEvidenceArtifactKey(artifact);
+          const url = this.resolveEvidenceImageUrl(artifact);
+          if (!url) return;
+
+          this.$set(this.urlEvidenceImageLoading, key, true);
+          this.$delete(this.urlEvidenceImageErrors, key);
+
+          try {
+            const response = await axios.get(url, { responseType: "blob" });
+            const objectUrl = globalThis.URL.createObjectURL(response.data);
+            this.$set(this.urlEvidenceImageUrls, key, objectUrl);
+          } catch (error) {
+            console.error("Error loading URL evidence image:", error);
+            this.$set(
+              this.urlEvidenceImageErrors,
+              key,
+              "Screenshot preview is unavailable."
+            );
+          } finally {
+            this.$set(this.urlEvidenceImageLoading, key, false);
+          }
+        })
+      );
+    },
+    revokeUrlEvidenceImageUrls() {
+      Object.values(this.urlEvidenceImageUrls).forEach((objectUrl) => {
+        if (objectUrl) {
+          globalThis.URL.revokeObjectURL(objectUrl);
+        }
+      });
+      this.urlEvidenceImageUrls = {};
+      this.urlEvidenceImageLoading = {};
+      this.urlEvidenceImageErrors = {};
+      this.closeUrlEvidencePreview();
+    },
+    formatEvidenceStatus(status) {
+      const labels = {
+        stored: "Evidence",
+        vision_analyzed: "AI Reviewed",
+        rendered: "Rendered",
+        blocked: "Blocked",
+        skipped: "Skipped",
+        error: "Error"
+      };
+      const normalized = (status || "unknown").toLowerCase();
+      if (labels[normalized]) {
+        return labels[normalized];
+      }
+      return normalized
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    },
+    formatVisionVerdict(verdict) {
+      return (verdict || "")
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    },
+    formatVisionConfidence(confidence) {
+      const normalized = (confidence || "").toLowerCase();
+      if (!normalized) return "";
+      return `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)} confidence`;
+    },
+    hasDistinctOriginalUrl(artifact) {
+      return Boolean(
+        artifact?.original_url &&
+          artifact?.normalized_url &&
+          artifact.original_url !== artifact.normalized_url
+      );
+    },
+    getEvidenceSignalFlags(artifact) {
+      const flags = [];
+      if (artifact?.credential_harvesting) flags.push("Credential Harvesting");
+      if (artifact?.brand_impersonation) flags.push("Brand Impersonation");
+      if (artifact?.suspicious_redirect) flags.push("Suspicious Redirect");
+      return flags;
+    },
+    formatEvidenceError(error) {
+      const text = String(error || "");
+      if (!text) return "";
+      if (text.includes("put: Unspecified error") || text.includes("r2_put_failed")) {
+        return "Screenshot was rendered, but evidence storage is temporarily unavailable.";
+      }
+      return text;
+    },
+    isInsufficientDataEvidence(artifact) {
+      return (artifact?.vision_verdict || "").toLowerCase() === "insufficient_data";
+    },
+    getEvidenceStatusColor(status) {
+      const normalized = (status || "").toLowerCase();
+      if (["stored", "rendered", "vision_analyzed"].includes(normalized)) {
+        return getBtnStatusColor("complete");
+      }
+      if (["blocked", "skipped"].includes(normalized)) {
+        return getBtnStatusColor("warning");
+      }
+      if (normalized === "error") {
+        return getBtnStatusColor("malicious");
+      }
+      return getBtnStatusColor("pending");
+    },
+    getVisionVerdictColor(verdict) {
+      const normalized = (verdict || "").toLowerCase();
+      if (normalized === "benign" || normalized === "insufficient_data") {
+        return getBtnStatusColor("nonmalicious");
+      }
+      if (normalized === "suspicious") {
+        return getBtnStatusColor("warning");
+      }
+      return getBtnStatusColor("malicious");
+    },
+    getVisionConfidenceColor(confidence) {
+      const normalized = (confidence || "").toLowerCase();
+      if (normalized === "high") return getBtnStatusColor("complete");
+      if (normalized === "medium") return getBtnStatusColor("warning");
+      if (normalized === "low") return getBtnStatusColor("pending");
+      return getBtnStatusColor("pending");
     },
     getEvidenceFindingMeta(step) {
       const rawLabel = step?.finding_label || "";
@@ -828,6 +1186,9 @@ export default {
   mounted() {
     this.fetchReport();
   },
+  beforeDestroy() {
+    this.revokeUrlEvidenceImageUrls();
+  },
   watch: {
     id(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
@@ -837,3 +1198,174 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.email-details-ai-analyze__url-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.email-details-ai-analyze__url-evidence-card {
+  border: 1px solid #e3edf5;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.email-details-ai-analyze__url-evidence-preview {
+  min-height: 180px;
+  background: #f6f9fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-details-ai-analyze__url-evidence-image {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  background: #f6f9fc;
+  cursor: zoom-in;
+}
+
+.email-details-ai-analyze__url-evidence-placeholder {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-details-ai-analyze__url-evidence-content {
+  padding: 14px;
+}
+
+.email-details-ai-analyze__url-evidence-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.email-details-ai-analyze__url-evidence-url {
+  color: #263238;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.email-details-ai-analyze__url-evidence-original-url {
+  color: #78909c;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.email-details-ai-analyze__url-evidence-summary {
+  margin-top: 10px;
+}
+
+.email-details-ai-analyze__url-evidence-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.email-details-ai-analyze__url-evidence-flag {
+  background: #fff3e0;
+  border: 1px solid #ffcc80;
+  border-radius: 999px;
+  color: #e65100;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+}
+
+.email-details-ai-analyze__url-evidence-signals {
+  margin-top: 10px;
+}
+
+.email-details-ai-analyze__url-evidence-subhead {
+  color: #546e7a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.email-details-ai-analyze__url-evidence-signal-list {
+  color: #455a64;
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.email-details-ai-analyze__url-evidence-action {
+  background: #f5f9ff;
+  border-left: 3px solid #1e88e5;
+  color: #263238;
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 10px;
+  padding: 8px 10px;
+}
+
+.email-details-ai-analyze__url-evidence-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+
+.email-details-ai-analyze__url-evidence-muted {
+  color: #78909c;
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+
+.email-details-ai-analyze__preview-dialog {
+  overflow: hidden;
+}
+
+.email-details-ai-analyze__preview-header {
+  align-items: flex-start;
+  border-bottom: 1px solid #e3edf5;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.email-details-ai-analyze__preview-title {
+  color: #263238;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.email-details-ai-analyze__preview-url {
+  color: #78909c;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.email-details-ai-analyze__preview-body {
+  background: #f6f9fc;
+  max-height: 78vh;
+  overflow: auto;
+  padding: 16px;
+}
+
+.email-details-ai-analyze__preview-image {
+  background: #fff;
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}
+</style>

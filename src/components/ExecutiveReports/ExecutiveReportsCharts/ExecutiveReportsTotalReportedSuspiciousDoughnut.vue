@@ -1,7 +1,7 @@
 <template>
   <WidgetLoading :loading="isLoading">
     <template #skeleton-content>
-      <ExecutiveWidgetContainer>
+      <ExecutiveWidgetContainer class="executive-report-total-reported-suspicious-container">
         <ExecutiveWidgetHeader
           :title="card.title"
           :subtitle="card.parentKey"
@@ -32,6 +32,9 @@
             </v-btn>
           </div>
         </ExecutiveWidgetBody>
+        <span v-if="!isEmpty" class="executive-report-total-reported-suspicious-note">
+          {{ simulationSourceNote }}
+        </span>
       </ExecutiveWidgetContainer>
     </template>
   </WidgetLoading>
@@ -39,7 +42,11 @@
 <script>
 import DoughnutChart from '@/components/Common/Charts/Doughnut.vue'
 import labels from '@/model/constants/labels'
-import { CHART_COLORS } from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
+import {
+  CHART_COLORS,
+  SIMULATION_SOURCE_NOTE,
+  getSimulationSourceDetails
+} from '@/components/ExecutiveReports/ExecutiveReportsCharts/utils'
 import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading.vue'
 import ExecutiveWidgetBody from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetBody.vue'
 import ExecutiveWidgetContainer from '@/components/ExecutiveReports/ExecutiveReportsWidget/ExecutiveWidgetContainer.vue'
@@ -93,6 +100,7 @@ export default {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       chartOptions: {},
       chartData: [],
+      simulationSourceNote: SIMULATION_SOURCE_NOTE,
       customPlugins: [
         {
           afterDraw: (chart) => {
@@ -176,9 +184,22 @@ export default {
       const phishingPercentage = phishing ? phishing[0].value : 0
       const simulation = data[0].widgetDatas.find(
         (obj) => obj.dataObject.ActionRange === 'Simulation'
-      )?.values
-      const simulationCount = simulation ? simulation[1].value : 0
-      const simulationPercentage = simulation ? simulation[0].value : 0
+      )
+      const simulationValues = simulation?.values
+      const simulationCount = simulationValues ? simulationValues[1].value : 0
+      const simulationPercentage = simulationValues ? simulationValues[0].value : 0
+      const simulationSourceDetails = getSimulationSourceDetails(simulation)
+      const categorySummaries = [
+        { label: labels.Undetected, count: undetectedCount, percentage: undetectedPercentage },
+        { label: labels.Malicious, count: maliciousCount, percentage: maliciousPercentage },
+        { label: labels.Phishing, count: phishingCount, percentage: phishingPercentage },
+        { label: labels.Simulation, count: simulationCount, percentage: simulationPercentage }
+      ]
+      const visibleCategorySummaries = categorySummaries.filter((item) => item.percentage > 0)
+      const countByLabel = categorySummaries.reduce((acc, item) => {
+        acc[item.label] = item.count
+        return acc
+      }, {})
       const chartOptions = {
         showLabels: true,
         responsive: true,
@@ -241,10 +262,15 @@ export default {
               } else if (type === 'Phishing' && phishing) {
                 val = phishing[1].value
               } else if (type === 'Simulation') {
-                val = simulation[1].value
+                val = simulationValues ? simulationValues[1].value : 0
               }
               addTr('Number of Reporting', val, true)
-              addTr('Percentage of Reporting', valArr[1] + '%', false)
+              addTr('Percentage of Reporting', valArr[1] + '%', type !== 'Simulation')
+              if (type === 'Simulation') {
+                Object.entries(simulationSourceDetails).forEach(([label, value], index, arr) => {
+                  addTr(label, value, index < arr.length - 1)
+                })
+              }
             }
             const position = this._chart.canvas.getBoundingClientRect()
             tooltipEl.style.opacity = 1
@@ -286,34 +312,32 @@ export default {
             fontSize: 12,
             generateLabels: (chart = {}) => {
               const { data } = chart
-              return [undetectedCount, maliciousCount, phishingCount, simulationCount].map(
-                (d, index) => {
-                  const label = data.labels[index]
-                  const splittedLabel = label.split(' ')
-                  const textParts =
-                    splittedLabel.length === 1
-                      ? [splittedLabel[0], d]
-                      : [splittedLabel[0] + ' ' + splittedLabel[1], d]
-                  const comparatorVal = 4
-                  let customMarginLeft = 1
-                  if (label === 'Undetected') customMarginLeft = 5
-                  else if (label === 'Simulation') customMarginLeft = 3
-                  return {
-                    text: Array.from(
-                      label + label + label.substring(0, label.length / comparatorVal) + d + '   '
-                    )
-                      .fill('')
-                      .join(' '),
-                    fillStyle: CHART_COLORS[data.labels[index]]
-                      ? CHART_COLORS[data.labels[index]].backgroundColor
-                      : null,
-                    lineWidth: 0,
-                    datasetIndex: index,
-                    textParts,
-                    customMarginLeft
-                  }
+              return data.labels.map((label, index) => {
+                const d = countByLabel[label] || 0
+                const splittedLabel = label.split(' ')
+                const textParts =
+                  splittedLabel.length === 1
+                    ? [splittedLabel[0], d]
+                    : [splittedLabel[0] + ' ' + splittedLabel[1], d]
+                const comparatorVal = 4
+                let customMarginLeft = 1
+                if (label === 'Undetected') customMarginLeft = 5
+                else if (label === 'Simulation') customMarginLeft = 3
+                return {
+                  text: Array.from(
+                    label + label + label.substring(0, label.length / comparatorVal) + d + '   '
+                  )
+                    .fill('')
+                    .join(' '),
+                  fillStyle: CHART_COLORS[data.labels[index]]
+                    ? CHART_COLORS[data.labels[index]].backgroundColor
+                    : null,
+                  lineWidth: 0,
+                  datasetIndex: index,
+                  textParts,
+                  customMarginLeft
                 }
-              )
+              })
             }
           }
         },
@@ -352,19 +376,14 @@ export default {
             borderWidth: 0
           }
         },
-        labels: this.valueEnums,
+        labels: visibleCategorySummaries.map((item) => item.label),
         showTooltipLine: true
       }
       this.chartData = {
-        labels: this.valueEnums,
+        labels: visibleCategorySummaries.map((item) => item.label),
         datasets: [
           {
-            data: [
-              undetectedPercentage,
-              maliciousPercentage,
-              phishingPercentage,
-              simulationPercentage
-            ].filter((v) => v > 0),
+            data: visibleCategorySummaries.map((item) => item.percentage),
             backgroundColor
           }
         ]

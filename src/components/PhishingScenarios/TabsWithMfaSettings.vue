@@ -160,6 +160,18 @@
             :page-index="Number.parseInt(landingPageTab, 10) - 1"
             :show-toolbar="!!getCurrentPageTemplate(template)"
           />
+          <div
+            v-if="blocklistWarning"
+            class="blocklist-preview-bar"
+            :class="'blocklist-preview-bar--' + blocklistWarning.status"
+          >
+            <VIcon
+              x-small
+              :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'"
+              >mdi-shield-alert</VIcon
+            >
+            <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+          </div>
           <KEmailPreview
             v-if="!!getCurrentPageTemplate(template)"
             is-landing-page
@@ -239,6 +251,7 @@ import KEmailPreview from '@/components/KEmailPreview'
 import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
 import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
 export default {
   name: 'TabsWithMfaSettings',
   components: { KEmailPreview, InputLanguagePreview, BrowserToolbar },
@@ -302,10 +315,14 @@ export default {
   data() {
     return {
       landingPageTab: '1',
-      internalLanguagePreview: ''
+      internalLanguagePreview: '',
+      blocklistWarning: null
     }
   },
   computed: {
+    isBlocklistCheckEnabled() {
+      return this.type === PREVIEW_DIALOG_TYPES.PHISHING && this.isPhishingScenario
+    },
     /** Smishing-only: must pass preview-layout="simulator". Never true for PhishingScenarioPreview / campaign wizards (default layout). */
     usePhishingLandingLayout() {
       return this.previewLayout === 'simulator'
@@ -356,6 +373,10 @@ export default {
     landingPageUrlForOpen() {
       const u = this.landingPageParams?.urlTemplate
       return typeof u === 'string' && u.trim() ? u.trim() : ''
+    },
+    blocklistWarningText() {
+      if (!this.blocklistWarning) return ''
+      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
     }
   },
   watch: {
@@ -373,6 +394,10 @@ export default {
         }
       },
       immediate: true
+    },
+    'landingPageParams.urlTemplate'() {
+      this.blocklistWarning = null
+      this.checkDomainBlocklist()
     }
   },
   mounted() {
@@ -382,6 +407,7 @@ export default {
         this.selectedLanguages[0].id ||
         this.selectedLanguages[0].languageTypeResourceId
     }
+    this.checkDomainBlocklist()
   },
   methods: {
     checkIsRedFlaggedTemplate(html) {
@@ -420,6 +446,28 @@ export default {
       } catch {
         window.open(url, '_blank')
       }
+    },
+    extractDomain(url) {
+      if (!url) return null
+      try {
+        const fullUrl = url.startsWith('http') ? url : 'https://' + url
+        return new URL(fullUrl).hostname.replace(/^www\./, '')
+      } catch {
+        return null
+      }
+    },
+    checkDomainBlocklist() {
+      if (!this.isBlocklistCheckEnabled) return
+      const domain = this.extractDomain(this.landingPageParams?.urlTemplate)
+      if (!domain) return
+      return getDomainBlocklistStatus(domain)
+        .then((response) => {
+          const data = response.data
+          if (data.status === 'malicious' || data.status === 'suspicious') {
+            this.blocklistWarning = { status: data.status, reason: data.reason }
+          }
+        })
+        .catch(() => {})
     }
   }
 }

@@ -180,7 +180,9 @@
                 :target-group-resource-ids="targetGroupResourceIds"
                 :total-target-user-count="totalTargetUserCount"
                 :user-target-audience-data="getUserTargetAudienceData"
-                :selected-phishing-scenario="getSelectedPhishingScenario"
+                :selected-phishing-scenarios="selectedPhishingScenarios"
+                :scenario-distribution="scenarioDistribution"
+                :scenario-pool="phishingScenarioItems"
                 :is-edit="isEdit"
                 :isDuplicate="isDuplicate"
                 :phishing-type-id="1"
@@ -360,7 +362,9 @@ export default {
         : true
     },
     hasEmailTemplateMultipleLanguage() {
-      return this.selectedPhishingScenarios.some((scenario) => scenario.languageTypeCode.length > 1)
+      return this.selectedPhishingScenarios.some(
+        (scenario) => Array.isArray(scenario.languageTypeCode) && scenario.languageTypeCode.length > 1
+      )
     },
     isSendUserPreferredLanguage() {
       return this.sendUserPreferredLanguage.toString() === '1'
@@ -417,15 +421,6 @@ export default {
       return Array.from(
         new Set(this.selectedTargetGroupsMapped.map((tg) => tg?.extraDatas?.companyName))
       )
-    },
-    getSelectedPhishingScenario() {
-      let selectedScenario = {}
-      if (this.step === 4) {
-        const { refCampaignManagerPhishingScenarios } = this.$refs
-        selectedScenario = refCampaignManagerPhishingScenarios?.emailTemplateParams || {}
-        selectedScenario.template = refCampaignManagerPhishingScenarios?.emailTemplate || ''
-      }
-      return selectedScenario
     },
     getFormDataForCampaignSummary() {
       let formData = {}
@@ -921,11 +916,15 @@ export default {
               awardCertificate,
               certificateConfigSendType,
               enrollmentSendTypeId,
-              trainingRedirectPage
+              trainingRedirectPage,
+              sendTemplatesInPreferredLanguage
             } = trainingTabModel[phishingScenarioResourceId]
             if (!isCheckboxSelected) return
             const { sendReminderEvery } = enrollmentReminder
             const enrollmentReminderEveryValue = sendReminderEvery
+            const canSendTemplatesInPreferredLanguage = ['2', '3'].includes(
+              enrollmentSendTypeId?.toString()
+            )
             delete enrollmentReminder.sendReminderEvery
             phishingScenarios.push({
               trainingId,
@@ -935,7 +934,9 @@ export default {
               awardCertificate,
               certificateConfigSendType,
               enrollmentSendTypeId,
-              trainingRedirectPage
+              trainingRedirectPage,
+              sendTemplatesInPreferredLanguage:
+                canSendTemplatesInPreferredLanguage && sendTemplatesInPreferredLanguage
             })
           })
           const emailReplySettings = {
@@ -1001,7 +1002,10 @@ export default {
                 ...this.trainingForCategory,
                 trainingLanguageIds: this.trainingForCategory.trainingLanguageIds.filter(
                   (lang) => lang !== labels.All
-                )
+                ),
+                sendTemplatesInPreferredLanguage:
+                  ['2', '3'].includes(this.trainingForCategory.enrollmentSendTypeId?.toString()) &&
+                  this.trainingForCategory.sendTemplatesInPreferredLanguage
               }
             }
           }
@@ -1057,6 +1061,13 @@ export default {
           '#btn-continue-editing--leaving-popup, #btn-quit--leaving-popup, [id*="leaving-popup"], .k-dialog__button, .app-dialog, .v-dialog'
         )
         if (leavingDialogButton) {
+          return
+        }
+
+        // VMenu/v-select içeriğine (örn. "Import Email", senaryo dropdown'ları) tıklanırsa ignore et;
+        // bu içerikler body'ye teleport edildiği için drawer dışında sayılıp drawer'ı kapatmasın
+        const menuContent = event.target.closest('.v-menu__content, .switch-account__container')
+        if (menuContent) {
           return
         }
       }

@@ -78,6 +78,7 @@ export default {
           .then(() => {
             this.$emit('on-success-multiple')
           })
+          .catch(() => {})
           .finally(() => {
             this.isActionButtonDisabled = false
           })
@@ -88,6 +89,7 @@ export default {
             this.$emit('handleSuccessDeleteAction', this.selectedTemplate)
             this.closeModal()
           })
+          .catch(() => {})
           .finally(() => {
             this.isActionButtonDisabled = false
           })

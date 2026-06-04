@@ -2,7 +2,7 @@ import useEnrollmentTableFilters from '@/hooks/enrollments/useEnrollmentTableFil
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 describe('useEnrollmentTableFilters', () => {
-  const { watch } = useEnrollmentTableFilters
+  const { methods, watch } = useEnrollmentTableFilters
 
   it('enrollmentStatusEnum watcher maps and sets status filter items', () => {
     const set = jest.fn((obj, key, value) => {
@@ -68,4 +68,59 @@ describe('useEnrollmentTableFilters', () => {
     ])
     expect(reRenderFilters).toHaveBeenCalledTimes(1)
   })
+
+  it('sortChanged maps totalDuration orderBy to DurationMinutes', () => {
+    const ctx = {
+      axiosPayload: {},
+      callForData: jest.fn()
+    }
+
+    methods.sortChanged.call(ctx, {
+      order: 'ascending',
+      prop: PROPERTY_STORE.TOTAL_DURATION
+    })
+
+    expect(ctx.axiosPayload).toEqual({
+      ascending: true,
+      orderBy: 'DurationMinutes'
+    })
+    expect(ctx.callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('sortChanged maps TotalDuration (PascalCase) orderBy to DurationMinutes', () => {
+    const ctx = {
+      axiosPayload: {},
+      callForData: jest.fn()
+    }
+
+    methods.sortChanged.call(ctx, {
+      order: 'descending',
+      prop: 'TotalDuration'
+    })
+
+    expect(ctx.axiosPayload).toEqual({
+      ascending: false,
+      orderBy: 'DurationMinutes'
+    })
+    expect(ctx.callForData).toHaveBeenCalledTimes(1)
+  })
+
+  it('sortChanged keeps non-duration orderBy unchanged', () => {
+    const ctx = {
+      axiosPayload: {},
+      callForData: jest.fn()
+    }
+
+    methods.sortChanged.call(ctx, {
+      order: 'descending',
+      prop: PROPERTY_STORE.TRAINING_NAME
+    })
+
+    expect(ctx.axiosPayload).toEqual({
+      ascending: false,
+      orderBy: PROPERTY_STORE.TRAINING_NAME
+    })
+    expect(ctx.callForData).toHaveBeenCalledTimes(1)
+  })
+
 })

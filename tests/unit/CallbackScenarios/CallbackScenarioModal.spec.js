@@ -96,34 +96,21 @@ describe('CallbackScenarioModal.vue methods', () => {
       })
     ).toBe(true)
     expect(
-      CallbackScenarioModal.computed.hasPhishingFile.call({
-        summaryData: { emailTemplate: { phishingFileName: 'file.pdf' } }
-      })
-    ).toBe(true)
-    expect(CallbackScenarioModal.computed.getPhishingFile.call({ summaryData: { emailTemplate: {} } })).toBeNull()
-    expect(
       CallbackScenarioModal.computed.getDifficultyType.call({
         scenarioDetailsLookup: { difficultyTypes: [{ value: 2, text: 'Medium' }] },
         generalDifficultyTypeId: '2'
       })
     ).toBe('Medium')
     expect(
-      CallbackScenarioModal.computed.getSelectedMethod.call({
-        formValues: { methodTypeId: '4' },
-        methods: [{ text: 'Click-Only' }, { text: 'Data Submission' }, { text: 'Attachment' }, { text: 'MFA' }],
-        selectedEmailTemplate: { categoryName: 'Click Only' }
+      CallbackScenarioModal.computed.getDifficultyType.call({
+        scenarioDetailsLookup: {},
+        generalDifficultyTypeId: '2'
       })
-    ).toBe('Click-Only')
+    ).toBe('')
     expect(
-      CallbackScenarioModal.computed.getSelectedMethod.call({
-        formValues: { methodTypeId: '2' },
-        methods: [{ text: 'Click-Only' }, { text: 'Data Submission' }, { text: 'Attachment' }, { text: 'MFA' }]
-      })
-    ).toBe('Data Submission')
-    expect(
-      CallbackScenarioModal.computed.getSelectedMethod.call({
-        formValues: {},
-        methods: []
+      CallbackScenarioModal.computed.getDifficultyType.call({
+        scenarioDetailsLookup: { difficultyTypes: [{ value: 1, text: 'Easy' }] },
+        generalDifficultyTypeId: '99'
       })
     ).toBe('')
     expect(
@@ -146,29 +133,82 @@ describe('CallbackScenarioModal.vue methods', () => {
       'Sender Phone Number': '+1 555 000',
       'Verification Message': 'Code'
     })
-    expect(
-      CallbackScenarioModal.computed.getPhishingFile.call({
-        summaryData: { emailTemplate: { phishingFileName: 'invoice.pdf' } }
-      })
-    ).toEqual({ name: 'invoice.pdf' })
   })
 
-  it('getMethodTypeDescription handles all known methods and fallback', () => {
-    expect(CallbackScenarioModal.methods.getMethodTypeDescription.call({}, 'Click-Only')).toBe(
-      'See who fails for phishing links'
-    )
+  it('emailTemplatePreviewSelectedRow returns row with resourceId fallback', () => {
     expect(
-      CallbackScenarioModal.methods.getMethodTypeDescription.call({}, 'Data Submission')
-    ).toBe(
-      'Gather information from users'
-    )
-    expect(CallbackScenarioModal.methods.getMethodTypeDescription.call({}, 'Attachment')).toBe(
-      'Send a trackable file'
-    )
-    expect(CallbackScenarioModal.methods.getMethodTypeDescription.call({}, 'MFA')).toBe(
-      'Send a phishing MFA'
-    )
-    expect(CallbackScenarioModal.methods.getMethodTypeDescription.call({}, 'X')).toBe('')
+      CallbackScenarioModal.computed.emailTemplatePreviewSelectedRow.call({
+        summaryData: { emailTemplate: { name: 'Tpl', resourceId: 'inner' } },
+        emailTemplateResourceId: 'outer'
+      })
+    ).toEqual({ name: 'Tpl', resourceId: 'outer' })
+
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewSelectedRow.call({
+        summaryData: { emailTemplate: { name: 'Tpl', resourceId: 'inner' } },
+        emailTemplateResourceId: ''
+      })
+    ).toEqual({ name: 'Tpl', resourceId: 'inner' })
+
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewSelectedRow.call({
+        summaryData: {},
+        emailTemplateResourceId: ''
+      })
+    ).toEqual({})
+  })
+
+  it('emailTemplatePreviewParams shapes attachment object only when phishingFileName exists', () => {
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewParams.call({
+        summaryData: {
+          emailTemplate: {
+            name: 'Tpl',
+            fromName: 'Sender',
+            fromAddress: 'sender@x.com',
+            subject: 'Subject',
+            phishingFileName: 'invoice.pdf'
+          }
+        }
+      })
+    ).toEqual({
+      name: 'Tpl',
+      fromName: 'Sender',
+      fromAddress: 'sender@x.com',
+      subject: 'Subject',
+      attachment: { name: 'invoice.pdf' }
+    })
+
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewParams.call({
+        summaryData: {
+          emailTemplate: {
+            name: 'Tpl',
+            fromName: 'Sender',
+            fromAddress: 'sender@x.com',
+            subject: 'Subject',
+            phishingFileName: null
+          }
+        }
+      }).attachment
+    ).toBeNull()
+
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewParams.call({
+        summaryData: {}
+      })
+    ).toEqual({})
+  })
+
+  it('emailTemplatePreviewHTML returns template html or null', () => {
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewHTML.call({
+        summaryData: { emailTemplate: { template: '<html />' } }
+      })
+    ).toBe('<html />')
+    expect(
+      CallbackScenarioModal.computed.emailTemplatePreviewHTML.call({ summaryData: {} })
+    ).toBeNull()
   })
 
   it('methodType watcher resets selected email ids when user changes method', () => {
@@ -395,8 +435,6 @@ describe('CallbackScenarioModal.vue methods', () => {
       selectedEmailTemplate: { difficultyName: 'Easy' },
       scenarioDetailsLookup: { difficultyTypes: [{ text: 'Easy', value: 1 }] },
       generalDifficultyTypeId: '',
-      emailDifficultyChipColor: '',
-      getDifficultyColor: jest.fn(() => '#217124'),
       $refs: {}
     }
 
@@ -407,7 +445,6 @@ describe('CallbackScenarioModal.vue methods', () => {
       expect.objectContaining({ languageShortCode: 'EN' })
     )
     expect(ctx.generalDifficultyTypeId).toBe('1')
-    expect(ctx.emailDifficultyChipColor).toBe('#217124')
     expect(ctx.step).toBe(3)
     expect(ctx.isSubmitDisabled).toBe(false)
   })
@@ -755,7 +792,6 @@ describe('CallbackScenarioModal.vue methods', () => {
       isDuplicate: true,
       availableForRequests: [],
       initialFormValues: {},
-      isFetched: false,
       isInitial: true,
       hydrateSelectedCallbackTemplate: jest.fn()
     }
@@ -771,7 +807,6 @@ describe('CallbackScenarioModal.vue methods', () => {
     expect(ctx.formValues.emailTemplateId).toBe('et-1')
     expect(ctx.formValues.callbackTemplateResourceId).toBe('cb-1')
     expect(ctx.hydrateSelectedCallbackTemplate).toHaveBeenCalledWith('cb-1')
-    expect(ctx.isFetched).toBe(true)
     expect(ctx.isSubmitDisabled).toBe(false)
     expect(ctx.isInitial).toBe(false)
   })
@@ -798,7 +833,6 @@ describe('CallbackScenarioModal.vue methods', () => {
       isDuplicate: false,
       availableForRequests: [],
       initialFormValues: {},
-      isFetched: false,
       isInitial: true,
       hydrateSelectedCallbackTemplate: jest.fn()
     }
@@ -810,7 +844,6 @@ describe('CallbackScenarioModal.vue methods', () => {
     expect(ctx.formValues.callbackTemplateResourceId).toBeNull()
     expect(ctx.formValues.tags).toEqual(['tag-1'])
     expect(ctx.hydrateSelectedCallbackTemplate).not.toHaveBeenCalled()
-    expect(ctx.isFetched).toBe(true)
     expect(ctx.isSubmitDisabled).toBe(false)
   })
 

@@ -199,6 +199,35 @@ export const isTeamsNotificationTemplateName = (templateName = '') => {
   return TEAMS_NOTIFICATION_TEMPLATE_NAMES.includes(templateName)
 }
 
+export const DIRECT_EMAIL_DELIVERY_TEMPLATE_NAMES = [
+  'Training Enrollment',
+  'Survey Enrollment',
+  'Survey Reminder',
+  'Learning Path Enrollment Reminder',
+  'Poster Enrollment',
+  'Learning Path Enrollment',
+  'Infographic Enrollment',
+  'Enrollment after Failed in a Simulation',
+  'Enrollment Reminder',
+  'Certificate',
+  'Suspicious Email Analysis Report',
+  'Suspicious Email Analysis Report Update',
+  'Investigation Started',
+  'Investigation Expired',
+  'Investigation Finished',
+  'Security Growth Login',
+  'Welcome Email',
+  'Reset Password',
+  'Threat Sharing Post Shared',
+  'Multi-factor Authentication Activated',
+  'Scheduled Report',
+  'Scheduled Report Mail'
+]
+
+export const isDirectEmailDeliveryTemplateName = (templateName = '') => {
+  return DIRECT_EMAIL_DELIVERY_TEMPLATE_NAMES.includes(templateName)
+}
+
 /**
  * `data-title="Company Logo"` attribute'u olan tüm `<img>` etiketlerinin `src`
  * değerini verilen değer ile günceller. Attribute sırasından bağımsızdır

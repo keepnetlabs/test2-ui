@@ -219,7 +219,7 @@ describe('functions.js (extra coverage)', () => {
     it('returns fieldMap for blocklist domain statuses', () => {
       expect(getDataTableFieldLabel('loading')).toBe('Checking...')
       expect(getDataTableFieldLabel('clean')).toBe('Clean')
-      expect(getDataTableFieldLabel('malicious')).toBe('Blocklisted')
+      expect(getDataTableFieldLabel('malicious')).toBe('Malicious')
       expect(getDataTableFieldLabel('suspicious')).toBe('Suspicious')
       expect(getDataTableFieldLabel('pending')).toBe('Pending')
       expect(getDataTableFieldLabel('partial')).toBe('Partial')

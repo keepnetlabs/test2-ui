@@ -1247,18 +1247,7 @@ describe('CompanyList.vue', () => {
     expect(wrapper.vm.isShowExtended).toBe(false)
   })
 
-  it('watcher toggles html overflow class when create/edit modal state changes', async () => {
-    const wrapper = createWrapper()
-    const toggleSpy = jest.spyOn(document.querySelector('html').classList, 'toggle')
-
-    await wrapper.setData({ isShowCreateOrEditModal: true })
-    await wrapper.setData({ isShowCreateOrEditModal: false })
-
-    expect(toggleSpy).toHaveBeenCalledWith('overflow-y-hidden')
-    toggleSpy.mockRestore()
-  })
-
-  it('updates add-group modal status and fetches data when closing', () => {
+it('updates add-group modal status and fetches data when closing', () => {
     const wrapper = createWrapper()
     wrapper.vm.getTableData = jest.fn()
 

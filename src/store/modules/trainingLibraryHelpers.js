@@ -1,7 +1,10 @@
 import AwarenessEducatorService from "@/api/awarenessEducator";
 import { getScenarioDataDetails } from "@/api/scenarios";
 import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
-import { distributionDelayTimeTypes } from "@/components/TrainingLibrary/utils";
+import {
+  distributionDelayTimeTypes,
+  TRAINING_DURATION_FILTER_ITEMS
+} from "@/components/TrainingLibrary/utils";
 import { PROPERTY_STORE } from "@/model/constants/commonConstants";
 
 const trainingLibraryHelpers = {
@@ -403,6 +406,9 @@ const trainingLibraryHelpers = {
       });
     },
     callForDurations({ commit, dispatch }) {
+      const filterItems = TRAINING_DURATION_FILTER_ITEMS.map((item) => ({
+        ...item
+      }));
       AwarenessEducatorService.getTrainingDurations().then((response) => {
         const durations =
           response?.data?.data?.map((duration) => ({
@@ -412,23 +418,23 @@ const trainingLibraryHelpers = {
             value: duration.id == null ? "" : String(duration.id)
           })) || [];
         commit("SET_DURATIONS", durations);
-        dispatch(
-          "trainingLibrary/setFilterItems",
-          {
-            key: PROPERTY_STORE.DURATION,
-            items: durations
-          },
-          { root: true }
-        );
-        dispatch(
-          "learningPath/setLearningPathFilterItems",
-          {
-            key: PROPERTY_STORE.DURATION,
-            items: durations
-          },
-          { root: true }
-        );
       });
+      dispatch(
+        "trainingLibrary/setFilterItems",
+        {
+          key: PROPERTY_STORE.TOTAL_DURATION,
+          items: filterItems
+        },
+        { root: true }
+      );
+      dispatch(
+        "learningPath/setLearningPathFilterItems",
+        {
+          key: PROPERTY_STORE.TOTAL_DURATION,
+          items: filterItems
+        },
+        { root: true }
+      );
     },
     callForBehaviours({ commit, dispatch }) {
       AwarenessEducatorService.getBehaviours().then((response) => {

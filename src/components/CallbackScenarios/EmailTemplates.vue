@@ -62,10 +62,12 @@
       v-if="isTemplateDetails"
       :status="isTemplateDetails"
       :isPreviewLoading="isPreviewLoading"
-      :selectedTemplateHeader="selectedTemplateHeader"
+      :selected-row="selectedTemplateRow"
       :templateHTML="templateHTML"
       :emailTemplateParams="emailTemplateParams"
-      @close="isTemplateDetails = false"
+      @on-close="isTemplateDetails = false"
+      @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <DataTable
       v-if="getCallbackEmailTemplatesSearchPermissions"
@@ -363,6 +365,7 @@ export default {
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
+      selectedTemplateRow: null,
       templateHTML: null
     }
   },
@@ -430,6 +433,7 @@ export default {
     },
     handlePreview(row) {
       this.isTemplateDetails = true
+      this.selectedTemplateRow = row
       const id = row.resourceId
       this.isPreviewLoading = true
       CallbackService.getEmailTemplate(id)
@@ -470,6 +474,14 @@ export default {
       this.isEdit = true
       this.isDuplicate = isDuplicate
       this.emailTemplateId = row.resourceId
+    },
+    handleEditFromPreview(row) {
+      this.handleEdit(row, false)
+      this.isTemplateDetails = false
+    },
+    handleDuplicateFromPreview(row) {
+      this.handleEdit(row, true)
+      this.isTemplateDetails = false
     },
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newEmailTemplate) {

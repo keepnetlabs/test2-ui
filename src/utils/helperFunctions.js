@@ -1,3 +1,7 @@
+import { resolveApiDurationFieldName } from '@/utils/searchFilterNormalize'
+
+export { resolveApiDurationFieldName, normalizeSearchFilterItems } from '@/utils/searchFilterNormalize'
+
 export function getAvailableForListFromBackend(list = []) {
   return list.map((item) => {
     let { typeName, targetName, targetResourceId } = item
@@ -69,31 +73,42 @@ export function getAvailableForValueFromList(list = []) {
   return makeAvailableForValue
 }
 export function columnFilterChanged(filter = {}, axiosPayload = {}) {
+  if (Array.isArray(filter) && filter.length === 0) {
+    return []
+  }
+
+  const normalizedFilter = Array.isArray(filter)
+    ? filter.map((item) => ({
+        ...item,
+        FieldName: resolveApiDurationFieldName(item.FieldName ?? item.fieldName)
+      }))
+    : {
+        ...filter,
+        FieldName: resolveApiDurationFieldName(filter.FieldName ?? filter.fieldName)
+      }
+
   let items = []
   let requestBody = axiosPayload.filter.FilterGroups[0].FilterItems
   requestBody.map((x) => {
-    if (Array.isArray(filter)) {
-      filter.forEach((i) => {
-        if (x.FieldName !== i.FieldName) {
-          items.push(x)
-        }
-      })
-    } else if (x.FieldName !== filter.FieldName) {
+    if (Array.isArray(normalizedFilter)) {
+      const replacedFields = new Set(
+        normalizedFilter.map((i) => resolveApiDurationFieldName(i.FieldName))
+      )
+      if (!replacedFields.has(resolveApiDurationFieldName(x.FieldName))) {
+        items.push(x)
+      }
+    } else if (resolveApiDurationFieldName(x.FieldName) !== normalizedFilter.FieldName) {
       items.push(x)
     }
   })
 
   requestBody = [...items]
-  if (Array.isArray(filter)) {
-    filter.forEach((x, i) => {
-      const elem = filter[i]
-      elem.FieldName = filter[i].FieldName
+  if (Array.isArray(normalizedFilter)) {
+    normalizedFilter.forEach((elem) => {
       requestBody.push(elem)
     })
   } else {
-    const elem = filter
-    elem.FieldName = filter.FieldName
-    requestBody.push(elem)
+    requestBody.push(normalizedFilter)
   }
 
   return requestBody
@@ -102,9 +117,10 @@ export function columnFilterChanged(filter = {}, axiosPayload = {}) {
 export function columnFilterCleared(fieldName = '', axiosPayload = {}) {
   let items = []
   let filterPayload = axiosPayload.filter.FilterGroups[0].FilterItems
+  const resolvedClearName = resolveApiDurationFieldName(fieldName)
 
   filterPayload.map((x) => {
-    if (x.FieldName !== fieldName) {
+    if (resolveApiDurationFieldName(x.FieldName) !== resolvedClearName) {
       items.push(x)
     }
   })

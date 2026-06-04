@@ -1,5 +1,43 @@
 import labels from '@/model/constants/labels'
 
+export const SIMULATION_SOURCE_NOTE =
+  'Simulation count reflects unique reports from Phishing Campaigns and Incident Responder (where available).'
+
+export const getSimulationSourceDetails = (widgetData = {}) => {
+  const sourceBreakdown = widgetData?.dataObject?.sourceBreakdown || widgetData?.sourceBreakdown
+  if (!sourceBreakdown || typeof sourceBreakdown !== 'object') return {}
+
+  const details = {}
+  const hasValue = (value) => value !== undefined && value !== null && value !== ''
+
+  if (hasValue(sourceBreakdown.incidentResponderCount)) {
+    details['Incident Responder'] = sourceBreakdown.incidentResponderCount
+  }
+
+  if (hasValue(sourceBreakdown.campaignCount)) {
+    details['Campaign Report > Reporters'] = sourceBreakdown.campaignCount
+  }
+
+  if (Array.isArray(sourceBreakdown.campaigns) && sourceBreakdown.campaigns.length) {
+    details.Campaigns = sourceBreakdown.campaigns
+      .map((campaign) => {
+        const campaignName = campaign.campaignName || campaign.name || 'Campaign'
+        const campaignCount =
+          campaign.count !== undefined && campaign.count !== null
+            ? campaign.count
+            : campaign.reportCount || 0
+        return `${campaignName} (${campaignCount})`
+      })
+      .join(', ')
+  }
+
+  if (!Object.keys(details).length && sourceBreakdown.sourceSummary) {
+    details['Source Breakdown'] = sourceBreakdown.sourceSummary
+  }
+
+  return details
+}
+
 export const CHART_COLORS = {
   'Open Attachment': {
     backgroundColor: '#801717',

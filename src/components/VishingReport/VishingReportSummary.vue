@@ -199,22 +199,28 @@ export default {
   },
   methods: {
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
-        this.languageItems = response?.data?.data || []
-      })
+      getVishingTemplateLanguages()
+        .then((response) => {
+          this.languageItems = response?.data?.data || []
+        })
+        .catch(() => {})
     },
     callForData(isUseLoading = false) {
       if (!this.id) return
       if (isUseLoading) this.isLoading = true
-      getVishingReportSummary(this.id).then((res) => {
-        const { data: { data = {} } = {} } = res || {}
-        this.vishingSummary = data
-        if (isUseLoading) {
-          setTimeout(() => {
-            this.isLoading = false
-          }, 300)
-        }
-      })
+      getVishingReportSummary(this.id)
+        .then((res) => {
+          const { data: { data = {} } = {} } = res || {}
+          this.vishingSummary = data
+          if (isUseLoading) {
+            setTimeout(() => {
+              this.isLoading = false
+            }, 300)
+          }
+        })
+        .catch(() => {
+          if (isUseLoading) this.isLoading = false
+        })
     }
   }
 }

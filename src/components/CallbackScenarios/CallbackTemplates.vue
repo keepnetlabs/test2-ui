@@ -7,6 +7,8 @@
       :showTemplateInfo="false"
       :languageItems="languageItems"
       @on-close="onToggleShowPreviewModal"
+      @on-edit="handleEditFromPreview"
+      @on-duplicate="handleDuplicateFromPreview"
     />
     <DeleteCallbackTemplateModal
       v-if="isDeleteModalVisible"
@@ -361,6 +363,14 @@ export default {
       this.modalStatus = true
       this.isEdit = true
       this.isDuplicate = isDuplicate
+    },
+    handleEditFromPreview(row) {
+      this.onToggleShowPreviewModal()
+      this.handleEdit(row, false)
+    },
+    handleDuplicateFromPreview(row) {
+      this.onToggleShowPreviewModal()
+      this.handleEdit(row, true)
     },
     checkIfCanCloseCallbackTemplateModal() {
       if (this.$refs?.refCallbackTemplateModal) {

@@ -78,7 +78,7 @@
           has-hint
         >
           <KSelect
-            v-if="isAwarenessEducatorTemplateSelected"
+            v-if="canUseDirectEmailDelivery"
             v-bind="getEmailDeliveryProps"
             v-model.trim="emailDelivery"
             id="input--notification-template-email-delivery-awareness"
@@ -271,7 +271,8 @@ import {
   scrollToEmailTemplateContent,
   MERGED_TEXTS_MAP,
   isTeamsNotificationTemplateName,
-  setCompanyLogoSrc
+  setCompanyLogoSrc,
+  isDirectEmailDeliveryTemplateName
 } from "@/components/Company Settings/utils";
 import { getDefaultEmailDeliverySetting } from "@/api/phishingsimulator";
 import { EMAIL_DELIVERY_TYPES } from "@/components/CampaignManager/AdvancedSettings/utils";
@@ -471,26 +472,12 @@ export default {
     shouldRenderEmailDeliveryField() {
       return !this.isTeamsNotificationTemplateSelected;
     },
-    isAwarenessEducatorTemplateSelected() {
+    isDirectEmailDeliveryTemplateSelected() {
       if (!this.formValues.emailTemplateCategoryResourceId) return false;
-      return [
-        "Training Enrollment",
-        "Survey Enrollment",
-        "Survey Reminder",
-        "Learning Path Enrollment Reminder",
-        "Poster Enrollment",
-        "Learning Path Enrollment",
-        "Infographic Enrollment",
-        "Enrollment after Failed in a Simulation",
-        "Enrollment Reminder",
-        "Certificate",
-        "Suspicious Email Analysis Report",
-        "Suspicious Email Analysis Report Update",
-        "Investigation Started",
-        "Investigation Expired",
-        "Investigation Finished",
-        "Security Growth Login"
-      ].includes(this.selectedTemplateCategoryName);
+      return isDirectEmailDeliveryTemplateName(this.selectedTemplateCategoryName);
+    },
+    canUseDirectEmailDelivery() {
+      return this.isDirectEmailDeliveryTemplateSelected;
     },
     getEnrollmentTemplateResourceId() {
       return this.categoryItems?.find(

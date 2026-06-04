@@ -32,41 +32,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-form class="add-in-settings__form" lazy-validation ref="refForm" v-model="isValid">
-      <v-list-item class="px-0 add-in-settings__list-item mt-0">
-        <v-list-item-content>
-          <label for="input--phishing-reporter-settings-add-in-name" class="add-in-settings__label"
-            >{{ labels.AddIn }} {{ labels.Name }}</label
-          >
-          <InputEntityName
-            v-model.trim="formValues.addInName"
-            id="input--phishing-reporter-settings-add-in-name"
-            class="k-textfield mt-2"
-            initial-placeholder="Enter an add-in name"
-            entity-name="add-in name"
-            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-            :applyRules="showForm"
-          />
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 add-in-settings__list-item">
-        <v-list-item-content>
-          <label for="input--phishing-reporter-settings-brand-name" class="add-in-settings__label"
-            >{{ labels.Brand }} {{ labels.Name }}</label
-          >
-          <InputEntityName
-            v-model.trim="formValues.brandName"
-            id="input--phishing-reporter-settings-brand-name"
-            class="k-textfield mt-2"
-            initial-placeholder="Enter a Brand Name"
-            entity-name="brand name"
-            :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
-            :applyRules="showForm"
-          />
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 add-in-settings__list-item add-in-settings__file-upload">
+      <v-list-item class="px-0 add-in-settings__list-item mt-0 add-in-settings__file-upload">
         <v-list-item-content>
           <label for="input--phishing-reporter-settings-logo" class="add-in-settings__label"
             >{{ labels.AddIn }} {{ labels.Logo }}</label
@@ -194,6 +160,57 @@
               type="list-item@10"
             ></v-skeleton-loader>
             <div v-else class="add-in-settings__dialog-box-settings__inner-container">
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  :for="`input--phishing-reporter-dialog-box-add-in-name-${setting.languageName}`"
+                  class="add-in-settings__list-item-header"
+                  >{{ labels.AddIn }} {{ labels.Name }}</label
+                >
+                <InputEntityName
+                  v-model.trim="setting.addInName"
+                  initialPlaceholder="Enter an add-in name"
+                  entityName="add-in name"
+                  :id="`input--phishing-reporter-dialog-box-add-in-name-${setting.languageName}`"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  :for="`input--phishing-reporter-dialog-box-brand-name-${setting.languageName}`"
+                  class="add-in-settings__list-item-header"
+                  >{{ labels.Brand }} {{ labels.Name }}</label
+                >
+                <InputEntityName
+                  v-model.trim="setting.brandName"
+                  initialPlaceholder="Enter a Brand Name"
+                  entityName="brand name"
+                  :id="`input--phishing-reporter-dialog-box-brand-name-${setting.languageName}`"
+                  class="k-textfield"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                />
+              </div>
+              <div class="add-in-settings__body-item mb-4">
+                <label
+                  :for="`input--phishing-reporter-dialog-box-description-${setting.languageName}`"
+                  class="add-in-settings__list-item-header"
+                  >{{ labels.AddIn }} {{ labels.Description }}</label
+                >
+                <InputDescription
+                  v-model.trim="setting.description"
+                  initialPlaceholder="Enter an add-in description"
+                  entityName="add-in description"
+                  :id="`input--phishing-reporter-dialog-box-description-${setting.languageName}`"
+                  rows="2"
+                  height="80"
+                  :readonly="!showForm || isFetchingDefaultSettingsForLanguage"
+                  :applyRules="showForm"
+                  :maxLength="256"
+                  :required="true"
+                />
+              </div>
               <div class="add-in-settings__body-item mb-4">
                 <label
                   for="input--phishing-reporter-message-box-title"
@@ -752,7 +769,12 @@ export default {
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
       this.formValues.warningLabel = warningLabel
-      this.formValues.dialogBoxSettings = [...dialogBoxSettings]
+      this.formValues.dialogBoxSettings = dialogBoxSettings.map((setting) => ({
+        addInName: addInName || '',
+        brandName: brandName || '',
+        description: '',
+        ...setting
+      }))
       // Map languageName to isoFriendlyName
       this.formValues.dialogBoxSettings.forEach((setting) => {
         const language = this.languageOptions.find((lang) => lang.name === setting.languageName)
@@ -763,10 +785,10 @@ export default {
       this.formValues.dialogBoxSettings.sort((x) => {
         return x.languageName === 'English' ? -1 : 1
       })
-      const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
-      if (defaultSettingIndex !== -1) {
-        this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
-        this.tab = dialogBoxSettings[defaultSettingIndex].languageName
+      const defaultSetting = this.formValues.dialogBoxSettings.find((s) => s.isDefault)
+      if (defaultSetting) {
+        this.defaultLanguage = defaultSetting.languageName
+        this.tab = defaultSetting.languageName
       }
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
@@ -800,7 +822,12 @@ export default {
         this.formValues.addInName = addInName
         this.formValues.brandName = brandName
         this.formValues.warningLabel = warningLabel
-        this.formValues.dialogBoxSettings = dialogBoxSettings
+        this.formValues.dialogBoxSettings = dialogBoxSettings.map((setting) => ({
+          addInName: addInName || '',
+          brandName: brandName || '',
+          description: '',
+          ...setting
+        }))
         // Map languageName to isoFriendlyName
         this.formValues.dialogBoxSettings.forEach((setting) => {
           const language = this.languageOptions.find((lang) => lang.name === setting.languageName)
@@ -811,12 +838,12 @@ export default {
         this.formValues.dialogBoxSettings.sort((x) => {
           return x.languageName === 'English (United Kingdom)' ? -1 : 1
         })
-        const defaultSettingIndex = dialogBoxSettings.findIndex((setting) => setting.isDefault)
-        if (defaultSettingIndex !== -1) {
-          this.defaultLanguage = dialogBoxSettings[defaultSettingIndex].languageName
-          this.tab = dialogBoxSettings[defaultSettingIndex].languageName
+        const defaultSetting = this.formValues.dialogBoxSettings.find((s) => s.isDefault)
+        if (defaultSetting) {
+          this.defaultLanguage = defaultSetting.languageName
+          this.tab = defaultSetting.languageName
           Object.keys(this.commonSettings).forEach((key) => {
-            this.commonSettings[key] = dialogBoxSettings[defaultSettingIndex][key]
+            this.commonSettings[key] = defaultSetting[key]
           })
         }
         getPhishingReporterImg().then((response) => {
@@ -829,7 +856,13 @@ export default {
         ? this.whiteLabelBrandName
         : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
-      this.formValues.dialogBoxSettings = [{ ...defaultDialogBoxSettings }]
+      this.formValues.dialogBoxSettings = [
+        {
+          ...defaultDialogBoxSettings,
+          addInName: this.formValues.addInName,
+          brandName: this.formValues.brandName || defaultDialogBoxSettings.brandName
+        }
+      ]
       this.commonSettings = structuredClone(defaultCommonSettings)
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = new File([blob], 'defaultlogo.png')
@@ -880,6 +913,9 @@ export default {
             this.languageOptions.find((lo) => lo.text === language)?.value || ''
           this.formValues.dialogBoxSettings.push({
             ...dialogBoxSettings,
+            addInName: dialogBoxSettings.addInName || this.formValues.addInName,
+            brandName: dialogBoxSettings.brandName || this.formValues.brandName,
+            description: dialogBoxSettings.description || defaultDialogBoxSettings.description,
             isConfirmationBeforeAnalysis: true,
             isDeleteEmailBeforeAnalysis: true,
             isSendSimulationMails: true,
@@ -974,7 +1010,16 @@ export default {
       }
       return invalidLanguages
     },
+    syncRootFromDefaultLanguage() {
+      const defaultSetting =
+        this.formValues.dialogBoxSettings.find((s) => s.isDefault) ||
+        this.formValues.dialogBoxSettings[0]
+      if (!defaultSetting) return
+      this.formValues.addInName = defaultSetting.addInName || this.formValues.addInName
+      this.formValues.brandName = defaultSetting.brandName || this.formValues.brandName
+    },
     submit(event, isAddIn = false) {
+      this.syncRootFromDefaultLanguage()
       const invalidLanguages = this.checkDialogBoxSettings()
       if (invalidLanguages.length) {
         this.$store.dispatch('common/createSnackBar', {

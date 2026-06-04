@@ -128,4 +128,18 @@ describe('VishingReportSummary.vue', () => {
     expect(wrapper.vm.languageItems).toHaveLength(1)
     expect(wrapper.vm.languageItems[0].name).toBe('English')
   })
+
+  it('callForData clears isLoading when initial fetch rejects', async () => {
+    getVishingReportSummary.mockRejectedValueOnce(new Error('network'))
+    const wrapper = mountComponent()
+    await new Promise((r) => setImmediate(r))
+    expect(wrapper.vm.isLoading).toBe(false)
+  })
+
+  it('callForLanguages leaves languageItems empty when API rejects', async () => {
+    getVishingTemplateLanguages.mockRejectedValueOnce(new Error('network'))
+    const wrapper = mountComponent()
+    await new Promise((r) => setImmediate(r))
+    expect(wrapper.vm.languageItems).toEqual([])
+  })
 })

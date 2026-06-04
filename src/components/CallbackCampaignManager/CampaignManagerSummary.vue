@@ -1,5 +1,14 @@
 <template>
   <div class="campaign-manager-last-step">
+    <EmailTemplatePreview
+      v-if="isShowEmailTemplatePreview"
+      :status="isShowEmailTemplatePreview"
+      :selectedRow="emailTemplatePreviewSelectedRow"
+      :templateHTML="emailTemplatePreviewHTML"
+      :emailTemplateParams="emailTemplatePreviewParams"
+      is-nested
+      @on-close="isShowEmailTemplatePreview = false"
+    />
     <CampaignManagerScheduleDialog
       v-if="showSchedule && isShowScheduleDialog"
       :status="isShowScheduleDialog"
@@ -101,12 +110,20 @@
       />
     </ElTabs>
     <div class="campaign-manager-last-step__email-template mt-4">
-      <CampaignManagerSummaryCard
-        detailable
-        icon="mdi-email"
-        :show-body-detail.sync="isShowEmailTemplate"
-        :title="labels.EmailThatWill"
-      >
+      <CampaignManagerSummaryCard icon="mdi-email" :title="labels.EmailThatWill">
+        <template #header-right>
+          <v-btn
+            class="campaign-manager-summary-card__button mr-6 pr-4"
+            rounded
+            outlined
+            color="#2196f3"
+            :disabled="!emailTemplatePreviewHTML"
+            @click="isShowEmailTemplatePreview = true"
+          >
+            <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+            Preview
+          </v-btn>
+        </template>
         <template #body>
           <div
             v-if="isFormData && emailTemplateParams && phishingScenarios.length"
@@ -146,20 +163,6 @@
               <span>&#62;</span>
             </div>
           </div>
-          <div
-            v-if="isShowEmailTemplate"
-            class="campaign-manager-last-step__email-template-body-preview-container"
-          >
-            <div class="campaign-manager-last-step__email-template-body-preview">
-              <KEmailPreview
-                v-if="!!emailTemplateParams.template"
-                ref="refPreview"
-                :html="emailTemplateParams.template"
-                :key="emailTemplateParams.template"
-                is-extra-height
-              />
-            </div>
-          </div>
         </template>
       </CampaignManagerSummaryCard>
     </div>
@@ -195,7 +198,7 @@ import CampaignManagerScheduleDialog from '@/components/CallbackCampaignManager/
 import CampaignManagerReportSummaryTraining from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTraining.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
-import KEmailPreview from '@/components/KEmailPreview'
+import EmailTemplatePreview from '@/components/CallbackScenarios/EmailTemplatePreview'
 export default {
   name: 'CampaignManagerSummary',
   components: {
@@ -206,7 +209,7 @@ export default {
     CampaignManagerSummaryCard,
     CallbackCampaignModalSummaryCallbackTemplate,
     AlertBox,
-    KEmailPreview
+    EmailTemplatePreview
   },
   props: {
     formData: {
@@ -233,18 +236,15 @@ export default {
     return {
       labels,
       isShowTargetUserDetail: false,
-      isShowEmailTemplate: false,
-      isShowLandingPageTemplate: false,
+      isShowEmailTemplatePreview: false,
       isScenarioDetailLoading: false,
       selectedScenarioResourceId: '',
-      selectedScenarioMethodTypeId: '',
       isShowScheduleDialog: false,
       trainingParams: null,
       selectedTraining: null,
       trainingLanguages: [],
       selectedTrainingLanguages: [],
       emailTemplateParams: {},
-      emailTemplate: null,
       callbackTemplate: null
     }
   },
@@ -426,6 +426,22 @@ export default {
             : ' users'
         }`
       return data
+    },
+    emailTemplatePreviewHTML() {
+      return this.emailTemplateParams?.template || null
+    },
+    emailTemplatePreviewParams() {
+      const t = this.emailTemplateParams || {}
+      return {
+        name: t.name,
+        fromName: t.fromName,
+        fromAddress: t.fromAddress,
+        subject: t.subject,
+        attachment: t.phishingFileName ? { name: t.phishingFileName } : null
+      }
+    },
+    emailTemplatePreviewSelectedRow() {
+      return { ...(this.emailTemplateParams || {}) }
     }
   },
   watch: {

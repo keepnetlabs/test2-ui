@@ -36,6 +36,22 @@
       @confirmMultipleDelete="deleteMultipleConfirmedItems"
       @changeModalStatus="changeDeleteModalStatus"
     />
+    <SovereigntyMigrateModal
+      :is-show="showSovereigntyMigrateModal"
+      :company-resource-id="sovereigntyMigrateRow.companyResourceId || ''"
+      :company-name="sovereigntyMigrateRow.companyName || ''"
+      :current-region-code="companyRowRegionCode(sovereigntyMigrateRow)"
+      :current-region-label="companyRowRegionPresetLabel(sovereigntyMigrateRow)"
+      @close="closeSovereigntyMigrateModal"
+      @success="onSovereigntyMigrateQueued"
+    />
+    <SovereigntyReportDrawer
+      v-if="showSovereigntyReportDrawer"
+      :status="showSovereigntyReportDrawer"
+      :company-resource-id="sovereigntyReportRow.companyResourceId || ''"
+      :company-name="sovereigntyReportRow.companyName || ''"
+      @on-close="closeSovereigntyReportDrawer"
+    />
     <AddGroupToModal
       v-if="showAddGroupToModal"
       :companyIdArray="companyIdArray"
@@ -180,6 +196,27 @@
             :text="tableOptions.rowActions[4].name"
             :checkIsOwnerProperty="false"
             @on-click="handleTableItemDelete(scope.row)"
+          />
+          <DefaultMenuRowAction
+            v-if="canShowSovereigntyMigrate(scope.row)"
+            :scope="scope"
+            :check-is-owner-property="false"
+            id="btn-sovereignty-migrate--company-row-actions"
+            :disabled="companyRowHasDataRegion(scope.row)"
+            :disabled-tooltip-text="sovereigntyMigrateTooltip(scope.row)"
+            :show-tooltip="companyRowHasDataRegion(scope.row)"
+            icon="mdi-earth"
+            text="Migrate data residency"
+            @on-click="openSovereigntyMigrateModal(scope.row)"
+          />
+          <DefaultMenuRowAction
+            v-if="canShowSovereigntyReport(scope.row)"
+            :scope="scope"
+            :check-is-owner-property="false"
+            id="btn-sovereignty-report--company-row-actions"
+            icon="mdi-file-document-outline"
+            text="Data residency report"
+            @on-click="openSovereigntyReportDrawer(scope.row)"
           />
           <DefaultMenuRowAction
             :scope="scope"
@@ -334,6 +371,8 @@ import {
 } from "@/utils/functions";
 import ServerSideProps from "@/helper-classes/server-side-table-props";
 import ConfigureNewCompanyModal from "@/components/Companies/ConfigureNewCompanyModal";
+import SovereigntyMigrateModal from "@/components/Companies/SovereigntyMigrateModal";
+import SovereigntyReportDrawer from "@/components/Companies/SovereigntyReportDrawer";
 import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
 import { getLicences } from "@/api/common";
 import { columnFilterChanged } from "@/utils/helperFunctions";
@@ -341,11 +380,15 @@ import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/Defa
 import RowActionsMenu from "@/components/SmallComponents/RowActions/RowActionsMenu";
 import DefaultMenuRowAction from "@/components/SmallComponents/RowActions/DefaultMenuRowAction";
 import AlertBox from "@/components/AlertBox.vue";
+import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
 export default {
   name: "CompanyList",
+  mixins: [useIsTestEnvironment],
   components: {
     AlertBox,
     ConfigureNewCompanyModal,
+    SovereigntyMigrateModal,
+    SovereigntyReportDrawer,
     AppModal,
     CreateItemModal,
     AddGroupToModal,
@@ -384,6 +427,10 @@ export default {
       selectedRow: {},
       multipleDeletePayload: {},
       multipleDeleteCompanyCount: 0,
+      showSovereigntyMigrateModal: false,
+      sovereigntyMigrateRow: {},
+      showSovereigntyReportDrawer: false,
+      sovereigntyReportRow: {},
       tableOptions: {
         columns: [
           {
@@ -699,11 +746,6 @@ export default {
       licenseCatalogFromLookup: []
     };
   },
-  watch: {
-    isShowCreateOrEditModal() {
-      document.querySelector("html").classList.toggle("overflow-y-hidden");
-    }
-  },
   created() {
     this._selectingChildren = false;
     this.getLookUpDatas();
@@ -732,6 +774,9 @@ export default {
         return "No companies exceeding their user limits, so the filter is disabled.";
       if (this.isTargetUserCountExceedLimit) return "Remove Filter";
       return "Filter exceeding limit";
+    },
+    isRootOrReseller() {
+      return this.$store.getters["auth/isRootOrReseller"];
     }
   },
   methods: {
@@ -772,6 +817,90 @@ export default {
         account.companyResourceId
       );
       localStorage.setItem("selectedCompanyName", account.companyName);
+    },
+    isClusterParentCompanyRow(row = {}) {
+      return !!(row.children && row.children.length > 0);
+    },
+    companyRowRegionCode(row = {}) {
+      const nested = row.region || row.Region;
+      const fromNested =
+        nested &&
+        (nested.code ?? nested.Code ?? nested.regionCode ?? nested.RegionCode);
+      if (fromNested != null && String(fromNested).trim()) return String(fromNested).trim();
+      const flat = [
+        row.regionCode,
+        row.RegionCode,
+        row.azureRegionCode,
+        row.AzureRegionCode
+      ];
+      for (let i = 0; i < flat.length; i++) {
+        const v = flat[i];
+        if (v != null && String(v).trim()) return String(v).trim();
+      }
+      return "";
+    },
+    companyRowRegionPresetLabel(row = {}) {
+      const nested = row.region || row.Region;
+      const fromNested =
+        nested &&
+        (nested.displayName ??
+          nested.DisplayName ??
+          nested.name ??
+          nested.Name);
+      const flat = [
+        row.regionDisplayName,
+        row.RegionDisplayName,
+        row.regionName,
+        row.RegionName,
+        fromNested
+      ];
+      for (let i = 0; i < flat.length; i++) {
+        const v = flat[i];
+        if (v != null && String(v).trim()) return String(v).trim();
+      }
+      return "";
+    },
+    companyRowHasDataRegion(row = {}) {
+      return !!this.companyRowRegionCode(row);
+    },
+    canShowSovereigntyMigrate(row = {}) {
+      return (
+        this.isTestEnvironment &&
+        this.isRootOrReseller &&
+        !this.isClusterParentCompanyRow(row)
+      );
+    },
+    sovereigntyMigrateTooltip(row = {}) {
+      if (this.companyRowHasDataRegion(row)) {
+        return "This company is already assigned to a region. Region changes aren't supported.";
+      }
+      return "";
+    },
+    openSovereigntyMigrateModal(row = {}) {
+      this.sovereigntyMigrateRow = { ...row };
+      this.showSovereigntyMigrateModal = true;
+    },
+    closeSovereigntyMigrateModal() {
+      this.showSovereigntyMigrateModal = false;
+      this.sovereigntyMigrateRow = {};
+    },
+    onSovereigntyMigrateQueued() {
+      this.getTableData();
+    },
+    canShowSovereigntyReport(row = {}) {
+      return (
+        this.isTestEnvironment &&
+        this.isRootOrReseller &&
+        !this.isClusterParentCompanyRow(row)
+      );
+    },
+    openSovereigntyReportDrawer(row = {}) {
+      this.sovereigntyReportRow = { ...row };
+      this.showSovereigntyReportDrawer = true;
+    },
+    closeSovereigntyReportDrawer() {
+      this.showSovereigntyReportDrawer = false;
+      this.sovereigntyReportRow = {};
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber;

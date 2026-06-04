@@ -3,6 +3,7 @@
     <vue-tel-input
       :value="value"
       validCharactersOnly
+      :allCountries="localizedPhoneCountries"
       defaultCountry="GB"
       :inputOptions="{
         showDialCode: true
@@ -37,6 +38,16 @@
 <script>
 import { VueTelInput } from 'vue-tel-input'
 import labels from '@/model/constants/labels'
+import { localizePhoneCountry } from '@/utils/phoneCountryName'
+
+const getDefaultPhoneCountries = () => {
+  const allCountriesProp =
+    VueTelInput?.props?.allCountries || VueTelInput?.options?.props?.allCountries
+  const getDefaultCountries = allCountriesProp?.default
+
+  return typeof getDefaultCountries === 'function' ? getDefaultCountries() : []
+}
+
 export default {
   name: 'InputPhone',
   components: {
@@ -60,6 +71,9 @@ export default {
     }
   },
   computed: {
+    localizedPhoneCountries() {
+      return getDefaultPhoneCountries().map(localizePhoneCountry)
+    },
     getErrorText() {
       if (this.value) {
         if (this.phonePossibility === 'too-short') {
@@ -143,6 +157,22 @@ export default {
       this.$refs.refTelInput.phone = val
       this.$emit('input', val)
     },
+    isNanpPhoneNumberPossible(phoneObject = {}) {
+      const candidates = [
+        this.value,
+        this.$refs.refTelInput?.phone,
+        phoneObject?.number?.e164,
+        phoneObject?.number?.international,
+        phoneObject?.number?.input
+      ]
+
+      return candidates.some((phoneNumber = '') => {
+        const digits = phoneNumber.toString().replace(/\D/g, '')
+        const nationalNumber = digits.startsWith('1') ? digits.substring(1) : ''
+
+        return digits.length === 11 && /^([2-9]\d{2})([2-9]\d{6})$/.test(nationalNumber)
+      })
+    },
     validatePhoneNumber() {
       this.$nextTick(() => {
         try {
@@ -159,7 +189,7 @@ export default {
             this.isPhoneNumberValid = true
             return
           }
-          this.isPhoneNumberValid = phoneObject.isValid
+          this.isPhoneNumberValid = phoneObject.isValid || this.isNanpPhoneNumberPossible(phoneObject)
         } catch {
           this.isPhoneNumberValid = false
         }

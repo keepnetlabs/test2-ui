@@ -1,142 +1,208 @@
 <template>
-  <AppDialog
-    custom-size="1600"
-    max-height
-    max-height-size="900"
-    icon="mdi-eye"
-    :status="status"
-    title="Callback Campaign Preview"
-    :subtitle="getSubtitle"
-    class-name="campaign-manager-preview-dialog"
-    @changeStatus="handleClose"
-  >
-    <template #app-dialog-body>
-      <ElTabs
-        v-if="!isLoading"
-        v-model="selectedScenario.text"
-        class="campaign-manager-last-step__phishing-scenario-tab mb-6"
-        @tab-click="callForScenarioDetail"
-      >
-        <ElTabPane
-          v-for="template in phishingScenarios"
-          :key="template.customKey"
-          :name="template.text"
-          :label="template.text"
-          :disabled="isLoading"
+  <div v-if="isVisible">
+    <div
+      class="common-simulator-preview-overlay"
+      @click="handleOverlayClick"
+    ></div>
+    <VNavigationDrawer
+      :value="isVisible"
+      :class="[
+        getNavigationDrawerClass,
+        'common-simulator-preview-dialog'
+      ]"
+      :data-drawer-id="drawerId"
+      fixed
+      :overlay-color="null"
+      right
+      stateless
+      width="calc(100% - 72px)"
+      height="100%"
+    >
+      <div class="campaign-manager-scenario-statistics-modal__header--sticky">
+        <div
+          class="campaign-manager-scenario-statistics-modal__header k-navigation-drawer__header"
         >
-          <span slot="label">
-            <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
-            <template v-else> {{ template.text }} </template>
-          </span>
-        </ElTabPane>
-      </ElTabs>
-      <DatatableLoading v-if="isLoadingScenario" :loading="isLoadingScenario" />
-      <ElTabs v-if="!isLoadingScenario" v-model="tab" class="k-sub-tab">
-        <ElTabPane id="campaign-preview-modal--email" name="email" :label="labels.JustEmail">
-          <div class="template-preview pt-4">
-            <div v-if="!!emailTemplate" class="template-preview__text">
-              <div class="mb-1">
-                <span class="template-preview__text--title">From: </span>
-                <span class="template-preview__text--body">{{
-                  emailTemplateParams.fromAddress
-                }}</span>
-              </div>
-              <div class="mb-1">
-                <span class="template-preview__text--title">From Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
-              </div>
-              <div class="mb-1">
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
-              </div>
-              <div class="template-preview__text--title">
-                <span>Subject: </span>
-                <span class="template-preview__text--body">{{ emailTemplateParams.subject }}</span>
-              </div>
+          <div>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle class="k-overlay__title">
+                  Callback Campaign Preview
+                </VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </div>
+          <div>
+            <VIcon class="cursor-pointer" color="#757575" @click="handleClose">
+              mdi-close
+            </VIcon>
+          </div>
+        </div>
+      </div>
+      <div
+        class="campaign-manager-scenario-statistics-modal__body k-navigation-drawer__body"
+      >
+        <div
+          class="d-flex align-center justify-space-between mt-4 mb-1"
+          style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;"
+        >
+          <div>
+            <span class="text-primary-color fs-5 fw-600">{{ getSubtitle }}</span>
+          </div>
+          <div class="d-flex align-center gap-2">
+            <VTooltip bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <VBtn icon outlined color="#2196F3" small @click="handleEditCampaign">
+                    <VIcon small>mdi-pencil</VIcon>
+                  </VBtn>
+                </div>
+              </template>
+              <span>Edit</span>
+            </VTooltip>
+          </div>
+        </div>
+        <ElTabs
+          v-if="!isLoading"
+          v-model="selectedScenario.text"
+          class="campaign-manager-last-step__phishing-scenario-tab mt-4"
+          @tab-click="callForScenarioDetail"
+        >
+          <ElTabPane
+            v-for="template in phishingScenarios"
+            :key="template.customKey"
+            :name="template.text"
+            :label="template.text"
+            :disabled="isLoading"
+          >
+            <span slot="label">
+              <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+              <template v-else>{{ template.text }}</template>
+            </span>
+          </ElTabPane>
+        </ElTabs>
+        <DatatableLoading v-if="isLoadingScenario" :loading="isLoadingScenario" />
+        <ElTabs v-if="!isLoadingScenario" v-model="tab" class="k-sub-tab">
+          <ElTabPane id="campaign-preview-modal--email" name="email" :label="labels.JustEmail">
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ emailTemplateParams.name }}
             </div>
             <div
-              v-if="emailTemplateParams.attachment"
-              class="attachment-wrapper mt-2"
-              style="position: relative;"
+              class="template-preview"
+              style="
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 16px;
+              "
             >
-              <div class="attachment blue-attach mb-0">
-                <AttachmentsPreview
-                  :deletable="false"
-                  :att="emailTemplateParams.attachment"
-                  :isEmailTemplate="true"
-                />
+              <div
+                v-if="!!emailTemplate"
+                class="d-flex align-center justify-end gap-2 mb-3"
+              >
+                <VTooltip bottom>
+                  <template #activator="{ on }">
+                    <div v-on="on">
+                      <VBtn icon outlined color="#2196F3" small @click="handleExternalLink">
+                        <VIcon small>mdi-open-in-new</VIcon>
+                      </VBtn>
+                    </div>
+                  </template>
+                  <span>Open in New Tab</span>
+                </VTooltip>
               </div>
+              <hr class="ml-n4 mr-n4 mb-3" v-if="!!emailTemplate" />
+              <div class="common-simulator-preview__text" v-if="!!emailTemplate">
+                <div>
+                  <span class="template-preview__text--title text-primary-color">Subject: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.subject
+                  }}</span>
+                </div>
+                <div>
+                  <span class="template-preview__text--title text-primary-color">From Name: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.fromName
+                  }}</span>
+                </div>
+                <div>
+                  <span class="template-preview__text--title text-primary-color">From Email: </span>
+                  <span class="template-preview__text--body text-primary-color">{{
+                    emailTemplateParams.fromAddress
+                  }}</span>
+                </div>
+              </div>
+              <div
+                v-if="emailTemplateParams.attachment"
+                class="attachment-wrapper mt-2 position-relative"
+              >
+                <div class="attachment blue-attach mb-0">
+                  <AttachmentsPreview
+                    :deletable="false"
+                    :att="emailTemplateParams.attachment"
+                    :isEmailTemplate="true"
+                  />
+                </div>
+              </div>
+              <hr class="mt-4 ml-n4 mr-n4 mb-2" v-if="!!emailTemplate" />
+              <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
             </div>
-            <hr class="mt-4" v-if="!!emailTemplate" />
-            <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
-          </div>
-        </ElTabPane>
-        <ElTabPane
-          id="campaign-preview-modal--callback"
-          name="callback"
-          label="Callback Template"
-        >
-          <div class="template-preview pt-4">
-            <div class="template-preview__text mb-4">
-              <div>
-                <span class="template-preview__text--title">Template Name: </span>
-                <span class="template-preview__text--body">{{ callbackTemplateParams.name }}</span>
-              </div>
+          </ElTabPane>
+          <ElTabPane
+            id="campaign-preview-modal--callback"
+            name="callback"
+            label="Callback Template"
+          >
+            <div class="text-primary-color fs-4 fw-600 mb-2 mt-n4">
+              {{ callbackTemplateParams.name }}
             </div>
             <CallbackTemplatePreviewSteps
               :template="callbackTemplateParams"
               :isTextToSpeechCompatible="isTextToSpeechCompatible"
               :voiceResourceId="callbackTemplateParams.vishingLanguageResourceId"
             />
-          </div>
-        </ElTabPane>
-        <template v-if="!!isRenderTrainingTab">
-          <ElTabPane id="campaign-preview-modal--training" name="training" label="Training">
-            <div class="template-preview pt-4">
-              <TrainingLibraryPreview
-                v-if="selectedLanguages.length"
-                v-show="!isPreviewLoading"
-                :is-loading.sync="isPreviewLoading"
-                :name="trainingParams.name"
-                :training-id="trainingParams.trainingId"
-                :languages="selectedLanguages"
-                :training-params="trainingParams"
-              />
-            </div>
           </ElTabPane>
-        </template>
-      </ElTabs>
-    </template>
-    <template #app-dialog-footer>
-      <AppDialogFooterWithClose @on-close="handleClose" />
-    </template>
-  </AppDialog>
+          <template v-if="!!isRenderTrainingTab">
+            <ElTabPane id="campaign-preview-modal--training" name="training" label="Training">
+              <div class="template-preview pt-4">
+                <TrainingLibraryPreview
+                  v-if="selectedLanguages.length"
+                  v-show="!isPreviewLoading"
+                  :is-loading.sync="isPreviewLoading"
+                  :name="trainingParams.name"
+                  :training-id="trainingParams.trainingId"
+                  :languages="selectedLanguages"
+                  :training-params="trainingParams"
+                />
+              </div>
+            </ElTabPane>
+          </template>
+        </ElTabs>
+      </div>
+    </VNavigationDrawer>
+  </div>
 </template>
 
 <script>
-import AppDialog from '@/components/AppDialog'
 import CallbackService from '@/api/callback'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
-import { createRandomCryptStringNumber } from '@/utils/functions'
-import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose.vue'
+import { createRandomCryptStringNumber, openHtmlInNewWindow } from '@/utils/functions'
 import CallbackTemplatePreviewSteps from '@/components/CallbackScenarios/CallbackTemplatePreviewSteps'
 import TrainingLibraryPreview from '@/components/AwarenessEducator/TrainingLibraryPreview.vue'
 import AwarenessEducatorService from '@/api/awarenessEducator'
+import useDrawerAnimation from '@/hooks/useDrawerAnimation'
 
 export default {
   name: 'CampaignManagerPreviewDialog',
   components: {
-    AppDialogFooterWithClose,
     AttachmentsPreview,
     KEmailPreview,
     DatatableLoading,
-    AppDialog,
     CallbackTemplatePreviewSteps,
     TrainingLibraryPreview
   },
+  mixins: [useDrawerAnimation],
   props: {
     status: {
       type: Boolean
@@ -147,6 +213,10 @@ export default {
     languages: {
       type: Array,
       default: () => []
+    },
+    isNested: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -171,6 +241,12 @@ export default {
     }
   },
   computed: {
+    getNavigationDrawerClass() {
+      return {
+        'k-navigation-drawer k-navigation-drawer--preview-dialog': true,
+        'nested-drawer': this.isNested
+      }
+    },
     isRenderTrainingTab() {
       return false
     },
@@ -297,7 +373,13 @@ export default {
       this.isLoading = flag
     },
     handleClose() {
-      this.$emit('on-close')
+      this.closeDrawer()
+    },
+    handleEditCampaign() {
+      this.$emit('on-edit-campaign', this.selectedRow)
+    },
+    handleExternalLink() {
+      openHtmlInNewWindow(this.emailTemplate)
     }
   }
 }

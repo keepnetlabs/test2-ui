@@ -1,11 +1,15 @@
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
 
-jest.mock('@/utils/helperFunctions', () => ({
-  columnFilterChanged: jest.fn((filter, payload) => [
-    { fieldName: 'test', value: 'testValue' }
-  ]),
-  columnFilterCleared: jest.fn((fieldName, payload) => [])
-}))
+jest.mock('@/utils/helperFunctions', () => {
+  const actual = jest.requireActual('@/utils/helperFunctions')
+  return {
+    ...actual,
+    columnFilterChanged: jest.fn((filter, payload) => [
+      { fieldName: 'test', value: 'testValue' }
+    ]),
+    columnFilterCleared: jest.fn((fieldName, payload) => [])
+  }
+})
 
 describe('useDefaultTableFunctions Hook', () => {
   let component

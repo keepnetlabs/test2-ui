@@ -54,6 +54,161 @@ describe('CampaignManagerSummary.vue (extra branch coverage)', () => {
       expect(CampaignManagerSummary.computed.getPhishingScenariosText.call(ctx)).toBe('Scenario Info')
     })
 
+    it('enrollmentNotificationLanguage summarizes selected training notification language', () => {
+      const ctx = {
+        formData: {
+          scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
+          trainings: {
+            s1: {
+              trainingId: 't1',
+              isCheckboxSelected: true,
+              sendTemplatesInPreferredLanguage: true
+            },
+            s2: {
+              trainingId: 't2',
+              isCheckboxSelected: true,
+              sendTemplatesInPreferredLanguage: false
+            }
+          }
+        }
+      }
+
+      expect(CampaignManagerSummary.computed.enrollmentNotificationLanguage.call(ctx)).toBe('Mixed')
+    })
+
+    it('enrollmentNotificationLanguage returns empty when no selected training exists', () => {
+      const ctx = {
+        formData: {
+          scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
+          trainings: {
+            s1: {
+              trainingId: 't1',
+              isCheckboxSelected: false,
+              sendTemplatesInPreferredLanguage: true
+            }
+          }
+        }
+      }
+
+      expect(CampaignManagerSummary.computed.enrollmentNotificationLanguage.call(ctx)).toBe('')
+    })
+
+    it('enrollmentNotificationLanguage summarizes all selected trainings as company language', () => {
+      const ctx = {
+        formData: {
+          scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
+          trainings: {
+            s1: {
+              trainingId: 't1',
+              isCheckboxSelected: true,
+              sendTemplatesInPreferredLanguage: false
+            },
+            s2: {
+              trainingId: 't2',
+              isCheckboxSelected: true,
+              sendTemplatesInPreferredLanguage: false
+            }
+          }
+        }
+      }
+
+      expect(CampaignManagerSummary.computed.enrollmentNotificationLanguage.call(ctx)).toBe(
+        'Company Language'
+      )
+    })
+
+    it('enrollmentNotificationLanguage reads category distribution training settings', () => {
+      const ctx = {
+        formData: {
+          scenarioDistribution: SCENARIO_DISTRIBUTION.RANDOM_SCENARIO_FOR_EACH,
+          trainingForCategory: {
+            trainingId: 't-category',
+            sendTemplatesInPreferredLanguage: true
+          }
+        }
+      }
+
+      expect(CampaignManagerSummary.computed.enrollmentNotificationLanguage.call(ctx)).toBe(
+        'Preferred Language'
+      )
+    })
+
+    it('enrollmentNotificationLanguage returns empty for category distribution without training', () => {
+      const ctx = {
+        formData: {
+          scenarioDistribution: SCENARIO_DISTRIBUTION.RANDOM_SCENARIO_FOR_EACH,
+          trainingForCategory: {}
+        }
+      }
+
+      expect(CampaignManagerSummary.computed.enrollmentNotificationLanguage.call(ctx)).toBe('')
+    })
+
+    it('getCampaignInfoItems includes enrollment notification language below hyper-personalization', () => {
+      const ctx = {
+        formData: {
+          name: 'Campaign A',
+          sendUserPreferredLanguage: 0,
+          smartGroup: {},
+          duration: 30,
+          scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
+          emailReplySettings: {},
+          trainings: {
+            s1: {
+              trainingId: 't1',
+              isCheckboxSelected: true,
+              sendTemplatesInPreferredLanguage: true
+            }
+          }
+        },
+        phishingScenarios: [{ method: 'Click-Only', difficulty: 'Medium' }],
+        enrollmentNotificationLanguage: 'Preferred Language'
+      }
+
+      const items = CampaignManagerSummary.computed.getCampaignInfoItems.call(ctx)
+
+      expect(Object.keys(items)).toEqual([
+        'name',
+        'Hyper-Personalization',
+        'Enrollment Notification Language',
+        'Smart Grouping',
+        'method',
+        'difficulty',
+        'Tracking Duration',
+        'Scenario Distribution',
+        'Reply Tracking'
+      ])
+      expect(items['Enrollment Notification Language']).toBe('Preferred Language')
+    })
+
+    it('getCampaignInfoItems includes enrollment notification language for category distribution', () => {
+      const ctx = {
+        formData: {
+          name: 'Campaign B',
+          sendUserPreferredLanguage: 1,
+          smartGroup: { name: 'Smart Group A' },
+          duration: 10,
+          scenarioDistribution: SCENARIO_DISTRIBUTION.RANDOM_SCENARIO_FOR_EACH,
+          emailReplySettings: { isEnabled: true },
+          phishingScenarioItems: [
+            { method: 'Click-Only', difficulty: 'Easy' },
+            { method: 'Data Submission', difficulty: 'Hard' }
+          ],
+          trainingForCategory: {
+            trainingId: 't-category',
+            sendTemplatesInPreferredLanguage: false
+          }
+        },
+        enrollmentNotificationLanguage: 'Company Language'
+      }
+
+      const items = CampaignManagerSummary.computed.getCampaignInfoItems.call(ctx)
+
+      expect(items['Enrollment Notification Language']).toBe('Company Language')
+      expect(items.method).toBe('Click-Only, Data Submission')
+      expect(items['Reply Tracking']).toBe('On')
+    })
+
     it('getPreferredLanguageText returns empty when no activeData', () => {
       const ctx = {
         formData: { userCountDetailResponse: { data: { data: [] } } },

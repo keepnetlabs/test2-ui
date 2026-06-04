@@ -21,6 +21,11 @@ describe('VishingReportDelivery.vue', () => {
     expect(wrapper.vm).toBeDefined()
   })
 
+  it('has correct component name', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.$options.name).toBe('VishingReportDelivery')
+  })
+
   it('isNotDelivered is true when emailErrorUserCount > 0', () => {
     const wrapper = mountComponent({
       helperData: { emailErrorUserCount: 5 }
@@ -53,5 +58,16 @@ describe('VishingReportDelivery.vue', () => {
   it('getNotDeliveredValue formats error count', () => {
     const wrapper = mountComponent()
     expect(wrapper.vm.getNotDeliveredValue).toBe('2 not delivered')
+  })
+
+  it('getNotDeliveredValue shows zero when emailErrorUserCount is 0', () => {
+    const wrapper = mountComponent({
+      helperData: {
+        emailDeliveredUserCount: 10,
+        totalTargetUserCount: 10,
+        emailErrorUserCount: 0
+      }
+    })
+    expect(wrapper.vm.getNotDeliveredValue).toBe('0 not delivered')
   })
 })

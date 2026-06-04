@@ -6,7 +6,13 @@
       :status="isPreviewVisible"
       :selected-row="selectedRow"
       :languages="languages"
+      :show-edit-button="isPreviewEditButtonVisible"
+      :show-duplicate-button="isPreviewDuplicateButtonVisible"
+      :edit-disabled="tableOptions.rowActions[2].disabled"
+      :duplicate-disabled="tableOptions.rowActions[3].disabled"
       @on-close="onToggleShowPreviewModal"
+      @on-edit-template="handlePreviewEdit"
+      @on-duplicate-template="handlePreviewDuplicate"
     />
     <VishingCampaignStopDialog
       v-if="isShowStopDialog"
@@ -385,7 +391,13 @@ export default {
     ...mapGetters({
       getVishingCampaignManagerSearchPermissions:
         'permissions/getVishingCampaignManagerSearchPermissions'
-    })
+    }),
+    isPreviewEditButtonVisible() {
+      return this.selectedRow && ['Scheduled', 'Idle'].includes(this.selectedRow.status)
+    },
+    isPreviewDuplicateButtonVisible() {
+      return this.selectedRow && ['Scheduled', 'Running', 'Idle'].includes(this.selectedRow.status)
+    }
   },
   mounted() {
     this.callForData()
@@ -407,15 +419,22 @@ export default {
             const { results = [] } = data
             this.tableData = results
           })
+          .catch(() => {
+            this.tableData = []
+          })
           .finally(() => (this.loading = false))
       } else {
         this.$router.push('/')
       }
     },
     callForLanguages() {
-      getVishingTemplateLanguages().then((response) => {
-        this.languages = response?.data?.data || []
-      })
+      getVishingTemplateLanguages()
+        .then((response) => {
+          this.languages = response?.data?.data || []
+        })
+        .catch(() => {
+          this.languages = []
+        })
     },
     toggleShowLaunchDialog(forceUpdate = false) {
       if (forceUpdate) this.callForData()
@@ -482,6 +501,16 @@ export default {
     handlePreview(row) {
       this.selectedRow = row
       this.onToggleShowPreviewModal()
+    },
+    handlePreviewEdit() {
+      const selectedRow = this.selectedRow
+      this.isPreviewVisible = false
+      this.handleEdit(selectedRow, false)
+    },
+    handlePreviewDuplicate() {
+      const selectedRow = this.selectedRow
+      this.isPreviewVisible = false
+      this.handleEdit(selectedRow, true)
     },
     handleEdit(row, isDuplicate) {
       this.selectedRow = row

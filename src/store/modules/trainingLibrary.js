@@ -511,7 +511,7 @@ const trainingLibrary = {
     },
     SET_SORT_BY_TO_PAYLOAD(state, payload) {
       state.axiosPayload.ascending = payload.ascending;
-      state.axiosPayload.orderBy = payload.orderBy;
+      state.axiosPayload.orderBy = resolvePayloadKey(payload.orderBy);
     },
     SET_SEARCH_TO_PAYLOAD(state) {
       const filterItems = state.axiosPayload.filter.FilterGroups[1].FilterItems;
@@ -928,6 +928,7 @@ const trainingLibrary = {
 const resolvePayloadKey = (key) => {
   if (key === "targetAudience") return "roles";
   if (key === "category") return "categories";
+  if (key === "totalDuration") return "DurationMinutes";
   return key;
 };
 const getTotalCountByType = (data, key) => {

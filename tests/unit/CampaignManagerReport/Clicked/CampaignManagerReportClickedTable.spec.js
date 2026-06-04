@@ -38,6 +38,8 @@ jest.mock('@/utils/helperFunctions', () => {
 })
 
 import CampaignManagerReportClickedTable from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedTable.vue'
+import CampaignManagerReportFeedbackDetailsDialog from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportFeedbackDetailsDialog.vue'
+import { shallowMount } from '@vue/test-utils'
 import {
   exportCampaignJobUserEmailClicked,
   searchCampaignJobUserEmailClicked
@@ -155,6 +157,7 @@ describe('CampaignManagerReportClickedTable.vue', () => {
             {
               resourceId: 'r1',
               preferredLanguage: 'English',
+              feedbackText: 'çok iyi',
               customFieldValues: [{ name: 'Region', value: 'EU' }]
             },
             {
@@ -188,7 +191,12 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     expect(searchCampaignJobUserEmailClicked).toHaveBeenCalledWith(ctx.axiosPayload, 'campaign-1', 'ig-1')
     expect(ctx.serverSideProps.totalNumberOfRecords).toBe(2)
     expect(ctx.tableData[0]).toEqual(
-      expect.objectContaining({ resourceId: 'r1', Region: 'EU', preferredLanguage: 'EN' })
+      expect.objectContaining({
+        resourceId: 'r1',
+        Region: 'EU',
+        preferredLanguage: 'EN',
+        feedbackText: 'çok iyi'
+      })
     )
     expect(ctx.tableData[1].preferredLanguage).toBe('Unknown')
     expect(ctx.botActivityCount).toBe(5)
@@ -328,6 +336,29 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     expect(dataWithPermission.tableOptions.rowActions[1].disabled).toBe(false)
   })
 
+  it('data() includes feedback column with backend field and status filter mapping', () => {
+    const data = CampaignManagerReportClickedTable.data.call({
+      $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': true } }
+    })
+
+    const feedbackColumn = data.tableOptions.columns.find(
+      (column) => column.property === 'feedbackText'
+    )
+
+    expect(feedbackColumn).toEqual(
+      expect.objectContaining({
+        label: 'Feedback',
+        type: 'slot',
+        filterableType: 'select',
+        filterableCustomFieldName: 'FeedbackStatus'
+      })
+    )
+    expect(feedbackColumn.filterableItems).toEqual([
+      { text: 'Has Feedback', value: 'HasFeedback' },
+      { text: 'No Feedback', value: 'NoFeedback' }
+    ])
+  })
+
   it('callForLanguages fallback branch handles empty lookup response', async () => {
     LookupLocalStorage.getSingle.mockResolvedValueOnce(undefined)
     const preferredCol = { property: 'preferredLanguage' }
@@ -354,5 +385,114 @@ describe('CampaignManagerReportClickedTable.vue', () => {
     CampaignManagerReportClickedTable.methods.handleGroupsClick.call(ctx, undefined)
     expect(ctx.isGroupsDialogOpen).toBe(true)
     expect(ctx.selectedGroups).toEqual([])
+  })
+
+  it('renders feedback View action and opens feedback details dialog with selected row', async () => {
+    const feedbackRow = {
+      firstName: 'Bruce',
+      lastName: 'Wayne',
+      feedbackText: 'The email looked real',
+      phishingScenarioName: 'Alert Message'
+    }
+    const wrapper = shallowMount(CampaignManagerReportClickedTable, {
+      provide: {
+        campaignDurationExpired: () => false
+      },
+      mocks: {
+        $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': true } }
+      },
+      data() {
+        return {
+          tableData: [feedbackRow]
+        }
+      },
+      methods: {
+        callForLanguages: jest.fn(),
+        callForData: jest.fn()
+      },
+      stubs: {
+        DataTable: {
+          name: 'DataTable',
+          props: ['columns', 'table'],
+          computed: {
+            feedbackColumn() {
+              return this.columns.find((column) => column.property === 'feedbackText')
+            }
+          },
+          template:
+            '<div><slot name="datatable-custom-column" :scope="{ row: table[0] }" :col="feedbackColumn" /></div>'
+        },
+        CampaignManagerReportFeedbackDetailsDialog,
+        CampaignManagerReportActivityColumn: true,
+        CampaignManagerReportTimeZoneColumn: true,
+        CampaignManagerReportGroupsColumn: true,
+        CommonReportViewTargetGroupsModal: true,
+        CampaignManagerReportBotActivityAlertBox: true,
+        DefaultButtonRowAction: true,
+        AppDialog: {
+          name: 'AppDialog',
+          props: ['title', 'subtitle'],
+          template:
+            '<div><h2>{{ title }}</h2><p>{{ subtitle }}</p><slot name="app-dialog-body" /><slot name="app-dialog-footer" /></div>'
+        },
+        AppDialogFooterWithClose: true
+      }
+    })
+
+    const viewButton = wrapper.find('.campaign-manager-report-clicked-feedback-link')
+    expect(viewButton.exists()).toBe(true)
+    expect(viewButton.text()).toBe('View')
+
+    await viewButton.trigger('click')
+
+    const dialog = wrapper.findComponent(CampaignManagerReportFeedbackDetailsDialog)
+    expect(dialog.exists()).toBe(true)
+    expect(dialog.props('selectedRow')).toEqual(feedbackRow)
+    expect(dialog.text()).toContain('Feedback Details')
+    expect(dialog.text()).toContain('Bruce Wayne')
+    expect(dialog.text()).toContain('The email looked real')
+  })
+
+  it('renders dash for feedback column when row has no feedback', () => {
+    const wrapper = shallowMount(CampaignManagerReportClickedTable, {
+      provide: {
+        campaignDurationExpired: () => false
+      },
+      mocks: {
+        $store: { getters: { 'permissions/getCampaignReportsClickedDetailsPermissions': true } }
+      },
+      data() {
+        return {
+          tableData: [{ firstName: 'Clark', lastName: 'Kent', feedbackText: '' }]
+        }
+      },
+      methods: {
+        callForLanguages: jest.fn(),
+        callForData: jest.fn()
+      },
+      stubs: {
+        DataTable: {
+          name: 'DataTable',
+          props: ['columns', 'table'],
+          computed: {
+            feedbackColumn() {
+              return this.columns.find((column) => column.property === 'feedbackText')
+            }
+          },
+          template:
+            '<div class="datatable-stub"><slot name="datatable-custom-column" :scope="{ row: table[0] }" :col="feedbackColumn" /></div>'
+        },
+        CampaignManagerReportFeedbackDetailsDialog: true,
+        CampaignManagerReportActivityColumn: true,
+        CampaignManagerReportTimeZoneColumn: true,
+        CampaignManagerReportGroupsColumn: true,
+        CommonReportViewTargetGroupsModal: true,
+        CampaignManagerReportBotActivityAlertBox: true,
+        DefaultButtonRowAction: true
+      }
+    })
+
+    expect(wrapper.find('.campaign-manager-report-clicked-feedback-link').exists()).toBe(false)
+    expect(wrapper.find('.datatable-stub').text()).toBe('-')
   })
 })

@@ -45,10 +45,13 @@ jest.mock('@/api/phishingsimulator', () => ({
               trainingInfo: {
                 trainingId: 'tr-1',
                 name: 'Training A',
-                languageList: [{ languageShortCode: 'en', languageId: 'lang-1' }]
+                languageList: [{ languageShortCode: 'en', languageId: 'lang-1' }],
+                sendTemplatesInPreferredLanguage: true
               },
+              sendTemplatesInPreferredLanguage: true,
               enrollmentInfo: {
-                enrollmentId: 'enr-1'
+                enrollmentId: 'enr-1',
+                sendTemplatesInPreferredLanguage: true
               }
             }
           ]
@@ -146,6 +149,9 @@ describe('CampaignManagerReportSummary.vue', () => {
     expect(wrapper.vm.getTotalUsers).toBe(100)
     expect(wrapper.vm.getChartData).toEqual([50, 20, 10, 15, 5, 2, 1, 3])
     expect(wrapper.vm.trainingReportDialogItems).toHaveLength(1)
+    expect(wrapper.vm.getScenarioInfoItems['Enrollment Notification Language']).toBe(
+      'Preferred Language'
+    )
   })
 
   it('builds email and landing page template payloads from active scenario', async () => {

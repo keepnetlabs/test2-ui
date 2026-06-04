@@ -46,6 +46,98 @@
         :disabled="isSameUser"
       />
     </form-group>
+    <form-group class-name="system-user-authentication-overrides width-auto">
+      <template #title>
+        <div class="system-user-authentication-overrides__header">
+          <div class="system-user-authentication-overrides__heading">
+            <v-icon size="22" color="#6b7280">mdi-shield-outline</v-icon>
+            <span class="system-user-authentication-overrides__heading-title">
+              Authentication Overrides
+            </span>
+          </div>
+          <span
+            :class="[
+              'system-user-authentication-overrides__status',
+              hasAuthenticationOverrides && 'system-user-authentication-overrides__status--active'
+            ]"
+          >
+            {{ authenticationOverrideStatus }}
+          </span>
+        </div>
+      </template>
+      <div class="system-user-authentication-overrides__list">
+        <div class="system-user-authentication-overrides__item">
+          <div class="system-user-authentication-overrides__icon">
+            <v-icon size="24" color="#2196f3">mdi-lock-outline</v-icon>
+          </div>
+          <div class="system-user-authentication-overrides__content">
+            <span class="system-user-authentication-overrides__title">Bypass SSO Redirect</span>
+            <span class="system-user-authentication-overrides__description">
+              Sign in directly with a password, skipping the domain's SSO policy.
+            </span>
+            <span v-if="!isSsoConfigured" class="system-user-authentication-overrides__warning">
+              SSO is not configured for this user's domain.
+            </span>
+          </div>
+          <v-switch
+            v-model="formValues.bypassSsoRedirect"
+            id="input--system-user-bypass-sso-redirect"
+            :label="getSwitchLabel(formValues.bypassSsoRedirect)"
+            class="k-switch system-user-authentication-overrides__switch"
+            color="#2196f3"
+            :disabled="!isSsoConfigured"
+            inset
+            hide-details
+          />
+        </div>
+        <div class="system-user-authentication-overrides__item">
+          <div class="system-user-authentication-overrides__icon">
+            <v-icon size="24" color="#2196f3">mdi-shield-check-outline</v-icon>
+          </div>
+          <div class="system-user-authentication-overrides__content">
+            <span class="system-user-authentication-overrides__title">Bypass MFA</span>
+            <span class="system-user-authentication-overrides__description">
+              No one-time code or authenticator app required at sign-in.
+            </span>
+          </div>
+          <v-switch
+            v-model="formValues.bypassMfa"
+            id="input--system-user-bypass-mfa"
+            :label="getSwitchLabel(formValues.bypassMfa)"
+            class="k-switch system-user-authentication-overrides__switch"
+            color="#2196f3"
+            inset
+            hide-details
+          />
+        </div>
+        <div class="system-user-authentication-overrides__item">
+          <div class="system-user-authentication-overrides__icon">
+            <v-icon size="24" color="#2196f3">mdi-ip-network-outline</v-icon>
+          </div>
+          <div class="system-user-authentication-overrides__content">
+            <span class="system-user-authentication-overrides__title">
+              Bypass IP Restriction
+            </span>
+            <span class="system-user-authentication-overrides__description">
+              Allow this system user to sign in outside the company's allowed IP ranges.
+            </span>
+            <span v-if="!hasIpRestrictions" class="system-user-authentication-overrides__warning">
+              IP restriction is not configured for this company.
+            </span>
+          </div>
+          <v-switch
+            v-model="formValues.bypassIpRestriction"
+            id="input--system-user-bypass-ip-restriction"
+            :label="getSwitchLabel(formValues.bypassIpRestriction)"
+            class="k-switch system-user-authentication-overrides__switch"
+            color="#2196f3"
+            :disabled="!hasIpRestrictions"
+            inset
+            hide-details
+          />
+        </div>
+      </div>
+    </form-group>
   </v-form>
 </template>
 
@@ -73,6 +165,14 @@ export default {
     isSameUser: {
       type: Boolean,
       default: false
+    },
+    isSsoConfigured: {
+      type: Boolean,
+      default: true
+    },
+    hasIpRestrictions: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -84,7 +184,28 @@ export default {
       }
     }
   },
+  computed: {
+    hasAuthenticationOverrides() {
+      return (
+        this.formValues.bypassSsoRedirect ||
+        this.formValues.bypassMfa ||
+        this.formValues.bypassIpRestriction
+      )
+    },
+    authenticationOverrideStatus() {
+      const { bypassSsoRedirect, bypassMfa, bypassIpRestriction } = this.formValues
+      const activeOverrides = []
+      if (bypassSsoRedirect) activeOverrides.push('SSO')
+      if (bypassMfa) activeOverrides.push('MFA')
+      if (bypassIpRestriction) activeOverrides.push('IP restriction')
+
+      return activeOverrides.length ? `${activeOverrides.join(' + ')} bypassed` : 'No overrides active'
+    }
+  },
   methods: {
+    getSwitchLabel(value) {
+      return value ? 'On' : 'Off'
+    },
     validatePhoneNumber() {
       this.$refs.refPhone.validatePhoneNumber()
       return this.$refs.refPhone.isPhoneNumberValid

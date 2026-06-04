@@ -1,7 +1,8 @@
 ﻿import { createLocalVue, shallowMount } from '@vue/test-utils'
 import VishingRoute from '@/views/VishingRoute'
 
-describe('VishingSimulator.vue', () => {
+/** Spec path is historical; component under test is VishingRoute (vishing entry redirect). */
+describe('VishingRoute via VishingSimulator.spec', () => {
   const localVue = createLocalVue()
 
   const mountComponent = () =>
@@ -21,5 +22,6 @@ describe('VishingSimulator.vue', () => {
   it('redirects to Vishing Templates', () => {
     const wrapper = mountComponent()
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith({ name: 'Vishing Templates' })
+    expect(wrapper.vm.$router.push).toHaveBeenCalledTimes(1)
   })
 })

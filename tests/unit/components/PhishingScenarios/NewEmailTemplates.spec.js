@@ -1,4 +1,5 @@
 import NewEmailTemplates from '@/components/PhishingScenarios/NewEmailTemplates.vue'
+import { parseEmailOrMessageFile } from '@/api/file'
 
 jest.mock('@/utils/functions', () => ({
   scrollToComponent: jest.fn(),
@@ -16,7 +17,15 @@ jest.mock('@/utils/functions', () => ({
   }))
 }))
 
+jest.mock('@/api/file', () => ({
+  parseEmailOrMessageFile: jest.fn()
+}))
+
 describe('NewEmailTemplates.vue methods/computed', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('getTitle computed resolves correct mode text', () => {
     expect(
       NewEmailTemplates.computed.getTitle.call({
@@ -196,6 +205,66 @@ describe('NewEmailTemplates.vue methods/computed', () => {
     expect(ctx.formValues.attachmentFiles.map((x) => x.fileName)).toEqual(['b.docx'])
     expect(ctx.formValues.importedEmailAttachments).toEqual([])
     expect(ctx.formValues.attachmentFilesFromApi.map((x) => x.fileName)).toEqual(['a.docx'])
+  })
+
+  it('replaceImportedEmailAnchorHrefs replaces only anchor hrefs with phishing merge tag', () => {
+    const template =
+      '<div data-id="1"><a class="primary" href="https://example.com/login" target="_blank">Login</a><img src="https://cdn.example.com/logo.png"><a href="/relative">Relative</a></div>'
+
+    const result = NewEmailTemplates.methods.replaceImportedEmailAnchorHrefs.call({}, template)
+    const document = new DOMParser().parseFromString(result, 'text/html')
+
+    expect(result).toBe(
+      '<div data-id="1"><a class="primary" href="{PHISHINGURL}" target="_blank">Login</a><img src="https://cdn.example.com/logo.png"><a href="{PHISHINGURL}">Relative</a></div>'
+    )
+    expect(Array.from(document.querySelectorAll('a')).map((anchor) => anchor.getAttribute('href'))).toEqual([
+      '{PHISHINGURL}',
+      '{PHISHINGURL}'
+    ])
+    expect(document.querySelector('img').getAttribute('src')).toBe('https://cdn.example.com/logo.png')
+    expect(document.body.textContent).toContain('Login')
+  })
+
+  it('handleFileUpload stores imported body after replacing anchor hrefs', async () => {
+    parseEmailOrMessageFile.mockResolvedValue({
+      data: {
+        data: {
+          from: 'sender@example.com',
+          fromName: 'Sender',
+          subject: 'Imported subject',
+          attachments: [],
+          body:
+            '<div><a href="https://example.com/login">Login</a><img src="https://cdn.example.com/logo.png"></div>'
+        }
+      }
+    })
+
+    const ctx = {
+      languagesPayload: [{ languageTypeResourceId: 'tr' }],
+      selectedLanguagePayloadItemBeforeSave: {},
+      formValues: {},
+      activeLanguage: 'tr',
+      lastRedFlags: {},
+      redFlags: {},
+      isShowRedFlags: true,
+      getCompanyPreferredLanguageId: 'tr',
+      replaceImportedEmailAnchorHrefs: NewEmailTemplates.methods.replaceImportedEmailAnchorHrefs
+    }
+    const event = {
+      target: {
+        files: [new File(['email'], 'email.eml', { type: 'message/rfc822' })],
+        value: 'email.eml'
+      }
+    }
+
+    NewEmailTemplates.methods.handleFileUpload.call(ctx, event)
+    await Promise.resolve()
+
+    const document = new DOMParser().parseFromString(ctx.languagesPayload[0].template, 'text/html')
+    expect(document.querySelector('a').getAttribute('href')).toBe('{PHISHINGURL}')
+    expect(document.querySelector('img').getAttribute('src')).toBe('https://cdn.example.com/logo.png')
+    expect(ctx.selectedLanguagePayloadItemBeforeSave.template).toBe(ctx.languagesPayload[0].template)
+    expect(event.target.value).toBe('')
   })
 
   it('showLocalizationSuccessMessage uses relocalize and single-language messages', () => {

@@ -68,6 +68,10 @@ export default {
     isQuishingPrintPreview: {
       type: Boolean,
       default: false
+    },
+    isQuishingPrintDownloadVisible: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -94,6 +98,12 @@ export default {
         icon: 'mdi-file-eye',
         action: 'on-print-preview',
         id: 'btn-preview--email-templates-row-actions'
+      }
+      const downloadItem = {
+        name: labels.Download,
+        icon: 'mdi-download',
+        action: 'on-download',
+        id: 'btn-download--row-actions-campaign-manager'
       }
       const newInstanceItem = {
         name: labels.CreateNewInstance,
@@ -133,6 +143,9 @@ export default {
       ) {
         copyOfRowActions.push(editItem, newInstanceItem)
         if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintDownloadVisible && this.isQuishingPrintPreview) {
+          copyOfRowActions.push(downloadItem)
+        }
         if (!this.isQuishingPrintPreview) copyOfRowActions.push(duplicateItem)
         copyOfRowActions.push(deleteItem)
       } else if (
@@ -142,10 +155,16 @@ export default {
       ) {
         copyOfRowActions.push(editItem, newInstanceItem)
         if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintDownloadVisible && this.isQuishingPrintPreview) {
+          copyOfRowActions.push(downloadItem)
+        }
         copyOfRowActions.push(deleteItem)
       } else {
         copyOfRowActions.push(editItem)
         if (this.isQuishingPrintPreview) copyOfRowActions.push(printPreviewItem)
+        if (this.isQuishingPrintDownloadVisible && this.isQuishingPrintPreview) {
+          copyOfRowActions.push(downloadItem)
+        }
         copyOfRowActions.push(deleteItem)
       }
 

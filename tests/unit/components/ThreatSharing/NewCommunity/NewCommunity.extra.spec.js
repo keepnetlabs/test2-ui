@@ -31,8 +31,14 @@ describe('NewCommunity.vue (branch coverage)', () => {
   const push = jest.fn(() => Promise.resolve())
   const replace = jest.fn(() => Promise.resolve())
 
-  const createWrapper = (propsData = {}, mocks = {}) =>
-    shallowMount(NewCommunity, {
+  const createParentChain = () => {
+    const chain = { communityName: '' }
+    chain.$parent = chain
+    return chain
+  }
+
+  const createWrapper = (propsData = {}, mocks = {}) => {
+    const wrapper = shallowMount(NewCommunity, {
       propsData: { status: true, ...propsData },
       mocks: {
         $store: { dispatch },
@@ -49,6 +55,9 @@ describe('NewCommunity.vue (branch coverage)', () => {
         InputDescription: true
       }
     })
+    wrapper.vm.$parent = createParentChain()
+    return wrapper
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()

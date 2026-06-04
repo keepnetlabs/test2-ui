@@ -13,6 +13,12 @@ jest.mock('@/api/systemUsers', () => ({
   getAvailableSystemUsersRole: jest.fn(() => Promise.resolve({ data: { data: [] } }))
 }))
 
+jest.mock('@/api/companyIpRestrictions', () => ({
+  getCompanyIpRestrictions: jest.fn(() => Promise.resolve({ data: { data: [] } })),
+  createCompanyIpRestrictions: jest.fn(() => Promise.resolve()),
+  deleteCompanyIpRestriction: jest.fn(() => Promise.resolve())
+}))
+
 jest.mock('@/utils/functions', () => ({
   scrollToComponent: jest.fn(),
   isDifferent: jest.fn(() => false),
@@ -37,6 +43,20 @@ describe('CreateOrEditSystemUser.vue', () => {
     expect(
       CreateOrEditSystemUser.computed.getBodyTitle.call({ selectedRow: { resourceId: 'u-1' } })
     ).toBe('Edit System User')
+  })
+
+  it('isSsoConfigured only disables SSO override when backend explicitly returns false', () => {
+    expect(CreateOrEditSystemUser.computed.isSsoConfigured.call({ selectedRow: null })).toBe(true)
+    expect(
+      CreateOrEditSystemUser.computed.isSsoConfigured.call({
+        selectedRow: { isSsoConfigured: false }
+      })
+    ).toBe(false)
+    expect(
+      CreateOrEditSystemUser.computed.isSsoConfigured.call({
+        selectedRow: { hasSamlConfiguration: true }
+      })
+    ).toBe(true)
   })
 
   it('country watcher sets phone/timezone defaults only when creating and country exists', () => {

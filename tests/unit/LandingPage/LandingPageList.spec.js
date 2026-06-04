@@ -144,7 +144,7 @@ describe('LandingPageList.vue', () => {
       callForData: jest.fn()
     }
 
-    methods.handleEdit.call(ctx, { resourceId: 'lp-1' }, true)
+    methods.handleEdit.call(ctx, { resourceId: 'lp-1', isOwner: true }, true)
     expect(ctx.modalStatus).toBe(true)
     expect(ctx.isEdit).toBe(true)
     expect(ctx.isDuplicate).toBe(true)
@@ -166,11 +166,43 @@ describe('LandingPageList.vue', () => {
       emailTemplateId: null
     }
 
-    methods.handleEdit.call(ctx, { resourceId: 'lp-2' }, false)
+    methods.handleEdit.call(ctx, { resourceId: 'lp-2', isOwner: true }, false)
     expect(ctx.modalStatus).toBe(true)
     expect(ctx.isEdit).toBe(true)
     expect(ctx.isDuplicate).toBe(false)
     expect(ctx.emailTemplateId).toBe('lp-2')
+  })
+
+  it('handleEdit does not open edit modal for non-owner landing pages', () => {
+    const ctx = {
+      modalStatus: false,
+      isEdit: false,
+      isDuplicate: false,
+      emailTemplateId: null
+    }
+
+    methods.handleEdit.call(ctx, { resourceId: 'lp-3', isOwner: false }, false)
+
+    expect(ctx.modalStatus).toBe(false)
+    expect(ctx.isEdit).toBe(false)
+    expect(ctx.isDuplicate).toBe(false)
+    expect(ctx.emailTemplateId).toBe(null)
+  })
+
+  it('handleEdit still opens duplicate modal for non-owner landing pages', () => {
+    const ctx = {
+      modalStatus: false,
+      isEdit: false,
+      isDuplicate: false,
+      emailTemplateId: null
+    }
+
+    methods.handleEdit.call(ctx, { resourceId: 'lp-3', isOwner: false }, true)
+
+    expect(ctx.modalStatus).toBe(true)
+    expect(ctx.isEdit).toBe(true)
+    expect(ctx.isDuplicate).toBe(true)
+    expect(ctx.emailTemplateId).toBe('lp-3')
   })
 
   it('changeNewEmailTemplateModalStatus without restart closes modal without refresh', () => {

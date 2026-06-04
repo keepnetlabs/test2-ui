@@ -1,6 +1,15 @@
 <template>
   <app-modal :status="status" icon-name="$callback" :title="getModalTitle">
     <template #overlay-body>
+      <EmailTemplatePreview
+        v-if="isShowEmailTemplatePreview"
+        :status="isShowEmailTemplatePreview"
+        :selectedRow="emailTemplatePreviewSelectedRow"
+        :templateHTML="emailTemplatePreviewHTML"
+        :emailTemplateParams="emailTemplatePreviewParams"
+        is-nested
+        @on-close="isShowEmailTemplatePreview = false"
+      />
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -163,126 +172,33 @@
                   :items="getMfaSettingsItems"
                 />
               </div>
-              <v-list-item>
+              <v-list-item class="pl-0">
                 <v-list-item-content>
                   <div class="summary">
-                    <div class="summary-header">
+                    <div class="summary-header py-4 px-6">
                       <div style="color: #2196f3;">
                         <v-icon :color="'#2196f3'" class="ml-2" left medium>
                           mdi-email
                         </v-icon>
-                        Email that will be sent to users
+                        <span>Email Template: </span>
+                        <span>{{
+                          summaryData.emailTemplate && summaryData.emailTemplate.name
+                        }}</span>
                       </div>
                       <div>
                         <v-btn
-                          class="campaign-manager-summary-card__button"
+                          class="campaign-manager-summary-card__button pr-4"
                           rounded
                           outlined
                           color="#2196f3"
-                          @click="showTemplate1 = !showTemplate1"
-                          >Preview
-                          <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate1 ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                          </v-icon></v-btn
+                          :disabled="
+                            !summaryData.emailTemplate || !summaryData.emailTemplate.template
+                          "
+                          @click="isShowEmailTemplatePreview = true"
                         >
-                      </div>
-                    </div>
-                    <div class="summary-content">
-                      <div class="d-flex justify-space-between">
-                        <div class="d-flex flex-column" v-if="!!summaryData">
-                          <div class="template-summary__title">
-                            {{ summaryData.emailTemplate && summaryData.emailTemplate.name }}
-                          </div>
-                          <div class="template-summary__sub-title mt-2">
-                            From:
-                            {{ summaryData.emailTemplate && summaryData.emailTemplate.fromAddress }}
-                          </div>
-                          <div
-                            v-if="hasPhishingFile"
-                            class="attachment-wrapper position-relative mt-2 mb-0"
-                          >
-                            <div class="attachment blue-attach mb-0">
-                              <AttachmentsPreview
-                                :deletable="false"
-                                :att="{
-                                  name: summaryData.emailTemplate.phishingFileName
-                                }"
-                                :isEmailTemplate="true"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="d-flex" v-if="!!summaryData">
-                          <v-chip
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
-                            class="template-list--item template-list--item__chip p mr-2"
-                            style="
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                            :color="emailDifficultyChipColor"
-                          >
-                            {{
-                              difficulties.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.difficultyResourceId
-                              ).text
-                            }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!summaryData && !!summaryData.emailTemplate"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            {{
-                              methods.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.categoryResourceId
-                              ).text
-                            }}
-                          </v-chip>
-                          <v-chip
-                            v-if="!!summaryData"
-                            class="template-list--item template-list--item__chip p"
-                            style="
-                              background-color: #757575;
-                              margin-left: 8px;
-                              color: white;
-                              border-radius: 6px;
-                              height: 24px;
-                              font-weight: 600;
-                              font-size: 12px;
-                            "
-                          >
-                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
-                            >{{
-                              summaryData.emailTemplate &&
-                              summaryData.emailTemplate.languageShortCode
-                            }}
-                          </v-chip>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      v-if="showTemplate1"
-                      class="summary-content summary-content__collapsable"
-                      style="border: none;"
-                    >
-                      <div class="summary-template">
-                        <KEmailPreview
-                          v-if="!!summaryData.emailTemplate.template"
-                          :key="summaryData.emailTemplate.template"
-                          :html="summaryData.emailTemplate.template"
-                          is-extra-height
-                        />
+                          <v-icon style="font-size: 20px; margin-right: 4px;">mdi-eye</v-icon>
+                          Preview
+                        </v-btn>
                       </div>
                     </div>
                   </div>
@@ -331,34 +247,27 @@ import CallbackService from '@/api/callback'
 import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import KEmailPreview from '@/components/KEmailPreview'
+import EmailTemplatePreview from '@/components/CallbackScenarios/EmailTemplatePreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
-import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
-import {
-  SCENARIO_DIFFICULTIES,
-  SCENARIO_METHOD_TYPES,
-  SCENARIO_METHODS
-} from '@/components/PhishingScenarios/utils'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CallbackTemplateSelectList from '@/components/CallbackScenarios/CallbackTemplateSelectList'
 import CallbackCampaignModalSummaryCallbackTemplate from '@/components/CallbackScenarios/CallbackCampaignModalSummaryCallbackTemplate'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { mapGetters } from 'vuex'
-import { getDifficultyColor } from '@/components/SmishingReport/Opened/utils'
 export default {
   name: 'CallbackScenarioModal',
   components: {
     ConfigureCompanyStepHeader,
     CampaignManagerSummaryCard,
     StepperFooter,
-    KEmailPreview,
+    EmailTemplatePreview,
     AppModal,
     FormGroup,
     MakeAvailableFor,
@@ -367,7 +276,6 @@ export default {
     InputTag,
     InputEntityName,
     InputDescription,
-    AttachmentsPreview,
     CallbackTemplateSelectList,
     CallbackCampaignModalSummaryCallbackTemplate
   },
@@ -380,10 +288,6 @@ export default {
       type: Boolean
     },
     isDuplicate: {
-      type: Boolean,
-      default: false
-    },
-    isAttachmentBased: {
       type: Boolean,
       default: false
     },
@@ -453,16 +357,10 @@ export default {
         saveButton: 'btn-save--add-or-edit-scenario-modal'
       },
       isInitial: true,
-      emailDifficultyChipColor: '#217124',
-      isFetched: false,
       isFetchingSelectedCallbackTemplate: false,
-      selectedTab: '1',
       summaryData: {},
-      showTemplate1: false,
-      showTemplate2: false,
+      isShowEmailTemplatePreview: false,
       languageOptions: [],
-      methods: SCENARIO_METHODS,
-      difficulties: SCENARIO_DIFFICULTIES,
       isSubmitDisabled: false,
       availableForRequests: [],
       generalDifficultyTypeId: '',
@@ -520,7 +418,6 @@ export default {
     getScenarioInfoItems() {
       return {
         Name: this.formValues.name,
-        // Method: this.getMethodText,
         Difficulty: this.getDifficultyType
       }
     },
@@ -530,28 +427,9 @@ export default {
         'Verification Message': this?.mfaData?.mfaTextTemplate
       }
     },
-    hasPhishingFile() {
-      return !!this.summaryData?.emailTemplate?.phishingFileName
-    },
-    getSelectedMethod() {
-      if (!this.formValues?.methodTypeId) return ''
-      if (this.methods[Number(this.formValues?.methodTypeId) - 1].text === 'MFA') {
-        return this.selectedEmailTemplate.categoryName === 'Click Only'
-          ? 'Click-Only'
-          : this.selectedEmailTemplate.categoryName
-      }
-      return this.methods[Number(this.formValues?.methodTypeId) - 1].text
-    },
     getModalTitle() {
       if (!this.isEdit) return 'New Callback Scenario'
       return this.isDuplicate ? 'Duplicate Callback Scenario' : 'Edit Callback Scenario'
-    },
-    getPhishingFile() {
-      return this.summaryData?.emailTemplate?.phishingFileName
-        ? {
-            name: this.summaryData?.emailTemplate?.phishingFileName
-          }
-        : null
     },
     getDifficultyType() {
       return (
@@ -559,6 +437,28 @@ export default {
           (item) => item.value === Number.parseInt(this.generalDifficultyTypeId)
         )?.text || ''
       )
+    },
+    emailTemplatePreviewSelectedRow() {
+      const template = this.summaryData?.emailTemplate
+      if (!template) return {}
+      return {
+        ...template,
+        resourceId: this.emailTemplateResourceId || template.resourceId
+      }
+    },
+    emailTemplatePreviewParams() {
+      const template = this.summaryData?.emailTemplate
+      if (!template) return {}
+      return {
+        name: template.name,
+        fromName: template.fromName,
+        fromAddress: template.fromAddress,
+        subject: template.subject,
+        attachment: template.phishingFileName ? { name: template.phishingFileName } : null
+      }
+    },
+    emailTemplatePreviewHTML() {
+      return this.summaryData?.emailTemplate?.template || null
     }
   },
   watch: {
@@ -585,7 +485,6 @@ export default {
     }
   },
   methods: {
-    getDifficultyColor,
     handleInitialTemplate(id) {
       this.initialFormValues.callbackTemplateResourceId = id
     },
@@ -688,26 +587,11 @@ export default {
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           this.availableForRequests = getAvailableForValueFromList(availableForList)
           this.initialFormValues = structuredClone(this.formValues)
-          this.isFetched = true
         })
         .finally(() => {
           this.isSubmitDisabled = false
           this.isInitial = false
         })
-    },
-    getMethodTypeDescription(method = '') {
-      switch (method) {
-        case SCENARIO_METHOD_TYPES.CLICK_ONLY:
-          return 'See who fails for phishing links'
-        case SCENARIO_METHOD_TYPES.DATA_SUBMISSION:
-          return 'Gather information from users'
-        case SCENARIO_METHOD_TYPES.ATTACHMENT:
-          return 'Send a trackable file'
-        case SCENARIO_METHOD_TYPES.MFA:
-          return 'Send a phishing MFA'
-        default:
-          return ''
-      }
     },
     getInitialEmailTemplateId(id) {
       this.initialFormValues.emailTemplateId = id
@@ -782,9 +666,6 @@ export default {
                 this.scenarioDetailsLookup['difficultyTypes']
                   ?.find((difficulty) => difficulty.text === this.selectedEmailTemplate.difficultyName)
                   ?.value.toString() || ''
-              this.emailDifficultyChipColor = this.getDifficultyColor(
-                this.selectedEmailTemplate.difficultyName
-              )
             }
             this.summaryData.emailTemplate = structuredClone(emailTemplateData)
             this.step += 1

@@ -1,4 +1,5 @@
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { normalizeSearchFilterItems, resolveApiDurationFieldName } from '@/utils/searchFilterNormalize'
 
 export default {
   methods: {
@@ -28,7 +29,7 @@ export default {
     },
     sortChanged({ order, prop } = {}) {
       this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = prop
+      this.axiosPayload.orderBy = resolveApiDurationFieldName(prop)
       this.callForData()
     },
     resetPageNumber() {
@@ -36,9 +37,8 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
+      const incoming = searchFilter?.filter?.FilterGroups?.[0]?.FilterItems || []
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = normalizeSearchFilterItems(incoming)
       if (typeof searchFilter?.filter?.SearchInputTextValue === 'string') {
         this.axiosPayload.filter.SearchInputTextValue = searchFilter.filter.SearchInputTextValue
       }

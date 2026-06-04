@@ -49,6 +49,7 @@ import PhoneNumber from 'awesome-phonenumber'
 import * as Validations from '@/utils/validations'
 import { getPhishingScenariosPhoneNumber } from '@/api/phishingsimulator'
 import { mapGetters } from 'vuex'
+import { getPhoneCountryName } from '@/utils/phoneCountryName'
 export default {
   name: 'InputPhoneNumberComboBox',
   components: { KSelect },
@@ -189,10 +190,7 @@ export default {
         }
       }
       const phoneNumberObj = this.createPhoneNumberObj(phoneNumberPayload)
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
-        type: 'region'
-      })
-      return regionNamesInEnglish.of(phoneNumberObj?.getRegionCode())
+      return getPhoneCountryName(phoneNumberObj?.getRegionCode())
     },
     createPhoneNumberObj(phoneNumber = '') {
       return new PhoneNumber(phoneNumber)

@@ -69,6 +69,21 @@
                   :max-length="256"
                   :items="landingPageData.methodTypes"
                 />
+                <form-group
+                  has-hint
+                  title="Language"
+                  sub-title="Select the language you are writing this webpage template in"
+                >
+                  <input-select-language
+                    v-model="formValues.languageTypeResourceId"
+                    v-bind="commonRules"
+                    item-text="text"
+                    item-value="value"
+                    required
+                    :items="languageOptions"
+                    :menu-props="{ offsetY: true }"
+                  />
+                </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <InputTag
                     v-model="formValues.tags"
@@ -136,6 +151,7 @@
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
                       :is-edit="isEdit"
+                      :is-duplicate="isDuplicate"
                       @invisible-captcha="isInvisibleCaptchaDisabled = $event"
                       @captcha-default-value="formValues.isInvisibleCaptchaEnabled = $event"
                     />
@@ -169,45 +185,7 @@
                         </VTooltip>
                       </template>
                     </VCheckbox>
-                    <div
-                      v-show="!isGenerateWithAIDisabled"
-                      :class="{
-                        'd-flex align-center justify-space-between':
-                          !isGenerateWithAIDisabled
-                      }"
-                    >
-                      <div class="d-flex align-center">
-                        <InputLanguagePreview
-                          :value="activeLanguage"
-                          ref="refInputLanguagePreview"
-                          style="max-width: 240px;"
-                          hide-details
-                          label="View/Edit Template"
-                          :items="selectedLanguages"
-                          :disabled="selectedLanguages.length === 0"
-                          @input="handleActiveLanguageChange"
-                        />
-                      </div>
-                      <InputLanguagesSettings
-                        v-model="selectedLanguages"
-                        :active-language="activeLanguage"
-                        :can-remove-languages="formValues.canRemoveLanguages"
-                        :initial-disabled-language-ids="initialDisabledLanguageIds"
-                        :language-items="languageItems"
-                        :translated-language-resource-ids="translatedLanguageResourceIds"
-                        :language-options="languageOptions"
-                        :is-notification-template="true"
-                        :is-landing-page="true"
-                        :is-show-localize-button="true"
-                        :is-generate-with-a-i-disabled="isGenerateWithAIDisabled"
-                        @input="handleSelectedLanguagesChange"
-                        @on-active-language-change="handleActiveLanguageChange"
-                        @on-generate-with-ai="handleGenerateWithAI"
-                        @on-relocalize-replace="handleRelocalizeReplace"
-                        @on-language-removed="handleLanguageRemoved"
-                      />
-                    </div>
-                    <FormGroup title="Landing Page Template" class-name="mt-4"></FormGroup>
+                    <FormGroup title="Landing Page Template"></FormGroup>
                     <el-tabs
                       v-model="tab"
                       class="landing-page-tab-content"
@@ -342,13 +320,6 @@
         @close="isSelectClickOnlyPageOpen = false"
         @add="handleClickOnlyPageAdded"
       />
-      <EditLanguagesLeavingDialog
-        v-if="showEditLanguagesLeavingDialog"
-        :status="showEditLanguagesLeavingDialog"
-        @on-close="handleCloseEditLanguagesLeavingDialog"
-        @on-discard="handleDiscardEditLanguagesLeavingDialog"
-        @on-confirm="handleConfirmEditLanguagesLeavingDialog"
-      />
     </template>
     <template #overlay-footer>
       <StepperFooter
@@ -371,6 +342,7 @@
 <script>
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import AppModal from '../AppModal'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -385,13 +357,7 @@ import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
 import InputPhishingMethod from '@/components/Common/Inputs/InputPhishingMethod.vue'
-import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
-import InputLanguagePreview from '@/components/Common/Inputs/InputLanguagePreview.vue'
-import EditLanguagesLeavingDialog from '@/components/PhishingScenarios/EditLanguagesLeavingDialog.vue'
-import QuishingService, {
-  generateQuishingLandingPageTranslation,
-  getQuishingLandingPageTranslation
-} from '@/api/quishing'
+import QuishingService from '@/api/quishing'
 import SelectClickOnlyPageModal from '@/components/LandingPage/SelectClickOnlyPageModal.vue'
 import '@/styles/landing-page-tabs.css'
 
@@ -465,10 +431,8 @@ export default {
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
+    InputSelectLanguage,
     InputTag,
-    InputLanguagesSettings,
-    InputLanguagePreview,
-    EditLanguagesLeavingDialog,
     SelectClickOnlyPageModal
   },
   props: {
@@ -506,14 +470,6 @@ export default {
         saveButton: 'btn-save--add-or-quishing-edit-landing-page-templates-modal'
       },
       languageOptions: [],
-      languageItems: [],
-      selectedLanguages: [],
-      activeLanguage: '',
-      languagesPayload: [],
-      initialDisabledLanguageIds: [],
-      selectedLanguagePayloadItemBeforeSave: null,
-      beforeSaveLanguage: null,
-      showEditLanguagesLeavingDialog: false,
       isInvisibleCaptchaDisabled: false,
       isSelectClickOnlyPageOpen: false,
       quishingApiFuncs: {
@@ -522,12 +478,6 @@ export default {
       },
       tab: 'page1',
       isSubmitDisabled: false,
-      isGenerateWithAi: false,
-      isGenerateWithAIDisabled: false,
-      isEverythingLocalized: false,
-      isDefault: false,
-      translationTempKey: null,
-      timeoutId: null,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       labels,
@@ -536,7 +486,6 @@ export default {
       availableForRequests: [],
       initialFormValues: {},
       formValues: {
-        canRemoveLanguages: true,
         isInvisibleCaptchaEnabled: false,
         phishingLink: {
           urlSchemaTypeId: '',
@@ -563,37 +512,6 @@ export default {
         ]
       },
       editItemsDisabled: false
-    }
-  },
-  watch: {
-    scenarioDetailsLookup: {
-      immediate: true,
-      handler(val) {
-        if (!val || this.isDefault) return
-        this.setLanguageItems()
-      }
-    },
-    selectedLanguages(newVal) {
-      if (!newVal.length) {
-        this.activeLanguage = ''
-      } else if (this.activeLanguage) {
-        const isInSelected = newVal.find((item) => item.value === this.activeLanguage)
-        if (!isInSelected) {
-          this.activeLanguage = newVal[0].value
-          const existingLanguage = this.languagesPayload.find(
-            (item) => item.languageTypeResourceId === this.activeLanguage
-          )
-          if (!existingLanguage) {
-            this.languagesPayload.push({
-              languageTypeResourceId: this.activeLanguage,
-              landingPages: structuredClone(this.formValues.landingPages),
-              isTranslated: false
-            })
-          }
-        }
-      } else if (newVal.length > 0) {
-        this.activeLanguage = newVal[0].value
-      }
     }
   },
   created() {
@@ -645,9 +563,6 @@ export default {
         this.availableForRequests = getAvailableForValueFromList(
           response?.data?.data?.availableForList
         )
-        if (typeof this.populateLanguagesFromExistingTemplate === 'function') {
-          this.populateLanguagesFromExistingTemplate(data)
-        }
         this.initialFormValues = structuredClone(this.formValues)
       })
     }
@@ -662,18 +577,6 @@ export default {
       emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl',
       getCurrentCompany: 'login/getCurrentCompany'
     }),
-    translatedLanguageResourceIds() {
-      return (this.languagesPayload || [])
-        .filter((item) => item.isTranslated)
-        .map((item) => item.languageTypeResourceId)
-    },
-    getSelectedLanguagePayload() {
-      const selected =
-        this.languagesPayload.find(
-          (item) => item.languageTypeResourceId === this.activeLanguage
-        ) || {}
-      return selected
-    },
     clickOnlyMethodText() {
       if (this.formValues.methodTypeId === '1') {
         return this.landingPageData?.methodTypes?.find((item) => item.value === '1')?.text || 'Click Only'
@@ -713,422 +616,6 @@ export default {
     }
   },
   methods: {
-    populateLanguagesFromExistingTemplate(data) {
-      const mainLanguageId = data.languageTypeResourceId
-      if (!mainLanguageId) return
-      const languagesPayload = [
-        {
-          languageTypeResourceId: mainLanguageId,
-          landingPages: structuredClone(data.landingPages || []),
-          isTranslated: true
-        }
-      ]
-      const seenLanguageIds = new Set([mainLanguageId])
-      ;(data.landingPages || []).forEach((page) => {
-        ;(page.languages || []).forEach((langPage) => {
-          if (!langPage?.languageTypeResourceId) return
-          let entry = languagesPayload.find(
-            (item) => item.languageTypeResourceId === langPage.languageTypeResourceId
-          )
-          if (!entry) {
-            entry = {
-              languageTypeResourceId: langPage.languageTypeResourceId,
-              landingPages: [],
-              isTranslated: true,
-              resourceId: langPage.resourceId
-            }
-            languagesPayload.push(entry)
-            seenLanguageIds.add(langPage.languageTypeResourceId)
-          }
-          entry.landingPages.push({
-            name: langPage.name,
-            content: langPage.content,
-            order: langPage.order || page.order || entry.landingPages.length + 1,
-            prompt: langPage.prompt || ''
-          })
-        })
-      })
-      this.languagesPayload = languagesPayload
-      this.selectedLanguages = languagesPayload.map((item) => ({
-        value: item.languageTypeResourceId,
-        text: this.getLanguageNameById(item.languageTypeResourceId)
-      }))
-      this.activeLanguage = mainLanguageId
-      this.initialDisabledLanguageIds = languagesPayload.map((item) => item.languageTypeResourceId)
-    },
-    getLanguageNameById(languageId) {
-      const found = this.languageOptions.find((opt) => opt.value === languageId)
-      return found?.text || ''
-    },
-    setLanguageItems() {
-      const languageTypes =
-        this.scenarioDetailsLookup?.languageTypes ||
-        this.landingPageData?.languageTypes ||
-        this.languageOptions ||
-        []
-      const preferredLanguageTypes =
-        this.scenarioDetailsLookup?.preferredLanguageTypes ||
-        this.landingPageData?.preferredLanguageTypes ||
-        []
-      const companyLanguageTypeResourceId =
-        this.scenarioDetailsLookup?.companyLanguageTypeResourceId ||
-        this.landingPageData?.companyLanguageTypeResourceId ||
-        this.getCurrentCompany?.preferredLanguageTypeResourceId ||
-        ''
-
-      const languageItems = []
-      languageItems.push(
-        {
-          value: 1,
-          text: 'Preferred Languages',
-          children: preferredLanguageTypes
-        },
-        {
-          value: 5,
-          text: 'All Languages',
-          children: languageTypes.filter(
-            (item) =>
-              !preferredLanguageTypes?.find((pItem) => pItem.value === item.value)
-          )
-        }
-      )
-      this.languageItems = languageItems
-
-      if (this.isEdit) return
-      const findedLanguage =
-        languageTypes?.find(
-          (item) => item.value === companyLanguageTypeResourceId
-        ) ||
-        this.languageOptions?.find(
-          (item) => item.value === companyLanguageTypeResourceId
-        )
-      if (!findedLanguage) return
-      if (this.selectedLanguages.find((item) => item.value === companyLanguageTypeResourceId)) return
-      this.selectedLanguages.push({
-        text: findedLanguage.text,
-        value: companyLanguageTypeResourceId
-      })
-      this.activeLanguage = companyLanguageTypeResourceId
-      this.formValues.languageTypeResourceId = companyLanguageTypeResourceId
-      this.$nextTick(() => {
-        this.handleSelectedLanguagesChange(this.selectedLanguages)
-        const isEnglish = (findedLanguage.text || '').toLowerCase().includes('english')
-        if (isEnglish) {
-          const companyLanguagePayload = this.languagesPayload.find(
-            (item) => item.languageTypeResourceId === companyLanguageTypeResourceId
-          )
-          if (companyLanguagePayload) {
-            companyLanguagePayload.isTranslated = true
-          }
-        }
-        this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload)
-      })
-    },
-    handleActiveLanguageChange(languageId) {
-      const isChanged = isDifferent(
-        this.getSelectedLanguagePayload,
-        this.selectedLanguagePayloadItemBeforeSave
-      )
-      if (isChanged && this.activeLanguage && this.activeLanguage !== languageId) {
-        this.beforeSaveLanguage = languageId
-        this.showEditLanguagesLeavingDialog = true
-        return
-      }
-      this.applyActiveLanguageChange(languageId)
-    },
-    applyActiveLanguageChange(languageId) {
-      const newLangPayload = this.languagesPayload.find(
-        (item) => item.languageTypeResourceId === languageId
-      )
-      if (newLangPayload?.landingPages) {
-        this.formValues.landingPages = structuredClone(newLangPayload.landingPages)
-      }
-      this.tab = 'page1'
-      this.activeLanguage = languageId
-      this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload)
-    },
-    handleSelectedLanguagesChange(languages) {
-      this.languagesPayload = languages.map((language) => {
-        const item = this.languagesPayload.find(
-          (item) => item.languageTypeResourceId === language.value
-        )
-        if (item) return item
-        return {
-          languageTypeResourceId: language.value,
-          landingPages: structuredClone(this.formValues.landingPages),
-          isTranslated: false
-        }
-      })
-      this.selectedLanguages = languages
-      this.selectedLanguagePayloadItemBeforeSave = structuredClone(this.getSelectedLanguagePayload)
-    },
-    handleLanguageRemoved({ languageName }) {
-      this.$store.dispatch('common/createSnackBar', {
-        message: `The ${languageName} language has been removed.`,
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: 'mdi-check-circle'
-      })
-    },
-    handleCloseEditLanguagesLeavingDialog() {
-      this.showEditLanguagesLeavingDialog = false
-      this.beforeSaveLanguage = null
-    },
-    handleDiscardEditLanguagesLeavingDialog() {
-      this.showEditLanguagesLeavingDialog = false
-      const langId = this.beforeSaveLanguage
-      this.beforeSaveLanguage = null
-      if (langId) this.applyActiveLanguageChange(langId)
-    },
-    handleConfirmEditLanguagesLeavingDialog() {
-      const idx = this.languagesPayload.findIndex(
-        (item) => item.languageTypeResourceId === this.activeLanguage
-      )
-      if (idx !== -1) {
-        this.$set(
-          this.languagesPayload,
-          idx,
-          {
-            ...this.languagesPayload[idx],
-            landingPages: structuredClone(this.formValues.landingPages)
-          }
-        )
-      }
-      this.showEditLanguagesLeavingDialog = false
-      const langId = this.beforeSaveLanguage
-      this.beforeSaveLanguage = null
-      if (langId) this.applyActiveLanguageChange(langId)
-    },
-    handleRelocalizeReplace({ language }) {
-      const selectedLanguagePayload = this.getSelectedLanguagePayload
-      const landingPages = selectedLanguagePayload.landingPages || []
-      const payload = {
-        landingPages: landingPages.map((page) => ({
-          name: page.name || '',
-          content: page.content || '',
-          order: page.order || 0
-        })),
-        targetLanguages: [{ languageResourceId: language.value }]
-      }
-      this.startTranslationFlow(payload)
-    },
-    handleGenerateWithAI() {
-      const selectedLanguagePayload = this.getSelectedLanguagePayload
-      const landingPages = selectedLanguagePayload.landingPages || []
-      const languagesToLocalize = this.selectedLanguages.filter((lang) => {
-        const payload = this.languagesPayload.find(
-          (p) => p.languageTypeResourceId === lang.value
-        )
-        return !(payload && payload.isTranslated)
-      })
-      const payload = {
-        landingPages: landingPages.map((page) => ({
-          name: page.name || '',
-          content: page.content || '',
-          order: page.order || 0
-        })),
-        targetLanguages: languagesToLocalize.map((item) => ({
-          languageResourceId: item.value
-        }))
-      }
-      this.startTranslationFlow(payload)
-    },
-    startTranslationFlow(payload) {
-      this.isGenerateWithAi = true
-      this.isGenerateWithAIDisabled = true
-      this.isSubmitDisabled = true
-      generateQuishingLandingPageTranslation(payload)
-        .then((response) => {
-          if (!response?.data?.data || response?.data?.status !== 'SUCCESS') {
-            this.resetGenerateWithAIDisabled()
-            return
-          }
-          this.translationTempKey = response.data.data
-          this.isEverythingLocalized = false
-          this.askForLandingPageTranslation()
-        })
-        .catch(() => {
-          this.resetGenerateWithAIDisabled()
-        })
-    },
-    askForLandingPageTranslation(count = 0, maxCount = null, timeoutId = 0) {
-      if (this.isEverythingLocalized || !this.translationTempKey) return
-      const languagesLength = Array.isArray(this.selectedLanguages)
-        ? this.selectedLanguages.length
-        : 0
-      const calculatedMax = Math.max((languagesLength || 1) * 20, 20)
-      const effectiveMax =
-        typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
-      if (count >= effectiveMax) {
-        this.resetGenerateWithAIDisabled(timeoutId)
-        return
-      }
-      if (this.timeoutId) clearTimeout(this.timeoutId)
-      this.timeoutId = setTimeout(() => {
-        getQuishingLandingPageTranslation(this.translationTempKey)
-          .then((response) => {
-            const { data } = response?.data || {}
-            if (!data) {
-              this.askForLandingPageTranslation(count + 1, effectiveMax, timeoutId)
-              return
-            }
-            if (data.isCompleted) {
-              this.isEverythingLocalized = true
-              const errorLanguages = []
-              const successLanguages = []
-              if (Array.isArray(data.translatedContents)) {
-                data.translatedContents.forEach((item) => {
-                  if (item.error || !item.success) errorLanguages.push(item)
-                  else successLanguages.push(item)
-                })
-                errorLanguages.forEach((item) => this.showLocalizationErrorMessage(item))
-                const processedLanguageIds = new Set()
-                successLanguages.forEach((item) => {
-                  if (processedLanguageIds.has(item.languageResourceId)) return
-                  const languagePayload = this.languagesPayload.find(
-                    (language) => language.languageTypeResourceId === item.languageResourceId
-                  )
-                  if (!languagePayload) return
-                  const languageTranslations = successLanguages.filter(
-                    (t) => t.languageResourceId === item.languageResourceId
-                  )
-                  languageTranslations.forEach((translation) => {
-                    const pageIndex = languagePayload.landingPages.findIndex(
-                      (page) => page.order === translation.order
-                    )
-                    if (pageIndex !== -1) {
-                      this.$set(
-                        languagePayload.landingPages[pageIndex],
-                        'content',
-                        translation.translatedContent || ''
-                      )
-                      if (translation.sourceName) {
-                        this.$set(
-                          languagePayload.landingPages[pageIndex],
-                          'name',
-                          translation.sourceName
-                        )
-                      }
-                    }
-                  })
-                  languagePayload.isTranslated = true
-                  processedLanguageIds.add(item.languageResourceId)
-                })
-                this.showLocalizationSuccessMessage(data.translatedContents)
-                this.resetGenerateWithAIDisabled(timeoutId)
-                const lastTranslation = successLanguages[successLanguages.length - 1]
-                if (lastTranslation) {
-                  this.applyActiveLanguageChange(lastTranslation.languageResourceId)
-                }
-              }
-            } else {
-              this.askForLandingPageTranslation(count + 1, effectiveMax, timeoutId)
-            }
-          })
-          .catch(() => {
-            this.askForLandingPageTranslation(count + 1, effectiveMax, timeoutId)
-          })
-      }, 5000)
-    },
-    showLocalizationErrorMessage(item) {
-      const languageName = item.targetLanguage || item.languageResourceId || 'Unknown'
-      const errorMessage = item.error || 'Translation failed'
-      this.$store.dispatch('common/createSnackBar', {
-        message: `${languageName}: ${errorMessage}`,
-        color: 'error'
-      })
-    },
-    showLocalizationSuccessMessage(translatedContents) {
-      if (!Array.isArray(translatedContents) || this.isDefault) return
-      const successItems = translatedContents.filter((item) => item.success && !item.error)
-      if (successItems.length === 0) return
-      const uniqueLanguageIds = new Set(
-        successItems.map((item) => item.languageResourceId).filter(Boolean)
-      )
-      const successCount = uniqueLanguageIds.size
-      if (successCount === 0) return
-      let message = ''
-      if (successCount === 1) {
-        const item = successItems.find((i) => i.success && !i.error)
-        const languageName = item?.targetLanguage || 'language'
-        message = `The ${languageName} language was successfully localized.`
-      } else {
-        message = `${successCount} languages were successfully localized.`
-      }
-      this.$store.dispatch('common/createSnackBar', { message, color: 'success' })
-    },
-    resetGenerateWithAIDisabled(timeoutId) {
-      this.isGenerateWithAi = false
-      this.isGenerateWithAIDisabled = false
-      this.isSubmitDisabled = false
-      this.isDefault = false
-      if (timeoutId) clearTimeout(timeoutId)
-      if (this.timeoutId) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-    },
-    buildLandingPagesPayload(payload) {
-      const selectedLanguagesList = this.selectedLanguages || []
-      const languagesPayloadList = this.languagesPayload || []
-      let mainLanguageId =
-        this.formValues.languageTypeResourceId || this.activeLanguage
-      const isMainLanguageInSelected = selectedLanguagesList.find(
-        (item) => item.value === mainLanguageId
-      )
-      if (!isMainLanguageInSelected && selectedLanguagesList.length > 0) {
-        mainLanguageId = selectedLanguagesList[0].value
-        this.formValues.languageTypeResourceId = mainLanguageId
-        payload.languageTypeResourceId = mainLanguageId
-        const newMainLanguagePayload = languagesPayloadList.find(
-          (p) => p.languageTypeResourceId === mainLanguageId
-        )
-        if (newMainLanguagePayload && newMainLanguagePayload.landingPages) {
-          const normalized = normalizeLandingPages(newMainLanguagePayload.landingPages)
-          this.formValues.landingPages = structuredClone(normalized)
-          payload.landingPages = structuredClone(normalized)
-        }
-      }
-      const mainLanguagePayload = languagesPayloadList.find(
-        (p) => p.languageTypeResourceId === mainLanguageId
-      ) || { landingPages: payload.landingPages }
-      const otherLanguagesPayload = languagesPayloadList.filter(
-        (p) => p.languageTypeResourceId !== mainLanguageId && p.isTranslated
-      )
-      const mainLandingPages = normalizeLandingPages(
-        mainLanguagePayload.landingPages || payload.landingPages || []
-      )
-      return mainLandingPages.map((mainPage, pageIndex) => {
-        const pagePayload = {
-          name: mainPage.name || '',
-          content: mainPage.content || '',
-          order: mainPage.order || 0,
-          prompt: mainPage.prompt || ''
-        }
-        const languages = otherLanguagesPayload
-          .map((langPayload) => {
-            const normalized = normalizeLandingPages(langPayload.landingPages || [])
-            const translatedPage =
-              normalized.find((p) => p.order === mainPage.order) || normalized[pageIndex]
-            if (!translatedPage) return null
-            const languagePayload = {
-              languageTypeResourceId: langPayload.languageTypeResourceId,
-              name: translatedPage.name || mainPage.name || '',
-              content: translatedPage.content || '',
-              order: translatedPage.order || mainPage.order || 0,
-              prompt: translatedPage.prompt || mainPage.prompt || ''
-            }
-            if (this.isEdit && !this.isDuplicate && langPayload.resourceId) {
-              languagePayload.resourceId = langPayload.resourceId
-            }
-            return languagePayload
-          })
-          .filter(Boolean)
-        if (languages.length > 0) {
-          pagePayload.languages = languages
-        }
-        return pagePayload
-      })
-    },
     async handleClickOnlyPageAdded(resourceId, pageIndex = 0) {
       this.isSelectClickOnlyPageOpen = false
       const response = await QuishingService.getLandingPageTemplatePreviewContent(resourceId)
@@ -1142,13 +629,6 @@ export default {
         content: templateContent
       })
       syncLandingPagesMetadata(this.formValues.landingPages)
-      ;(this.languagesPayload || []).forEach((language) => {
-        if (language && language.landingPages) {
-          language.landingPages.push(
-            structuredClone(this.formValues.landingPages[this.formValues.landingPages.length - 1])
-          )
-        }
-      })
       this.tab = getValidLandingPageTab(
         this.formValues.landingPages,
         this.formValues.landingPages.length - 1
@@ -1162,13 +642,6 @@ export default {
         content: ''
       })
       syncLandingPagesMetadata(this.formValues.landingPages)
-      ;(this.languagesPayload || []).forEach((language) => {
-        if (language && language.landingPages) {
-          language.landingPages.push(
-            structuredClone(this.formValues.landingPages[this.formValues.landingPages.length - 1])
-          )
-        }
-      })
       this.tab = getValidLandingPageTab(
         this.formValues.landingPages,
         this.formValues.landingPages.length - 1
@@ -1178,12 +651,6 @@ export default {
       const activeTabIndex = getLandingPageTabIndex(this.tab)
       this.formValues.landingPages.splice(index, 1)
       syncLandingPagesMetadata(this.formValues.landingPages)
-      ;(this.languagesPayload || []).forEach((language) => {
-        if (language && language.landingPages && language.landingPages[index]) {
-          language.landingPages.splice(index, 1)
-          syncLandingPagesMetadata(language.landingPages)
-        }
-      })
       const nextTabIndex = activeTabIndex >= index ? activeTabIndex - 1 : activeTabIndex
       this.tab = getValidLandingPageTab(this.formValues.landingPages, nextTabIndex)
     },
@@ -1224,13 +691,6 @@ export default {
           content: result
         })
         syncLandingPagesMetadata(that.formValues.landingPages)
-        ;(that.languagesPayload || []).forEach((language) => {
-          if (language && language.landingPages) {
-            language.landingPages.push(
-              structuredClone(that.formValues.landingPages[that.formValues.landingPages.length - 1])
-            )
-          }
-        })
         that.tab = getValidLandingPageTab(
           that.formValues.landingPages,
           that.formValues.landingPages.length - 1
@@ -1283,17 +743,6 @@ export default {
         isValid = refMakeAvailableFor.isAvailableForValid
       }
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
-        if (this.activeLanguage && Array.isArray(this.languagesPayload)) {
-          const idx = this.languagesPayload.findIndex(
-            (item) => item.languageTypeResourceId === this.activeLanguage
-          )
-          if (idx !== -1) {
-            this.$set(this.languagesPayload, idx, {
-              ...this.languagesPayload[idx],
-              landingPages: structuredClone(this.formValues.landingPages)
-            })
-          }
-        }
         syncLandingPagesMetadata(this.formValues.landingPages)
         const formValues = {
           ...this.formValues.phishingLink,
@@ -1306,14 +755,12 @@ export default {
             this.availableForRequests
           )
         }
-        if (
-          typeof this.buildLandingPagesPayload === 'function' &&
-          Array.isArray(this.selectedLanguages) &&
-          this.selectedLanguages.length > 0
-        ) {
-          payload.landingPages = this.buildLandingPagesPayload(payload)
-        } else if (Array.isArray(payload.landingPages)) {
-          payload.landingPages = normalizeLandingPages(payload.landingPages)
+        if (Array.isArray(payload.landingPages)) {
+          payload.landingPages = normalizeLandingPages(payload.landingPages).map((page) => {
+            const landingPage = { ...page }
+            delete landingPage.languages
+            return landingPage
+          })
         }
         if (this.isEdit && !this.isDuplicate) {
           QuishingService.updateLandingPage(payload, this.emailTemplateId)

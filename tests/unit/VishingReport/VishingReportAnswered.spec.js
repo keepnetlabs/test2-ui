@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils'
 import VishingReportAnswered from '@/components/VishingReport/VishingReportAnswered.vue'
-import { getVishingReportAnswered } from '@/api/vishing'
+import { exportVishingAnsweredUsers, getVishingReportAnswered } from '@/api/vishing'
 
 jest.mock('@/api/vishing', () => ({
   getVishingReportAnswered: jest.fn(() =>
@@ -70,5 +70,88 @@ describe('VishingReportAnswered.vue', () => {
     wrapper.vm.callForData()
     await new Promise((r) => setTimeout(r, 0))
     expect(wrapper.vm.tableData).toEqual([])
+  })
+
+  it('CONSTANTS defines answered data table id', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.CONSTANTS.id).toBe('vishing-report-answered-data-table')
+  })
+
+  it('callForData merges custom field values into row objects', async () => {
+    const wrapper = mountComponent()
+    await new Promise((r) => setTimeout(r, 0))
+    getVishingReportAnswered.mockResolvedValueOnce({
+      data: {
+        data: {
+          results: [
+            {
+              firstName: 'A',
+              lastName: 'B',
+              customFieldValues: [{ name: 'Office', value: 'London' }]
+            }
+          ],
+          totalNumberOfRecords: 1,
+          totalNumberOfPages: 1,
+          pageNumber: 1
+        }
+      }
+    })
+    wrapper.vm.callForData()
+    await new Promise((r) => setTimeout(r, 0))
+    expect(wrapper.vm.tableData[0].Office).toBe('London')
+    expect(wrapper.vm.tableData[0].firstName).toBe('A')
+  })
+
+  it('exportVishingReportAnsweredUsers calls export API and triggers anchor click', async () => {
+    const clickMock = jest.fn()
+    const origCreate = document.createElement.bind(document)
+    const createSpy = jest.spyOn(document, 'createElement').mockImplementation((tag) => {
+      if (tag === 'a') {
+        return { click: clickMock, href: '', download: '' }
+      }
+      return origCreate(tag)
+    })
+    const wrapper = mountComponent()
+    wrapper.vm.exportVishingReportAnsweredUsers({
+      exportTypes: ['CSV'],
+      pageNumber: 2,
+      pageSize: 50,
+      reportAllPages: true
+    })
+    await new Promise((r) => setTimeout(r, 0))
+    expect(exportVishingAnsweredUsers).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pageNumber: 2,
+        pageSize: 50,
+        exportType: 'CSV',
+        reportAllPages: true
+      }),
+      'v1'
+    )
+    expect(clickMock).toHaveBeenCalled()
+    createSpy.mockRestore()
+  })
+
+  it('exportVishingReportAnsweredUsers maps XLS export type to Excel in payload', async () => {
+    const origCreate = document.createElement.bind(document)
+    const createSpy = jest.spyOn(document, 'createElement').mockImplementation((tag) => {
+      if (tag === 'a') {
+        return { click: jest.fn(), href: '', download: '' }
+      }
+      return origCreate(tag)
+    })
+    const wrapper = mountComponent()
+    wrapper.vm.exportVishingReportAnsweredUsers({
+      exportTypes: ['XLS'],
+      pageNumber: 1,
+      pageSize: 10,
+      reportAllPages: false
+    })
+    await new Promise((r) => setTimeout(r, 0))
+    expect(exportVishingAnsweredUsers).toHaveBeenCalledWith(
+      expect.objectContaining({ exportType: 'Excel' }),
+      'v1'
+    )
+    createSpy.mockRestore()
   })
 })

@@ -39,6 +39,36 @@ describe('PhishingReporter.vue', () => {
     expect(ctx.getPhishingReportSummary).toHaveBeenCalled()
   })
 
+  it('changeTabStatus updates active tab', () => {
+    const ctx = { tab: 'phishing-reporter-users' }
+
+    PhishingReporter.methods.changeTabStatus.call(ctx, 'phishing-reporter-settings')
+
+    expect(ctx.tab).toBe('phishing-reporter-settings')
+  })
+
+  it('handleListItemClick updates selected date and refreshes summary', () => {
+    const ctx = {
+      selectedDate: 'Last 4 minutes',
+      getPhishingReportSummary: jest.fn()
+    }
+
+    PhishingReporter.methods.handleListItemClick.call(ctx, 'Last 24h')
+
+    expect(ctx.selectedDate).toBe('Last 24h')
+    expect(ctx.getPhishingReportSummary).toHaveBeenCalled()
+  })
+
+  it('mounted reads route hash', () => {
+    const ctx = {
+      getHash: jest.fn()
+    }
+
+    PhishingReporter.mounted.call(ctx)
+
+    expect(ctx.getHash).toHaveBeenCalled()
+  })
+
   it('getHash updates tab for users/settings hash', () => {
     const ctx = { tab: 'phishing-reporter-users', $route: { hash: '' } }
     expect(PhishingReporter.methods.getHash.call(ctx, '#users')).toBe(true)
@@ -50,6 +80,13 @@ describe('PhishingReporter.vue', () => {
     expect(PhishingReporter.methods.getHash.call({ tab: 'x', $route: {} })).toBe(false)
   })
 
+  it('getHash uses route hash fallback and returns true for unknown hash without tab change', () => {
+    const ctx = { tab: 'phishing-reporter-users', $route: { hash: '#unknown' } }
+
+    expect(PhishingReporter.methods.getHash.call(ctx)).toBe(true)
+    expect(ctx.tab).toBe('phishing-reporter-users')
+  })
+
   it('created prioritizes tenant/error query and keeps settings tab', () => {
     const ctx = {
       tab: 'phishing-reporter-users',
@@ -59,6 +96,49 @@ describe('PhishingReporter.vue', () => {
       getPhishingReport: jest.fn(),
       $route: {
         query: { tenant: 'abc', tab: 'phishing-reporter-users' },
+        params: { tab: 'phishing-reporter-users' }
+      },
+      $nextTick: (cb) => cb()
+    }
+
+    PhishingReporter.created.call(ctx)
+
+    expect(ctx.tab).toBe('phishing-reporter-settings')
+  })
+
+  it('created defaults to settings tab when search permission is missing but settings permission exists', () => {
+    const ctx = {
+      tab: 'phishing-reporter-users',
+      getPhishingReporterSearchPermissions: false,
+      getPhishingReporterGetPermissions: true,
+      getPhishingReportSummary: jest.fn(),
+      getPhishingReport: jest.fn(),
+      $route: {
+        query: {},
+        params: {}
+      },
+      $nextTick: (cb) => cb()
+    }
+
+    PhishingReporter.created.call(ctx)
+
+    expect(ctx.tab).toBe('phishing-reporter-settings')
+    expect(ctx.getPhishingReportSummary).toHaveBeenCalled()
+    expect(ctx.getPhishingReport).toHaveBeenCalled()
+  })
+
+  it('created prioritizes route error query when authorization returns an error', () => {
+    const ctx = {
+      tab: 'phishing-reporter-users',
+      getPhishingReporterSearchPermissions: true,
+      getPhishingReporterGetPermissions: true,
+      getPhishingReportSummary: jest.fn(),
+      getPhishingReport: jest.fn(),
+      $route: {
+        query: {
+          error: 'access_denied',
+          error_description: 'Authorization failed'
+        },
         params: { tab: 'phishing-reporter-users' }
       },
       $nextTick: (cb) => cb()

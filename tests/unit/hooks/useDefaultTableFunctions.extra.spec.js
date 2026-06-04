@@ -1,9 +1,14 @@
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
-jest.mock('@/utils/helperFunctions', () => ({
-  columnFilterChanged: jest.fn((filter, payload) => []),
-  columnFilterCleared: jest.fn((fieldName, payload) => [])
-}))
+jest.mock('@/utils/helperFunctions', () => {
+  const actual = jest.requireActual('@/utils/helperFunctions')
+  return {
+    ...actual,
+    columnFilterChanged: jest.fn(() => []),
+    columnFilterCleared: jest.fn(() => [])
+  }
+})
 
 describe('useDefaultTableFunctions (extra branch coverage)', () => {
   let component
@@ -174,5 +179,69 @@ describe('useDefaultTableFunctions (extra branch coverage)', () => {
 
     expect(component.axiosPayload.ascending).toBe(false)
     expect(component.axiosPayload.orderBy).toBe('name')
+  })
+
+  it('sortChanged maps totalDuration orderBy to DurationMinutes', () => {
+    component.sortChanged({ order: 'ascending', prop: PROPERTY_STORE.TOTAL_DURATION })
+
+    expect(component.axiosPayload.orderBy).toBe('DurationMinutes')
+  })
+
+  it('sortChanged maps TotalDuration (PascalCase) orderBy to DurationMinutes', () => {
+    component.sortChanged({ order: 'ascending', prop: 'TotalDuration' })
+
+    expect(component.axiosPayload.orderBy).toBe('DurationMinutes')
+  })
+
+  it('handleSearchChange normalizes TotalDuration in search FilterItems', () => {
+    const searchFilter = {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [
+              { FieldName: 'TotalDuration', Operator: 'Contains', Value: '15' },
+              { FieldName: 'TrainingName', Operator: 'Contains', Value: 'x' }
+            ]
+          }
+        ],
+        SearchInputTextValue: 'x'
+      }
+    }
+
+    component.handleSearchChange(searchFilter)
+
+    expect(component.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([
+      { FieldName: 'DurationMinutes', Operator: 'Contains', Value: '15' },
+      { FieldName: 'TrainingName', Operator: 'Contains', Value: 'x' }
+    ])
+  })
+
+  it('handleSearchChange normalizes duration when search item only has fieldName', () => {
+    const searchFilter = {
+      filter: {
+        FilterGroups: [
+          {
+            FilterItems: [{ fieldName: PROPERTY_STORE.TOTAL_DURATION, Operator: 'Contains', Value: '3' }]
+          }
+        ],
+        SearchInputTextValue: 'q'
+      }
+    }
+
+    component.handleSearchChange(searchFilter)
+
+    expect(component.axiosPayload.filter.FilterGroups[1].FilterItems[0]).toMatchObject({
+      FieldName: 'DurationMinutes',
+      Operator: 'Contains',
+      Value: '3'
+    })
+  })
+
+  it('handleSearchChange uses empty FilterItems when filter or groups are missing', () => {
+    component.handleSearchChange({})
+    expect(component.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([])
+
+    component.handleSearchChange({ filter: {} })
+    expect(component.axiosPayload.filter.FilterGroups[1].FilterItems).toEqual([])
   })
 })

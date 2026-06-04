@@ -242,6 +242,38 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
   })
 
+  it('SET_FILTER_TO_PAYLOAD maps totalDuration key to FieldName=DurationMinutes in FilterItems', () => {
+    const state = createState()
+    trainingLibrary.mutations.SET_FILTER_TO_PAYLOAD(state, {
+      key: 'totalDuration',
+      activeValue: ['1-2', '90+'],
+      activeOperator: 'Include'
+    })
+
+    const items = state.axiosPayload.filter.FilterGroups[0].FilterItems
+    expect(items).toHaveLength(1)
+    expect(items[0]).toEqual({
+      FieldName: 'DurationMinutes',
+      Value: '1-2,90+',
+      Operator: 'Include'
+    })
+  })
+
+  it('REMOVE_FILTER_FROM_PAYLOAD removes DurationMinutes filter when key is totalDuration', () => {
+    const state = createState()
+    state.axiosPayload.filter.FilterGroups[0].FilterItems = [
+      { FieldName: 'DurationMinutes', Value: '1-2', Operator: 'Include' }
+    ]
+
+    trainingLibrary.mutations.REMOVE_FILTER_FROM_PAYLOAD(state, {
+      key: 'totalDuration',
+      filterType: 'search',
+      activeValue: []
+    })
+
+    expect(state.axiosPayload.filter.FilterGroups[0].FilterItems).toEqual([])
+  })
+
   it('SET_FILTER_TYPE_TO_PAYLOAD updates filter condition', () => {
     const state = createState()
     state.filterType = 'AND'
@@ -257,6 +289,17 @@ describe('trainingLibrary store (branch extra coverage)', () => {
     })
     expect(state.axiosPayload.ascending).toBe(true)
     expect(state.axiosPayload.orderBy).toBe('trainingName')
+  })
+
+  it('SET_SORT_BY_TO_PAYLOAD maps totalDuration orderBy to DurationMinutes', () => {
+    const state = createState()
+    trainingLibrary.mutations.SET_SORT_BY_TO_PAYLOAD(state, {
+      ascending: true,
+      orderBy: 'totalDuration'
+    })
+
+    expect(state.axiosPayload.ascending).toBe(true)
+    expect(state.axiosPayload.orderBy).toBe('DurationMinutes')
   })
 
   it('RESET_PAGINATION resets page numbers', () => {

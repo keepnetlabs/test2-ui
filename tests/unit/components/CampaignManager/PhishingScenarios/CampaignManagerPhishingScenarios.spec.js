@@ -1,11 +1,17 @@
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios.vue'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
 import { SCENARIO_DISTRIBUTION } from '@/components/CampaignManager/utils'
+import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
+
+jest.mock('@/api/domainBlocklist', () => ({
+  getDomainBlocklistStatus: jest.fn().mockResolvedValue({ data: {} })
+}))
 
 describe('CampaignManagerPhishingScenarios.vue', () => {
   let ctx
 
   beforeEach(() => {
+    jest.clearAllMocks()
     ctx = {
       $emit: jest.fn(),
       $set: jest.fn(),
@@ -124,6 +130,18 @@ describe('CampaignManagerPhishingScenarios.vue', () => {
     it('getCategoryItems returns categories texts if formDetails exist', () => {
       ctx.formDetails = { categories: [{ text: 'Cat1' }, { text: 'Cat2' }] }
       expect(CampaignManagerPhishingScenarios.computed.getCategoryItems.call(ctx)).toEqual(['Cat1', 'Cat2'])
+    })
+
+    it('getScenarioDistributionItems excludes Agentic AI mapping option', () => {
+      const result = CampaignManagerPhishingScenarios.computed.getScenarioDistributionItems.call(ctx)
+
+      expect(result).toEqual(
+        expect.not.arrayContaining([
+          expect.objectContaining({
+            value: SCENARIO_DISTRIBUTION.AGENTIC_AI_EXPLICIT_USER_SCENARIO_MAPPING
+          })
+        ])
+      )
     })
 
     it('isShowTrainingTab returns true when training permission is true and distribution is manually', () => {
@@ -251,6 +269,48 @@ describe('CampaignManagerPhishingScenarios.vue', () => {
       }
       CampaignManagerPhishingScenarios.methods.adjustTrainingModel.call(ctx, 'res2')
       expect(ctx.$refs.trainingTab.$refs.inputContentLanguage.setDefaultValue).toHaveBeenCalled()
+    })
+
+    it('extractDomain parses landing page URL and strips www', () => {
+      expect(
+        CampaignManagerPhishingScenarios.methods.extractDomain('https://www.example.com/path')
+      ).toBe('example.com')
+    })
+
+    it('checkDomainBlocklist calls API for phishing landing page URLs', () => {
+      ctx.landingPageParams = { urlTemplate: 'https://www.blocked.test/login' }
+      ctx.blocklistWarning = null
+      ctx.extractDomain = CampaignManagerPhishingScenarios.methods.extractDomain
+
+      CampaignManagerPhishingScenarios.methods.checkDomainBlocklist.call(ctx)
+
+      expect(getDomainBlocklistStatus).toHaveBeenCalledWith('blocked.test')
+    })
+
+    it('checkDomainBlocklist sets warning for suspicious phishing domains', async () => {
+      ctx.landingPageParams = { urlTemplate: 'https://suspicious.test' }
+      ctx.blocklistWarning = null
+      ctx.extractDomain = CampaignManagerPhishingScenarios.methods.extractDomain
+      getDomainBlocklistStatus.mockResolvedValueOnce({
+        data: { status: 'suspicious', reason: 'Flagged by 2 vendors' }
+      })
+
+      await CampaignManagerPhishingScenarios.methods.checkDomainBlocklist.call(ctx)
+
+      expect(ctx.blocklistWarning).toEqual({
+        status: 'suspicious',
+        reason: 'Flagged by 2 vendors'
+      })
+    })
+
+    it('checkDomainBlocklist skips non-phishing campaign scenario previews', () => {
+      ctx.type = SCENARIO_TYPES.QUISHING
+      ctx.landingPageParams = { urlTemplate: 'https://blocked.test' }
+      ctx.extractDomain = CampaignManagerPhishingScenarios.methods.extractDomain
+
+      CampaignManagerPhishingScenarios.methods.checkDomainBlocklist.call(ctx)
+
+      expect(getDomainBlocklistStatus).not.toHaveBeenCalled()
     })
   })
 })

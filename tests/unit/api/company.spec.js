@@ -287,6 +287,63 @@ describe('Company API', () => {
     })
   })
 
+  describe('migrateCompanySovereignty', () => {
+    it('should call POST with companyResourceId in URL and payload as body (no snackbar config)', async () => {
+      const payload = { targetRegionCode: 'canadacentral', batchSize: 500 }
+      await CompanyAPI.migrateCompanySovereignty('company-abc', payload)
+      expect(testRequest.post).toHaveBeenCalledWith(
+        '/companies/company-abc/sovereignty/migrate',
+        payload
+      )
+    })
+
+    it('should not pass any third argument (custom success snackbar handled by caller)', async () => {
+      await CompanyAPI.migrateCompanySovereignty('company-1', { targetRegionCode: 'eu', batchSize: 100 })
+      const call = testRequest.post.mock.calls[0]
+      expect(call).toHaveLength(2)
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.migrateCompanySovereignty('id-x', {})
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('should propagate POST errors', async () => {
+      testRequest.post.mockRejectedValueOnce(new Error('Conflict'))
+      await expect(
+        CompanyAPI.migrateCompanySovereignty('company-1', {})
+      ).rejects.toThrow('Conflict')
+    })
+  })
+
+  describe('getPiiResidencyReport', () => {
+    it('should call GET with companyResourceId in URL and loading: false by default', async () => {
+      await CompanyAPI.getPiiResidencyReport('company-abc')
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/companies/company-abc/sovereignty/pii-residency-report',
+        { loading: false }
+      )
+    })
+
+    it('should respect loading: true when explicitly passed', async () => {
+      await CompanyAPI.getPiiResidencyReport('company-1', { loading: true })
+      expect(testRequest.get).toHaveBeenCalledWith(
+        '/companies/company-1/sovereignty/pii-residency-report',
+        { loading: true }
+      )
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getPiiResidencyReport('id-x')
+      expect(typeof result.then).toBe('function')
+    })
+
+    it('should propagate GET errors', async () => {
+      testRequest.get.mockRejectedValueOnce(new Error('Not found'))
+      await expect(CompanyAPI.getPiiResidencyReport('company-1')).rejects.toThrow('Not found')
+    })
+  })
+
   describe('updateInitializeCompany', () => {
     it('should call PUT with COMMON_SNACKBAR', async () => {
       const payload = { initialized: true }

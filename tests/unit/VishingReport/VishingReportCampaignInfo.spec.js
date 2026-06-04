@@ -26,6 +26,22 @@ describe('VishingReportCampaignInfo.vue', () => {
     expect(wrapper.vm).toBeDefined()
   })
 
+  it('has correct component name', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.vm.$options.name).toBe('VishingReportCampaignInfo')
+  })
+
+  it('getBodyValue formats zero users', () => {
+    const wrapper = mountComponent({
+      items: {
+        'Target Groups': { show: false, value: [] },
+        'Target Users': { show: true, value: 0 },
+        'Language / Voice': { show: true, value: 'en / Male' }
+      }
+    })
+    expect(wrapper.vm.getBodyValue).toBe('0 users')
+  })
+
   it('getItems filters out items with show false', () => {
     const wrapper = mountComponent({
       items: {
