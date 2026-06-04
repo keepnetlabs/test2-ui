@@ -41,6 +41,7 @@
         <div class="input-phishing-link-mini__input-group">
           <KSelect
             label="Domain"
+            class="domain-suggest-field"
             :value="value.domainRecordId"
             item-disabled="disabled"
             item-text="text"
@@ -51,11 +52,34 @@
             hide-details
             placeholder="Select domain record"
             required
+            :slots="{ append: true }"
             :menu-props="{ offsetY: true }"
             :items="domainRecords"
             :rules="[(v) => Validations.required(v, labels.Required)]"
             @input="handleChangeDomainRecord($event)"
-          ></KSelect>
+          >
+            <template #append>
+              <VTooltip bottom max-width="240" z-index="9999999">
+                <template #activator="{ on, attrs }">
+                  <VIcon
+                    v-if="domainSuggestIcon"
+                    v-bind="attrs"
+                    size="20"
+                    color="#2196f3"
+                    :class="['domain-suggest-icon', { 'domain-suggest-icon--spin': domainSuggest.isLoading }]"
+                    v-on="on"
+                    @click.stop="suggestDomain"
+                    @mousedown.stop.prevent
+                  >{{ domainSuggestIcon }}</VIcon>
+                </template>
+                <span>Suggest a safe, content-matched domain</span>
+              </VTooltip>
+              <VIcon class="domain-suggest-chevron">mdi-menu-down</VIcon>
+            </template>
+          </KSelect>
+          <div v-if="domainSuggestNote" class="domain-suggest-note">
+            <VIcon x-small color="#2196f3" class="mr-1">mdi-auto-fix</VIcon>{{ domainSuggestNote }}
+          </div>
           <div v-if="blocklistWarning" class="blocklist-hint">
             <span
               class="blocklist-hint__text"
@@ -188,10 +212,12 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { createRandomCryptStringNumber } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
+import domainSuggest from '@/mixins/domainSuggest'
 import { getDomainBlocklistStatus, getCleanDomainSuggestions } from '@/api/domainBlocklist'
 export default {
   name: 'InputPhishingLinkMini',
   components: { KSelect },
+  mixins: [domainSuggest],
   props: {
     value: {
       type: Object,
@@ -249,6 +275,10 @@ export default {
     captchaEnabled: {
       type: Boolean,
       default: false
+    },
+    contentText: {
+      type: String,
+      default: ''
     }
   },
   data() {

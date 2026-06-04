@@ -178,6 +178,7 @@
                       :extension-types="getExtensionTypes"
                       :parameter-types="getParameterTypes"
                       :path-types="getPathTypes"
+                      :content-text="randomDomainContentText"
                       :is-edit="isEdit"
                       :is-duplicate="isDuplicate"
                       @invisible-captcha="isInvisibleCaptchaDisabled = $event"
@@ -386,6 +387,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { MERGED_TEXTS_MAP } from '@/components/LandingPage/utils'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import InputPhishingLink from '@/components/Common/Inputs/InputPhishingLink.vue'
+import { buildContentText } from '@/utils/randomDomain'
 import SelectClickOnlyPageModal from '@/components/LandingPage/SelectClickOnlyPageModal.vue'
 import '@/styles/landing-page-tabs.css'
 export default {
@@ -674,6 +676,15 @@ export default {
     },
     getDomainRecordTypes() {
       return this.landingPageData?.domainRecords || []
+    },
+    randomDomainContentText() {
+      const fv = this.formValues || {}
+      return buildContentText({
+        name: fv.name,
+        description: fv.description,
+        tags: fv.tags,
+        landingPages: fv.landingPages
+      })
     },
     getExtensionTypes() {
       return this.landingPageData?.extensionTypes || []
