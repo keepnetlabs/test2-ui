@@ -12,12 +12,17 @@
     font-size: 12px;
     color: #2196F3;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none; // underline lives on the label so the wand icon isn't underlined
     margin-left: 2px;
 
     &--loading {
       pointer-events: none;
       opacity: 0.6;
+    }
+
+    // Underline only the text, not the leading wand icon.
+    &-label {
+      text-decoration: underline;
     }
   }
 
@@ -39,6 +44,41 @@
     &:hover {
       background: #e8f5e9 !important;
     }
+  }
+}
+
+// Suggest-domain control - InputPhishingLink / InputPhishingLinkMini (create/edit flow)
+.domain-suggest-note {
+  display: flex;
+  align-items: center;
+  padding: 2px 12px 0;
+  font-size: 12px;
+  color: #757575;
+}
+
+// In-field "suggest domain" wand, rendered in the select's append-inner slot next to the
+// (manually rendered) dropdown chevron.
+.domain-suggest-icon {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.domain-suggest-icon--spin {
+  animation: domain-suggest-spin 0.8s linear infinite;
+}
+
+// Keep the native open/close rotation on the manually-rendered chevron.
+.domain-suggest-chevron {
+  transition: transform 0.3s ease;
+}
+
+.domain-suggest-field.v-select--is-menu-active .domain-suggest-chevron {
+  transform: rotate(180deg);
+}
+
+@keyframes domain-suggest-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -64,6 +104,14 @@
   }
 
   &__text {
-    flex: 1;
+    // natural width so the "Suggest clean domain" action sits right after it
+  }
+
+  // "Suggest clean domain" link (wand + text) shown right after the warning text.
+  &__fix {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
   }
 }

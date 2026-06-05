@@ -122,6 +122,7 @@ describe('useAIDescriptionGeneration Hook', () => {
         expect(axiosMock.post).toHaveBeenCalledWith(
           'https://ai-description.keepnet-labs-ltd-business-profile4086.workers.dev/description',
           {
+            type: 'training',
             name: 'Test',
             category: 'Security',
             role: 'Employee'
@@ -411,7 +412,8 @@ describe('useAIDescriptionGeneration Hook', () => {
         await component.generateAIDescription(testPayload)
 
         const payload = axiosMock.post.mock.calls[0][1]
-        expect(payload).toEqual(testPayload)
+        // The hook prepends a `type` discriminator (default 'training') to the payload.
+        expect(payload).toEqual({ type: 'training', ...testPayload })
       })
 
       it('should handle payload with special characters', async () => {

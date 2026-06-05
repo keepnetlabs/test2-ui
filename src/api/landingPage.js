@@ -1,9 +1,12 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
-export function updateLandingPage(payload, id) {
+export function updateLandingPage(payload, id, { silent = false } = {}) {
+  // `silent` omits the global success snackbar (e.g. the preview "fix domain" wand, which
+  // shows its own inline note and would otherwise stack a snackbar under the drawer).
+  // Error snackbars still surface regardless.
   return testRequest.put(`phishing-simulator/landing-page-template/${id}`, payload, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: silent ? undefined : COMMON_SNACKBAR
   })
 }
 

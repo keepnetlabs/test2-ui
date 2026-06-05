@@ -91,6 +91,8 @@
             :isMethodMfa="isMethodMfa"
             :landing-page-params="landingPageParams"
             :landing-page-templates="landingPageTemplates"
+            :can-fix-domain="true"
+            @domain-fixed="onDomainFixed"
           />
         </ElTabPane>
       </ElTabs>
@@ -218,7 +220,8 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            methodTypeId
+            methodTypeId,
+            resourceId: landingPageResourceId
           } = landingPageTemplate || []
 
           this.landingPageParams = {
@@ -229,7 +232,8 @@ export default {
             method: methods[methodTypeId - 1]?.text || '',
             isAttachmentBasedTemplate: methodTypeId === 3,
             mfaTextTemplate: data.mfaTextTemplate,
-            mfaSmsSenderNumber: data.mfaSmsSenderNumber
+            mfaSmsSenderNumber: data.mfaSmsSenderNumber,
+            resourceId: landingPageResourceId
           }
           this.landingPageTemplates = landingPages
           this.isMethodMfa = data.methodTypeId === 4
@@ -242,6 +246,12 @@ export default {
     },
     setLoading(flag = false) {
       this.isLoading = flag
+    },
+    onDomainFixed(info = {}) {
+      // Reflect the rebuilt URL immediately after the wand updates the template's domain.
+      if (info.urlTemplate && this.landingPageParams) {
+        this.landingPageParams.urlTemplate = info.urlTemplate
+      }
     },
     handleClose() {
       this.$emit('on-close')

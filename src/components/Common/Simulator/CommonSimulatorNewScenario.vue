@@ -48,6 +48,7 @@
           is-nested
           :is-smishing="type === SCENARIO_TYPES.SMISHING"
           :should-control-html-overflow="false"
+          :can-fix-domain="true"
           @on-close="showLandingPagePreviewDialog = false"
         />
         <VNavigationDrawer

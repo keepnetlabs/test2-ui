@@ -94,6 +94,24 @@
             <div v-if="blocklistWarning" class="blocklist-preview-bar" :class="'blocklist-preview-bar--' + blocklistWarning.status">
               <VIcon x-small :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'">mdi-shield-alert</VIcon>
               <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+              <a
+                v-if="domainFixIcon"
+                class="blocklist-hint__link blocklist-preview-bar__fix"
+                :class="{ 'blocklist-hint__link--loading': domainFix.isLoading }"
+                @click.prevent="fixDomain"
+              >
+                <VIcon
+                  small
+                  color="#2196f3"
+                  class="mr-1"
+                  :class="{ 'domain-suggest-icon--spin': domainFix.isLoading }"
+                  >{{ domainFixIcon }}</VIcon
+                ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+              </a>
+            </div>
+            <div v-if="domainFixNote" class="domain-suggest-note">
+              <VIcon v-if="domainFixNoteIcon" x-small color="#4caf50" class="mr-1">{{ domainFixNoteIcon }}</VIcon
+              >{{ domainFixNote }}
             </div>
             <KEmailPreview
               v-if="!!getCurrentPageTemplate(template)"
@@ -176,9 +194,12 @@ import BrowserToolbar from '@/components/Common/Others/BrowserToolbar.vue'
 import { PREVIEW_DIALOG_TYPES } from '@/components/Common/Simulator/utils'
 import { openHtmlInNewWindow } from '@/utils/functions'
 import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
+import domainTemplateFix from '@/mixins/domainTemplateFix'
+import { buildContentText } from '@/utils/randomDomain'
 export default {
   name: 'TabsWithMfaSettingsMultipleLanguages',
   components: { KEmailPreview, InputLanguagePreview, BrowserToolbar },
+  mixins: [domainTemplateFix],
   props: {
     landingPageTemplates: {
       type: Array,
@@ -217,6 +238,15 @@ export default {
       default: ''
     },
     readOnly: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Opt-in: show the "fix domain" wand inside the blocklist warning. Enable only in
+     * editable scenario/campaign-builder contexts — NOT in sent-campaign report previews,
+     * since fixing updates the landing page template globally.
+     */
+    canFixDomain: {
       type: Boolean,
       default: false
     }
@@ -275,6 +305,19 @@ export default {
     blocklistWarningText() {
       if (!this.blocklistWarning) return ''
       return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
+    },
+    // --- domainTemplateFix wand (overrides the mixin's stubs) ---
+    domainFixResourceId() {
+      if (!this.canFixDomain || !this.isPhishing || !this.isPhishingScenario) return null
+      return this.landingPageParams?.resourceId || null
+    },
+    domainFixContentText() {
+      const pages = (this.landingPageTemplates || []).map((t) => ({ content: t?.content || '' }))
+      return buildContentText({
+        name: this.landingPageParams?.name,
+        description: this.landingPageParams?.description,
+        landingPages: pages
+      })
     }
   },
   watch: {
@@ -361,6 +404,12 @@ export default {
           }
         })
         .catch(() => {})
+    },
+    refreshAfterDomainFix(info = {}) {
+      // The template's domain was updated globally. Clear the stale warning and hand the
+      // rebuilt URL up so the parent (which owns landingPageParams) can refresh the preview.
+      this.blocklistWarning = null
+      this.$emit('domain-fixed', info)
     }
   }
 }
