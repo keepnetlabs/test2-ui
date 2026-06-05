@@ -86,17 +86,7 @@
                     entityName="scenario name"
                     initialPlaceholder="Enter a name"
                     :disabled="editItemsDisabled"
-                  />
-                </form-group>
-                <form-group title="Description" sub-title="Describe the template briefly">
-                  <InputDescription
-                    v-model.trim="formValues.description"
-                    id="input--new-phishing-scenarios-description"
-                    entityName="description"
-                    initialPlaceholder="Enter description"
-                    rows="2"
-                    height="100"
-                    :maxLength="300"
+                    @blur="handleNameBlur"
                   />
                 </form-group>
                 <form-group
@@ -144,6 +134,25 @@
                     required
                     :items="languageOptions"
                     :menu-props="{ offsetY: true }"
+                  />
+                </form-group>
+                <form-group title="Description" sub-title="Describe the scenario briefly">
+                  <InputAIDescription
+                    v-model.trim="formValues.description"
+                    id="input--new-phishing-scenarios-description"
+                    entity-name="description"
+                    initial-placeholder="Enter description"
+                    rows="2"
+                    height="100"
+                    :max-length="300"
+                    hint="AI needs a few words to create a meaningful description."
+                    :show-generated-by-ai="hasGenerated"
+                    :is-generating="isGenerateLoading"
+                    :show-generate-button="true"
+                    :has-generated="hasGenerated"
+                    :is-generate-disabled="isGenerateDisabled"
+                    tooltip-message="To generate an AI-powered description, enter the scenario name first."
+                    @generate="handleGenerate"
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the scenario">
@@ -329,9 +338,12 @@
         :max-step="isAttachmentBasedScenario ? 3 : 4"
         :step.sync="step"
         :disabled-statuses="{
-          nextButton: isSubmitDisabled,
-          submitButton: isSubmitDisabled
+          nextButton: isGenerateLoading || isSubmitDisabled,
+          submitButton: isGenerateLoading || isSubmitDisabled
         }"
+        :disabledNextButtonTooltipText="
+          isGenerateLoading ? 'Please wait for the AI description to finish generating.' : ''
+        "
         :ids="footerButtonsIds"
         @on-cancel="changeNewScenarioModalStatus"
         @on-back="backStep"
@@ -355,7 +367,8 @@ import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
+import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
@@ -377,12 +390,13 @@ export default {
     InputSelectLanguage,
     InputTag,
     InputEntityName,
-    InputDescription,
+    InputAIDescription,
     TextMessageTemplateSelectList,
     CampaignManagerSummaryCard,
     CommonSimulatorLandingPageTemplatesPreviewDialog,
     SmishingPreviewDrawer
   },
+  mixins: [useAIDescriptionGeneration],
   props: {
     status: {
       type: Boolean,
@@ -423,6 +437,9 @@ export default {
       },
       isInitial: true,
       isFetched: false,
+      isGenerateLoading: false,
+      hasGenerated: false,
+      hasGenerationError: false,
       summaryData: {},
       languageOptions: [],
       methods: [
@@ -474,6 +491,50 @@ export default {
     }
   },
   methods: {
+    handleNameBlur() {
+      // Trigger auto-generation once the user has finished entering the scenario name
+      if (
+        !this.isEdit &&
+        this.formValues.name &&
+        !this.formValues.description &&
+        !this.hasGenerated &&
+        !this.hasGenerationError &&
+        !this.isGenerateLoading
+      ) {
+        this.handleGenerate()
+      }
+    },
+    async handleGenerate() {
+      if (this.isGenerateDisabled || this.isGenerateLoading) {
+        return
+      }
+      this.isGenerateLoading = true
+      this.hasGenerationError = false
+
+      try {
+        const generatedDescription = await this.generateAIDescription({
+          type: 'smishing',
+          name: this.formValues.name,
+          category: this.getSelectedMethod,
+          description: this.formValues.description,
+          fields: {
+            difficulty: this.getDifficultyType
+          }
+        })
+
+        if (generatedDescription) {
+          this.formValues.description = generatedDescription
+          this.hasGenerated = true
+        } else {
+          this.hasGenerated = false
+        }
+      } catch (error) {
+        console.error('Failed to generate AI description:', error)
+        this.hasGenerationError = true
+      } finally {
+        this.isGenerateLoading = false
+      }
+    },
     getMethodTypeDescription(method = '') {
       if (method === 'Click-Only') return 'See who fails for phishing links'
       return method === 'Data Submission' ? 'Gather information from users' : 'Send a smishing MFA'
@@ -631,6 +692,22 @@ export default {
     ...mapGetters({
       getCurrentCompany: 'login/getCurrentCompany'
     }),
+    isGenerateDisabled() {
+      // If a meaningful description already exists, allow improving it
+      if (this.formValues.description && this.formValues.description.trim().length > 5) {
+        return this.isGenerateLoading
+      }
+      // Otherwise the scenario name is the minimum required field
+      return !this.formValues.name || this.isGenerateLoading
+    },
+    // Auto-generate once the scenario name is filled and the description is still empty
+    // (mirrors the training new-flow behaviour). The mixin watches this and fires handleGenerate.
+    // Auto-generation fires on the scenario name blur (see handleNameBlur), not reactively,
+    // so it doesn't trigger on the first typed character. Returning false disables the mixin
+    // watcher.
+    canAutoGenerateDescription() {
+      return false
+    },
     getSummaryContainerStyle() {
       return this.isMethodMfa
         ? {

@@ -16,6 +16,7 @@
     :hide-details="hideDetails"
     :class="className"
     @input="$emit('input', $event)"
+    @blur="$emit('blur', $event)"
   />
 </template>
 <script>
