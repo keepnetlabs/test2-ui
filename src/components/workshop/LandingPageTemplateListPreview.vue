@@ -475,6 +475,10 @@
                             </span>
                             <span class="template-preview__text--body">{{ templateURL }}</span>
                           </div>
+                          <div v-if="domainFixNote" class="domain-suggest-note pl-0">
+                            <VIcon v-if="domainFixNoteIcon" x-small color="#4caf50" class="mr-1">{{ domainFixNoteIcon }}</VIcon
+                            >{{ domainFixNote }}
+                          </div>
                           <div>
                             <span class="template-preview__text--title">Stop Bot Activity: </span>
                             <span class="template-preview__text--body">{{
@@ -494,6 +498,20 @@
                           >mdi-shield-alert</VIcon
                         >
                         <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                        <a
+                          v-if="domainFixIcon"
+                          class="blocklist-hint__link blocklist-preview-bar__fix"
+                          :class="{ 'blocklist-hint__link--loading': domainFix.isLoading }"
+                          @click.prevent="fixDomain"
+                        >
+                          <VIcon
+                            small
+                            color="#2196f3"
+                            class="mr-1"
+                            :class="{ 'domain-suggest-icon--spin': domainFix.isLoading }"
+                            >{{ domainFixIcon }}</VIcon
+                          ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+                        </a>
                       </div>
                       <ElTabs
                         v-if="landingPageTemplates.length > 1"
@@ -859,6 +877,10 @@
                         </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
+                      <div v-if="domainFixNote" class="domain-suggest-note pl-0">
+                        <VIcon v-if="domainFixNoteIcon" x-small color="#4caf50" class="mr-1">{{ domainFixNoteIcon }}</VIcon
+                        >{{ domainFixNote }}
+                      </div>
                       <div>
                         <span class="template-preview__text--title">Stop Bot Activity: </span>
                         <span class="template-preview__text--body">{{
@@ -877,6 +899,20 @@
                         >mdi-shield-alert</VIcon
                       >
                       <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                      <a
+                        v-if="domainFixIcon"
+                        class="blocklist-hint__link blocklist-preview-bar__fix"
+                        :class="{ 'blocklist-hint__link--loading': domainFix.isLoading }"
+                        @click.prevent="fixDomain"
+                      >
+                        <VIcon
+                          small
+                          color="#2196f3"
+                          class="mr-1"
+                          :class="{ 'domain-suggest-icon--spin': domainFix.isLoading }"
+                          >{{ domainFixIcon }}</VIcon
+                        ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+                      </a>
                     </div>
                     <AlertBox
                       v-if="showPageAlert"
@@ -971,9 +1007,11 @@ import AlertBox from '@/components/AlertBox'
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
+import domainTemplateFix from '@/mixins/domainTemplateFix'
+import { buildContentText } from '@/utils/randomDomain'
 export default {
   name: 'LandingPageListPreview',
-  mixins: [useDebounce],
+  mixins: [useDebounce, domainTemplateFix],
   components: {
     EmailTemplateListLeftSideLanguages,
     CommonSimulatorLandingPageTemplatesPreviewDialog,
@@ -1189,6 +1227,17 @@ export default {
     blocklistWarningText() {
       if (!this.blocklistWarning) return ''
       return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
+    },
+    // --- domainTemplateFix wand (overrides the mixin's stubs) ---
+    domainFixResourceId() {
+      if (!this.isPhishing) return null
+      return this.landingPagePreviewSelectedRow?.resourceId || null
+    },
+    domainFixContentText() {
+      return buildContentText({
+        name: this.selectedTemplateHeader || this.templateName,
+        landingPages: [{ content: this.getSingleTemplateDetails || '' }]
+      })
     }
   },
   watch: {
@@ -1835,6 +1884,11 @@ export default {
           }
         })
         .catch(() => {})
+    },
+    refreshAfterDomainFix(info = {}) {
+      // The template's domain was updated globally. Reflect the rebuilt URL and clear the warning.
+      this.blocklistWarning = null
+      if (info.urlTemplate) this.templateURL = info.urlTemplate
     }
   }
 }

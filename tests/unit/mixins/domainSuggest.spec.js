@@ -1,9 +1,10 @@
 jest.mock('@/api/domainBlocklist', () => ({
-  getAllDomainBlocklistStatuses: jest.fn()
+  getAllDomainBlocklistStatuses: jest.fn(),
+  getDomainBlocklistStatus: jest.fn()
 }))
 
 import domainSuggest from '@/mixins/domainSuggest'
-import { getAllDomainBlocklistStatuses } from '@/api/domainBlocklist'
+import { getAllDomainBlocklistStatuses, getDomainBlocklistStatus } from '@/api/domainBlocklist'
 
 const pool = [
   { value: '1', text: 'random-store.net' },
@@ -28,6 +29,8 @@ const makeCtx = (overrides = {}) => ({
   handleChangeDomainRecord: jest.fn(),
   // pull real implementations under test
   suggestDomain: domainSuggest.methods.suggestDomain,
+  resolveSafePick: domainSuggest.methods.resolveSafePick,
+  verifyDomainStatus: domainSuggest.methods.verifyDomainStatus,
   buildDomainSuggestMessage: domainSuggest.methods.buildDomainSuggestMessage,
   resetDomainSuggest: domainSuggest.methods.resetDomainSuggest,
   ...overrides
@@ -41,6 +44,8 @@ describe('domainSuggest mixin', () => {
     getAllDomainBlocklistStatuses.mockResolvedValue({
       data: { domains: [{ domain: 'phishy.com', status: 'malicious' }] }
     })
+    // Per-domain verification: clean by default unless a test overrides it.
+    getDomainBlocklistStatus.mockResolvedValue({ data: { status: 'clean' } })
   })
 
   describe('isDomainSuggestDisabled', () => {
@@ -76,7 +81,7 @@ describe('domainSuggest mixin', () => {
       expect(ctx.handleChangeDomainRecord).toHaveBeenCalledWith('2') // acme-bank-login.com
       expect(ctx.domainSuggest.appliedValue).toBe('2')
       expect(ctx.domainSuggest.excludedCount).toBe(1)
-      expect(ctx.domainSuggest.message).toBe('matched: acme, bank · 1 risky skipped')
+      expect(ctx.domainSuggest.message).toBe('clean domain selected')
       expect(ctx.domainSuggest.isLoading).toBe(false)
     })
 
@@ -95,7 +100,7 @@ describe('domainSuggest mixin', () => {
       const ctx = makeCtx({ contentText: 'lorem ipsum dolor', value: { domainRecordId: '1' } })
       await domainSuggest.methods.suggestDomain.call(ctx)
       expect(ctx.handleChangeDomainRecord).toHaveBeenCalledWith('2')
-      expect(ctx.domainSuggest.message).toBe('random clean domain · 1 risky skipped')
+      expect(ctx.domainSuggest.message).toBe('clean domain selected')
     })
 
     it('reports when no eligible domain exists and never selects one', async () => {
@@ -114,12 +119,25 @@ describe('domainSuggest mixin', () => {
       expect(ctx.domainSuggest.message).toBe('No eligible (non-blacklisted) domain available')
     })
 
-    it('still suggests (best effort) when the blocklist service fails', async () => {
+    it('still suggests (best effort) when the bulk blocklist service fails', async () => {
       getAllDomainBlocklistStatuses.mockRejectedValueOnce(new Error('network'))
       const ctx = makeCtx()
       await domainSuggest.methods.suggestDomain.call(ctx)
-      expect(ctx.domainSuggest.statusMap).toEqual({})
       expect(ctx.handleChangeDomainRecord).toHaveBeenCalled()
+    })
+
+    it('never selects a domain the per-domain check flags, even if missing from the bulk list', async () => {
+      // Bulk list reports nothing → no exclusions from rankDomains.
+      getAllDomainBlocklistStatuses.mockResolvedValue({ data: { domains: [] } })
+      // But the authoritative per-domain check says the best match (acme-bank-login) is malicious.
+      getDomainBlocklistStatus.mockImplementation((domain) =>
+        Promise.resolve({ data: { status: domain === 'acme-bank-login.com' ? 'malicious' : 'clean' } })
+      )
+      const ctx = makeCtx()
+      await domainSuggest.methods.suggestDomain.call(ctx)
+      expect(ctx.handleChangeDomainRecord).toHaveBeenCalled()
+      expect(ctx.handleChangeDomainRecord).not.toHaveBeenCalledWith('2') // acme-bank-login skipped
+      expect(ctx.domainSuggest.statusMap['acme-bank-login.com']).toBe('malicious')
     })
 
     it('ignores clicks while disabled or already loading', async () => {
@@ -135,25 +153,26 @@ describe('domainSuggest mixin', () => {
   })
 
   describe('buildDomainSuggestMessage', () => {
-    it('confirms a plain clean pick when nothing matched', () => {
-      const ctx = { domainSuggest: { excludedCount: 0 } }
-      expect(
-        domainSuggest.methods.buildDomainSuggestMessage.call(ctx, { matchedKeywords: [] })
-      ).toBe('random clean domain')
+    it('returns a simple confirmation message', () => {
+      expect(domainSuggest.methods.buildDomainSuggestMessage.call({})).toBe('clean domain selected')
+    })
+  })
+
+  describe('value.domainRecordId watcher', () => {
+    const watcher = domainSuggest.watch['value.domainRecordId']
+
+    it('clears a stale note when the domain changes outside the wand', () => {
+      const ctx = { domainSuggest: { message: 'clean domain selected', appliedValue: '2', cursor: 0 } }
+      watcher.call(ctx, '5') // user manually picked a different domain
+      expect(ctx.domainSuggest.message).toBe('')
+      expect(ctx.domainSuggest.appliedValue).toBeNull()
+      expect(ctx.domainSuggest.cursor).toBe(-1)
     })
 
-    it('appends the risky-skipped count to a clean pick', () => {
-      const ctx = { domainSuggest: { excludedCount: 2 } }
-      expect(
-        domainSuggest.methods.buildDomainSuggestMessage.call(ctx, { matchedKeywords: [] })
-      ).toBe('random clean domain · 2 risky skipped')
-    })
-
-    it('combines matched keywords and risky-skipped count', () => {
-      const ctx = { domainSuggest: { excludedCount: 1 } }
-      expect(
-        domainSuggest.methods.buildDomainSuggestMessage.call(ctx, { matchedKeywords: ['acme', 'bank'] })
-      ).toBe('matched: acme, bank · 1 risky skipped')
+    it('keeps the note when the change came from the wand itself', () => {
+      const ctx = { domainSuggest: { message: 'clean domain selected', appliedValue: '2', cursor: 0 } }
+      watcher.call(ctx, '2') // same value the wand just applied
+      expect(ctx.domainSuggest.message).toBe('clean domain selected')
     })
   })
 

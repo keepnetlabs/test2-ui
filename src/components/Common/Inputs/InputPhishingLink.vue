@@ -120,24 +120,18 @@
         {{ blocklistWarning.reason }}
         <a
           class="blocklist-hint__link"
-          :class="{ 'blocklist-hint__link--loading': isSuggestionsLoading }"
-          @click.prevent="handleSwitchDomain"
-        >{{ isSuggestionsLoading ? 'Loading...' : 'Suggest clean domain' }}</a>
-      </span>
-      <div v-if="cleanSuggestions.length > 0" class="blocklist-hint__suggestions">
-        <v-btn
-          v-for="suggestion in cleanSuggestions.slice(0, 5)"
-          :key="suggestion.domain"
-          outlined
-          x-small
-          color="#217124"
-          class="blocklist-hint__suggestion-btn"
-          @click="selectCleanDomain(suggestion.domain)"
+          :class="{ 'blocklist-hint__link--loading': domainSuggest.isLoading }"
+          @click.prevent="suggestDomain"
         >
-          <VIcon x-small class="mr-1">mdi-swap-horizontal</VIcon>
-          {{ suggestion.domain }}
-        </v-btn>
-      </div>
+          <VIcon
+            small
+            color="#2196f3"
+            class="mr-1"
+            :class="{ 'domain-suggest-icon--spin': domainSuggest.isLoading }"
+          >{{ domainSuggest.isLoading ? 'mdi-loading' : 'mdi-auto-fix' }}</VIcon
+          ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+        </a>
+      </span>
     </div>
     <div style="max-width: 980px;">
       <VTextField

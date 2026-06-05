@@ -125,10 +125,10 @@ export function scoreDomain(domainName, keywords) {
         best = Math.max(best, 1)
       }
     }
-    if (best > 0) {
-      score += best
-      matched.push(keyword)
-    }
+    if (best > 0) score += best
+    // Only surface whole-word matches as "matched" — loose substring hits ("line", "ine")
+    // still help ranking but are too noisy to show the user.
+    if (best === 3) matched.push(keyword)
   }
   return { score, matched }
 }

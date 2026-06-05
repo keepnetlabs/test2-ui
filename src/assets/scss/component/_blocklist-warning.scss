@@ -12,12 +12,17 @@
     font-size: 12px;
     color: #2196F3;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none; // underline lives on the label so the wand icon isn't underlined
     margin-left: 2px;
 
     &--loading {
       pointer-events: none;
       opacity: 0.6;
+    }
+
+    // Underline only the text, not the leading wand icon.
+    &-label {
+      text-decoration: underline;
     }
   }
 
@@ -99,6 +104,14 @@
   }
 
   &__text {
-    flex: 1;
+    // natural width so the "Suggest clean domain" action sits right after it
+  }
+
+  // "Suggest clean domain" link (wand + text) shown right after the warning text.
+  &__fix {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
   }
 }

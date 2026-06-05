@@ -497,7 +497,9 @@
                       :landing-page-templates="landingPageTemplates"
                       :selected-languages="selectedLandingPageLanguages"
                       :language-preview="landingPageLanguagePreview"
+                      :can-fix-domain="isPhishing"
                       @language-change="handleLandingPageLanguageChange"
+                      @domain-fixed="refreshAfterDomainFix"
                     />
                     <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
@@ -574,6 +576,10 @@
                             >{{ landingPageParams.urlTemplate }}
                           </span>
                         </div>
+                        <div v-if="domainFixNote" class="domain-suggest-note pl-0">
+                          <VIcon v-if="domainFixNoteIcon" x-small color="#4caf50" class="mr-1">{{ domainFixNoteIcon }}</VIcon
+                          >{{ domainFixNote }}
+                        </div>
                         <div>
                           <span
                             class="template-preview__text--title"
@@ -598,6 +604,20 @@
                           >mdi-shield-alert</VIcon
                         >
                         <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                        <a
+                          v-if="domainFixIcon"
+                          class="blocklist-hint__link blocklist-preview-bar__fix"
+                          :class="{ 'blocklist-hint__link--loading': domainFix.isLoading }"
+                          @click.prevent="fixDomain"
+                        >
+                          <VIcon
+                            small
+                            color="#2196f3"
+                            class="mr-1"
+                            :class="{ 'domain-suggest-icon--spin': domainFix.isLoading }"
+                            >{{ domainFixIcon }}</VIcon
+                          ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+                        </a>
                       </div>
                       <hr class="mt-4" v-if="!!getSingleTemplateDetails" />
                       <KEmailPreview
@@ -689,6 +709,8 @@ import InputLanguagePreview from '../../Common/Inputs/InputLanguagePreview.vue'
 import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTemplateListLeftSideLanguages.vue'
 import { TRAINING_LIBRARY_TYPES } from '@/components/TrainingLibrary/utils'
 import { getDomainBlocklistStatus } from '@/api/domainBlocklist'
+import domainTemplateFix from '@/mixins/domainTemplateFix'
+import { buildContentText } from '@/utils/randomDomain'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: {
@@ -707,7 +729,7 @@ export default {
     AttachmentsPreview,
     EmailTemplateListLeftSideLanguages
   },
-  mixins: [useDebounce],
+  mixins: [useDebounce, domainTemplateFix],
   props: {
     isEdit: {
       type: Boolean,
@@ -960,6 +982,18 @@ export default {
     blocklistWarningText() {
       if (!this.blocklistWarning) return ''
       return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
+    },
+    // --- domainTemplateFix wand (overrides the mixin's stubs) ---
+    domainFixResourceId() {
+      if (this.type !== SCENARIO_TYPES.PHISHING) return null
+      return this.landingPageParams?.resourceId || null
+    },
+    domainFixContentText() {
+      return buildContentText({
+        name: this.landingPageParams?.name,
+        description: this.landingPageParams?.description,
+        landingPages: [{ content: this.previewLandingHtml || '' }]
+      })
     }
   },
   watch: {
@@ -1843,6 +1877,14 @@ export default {
           }
         })
         .catch(() => {})
+    },
+    refreshAfterDomainFix(info = {}) {
+      // The landing page template's domain was updated globally. Reflect the rebuilt URL
+      // in the preview immediately and clear the stale warning.
+      this.blocklistWarning = null
+      if (info.urlTemplate && this.landingPageParams) {
+        this.landingPageParams.urlTemplate = info.urlTemplate
+      }
     }
   }
 }
