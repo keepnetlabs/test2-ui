@@ -994,6 +994,12 @@ export default {
         description: this.landingPageParams?.description,
         landingPages: [{ content: this.previewLandingHtml || '' }]
       })
+    },
+    domainFixLanguage() {
+      const match = (this.selectedTemplateLanguages || []).find(
+        (l) => String(l.value) === String(this.languagePreview)
+      )
+      return (match && match.text) || ''
     }
   },
   watch: {

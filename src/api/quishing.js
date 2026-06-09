@@ -49,9 +49,11 @@ const getQuishingScenarioLandingPageAndEmailTemplate = (
     `/quishing-simulator/quishing-scenario/preview/${templateType}/${resourceId}`
   )
 }
-const updateLandingPage = (payload, id) => {
+const updateLandingPage = (payload, id, { silent = false } = {}) => {
+  // `silent` omits the global success snackbar (preview "fix domain" wand shows its own inline
+  // note and would otherwise stack a snackbar under the drawer). Error snackbars still surface.
   return testRequest.put(`/quishing-simulator/landing-page-template/${id}`, payload, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: silent ? undefined : COMMON_SNACKBAR
   })
 }
 

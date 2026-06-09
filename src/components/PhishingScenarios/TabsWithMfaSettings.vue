@@ -351,7 +351,15 @@ export default {
   },
   computed: {
     isBlocklistCheckEnabled() {
+      // Smishing scenario previews opt in via `is-smishing` (additive — phishing path unchanged).
+      if (this.isSmishing) return true
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING && this.isPhishingScenario
+    },
+    // Route the domain fix to the right simulator's landing-page API.
+    domainFixChannel() {
+      if (this.isSmishing) return 'smishing'
+      if (this.type === PREVIEW_DIALOG_TYPES.QUISHING) return 'quishing'
+      return 'phishing'
     },
     /** Smishing-only: must pass preview-layout="simulator". Never true for PhishingScenarioPreview / campaign wizards (default layout). */
     usePhishingLandingLayout() {
@@ -406,7 +414,9 @@ export default {
     },
     blocklistWarningText() {
       if (!this.blocklistWarning) return ''
-      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
+      const reason = this.blocklistWarning.reason
+      const prefix = reason ? `${reason} ` : ''
+      return `${prefix}Please use a clean domain before sending.`
     },
     // --- domainTemplateFix wand (overrides the mixin's stubs) ---
     domainFixResourceId() {
@@ -422,6 +432,13 @@ export default {
         description: this.landingPageParams?.description,
         landingPages: pages
       })
+    },
+    domainFixLanguage() {
+      const cur = this.currentLanguagePreview
+      const match = (this.selectedLanguages || []).find(
+        (l) => String(l.value || l.id || l.languageTypeResourceId) === String(cur)
+      )
+      return (match && (match.text || match.name || match.languageName)) || ''
     }
   },
   watch: {

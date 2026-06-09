@@ -182,6 +182,36 @@
                         <span class="template-preview__text--title">Phishing URL: </span>
                         <span class="template-preview__text--body">{{ templateURL }}</span>
                       </div>
+                      <div v-if="domainFixNote" class="domain-suggest-note pl-0">
+                        <VIcon v-if="domainFixNoteIcon" x-small color="#4caf50" class="mr-1">{{ domainFixNoteIcon }}</VIcon
+                        >{{ domainFixNote }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="blocklistWarning"
+                      class="blocklist-preview-bar"
+                      :class="'blocklist-preview-bar--' + blocklistWarning.status"
+                    >
+                      <VIcon
+                        x-small
+                        :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'"
+                        >mdi-shield-alert</VIcon
+                      >
+                      <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                      <a
+                        v-if="domainFixIcon"
+                        class="blocklist-hint__link blocklist-preview-bar__fix"
+                        :class="{ 'blocklist-hint__link--loading': domainFix.isLoading }"
+                        @click.prevent="fixDomain"
+                      >
+                        <VIcon
+                          small
+                          color="#2196f3"
+                          class="mr-1"
+                          :class="{ 'domain-suggest-icon--spin': domainFix.isLoading }"
+                          >{{ domainFixIcon }}</VIcon
+                        ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+                      </a>
                     </div>
                     <hr class="mt-2" v-if="!!template.content" />
                     <KEmailPreview
@@ -256,6 +286,36 @@
                       <span class="template-preview__text--title">Phishing URL: </span>
                       <span class="template-preview__text--body">{{ templateURL }}</span>
                     </div>
+                    <div v-if="domainFixNote" class="domain-suggest-note pl-0">
+                      <VIcon v-if="domainFixNoteIcon" x-small color="#4caf50" class="mr-1">{{ domainFixNoteIcon }}</VIcon
+                      >{{ domainFixNote }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="blocklistWarning"
+                    class="blocklist-preview-bar"
+                    :class="'blocklist-preview-bar--' + blocklistWarning.status"
+                  >
+                    <VIcon
+                      x-small
+                      :color="blocklistWarning.status === 'malicious' ? '#f44336' : '#ff9800'"
+                      >mdi-shield-alert</VIcon
+                    >
+                    <span class="blocklist-preview-bar__text">{{ blocklistWarningText }}</span>
+                    <a
+                      v-if="domainFixIcon"
+                      class="blocklist-hint__link blocklist-preview-bar__fix"
+                      :class="{ 'blocklist-hint__link--loading': domainFix.isLoading }"
+                      @click.prevent="fixDomain"
+                    >
+                      <VIcon
+                        small
+                        color="#2196f3"
+                        class="mr-1"
+                        :class="{ 'domain-suggest-icon--spin': domainFix.isLoading }"
+                        >{{ domainFixIcon }}</VIcon
+                      ><span class="blocklist-hint__link-label">Suggest clean domain</span>
+                    </a>
                   </div>
                   <hr class="mt-2" v-if="!!getSingleTemplateDetails" />
                   <KEmailPreview
@@ -284,6 +344,9 @@ import ShowMoreTags from '@/components/ShowMoreTags'
 import KSelect from '@/components/Common/Inputs/KSelect.vue'
 import { SCENARIO_DIFFICULTIES, SCENARIO_METHODS } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
+import domainTemplateFix from '@/mixins/domainTemplateFix'
+import blocklistPreview from '@/mixins/blocklistPreview'
+import { buildContentText } from '@/utils/randomDomain'
 import ConfigureCompanyStepHeader from '../Companies/ConfigureCompanyStepHeader'
 import labels from '@/model/constants/labels'
 import InputCallerPhoneNumber from '../Common/Inputs/InputCallerPhoneNumber'
@@ -295,7 +358,7 @@ import EmailTemplateListLeftSideLanguages from '@/components/workshop/EmailTempl
 
 export default {
   name: 'LandingPageListPreview',
-  mixins: [useDebounce],
+  mixins: [useDebounce, domainTemplateFix, blocklistPreview],
   components: {
     FormGroup,
     InputCallerPhoneNumber,
@@ -386,6 +449,8 @@ export default {
       isTemplateDetails: null,
       loadingTemplates: false,
       templateURL: null,
+      domainFixSelectedResourceId: null,
+      domainFixLanguageName: '',
       selectedPreviousIndex: 0,
       mfaMessageRules: [
         (v) => Validations.required(v),
@@ -415,6 +480,20 @@ export default {
     },
     getLandingPageHtmlKey() {
       return `${this.getSingleTemplateDetails}-${this.templateName}`
+    },
+    // --- domainTemplateFix wand (Smishing channel) ---
+    domainFixChannel() {
+      return 'smishing'
+    },
+    domainFixResourceId() {
+      return this.domainFixSelectedResourceId || null
+    },
+    domainFixContentText() {
+      const pages = (this.landingPageTemplates || []).map((t) => ({ content: t?.content || '' }))
+      return buildContentText({ name: this.templateName, landingPages: pages })
+    },
+    domainFixLanguage() {
+      return this.domainFixLanguageName || ''
     }
   },
   watch: {
@@ -578,6 +657,11 @@ export default {
           this.$emit('loading', false)
         })
     },
+    refreshAfterDomainFix(info = {}) {
+      // Template domain updated globally → clear the stale warning and reflect the new URL.
+      this.blocklistWarning = null
+      if (info.urlTemplate) this.templateURL = info.urlTemplate
+    },
     handleScroll(e) {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
       const scrollHeight = e.target.scrollHeight - 30
@@ -609,12 +693,15 @@ export default {
       if (isInitial) {
         this.$emit('initialLandingPageTemplateId', item.id)
       }
+      this.domainFixSelectedResourceId = item.resourceId
+      this.domainFixLanguageName = item.languageTypeName || ''
       SmishingService.getLandingPageTemplate(item.resourceId)
         .then((response) => {
           this.templateURL = response?.data?.data?.urlTemplate || ''
           this.templateName = response?.data?.data?.name
           this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
           this.landingPageTemplates = response?.data?.data?.landingPages || []
+          this.checkBlocklist(this.templateURL)
           this.$emit('selectedLandingPageChange', {
             ...item,
             ...response.data.data

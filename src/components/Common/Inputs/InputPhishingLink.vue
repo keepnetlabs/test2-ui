@@ -212,6 +212,12 @@ export default {
     contentText: {
       type: String,
       default: ''
+    },
+    // Language name of the template being edited (e.g. "Turkish (Türkiye)"); sent to the AI
+    // domain-suggest worker as a hint. Read by the domainSuggest mixin's ensureAiPreferred.
+    suggestLanguage: {
+      type: String,
+      default: ''
     }
   },
   data() {

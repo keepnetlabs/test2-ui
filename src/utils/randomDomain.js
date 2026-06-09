@@ -66,12 +66,16 @@ export function buildBlocklistStatusMap(domains) {
  * @param {string} text
  * @returns {string[]} unique keywords
  */
-export function extractKeywords(text) {
-  if (!text || typeof text !== 'string') return []
-  const stripped = text
+export function htmlToText(text) {
+  if (!text || typeof text !== 'string') return ''
+  return text
     .replace(/<[^>]*>/g, ' ') // remove HTML tags
     .replace(/&[a-z]+;/gi, ' ') // remove HTML entities (&nbsp; etc.)
-    .toLowerCase()
+}
+
+export function extractKeywords(text) {
+  if (!text || typeof text !== 'string') return []
+  const stripped = htmlToText(text).toLowerCase()
 
   const seen = new Set()
   const keywords = []

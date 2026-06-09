@@ -29,6 +29,7 @@
       :type="type"
       :languages="languageOptions"
       is-nested
+      :can-fix-domain="true"
       :should-control-html-overflow="false"
       @on-close="isShowLandingPageTemplateDrawer = false"
     />
