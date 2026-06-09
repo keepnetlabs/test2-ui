@@ -1,6 +1,7 @@
 import { getAllDomainBlocklistStatuses, getDomainBlocklistStatus } from '@/api/domainBlocklist'
 import { rankDomains, buildBlocklistStatusMap } from '@/utils/randomDomain'
 import { mapDomainFormRecords, buildDomainChangePayload } from '@/utils/landingPageDomainPayload'
+import { aiPreferredDomainId, hoistCandidate } from '@/utils/domainSuggestAI'
 
 const RISKY_STATUSES = ['malicious', 'suspicious']
 const SUCCESS_NOTE = 'clean domain selected'
@@ -30,7 +31,9 @@ export default {
         statusMap: null, // cached blocklist statuses (fetched once)
         cursor: -1,
         message: '',
-        isLoading: false
+        isLoading: false,
+        aiPreferredValue: null, // AI's best-fit pick (id), hoisted to front of the cycle
+        aiComputedFor: undefined // content the AI pick was computed for (cache key)
       }
     }
   },
@@ -42,6 +45,16 @@ export default {
     // Host MAY override with free-form content used to rank domains by semantic fit.
     domainFixContentText() {
       return ''
+    },
+    // Host MAY override with the previewed template's language name (e.g. "Turkish (Türkiye)").
+    // Sent to the AI worker as a hint so the suggested domain fits the content's language.
+    domainFixLanguage() {
+      return ''
+    },
+    // Host MAY override to target a non-phishing simulator. Selects which landing-page API
+    // the fix uses ('phishing' | 'smishing' | 'quishing'); their endpoints differ per channel.
+    domainFixChannel() {
+      return 'phishing'
     },
     isDomainFixDisabled() {
       return !this.domainFixResourceId
@@ -67,31 +80,62 @@ export default {
   },
   watch: {
     domainFixResourceId() {
-      // Previewing a different template → restart the cycle and drop any stale note.
-      // The pool / blocklist caches are global and intentionally kept.
+      // Previewing a different template → restart the cycle, drop any stale note, and force
+      // the AI preference to recompute for the new template's content. The pool / blocklist
+      // caches are global and intentionally kept.
       this.domainFix.cursor = -1
       this.domainFix.message = ''
+      this.domainFix.aiComputedFor = undefined
     }
   },
   methods: {
     // Host MAY override to refresh preview + re-run blocklist check after a fix.
     refreshAfterDomainFix() {},
+    /**
+     * Resolve the landing-page API for the active channel, normalized to one shape:
+     *   getFormDetails() · getTemplate(id) · update(payload, id)
+     * The three simulators differ in endpoint, export name AND argument order (smishing's
+     * update is `(id, payload)`), so the adapter hides that from `fixDomain`. Lazy-imported
+     * so this mixin's module graph stays free of the Vuex store (api → testRequest → store),
+     * keeping it light to import in tests.
+     */
+    async loadDomainFixApi() {
+      if (this.domainFixChannel === 'smishing') {
+        const m = (await import('@/api/smishing')).default
+        return {
+          getFormDetails: () => m.getLandingPageTemplateFormDetails(),
+          getTemplate: (id) => m.getLandingPageTemplate(id),
+          // note reversed args (id, payload); silent → no snackbar behind the drawer
+          update: (payload, id) => m.updateLandingPageTemplate(id, payload, { silent: true })
+        }
+      }
+      if (this.domainFixChannel === 'quishing') {
+        const m = (await import('@/api/quishing')).default
+        return {
+          getFormDetails: () => m.getLandingPageFormDetails(),
+          getTemplate: (id) => m.getLandingPageTemplate(id),
+          update: (payload, id) => m.updateLandingPage(payload, id, { silent: true })
+        }
+      }
+      const m = await import('@/api/landingPage')
+      return {
+        getFormDetails: () => m.getLandingPageFormDetails(),
+        getTemplate: (id) => m.getLandingPageTemplate(id),
+        // silent: our inline "clean domain selected" note is the confirmation; the global
+        // success snackbar would otherwise stack behind the preview drawer.
+        update: (payload, id) => m.updateLandingPage(payload, id, { silent: true })
+      }
+    },
     async fixDomain() {
       const s = this.domainFix
       if (this.isDomainFixDisabled || s.isLoading) return
       s.isLoading = true
       try {
-        // Lazy-loaded so this mixin's module graph stays free of the Vuex store
-        // (landingPage API → testRequest → store), which keeps it light to import in tests.
-        const {
-          getLandingPageFormDetails,
-          getLandingPageTemplate,
-          updateLandingPage
-        } = await import('@/api/landingPage')
+        const api = await this.loadDomainFixApi()
 
         if (s.domainRecords == null) {
           try {
-            const res = await getLandingPageFormDetails()
+            const res = await api.getFormDetails()
             s.domainRecords = mapDomainFormRecords(res?.data?.data?.domainRecords)
           } catch (e) {
             s.domainRecords = []
@@ -113,6 +157,7 @@ export default {
           }
         }
 
+        await this.ensureAiPreferredFix()
         const pick = await this.resolveSafeDomainFixPick()
         if (!pick) {
           s.message = 'No eligible (non-blacklisted) domain available'
@@ -120,20 +165,18 @@ export default {
         }
 
         const id = this.domainFixResourceId
-        const entityRes = await getLandingPageTemplate(id)
+        const entityRes = await api.getTemplate(id)
         const entity = entityRes && entityRes.data && entityRes.data.data
         const schema = pick.extraDatas && pick.extraDatas[0]
         const payload = buildDomainChangePayload(entity, pick.value, schema)
-        // silent: our inline "clean domain selected" note is the confirmation; the global
-        // success snackbar would otherwise stack behind the preview drawer.
-        const updRes = await updateLandingPage(payload, id, { silent: true })
+        const updRes = await api.update(payload, id)
 
         // Read the rebuilt urlTemplate so the preview can refresh immediately. Prefer the
         // PUT response; fall back to a fresh GET if it didn't echo the updated entity.
         let newUrlTemplate = (updRes && updRes.data && updRes.data.data && updRes.data.data.urlTemplate) || ''
         if (!newUrlTemplate) {
           try {
-            const fresh = await getLandingPageTemplate(id)
+            const fresh = await api.getTemplate(id)
             newUrlTemplate = (fresh && fresh.data && fresh.data.data && fresh.data.data.urlTemplate) || ''
           } catch (e) {
             newUrlTemplate = ''
@@ -158,11 +201,13 @@ export default {
     async resolveSafeDomainFixPick() {
       const s = this.domainFix
       for (let attempt = 0; attempt < s.domainRecords.length; attempt++) {
-        const { candidates } = rankDomains({
+        const { candidates: ranked } = rankDomains({
           domainRecords: s.domainRecords,
           contentText: this.domainFixContentText,
           statusMap: s.statusMap
         })
+        // Hoist the AI's best-fit pick to the front; no-op when AI is unavailable / not found.
+        const candidates = hoistCandidate(ranked, s.aiPreferredValue)
         if (!candidates.length) return null
 
         s.cursor = (s.cursor + 1) % candidates.length
@@ -181,6 +226,29 @@ export default {
         return { ...candidate, extraDatas: record && record.extraDatas }
       }
       return null
+    },
+    /**
+     * Compute the AI's preferred domain ONCE per (content, template) — cycling reuses it
+     * without re-calling the worker. Ranks the eligible pool first so the AI only picks from
+     * non-blacklisted candidates; on any failure `aiPreferredValue` stays null (rule-based).
+     */
+    async ensureAiPreferredFix() {
+      const s = this.domainFix
+      // Cache key includes language so switching the previewed language recomputes the pick.
+      const cacheKey = `${this.domainFixContentText} ${this.domainFixLanguage}`
+      if (s.aiComputedFor === cacheKey) return
+      s.aiComputedFor = cacheKey
+      s.aiPreferredValue = null
+      const { candidates } = rankDomains({
+        domainRecords: s.domainRecords,
+        contentText: this.domainFixContentText,
+        statusMap: s.statusMap
+      })
+      s.aiPreferredValue = await aiPreferredDomainId({
+        candidates,
+        contentText: this.domainFixContentText,
+        language: this.domainFixLanguage
+      })
     },
     async verifyDomainFixStatus(domainName) {
       try {

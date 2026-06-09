@@ -84,9 +84,11 @@ function createLandingPageTemplate(payload) {
   })
 }
 
-function updateLandingPageTemplate(resourceId, payload) {
+function updateLandingPageTemplate(resourceId, payload, { silent = false } = {}) {
+  // `silent` omits the global success snackbar (preview "fix domain" wand shows its own inline
+  // note and would otherwise stack a snackbar under the drawer). Error snackbars still surface.
   return testRequest.put(`/smishing-simulator/landing-page-template/${resourceId}`, payload, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: silent ? undefined : COMMON_SNACKBAR
   })
 }
 

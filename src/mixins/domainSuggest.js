@@ -1,5 +1,6 @@
 import { getAllDomainBlocklistStatuses, getDomainBlocklistStatus } from '@/api/domainBlocklist'
 import { rankDomains, buildBlocklistStatusMap } from '@/utils/randomDomain'
+import { aiPreferredDomainId, hoistCandidate } from '@/utils/domainSuggestAI'
 
 const RISKY_STATUSES = ['malicious', 'suspicious']
 
@@ -24,7 +25,9 @@ export default {
         appliedValue: null,
         cursor: -1,
         message: '',
-        isLoading: false
+        isLoading: false,
+        aiPreferredValue: null, // AI's best-fit pick (id), hoisted to front of the cycle
+        aiComputedFor: undefined // contentText the AI pick was computed for (cache key)
       }
     }
   },
@@ -46,8 +49,10 @@ export default {
       this.resetDomainSuggest(true)
     },
     contentText() {
-      // Content changed → next click should re-rank from the best match again.
+      // Content changed → next click should re-rank from the best match again, and the
+      // AI preference must be recomputed for the new content.
       this.domainSuggest.cursor = -1
+      this.domainSuggest.aiComputedFor = undefined
     },
     'value.domainRecordId'(val) {
       // Domain changed by something other than the wand (e.g. a manual dropdown pick) →
@@ -69,6 +74,8 @@ export default {
       s.appliedValue = null
       s.cursor = -1
       s.message = ''
+      s.aiPreferredValue = null
+      s.aiComputedFor = undefined
     },
     async suggestDomain() {
       const s = this.domainSuggest
@@ -85,6 +92,7 @@ export default {
             s.statusMap = {}
           }
         }
+        await this.ensureAiPreferred()
         const pick = await this.resolveSafePick()
         if (!pick) {
           s.appliedValue = null
@@ -109,11 +117,14 @@ export default {
     async resolveSafePick() {
       const s = this.domainSuggest
       for (let attempt = 0; attempt < this.domainRecords.length; attempt++) {
-        const { candidates, excludedCount } = rankDomains({
+        const { candidates: ranked, excludedCount } = rankDomains({
           domainRecords: this.domainRecords,
           contentText: this.contentText,
           statusMap: s.statusMap
         })
+        // Hoist the AI's best-fit pick to the front so the first click lands on it; the rest
+        // of the cycle keeps the rule-based order. No-op when AI is unavailable / not found.
+        const candidates = hoistCandidate(ranked, s.aiPreferredValue)
         s.candidates = candidates
         s.excludedCount = excludedCount
         if (!candidates.length) return null
@@ -123,8 +134,9 @@ export default {
 
         // No content match → "give me a (different) clean domain": if we'd land on the
         // already-selected domain and alternatives exist, step once more so the click does
-        // something. (For a real content match we keep the best, even if already selected.)
-        const noContentMatch = candidates[0].score === 0
+        // something. (For a real content match — or an explicit AI pick — we keep the best,
+        // even if already selected.)
+        const noContentMatch = candidates[0].score === 0 && !s.aiPreferredValue
         const current = this.value && this.value.domainRecordId
         if (noContentMatch && candidates.length > 1 && String(candidate.value) === String(current)) {
           s.cursor = (s.cursor + 1) % candidates.length
@@ -143,6 +155,30 @@ export default {
         return candidate
       }
       return null
+    },
+    /**
+     * Compute the AI's preferred domain ONCE per (content, pool) — cycling reuses it without
+     * re-calling the worker. Ranks the eligible pool first so the AI only ever picks from
+     * non-blacklisted candidates; on any failure `aiPreferredValue` stays null (rule-based).
+     */
+    async ensureAiPreferred() {
+      const s = this.domainSuggest
+      const language = this.suggestLanguage || ''
+      // Cache key includes language so switching the edited language recomputes the pick.
+      const cacheKey = `${this.contentText} ${language}`
+      if (s.aiComputedFor === cacheKey) return // already computed for this content + language
+      s.aiComputedFor = cacheKey
+      s.aiPreferredValue = null
+      const { candidates } = rankDomains({
+        domainRecords: this.domainRecords,
+        contentText: this.contentText,
+        statusMap: s.statusMap
+      })
+      s.aiPreferredValue = await aiPreferredDomainId({
+        candidates,
+        contentText: this.contentText,
+        language
+      })
     },
     async verifyDomainStatus(domainName) {
       try {

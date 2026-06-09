@@ -7,6 +7,25 @@ jest.mock('@/api/landingPage', () => ({
   getLandingPageTemplate: jest.fn(),
   updateLandingPage: jest.fn()
 }))
+jest.mock('@/api/domainSuggest', () => ({
+  suggestDomainByContent: jest.fn()
+}))
+jest.mock('@/api/smishing', () => ({
+  __esModule: true,
+  default: {
+    getLandingPageTemplateFormDetails: jest.fn(),
+    getLandingPageTemplate: jest.fn(),
+    updateLandingPageTemplate: jest.fn()
+  }
+}))
+jest.mock('@/api/quishing', () => ({
+  __esModule: true,
+  default: {
+    getLandingPageFormDetails: jest.fn(),
+    getLandingPageTemplate: jest.fn(),
+    updateLandingPage: jest.fn()
+  }
+}))
 
 import domainTemplateFix from '@/mixins/domainTemplateFix'
 import { getAllDomainBlocklistStatuses, getDomainBlocklistStatus } from '@/api/domainBlocklist'
@@ -15,6 +34,9 @@ import {
   getLandingPageTemplate,
   updateLandingPage
 } from '@/api/landingPage'
+import { suggestDomainByContent } from '@/api/domainSuggest'
+import smishingApi from '@/api/smishing'
+import quishingApi from '@/api/quishing'
 
 const rawPool = [
   { id: 1, domain: 'random-store.net', urlSchemaType: 'https', urlSchemaTypeId: 2, isStopBotActivity: false },
@@ -27,7 +49,9 @@ const freshState = () => ({
   statusMap: null,
   cursor: -1,
   message: '',
-  isLoading: false
+  isLoading: false,
+  aiPreferredValue: null,
+  aiComputedFor: undefined
 })
 
 const makeCtx = (overrides = {}) => {
@@ -36,9 +60,12 @@ const makeCtx = (overrides = {}) => {
     domainFixResourceId: 'lp-1',
     domainFixContentText: 'Acme Bank secure login',
     refreshAfterDomainFix: jest.fn(),
+    domainFixChannel: 'phishing',
     fixDomain: domainTemplateFix.methods.fixDomain,
+    loadDomainFixApi: domainTemplateFix.methods.loadDomainFixApi,
     resolveSafeDomainFixPick: domainTemplateFix.methods.resolveSafeDomainFixPick,
     verifyDomainFixStatus: domainTemplateFix.methods.verifyDomainFixStatus,
+    ensureAiPreferredFix: domainTemplateFix.methods.ensureAiPreferredFix,
     ...overrides
   }
   // mirror the computed
@@ -62,6 +89,8 @@ describe('domainTemplateFix mixin', () => {
       data: { data: { resourceId: 'lp-1', name: 'Acme', domainRecordId: '3', landingPages: [] } }
     })
     updateLandingPage.mockResolvedValue({})
+    // No AI preference by default → pure rule-based ranking (worker may be unconfigured/down).
+    suggestDomainByContent.mockResolvedValue(null)
   })
 
   describe('computed', () => {
@@ -110,6 +139,38 @@ describe('domainTemplateFix mixin', () => {
     })
   })
 
+  describe('loadDomainFixApi (channel adapter)', () => {
+    it('phishing → landingPage exports; update is silent and (payload, id)', async () => {
+      const api = await domainTemplateFix.methods.loadDomainFixApi.call({ domainFixChannel: 'phishing' })
+      await api.getFormDetails()
+      await api.getTemplate('p1')
+      await api.update({ a: 1 }, 'p1')
+      expect(getLandingPageFormDetails).toHaveBeenCalled()
+      expect(getLandingPageTemplate).toHaveBeenCalledWith('p1')
+      expect(updateLandingPage).toHaveBeenCalledWith({ a: 1 }, 'p1', { silent: true })
+    })
+
+    it('quishing → quishing exports; update is (payload, id)', async () => {
+      const api = await domainTemplateFix.methods.loadDomainFixApi.call({ domainFixChannel: 'quishing' })
+      await api.getFormDetails()
+      await api.getTemplate('q1')
+      await api.update({ b: 2 }, 'q1')
+      expect(quishingApi.getLandingPageFormDetails).toHaveBeenCalled()
+      expect(quishingApi.getLandingPageTemplate).toHaveBeenCalledWith('q1')
+      expect(quishingApi.updateLandingPage).toHaveBeenCalledWith({ b: 2 }, 'q1', { silent: true })
+    })
+
+    it('smishing → smishing exports; update args are REVERSED to (id, payload), silent', async () => {
+      const api = await domainTemplateFix.methods.loadDomainFixApi.call({ domainFixChannel: 'smishing' })
+      await api.getFormDetails()
+      await api.getTemplate('s1')
+      await api.update({ c: 3 }, 's1')
+      expect(smishingApi.getLandingPageTemplateFormDetails).toHaveBeenCalled()
+      expect(smishingApi.getLandingPageTemplate).toHaveBeenCalledWith('s1')
+      expect(smishingApi.updateLandingPageTemplate).toHaveBeenCalledWith('s1', { c: 3 }, { silent: true })
+    })
+  })
+
   describe('fixDomain', () => {
     it('picks the best clean domain, updates the template, and refreshes', async () => {
       const ctx = makeCtx()
@@ -126,6 +187,30 @@ describe('domainTemplateFix mixin', () => {
       expect(ctx.domainFix.isLoading).toBe(false)
       // updates silently — the inline note is the confirmation, no global snackbar
       expect(updateLandingPage).toHaveBeenCalledWith(expect.any(Object), 'lp-1', { silent: true })
+    })
+
+    it('lets a valid AI preference override the rule-based pick', async () => {
+      // Rule-based best is acme-bank-login.com (id 2); AI prefers random-store.net (id 1).
+      suggestDomainByContent.mockResolvedValue('1')
+      const ctx = makeCtx()
+      await domainTemplateFix.methods.fixDomain.call(ctx)
+      expect(suggestDomainByContent).toHaveBeenCalledTimes(1)
+      expect(updateLandingPage.mock.calls[0][0].domainRecordId).toBe('1')
+    })
+
+    it('falls back to the rule-based pick when the AI pick is not an eligible candidate', async () => {
+      suggestDomainByContent.mockResolvedValue('999') // not in pool
+      const ctx = makeCtx()
+      await domainTemplateFix.methods.fixDomain.call(ctx)
+      expect(updateLandingPage.mock.calls[0][0].domainRecordId).toBe('2')
+    })
+
+    it('forwards the previewed template language to the AI worker as a hint', async () => {
+      const ctx = makeCtx({ domainFixLanguage: 'Turkish (Türkiye)' })
+      await domainTemplateFix.methods.fixDomain.call(ctx)
+      expect(suggestDomainByContent).toHaveBeenCalledWith(
+        expect.objectContaining({ language: 'Turkish (Türkiye)' })
+      )
     })
 
     it('caches the pool and blocklist statuses across clicks', async () => {

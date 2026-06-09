@@ -318,6 +318,12 @@ export default {
         description: this.landingPageParams?.description,
         landingPages: pages
       })
+    },
+    domainFixLanguage() {
+      const match = (this.selectedLanguages || []).find(
+        (l) => String(l.value || l.id || l.languageTypeResourceId) === String(this.languagePreview)
+      )
+      return (match && (match.text || match.name || match.languageName)) || ''
     }
   },
   watch: {

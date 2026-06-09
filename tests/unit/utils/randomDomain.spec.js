@@ -2,6 +2,7 @@ import {
   EXCLUDED_BLOCKLIST_STATUSES,
   buildBlocklistStatusMap,
   buildContentText,
+  htmlToText,
   extractKeywords,
   tokenizeDomain,
   scoreDomain,
@@ -42,6 +43,17 @@ describe('randomDomain util', () => {
       expect(buildContentText({ name: 'Acme' })).toBe('Acme')
       expect(buildContentText({})).toBe('')
       expect(buildContentText()).toBe('')
+    })
+  })
+
+  describe('htmlToText', () => {
+    it('strips tags and entities, preserving text and case', () => {
+      expect(htmlToText('<h1>Acme&nbsp;Bank</h1>')).toBe(' Acme Bank ')
+    })
+    it('returns empty string for non-string / empty input', () => {
+      expect(htmlToText('')).toBe('')
+      expect(htmlToText(null)).toBe('')
+      expect(htmlToText(42)).toBe('')
     })
   })
 

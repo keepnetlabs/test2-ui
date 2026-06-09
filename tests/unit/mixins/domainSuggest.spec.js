@@ -2,9 +2,13 @@ jest.mock('@/api/domainBlocklist', () => ({
   getAllDomainBlocklistStatuses: jest.fn(),
   getDomainBlocklistStatus: jest.fn()
 }))
+jest.mock('@/api/domainSuggest', () => ({
+  suggestDomainByContent: jest.fn()
+}))
 
 import domainSuggest from '@/mixins/domainSuggest'
 import { getAllDomainBlocklistStatuses, getDomainBlocklistStatus } from '@/api/domainBlocklist'
+import { suggestDomainByContent } from '@/api/domainSuggest'
 
 const pool = [
   { value: '1', text: 'random-store.net' },
@@ -19,7 +23,9 @@ const freshState = () => ({
   appliedValue: null,
   cursor: -1,
   message: '',
-  isLoading: false
+  isLoading: false,
+  aiPreferredValue: null,
+  aiComputedFor: undefined
 })
 
 const makeCtx = (overrides = {}) => ({
@@ -33,6 +39,7 @@ const makeCtx = (overrides = {}) => ({
   verifyDomainStatus: domainSuggest.methods.verifyDomainStatus,
   buildDomainSuggestMessage: domainSuggest.methods.buildDomainSuggestMessage,
   resetDomainSuggest: domainSuggest.methods.resetDomainSuggest,
+  ensureAiPreferred: domainSuggest.methods.ensureAiPreferred,
   ...overrides
 })
 
@@ -46,6 +53,8 @@ describe('domainSuggest mixin', () => {
     })
     // Per-domain verification: clean by default unless a test overrides it.
     getDomainBlocklistStatus.mockResolvedValue({ data: { status: 'clean' } })
+    // No AI preference by default → pure rule-based ranking (worker may be unconfigured/down).
+    suggestDomainByContent.mockResolvedValue(null)
   })
 
   describe('isDomainSuggestDisabled', () => {
@@ -138,6 +147,38 @@ describe('domainSuggest mixin', () => {
       expect(ctx.handleChangeDomainRecord).toHaveBeenCalled()
       expect(ctx.handleChangeDomainRecord).not.toHaveBeenCalledWith('2') // acme-bank-login skipped
       expect(ctx.domainSuggest.statusMap['acme-bank-login.com']).toBe('malicious')
+    })
+
+    it('lets the AI preference win the first pick over the rule-based best', async () => {
+      // Rule-based best for "Acme Bank…" is acme-bank-login.com ('2'); AI prefers random-store ('1').
+      suggestDomainByContent.mockResolvedValue('1')
+      const ctx = makeCtx()
+      await domainSuggest.methods.suggestDomain.call(ctx)
+      expect(ctx.handleChangeDomainRecord).toHaveBeenCalledWith('1')
+      expect(ctx.domainSuggest.appliedValue).toBe('1')
+    })
+
+    it('ignores an AI pick outside the eligible pool and falls back to rule-based', async () => {
+      suggestDomainByContent.mockResolvedValue('999') // not a real candidate
+      const ctx = makeCtx()
+      await domainSuggest.methods.suggestDomain.call(ctx)
+      expect(ctx.handleChangeDomainRecord).toHaveBeenCalledWith('2') // rule-based best
+    })
+
+    it('computes the AI preference once and reuses it across cycle clicks', async () => {
+      suggestDomainByContent.mockResolvedValue('1')
+      const ctx = makeCtx()
+      await domainSuggest.methods.suggestDomain.call(ctx)
+      await domainSuggest.methods.suggestDomain.call(ctx)
+      expect(suggestDomainByContent).toHaveBeenCalledTimes(1) // not re-called while cycling
+    })
+
+    it('forwards the edited template language to the AI worker as a hint', async () => {
+      const ctx = makeCtx({ suggestLanguage: 'Turkish (Türkiye)' })
+      await domainSuggest.methods.suggestDomain.call(ctx)
+      expect(suggestDomainByContent).toHaveBeenCalledWith(
+        expect.objectContaining({ language: 'Turkish (Türkiye)' })
+      )
     })
 
     it('ignores clicks while disabled or already loading', async () => {

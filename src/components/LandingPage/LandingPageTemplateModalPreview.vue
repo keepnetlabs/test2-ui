@@ -261,16 +261,34 @@ export default {
     },
     blocklistWarningText() {
       if (!this.blocklistWarning) return ''
-      return `${this.blocklistWarning.reason} Please use a clean domain before sending.`
+      const reason = this.blocklistWarning.reason
+      const prefix = reason ? `${reason} ` : ''
+      return `${prefix}Please use a clean domain before sending.`
     },
     // --- domainTemplateFix wand (overrides the mixin's stubs) ---
     domainFixResourceId() {
-      if (!this.canFixDomain || !this.isPhishing) return null
+      if (!this.canFixDomain) return null
       return this.templateResourceId || null
+    },
+    // Route the fix to the right simulator's landing-page API (endpoints differ per channel).
+    // NOTE: detect channel case-insensitively from `type` (campaign/new-scenario callers pass
+    // the capitalized SCENARIO_TYPES value e.g. 'Quishing', the library passes lowercase
+    // PREVIEW_DIALOG_TYPES 'quishing') OR via the explicit props (the Smishing list passes
+    // `type=PHISHING` + `is-smishing-prop`). A case-sensitive `type` compare here would send
+    // the quishing campaign/new-scenario wand to the phishing endpoint.
+    domainFixChannel() {
+      const t = (this.type || '').toLowerCase()
+      if (this.isQuishingProp || t === PREVIEW_DIALOG_TYPES.QUISHING) return 'quishing'
+      if (this.isSmishingProp || t === 'smishing') return 'smishing'
+      return 'phishing'
     },
     domainFixContentText() {
       const pages = (this.landingPageTemplates || []).map((t) => ({ content: t?.content || '' }))
       return buildContentText({ name: this.templateName, landingPages: pages })
+    },
+    domainFixLanguage() {
+      const sel = this.languageItems.find((l) => String(l.value) === String(this.selectedLanguageId))
+      return (sel && sel.text) || ''
     }
   },
   watch: {

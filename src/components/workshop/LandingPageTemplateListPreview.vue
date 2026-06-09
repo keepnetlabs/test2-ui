@@ -1238,6 +1238,10 @@ export default {
         name: this.selectedTemplateHeader || this.templateName,
         landingPages: [{ content: this.getSingleTemplateDetails || '' }]
       })
+    },
+    domainFixLanguage() {
+      const opt = this.getLanguageOptionById(this.languagePreview)
+      return (opt && (opt.text || opt.name || opt.languageName)) || ''
     }
   },
   watch: {
