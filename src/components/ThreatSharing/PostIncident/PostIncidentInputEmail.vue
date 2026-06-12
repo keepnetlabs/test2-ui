@@ -105,7 +105,7 @@ export default {
     callForData() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500000,
+        pageSize: 9999,
         orderBy: 'createTime',
         ascending: false,
         clusteredBy: ''
