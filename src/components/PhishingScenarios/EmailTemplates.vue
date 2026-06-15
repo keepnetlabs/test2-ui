@@ -155,6 +155,7 @@ import {
 } from '@/model/constants/commonConstants'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
+import { BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID } from '@/components/PhishingScenarios/utils'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import * as Validations from '@/utils/validations'
 import { mapGetters } from 'vuex'
@@ -253,7 +254,8 @@ export default {
             filterableItems: [
               { text: 'Click Only', value: 'WNZt0sCVCWB3' },
               { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-              { text: 'Attachment', value: '7dLrW2kdBTDs' }
+              { text: 'Attachment', value: '7dLrW2kdBTDs' },
+              { text: 'Double Barrel', value: BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID }
             ]
           },
           {

@@ -414,6 +414,14 @@
                           <VIcon color="#2196f3" medium> mdi-fullscreen </VIcon>
                         </VBtn>
                       </div>
+                      <ElTabs
+                        v-if="isBarrelTemplate && !!emailTemplate"
+                        v-model="barrelPreviewMode"
+                        class="k-sub-tab barrel-mode-tabs mb-2"
+                      >
+                        <ElTabPane label="Lure Email" name="lure" />
+                        <ElTabPane label="Payload Email" name="payload" />
+                      </ElTabs>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
                         <div>
                           <span class="fw-600 text-primary-color">Template Name: </span>
@@ -435,9 +443,7 @@
                           />
                           <div class="mb-2">
                             <span class="fw-600 text-primary-color">Subject: </span>
-                            <span class="fw-400 text-primary-color">{{
-                              emailTemplateParams && emailTemplateParams.subject
-                            }}</span>
+                            <span class="fw-400 text-primary-color">{{ displayedSubject }}</span>
                           </div>
                           <div class="mb-2">
                             <span class="fw-600 text-primary-color">From Name: </span>
@@ -475,8 +481,8 @@
                       <hr v-if="!!emailTemplate" />
                       <KEmailPreview
                         v-if="!!emailTemplate"
-                        :key="emailTemplate"
-                        :html="emailTemplate"
+                        :key="displayedEmailTemplate"
+                        :html="displayedEmailTemplate"
                       />
                     </div>
                   </ElTabPane>
@@ -700,6 +706,7 @@ import QuishingService from '@/api/quishing'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import AwarenessEducatorService from '@/api/awarenessEducator'
 import { getEnrollmentSendTypeIdByEnum } from '@/components/CampaignManager/PhishingScenarios/utils'
+import { BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID } from '@/components/PhishingScenarios/utils'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import {
   scenarioDistributionItems,
@@ -812,6 +819,8 @@ export default {
       totalPhishingScenariosCount: 0,
       scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
       emailTemplate: null,
+      isBarrelTemplate: false,
+      barrelPreviewMode: 'lure',
       emailTemplateParams: null,
       landingPageParams: null,
       landingPageTemplate: null,
@@ -978,6 +987,21 @@ export default {
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
+    // Subject shown in the inline preview: payload subject in payload mode, lure subject otherwise.
+    displayedSubject() {
+      return this.isBarrelPayloadMode
+        ? this.emailTemplateParams?.barrelPayload?.subject || ''
+        : this.emailTemplateParams?.subject
+    },
+    // Body shown in KEmailPreview: payload html in payload mode, lure html otherwise.
+    displayedEmailTemplate() {
+      return this.isBarrelPayloadMode
+        ? this.emailTemplateParams?.barrelPayload?.template || ''
+        : this.emailTemplate
     },
     blocklistWarningText() {
       if (!this.blocklistWarning) return ''
@@ -1408,12 +1432,21 @@ export default {
           } = emailTemplate || {}
           if (this.type === SCENARIO_TYPES.QUISHING)
             template = template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
+          // Barrel templates carry a second body (payload) per language under barrelPayload.
+          // Phishing-only; gate on actual payload content so the Lure/Payload toggle only appears
+          // when the response truly carries a payload (graceful no-op otherwise).
+          const primaryBarrelPayload = emailTemplate?.barrelPayload
+          this.isBarrelTemplate =
+            this.isPhishing &&
+            !!(primaryBarrelPayload &&
+              (primaryBarrelPayload.template || primaryBarrelPayload.subject))
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
             ccAddresses,
             subject,
+            barrelPayload: primaryBarrelPayload || {},
             difficulty:
               difficulties.find((item) => item.value === difficultyResourceId)?.text || '',
             attachments,
@@ -1439,6 +1472,7 @@ export default {
               fromAddress: fromAddress,
               subject: subject,
               template: template,
+              barrelPayload: primaryBarrelPayload || {},
               ccAddresses: ccAddresses,
               languageTypeName:
                 this.languages.find((lang) => lang.languageTypeName === languageTypeName)?.text ||
@@ -1462,6 +1496,7 @@ export default {
                     fromAddress: item.fromAddress,
                     subject: item.subject,
                     template: item.template,
+                    barrelPayload: item.barrelPayload || {},
                     ccAddresses: item.ccAddresses,
                     languageTypeName:
                       this.languages.find((lang) => lang.languageTypeName === item.languageTypeName)
@@ -1714,6 +1749,7 @@ export default {
       this.$set(this.emailTemplateParams, 'fromAddress', findedTemplate.fromAddress)
       this.$set(this.emailTemplateParams, 'subject', findedTemplate.subject)
       this.$set(this.emailTemplateParams, 'template', findedTemplate.template)
+      this.$set(this.emailTemplateParams, 'barrelPayload', findedTemplate.barrelPayload || {})
       this.$set(this.emailTemplateParams, 'ccAddresses', findedTemplate.ccAddresses)
       this.$set(this.emailTemplateParams, 'cc', findedTemplate.ccAddresses) // Also set cc for template
       this.$set(

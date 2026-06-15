@@ -109,6 +109,9 @@ export default {
           return 'Send a trackable file'
         case SCENARIO_METHOD_TYPES.MFA:
           return 'Send a phishing MFA'
+        case SCENARIO_METHOD_TYPES.BARREL:
+        case SCENARIO_METHOD_TYPES.DOUBLE_BARREL:
+          return 'Send a harmless lure first, then a payload with the link'
         default:
           return `See who fails for ${scenarioType} links`
       }

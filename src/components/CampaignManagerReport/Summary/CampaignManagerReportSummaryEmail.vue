@@ -66,7 +66,17 @@
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
           <DatatableLoading v-if="isLoading" :loading="isLoading" />
-          <KEmailPreview v-else :html="emailTemplate" is-extra-height />
+          <template v-else>
+            <ElTabs
+              v-if="isBarrelTemplate"
+              v-model="barrelPreviewMode"
+              class="k-sub-tab barrel-mode-tabs mb-2"
+            >
+              <ElTabPane label="Lure Email" name="lure" />
+              <ElTabPane label="Payload Email" name="payload" />
+            </ElTabs>
+            <KEmailPreview :html="displayedEmailTemplate" is-extra-height />
+          </template>
         </div>
       </div>
     </template>
@@ -120,12 +130,22 @@ export default {
       name: '',
       fromName: '',
       fromAddress: '',
-      isAssistedByAI: false
+      isAssistedByAI: false,
+      isBarrelTemplate: false,
+      barrelPreviewMode: 'lure',
+      barrelPayload: {}
     }
   },
   computed: {
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
+    // Body shown in KEmailPreview: payload html in payload mode, lure html otherwise.
+    displayedEmailTemplate() {
+      return this.isBarrelPayloadMode ? this.barrelPayload?.template || '' : this.emailTemplate
     }
   },
   watch: {
@@ -164,6 +184,12 @@ export default {
             this.fromAddress = data.fromAddress
             this.name = data.name
             this.isAssistedByAI = data?.isAssistedByAI || false
+            // Barrel templates carry a payload body. This single-email report card has no
+            // per-language data, so gate the Lure/Payload toggle strictly on actual payload
+            // content presence — showing an empty payload tab would be misleading, and absent
+            // payload data this is a graceful no-op (lure only, unchanged behavior).
+            this.barrelPayload = data.barrelPayload || {}
+            this.isBarrelTemplate = !!(this.barrelPayload.template || this.barrelPayload.subject)
           })
           .finally(() => {
             if (showLoader) this.setLoading()

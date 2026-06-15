@@ -190,7 +190,11 @@
                 :frequency-disabled-text="frequencyDisabledText"
                 :targetGroupCompanyNames="targetGroupCompanyNames"
                 @set-action-button-disability="setActionButtonDisability"
-              />
+              >
+                <template v-if="isBarrelCampaign" #afterFrequency>
+                  <CampaignManagerBarrelOptions v-model="barrelOptions" class="mt-2 mb-8" />
+                </template>
+              </CampaignManagerDeliverySettings>
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="5">
               <ConfigureCompanyStepHeader
@@ -251,6 +255,8 @@ import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { getTargetGroupCountDetailExt } from '@/api/targetUsers'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
+import CampaignManagerBarrelOptions from '@/components/CampaignManager/BarrelOptions/CampaignManagerBarrelOptions'
+import { BARREL_DEFAULTS, SCENARIO_METHOD_TYPE } from '@/components/PhishingScenarios/utils'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
@@ -269,6 +275,7 @@ const EMITS = {
 export default {
   name: 'CampaignManagerAddOrEditModal',
   components: {
+    CampaignManagerBarrelOptions,
     CampaignManagerLanguageSupportDialog,
     CampaignManagerDeliverySettings,
     CampaignManagerTargetAudience,
@@ -330,6 +337,7 @@ export default {
       selectedTargetGroupsMapped: [],
       selectedTargetGroups: [],
       selectedPhishingScenarios: [],
+      barrelOptions: { ...BARREL_DEFAULTS },
       scenarioDistribution: SCENARIO_DISTRIBUTION.MANUALLY,
       initialScenarioDistribution: null,
       defaultTargetGroupResourceIds: [],
@@ -374,6 +382,15 @@ export default {
         return this.phishingScenarioItems.some((scenario) => scenario.method === 'MFA')
       }
       return this.selectedPhishingScenarios.some((scenario) => scenario.method === 'MFA')
+    },
+    isBarrelCampaign() {
+      // Show the barrel config panel when at least one selected scenario is Double Barrel
+      // (covers mixed campaigns), mirroring the MFA detection logic.
+      const scenarios =
+        this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY
+          ? this.phishingScenarioItems
+          : this.selectedPhishingScenarios
+      return scenarios.some((scenario) => this.isDoubleBarrelScenario(scenario))
     },
     getTotalTargetUserCountForTargetAudience() {
       if (Object.keys(this.userCountDetailResponse)?.length) return this.totalTargetUserCount
@@ -480,6 +497,8 @@ export default {
           formData.categoryFilter = this.categoryFilter
           formData.phishingScenarioItems = this.phishingScenarioItems
         }
+        formData.isBarrelCampaign = this.isBarrelCampaign
+        if (this.isBarrelCampaign) formData.barrelOptions = this.barrelOptions
       }
       return formData
     },
@@ -660,6 +679,18 @@ export default {
     getInitialCampaignManagerCampaignInfo(values) {
       this.initialFormValues = { ...this.initialFormValues, ...values }
     },
+    isDoubleBarrelScenario(scenario) {
+      // Tolerant match: backend method label may be "Double Barrel"/"DoubleBarrel"; also
+      // accept an explicit methodType id of 6 if the scenario object carries it.
+      const normalizedMethod = String(scenario?.method || '')
+        .replace(/[\s_-]/g, '')
+        .toLowerCase()
+      return (
+        normalizedMethod === 'doublebarrel' ||
+        String(scenario?.methodTypeId) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL ||
+        String(scenario?.methodType) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL
+      )
+    },
     callForData() {
       getCampaignManager(this.getCampaignResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
@@ -672,6 +703,14 @@ export default {
         }
         this.initialScenarioDistribution =
           data?.categoryDistributionType || SCENARIO_DISTRIBUTION.MANUALLY
+        this.barrelOptions = {
+          delayMinutes: data?.barrelDelayMinutes ?? BARREL_DEFAULTS.delayMinutes,
+          orderType: data?.barrelOrderType ?? BARREL_DEFAULTS.orderType,
+          skipPayloadIfReported:
+            data?.barrelSkipPayloadIfReported ?? BARREL_DEFAULTS.skipPayloadIfReported,
+          responsiveDelivery: data?.barrelResponsiveDelivery ?? BARREL_DEFAULTS.responsiveDelivery,
+          urgentFlagType: data?.barrelUrgentFlagType ?? BARREL_DEFAULTS.urgentFlagType
+        }
         this.selectedRowFormData = data
         this.sendUserPreferredLanguage = data?.sendUserPreferredLanguage?.toString()
         this.selectedTargetGroups = data.targetGroups.map((tGroup) => ({
@@ -988,7 +1027,16 @@ export default {
             sendRandomlyUsersCalculateTypeId:
               targetAudienceFormData.sendRandomlyUsersCalculateTypeId,
             categoryDistributionType: this.scenarioDistribution,
-            clickedUserGroupResourceId: this.clickedUserGroupResourceId
+            clickedUserGroupResourceId: this.clickedUserGroupResourceId,
+            ...(this.isBarrelCampaign
+              ? {
+                  barrelDelayMinutes: this.barrelOptions.delayMinutes,
+                  barrelOrderType: this.barrelOptions.orderType,
+                  barrelSkipPayloadIfReported: this.barrelOptions.skipPayloadIfReported,
+                  barrelResponsiveDelivery: this.barrelOptions.responsiveDelivery,
+                  barrelUrgentFlagType: this.barrelOptions.urgentFlagType
+                }
+              : {})
           }
           if (this.scenarioDistribution !== SCENARIO_DISTRIBUTION.MANUALLY) {
             payload = {

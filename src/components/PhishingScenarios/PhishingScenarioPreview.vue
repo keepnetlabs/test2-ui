@@ -15,6 +15,14 @@
       <ElTabs v-show="!isLoading" v-model="tab">
         <ElTabPane id="campaign-manager-info--email-content" name="email" :label="labels.JustEmail">
           <div class="template-preview pt-4">
+            <ElTabs
+              v-if="isBarrelTemplate && !!emailTemplate"
+              v-model="barrelPreviewMode"
+              class="k-sub-tab barrel-mode-tabs mb-2"
+            >
+              <ElTabPane label="Lure Email" name="lure" />
+              <ElTabPane label="Payload Email" name="payload" />
+            </ElTabs>
             <div class="template-preview__text" v-if="!!emailTemplate">
               <div>
                 <span class="template-preview__text--title">Template Name: </span>
@@ -59,7 +67,7 @@
                     line-height: 24px;
                     color: #383b41;
                   "
-                  >{{ emailTemplateParams.subject }}</span
+                  >{{ displayedSubject }}</span
                 >
               </div>
             </div>
@@ -77,7 +85,7 @@
               </div>
             </div>
             <hr class="mt-2" v-if="!!emailTemplate" />
-            <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
+            <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="displayedEmailTemplate" />
           </div>
         </ElTabPane>
         <ElTabPane
@@ -121,6 +129,7 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import TabsWithMfaSettings from '@/components/PhishingScenarios/TabsWithMfaSettings'
+import { BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID } from '@/components/PhishingScenarios/utils'
 export default {
   name: 'PhishingScenarioPreview',
   components: {
@@ -149,12 +158,28 @@ export default {
       tab: 'email',
       isLoading: false,
       labels,
-      timeoutId: ''
+      timeoutId: '',
+      isBarrelTemplate: false,
+      barrelPreviewMode: 'lure',
+      barrelPayload: {}
     }
   },
   computed: {
     isAttachmentBasedScenario() {
       return this.selectedRow?.method ? this.selectedRow?.method === 'Attachment' : false
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
+    // Subject shown: payload subject in payload mode, lure subject otherwise.
+    displayedSubject() {
+      return this.isBarrelPayloadMode
+        ? this.barrelPayload?.subject || ''
+        : this.emailTemplateParams.subject
+    },
+    // Body shown in KEmailPreview: payload html in payload mode, lure html otherwise.
+    displayedEmailTemplate() {
+      return this.isBarrelPayloadMode ? this.barrelPayload?.template || '' : this.emailTemplate
     },
     getTitle() {
       return 'Scenario Preview'
@@ -213,6 +238,13 @@ export default {
               : null
           }
           this.emailTemplate = template
+          // Barrel templates carry a second body (payload). Detect by category, falling back to
+          // actual payload content so the Lure/Payload toggle only appears when a payload exists.
+          const barrelPayload = emailTemplate?.barrelPayload
+          this.barrelPayload = barrelPayload || {}
+          this.isBarrelTemplate =
+            emailTemplate?.categoryResourceId === BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID ||
+            !!(barrelPayload && (barrelPayload.template || barrelPayload.subject))
 
           const {
             name: landingPageName,

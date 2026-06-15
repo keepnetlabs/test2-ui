@@ -31,6 +31,7 @@
           :blockManagerComponents="activeBlockManagerComponents"
           :template-type="templateType"
           :isAttachmentBasedTemplate="isAttachmentBasedScenario"
+          :hidePhishingUrlMergeTag="hidePhishingUrlMergeTag"
           :customHeadScripts="customHeadScripts"
           :customHeadScriptsPlacement="customHeadScriptsPlacement"
           :isShowHeadScripts="isShowHeadScripts"
@@ -126,9 +127,7 @@
             </div>
             <div class="d-flex gap-2 flex-column">
               <div
-                v-for="(i, index) in templateType === 'landing'
-                  ? landingPageBadgeContents
-                  : badgeContents"
+                v-for="(i, index) in displayedBadgeContents"
                 :key="index"
                 class="email-template__ai-assistant-content-badge"
                 @click="handleAiAssistantBadgeClick(index)"
@@ -374,6 +373,7 @@
           !hideNotificationTemplateSenderFields ||
           showNameField ||
           showLanguageField ||
+          showSubjectField ||
           isNotificationTemplate
         )
       "
@@ -771,7 +771,10 @@ import * as Validations from '@/utils/validations'
 import { createRandomCryptStringNumber, isDifferent } from '@/utils/functions'
 import {
   scrollToEmailTemplateContent,
-  setCompanyLogoSrc
+  setCompanyLogoSrc,
+  AI_ALLY_EMAIL_SUGGESTIONS,
+  AI_ALLY_LURE_SUGGESTIONS,
+  AI_ALLY_LANDING_SUGGESTIONS
 } from '@/components/Company Settings/utils'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapActions, mapGetters } from 'vuex'
@@ -843,6 +846,8 @@ export default {
     'fileUploadHint',
     'size',
     'isAttachmentBasedScenario',
+    'hidePhishingUrlMergeTag',
+    'useLureSuggestions',
     'isAttachmentError',
     'isNotificationTemplate',
     'isEnrollmentCategorySelected',
@@ -853,6 +858,7 @@ export default {
     'hideNotificationTemplatePreviewOuterShell',
     'isHorizontalFormGroups',
     'showNameField',
+    'showSubjectField',
     'isAiAssistant',
     'isAIAllyEnabled',
     'aiAssistant',
@@ -889,60 +895,6 @@ export default {
     return {
       QUISHING_EMAIL_TEMPLATE_TYPES,
       isEmailGenerating: false,
-      badgeContents: [
-        {
-          title: 'Finance Department Alert',
-          content:
-            'Create a template that appears to be from our Finance Department, asking the user to verify a payment that is scheduled for today. Include a link that directs them to a secure page to review the details. The tone should be urgent and professional, with an emphasis on preventing unauthorized transactions.'
-        },
-        {
-          title: 'HR Benefits Update',
-          content:
-            'Make a template that looks like it is coming from our HR department, informing the user about changes to their benefits package. They are asked to log in to the benefits portal via a provided link to review and accept the new terms. The tone should be informative yet urgent, stressing the need to complete this before the end of the week.'
-        },
-        {
-          title: 'Suspicious Login Alert',
-          content:
-            'Make a template that looks like it is coming from the organization’s security team, warning the user about a suspicious login attempt on their account. The email should urge them to click a link to verify their identity and secure their account. The tone should be urgent, with a focus on protecting the user’s account from unauthorized access.'
-        },
-        {
-          title: 'Payroll Adjustment Notification',
-          content:
-            'Make a template that seems to be from the Payroll Department, informing the user of a recent adjustment to their paycheck due to an error. Include a link where they can view the updated payment details. The tone should be apologetic for the error but emphasize the need for the user to verify the correction.'
-        },
-        {
-          title: 'Account Deactivation Notice',
-          content:
-            'Make a template that looks like it’s from the user’s account management system, warning them that their account will be deactivated if they do not confirm their details by clicking a provided link. The tone should be formal and emphasize the importance of maintaining active status.'
-        }
-      ],
-      landingPageBadgeContents: [
-        {
-          title: 'Company Event Registration',
-          content:
-            'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.'
-        },
-        {
-          title: 'Password Reset Page',
-          content:
-            'Create a landing page for a system password reset. Include a field for entering the email address, a "Submit" button, and a link for "Contact Support" in case the user has trouble resetting their password. The design should be simple with a white background, and include a small company logo at the top. The instructions should be clear and concise.'
-        },
-        {
-          title: 'Bank Account Login Page',
-          content:
-            'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
-        },
-        {
-          title: 'Subscription Confirmation Page',
-          content:
-            'Create a landing page for subscription confirmation. Include a message saying "Thank you for subscribing!", a field for entering an email address to confirm the subscription, and a "Confirm Subscription" button. Add a small note about privacy at the bottom. The design should be clean and modern, with a focus on ease of use.'
-        },
-        {
-          title: 'Phishing Awareness Oops Page',
-          content:
-            "Create a landing page that tells the user they've clicked on a simulated phishing email. The message should say \"Oops! The email you just clicked was a phishing simulation. Don't worry, this is to help you learn.\" Include three key rules: 1. Avoid unknown links/attachments. 2. Verify the sender's email. 3. Be cautious of too-good-to-be-true offers. The design should be clear and educational."
-        }
-      ],
       selectLanguageRules: {
         rules: [(v) => Validations.required(v, labels.Required)]
       },
@@ -1107,6 +1059,12 @@ export default {
         return this.isEmailGenerating ? 'Generating Landing Page...' : 'Generate Landing Page'
       }
       return this.isEmailGenerating ? 'Generating Email Template...' : 'Generate Email Template'
+    },
+    // AI Ally "TRY SUGGESTIONS". For a Double Barrel lure editor (useLureSuggestions) the
+    // prompts must NOT ask for links/CTAs — the lure email carries no phishing URL.
+    displayedBadgeContents() {
+      if (this.templateType === 'landing') return AI_ALLY_LANDING_SUGGESTIONS
+      return this.useLureSuggestions ? AI_ALLY_LURE_SUGGESTIONS : AI_ALLY_EMAIL_SUGGESTIONS
     },
     getGenerateEmailButtonStyle() {
       if (this.isShowRedFlags) return this.isRedFlagButtonDisabledStyle
@@ -1443,10 +1401,7 @@ export default {
       this.$emit('update:subject', this.generatedTemplates[index].subject)
     },
     handleAiAssistantBadgeClick(index) {
-      this.aiTemplateText =
-        this.templateType === 'landing'
-          ? this.landingPageBadgeContents[index].content
-          : this.badgeContents[index].content
+      this.aiTemplateText = this.displayedBadgeContents[index].content
     },
     handleRenameItem() {
       this.$emit('handleRenameAttachment')

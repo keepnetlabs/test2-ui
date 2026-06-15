@@ -32,3 +32,19 @@
         display: none !important;
     }
 }
+
+// Barrel payload editor: when the EDIT button is shown there is no AI banner
+// (unlike the lure editor), so the subject grid renders flush against the card
+// top. Add breathing room for this case only.
+.barrel-payload-editor {
+    div[style*="grid-template-columns"] {
+        padding-top: 10px;
+    }
+}
+
+// Vertically center the barrel info AlertBox icon with its single-line text.
+.barrel-info-alert {
+    .alert-box__default-content {
+        align-items: center;
+    }
+}

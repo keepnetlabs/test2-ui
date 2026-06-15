@@ -157,6 +157,7 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import barrelEmailRoleColumnMixin from '@/components/CampaignManagerReport/barrelEmailRoleColumnMixin'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import CampaignManagerReportGroupsColumn from '@/components/CampaignManagerReport/CampaignManagerReportGroupsColumn.vue'
@@ -179,7 +180,7 @@ export default {
     CommonReportViewTargetGroupsModal,
     DefaultButtonRowAction
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, barrelEmailRoleColumnMixin],
   props: {
     id: {
       type: String

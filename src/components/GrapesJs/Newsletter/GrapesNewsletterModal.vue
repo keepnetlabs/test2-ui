@@ -103,6 +103,12 @@ export default {
       type: Boolean,
       default: false
     },
+    // Hides the {PHISHINGURL} merge tag from the editor (e.g. Double Barrel lure email,
+    // which must never contain links/the phishing URL — that lives only in the payload).
+    hidePhishingUrlMergeTag: {
+      type: Boolean,
+      default: false
+    },
     isShowHeadScripts: {
       type: Boolean,
       default: false
@@ -489,7 +495,7 @@ export default {
       } catch {
         return;
       }
-      if (this.isAttachmentBasedTemplate) {
+      if (this.isAttachmentBasedTemplate || this.hidePhishingUrlMergeTag) {
         delete blockManagerComponents["{PHISHINGURL}"];
       }
       Object.keys(blockManagerComponents).forEach((key) => {
@@ -1018,7 +1024,7 @@ export default {
       } catch {
         blockManagerComponents = {};
       }
-      if (this.isAttachmentBasedTemplate) {
+      if (this.isAttachmentBasedTemplate || this.hidePhishingUrlMergeTag) {
         delete blockManagerComponents["{PHISHINGURL}"];
       }
       for (const [key, value] of Object.entries(blockManagerComponents)) {

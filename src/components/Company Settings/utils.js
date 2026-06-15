@@ -249,3 +249,91 @@ export const setCompanyLogoSrc = (html = '', newSrc = '') => {
     }
   )
 }
+
+// AI Ally "TRY SUGGESTIONS" preset prompts. Kept here (not in component data) so the
+// static content lives in one place. EMAIL = standard phishing email (includes a link /
+// call-to-action). LURE = Double Barrel first email — must build context WITHOUT any
+// links. LANDING = landing page prompts.
+export const AI_ALLY_EMAIL_SUGGESTIONS = [
+  {
+    title: 'Finance Department Alert',
+    content:
+      'Create a template that appears to be from our Finance Department, asking the user to verify a payment that is scheduled for today. Include a link that directs them to a secure page to review the details. The tone should be urgent and professional, with an emphasis on preventing unauthorized transactions.'
+  },
+  {
+    title: 'HR Benefits Update',
+    content:
+      'Make a template that looks like it is coming from our HR department, informing the user about changes to their benefits package. They are asked to log in to the benefits portal via a provided link to review and accept the new terms. The tone should be informative yet urgent, stressing the need to complete this before the end of the week.'
+  },
+  {
+    title: 'Suspicious Login Alert',
+    content:
+      'Make a template that looks like it is coming from the organization’s security team, warning the user about a suspicious login attempt on their account. The email should urge them to click a link to verify their identity and secure their account. The tone should be urgent, with a focus on protecting the user’s account from unauthorized access.'
+  },
+  {
+    title: 'Payroll Adjustment Notification',
+    content:
+      'Make a template that seems to be from the Payroll Department, informing the user of a recent adjustment to their paycheck due to an error. Include a link where they can view the updated payment details. The tone should be apologetic for the error but emphasize the need for the user to verify the correction.'
+  },
+  {
+    title: 'Account Deactivation Notice',
+    content:
+      'Make a template that looks like it’s from the user’s account management system, warning them that their account will be deactivated if they do not confirm their details by clicking a provided link. The tone should be formal and emphasize the importance of maintaining active status.'
+  }
+]
+
+export const AI_ALLY_LURE_SUGGESTIONS = [
+  {
+    title: 'Finance Department Alert',
+    content:
+      'Create a template that appears to be from our Finance Department, giving the user a heads-up that a payment verification request will follow shortly in a separate email. Do NOT include any links, buttons or URLs — this first email only builds context and sets the expectation that a follow-up will arrive. The tone should be professional and informative.'
+  },
+  {
+    title: 'HR Benefits Update',
+    content:
+      'Make a template from the HR department informing the user that changes to their benefits package are being rolled out and that a follow-up email with the details and next steps will arrive soon. Do NOT include any links or buttons — this is an awareness email only. The tone should be informative.'
+  },
+  {
+    title: 'Suspicious Login Alert',
+    content:
+      'Make a template from the organization’s security team notifying the user that unusual activity was noticed on their account and that a verification step will be required in a follow-up message. Do NOT include any links or buttons. The tone should be calm but urgent.'
+  },
+  {
+    title: 'Payroll Adjustment Notification',
+    content:
+      'Make a template from the Payroll Department informing the user that a recent adjustment was made to their paycheck and that the updated details will follow in a separate email. Do NOT include any links or buttons. The tone should be apologetic for the error but informative.'
+  },
+  {
+    title: 'Account Deactivation Notice',
+    content:
+      'Make a template from the account management system warning the user that their account status is under review and that a confirmation step will be requested in an upcoming email. Do NOT include any links or buttons. The tone should be formal.'
+  }
+]
+
+export const AI_ALLY_LANDING_SUGGESTIONS = [
+  {
+    title: 'Company Event Registration',
+    content:
+      'Create a landing page for a company event registration. Include fields for full name, email, phone number, and a dropdown to select the department. Add a "Register" button at the bottom. The page should also include a banner at the top with the company logo and event name. The color scheme should match typical corporate branding with a professional look.'
+  },
+  {
+    title: 'Password Reset Page',
+    content:
+      'Create a landing page for a system password reset. Include a field for entering the email address, a "Submit" button, and a link for "Contact Support" in case the user has trouble resetting their password. The design should be simple with a white background, and include a small company logo at the top. The instructions should be clear and concise.'
+  },
+  {
+    title: 'Bank Account Login Page',
+    content:
+      'Create a landing page that mimics a bank account login page. Include fields for "Username" and "Password", a "Forgot Username or Password?" link, and a "Sign In" button. Add a small bank logo at the top, and include links for "Enroll Now" and "Help". The design should be secure and professional, with a dark blue and white color scheme.'
+  },
+  {
+    title: 'Subscription Confirmation Page',
+    content:
+      'Create a landing page for subscription confirmation. Include a message saying "Thank you for subscribing!", a field for entering an email address to confirm the subscription, and a "Confirm Subscription" button. Add a small note about privacy at the bottom. The design should be clean and modern, with a focus on ease of use.'
+  },
+  {
+    title: 'Phishing Awareness Oops Page',
+    content:
+      "Create a landing page that tells the user they've clicked on a simulated phishing email. The message should say \"Oops! The email you just clicked was a phishing simulation. Don't worry, this is to help you learn.\" Include three key rules: 1. Avoid unknown links/attachments. 2. Verify the sender's email. 3. Be cautious of too-good-to-be-true offers. The design should be clear and educational."
+  }
+]

@@ -98,6 +98,7 @@ import {
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import barrelEmailRoleColumnMixin from '@/components/CampaignManagerReport/barrelEmailRoleColumnMixin'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportTimeZoneColumn from '@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue'
 import DefaultButtonRowAction from '@/components/SmallComponents/RowActions/DefaultButtonRowAction'
@@ -112,7 +113,7 @@ export default {
     CommonReportViewTargetGroupsModal,
     DefaultButtonRowAction
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, barrelEmailRoleColumnMixin],
   props: {
     id: {
       type: String

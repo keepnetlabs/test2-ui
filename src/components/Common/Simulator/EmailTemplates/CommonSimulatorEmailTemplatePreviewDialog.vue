@@ -56,6 +56,15 @@
           </div>
           <div class="email-template-preview__container">
             <template v-if="!isIndividualPrintoutTemplate">
+              <!-- Barrel: Lure / Payload body toggle -->
+              <ElTabs
+                v-if="isBarrelTemplate"
+                v-model="barrelPreviewMode"
+                class="k-sub-tab barrel-mode-tabs mb-2"
+              >
+                <ElTabPane label="Lure Email" name="lure" />
+                <ElTabPane label="Payload Email" name="payload" />
+              </ElTabs>
               <!-- Actions Header -->
               <div class="email-template-preview__header d-flex align-center justify-space-between mb-4">
                 <div></div>
@@ -109,7 +118,7 @@
                   >
                   <span class="email-template-preview__text--title">Subject: </span>
                   <span class="email-template-preview__text--body">{{
-                    emailTemplateParams.subject
+                    displayedSubject
                   }}</span>
                   <RedFlagTooltip
                     v-if="redFlags && redFlags.subject && redFlags.subject.tooltipMessage"
@@ -253,7 +262,7 @@
             </div>
             <hr class="mt-4 ml-n4 mr-n4" v-if="!!templateHTML" />
             <div :class="isShowRedFlags ? 'email-template-preview-phishing mt-2' : 'mt-2'">
-              <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+              <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="displayedTemplateHtml" />
             </div>
           </div>
         </div>
@@ -273,7 +282,10 @@ import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import { checkQuishingRedFlags } from '@/api/quishing'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
-import { defaultRedFlags } from '@/components/PhishingScenarios/utils'
+import {
+  defaultRedFlags,
+  BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
+} from '@/components/PhishingScenarios/utils'
 import { qrCodeString } from '@/components/GrapesJs/Newsletter/mergedTexts/qrCode'
 import QuishingService from '@/api/quishing'
 import { useLoading } from '@/hooks/useLoading'
@@ -346,7 +358,10 @@ export default {
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
       isRedFlagsLoading: false,
-      lastRedFlags: {}
+      lastRedFlags: {},
+      isBarrelTemplate: false,
+      barrelPreviewMode: 'lure',
+      barrelPayload: {}
     }
   },
   computed: {
@@ -361,6 +376,20 @@ export default {
     },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
+    // Subject shown: payload subject in payload mode, lure subject otherwise.
+    displayedSubject() {
+      return this.isBarrelPayloadMode
+        ? this.barrelPayload?.subject || ''
+        : this.emailTemplateParams.subject
+    },
+    // Body shown in KEmailPreview: raw payload html in payload mode, the (possibly
+    // red-flag-styled) lure templateHTML otherwise.
+    displayedTemplateHtml() {
+      return this.isBarrelPayloadMode ? this.barrelPayload?.template || '' : this.templateHTML
     },
     getIndividualPrintoutStyle() {
       const style = {
@@ -450,6 +479,13 @@ export default {
           if (this.type === SCENARIO_TYPES.QUISHING)
             data.template = data?.template?.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
           this.templateHTML = data.template
+          // Barrel templates carry a second body (payload). Detect by category, falling back to
+          // actual payload content so the Lure/Payload toggle only appears when a payload exists.
+          const bp = data.barrelPayload
+          this.barrelPayload = bp || {}
+          this.isBarrelTemplate =
+            data.categoryResourceId === BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID ||
+            !!(bp && (bp.template || bp.subject))
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
@@ -461,7 +497,7 @@ export default {
       this.closeDrawer()
     },
     handleExternalLink() {
-      openHtmlInNewWindow(this.templateHTML)
+      openHtmlInNewWindow(this.displayedTemplateHtml)
     },
     handlePreviewIndividualPrintout() {
       this.isIndividualPrintoutButtonDisabled = true
