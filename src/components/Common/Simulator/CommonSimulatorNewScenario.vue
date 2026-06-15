@@ -516,7 +516,8 @@ import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import {
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHOD_TYPES,
-  SCENARIO_METHODS
+  SCENARIO_METHODS,
+  SCENARIO_METHOD_TYPE
 } from '@/components/PhishingScenarios/utils'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
@@ -839,7 +840,19 @@ export default {
       ).text
     },
     getMethodTypes() {
-      return this.scenarioDetailsLookup?.methodTypes || []
+      const methodTypes = this.scenarioDetailsLookup?.methodTypes || []
+      // Client fallback: ensure Double Barrel is selectable for phishing even if the
+      // form-details endpoint does not return it yet. Deduped to avoid double entries.
+      if (
+        this.isPhishing &&
+        !methodTypes.some((mType) => mType.value === SCENARIO_METHOD_TYPE.DOUBLE_BARREL)
+      ) {
+        return [
+          ...methodTypes,
+          { text: 'Double Barrel', value: SCENARIO_METHOD_TYPE.DOUBLE_BARREL }
+        ]
+      }
+      return methodTypes
     },
     isMethodMfa() {
       return this.formValues.methodTypeId === '4'
@@ -904,14 +917,15 @@ export default {
     },
     getSelectedMethod() {
       if (!this.formValues?.methodTypeId) return ''
-      if (
-        SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text ===
-        SCENARIO_METHOD_TYPES.MFA
-      ) {
+      // Double Barrel (6) has no SCENARIO_METHODS index entry; return '' so the landing
+      // page list is not filtered by method (Contains '' matches all).
+      const selectedMethod = SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1]
+      if (!selectedMethod) return ''
+      if (selectedMethod.text === SCENARIO_METHOD_TYPES.MFA) {
         return this.selectedEmailTemplate.categoryName === labels.ClickOnly
           ? SCENARIO_METHOD_TYPES.CLICK_ONLY
           : this.selectedEmailTemplate.categoryName
-      } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text
+      } else return selectedMethod.text
     },
     getStep2Title() {
       return this.isQuishingTypeIndividualPrintOut
@@ -1001,10 +1015,10 @@ export default {
       )
     },
     getMethodText() {
+      // Use getMethodTypes (not the raw lookup) so the client-injected Double Barrel
+      // fallback resolves to a method label too.
       return (
-        this.scenarioDetailsLookup?.methodTypes?.find(
-          (item) => item.value === this.formValues.methodTypeId
-        )?.text || ''
+        this.getMethodTypes?.find((item) => item.value === this.formValues.methodTypeId)?.text || ''
       )
     },
     getCurrentLandingPageTemplate() {

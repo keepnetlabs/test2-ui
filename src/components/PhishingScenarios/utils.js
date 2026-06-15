@@ -145,7 +145,9 @@ export const SCENARIO_METHOD_TYPES = {
   CLICK_ONLY_SPACE: 'Click Only',
   DATA_SUBMISSION: 'Data Submission',
   ATTACHMENT: 'Attachment',
-  MFA: 'MFA'
+  MFA: 'MFA',
+  BARREL: 'Barrel',
+  DOUBLE_BARREL: 'Double Barrel'
 }
 
 export const SCENARIO_METHODS = [
@@ -161,8 +163,59 @@ export const SCENARIO_DIFFICULTIES = [
   { text: 'Hard', value: 'c4LCGEB9MayB' }
 ]
 
+// ---- Double Barrel Phishing ----
+// Barrel email template category resource id (filtered in scenario step 2)
+export const BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID = 'BrLr4x7Km2Nw'
+
+// Phishing scenario method type ids (string, matches formValues.methodTypeId)
+export const SCENARIO_METHOD_TYPE = {
+  CLICK_ONLY: '1',
+  DATA_SUBMISSION: '2',
+  ATTACHMENT: '3',
+  MFA: '4',
+  DOUBLE_BARREL: '6'
+}
+
+// barrelOrderType: 1 = LureFirst, 2 = PayloadFirst
+export const BARREL_ORDER_TYPES = [
+  { text: 'Lure First', value: 1 },
+  { text: 'Payload First', value: 2 }
+]
+
+// barrelUrgentFlagType: 0 None, 1 LureOnly, 2 PayloadOnly, 3 Both
+export const BARREL_URGENT_FLAG_TYPES = [
+  { text: 'None', value: 0 },
+  { text: 'Lure Only', value: 1 },
+  { text: 'Payload Only', value: 2 },
+  { text: 'Both', value: 3 }
+]
+
+// barrelDelayMinutes shown as a select (UI standard) instead of a slider
+export const BARREL_DELAY_MINUTE_OPTIONS = [
+  { text: '5 minutes', value: 5 },
+  { text: '10 minutes', value: 10 },
+  { text: '15 minutes', value: 15 },
+  { text: '30 minutes', value: 30 },
+  { text: '60 minutes', value: 60 },
+  { text: '120 minutes', value: 120 },
+  { text: '240 minutes', value: 240 }
+]
+
+// UI defaults (backend also auto-defaults; delay UI default is 60 per UI spec)
+export const BARREL_DEFAULTS = {
+  delayMinutes: 60,
+  orderType: 1,
+  skipPayloadIfReported: true,
+  responsiveDelivery: false,
+  urgentFlagType: 2
+}
+
 export const getDefaultEmailTemplatePayload = (categoryResourceId = '') => {
-  const categoryResourceIdValue = SCENARIO_METHODS[Number(categoryResourceId) - 1].value
+  // Double Barrel (methodTypeId '6') maps to the Barrel category; others use the index-based lookup.
+  const categoryResourceIdValue =
+    String(categoryResourceId) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL
+      ? BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
+      : SCENARIO_METHODS[Number(categoryResourceId) - 1]?.value
   return {
     pageNumber: 1,
     pageSize: 10,
@@ -280,6 +333,15 @@ export const getEmailTemplateMethodItems = () => [
     code: '3',
     description: null,
     orderNumber: 3
+  },
+  {
+    resourceId: BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID,
+    genericCodeTypeId: 19,
+    genericCodeTypeName: 'Phishing Simulator Categories',
+    name: 'Double Barrel',
+    code: '6',
+    description: null,
+    orderNumber: 4
   }
 ]
 

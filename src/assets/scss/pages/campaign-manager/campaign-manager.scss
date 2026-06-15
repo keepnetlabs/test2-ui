@@ -289,3 +289,101 @@
     }
   }
 }
+
+// Double Barrel settings panel (Delivery Settings step).
+// Stays within the 554px form standard (.k-form-group default). Send Order is
+// a radio group (primary choice, matching the Distribution section), with
+// Delay + Urgent Flag as selects sharing a two-column row beneath it.
+.campaign-manager-barrel-options {
+  &__field--order {
+    margin-bottom: 20px;
+  }
+
+  &__radio-group {
+    margin-top: 6px !important;
+  }
+
+  &__radio {
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  // Field labels: 14px (not the 20px section title) so the row stays
+  // single-line and aligned — the section title above carries the weight.
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 8px;
+  }
+
+  &__hint-icon {
+    font-size: 16px !important;
+    color: rgba(0, 0, 0, 0.38) !important;
+    cursor: help;
+  }
+
+  // Separate the conditional toggles from the selects with a light divider.
+  &__toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #eceff1;
+  }
+
+  // Toggle rows follow the project standard (email-settings): switch + a
+  // bold label with a lighter description beneath.
+  &__switch-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__switch.v-input {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    flex: none;
+  }
+
+  &__switch-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__switch-label {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  &__switch-description {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 2px;
+  }
+}

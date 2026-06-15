@@ -52,7 +52,9 @@ export default {
   components: { KContainer },
   provide() {
     return {
-      campaignDurationExpired: () => this.campaignDurationExpired
+      campaignDurationExpired: () => this.campaignDurationExpired,
+      // Reactive object; tables inject this to show the barrel "Email Role" column.
+      reportBarrelState: this.reportBarrelState
     }
   },
   data() {
@@ -62,6 +64,7 @@ export default {
       isLoading: true,
       tab: labels.Summary,
       apiResponse: {},
+      reportBarrelState: { isBarrel: false },
       campaignDurationExpired: false,
       multipleType: [],
       tabItems: [
@@ -169,6 +172,8 @@ export default {
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
+          // Double Barrel campaigns return a barrelOptions object; null otherwise.
+          this.reportBarrelState.isBarrel = !!response?.data?.data?.barrelOptions
           const trackingReplyInfo = response?.data?.data?.campaignInfo?.trackingReplyInfo
           if (!trackingReplyInfo || trackingReplyInfo === 'Off') {
             this.tabItems.splice(

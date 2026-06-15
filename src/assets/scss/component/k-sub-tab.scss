@@ -15,6 +15,41 @@
     min-width: 34px !important;
   }
 }
+
+// Barrel Lure/Payload sub-tabs.
+// Element UI sizes .el-tabs__active-bar from the active tab's clientWidth at
+// mount. When these tabs render inside a conditionally-shown step the width
+// comes out ~0 and falls back to the 34px min-width above, so the underline is
+// shorter than the "Lure Email" / "Payload Email" label. A static px width
+// can't fit two differently-sized labels, so draw the underline on the active
+// item itself — it spans the real tab width for either label, on every surface
+// (editor, preview dialogs, reports), with no JS or layout-timing dependency.
+.barrel-mode-tabs {
+  .el-tabs__active-bar {
+    display: none;
+  }
+  // The native active-bar is sized from clientWidth at mount; inside a
+  // conditionally-shown step that comes out ~0 and the underline is wrong.
+  // Draw it with a pseudo-element instead. Element flushes the first tab's
+  // inner padding to 0 (nth-child rule), so force symmetric side padding with
+  // !important and inset the underline by the same amount — then it lands
+  // exactly under the label (full word width, centred) for either tab, on
+  // every surface, regardless of position.
+  $barrel-tab-pad: 16px;
+  .el-tabs__item {
+    position: relative;
+    padding: 0 $barrel-tab-pad !important;
+  }
+  .el-tabs__item.is-active::after {
+    content: "";
+    position: absolute;
+    left: $barrel-tab-pad;
+    right: $barrel-tab-pad;
+    bottom: 0;
+    height: 2px;
+    background-color: #0486fe;
+  }
+}
 .tabs-with-mfa-settings{
   margin-left:-8px;
   .el-tabs__nav{

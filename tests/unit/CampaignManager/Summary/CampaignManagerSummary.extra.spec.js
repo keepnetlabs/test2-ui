@@ -275,6 +275,51 @@ describe('CampaignManagerSummary.vue (extra branch coverage)', () => {
       expect(text).toContain('All users matched')
     })
 
+    it('getSettingsItems appends barrel rows for a Double Barrel campaign', () => {
+      const ctx = {
+        formData: {
+          selectedEmailDelivery: { type: 1, name: 'SMTP A' },
+          sendingLimit: 50,
+          selectedSchedule: 'Now',
+          frequency: 'One Time',
+          isBarrelCampaign: true,
+          barrelOptions: {
+            orderType: 1,
+            delayMinutes: 60,
+            urgentFlagType: 2,
+            skipPayloadIfReported: true,
+            responsiveDelivery: false
+          }
+        }
+      }
+
+      const items = CampaignManagerSummary.computed.getSettingsItems.call(ctx)
+
+      expect(items['Send Order']).toBe('Lure First')
+      expect(items['Delay Between Emails']).toBe('60 minutes')
+      expect(items['Urgent Flag']).toBe('Payload Only')
+      expect(items['Skip Payload If Reported']).toBe('On')
+      expect(items['Responsive Delivery']).toBe('Off')
+    })
+
+    it('getSettingsItems omits barrel rows for a non-barrel campaign', () => {
+      const ctx = {
+        formData: {
+          selectedEmailDelivery: { type: 1, name: 'SMTP A' },
+          sendingLimit: 50,
+          selectedSchedule: 'Now',
+          frequency: 'One Time',
+          isBarrelCampaign: false
+        }
+      }
+
+      const items = CampaignManagerSummary.computed.getSettingsItems.call(ctx)
+
+      expect(items['Send Order']).toBeUndefined()
+      expect(items['Urgent Flag']).toBeUndefined()
+      expect(items['Skip Payload If Reported']).toBeUndefined()
+    })
+
     it('getPreferredLanguageText returns valid message when has both matched and fallback users', () => {
       const ctx = {
         formData: {

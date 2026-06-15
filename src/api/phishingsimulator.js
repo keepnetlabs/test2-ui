@@ -101,6 +101,12 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
   formData.append('prompt', payload.languages[0].prompt || '')
   formData.append('toneResourceId', payload.languages[0].toneResourceId || '')
   formData.append('localizationResourceId', payload.languages[0].localizationResourceId || '')
+  // Double Barrel: primary language payload (subject + body). Category 'BrLr4x7Km2Nw' = Barrel.
+  const isBarrelTemplate = payload.categoryResourceId === 'BrLr4x7Km2Nw'
+  if (isBarrelTemplate && payload.languages[0]?.barrelPayload) {
+    formData.append('barrelPayload.subject', payload.languages[0].barrelPayload.subject || '')
+    formData.append('barrelPayload.template', payload.languages[0].barrelPayload.template || '')
+  }
   if (isEdit && payload?.languages[0]?.detailActionType)
     formData.append('detailActionType', payload?.languages[0]?.detailActionType?.toString())
   if (payload.languages?.length > 1) {
@@ -109,6 +115,12 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
         if (key === 'ccAddresses') {
           for (let j = 0; j < value.length; j++) {
             formData.append(`languages[${[i - 1]}].${key}[${[j]}]`, value[j])
+          }
+        } else if (key === 'barrelPayload') {
+          // Nested object: append explicitly so it is not serialized as [object Object]
+          if (isBarrelTemplate && value) {
+            formData.append(`languages[${[i - 1]}].barrelPayload.subject`, value.subject || '')
+            formData.append(`languages[${[i - 1]}].barrelPayload.template`, value.template || '')
           }
         } else {
           formData.append(`languages[${[i - 1]}].${key}`, value || '')

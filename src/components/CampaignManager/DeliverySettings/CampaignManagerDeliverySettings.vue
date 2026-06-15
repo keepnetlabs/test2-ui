@@ -121,6 +121,10 @@
         <span v-else class="text-primary-color ml-2 fs-3-4">{{ frequencyDisabledText }}</span>
       </template>
     </AlertBox>
+    <!-- Optional section rendered directly below Frequency (e.g. Double Barrel
+         settings for phishing campaigns). Opt-in slot — other campaign types
+         that reuse this component leave it empty and are unaffected. -->
+    <slot name="afterFrequency" />
     <InputSchedule
       v-model="inputScheduleFormData"
       :isEditOrDuplicate="isEdit || isDuplicate"

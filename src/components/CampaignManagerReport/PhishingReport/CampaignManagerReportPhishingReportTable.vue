@@ -104,6 +104,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from "@/model/constants/commonConstants";
 import useDefaultTableFunctions from "@/hooks/useDefaultTableFunctions";
+import barrelEmailRoleColumnMixin from "@/components/CampaignManagerReport/barrelEmailRoleColumnMixin";
 import CampaignManagerReportTimeZoneColumn from "@/components/CampaignManagerReport/CampaignManagerReportTimeZoneColumn.vue";
 import { createCustomFieldColumns } from "@/utils/helperFunctions";
 import DefaultButtonRowAction from "@/components/SmallComponents/RowActions/DefaultButtonRowAction";
@@ -118,7 +119,7 @@ export default {
     CommonReportViewTargetGroupsModal,
     DefaultButtonRowAction
   },
-  mixins: [useLoading, useDefaultTableFunctions],
+  mixins: [useLoading, useDefaultTableFunctions, barrelEmailRoleColumnMixin],
   props: {
     id: {
       type: String

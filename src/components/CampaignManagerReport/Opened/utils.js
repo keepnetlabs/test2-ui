@@ -54,6 +54,25 @@ export const COLUMNS = {
       { text: 'Bot Activity', value: '1' }
     ]
   },
+  // Double Barrel: which email of the pair this row represents (Lure or Payload).
+  // Added only for barrel campaigns via barrelEmailRoleColumnMixin.
+  BARREL_EMAIL_ROLE: {
+    property: 'barrelEmailRole',
+    align: 'left',
+    label: 'Email Role',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 150,
+    isEditable: false,
+    filterableType: 'select',
+    filterableItems: [
+      { text: 'Lure', value: 'Lure' },
+      { text: 'Payload', value: 'Payload' }
+    ],
+    filterableCustomFieldName: 'BarrelEmailRole'
+  },
   PHISHING_SCENARIO_NAME: {
     property: PROPERTY_STORE.PHISHING_SCENARIO_NAME,
     align: 'left',

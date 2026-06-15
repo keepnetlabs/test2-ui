@@ -1,5 +1,10 @@
 import { shallowMount } from '@vue/test-utils'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate.vue'
+import {
+  AI_ALLY_EMAIL_SUGGESTIONS,
+  AI_ALLY_LURE_SUGGESTIONS,
+  AI_ALLY_LANDING_SUGGESTIONS
+} from '@/components/Company Settings/utils'
 
 describe('EmailTemplate.vue', () => {
   it('has expected component name', () => {
@@ -31,25 +36,51 @@ describe('EmailTemplate.vue', () => {
     expect(EmailTemplate.methods.handleValueComparator.call(ctx, 'usa-root', 'de')).toBe(false)
   })
 
-  it('handleAiAssistantBadgeClick selects landing and email badge content', () => {
-    const landingCtx = {
-      templateType: 'landing',
-      landingPageBadgeContents: [{ content: 'landing badge' }],
-      badgeContents: [{ content: 'email badge' }],
+  it('displayedBadgeContents selects landing, lure (no-link), or default email suggestions', () => {
+    // landing wins regardless of useLureSuggestions
+    expect(
+      EmailTemplate.computed.displayedBadgeContents.call({
+        templateType: 'landing',
+        useLureSuggestions: true
+      })
+    ).toBe(AI_ALLY_LANDING_SUGGESTIONS)
+    // barrel lure editor → no-link lure suggestions
+    expect(
+      EmailTemplate.computed.displayedBadgeContents.call({
+        templateType: 'email',
+        useLureSuggestions: true
+      })
+    ).toBe(AI_ALLY_LURE_SUGGESTIONS)
+    // default (payload / normal) → link-bearing suggestions
+    expect(
+      EmailTemplate.computed.displayedBadgeContents.call({
+        templateType: 'email',
+        useLureSuggestions: false
+      })
+    ).toBe(AI_ALLY_EMAIL_SUGGESTIONS)
+  })
+
+  it('lure suggestions never instruct the AI to include a link (payload ones do)', () => {
+    // Guards the core barrel rule: the lure email must not contain links.
+    AI_ALLY_LURE_SUGGESTIONS.forEach((s) => {
+      expect(s.content.toLowerCase()).not.toContain('include a link')
+      expect(s.content).toMatch(/do not include any links|no links/i)
+    })
+    // payload/email suggestions intentionally drive a link/CTA
+    expect(AI_ALLY_EMAIL_SUGGESTIONS.some((s) => /link/i.test(s.content))).toBe(true)
+    // the two sets cover the same themes
+    expect(AI_ALLY_LURE_SUGGESTIONS.map((s) => s.title)).toEqual(
+      AI_ALLY_EMAIL_SUGGESTIONS.map((s) => s.title)
+    )
+  })
+
+  it('handleAiAssistantBadgeClick copies the prompt from displayedBadgeContents', () => {
+    const ctx = {
+      displayedBadgeContents: [{ content: 'first prompt' }, { content: 'second prompt' }],
       aiTemplateText: ''
     }
-    const emailCtx = {
-      templateType: 'email',
-      landingPageBadgeContents: [{ content: 'landing badge' }],
-      badgeContents: [{ content: 'email badge' }],
-      aiTemplateText: ''
-    }
-
-    EmailTemplate.methods.handleAiAssistantBadgeClick.call(landingCtx, 0)
-    EmailTemplate.methods.handleAiAssistantBadgeClick.call(emailCtx, 0)
-
-    expect(landingCtx.aiTemplateText).toBe('landing badge')
-    expect(emailCtx.aiTemplateText).toBe('email badge')
+    EmailTemplate.methods.handleAiAssistantBadgeClick.call(ctx, 1)
+    expect(ctx.aiTemplateText).toBe('second prompt')
   })
 
   it('changeGrapesModalStatus toggles modal and emits template-edit', () => {

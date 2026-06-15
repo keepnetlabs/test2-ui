@@ -48,7 +48,10 @@ describe('Common Simulator utils', () => {
   })
 
   it('keeps category filter variants for phishing and quishing consistent', () => {
-    expect(COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME.filterableItems).toHaveLength(3)
+    expect(COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME.filterableItems).toHaveLength(4)
+    expect(COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME.filterableItems).toEqual(
+      expect.arrayContaining([{ text: 'Double Barrel', value: 'BrLr4x7Km2Nw' }])
+    )
     expect(COMMON_SIMULATOR_COLUMNS.QUISHING_CATEGORY_NAME.filterableItems).toHaveLength(2)
     expect(COMMON_SIMULATOR_COLUMNS.CATEGORY_NAME.filterableCustomFieldName).toBe(
       'CategoryResourceId'

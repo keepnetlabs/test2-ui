@@ -60,8 +60,13 @@ describe('PhishingScenarios utils', () => {
   it('returns method items used for email templates', () => {
     const methodItems = getEmailTemplateMethodItems()
 
-    expect(methodItems).toHaveLength(3)
-    expect(methodItems.map((x) => x.name)).toEqual(['Click Only', 'Data Submission', 'Attachment'])
+    expect(methodItems).toHaveLength(4)
+    expect(methodItems.map((x) => x.name)).toEqual([
+      'Click Only',
+      'Data Submission',
+      'Attachment',
+      'Double Barrel'
+    ])
     expect(methodItems.find((x) => x.name === 'MFA')).toBeUndefined()
   })
 
