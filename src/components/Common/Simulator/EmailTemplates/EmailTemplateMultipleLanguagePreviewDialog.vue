@@ -418,7 +418,7 @@ export default {
             difficultyResourceId,
             phishingFileName,
             subject,
-            languages,
+            languages = [],
             languageTypeName,
             languageTypeResourceId
           } = data
