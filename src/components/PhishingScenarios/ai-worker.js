@@ -179,6 +179,8 @@ const PROMPT_CONFIGS = {
     requiredWords: "phishing simulation, security awareness, simulation",
     safetyRule:
       "Describe the simulation for defensive security-awareness training only; never include step-by-step attack instructions",
+    methodNote:
+      'If the Method is "Double Barrel", the simulation uses two emails — a benign lure email that first builds trust, followed by a malicious payload email; reflect this two-stage lure-and-payload approach in the description.',
   },
   quishing: {
     platform: "a quishing (QR-code phishing) simulation library used in security awareness programs",
@@ -236,7 +238,7 @@ Writing guidelines:
 - If any of the provided fields (Name, ${cfg.categoryLabel}, Method, Difficulty, Target audience) are present, the description MUST reflect them
 - When updating an existing description, prioritize new details over old wording if they conflict
 - ${cfg.safetyRule}
-- Do NOT mention: workflow, innovative solution, AI assistant, rewritten sentence, here is
+${cfg.methodNote ? `- ${cfg.methodNote}\n` : ""}- Do NOT mention: workflow, innovative solution, AI assistant, rewritten sentence, here is
 - Do NOT use emojis, markdown, bullet points, or line breaks
 - Write only ONE sentence
 

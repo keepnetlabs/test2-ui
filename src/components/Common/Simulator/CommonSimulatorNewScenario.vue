@@ -841,18 +841,19 @@ export default {
     },
     getMethodTypes() {
       const methodTypes = this.scenarioDetailsLookup?.methodTypes || []
-      // Client fallback: ensure Double Barrel is selectable for phishing even if the
-      // form-details endpoint does not return it yet. Deduped to avoid double entries.
-      if (
-        this.isPhishing &&
-        !methodTypes.some((mType) => mType.value === SCENARIO_METHOD_TYPE.DOUBLE_BARREL)
-      ) {
-        return [
-          ...methodTypes,
-          { text: 'Double Barrel', value: SCENARIO_METHOD_TYPE.DOUBLE_BARREL }
-        ]
+      if (this.isPhishing) {
+        // Client fallback: ensure Double Barrel is selectable for phishing even if the
+        // form-details endpoint does not return it yet. Deduped to avoid double entries.
+        if (!methodTypes.some((mType) => mType.value === SCENARIO_METHOD_TYPE.DOUBLE_BARREL)) {
+          return [
+            ...methodTypes,
+            { text: 'Double Barrel', value: SCENARIO_METHOD_TYPE.DOUBLE_BARREL }
+          ]
+        }
+        return methodTypes
       }
-      return methodTypes
+      // Double Barrel is a phishing-only technique: never show it for quishing.
+      return methodTypes.filter((mType) => mType.value !== SCENARIO_METHOD_TYPE.DOUBLE_BARREL)
     },
     isMethodMfa() {
       return this.formValues.methodTypeId === '4'

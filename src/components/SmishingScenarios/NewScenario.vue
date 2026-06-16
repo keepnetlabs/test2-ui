@@ -377,6 +377,7 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import CommonSimulatorLandingPageTemplatesPreviewDialog from '@/components/Common/Simulator/LandingPageTemplates/CommonSimulatorLandingPageTemplatesPreviewDialog.vue'
 import SmishingPreviewDrawer from '@/components/Common/Simulator/SmishingPreviewDrawer.vue'
 import { PREVIEW_DIALOG_TYPES, SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import { SCENARIO_METHOD_TYPE } from '@/components/PhishingScenarios/utils'
 import { mapGetters } from 'vuex'
 export default {
   name: 'NewScenario',
@@ -820,7 +821,10 @@ export default {
       }
     },
     methodTypeItems() {
-      return this.scenarioDetailsLookup?.methodTypes || []
+      // Double Barrel is a phishing-only technique: never show it in smishing.
+      return (this.scenarioDetailsLookup?.methodTypes || []).filter(
+        (mType) => mType.value !== SCENARIO_METHOD_TYPE.DOUBLE_BARREL
+      )
     }
   },
   created() {
