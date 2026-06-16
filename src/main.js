@@ -54,6 +54,8 @@ Vue.use(require('vue-moment'))
 Vue.use(VueMask)
 Vue.directive('mask', VueMaskDirective)
 Vue.config.productionTip = false
+// <ninja-keys> is a web component (command palette); tell Vue to ignore it.
+Vue.config.ignoredElements = [...(Vue.config.ignoredElements || []), 'ninja-keys']
 const vm = new Vue({
   router,
   store,

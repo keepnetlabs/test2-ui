@@ -285,6 +285,24 @@ export default {
     this.callForNumbers()
   },
   methods: {
+    // Applies a Status filter programmatically (e.g. from the command palette),
+    // reusing the manual-filter path. Transient: updates payload + reloads but
+    // never persists to the saved-filter localStorage.
+    applyStatusFilter(statusValues = []) {
+      if (!Array.isArray(statusValues) || !statusValues.length) {
+        return
+      }
+      const fieldName = COLUMNS.STATUS.property
+      const value = statusValues.join(',')
+      this.columnFilterChanged({ Value: value, FieldName: fieldName, Operator: 'Include' })
+      const table = this.$refs.refTable
+      if (table) {
+        table.reRenderFilters({
+          ...(table.filterValues || {}),
+          [fieldName]: { textValue: '', selectValue: value, fieldName }
+        })
+      }
+    },
     callForAvailableNumbers(params = {}) {
       this.setLoading(true)
       CallbackService.getUsedCallbackNumbers()
