@@ -282,7 +282,7 @@
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :table="reportedEmailsData"
-            :columns="emails.columns"
+            :columns="reportedEmailColumns"
             :extended-view-loading="extendedViewLoading"
             :is-extended-view-cancel-button-disabled="
               isExtendedViewCancelButtonDisabled
@@ -381,6 +381,28 @@
                     :text="getDataTableFieldLabel(scope.row.status)"
                   />
                 </template>
+              </template>
+              <template v-if="scope.column.property === 'aiRiskLevel'">
+                <Badge
+                  v-if="getRowAiRiskLevel(scope.row)"
+                  :text="getRowAiRiskLevel(scope.row)"
+                  :color="getAiRiskColor(getRowAiRiskLevel(scope.row))"
+                  size="small"
+                  :outline="false"
+                  :full-width="false"
+                  class-name="incident-responder__ai-analysis-badge"
+                />
+              </template>
+              <template v-if="scope.column.property === 'aiAnalysis'">
+                <Badge
+                  v-if="getRowAiVerdict(scope.row)"
+                  :text="getRowAiVerdict(scope.row)"
+                  :color="getAiVerdictColor(getRowAiVerdict(scope.row))"
+                  size="small"
+                  :outline="false"
+                  :full-width="false"
+                  class-name="incident-responder__ai-analysis-badge"
+                />
               </template>
             </template>
             <template v-slot:extended-view-slot>
@@ -516,6 +538,8 @@ import {
 import {
   getDataTableFieldLabel,
   getDefaultAxiosPayload,
+  getBtnPriorityColor,
+  getBtnStatusColor,
   handleIsSafari,
   setSafariClusterFix
 } from "@/utils/functions";
@@ -558,8 +582,10 @@ import ReportedEmailTrends from "@/components/Common/Widget/WidgetComponents/Rep
 import ConfirmationRequiredPopup from "@/components/IncidentResponder/ConfirmationRequiredPopup.vue";
 import axios from "axios";
 import AuthenticationService from "@/services/authentication";
+import Badge from "@/components/Badge";
 export default {
   components: {
+    Badge,
     ConfirmationRequiredPopup,
     ReportedEmailTrends,
     RecentlyReportedIncidents,
@@ -618,6 +644,7 @@ export default {
     clusteredRow: null,
     isCustomMessageMultiple: false,
     reportedEmailsData: [],
+    aiAnalysisAvailable: false,
     bindPropsIsSafari: {},
     reportedEmailsLoading: false,
     showPlaybookModal: false,
@@ -871,6 +898,34 @@ export default {
             }
           },
           width: "150"
+        },
+        {
+          property: "aiRiskLevel",
+          isAiAnalysisColumn: true,
+          align: "center",
+          label: "Risk Level",
+          fixed: false,
+          sortable: false,
+          hideSort: true,
+          show: true,
+          isEditable: false,
+          type: "slot",
+          width: "160",
+          fullWidth: true
+        },
+        {
+          property: "aiAnalysis",
+          isAiAnalysisColumn: true,
+          align: "center",
+          label: "AI Analysis",
+          fixed: false,
+          sortable: false,
+          hideSort: true,
+          show: true,
+          isEditable: false,
+          type: "slot",
+          width: "240",
+          fullWidth: true
         },
         {
           property: PROPERTY_STORE.STATUS,
@@ -1399,6 +1454,15 @@ export default {
       getDashboardReportedEmailTrendsPermission:
         "permissions/getDashboardReportedEmailTrendsPermission"
     }),
+    reportedEmailColumns() {
+      // The AI Analysis column is shown only when the backend returns AI
+      // analysis data (i.e. tenants with the Incident Responder AI license);
+      // otherwise it is removed entirely so non-AI tenants see no AI field.
+      if (this.aiAnalysisAvailable) {
+        return this.emails.columns;
+      }
+      return this.emails.columns.filter((col) => !col.isAiAnalysisColumn);
+    },
     isParentTableHashFilterActive() {
       return !!this.requestBodyReportedEmails?.filter?.FilterGroups[0]?.FilterItems.find(
         (item) => ["MD5", "SHA512"].includes(item.FieldName)
@@ -1497,6 +1561,28 @@ export default {
     ...mapActions({
       getCurrentUser: "auth/getCurrentUser"
     }),
+    getRowAiVerdict(row) {
+      return (row && (row.verdict || row.aiVerdict)) || "";
+    },
+    getRowAiRiskLevel(row) {
+      return (row && (row.riskLevel || row.aiRiskLevel)) || "";
+    },
+    getAiRiskColor(level) {
+      return getBtnPriorityColor(level) || getBtnStatusColor(level);
+    },
+    getAiVerdictColor(verdict) {
+      const normalized = (verdict || "").toLowerCase();
+      if (normalized.includes("no threat") || normalized.includes("benign")) {
+        return getBtnStatusColor("nonmalicious");
+      }
+      if (normalized.includes("suspicious") || normalized.includes("warning")) {
+        return getBtnStatusColor("warning");
+      }
+      if (normalized.includes("malicious") || normalized.includes("phishing")) {
+        return getBtnStatusColor("malicious");
+      }
+      return getBtnStatusColor("none");
+    },
     handleConfirmationRequiredClose() {
       this.isExtendedViewSaveButtonDisabled = false;
       this.isShowConfirmationRequired = false;
@@ -2249,6 +2335,14 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
             this.serverSideProps.pageNumber = pageNumber;
             this.reportedEmailsData = results || [];
+            if (
+              !this.aiAnalysisAvailable &&
+              (results || []).some(
+                (row) => row && (row.verdict != null || row.riskLevel != null)
+              )
+            ) {
+              this.aiAnalysisAvailable = true;
+            }
             if (this.selectedCluster) {
               this.changeFirstColumnWidth(360);
             }

@@ -5,15 +5,21 @@ jest.mock('@/utils/functions', () => ({
 }))
 
 jest.mock('axios', () => ({
-  post: jest.fn()
+  get: jest.fn(),
+  post: jest.fn(),
+  create: jest.fn()
 }))
 
-jest.mock('@/services/authentication', () => ({
-  getToken: jest.fn(() => 'token-1')
+jest.mock('@/api/notifiedEmail', () => ({
+  getNotifiedEmailAiAnalysis: jest.fn(),
+  reAnalyzeNotifiedEmailAiAnalysis: jest.fn()
 }))
 
 import EmailDetailsAIAnalyze from '@/components/IncidentResponder/EmailDetails/EmailDetailsAIAnalyze.vue'
-import axios from 'axios'
+import {
+  getNotifiedEmailAiAnalysis,
+  reAnalyzeNotifiedEmailAiAnalysis
+} from '@/api/notifiedEmail'
 import { getBtnPriorityColor, getBtnStatusColor } from '@/utils/functions'
 
 describe('EmailDetailsAIAnalyze.vue', () => {
@@ -84,6 +90,13 @@ describe('EmailDetailsAIAnalyze.vue', () => {
     expect(grouped.map((g) => g.key)).toEqual(['p1', 'p3'])
   })
 
+  it('analysisFailed reflects the analysis status', () => {
+    expect(computed.analysisFailed.call({ analysisStatus: 'Failed' })).toBe(true)
+    expect(computed.analysisFailed.call({ analysisStatus: 'failed' })).toBe(true)
+    expect(computed.analysisFailed.call({ analysisStatus: 'Completed' })).toBe(false)
+    expect(computed.analysisFailed.call({ analysisStatus: '' })).toBe(false)
+  })
+
   it('returns evidence meta from map, unknown labels and fallback titles', () => {
     const ctx = {
       evidenceFindingMetaMap: {
@@ -132,57 +145,176 @@ describe('EmailDetailsAIAnalyze.vue', () => {
     expect(ctx.showAllNotObservedIndicators).toBe(true)
   })
 
-  it('fetchReport sets report and default open evidence step on success', async () => {
-    axios.post.mockResolvedValueOnce({
-      data: {
-        report: {
-          evidence_flow: [{ step: 3 }]
-        }
-      }
-    })
+  it('readAnalysisField reads camelCase first then PascalCase fallback', () => {
+    expect(methods.readAnalysisField(null, 'status')).toBeUndefined()
+    expect(methods.readAnalysisField({ status: 'Running' }, 'status')).toBe('Running')
+    expect(methods.readAnalysisField({ Status: 'Running' }, 'status')).toBe('Running')
+    expect(
+      methods.readAnalysisField({ failureReason: 'boom' }, 'failureReason')
+    ).toBe('boom')
+  })
 
-    const emit = jest.fn()
+  it('applyAnalysisData populates report on Completed status', () => {
     const ctx = {
-      id: 'mail-1',
-      isLoadingReport: false,
-      loadError: 'old',
-      reportCreatedAt: null,
-      isMetadataExpanded: false,
-      isAgentDeterminationExpanded: true,
-      openEvidenceSteps: [99],
-      report: null,
-      $emit: emit,
+      readAnalysisField: methods.readAnalysisField,
       getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
       loadUrlEvidenceImages: jest.fn(),
       revokeUrlEvidenceImageUrls: jest.fn()
     }
 
-    await methods.fetchReport.call(ctx)
+    const status = methods.applyAnalysisData.call(ctx, {
+      status: 'Completed',
+      report: { evidence_flow: [{ step: 2 }] },
+      finishedDate: '2026-06-10 14:02:48'
+    })
 
-    expect(ctx.report).toEqual({ evidence_flow: [{ step: 3 }] })
-    expect(ctx.openEvidenceSteps).toEqual([3])
-    expect(ctx.loadError).toBe('')
-    expect(ctx.isLoadingReport).toBe(false)
-    expect(emit).toHaveBeenCalledWith('update:loading', true)
-    expect(emit).toHaveBeenCalledWith('update:loading', false)
+    expect(status).toBe('completed')
+    expect(ctx.analysisStatus).toBe('Completed')
+    expect(ctx.report).toEqual({ evidence_flow: [{ step: 2 }] })
+    expect(ctx.openEvidenceSteps).toEqual([2])
+    expect(ctx.reportCreatedAt).toBe('2026-06-10 14:02:48')
+    expect(ctx.failureReason).toBe('')
+    expect(ctx.loadUrlEvidenceImages).toHaveBeenCalled()
   })
 
-  it('fetchReport handles failure path', async () => {
-    axios.post.mockRejectedValueOnce(new Error('failed'))
-
+  it('applyAnalysisData stores failure reason on Failed status (PascalCase envelope)', () => {
     const ctx = {
-      id: 'mail-2',
-      isLoadingReport: false,
-      loadError: '',
-      report: { old: true },
-      reportCreatedAt: null,
-      isMetadataExpanded: true,
-      isAgentDeterminationExpanded: false,
-      openEvidenceSteps: [],
-      $emit: jest.fn(),
+      readAnalysisField: methods.readAnalysisField,
       getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
       loadUrlEvidenceImages: jest.fn(),
       revokeUrlEvidenceImageUrls: jest.fn()
+    }
+
+    const status = methods.applyAnalysisData.call(ctx, {
+      Status: 'Failed',
+      FailureReason: 'Agent response did not contain a report.'
+    })
+
+    expect(status).toBe('failed')
+    expect(ctx.report).toBe(null)
+    expect(ctx.failureReason).toBe('Agent response did not contain a report.')
+    expect(ctx.revokeUrlEvidenceImageUrls).toHaveBeenCalled()
+  })
+
+  it('applyAnalysisData defaults to NotAnalyzed on empty data and leaves report untouched', () => {
+    const ctx = {
+      report: null,
+      readAnalysisField: methods.readAnalysisField,
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
+    }
+
+    expect(methods.applyAnalysisData.call(ctx, {})).toBe('notanalyzed')
+    expect(ctx.analysisStatus).toBe('NotAnalyzed')
+    expect(ctx.loadUrlEvidenceImages).not.toHaveBeenCalled()
+  })
+
+  it('isTerminalStatus only treats completed/failed as terminal', () => {
+    expect(methods.isTerminalStatus('completed')).toBe(true)
+    expect(methods.isTerminalStatus('Failed')).toBe(true)
+    expect(methods.isTerminalStatus('pending')).toBe(false)
+    expect(methods.isTerminalStatus('running')).toBe(false)
+    expect(methods.isTerminalStatus('')).toBe(false)
+  })
+
+  it('shouldPoll only treats pending/running as pollable', () => {
+    expect(methods.shouldPoll('pending')).toBe(true)
+    expect(methods.shouldPoll('Running')).toBe(true)
+    expect(methods.shouldPoll('completed')).toBe(false)
+    expect(methods.shouldPoll('failed')).toBe(false)
+    expect(methods.shouldPoll('notanalyzed')).toBe(false)
+    expect(methods.shouldPoll('')).toBe(false)
+  })
+
+  it('fetchReport reads latest analysis and does not poll when completed', async () => {
+    getNotifiedEmailAiAnalysis.mockResolvedValueOnce({
+      data: { data: { status: 'Completed' } }
+    })
+
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-1',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(() => 'completed'),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(),
+      $emit: emit
+    }
+
+    await methods.fetchReport.call(ctx)
+
+    expect(ctx.stopPolling).toHaveBeenCalled()
+    expect(getNotifiedEmailAiAnalysis).toHaveBeenCalledWith('mail-1')
+    expect(ctx.applyAnalysisData).toHaveBeenCalledWith({ status: 'Completed' })
+    expect(ctx.startPolling).not.toHaveBeenCalled()
+    expect(ctx.isLoadingReport).toBe(false)
+    expect(emit).toHaveBeenCalledWith('update:loading', false)
+  })
+
+  it('fetchReport starts polling and keeps the loader on while running', async () => {
+    getNotifiedEmailAiAnalysis.mockResolvedValueOnce({
+      data: { data: { status: 'Running' } }
+    })
+
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-1',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(() => 'running'),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(function () {
+        this.pollTimer = 123
+      }),
+      $emit: emit
+    }
+
+    await methods.fetchReport.call(ctx)
+
+    expect(ctx.startPolling).toHaveBeenCalled()
+    // finally guard must not reset loading while a poll timer is active
+    expect(ctx.isLoadingReport).toBe(true)
+  })
+
+  it('fetchReport surfaces an error and skips polling when the response is empty (swallowed 503/cancel)', async () => {
+    getNotifiedEmailAiAnalysis.mockResolvedValueOnce({})
+
+    const ctx = {
+      id: 'mail-1',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(),
+      $emit: jest.fn()
+    }
+
+    await methods.fetchReport.call(ctx)
+
+    expect(ctx.applyAnalysisData).not.toHaveBeenCalled()
+    expect(ctx.startPolling).not.toHaveBeenCalled()
+    expect(ctx.loadError).toBe('Unable to load AI analysis report at this time.')
+    expect(ctx.isLoadingReport).toBe(false)
+  })
+
+  it('fetchReport handles failure path', async () => {
+    getNotifiedEmailAiAnalysis.mockRejectedValueOnce(new Error('failed'))
+
+    const ctx = {
+      id: 'mail-2',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(),
+      report: { old: true },
+      $emit: jest.fn()
     }
 
     await methods.fetchReport.call(ctx)
@@ -190,6 +322,247 @@ describe('EmailDetailsAIAnalyze.vue', () => {
     expect(ctx.loadError).toBe('Unable to load AI analysis report at this time.')
     expect(ctx.report).toBe(null)
     expect(ctx.isLoadingReport).toBe(false)
+  })
+
+  it('fetchReport returns early when id is missing', async () => {
+    const ctx = { id: '', stopPolling: jest.fn() }
+    await methods.fetchReport.call(ctx)
+    expect(getNotifiedEmailAiAnalysis).not.toHaveBeenCalled()
+  })
+
+  it('runAnalysis triggers re-analyze and polls for non-terminal status', async () => {
+    reAnalyzeNotifiedEmailAiAnalysis.mockResolvedValueOnce({
+      data: { data: { status: 'Pending' } }
+    })
+
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-9',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(() => 'pending'),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(function () {
+        this.pollTimer = 5
+      }),
+      $emit: emit
+    }
+
+    await methods.runAnalysis.call(ctx)
+
+    expect(reAnalyzeNotifiedEmailAiAnalysis).toHaveBeenCalledWith('mail-9')
+    expect(ctx.startPolling).toHaveBeenCalled()
+    expect(ctx.isRunningAnalysis).toBe(false)
+  })
+
+  it('runAnalysis does not poll when re-analyze immediately returns a terminal status', async () => {
+    reAnalyzeNotifiedEmailAiAnalysis.mockResolvedValueOnce({
+      data: { data: { status: 'Completed' } }
+    })
+
+    const ctx = {
+      id: 'mail-9',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(() => 'completed'),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(),
+      $emit: jest.fn()
+    }
+
+    await methods.runAnalysis.call(ctx)
+
+    expect(ctx.startPolling).not.toHaveBeenCalled()
+    expect(ctx.isLoadingReport).toBe(false)
+  })
+
+  it('runAnalysis surfaces an error and skips polling when re-analyze response is empty', async () => {
+    reAnalyzeNotifiedEmailAiAnalysis.mockResolvedValueOnce({})
+
+    const ctx = {
+      id: 'mail-9',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(),
+      $emit: jest.fn()
+    }
+
+    await methods.runAnalysis.call(ctx)
+
+    expect(ctx.applyAnalysisData).not.toHaveBeenCalled()
+    expect(ctx.startPolling).not.toHaveBeenCalled()
+    expect(ctx.loadError).toBe('Unable to run AI analysis at this time.')
+    expect(ctx.isRunningAnalysis).toBe(false)
+    expect(ctx.isLoadingReport).toBe(false)
+  })
+
+  it('runAnalysis handles failure path and resets loading flags', async () => {
+    reAnalyzeNotifiedEmailAiAnalysis.mockRejectedValueOnce(new Error('fail'))
+
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-9',
+      pollTimer: null,
+      stopPolling: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      shouldPoll: methods.shouldPoll,
+      startPolling: jest.fn(),
+      report: { old: true },
+      $emit: emit
+    }
+
+    await methods.runAnalysis.call(ctx)
+
+    expect(ctx.loadError).toBe('Unable to run AI analysis at this time.')
+    expect(ctx.report).toBe(null)
+    expect(ctx.isRunningAnalysis).toBe(false)
+    expect(ctx.isLoadingReport).toBe(false)
+  })
+
+  it('pollOnce stops polling and clears loader on a terminal status', async () => {
+    getNotifiedEmailAiAnalysis.mockResolvedValueOnce({
+      data: { data: { status: 'Completed' } }
+    })
+
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-1',
+      pollStartedAt: Date.now(),
+      isPollInFlight: false,
+      stopPolling: jest.fn(),
+      applyAnalysisData: jest.fn(() => 'completed'),
+      isTerminalStatus: methods.isTerminalStatus,
+      $emit: emit
+    }
+
+    await methods.pollOnce.call(ctx)
+
+    expect(ctx.stopPolling).toHaveBeenCalled()
+    expect(ctx.isLoadingReport).toBe(false)
+    expect(ctx.isPollInFlight).toBe(false)
+    expect(emit).toHaveBeenCalledWith('update:loading', false)
+  })
+
+  it('pollOnce keeps polling while the status is non-terminal', async () => {
+    getNotifiedEmailAiAnalysis.mockResolvedValueOnce({
+      data: { data: { status: 'Running' } }
+    })
+
+    const ctx = {
+      id: 'mail-1',
+      pollStartedAt: Date.now(),
+      isPollInFlight: false,
+      stopPolling: jest.fn(),
+      applyAnalysisData: jest.fn(() => 'running'),
+      isTerminalStatus: methods.isTerminalStatus,
+      $emit: jest.fn()
+    }
+
+    await methods.pollOnce.call(ctx)
+
+    expect(ctx.stopPolling).not.toHaveBeenCalled()
+    expect(ctx.isPollInFlight).toBe(false)
+  })
+
+  it('pollOnce ignores an empty response and keeps polling', async () => {
+    getNotifiedEmailAiAnalysis.mockResolvedValueOnce({})
+
+    const ctx = {
+      id: 'mail-1',
+      pollStartedAt: Date.now(),
+      isPollInFlight: false,
+      stopPolling: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      isTerminalStatus: methods.isTerminalStatus,
+      $emit: jest.fn()
+    }
+
+    await methods.pollOnce.call(ctx)
+
+    expect(ctx.applyAnalysisData).not.toHaveBeenCalled()
+    expect(ctx.stopPolling).not.toHaveBeenCalled()
+    expect(ctx.isPollInFlight).toBe(false)
+  })
+
+  it('pollOnce skips overlapping calls while a request is already in flight', async () => {
+    const ctx = {
+      id: 'mail-1',
+      pollStartedAt: Date.now(),
+      isPollInFlight: true,
+      stopPolling: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      isTerminalStatus: methods.isTerminalStatus,
+      $emit: jest.fn()
+    }
+
+    await methods.pollOnce.call(ctx)
+
+    expect(getNotifiedEmailAiAnalysis).not.toHaveBeenCalled()
+    expect(ctx.applyAnalysisData).not.toHaveBeenCalled()
+  })
+
+  it('pollOnce times out and surfaces a message when no report arrived', async () => {
+    const emit = jest.fn()
+    const ctx = {
+      id: 'mail-1',
+      pollStartedAt: 0,
+      isPollInFlight: false,
+      report: null,
+      stopPolling: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      isTerminalStatus: methods.isTerminalStatus,
+      $emit: emit
+    }
+
+    await methods.pollOnce.call(ctx)
+
+    expect(getNotifiedEmailAiAnalysis).not.toHaveBeenCalled()
+    expect(ctx.stopPolling).toHaveBeenCalled()
+    expect(ctx.isLoadingReport).toBe(false)
+    expect(ctx.loadError).toContain('taking longer than expected')
+  })
+
+  it('pollOnce stops immediately when id is missing', async () => {
+    const ctx = { id: '', stopPolling: jest.fn() }
+    await methods.pollOnce.call(ctx)
+    expect(ctx.stopPolling).toHaveBeenCalled()
+    expect(getNotifiedEmailAiAnalysis).not.toHaveBeenCalled()
+  })
+
+  it('startPolling schedules pollOnce and stopPolling clears the timer', () => {
+    jest.useFakeTimers()
+    try {
+      const pollOnce = jest.fn()
+      const ctx = {
+        pollTimer: null,
+        isPollInFlight: true,
+        stopPolling: methods.stopPolling,
+        pollOnce,
+        $emit: jest.fn()
+      }
+
+      methods.startPolling.call(ctx)
+      expect(ctx.pollTimer).not.toBeNull()
+      expect(ctx.isPollInFlight).toBe(false)
+      expect(ctx.isLoadingReport).toBe(true)
+
+      jest.advanceTimersByTime(4000)
+      expect(pollOnce).toHaveBeenCalledTimes(1)
+
+      methods.stopPolling.call(ctx)
+      expect(ctx.pollTimer).toBeNull()
+
+      jest.advanceTimersByTime(8000)
+      expect(pollOnce).toHaveBeenCalledTimes(1)
+    } finally {
+      jest.useRealTimers()
+    }
   })
 
   it('color helper methods use status/priority helpers', () => {
