@@ -74,7 +74,7 @@ describe('IncidentResponder.vue', () => {
       expect(() => methods.getAiVerdictColor('')).not.toThrow()
     })
 
-    it('reportedEmailColumns drops the AI column until AI data is available', () => {
+    it('reportedEmailColumns drops the AI columns when no license/case and no AI data', () => {
       const columns = [
         { property: 'result' },
         { property: 'aiAnalysis', isAiAnalysisColumn: true },
@@ -82,12 +82,37 @@ describe('IncidentResponder.vue', () => {
       ]
 
       const hidden = computed.reportedEmailColumns.call({
+        showAIAnalyze: false,
         aiAnalysisAvailable: false,
         emails: { columns }
       })
       expect(hidden.some((c) => c.isAiAnalysisColumn)).toBe(false)
+    })
+
+    it('reportedEmailColumns shows the AI columns when showAIAnalyze is true', () => {
+      const columns = [
+        { property: 'result' },
+        { property: 'aiAnalysis', isAiAnalysisColumn: true },
+        { property: 'status' }
+      ]
 
       const shown = computed.reportedEmailColumns.call({
+        showAIAnalyze: true,
+        aiAnalysisAvailable: false,
+        emails: { columns }
+      })
+      expect(shown.some((c) => c.isAiAnalysisColumn)).toBe(true)
+    })
+
+    it('reportedEmailColumns shows the AI columns when backend returns AI data', () => {
+      const columns = [
+        { property: 'result' },
+        { property: 'aiAnalysis', isAiAnalysisColumn: true },
+        { property: 'status' }
+      ]
+
+      const shown = computed.reportedEmailColumns.call({
+        showAIAnalyze: false,
         aiAnalysisAvailable: true,
         emails: { columns }
       })
