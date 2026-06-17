@@ -5,15 +5,21 @@ jest.mock('@/utils/functions', () => ({
 }))
 
 jest.mock('axios', () => ({
-  post: jest.fn()
+  get: jest.fn(),
+  post: jest.fn(),
+  create: jest.fn()
 }))
 
-jest.mock('@/services/authentication', () => ({
-  getToken: jest.fn(() => 'token-1')
+jest.mock('@/api/notifiedEmail', () => ({
+  getNotifiedEmailAiAnalysis: jest.fn(),
+  reAnalyzeNotifiedEmailAiAnalysis: jest.fn()
 }))
 
 import EmailDetailsAIAnalyze from '@/components/IncidentResponder/EmailDetails/EmailDetailsAIAnalyze.vue'
-import axios from 'axios'
+import {
+  getNotifiedEmailAiAnalysis,
+  reAnalyzeNotifiedEmailAiAnalysis
+} from '@/api/notifiedEmail'
 
 describe('EmailDetailsAIAnalyze.vue (extra branch coverage)', () => {
   const { computed, methods } = EmailDetailsAIAnalyze
@@ -88,84 +94,78 @@ describe('EmailDetailsAIAnalyze.vue (extra branch coverage)', () => {
   })
 
   it('runAnalysis returns early when id is missing', async () => {
-    const ctx = { id: '', isRunningAnalysis: false, isLoadingReport: false }
+    const ctx = {
+      id: '',
+      isRunningAnalysis: false,
+      isLoadingReport: false,
+      stopPolling: jest.fn()
+    }
     await methods.runAnalysis.call(ctx)
-    expect(axios.post).not.toHaveBeenCalled()
+    expect(reAnalyzeNotifiedEmailAiAnalysis).not.toHaveBeenCalled()
   })
 
   it('fetchReport returns early when id is missing', async () => {
-    const ctx = { id: '', isLoadingReport: false }
+    const ctx = { id: '', isLoadingReport: false, stopPolling: jest.fn() }
     await methods.fetchReport.call(ctx)
-    expect(axios.post).not.toHaveBeenCalled()
+    expect(getNotifiedEmailAiAnalysis).not.toHaveBeenCalled()
   })
 
-  it('runAnalysis success path accepts nested payload.data.report and opens first evidence step', async () => {
-    axios.post.mockResolvedValueOnce({
-      data: {
-        data: {
-          report: {
-            evidence_flow: [{ step: 2 }]
-          }
-        }
-      }
-    })
-
-    const emit = jest.fn()
+  it('applyAnalysisData falls back to a default failure reason when none is provided', () => {
     const ctx = {
-      id: 'mail-77',
-      isRunningAnalysis: false,
-      isLoadingReport: false,
-      loadError: 'old',
-      report: null,
-      reportCreatedAt: null,
-      isMetadataExpanded: false,
-      isAgentDeterminationExpanded: true,
-      openEvidenceSteps: [99],
-      $emit: emit,
+      readAnalysisField: methods.readAnalysisField,
       getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
       loadUrlEvidenceImages: jest.fn(),
       revokeUrlEvidenceImageUrls: jest.fn()
     }
 
-    await methods.runAnalysis.call(ctx)
+    methods.applyAnalysisData.call(ctx, { status: 'Failed' })
 
-    expect(ctx.report).toEqual({ evidence_flow: [{ step: 2 }] })
-    expect(ctx.openEvidenceSteps).toEqual([2])
-    expect(ctx.isRunningAnalysis).toBe(false)
-    expect(ctx.isLoadingReport).toBe(false)
-    expect(ctx.loadError).toBe('')
-    expect(ctx.reportCreatedAt).toBeTruthy()
-    expect(emit).toHaveBeenCalledWith('update:loading', true)
-    expect(emit).toHaveBeenCalledWith('update:loading', false)
+    expect(ctx.failureReason).toBe('AI analysis could not be completed.')
   })
 
-  it('runAnalysis handles failure path and resets loading flags', async () => {
-    axios.post.mockRejectedValueOnce(new Error('fail'))
-    const emit = jest.fn()
+  it('applyAnalysisData falls back to createTime then current date for reportCreatedAt', () => {
+    const withCreateTime = {
+      readAnalysisField: methods.readAnalysisField,
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
+    }
+    methods.applyAnalysisData.call(withCreateTime, {
+      status: 'Completed',
+      report: { evidence_flow: [] },
+      createTime: '2026-06-10 14:02:10'
+    })
+    expect(withCreateTime.reportCreatedAt).toBe('2026-06-10 14:02:10')
+
+    const withoutDates = {
+      readAnalysisField: methods.readAnalysisField,
+      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
+      loadUrlEvidenceImages: jest.fn(),
+      revokeUrlEvidenceImageUrls: jest.fn()
+    }
+    methods.applyAnalysisData.call(withoutDates, {
+      status: 'Completed',
+      report: { evidence_flow: [] }
+    })
+    expect(withoutDates.reportCreatedAt).toBeInstanceOf(Date)
+  })
+
+  it('pollOnce swallows transient errors and keeps polling', async () => {
+    getNotifiedEmailAiAnalysis.mockRejectedValueOnce(new Error('transient'))
+
     const ctx = {
       id: 'mail-1',
-      isRunningAnalysis: false,
-      isLoadingReport: false,
-      loadError: '',
-      report: { old: true },
-      reportCreatedAt: 'old',
-      isMetadataExpanded: false,
-      isAgentDeterminationExpanded: true,
-      openEvidenceSteps: [1],
-      $emit: emit,
-      getDefaultOpenEvidenceSteps: methods.getDefaultOpenEvidenceSteps,
-      loadUrlEvidenceImages: jest.fn(),
-      revokeUrlEvidenceImageUrls: jest.fn()
+      pollStartedAt: Date.now(),
+      stopPolling: jest.fn(),
+      applyAnalysisData: jest.fn(),
+      isTerminalStatus: methods.isTerminalStatus,
+      $emit: jest.fn()
     }
 
-    await methods.runAnalysis.call(ctx)
+    await methods.pollOnce.call(ctx)
 
-    expect(ctx.loadError).toBe('Unable to run AI analysis at this time.')
-    expect(ctx.report).toBe(null)
-    expect(ctx.isRunningAnalysis).toBe(false)
-    expect(ctx.isLoadingReport).toBe(false)
-    expect(emit).toHaveBeenCalledWith('update:loading', true)
-    expect(emit).toHaveBeenCalledWith('update:loading', false)
+    expect(ctx.stopPolling).not.toHaveBeenCalled()
+    expect(console.error).toHaveBeenCalled()
   })
 
   it('color helpers cover additional branches', () => {
