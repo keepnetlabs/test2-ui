@@ -115,5 +115,21 @@ describe('CampaignManager utils', () => {
       expect(COLUMNS.STATUS.type).toBe('slot')
       expect(COLUMNS.STATUS.property).toBeDefined()
     })
+
+    it('METHOD filter includes Double Barrel', () => {
+      const values = COLUMNS.METHOD.filterableItems.map((i) => i.value)
+      expect(values).toContain('Double Barrel')
+      // existing method options remain intact
+      expect(values).toEqual(
+        expect.arrayContaining([
+          'Multiple Method',
+          'Click-Only',
+          'Data Submission',
+          'Attachment',
+          'MFA',
+          'Double Barrel'
+        ])
+      )
+    })
   })
 })
