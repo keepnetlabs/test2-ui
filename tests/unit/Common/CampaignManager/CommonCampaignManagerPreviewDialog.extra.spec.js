@@ -71,4 +71,50 @@ describe('CommonCampaignManagerPreviewDialog.vue (extra computed branching)', ()
       ).toBe(true)
     })
   })
+
+  describe('barrel Lure/Payload preview', () => {
+    it('isBarrelPayloadMode is true only when a barrel template is in payload mode', () => {
+      expect(
+        comp.computed.isBarrelPayloadMode.call({
+          isBarrelTemplate: true,
+          barrelPreviewMode: 'payload'
+        })
+      ).toBe(true)
+      expect(
+        comp.computed.isBarrelPayloadMode.call({
+          isBarrelTemplate: true,
+          barrelPreviewMode: 'lure'
+        })
+      ).toBe(false)
+      expect(
+        comp.computed.isBarrelPayloadMode.call({
+          isBarrelTemplate: false,
+          barrelPreviewMode: 'payload'
+        })
+      ).toBe(false)
+    })
+
+    it('getEmailPreviewHtml returns payload body in payload mode, lure otherwise', () => {
+      const ctx = {
+        isBarrelPayloadMode: true,
+        emailTemplate: '<p>lure</p>',
+        payloadEmailTemplate: '<p>payload</p>'
+      }
+      expect(comp.computed.getEmailPreviewHtml.call(ctx)).toBe('<p>payload</p>')
+      expect(
+        comp.computed.getEmailPreviewHtml.call({ ...ctx, isBarrelPayloadMode: false })
+      ).toBe('<p>lure</p>')
+    })
+
+    it('getPreviewSubject returns the payload subject in payload mode, lure otherwise', () => {
+      const ctx = {
+        isBarrelPayloadMode: true,
+        emailTemplateParams: { subject: 'Lure subject', barrelPayload: { subject: 'Payload subject' } }
+      }
+      expect(comp.computed.getPreviewSubject.call(ctx)).toBe('Payload subject')
+      expect(
+        comp.computed.getPreviewSubject.call({ ...ctx, isBarrelPayloadMode: false })
+      ).toBe('Lure subject')
+    })
+  })
 })

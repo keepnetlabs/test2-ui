@@ -279,7 +279,7 @@
                         </template>
                       </EmailTemplate>
                       <div
-                        v-if="isBarrelTemplate"
+                        v-if="isBarrelTemplate && barrelPayloadEditorMounted"
                         v-show="isBarrelPayloadMode"
                         class="barrel-payload-panel"
                       >
@@ -589,6 +589,11 @@ export default {
       },
       languagesPayload: [],
       barrelEditMode: 'lure',
+      // The payload editor's email preview is an auto-sizing iframe; mounting it
+      // while hidden (display:none) measures a 0/wrong height that never recovers
+      // when shown. Mount it lazily the first time the Payload tab is opened (so
+      // it sizes while visible), then keep it mounted via v-show.
+      barrelPayloadEditorMounted: false,
       // Tracks the two-pass barrel translation. Backend exposes a single polling
       // job, so we translate the lure body first, then chain the payload body and
       // reuse the same poll loop. null for non-barrel templates (legacy behaviour).
@@ -761,6 +766,11 @@ export default {
         if (!val || this.isDefault) return
         this.setLanguageItems()
       }
+    },
+    barrelEditMode(mode) {
+      // Lazily mount the payload editor the first time its tab is opened so its
+      // preview iframe measures height while visible (see barrelPayloadEditorMounted).
+      if (mode === 'payload') this.barrelPayloadEditorMounted = true
     },
     'formValues.categoryResourceId'() {
       // Reset to lure editor whenever category changes (e.g. away from Barrel)

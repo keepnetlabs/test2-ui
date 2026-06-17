@@ -1457,11 +1457,16 @@ export default {
         "permissions/getDashboardReportedEmailTrendsPermission"
     }),
     reportedEmailColumns() {
-      // The AI Analysis columns are shown to tenants with the Incident
-      // Responder AI license (or the static fallback cases in showAIAnalyze),
-      // or whenever the backend actually returns AI analysis data; otherwise
-      // they are removed entirely so non-AI tenants see no AI field.
-      if (this.showAIAnalyze || this.aiAnalysisAvailable) {
+      // The Agentic AI permission is the hard gate: without it the AI Analysis
+      // and Risk Level columns are removed entirely, even if the backend still
+      // returns stale AI data (the data-driven `aiAnalysisAvailable` fallback
+      // must never override a permission denial). With the permission, the
+      // columns show for licensed/allowlisted tenants (showAIAnalyze) or
+      // whenever real AI analysis data is present.
+      const canShowAiColumns =
+        this.showAIAnalyze ||
+        (this.hasAgenticAIPermission && this.aiAnalysisAvailable);
+      if (canShowAiColumns) {
         return this.emails.columns;
       }
       return this.emails.columns.filter((col) => !col.isAiAnalysisColumn);
@@ -1564,6 +1569,15 @@ export default {
     ...mapActions({
       getCurrentUser: "auth/getCurrentUser"
     }),
+    rowHasAiAnalysis(row) {
+      // A row only counts as carrying AI analysis when it has a non-empty
+      // verdict or risk level. The backend returns these as empty strings (not
+      // null) for non-AI tenants, so a `!= null` check would mark AI analysis
+      // as available and surface the AI columns with empty cells. Reusing the
+      // same truthy accessors that render the cells keeps availability and
+      // display in sync.
+      return !!(this.getRowAiVerdict(row) || this.getRowAiRiskLevel(row));
+    },
     getRowAiVerdict(row) {
       return (row && (row.verdict || row.aiVerdict)) || "";
     },
@@ -2340,9 +2354,7 @@ export default {
             this.reportedEmailsData = results || [];
             if (
               !this.aiAnalysisAvailable &&
-              (results || []).some(
-                (row) => row && (row.verdict != null || row.riskLevel != null)
-              )
+              (results || []).some((row) => this.rowHasAiAnalysis(row))
             ) {
               this.aiAnalysisAvailable = true;
             }

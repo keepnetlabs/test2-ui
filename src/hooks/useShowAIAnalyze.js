@@ -67,8 +67,26 @@ function isAllowedByLegacyFallback(store) {
  */
 export default {
   computed: {
+    /**
+     * Whether the tenant holds the Agentic AI settings permission. This is the
+     * hard gate for every AI analysis surface: without it no AI tab, column, or
+     * data-driven fallback may appear, because the backend returns
+     * `{ status: "NotAnalyzed" }` and the user cannot run analysis anyway.
+     */
+    hasAgenticAIPermission() {
+      return !!this.$store.getters[
+        'permissions/getAgenticAISettingsGetPermissions'
+      ]
+    },
     showAIAnalyze() {
       const store = this.$store
+      // Temporary permission gate: without the Agentic AI permission the backend
+      // returns `{ status: "NotAnalyzed" }`, yet the legacy company/country
+      // fallback below would still surface the AI tab and its "Run AI Analysis"
+      // screen — a dead end for users who can't actually run it. Require the
+      // permission first. Legacy license/allowlist logic is kept intact.
+      if (!this.hasAgenticAIPermission) return false
+
       const hasAgenticAILicense = !!store.getters['login/getHasAgenticAILicense']
       // Authoritative gate; the rest is a deprecated fallback to be removed
       // once the license covers every AI-enabled tenant.

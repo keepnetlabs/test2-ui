@@ -5,21 +5,31 @@ jest.mock('@/utils/isTestEnvironment', () => ({
   isTestEnvironment: jest.fn()
 }))
 
-const { showAIAnalyze } = useShowAIAnalyze.computed
+const { showAIAnalyze, hasAgenticAIPermission } = useShowAIAnalyze.computed
 
 const makeThis = ({
   hasAgenticAILicense = false,
+  hasAgenticAIPermission: permission = true,
   selectedCompanyName = '',
   selectedCompanyObject
-} = {}) => ({
-  $store: {
-    getters: { 'login/getHasAgenticAILicense': hasAgenticAILicense },
-    state: {
-      auth: { selectedCompanyName },
-      dashboard: { selectedCompanyObject }
+} = {}) => {
+  const ctx = {
+    $store: {
+      getters: {
+        'login/getHasAgenticAILicense': hasAgenticAILicense,
+        'permissions/getAgenticAISettingsGetPermissions': permission
+      },
+      state: {
+        auth: { selectedCompanyName },
+        dashboard: { selectedCompanyObject }
+      }
     }
   }
-})
+  // showAIAnalyze reads this.hasAgenticAIPermission (the same computed in the
+  // mixin), so resolve it onto the context the way Vue would on the instance.
+  ctx.hasAgenticAIPermission = hasAgenticAIPermission.call(ctx)
+  return ctx
+}
 
 describe('useShowAIAnalyze mixin', () => {
   beforeEach(() => {
@@ -29,6 +39,52 @@ describe('useShowAIAnalyze mixin', () => {
   it('returns true when tenant has the Agentic AI license', () => {
     expect(showAIAnalyze.call(makeThis({ hasAgenticAILicense: true }))).toBe(true)
   })
+
+  it('returns false without the Agentic AI permission, even with license', () => {
+    expect(
+      showAIAnalyze.call(
+        makeThis({ hasAgenticAILicense: true, hasAgenticAIPermission: false })
+      )
+    ).toBe(false)
+  })
+
+  it('returns false without the Agentic AI permission, even for an allowlisted company', () => {
+    expect(
+      showAIAnalyze.call(
+        makeThis({ selectedCompanyName: 'Bolearis', hasAgenticAIPermission: false })
+      )
+    ).toBe(false)
+  })
+
+  it.each(['Turkey', 'Türkiye', 'turkiye'])(
+    'returns false without the Agentic AI permission, even when country is %s',
+    (countryName) => {
+      expect(
+        showAIAnalyze.call(
+          makeThis({
+            selectedCompanyName: 'Other',
+            selectedCompanyObject: { countryName },
+            hasAgenticAIPermission: false
+          })
+        )
+      ).toBe(false)
+    }
+  )
+
+  it.each(['TR', 'TUR', 'tr-tr'])(
+    'returns false without the Agentic AI permission, even when country code is %s',
+    (countryCode) => {
+      expect(
+        showAIAnalyze.call(
+          makeThis({
+            selectedCompanyName: 'Other',
+            selectedCompanyObject: { countryCode },
+            hasAgenticAIPermission: false
+          })
+        )
+      ).toBe(false)
+    }
+  )
 
   it('returns true in test environment even without license or allowed company', () => {
     isTestEnvironment.mockReturnValue(true)
@@ -87,5 +143,16 @@ describe('useShowAIAnalyze mixin', () => {
         makeThis({ selectedCompanyName: 'Other', selectedCompanyObject: {} })
       )
     ).toBe(false)
+  })
+
+  describe('hasAgenticAIPermission', () => {
+    it('reflects the Agentic AI settings permission getter', () => {
+      expect(
+        hasAgenticAIPermission.call(makeThis({ hasAgenticAIPermission: true }))
+      ).toBe(true)
+      expect(
+        hasAgenticAIPermission.call(makeThis({ hasAgenticAIPermission: false }))
+      ).toBe(false)
+    })
   })
 })

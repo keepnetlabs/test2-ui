@@ -65,6 +65,21 @@ describe('IncidentResponder.vue', () => {
       expect(methods.getRowAiRiskLevel({})).toBe('')
     })
 
+    it('rowHasAiAnalysis is true only for non-empty verdict/risk level', () => {
+      const ctx = {
+        getRowAiVerdict: methods.getRowAiVerdict,
+        getRowAiRiskLevel: methods.getRowAiRiskLevel
+      }
+      expect(methods.rowHasAiAnalysis.call(ctx, { verdict: 'Phishing' })).toBe(true)
+      expect(methods.rowHasAiAnalysis.call(ctx, { riskLevel: 'High' })).toBe(true)
+      expect(methods.rowHasAiAnalysis.call(ctx, { aiVerdict: 'Benign' })).toBe(true)
+      // Backend sends empty strings (not null) for non-AI tenants -> must NOT
+      // count as AI data, otherwise the AI columns show with empty cells.
+      expect(methods.rowHasAiAnalysis.call(ctx, { verdict: '', riskLevel: '' })).toBe(false)
+      expect(methods.rowHasAiAnalysis.call(ctx, {})).toBe(false)
+      expect(methods.rowHasAiAnalysis.call(ctx, null)).toBe(false)
+    })
+
     it('getAiVerdictColor maps verdict text to a semantic status color', () => {
       expect(methods.getAiVerdictColor('Benign')).toBeTruthy()
       expect(methods.getAiVerdictColor('No Threat Detected - Marketing Email')).toBeTruthy()
@@ -74,49 +89,51 @@ describe('IncidentResponder.vue', () => {
       expect(() => methods.getAiVerdictColor('')).not.toThrow()
     })
 
-    it('reportedEmailColumns drops the AI columns when no license/case and no AI data', () => {
-      const columns = [
-        { property: 'result' },
-        { property: 'aiAnalysis', isAiAnalysisColumn: true },
-        { property: 'status' }
-      ]
+    const aiColumns = () => [
+      { property: 'result' },
+      { property: 'aiAnalysis', isAiAnalysisColumn: true },
+      { property: 'status' }
+    ]
 
+    it('reportedEmailColumns drops the AI columns when no license/case and no AI data', () => {
       const hidden = computed.reportedEmailColumns.call({
         showAIAnalyze: false,
+        hasAgenticAIPermission: false,
         aiAnalysisAvailable: false,
-        emails: { columns }
+        emails: { columns: aiColumns() }
       })
       expect(hidden.some((c) => c.isAiAnalysisColumn)).toBe(false)
     })
 
     it('reportedEmailColumns shows the AI columns when showAIAnalyze is true', () => {
-      const columns = [
-        { property: 'result' },
-        { property: 'aiAnalysis', isAiAnalysisColumn: true },
-        { property: 'status' }
-      ]
-
       const shown = computed.reportedEmailColumns.call({
         showAIAnalyze: true,
+        hasAgenticAIPermission: true,
         aiAnalysisAvailable: false,
-        emails: { columns }
+        emails: { columns: aiColumns() }
       })
       expect(shown.some((c) => c.isAiAnalysisColumn)).toBe(true)
     })
 
-    it('reportedEmailColumns shows the AI columns when backend returns AI data', () => {
-      const columns = [
-        { property: 'result' },
-        { property: 'aiAnalysis', isAiAnalysisColumn: true },
-        { property: 'status' }
-      ]
-
+    it('reportedEmailColumns shows the AI columns when permitted and backend returns AI data', () => {
       const shown = computed.reportedEmailColumns.call({
         showAIAnalyze: false,
+        hasAgenticAIPermission: true,
         aiAnalysisAvailable: true,
-        emails: { columns }
+        emails: { columns: aiColumns() }
       })
       expect(shown.some((c) => c.isAiAnalysisColumn)).toBe(true)
+    })
+
+    it('reportedEmailColumns hides the AI columns without permission even if backend returns AI data', () => {
+      // Hard gate: stale AI data must never override a permission denial.
+      const hidden = computed.reportedEmailColumns.call({
+        showAIAnalyze: false,
+        hasAgenticAIPermission: false,
+        aiAnalysisAvailable: true,
+        emails: { columns: aiColumns() }
+      })
+      expect(hidden.some((c) => c.isAiAnalysisColumn)).toBe(false)
     })
   })
 })
