@@ -583,7 +583,9 @@ import ConfirmationRequiredPopup from "@/components/IncidentResponder/Confirmati
 import axios from "axios";
 import AuthenticationService from "@/services/authentication";
 import Badge from "@/components/Badge";
+import useShowAIAnalyze from "@/hooks/useShowAIAnalyze";
 export default {
+  mixins: [useShowAIAnalyze],
   components: {
     Badge,
     ConfirmationRequiredPopup,
@@ -924,7 +926,7 @@ export default {
           show: true,
           isEditable: false,
           type: "slot",
-          width: "240",
+          width: "320",
           fullWidth: true
         },
         {
@@ -1455,10 +1457,11 @@ export default {
         "permissions/getDashboardReportedEmailTrendsPermission"
     }),
     reportedEmailColumns() {
-      // The AI Analysis column is shown only when the backend returns AI
-      // analysis data (i.e. tenants with the Incident Responder AI license);
-      // otherwise it is removed entirely so non-AI tenants see no AI field.
-      if (this.aiAnalysisAvailable) {
+      // The AI Analysis columns are shown to tenants with the Incident
+      // Responder AI license (or the static fallback cases in showAIAnalyze),
+      // or whenever the backend actually returns AI analysis data; otherwise
+      // they are removed entirely so non-AI tenants see no AI field.
+      if (this.showAIAnalyze || this.aiAnalysisAvailable) {
         return this.emails.columns;
       }
       return this.emails.columns.filter((col) => !col.isAiAnalysisColumn);

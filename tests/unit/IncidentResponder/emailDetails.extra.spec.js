@@ -365,7 +365,10 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
         propsData: { id: 'mail-1' },
         mocks: {
           $route: { params: {}, query: { tab: 'sixth' } },
-          $store: { state: { auth: { selectedCompanyName: '' } } }
+          $store: {
+            state: { auth: { selectedCompanyName: '' } },
+            getters: { 'login/getHasAgenticAILicense': false }
+          }
         },
         stubs: {
           Datatable: true,
@@ -410,7 +413,10 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
         propsData: { id: 'mail-2' },
         mocks: {
           $route: { params: {}, query: { tab: 'sixth' } },
-          $store: { state: { auth: { selectedCompanyName: '' } } }
+          $store: {
+            state: { auth: { selectedCompanyName: '' } },
+            getters: { 'login/getHasAgenticAILicense': false }
+          }
         },
         stubs: {
           Datatable: true,
@@ -454,7 +460,10 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
         propsData: { id: 'mail-3' },
         mocks: {
           $route: { params: {}, query: { tab: 'sixth' } },
-          $store: { state: { auth: { selectedCompanyName: '' } } }
+          $store: {
+            state: { auth: { selectedCompanyName: '' } },
+            getters: { 'login/getHasAgenticAILicense': false }
+          }
         },
         stubs: {
           Datatable: true,
@@ -481,132 +490,4 @@ describe('IncidentResponder emailDetails.vue (extra branch coverage)', () => {
     })
   })
 
-  describe('showAIAnalyze', () => {
-    it('returns true when isTestEnvironment (localhost) and no allowed company', () => {
-      const mockThis = {
-        isTestEnvironment: true,
-        $store: { state: { auth: { selectedCompanyName: '' } } }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-    })
-
-    it('returns true when allowed company even without test environment', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: { state: { auth: { selectedCompanyName: 'Bolearis' } } }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-    })
-
-    it('returns true for BDO UK even without test environment', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: { state: { auth: { selectedCompanyName: 'BDO UK' } } }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-    })
-
-    it('matches allowed company names case-insensitively', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: { state: { auth: { selectedCompanyName: 'bdo uk' } } }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-    })
-
-    it('returns true when selected company country is Turkey', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: {
-          state: {
-            auth: { selectedCompanyName: 'Other' },
-            dashboard: {
-              selectedCompanyObject: {
-                countryName: 'Turkey'
-              }
-            }
-          }
-        }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-    })
-
-    it.each(['Türkiye', 'turkiye'])(
-      'returns true when selected company country is %s',
-      (countryName) => {
-        const mockThis = {
-          isTestEnvironment: false,
-          $store: {
-            state: {
-              auth: { selectedCompanyName: 'Other' },
-              dashboard: {
-                selectedCompanyObject: {
-                  countryName
-                }
-              }
-            }
-          }
-        }
-        expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-      }
-    )
-
-    it('returns true when selected company country code is TR', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: {
-          state: {
-            auth: { selectedCompanyName: 'Other' },
-            dashboard: {
-              selectedCompanyObject: {
-                countryCode: 'TR'
-              }
-            }
-          }
-        }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-    })
-
-    it.each(['TUR', 'tr-tr'])(
-      'returns true when selected company country code is %s',
-      (countryCode) => {
-        const mockThis = {
-          isTestEnvironment: false,
-          $store: {
-            state: {
-              auth: { selectedCompanyName: 'Other' },
-              dashboard: {
-                selectedCompanyObject: {
-                  countryCode
-                }
-              }
-            }
-          }
-        }
-        expect(computed.showAIAnalyze.call(mockThis)).toBe(true)
-      }
-    )
-
-    it('returns false when dashboard exists without selected company country data', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: {
-          state: {
-            auth: { selectedCompanyName: 'Other' },
-            dashboard: {}
-          }
-        }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(false)
-    })
-
-    it('returns false when neither test environment nor allowed company', () => {
-      const mockThis = {
-        isTestEnvironment: false,
-        $store: { state: { auth: { selectedCompanyName: 'Other' } } }
-      }
-      expect(computed.showAIAnalyze.call(mockThis)).toBe(false)
-    })
-  })
 })
