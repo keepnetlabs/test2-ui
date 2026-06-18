@@ -48,6 +48,7 @@ const baseCtx = (overrides = {}) => ({
   barrelPayloadTranslationSource: null,
   selectedLanguagePayloadItemBeforeSave: { template: '', subject: '' },
   languagesPayload: [],
+  emptyBarrelPayload: NewEmailTemplates.methods.emptyBarrelPayload,
   $nextTick: (cb) => cb && cb(),
   $set: (obj, key, val) => {
     obj[key] = val
@@ -72,6 +73,7 @@ afterEach(() => {
 describe('seedBarrelPayloadFromLureIfNeeded — copies lure into empty payloads on switch-to-barrel', () => {
   const ctx = (overrides = {}) => ({
     isBarrelTemplate: true,
+    emptyBarrelPayload: NewEmailTemplates.methods.emptyBarrelPayload,
     $set: (obj, key, val) => {
       obj[key] = val
     },
@@ -189,7 +191,9 @@ describe('created() edit-load — seeds barrel payload from lure for Click-Only-
       setFooterButtonIds: jest.fn(),
       callForMergedTags: jest.fn(),
       callForLanguages: jest.fn(),
-      seedBarrelPayloadFromLureIfNeeded: NewEmailTemplates.methods.seedBarrelPayloadFromLureIfNeeded
+      seedBarrelPayloadFromLureIfNeeded: NewEmailTemplates.methods.seedBarrelPayloadFromLureIfNeeded,
+      emptyBarrelPayload: NewEmailTemplates.methods.emptyBarrelPayload,
+      barrelPayloadFromApi: NewEmailTemplates.methods.barrelPayloadFromApi
     }
 
     NewEmailTemplates.created.call(ctx)

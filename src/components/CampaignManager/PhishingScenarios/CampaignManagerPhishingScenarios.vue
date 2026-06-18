@@ -927,11 +927,11 @@ export default {
         : {}
     },
     getPhishingFile() {
-      return this.emailTemplateParams?.phishingFileName
-        ? {
-            name: this.emailTemplateParams?.phishingFileName
-          }
-        : null
+      // Payload mode shows the payload's own attachment; lure mode shows the lure attachment.
+      const name = this.isBarrelPayloadMode
+        ? this.emailTemplateParams?.barrelPayload?.phishingFileName
+        : this.emailTemplateParams?.phishingFileName
+      return name ? { name } : null
     },
     getSelectedScenarioSwitchLabel() {
       return `Only show selected scenarios (${this.value.length})`

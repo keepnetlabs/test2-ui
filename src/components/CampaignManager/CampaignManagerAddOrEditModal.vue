@@ -189,6 +189,7 @@
                 :is-frequency-disabled="isFrequencyDisabled"
                 :frequency-disabled-text="frequencyDisabledText"
                 :targetGroupCompanyNames="targetGroupCompanyNames"
+                :hide-distribution="isBarrelCampaign"
                 @set-action-button-disability="setActionButtonDisability"
               >
                 <template v-if="isBarrelCampaign" #afterFrequency>

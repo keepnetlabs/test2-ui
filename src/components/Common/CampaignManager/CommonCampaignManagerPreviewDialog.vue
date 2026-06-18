@@ -180,13 +180,13 @@
                 </div>
               </div>
               <div
-                v-if="emailTemplateParams.attachment"
+                v-if="getPreviewAttachment"
                 class="attachment-wrapper mt-2 position-relative"
               >
                 <div class="attachment blue-attach mb-0">
                   <AttachmentsPreview
                     :deletable="false"
-                    :att="emailTemplateParams.attachment"
+                    :att="getPreviewAttachment"
                     :isEmailTemplate="true"
                   />
                 </div>
@@ -397,6 +397,15 @@ export default {
       return this.isBarrelPayloadMode
         ? this.emailTemplateParams?.barrelPayload?.subject || ''
         : this.emailTemplateParams.subject
+    },
+    // In payload mode show the payload's own attachment (its phishing file); otherwise the
+    // lure attachment. Mirrors the lure's single-attachment display.
+    getPreviewAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.emailTemplateParams?.barrelPayload?.phishingFileName
+        return name ? { name } : null
+      }
+      return this.emailTemplateParams.attachment
     }
   },
   created() {
