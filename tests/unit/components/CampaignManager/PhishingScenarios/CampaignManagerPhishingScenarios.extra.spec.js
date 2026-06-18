@@ -17,6 +17,21 @@ describe('CampaignManagerPhishingScenarios.vue (extra)', () => {
     )
   })
 
+  it('getMethodItems includes Double Barrel for phishing but not for quishing', () => {
+    const phishing = CampaignManagerPhishingScenarios.computed.getMethodItems.call({
+      type: SCENARIO_TYPES.PHISHING
+    })
+    const quishing = CampaignManagerPhishingScenarios.computed.getMethodItems.call({
+      type: SCENARIO_TYPES.QUISHING
+    })
+    expect(phishing.map((i) => i.text)).toContain('Double Barrel')
+    // existing phishing methods stay intact
+    expect(phishing.map((i) => i.text)).toEqual(
+      expect.arrayContaining(['Click-Only', 'Data Submission', 'Attachment', 'MFA'])
+    )
+    expect(quishing.map((i) => i.text)).not.toContain('Double Barrel')
+  })
+
   it('getContainerStyle returns empty object when distribution is not manually', () => {
     const ctx = {
       isValid: false,
