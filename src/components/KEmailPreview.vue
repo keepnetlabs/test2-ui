@@ -47,7 +47,8 @@ export default {
       isInitialResize: true,
       numberHeight: this.isLandingPage ? 660 : 300,
       resizeObserver: null,
-      lastObservedWidth: 0
+      lastObservedWidth: 0,
+      settleTimeouts: []
     }
   },
   watch: {
@@ -66,6 +67,10 @@ export default {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect()
       this.resizeObserver = null
+    }
+    if (this.settleTimeouts.length) {
+      this.settleTimeouts.forEach((t) => clearTimeout(t))
+      this.settleTimeouts = []
     }
   },
   methods: {
@@ -162,6 +167,7 @@ export default {
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)
+          this.scheduleSettleRemeasure()
         }
         if (!this.stopCalculateFrame) {
           this.numberHeight = height
@@ -171,6 +177,50 @@ export default {
           this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
           this.animationFrame = globalThis.requestAnimationFrame(() => this.resizeIframe())
         }
+      }
+    },
+    // After locking the height, web fonts / late images can reflow the email taller,
+    // leaving the content higher than the locked iframe (a thin scrollbar). Re-measure at
+    // a few increasing delays and GROW the height to fit. Monotonic by design (only ever
+    // increases): it can never clip content, never shrinks, and never touches templates
+    // that already fit. The multiple passes catch assets that settle late, so the height
+    // ends up fitting the full content — which is also what makes scrolling="no" safe
+    // (nothing left to clip). body.scrollHeight still reports the true content height even
+    // when scrolling is disabled, so the measurement stays correct.
+    scheduleSettleRemeasure() {
+      ;[250, 800, 1600].forEach((delay) => {
+        this.settleTimeouts.push(setTimeout(() => this.growToFitContent(), delay))
+      })
+    },
+    growToFitContent() {
+      const iframe = this.$refs.iframe
+      if (
+        !iframe ||
+        !iframe.contentWindow ||
+        !iframe.contentWindow.document ||
+        !iframe.contentWindow.document.body ||
+        iframe.clientWidth === 0
+      ) {
+        return
+      }
+      let desired = iframe.contentWindow.document.body.scrollHeight + 18
+      if (
+        globalThis.navigator &&
+        globalThis.navigator.userAgent &&
+        globalThis.navigator.userAgent.toLowerCase().includes('windows')
+      ) {
+        desired += 20
+      }
+      if (handleIsSafari()) {
+        desired += 30
+      }
+      const current =
+        typeof this.height === 'string'
+          ? Number.parseInt(this.height.replace('px', ''), 10) || 0
+          : Number(this.height) || 0
+      if (desired > current) {
+        this.height = desired + 'px'
+        this.numberHeight = desired
       }
     },
     setDefaultHeight(height) {

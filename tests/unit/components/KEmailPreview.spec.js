@@ -317,6 +317,81 @@ describe('KEmailPreview.vue', () => {
     else delete globalThis.ResizeObserver
   })
 
+  it('scheduleSettleRemeasure grows height when content reflowed taller after lock', () => {
+    jest.useFakeTimers()
+    const wrapper = createWrapper()
+    wrapper.setData({ height: '400px' }) // locked height
+    wrapper.vm.$refs = {
+      iframe: {
+        clientWidth: 600,
+        contentWindow: { document: { body: { scrollHeight: 500 } } }
+      }
+    }
+    wrapper.vm.scheduleSettleRemeasure()
+    jest.advanceTimersByTime(250)
+    // 500 + 18 = 518 (non-Windows/non-Safari in this test env) > 400 → grows.
+    expect(wrapper.vm.height).toBe('518px')
+    jest.useRealTimers()
+  })
+
+  it('scheduleSettleRemeasure never shrinks height when content already fits', () => {
+    jest.useFakeTimers()
+    const wrapper = createWrapper()
+    wrapper.setData({ height: '600px' }) // locked height already taller than content
+    wrapper.vm.$refs = {
+      iframe: {
+        clientWidth: 600,
+        contentWindow: { document: { body: { scrollHeight: 500 } } }
+      }
+    }
+    wrapper.vm.scheduleSettleRemeasure()
+    jest.advanceTimersByTime(250)
+    // 518 < 600 → no change (monotonic, never shrinks).
+    expect(wrapper.vm.height).toBe('600px')
+    jest.useRealTimers()
+  })
+
+  it('scheduleSettleRemeasure is a no-op when iframe is hidden (clientWidth 0)', () => {
+    jest.useFakeTimers()
+    const wrapper = createWrapper()
+    wrapper.setData({ height: '400px' })
+    wrapper.vm.$refs = {
+      iframe: {
+        clientWidth: 0,
+        contentWindow: { document: { body: { scrollHeight: 5000 } } }
+      }
+    }
+    wrapper.vm.scheduleSettleRemeasure()
+    jest.advanceTimersByTime(250)
+    expect(wrapper.vm.height).toBe('400px')
+    jest.useRealTimers()
+  })
+
+  it('locking schedules a settle re-measure', () => {
+    const wrapper = createWrapper()
+    const settleSpy = jest.spyOn(wrapper.vm, 'scheduleSettleRemeasure').mockImplementation(() => {})
+    wrapper.setData({ isInitialResize: false, stopCalculateFrame: false, numberHeight: 300 })
+    wrapper.vm.$refs = {
+      iframe: {
+        clientWidth: 600,
+        contentWindow: { document: { body: { scrollHeight: 500 } } }
+      }
+    }
+    wrapper.vm.resizeIframe()
+    expect(settleSpy).toHaveBeenCalled()
+  })
+
+  it('scheduleSettleRemeasure schedules multiple grow passes for late-loading assets', () => {
+    jest.useFakeTimers()
+    const wrapper = createWrapper()
+    const growSpy = jest.spyOn(wrapper.vm, 'growToFitContent').mockImplementation(() => {})
+    wrapper.vm.scheduleSettleRemeasure()
+    expect(wrapper.vm.settleTimeouts.length).toBe(3)
+    jest.advanceTimersByTime(1600)
+    expect(growSpy).toHaveBeenCalledTimes(3)
+    jest.useRealTimers()
+  })
+
   it('watches html and updates iframeKey', () => {
     const { createRandomCryptStringNumber } = require('@/utils/functions')
     createRandomCryptStringNumber.mockReturnValueOnce('99999')
