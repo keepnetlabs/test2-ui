@@ -464,7 +464,7 @@
                         }}</span>
                       </div>
                       <div
-                        v-if="phishingFile && phishingFile.length"
+                        v-if="displayedPhishingFile && displayedPhishingFile.length"
                         class="attachment-wrapper d-flex align-center"
                         style="position: relative;"
                       >
@@ -472,7 +472,7 @@
                         <div class="attachment blue-attach mb-0">
                           <AttachmentsPreview
                             :deletable="false"
-                            :att="phishingFile[0]"
+                            :att="displayedPhishingFile[0]"
                             :isEmailTemplate="true"
                           />
                         </div>
@@ -632,6 +632,7 @@ export default {
       barrelPreviewMode: 'lure',
       templateBarrelSubject: '',
       templateBarrelHTML: '',
+      templateBarrelPhishingFileName: '',
       activeTemplateHTML: null,
       isTemplateDetails: null,
       selectedTemplateHeader: null,
@@ -692,6 +693,15 @@ export default {
     },
     displayedTemplateHtml() {
       return this.isBarrelPayloadMode ? this.templateBarrelHTML : this.templateHTML
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedPhishingFile() {
+      if (this.isBarrelPayloadMode) {
+        return this.templateBarrelPhishingFileName
+          ? [{ name: this.templateBarrelPhishingFileName }]
+          : []
+      }
+      return this.phishingFile
     },
     isQuishingTypeEmail() {
       if (!this.isQuishing) return false
@@ -1351,6 +1361,7 @@ export default {
           this.barrelPreviewMode = 'lure'
           this.templateBarrelSubject = primaryBarrelPayload?.subject || ''
           this.templateBarrelHTML = primaryBarrelPayload?.template || ''
+          this.templateBarrelPhishingFileName = primaryBarrelPayload?.phishingFileName || ''
           this.phishingFile = data?.phishingFileName
             ? [
                 {
@@ -1420,6 +1431,7 @@ export default {
       this.templateCCAddresses = findedTemplate?.ccAddresses || ''
       this.templateBarrelSubject = findedTemplate?.barrelPayload?.subject || ''
       this.templateBarrelHTML = findedTemplate?.barrelPayload?.template || ''
+      this.templateBarrelPhishingFileName = findedTemplate?.barrelPayload?.phishingFileName || ''
       if (!this.isEditMode) return
       if (languagePreview) this.handleSaveOldEditLanguage(languagePreview)
       this.editData.template = this.templateHTML

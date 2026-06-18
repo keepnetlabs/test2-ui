@@ -305,6 +305,12 @@
                           :language-options="languageOptions"
                           :selected-method="getSelectedMethod"
                           :is-attachment-based-scenario="false"
+                          :show-attachment-upload="true"
+                          :attachmentFiles.sync="getSelectedBarrelPayload.attachmentFiles"
+                          :importedEmailAttachments.sync="getSelectedBarrelPayload.importedEmailAttachments"
+                          :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                          :size="5"
+                          fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
                           :is-show-red-flags="false"
                           :red-flags="null"
                           :is-red-flags-loading="false"
@@ -315,6 +321,9 @@
                           :method-type-id="getMethodTypeId"
                           :subject.sync="getSelectedBarrelPayload.subject"
                           :template.sync="getSelectedBarrelPayload.template"
+                          @setAttachmentFile="setBarrelPayloadAttachmentFile"
+                          @handleAttachmentRemove="handleBarrelPayloadAttachmentRemove"
+                          @handleDeleteAttachment="handleBarrelPayloadDeleteAttachment"
                         />
                       </div>
                     </FormGroup>
@@ -833,10 +842,7 @@ export default {
           prompt: this.formValues.prompt,
           toneResourceId: this.formValues.toneResourceId,
           localizationResourceId: this.formValues.localizationResourceId,
-          barrelPayload: {
-            subject: this.formValues.barrelPayload?.subject || '',
-            template: this.formValues.barrelPayload?.template || ''
-          },
+          barrelPayload: this.barrelPayloadFromApi(this.formValues.barrelPayload),
           isTranslated: true
         })
         this.selectedLanguages.push({
@@ -865,10 +871,7 @@ export default {
               toneResourceId: item.toneResourceId,
               localizationResourceId: item.localizationResourceId,
               resourceId: item.resourceId,
-              barrelPayload: {
-                subject: item.barrelPayload?.subject || '',
-                template: item.barrelPayload?.template || ''
-              },
+              barrelPayload: this.barrelPayloadFromApi(item.barrelPayload),
               isTranslated: true
             })
           })
@@ -1166,7 +1169,7 @@ export default {
           prompt: '',
           toneResourceId: '',
           localizationResourceId: '',
-          barrelPayload: { subject: '', template: '' },
+          barrelPayload: this.emptyBarrelPayload(),
           detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD,
           isTranslated: false
         }
@@ -1541,6 +1544,69 @@ export default {
     // Only, then switched to Barrel). The lure is already in the correct language, so this
     // is a plain copy (no translation call) and only fills payloads that are still empty —
     // never overwriting a payload the user has already diverged.
+    // Factory for a per-language barrel payload. Carries its own attachment state so the
+    // payload editor's :attachmentFiles.sync binding always has arrays to write to.
+    // Mirrors the lure attachment model: attachmentFiles[0] is the tracked phishing file
+    // (the "clicked = phished" file), importedEmailAttachments are decoy attachments.
+    emptyBarrelPayload(over = {}) {
+      return {
+        subject: '',
+        template: '',
+        attachmentFiles: [],
+        importedEmailAttachments: [],
+        attachmentFilesFromApi: [],
+        isPhishingFileModified: false,
+        isAddedNewPhishingFile: false,
+        phishingFileName: '',
+        ...over
+      }
+    },
+    // Build a barrel payload from an API response payload object, restoring its attachments
+    // the same way the lure does on edit (phishing file -> attachmentFiles[0], decoys ->
+    // importedEmailAttachments).
+    barrelPayloadFromApi(bp = {}) {
+      const decoys = (bp.attachments || []).map((item) => ({ ...item, isDeletable: true }))
+      const phishingFiles = bp.phishingFileName
+        ? [{ fileName: bp.phishingFileName, url: bp.phishingFileUrl }]
+        : []
+      return this.emptyBarrelPayload({
+        subject: bp.subject || '',
+        template: bp.template || '',
+        attachmentFiles: phishingFiles,
+        importedEmailAttachments: decoys,
+        attachmentFilesFromApi: JSON.parse(JSON.stringify(decoys)),
+        phishingFileName: bp.phishingFileName || ''
+      })
+    },
+    // Payload-editor attachment handlers — same behaviour as the lure handlers but scoped to
+    // the ACTIVE language's barrelPayload instead of the shared formValues, so each language
+    // keeps its own payload attachment.
+    setBarrelPayloadAttachmentFile(file) {
+      const bp = this.getSelectedBarrelPayload
+      if (!bp) return
+      const files = Array.isArray(file) ? file : [file]
+      bp.attachmentFiles = files.filter(Boolean)
+      bp.isPhishingFileModified = true
+      bp.isAddedNewPhishingFile = true
+    },
+    handleBarrelPayloadDeleteAttachment() {
+      const bp = this.getSelectedBarrelPayload
+      if (!bp) return
+      bp.attachmentFiles = []
+      bp.isAddedNewPhishingFile = false
+    },
+    handleBarrelPayloadAttachmentRemove({ item } = {}) {
+      const bp = this.getSelectedBarrelPayload
+      if (!bp) return
+      const name = item?.fileName || item?.name
+      bp.attachmentFiles = (bp.attachmentFiles || []).filter(
+        (att) => (att?.fileName || att?.name) !== name
+      )
+      bp.importedEmailAttachments = (bp.importedEmailAttachments || []).filter(
+        (att) => (att?.fileName || att?.name) !== name
+      )
+      if (!bp.attachmentFiles.length) bp.isAddedNewPhishingFile = false
+    },
     seedBarrelPayloadFromLureIfNeeded() {
       if (!this.isBarrelTemplate) return
       this.languagesPayload.forEach((p) => {
@@ -1548,7 +1614,7 @@ export default {
         const payloadEmpty = !((p.barrelPayload && p.barrelPayload.template) || '').trim()
         if (!lureBody || !payloadEmpty) return
         if (!p.barrelPayload) {
-          this.$set(p, 'barrelPayload', { subject: '', template: '' })
+          this.$set(p, 'barrelPayload', this.emptyBarrelPayload())
         }
         p.barrelPayload.template = p.template
         if (!(p.barrelPayload.subject || '').trim()) {
@@ -1666,7 +1732,7 @@ export default {
               if (!languagePayload) return
               if (isPayloadPass) {
                 if (!languagePayload.barrelPayload) {
-                  this.$set(languagePayload, 'barrelPayload', { subject: '', template: '' })
+                  this.$set(languagePayload, 'barrelPayload', this.emptyBarrelPayload())
                 }
                 languagePayload.barrelPayload.template = item.template
                 languagePayload.barrelPayload.subject =
@@ -1680,7 +1746,7 @@ export default {
                 // in this one pass instead of firing a second translate call.
                 if (this.isDefault && this.isBarrelTemplate) {
                   if (!languagePayload.barrelPayload) {
-                    this.$set(languagePayload, 'barrelPayload', { subject: '', template: '' })
+                    this.$set(languagePayload, 'barrelPayload', this.emptyBarrelPayload())
                   }
                   languagePayload.barrelPayload.template = item.template
                   languagePayload.barrelPayload.subject =

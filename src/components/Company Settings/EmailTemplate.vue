@@ -582,7 +582,7 @@
     </div>
     <div :class="[isHorizontalFormGroups ? 'k-form-group k-form-group--horizontal' : '']">
       <div
-        v-if="isAttachmentBasedScenario && !onlyGrapes"
+        v-if="(isAttachmentBasedScenario || showAttachmentUpload) && !onlyGrapes"
         :class="['d-flex mx-6 align-center', isHorizontalFormGroups ? 'v-list-item__content' : '']"
       >
         <label
@@ -846,6 +846,11 @@ export default {
     'fileUploadHint',
     'size',
     'isAttachmentBasedScenario',
+    // Shows the attachment upload section on its own, WITHOUT the attachment-based
+    // behaviour (which would also strip the {PHISHINGURL} merge tag from the editor).
+    // Used by the Double Barrel payload editor, where attachments are optional but the
+    // body still needs {PHISHINGURL}.
+    'showAttachmentUpload',
     'hidePhishingUrlMergeTag',
     'useLureSuggestions',
     'isAttachmentError',

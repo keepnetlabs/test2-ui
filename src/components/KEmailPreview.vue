@@ -45,7 +45,9 @@ export default {
       isBodyHeightUsed: false,
       stopCalculateFrame: false,
       isInitialResize: true,
-      numberHeight: this.isLandingPage ? 660 : 300
+      numberHeight: this.isLandingPage ? 660 : 300,
+      resizeObserver: null,
+      lastObservedWidth: 0
     }
   },
   watch: {
@@ -56,12 +58,40 @@ export default {
   },
   mounted() {
     globalThis.addEventListener('message', this.handleWindowMessage)
+    this.observeIframeVisibility()
   },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)
     globalThis.removeEventListener('message', this.handleWindowMessage)
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
   },
   methods: {
+    // When the iframe lives inside a v-show/display:none container (e.g. the Double Barrel
+    // payload editor while the Lure tab is shown), it has zero layout width. Any height
+    // measured then is meaningless and gets locked via stopCalculateFrame, leaving empty
+    // space + a scrollbar once the panel is finally shown. Watch for the hidden→visible
+    // (0 → >0 width) transition and re-measure at the real width. Height changes we make
+    // ourselves don't alter width, so this never loops.
+    observeIframeVisibility() {
+      const iframe = this.$refs.iframe
+      if (!iframe || typeof globalThis.ResizeObserver !== 'function') return
+      this.lastObservedWidth = iframe.clientWidth || 0
+      this.resizeObserver = new globalThis.ResizeObserver(() => {
+        const width = iframe.clientWidth || 0
+        if (width > 0 && this.lastObservedWidth === 0) {
+          this.stopCalculateFrame = false
+          this.isInitialResize = true
+          cancelAnimationFrame(this.animationFrame)
+          this.animationFrame = null
+          this.resizeIframe()
+        }
+        this.lastObservedWidth = width
+      })
+      this.resizeObserver.observe(iframe)
+    },
     handleLoad() {
       if (handleIsSafari()) {
         setTimeout(() => {
@@ -88,6 +118,12 @@ export default {
     },
     resizeIframe() {
       const iframe = this.$refs.iframe
+      // A display:none ancestor gives the iframe zero layout width; body.scrollHeight is
+      // then wildly wrong and would get locked. Bail without measuring or locking —
+      // observeIframeVisibility() re-measures once the iframe is actually shown.
+      if (iframe && iframe.clientWidth === 0) {
+        return
+      }
       if (
         iframe &&
         iframe.contentWindow &&
