@@ -31,14 +31,20 @@ const TURKEY_COUNTRY_NAMES = ['turkey', 'türkiye', 'turkiye']
 const TURKEY_COUNTRY_CODES = ['tr', 'tur', 'tr-tr']
 
 /**
- * Legacy, non-license-based gate for AI analysis fields. Kept until the
- * Agentic AI license fully covers every AI-enabled tenant.
+ * Legacy, non-license-based gate for AI analysis fields.
+ *
+ * No longer part of the live gate: AI analysis now follows the Agentic AI
+ * license, exactly like Company Settings gates the Agentic AI tab. Granting
+ * access here on company/country alone made AI surfaces (Incident Responder
+ * columns, email details AI tab) appear for unlicensed allowlisted tenants
+ * while Company Settings hid the Agentic AI tab for the very same company.
+ * Exported and retained only for reference / quick rollback.
  *
  * @deprecated See {@link AI_ANALYZE_COMPANIES}.
  * @param {object} store - Vuex store.
  * @returns {boolean}
  */
-function isAllowedByLegacyFallback(store) {
+export function isAllowedByLegacyFallback(store) {
   if (isTestEnvironment()) return true
 
   const companyName = store.state.auth.selectedCompanyName || ''
@@ -79,18 +85,17 @@ export default {
       ]
     },
     showAIAnalyze() {
-      const store = this.$store
-      // Temporary permission gate: without the Agentic AI permission the backend
-      // returns `{ status: "NotAnalyzed" }`, yet the legacy company/country
-      // fallback below would still surface the AI tab and its "Run AI Analysis"
-      // screen — a dead end for users who can't actually run it. Require the
-      // permission first. Legacy license/allowlist logic is kept intact.
+      // Gate AI analysis exactly like Company Settings gates the Agentic AI tab
+      // (CompanySettings.vue → v-if="hasAgenticAILicense"): the Agentic AI
+      // license is authoritative, so visibility stays consistent across the app.
+      // The Agentic AI settings permission is also required because without it
+      // the backend returns `{ status: "NotAnalyzed" }` and the "Run AI Analysis"
+      // screen is a dead end. The legacy company/country allowlist
+      // (isAllowedByLegacyFallback) is retained for reference but intentionally
+      // no longer consulted — it surfaced AI for unlicensed allowlisted tenants
+      // while Company Settings hid the Agentic AI tab for the same company.
       if (!this.hasAgenticAIPermission) return false
-
-      const hasAgenticAILicense = !!store.getters['login/getHasAgenticAILicense']
-      // Authoritative gate; the rest is a deprecated fallback to be removed
-      // once the license covers every AI-enabled tenant.
-      return hasAgenticAILicense || isAllowedByLegacyFallback(store)
+      return !!this.$store.getters['login/getHasAgenticAILicense']
     }
   }
 }
