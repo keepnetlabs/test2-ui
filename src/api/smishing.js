@@ -446,7 +446,7 @@ function postExcludedIPAddresses(payload = {}) {
 }
 
 // --- External SMS moderation/enhancement (Cloudflare Worker) ---
-const TXT_ENHANCE_URL = 'https://txt-enhance.keepnet-labs-ltd-business-profile4086.workers.dev/'
+const TXT_ENHANCE_URL = 'https://txt-enhance.keepnetlabs.com/'
 
 function checkSmishingTextRisk(text) {
   return axios.post(TXT_ENHANCE_URL, { method: 'check', text }, { timeout: 100000 })
