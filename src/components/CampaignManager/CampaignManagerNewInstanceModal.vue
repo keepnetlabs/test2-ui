@@ -42,18 +42,20 @@
         :error-message="getTargetGroupErrorMessage"
       />
       <InputSchedule v-model="inputScheduleFormData" ref="inputSchedule" isPhishing />
-      <InputDistribution
-        v-model="inputDistributionFormData"
-        :distribution-delay-time-items="getDistributionDelayTimeItems"
-        :selected-time-zone-text="selectedTimeZoneText"
-        @call-for-calculate-sending-info="callForCalculateSendingInfo"
-      />
-      <div
-        v-if="getDistributionTextRenderStatus"
-        class="campaign-manager-advanced-settings__distribution-text mt-6"
-      >
-        {{ getDistributionText }}
-      </div>
+      <template v-if="!isBarrelCampaign">
+        <InputDistribution
+          v-model="inputDistributionFormData"
+          :distribution-delay-time-items="getDistributionDelayTimeItems"
+          :selected-time-zone-text="selectedTimeZoneText"
+          @call-for-calculate-sending-info="callForCalculateSendingInfo"
+        />
+        <div
+          v-if="getDistributionTextRenderStatus"
+          class="campaign-manager-advanced-settings__distribution-text mt-6"
+        >
+          {{ getDistributionText }}
+        </div>
+      </template>
       <FormGroup class="mt-6" :title="labels.MarkAsTest" style="max-width: 640px;">
         <div>
           <v-checkbox
@@ -86,6 +88,7 @@ import { isDifferent, getDefaultAxiosPayload, getTimeZoneForMoment } from '@/uti
 import useDebounce from '@/hooks/useDebounce'
 import InputDistribution from '@/components/Common/Inputs/InputDistribution'
 import InputSchedule from '@/components/Common/Inputs/InputSchedule'
+import { isDoubleBarrelScenario } from '@/components/PhishingScenarios/utils'
 import {
   DISTRIBUTION_START_TYPES,
   DISTRIBUTION_TYPES
@@ -155,6 +158,9 @@ export default {
       selectedTimeZoneText: '',
       sendUserPreferredLanguage: '0',
       scenarioResourceIds: [],
+      // Double Barrel runs deliver via the lure/payload schedule, so the batch
+      // Distribution section does not apply and is hidden (set from the loaded campaign).
+      isBarrelCampaign: false,
       inputDistributionFormData: {
         distributionTypeId: DISTRIBUTION_TYPES.PHISHING,
         distributionDelayEvery: 20,
@@ -246,6 +252,8 @@ export default {
     getCampaignManager(this.selectedRow.resourceId).then((response) => {
       const { data: { data = {} } = {} } = response
       this.scenarioResourceIds = data?.phishingScenarios?.map((item) => item.value)
+      // phishingScenarioType is the campaign's method type id (6 = Double Barrel).
+      this.isBarrelCampaign = isDoubleBarrelScenario({ methodTypeId: data?.phishingScenarioType })
       this.inputDistributionFormData.distributionStartTypeId = data?.distributionStartTypeId
       this.inputDistributionFormData.distributionDelayEvery = data?.distributionDelayEvery.toString()
       this.inputDistributionFormData.distributionDelayTimeTypeId = data?.distributionDelayTimeTypeId.toString()

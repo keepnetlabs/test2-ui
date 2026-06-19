@@ -134,6 +134,20 @@ describe('CampaignManagerNewInstanceModal.extra.spec.js', () => {
     })
   })
 
+  describe('Double Barrel hides Distribution', () => {
+    it('renders InputDistribution by default (non-barrel)', () => {
+      const wrapper = createWrapper()
+      expect(wrapper.vm.isBarrelCampaign).toBe(false)
+      expect(wrapper.findComponent({ name: 'InputDistribution' }).exists()).toBe(true)
+    })
+
+    it('hides InputDistribution when the run is a Double Barrel campaign', async () => {
+      const wrapper = createWrapper()
+      await wrapper.setData({ isBarrelCampaign: true })
+      expect(wrapper.findComponent({ name: 'InputDistribution' }).exists()).toBe(false)
+    })
+  })
+
   describe('getTargetGroupErrorMessage', () => {
     it('returns selection required error if groups are empty', () => {
       const wrapper = createWrapper()
