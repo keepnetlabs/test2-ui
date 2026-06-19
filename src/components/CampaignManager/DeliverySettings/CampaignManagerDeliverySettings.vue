@@ -124,7 +124,7 @@
     <!-- Optional section rendered directly below Frequency (e.g. Double Barrel
          settings for phishing campaigns). Opt-in slot — other campaign types
          that reuse this component leave it empty and are unaffected. -->
-    <slot name="afterFrequency" />
+    <slot name="afterFrequency" :is-dec-selected="isSelectedEmailDeliveryIsDec" />
     <InputSchedule
       v-model="inputScheduleFormData"
       :isEditOrDuplicate="isEdit || isDuplicate"
@@ -340,6 +340,10 @@ export default {
     isSelectedEmailDeliveryIsSmtp() {
       if (!this.emailDelivery) return false
       return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP
+    },
+    isSelectedEmailDeliveryIsDec() {
+      if (!this.emailDelivery) return false
+      return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
     },
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''

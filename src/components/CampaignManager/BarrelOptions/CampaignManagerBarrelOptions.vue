@@ -61,16 +61,19 @@
             </VTooltip>
           </label>
           <KSelect
-            :value="value.urgentFlagType"
+            :value="displayedUrgentFlagType"
             :items="urgentFlagTypes"
             item-text="text"
             item-value="value"
             outlined
             dense
             hide-details
-            :disabled="disabled"
+            :disabled="disabled || decSelected"
             @input="update('urgentFlagType', $event)"
           />
+          <div v-if="decSelected" class="campaign-manager-barrel-options__field-hint">
+            Urgent Flag isn't supported with Direct Email Connection (DEC).
+          </div>
         </div>
       </div>
       <div class="campaign-manager-barrel-options__toggles">
@@ -117,6 +120,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import {
   BARREL_ORDER_TYPES,
   BARREL_URGENT_FLAG_TYPES,
+  BARREL_URGENT_FLAG_NONE,
   BARREL_DELAY_MINUTE_OPTIONS,
   BARREL_DEFAULTS
 } from '@/components/PhishingScenarios/utils'
@@ -132,6 +136,13 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    // Direct Email Connection (DEC) caps custom headers at 5 and that quota is already
+    // used, so the urgency/priority header can't be added. When DEC is selected we force
+    // the Urgent Flag to None and disable the control.
+    decSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -139,6 +150,24 @@ export default {
       orderTypes: BARREL_ORDER_TYPES,
       urgentFlagTypes: BARREL_URGENT_FLAG_TYPES,
       delayOptions: BARREL_DELAY_MINUTE_OPTIONS
+    }
+  },
+  computed: {
+    // Under DEC the control always shows None regardless of the stored value.
+    displayedUrgentFlagType() {
+      return this.decSelected ? BARREL_URGENT_FLAG_NONE : this.value.urgentFlagType
+    }
+  },
+  watch: {
+    // Normalize the persisted value to None whenever DEC is the active delivery (covers both
+    // switching to DEC and editing a campaign that already uses DEC).
+    decSelected: {
+      immediate: true,
+      handler(isDec) {
+        if (isDec && this.value.urgentFlagType !== BARREL_URGENT_FLAG_NONE) {
+          this.update('urgentFlagType', BARREL_URGENT_FLAG_NONE)
+        }
+      }
     }
   },
   methods: {

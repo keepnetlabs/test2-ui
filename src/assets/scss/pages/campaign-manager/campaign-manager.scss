@@ -400,4 +400,13 @@
     color: rgba(0, 0, 0, 0.6);
     margin-top: 2px;
   }
+
+  &__field-hint {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 17px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 6px;
+    max-width: 320px;
+  }
 }

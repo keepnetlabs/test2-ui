@@ -202,8 +202,9 @@ export const BARREL_ORDER_TYPES = [
 ]
 
 // barrelUrgentFlagType: 0 None, 1 LureOnly, 2 PayloadOnly, 3 Both
+export const BARREL_URGENT_FLAG_NONE = 0
 export const BARREL_URGENT_FLAG_TYPES = [
-  { text: 'None', value: 0 },
+  { text: 'None', value: BARREL_URGENT_FLAG_NONE },
   { text: 'Lure Only', value: 1 },
   { text: 'Payload Only', value: 2 },
   { text: 'Both', value: 3 }

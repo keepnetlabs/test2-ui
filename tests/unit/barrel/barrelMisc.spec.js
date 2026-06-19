@@ -36,6 +36,37 @@ describe('CampaignManagerBarrelOptions.update', () => {
   })
 })
 
+describe('CampaignManagerBarrelOptions — Urgent Flag under DEC', () => {
+  const displayed = CampaignManagerBarrelOptions.computed.displayedUrgentFlagType
+  const decWatcher = CampaignManagerBarrelOptions.watch.decSelected.handler
+
+  it('displays None (0) when DEC is selected, regardless of stored value', () => {
+    expect(displayed.call({ decSelected: true, value: { urgentFlagType: 2 } })).toBe(0)
+  })
+
+  it('displays the stored value when DEC is not selected', () => {
+    expect(displayed.call({ decSelected: false, value: { urgentFlagType: 2 } })).toBe(2)
+  })
+
+  it('forces urgentFlagType to None when DEC becomes active and value is non-None', () => {
+    const update = jest.fn()
+    decWatcher.call({ value: { urgentFlagType: 3 }, update }, true)
+    expect(update).toHaveBeenCalledWith('urgentFlagType', 0)
+  })
+
+  it('does not emit when DEC is active but value is already None', () => {
+    const update = jest.fn()
+    decWatcher.call({ value: { urgentFlagType: 0 }, update }, true)
+    expect(update).not.toHaveBeenCalled()
+  })
+
+  it('does not touch the value when DEC is not selected', () => {
+    const update = jest.fn()
+    decWatcher.call({ value: { urgentFlagType: 2 }, update }, false)
+    expect(update).not.toHaveBeenCalled()
+  })
+})
+
 describe('barrelEmailRoleColumnMixin', () => {
   const visibilityFn = barrelEmailRoleColumnMixin.computed.isBarrelReportColumnVisible
   const sync = barrelEmailRoleColumnMixin.methods.syncBarrelEmailRoleColumn

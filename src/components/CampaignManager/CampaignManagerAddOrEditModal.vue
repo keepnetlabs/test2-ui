@@ -192,8 +192,12 @@
                 :hide-distribution="isBarrelCampaign"
                 @set-action-button-disability="setActionButtonDisability"
               >
-                <template v-if="isBarrelCampaign" #afterFrequency>
-                  <CampaignManagerBarrelOptions v-model="barrelOptions" class="mt-2 mb-8" />
+                <template v-if="isBarrelCampaign" #afterFrequency="{ isDecSelected }">
+                  <CampaignManagerBarrelOptions
+                    v-model="barrelOptions"
+                    :dec-selected="isDecSelected"
+                    class="mt-2 mb-8"
+                  />
                 </template>
               </CampaignManagerDeliverySettings>
             </v-stepper-content>
