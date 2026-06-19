@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+      - dev
+      - test
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: Qodana-Props-UI
+
+steps:
+  - task: Cache@2
+    inputs:
+      key: '"$(Build.Repository.Name)" | "$(Build.SourceBranchName)" | "$(Build.SourceVersion)"'
+      path: '$(Agent.TempDirectory)/qodana/cache'
+      restoreKeys: |
+        "$(Build.Repository.Name)" | "$(Build.SourceBranchName)"
+        "$(Build.Repository.Name)"
+  - task: QodanaScan@2026
+    inputs:
+      uploadResult: true
+    env:
+      QODANA_TOKEN: $(QODANA_TOKEN)
+      QODANA_ENDPOINT: $(QODANA_ENDPOINT)
