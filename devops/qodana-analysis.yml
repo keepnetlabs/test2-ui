@@ -1,8 +1,12 @@
-trigger:
+trigger: none
+
+schedules:
+- cron: "0 2 * * *"
+  displayName: Nightly Qodana full scan
   branches:
     include:
       - dev
-      - test
+  always: true
 
 pool:
   vmImage: ubuntu-latest
