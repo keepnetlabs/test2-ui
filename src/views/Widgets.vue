@@ -427,7 +427,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: "Simulation Coverage",
           key: "SimulationCoverageWidget",
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "pie",
           dateInterval: "month",
@@ -451,7 +451,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: "Training Completion",
           key: "TrainingCompletionWidget",
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "bar",
           dateInterval: "month",
@@ -481,7 +481,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: "Industry Phishing Risk Score",
           key: "IndustryPhishingRiskScoreWidget",
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -519,7 +519,7 @@ export default {
             key: "ImpactOfPhishingAwarenessTrainingWidget",
             resourceId: "9c29GEAMmurS"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -550,7 +550,7 @@ export default {
             key: "RepeatOffendersUsersRateWidget",
             resourceId: "mpdEh10N5E4d"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -645,27 +645,27 @@ export default {
         {
           name: "Simulation Coverage",
           key: "SimulationCoverageWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Training Completion",
           key: "TrainingCompletionWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Industry Phishing Risk Score",
           key: "IndustryPhishingRiskScoreWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Impact of Phishing Awareness Training",
           key: "ImpactOfPhishingAwarenessTrainingWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Phishing Simulation Repeat Offenders Rate",
           key: "RepeatOffendersUsersRateWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Agentic AI Status",
@@ -738,7 +738,7 @@ export default {
             this.availableWidgets.push({
               name: "Phishing Simulation Repeat Offenders Rate",
               key: "RepeatOffendersUsersRateWidget",
-              isAllowed: true
+              isAllowed: this?.permissions?.executiveReports
             });
           }
         }
@@ -1093,7 +1093,7 @@ export default {
             resourceId: "uyzuHENtMZU0"
           },
           isDashboardWidget: true,
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           x: 0,
@@ -1116,7 +1116,7 @@ export default {
             key: "ImpactOfPhishingAwarenessTrainingWidget",
             resourceId: "9c29GEAMmurS"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -1389,7 +1389,7 @@ export default {
             key: "RepeatOffendersUsersRateWidget",
             resourceId: "mpdEh10N5E4d"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
