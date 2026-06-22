@@ -271,7 +271,9 @@ export function saveAgenticAISettings(payload = {}) {
   return updateAgenticAISettings(payload)
 }
 export function getAgenticAIActivitiesStats() {
-  return testRequest.get('/agentic-ai/activities/stats')
+  // Dashboard background stat fetch: the widget keeps default 0 values on failure,
+  // so suppress the global error toast (e.g. 403 for roles without Agentic AI access).
+  return testRequest.get('/agentic-ai/activities/stats', { snackbar: { hideError: true } })
 }
 
 export function searchAgenticAIActivities(payload = {}) {
