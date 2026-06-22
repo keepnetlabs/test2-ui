@@ -185,9 +185,10 @@
                 </div>
 
                 <div
-                  v-if="emailTemplateParams.attachment"
+                  v-if="displayedAttachment"
                   class="attachment-wrapper position-relative mt-2"
                   :class="
+                    !isBarrelPayloadMode &&
                     redFlags &&
                     redFlags.attachmentFileName &&
                     redFlags.attachmentFileName.isRedFlagged
@@ -197,6 +198,7 @@
                 >
                   <VIcon
                     v-if="
+                      !isBarrelPayloadMode &&
                       redFlags &&
                       redFlags.attachmentFileName &&
                       redFlags.attachmentFileName.isRedFlagged
@@ -208,12 +210,13 @@
                   <div class="attachment blue-attach mb-0">
                     <AttachmentsPreview
                       :deletable="false"
-                      :att="emailTemplateParams.attachment"
+                      :att="displayedAttachment"
                       :isEmailTemplate="true"
                     />
                   </div>
                   <RedFlagTooltip
                     v-if="
+                      !isBarrelPayloadMode &&
                       redFlags &&
                       redFlags.attachmentFileName &&
                       redFlags.attachmentFileName.tooltipMessage
@@ -390,6 +393,14 @@ export default {
     // red-flag-styled) lure templateHTML otherwise.
     displayedTemplateHtml() {
       return this.isBarrelPayloadMode ? this.barrelPayload?.template || '' : this.templateHTML
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.barrelPayload?.phishingFileName
+        return name ? { name } : null
+      }
+      return this.emailTemplateParams.attachment
     },
     getIndividualPrintoutStyle() {
       const style = {

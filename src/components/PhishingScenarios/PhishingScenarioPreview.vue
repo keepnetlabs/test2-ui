@@ -72,14 +72,14 @@
               </div>
             </div>
             <div
-              v-if="emailTemplateParams.attachment"
+              v-if="displayedAttachment"
               class="attachment-wrapper mt-2"
               style="position: relative;"
             >
               <div class="attachment blue-attach mb-0">
                 <AttachmentsPreview
                   :deletable="false"
-                  :att="emailTemplateParams.attachment"
+                  :att="displayedAttachment"
                   :isEmailTemplate="true"
                 />
               </div>
@@ -180,6 +180,14 @@ export default {
     // Body shown in KEmailPreview: payload html in payload mode, lure html otherwise.
     displayedEmailTemplate() {
       return this.isBarrelPayloadMode ? this.barrelPayload?.template || '' : this.emailTemplate
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.barrelPayload?.phishingFileName
+        return name ? { name } : null
+      }
+      return this.emailTemplateParams.attachment
     },
     getTitle() {
       return 'Scenario Preview'

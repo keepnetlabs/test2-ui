@@ -235,13 +235,13 @@
                 />
               </div>
               <div
-                v-if="emailTemplateParams.attachment"
+                v-if="displayedAttachment"
                 class="attachment-wrapper position-relative mt-2"
               >
                 <div class="attachment blue-attach mb-0">
                   <AttachmentsPreview
                     :deletable="false"
-                    :att="emailTemplateParams.attachment"
+                    :att="displayedAttachment"
                     :redFlags="redFlags"
                     :isEmailTemplate="true"
                   />
@@ -425,6 +425,14 @@ export default {
     // keep independent flags.
     redFlagCacheKey() {
       return `${this.activeLanguage}__${this.barrelPreviewMode}`
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.emailTemplateParams.barrelPayload?.phishingFileName
+        return name ? { name } : null
+      }
+      return this.emailTemplateParams.attachment
     }
   },
   watch: {

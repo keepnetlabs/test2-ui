@@ -70,6 +70,48 @@ const getPhishingFileType = (payload) => {
   }
   return payload?.phishingFileName?.split('.')?.[1] || null
 }
+
+// File extension (without the dot) for a barrel payload's phishing file.
+const getBarrelPayloadFileType = (bp) => {
+  const file = bp?.attachmentFiles?.[0]
+  if (file) {
+    return file.name ? file.name.split('.')[1] : file.fileName?.split('.')[1]
+  }
+  return bp?.phishingFileName?.split('.')?.[1] || null
+}
+
+// Append a barrel payload's attachment fields under the given prefix
+// ('barrelPayload' or 'languages[i].barrelPayload'). Mirrors the lure attachment block:
+// attachmentFiles[0] is the tracked phishing file, importedEmailAttachments[0] is the decoy
+// attachment. Only appended when the payload actually carries attachment data, so existing
+// barrel templates without payload attachments are unaffected.
+const appendBarrelPayloadAttachments = (formData, prefix, bp) => {
+  const hasAttachmentData =
+    bp?.attachmentFiles?.length ||
+    bp?.importedEmailAttachments?.length ||
+    bp?.phishingFileName
+  if (!hasAttachmentData) return
+
+  const phishingSource = bp.attachmentFiles?.[0]
+  const phishingFile =
+    bp.isAddedNewPhishingFile && phishingSource
+      ? phishingSource instanceof File
+        ? phishingSource
+        : convertContentToFile(phishingSource)
+      : null
+
+  const decoySource = bp.importedEmailAttachments?.[0]
+  const attachmentFile = decoySource
+    ? decoySource instanceof File
+      ? decoySource
+      : convertContentToFile(decoySource)
+    : null
+
+  formData.append(`${prefix}.phishingFile`, phishingFile)
+  formData.append(`${prefix}.phishingFileType`, getBarrelPayloadFileType(bp))
+  formData.append(`${prefix}.phishingFileName`, bp.phishingFileName || '')
+  formData.append(`${prefix}.attachmentFiles`, attachmentFile)
+}
 const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '') => {
   const formData = new FormData()
   formData.append('name', payload.name || '')
@@ -106,6 +148,7 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
   if (isBarrelTemplate && payload.languages[0]?.barrelPayload) {
     formData.append('barrelPayload.subject', payload.languages[0].barrelPayload.subject || '')
     formData.append('barrelPayload.template', payload.languages[0].barrelPayload.template || '')
+    appendBarrelPayloadAttachments(formData, 'barrelPayload', payload.languages[0].barrelPayload)
   }
   if (isEdit && payload?.languages[0]?.detailActionType)
     formData.append('detailActionType', payload?.languages[0]?.detailActionType?.toString())
@@ -121,6 +164,11 @@ const createCommonFormDataForPhishingTemplate = (payload, isEdit = false, id = '
           if (isBarrelTemplate && value) {
             formData.append(`languages[${[i - 1]}].barrelPayload.subject`, value.subject || '')
             formData.append(`languages[${[i - 1]}].barrelPayload.template`, value.template || '')
+            appendBarrelPayloadAttachments(
+              formData,
+              `languages[${[i - 1]}].barrelPayload`,
+              value
+            )
           }
         } else {
           formData.append(`languages[${[i - 1]}].${key}`, value || '')

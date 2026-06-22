@@ -441,14 +441,14 @@
                 </div>
               </div>
               <div
-                v-if="emailTemplateParams.attachment"
+                v-if="displayedAttachment"
                 class="attachment-wrapper mt-2 position-relative"
               >
                 <div class="attachment blue-attach mb-0">
                   <AttachmentsPreview
                     :deletable="false"
-                    :att="emailTemplateParams.attachment"
-                    :redFlags="redFlags"
+                    :att="displayedAttachment"
+                    :redFlags="isBarrelPayloadMode ? null : redFlags"
                     :isEmailTemplate="true"
                   />
                 </div>
@@ -749,6 +749,14 @@ export default {
     // Red-flag state cached per language AND per lure/payload mode.
     redFlagCacheKey() {
       return `${this.languagePreview}__${this.barrelPreviewMode}`;
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.emailTemplateParams.barrelPayload?.phishingFileName;
+        return name ? { name } : null;
+      }
+      return this.emailTemplateParams.attachment;
     },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false;

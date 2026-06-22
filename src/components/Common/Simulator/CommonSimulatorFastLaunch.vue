@@ -103,6 +103,10 @@ import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
 import { SCENARIO_TYPES } from '@/components/Common/Simulator/utils'
+import {
+  BARREL_DEFAULTS,
+  isDoubleBarrelScenario
+} from '@/components/PhishingScenarios/utils'
 import QuishingService from '@/api/quishing'
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from '@/components/QuishingEmailTemplates/utils'
 import CampaignManagerPrintoutSummary from '@/components/CampaignManager/Summary/CampaignManagerPrintoutSummary.vue'
@@ -212,6 +216,13 @@ export default {
         formData.frequency = 'One Time'
         formData.templateType = this?.emailTemplateParams?.type
         formData.scenarioDistribution = 0
+        // Fast Launch sends no barrel options, so a Double Barrel scenario runs
+        // with the backend defaults — surface those same defaults in the summary
+        // (the regular Campaign Manager flow shows them under Settings too).
+        formData.isBarrelCampaign = isDoubleBarrelScenario(this.selectedScenario)
+        if (formData.isBarrelCampaign) {
+          formData.barrelOptions = { ...BARREL_DEFAULTS }
+        }
       }
       return formData
     }

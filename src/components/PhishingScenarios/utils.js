@@ -176,6 +176,25 @@ export const SCENARIO_METHOD_TYPE = {
   DOUBLE_BARREL: '6'
 }
 
+/**
+ * Whether a scenario uses the Double Barrel method. Tolerant match: the backend
+ * label may be "Double Barrel"/"DoubleBarrel", or the scenario may carry an
+ * explicit method type id of 6 (methodTypeId / methodType).
+ *
+ * @param {object} scenario
+ * @returns {boolean}
+ */
+export const isDoubleBarrelScenario = (scenario) => {
+  const normalizedMethod = String(scenario?.method || '')
+    .replace(/[\s_-]/g, '')
+    .toLowerCase()
+  return (
+    normalizedMethod === 'doublebarrel' ||
+    String(scenario?.methodTypeId) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL ||
+    String(scenario?.methodType) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL
+  )
+}
+
 // barrelOrderType: 1 = LureFirst, 2 = PayloadFirst
 export const BARREL_ORDER_TYPES = [
   { text: 'Lure First', value: 1 },
@@ -183,8 +202,9 @@ export const BARREL_ORDER_TYPES = [
 ]
 
 // barrelUrgentFlagType: 0 None, 1 LureOnly, 2 PayloadOnly, 3 Both
+export const BARREL_URGENT_FLAG_NONE = 0
 export const BARREL_URGENT_FLAG_TYPES = [
-  { text: 'None', value: 0 },
+  { text: 'None', value: BARREL_URGENT_FLAG_NONE },
   { text: 'Lure Only', value: 1 },
   { text: 'Payload Only', value: 2 },
   { text: 'Both', value: 3 }

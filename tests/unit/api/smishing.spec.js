@@ -749,7 +749,7 @@ describe('smishing API', () => {
       const text = 'test message'
       await smishingApi.checkSmishingTextRisk(text)
       expect(axios.post).toHaveBeenCalledWith(
-        expect.stringContaining('txt-enhance'),
+        expect.stringContaining('txt-enhance.keepnetlabs.com'),
         { method: 'check', text },
         { timeout: 100000 }
       )
@@ -759,7 +759,7 @@ describe('smishing API', () => {
       const text = 'improve this'
       await smishingApi.enhanceSmishingText(text)
       expect(axios.post).toHaveBeenCalledWith(
-        expect.stringContaining('txt-enhance'),
+        expect.stringContaining('txt-enhance.keepnetlabs.com'),
         { method: 'enhance', text },
         { timeout: 100000 }
       )

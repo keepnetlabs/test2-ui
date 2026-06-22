@@ -485,9 +485,9 @@ import {
 import EmailDetailsUrl from "@/components/IncidentResponder/EmailDetails/EmailDetailsUrl";
 import labels from "@/model/constants/labels";
 import KEmailPreview from "@/components/KEmailPreview";
-import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
+import useShowAIAnalyze from "@/hooks/useShowAIAnalyze";
 export default {
-  mixins: [useIsTestEnvironment],
+  mixins: [useShowAIAnalyze],
   components: {
     KEmailPreview,
     EmailDetailsUrl,
@@ -936,40 +936,6 @@ export default {
       return reportCommentText.trim()
         ? reportCommentText
         : "No user comment was provided.";
-    },
-    showAIAnalyze() {
-      const AI_ANALYZE_COMPANIES = [
-        "Bolearis",
-        "TIP Group",
-        "Sunexpress",
-        "ETİ",
-        "Axa Sigorta",
-        "Vodafone TR",
-        "System",
-        "Aksigorta",
-        "Sahibinden",
-        "BDO UK",
-        "KITH",
-        "Keepnet Labs LTS",
-        "Binalyze"
-      ];
-      const isDevEnv = this.isTestEnvironment;
-      const companyName = this.$store.state.auth.selectedCompanyName || "";
-      const isAllowedCompany = AI_ANALYZE_COMPANIES.some(
-        (name) => name.toLowerCase() === companyName.toLowerCase()
-      );
-      const selectedCompany =
-        this.$store.state.dashboard?.selectedCompanyObject || {};
-      const countryName = (
-        selectedCompany.countryName || ''
-      ).toLowerCase();
-      const countryCode = (
-        selectedCompany.countryCode || ''
-      ).toLowerCase();
-      const isTurkeyCompany =
-        ["turkey", "türkiye", "turkiye"].includes(countryName) ||
-        ["tr", "tur", "tr-tr"].includes(countryCode);
-      return isDevEnv || isAllowedCompany || isTurkeyCompany;
     }
   },
   watch: {

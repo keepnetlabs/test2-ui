@@ -901,6 +901,20 @@ describe('Company API', () => {
     })
   })
 
+  describe('getAgenticAIActivitiesStats', () => {
+    it('should call GET with hideError config to suppress the global error toast', async () => {
+      await CompanyAPI.getAgenticAIActivitiesStats()
+      expect(testRequest.get).toHaveBeenCalledWith('/agentic-ai/activities/stats', {
+        snackbar: { hideError: true }
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getAgenticAIActivitiesStats()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
   describe('saveAgenticAISettings', () => {
     it('should call updateAgenticAISettings internally', async () => {
       const payload = { setting: 'value' }

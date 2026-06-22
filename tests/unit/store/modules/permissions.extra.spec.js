@@ -82,7 +82,8 @@ describe('permissions store module (real)', () => {
       getDashboardWidgetsPermission: true,
       getPhishingReporterLeftMenuPermissions: false,
       getIncidentResponderLeftMenuPermissions: true,
-      getPhishingSimulatorLeftMenuPermissions: true
+      getPhishingSimulatorLeftMenuPermissions: true,
+      getExecutiveReportsSearchPermissions: true
     }
 
     expect(store.getters.getWidgetsPermissions(state, mockGetters)).toEqual({
@@ -101,8 +102,24 @@ describe('permissions store module (real)', () => {
       mostPhishedUsersCard: true,
       phishingCampaignTrendsCard: true,
       mostEngagedCampaignsCard: true,
-      topPhishingSimulationReportersCard: true
+      topPhishingSimulationReportersCard: true,
+      executiveReports: true
     })
+  })
+
+  it('getWidgetsPermissions maps executiveReports from getExecutiveReportsSearchPermissions', () => {
+    const store = loadPermissionsStore()
+    const state = JSON.parse(JSON.stringify(store.state))
+
+    const granted = store.getters.getWidgetsPermissions(state, {
+      getExecutiveReportsSearchPermissions: true
+    })
+    expect(granted.executiveReports).toBe(true)
+
+    const denied = store.getters.getWidgetsPermissions(state, {
+      getExecutiveReportsSearchPermissions: false
+    })
+    expect(denied.executiveReports).toBe(false)
   })
 
   it('actions dispatch and commit expected mutations', () => {

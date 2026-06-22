@@ -40,6 +40,13 @@
     div[style*="grid-template-columns"] {
         padding-top: 10px;
     }
+
+    // The shared EDIT button is pinned right:24px globally. Inside the Double Barrel
+    // payload editor it sits too close to the card edge, so nudge it a bit left here
+    // ONLY — the global rule and every other template preview stay untouched.
+    .email-template-preview__button {
+        right: 48px;
+    }
 }
 
 // Vertically center the barrel info AlertBox icon with its single-line text.

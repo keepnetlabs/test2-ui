@@ -911,7 +911,15 @@ export default {
       if (this.type === SCENARIO_TYPES.QUISHING) {
         return quishingMethods
       }
-      return methods
+      // Double Barrel is a phishing-only method. It is not in the shared
+      // `methods` list (which feeds several other surfaces), so append it just
+      // for this "Type" filter. The Type filter sends item.text to the backend
+      // (FieldName 'method', Operator 'Include'); value is the barrel email
+      // template category resource id, mirroring the other entries.
+      return [
+        ...methods,
+        { text: 'Double Barrel', value: BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID }
+      ]
     },
     getContainerStyle() {
       return !this.isValid && this.scenarioDistribution === SCENARIO_DISTRIBUTION.MANUALLY
@@ -919,11 +927,11 @@ export default {
         : {}
     },
     getPhishingFile() {
-      return this.emailTemplateParams?.phishingFileName
-        ? {
-            name: this.emailTemplateParams?.phishingFileName
-          }
-        : null
+      // Payload mode shows the payload's own attachment; lure mode shows the lure attachment.
+      const name = this.isBarrelPayloadMode
+        ? this.emailTemplateParams?.barrelPayload?.phishingFileName
+        : this.emailTemplateParams?.phishingFileName
+      return name ? { name } : null
     },
     getSelectedScenarioSwitchLabel() {
       return `Only show selected scenarios (${this.value.length})`

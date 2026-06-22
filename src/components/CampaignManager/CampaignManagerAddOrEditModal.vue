@@ -189,10 +189,15 @@
                 :is-frequency-disabled="isFrequencyDisabled"
                 :frequency-disabled-text="frequencyDisabledText"
                 :targetGroupCompanyNames="targetGroupCompanyNames"
+                :hide-distribution="isBarrelCampaign"
                 @set-action-button-disability="setActionButtonDisability"
               >
-                <template v-if="isBarrelCampaign" #afterFrequency>
-                  <CampaignManagerBarrelOptions v-model="barrelOptions" class="mt-2 mb-8" />
+                <template v-if="isBarrelCampaign" #afterFrequency="{ isDecSelected }">
+                  <CampaignManagerBarrelOptions
+                    v-model="barrelOptions"
+                    :dec-selected="isDecSelected"
+                    class="mt-2 mb-8"
+                  />
                 </template>
               </CampaignManagerDeliverySettings>
             </v-stepper-content>
@@ -256,7 +261,10 @@ import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSetti
 import { getTargetGroupCountDetailExt } from '@/api/targetUsers'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/PhishingScenarios/CampaignManagerPhishingScenarios'
 import CampaignManagerBarrelOptions from '@/components/CampaignManager/BarrelOptions/CampaignManagerBarrelOptions'
-import { BARREL_DEFAULTS, SCENARIO_METHOD_TYPE } from '@/components/PhishingScenarios/utils'
+import {
+  BARREL_DEFAULTS,
+  isDoubleBarrelScenario
+} from '@/components/PhishingScenarios/utils'
 import CustomError from '@/components/CustomError.vue'
 import CampaignManagerTargetAudience from '@/components/CampaignManager/TargetAudience/CampaignManagerTargetAudience'
 import CampaignManagerDeliverySettings from '@/components/CampaignManager/DeliverySettings/CampaignManagerDeliverySettings'
@@ -680,16 +688,7 @@ export default {
       this.initialFormValues = { ...this.initialFormValues, ...values }
     },
     isDoubleBarrelScenario(scenario) {
-      // Tolerant match: backend method label may be "Double Barrel"/"DoubleBarrel"; also
-      // accept an explicit methodType id of 6 if the scenario object carries it.
-      const normalizedMethod = String(scenario?.method || '')
-        .replace(/[\s_-]/g, '')
-        .toLowerCase()
-      return (
-        normalizedMethod === 'doublebarrel' ||
-        String(scenario?.methodTypeId) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL ||
-        String(scenario?.methodType) === SCENARIO_METHOD_TYPE.DOUBLE_BARREL
-      )
+      return isDoubleBarrelScenario(scenario)
     },
     callForData() {
       getCampaignManager(this.getCampaignResourceId).then((response) => {
