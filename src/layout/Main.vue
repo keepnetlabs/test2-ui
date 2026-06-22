@@ -1076,6 +1076,20 @@
           <Breadcrumb :base-name="getBreadCrumbBaseName" />
         </div>
       </div>
+      <v-spacer />
+      <button
+        type="button"
+        class="command-palette-trigger"
+        :class="{ 'command-palette-trigger--with-chat': hasAgenticAILicense }"
+        aria-label="Go to or search"
+        @click="openCommandPalette"
+      >
+        <v-icon size="18" class="command-palette-trigger__icon">{{
+          iconPaths.mdiMagnify
+        }}</v-icon>
+        <span class="command-palette-trigger__label">Go to or search…</span>
+        <span class="command-palette-trigger__kbd">{{ commandPaletteHint }}</span>
+      </button>
     </v-app-bar>
     <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'">
       <v-container
@@ -1090,6 +1104,16 @@
 
     <!-- Chat Panel -->
     <ChatPanel v-if="hasAgenticAILicense" />
+
+    <!-- Command palette (Cmd/Ctrl+K) -->
+    <CommandPalette
+      ref="commandPalette"
+      :account-action="changeDropdownItem"
+      :can-switch-company="isShowSwitchCompany"
+      :can-return-to-main-account="isReturnMainAccountVisible"
+      :help-documentation-enabled="isDocumentationLinkEnabled"
+      :support-email="supportEmailAddress || ''"
+    />
   </v-app>
 </template>
 <script>
@@ -1109,7 +1133,8 @@ import {
   mdiHelpCircle,
   mdiPhoneInTalk,
   mdiBook,
-  mdiSearchWeb
+  mdiSearchWeb,
+  mdiMagnify
 } from "@mdi/js";
 import offline from "v-offline";
 import ConnectionLost from "../components/ConnectionLost";
@@ -1131,6 +1156,7 @@ import AppRouterLink from "@/layout/AppRouterLink";
 import InitializeCompanyModal from "@/components/Companies/InitializeCompanyModal";
 import AppDialog from "@/components/AppDialog.vue";
 import ChatPanel from "@/components/layout/ChatPanel.vue";
+import CommandPalette from "@/components/CommandPalette.vue";
 import useIsTestEnvironment from "@/hooks/useIsTestEnvironment";
 
 export default {
@@ -1154,7 +1180,8 @@ export default {
     Breadcrumb,
     TargetUsersCheckLicenseDialog,
     MainListItemLoading,
-    ChatPanel
+    ChatPanel,
+    CommandPalette
   },
   data() {
     return {
@@ -1177,7 +1204,8 @@ export default {
         mdiHelpCircle,
         mdiPhoneInTalk,
         mdiBook,
-        mdiSearchWeb
+        mdiSearchWeb,
+        mdiMagnify
       },
       switchDialogStatus: false,
       showNewPassword: false,
@@ -1229,6 +1257,12 @@ export default {
     };
   },
   computed: {
+    commandPaletteHint() {
+      const isMac =
+        typeof navigator !== "undefined" &&
+        /Mac|iPhone|iPad|iPod/.test(navigator.platform || "");
+      return isMac ? "⌘K" : "Ctrl K";
+    },
     ...mapGetters({
       companyUpdateRequired: "auth/companyUpdateRequired",
       isFeedbackPopupOpened: "dashboard/isPopupOpened",
@@ -1341,6 +1375,13 @@ export default {
     },
     getBreadCrumbBaseName() {
       return this.brandName || this.$store.state.auth.selectedCompanyName;
+    },
+    // Whitelabel gate for the documentation link, mirroring
+    // NavigationDrawerFooter (defaults to enabled when unset). Surfaced to the
+    // command palette's "Open documentation" entry.
+    isDocumentationLinkEnabled() {
+      const { isDocumentationLinkEnabled = true } = this.navigatorMenuProps || {};
+      return isDocumentationLinkEnabled;
     },
     getTargetGroupUsersRouterName() {
       return (
@@ -1708,6 +1749,11 @@ export default {
       getCurrentUser: "auth/getCurrentUser",
       handleCloseLicenseExceededDialog: "whitelabel/toggleShowExceedDialog"
     }),
+    openCommandPalette() {
+      if (this.$refs.commandPalette) {
+        this.$refs.commandPalette.open();
+      }
+    },
     handlePhishingCampaignManagerClick() {
       this.$router.push("/phishing-simulator/campaign-manager?status=parent");
     },
@@ -1831,3 +1877,52 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.command-palette-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px 0 12px;
+  margin-right: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  /* Solid white pill reads clearly on the colored page header. */
+  background: #ffffff;
+  color: #5f6b7a;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(56, 59, 65, 0.12);
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+/* Clear the fixed "Use Agentic AI" button (right:0, width:56px) when present. */
+.command-palette-trigger--with-chat {
+  margin-right: 72px;
+}
+.command-palette-trigger:hover {
+  background: #fff;
+  border-color: #2196f3;
+  color: #1173c1;
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.25);
+}
+.command-palette-trigger__icon {
+  color: inherit !important;
+}
+.command-palette-trigger__label {
+  line-height: 1;
+}
+.command-palette-trigger__kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background: #fff;
+  color: #9aa5b1;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+</style>

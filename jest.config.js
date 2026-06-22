@@ -30,6 +30,7 @@ module.exports = {
   modulePaths: ['<rootDir>/src', '<rootDir>/node_modules'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^ninja-keys$': '<rootDir>/tests/__mocks__/ninjaKeysMock.js',
     '\\.(css|scss|sass)$': '<rootDir>/tests/__mocks__/styleMock.js',
     'vuetify/lib(.*)': '<rootDir>/node_modules/vuetify/es5$1',
     'element-ui/(.*)': '<rootDir>/node_modules/element-ui/$1'

@@ -336,6 +336,29 @@ export default {
           .finally(this.setLoading)
       }
     },
+    // Applies a Status column filter programmatically (e.g. from the command
+    // palette), reusing the exact path a manual filter selection takes. This is
+    // transient: like manual filtering, it updates the payload + reloads but
+    // does NOT persist to the saved-filter localStorage, so a user's saved
+    // default is left untouched and returns on the next clean visit.
+    applyStatusFilter(statusValues = []) {
+      if (!Array.isArray(statusValues) || !statusValues.length) {
+        return
+      }
+      const fieldName = COLUMNS.STATUS.property
+      const value = statusValues.join(',')
+      // Same shape DataTableFilter emits for a 'select' column.
+      this.columnFilterChanged({ Value: value, FieldName: fieldName, Operator: 'Include' })
+      // Keep the filter funnel UI in sync (selected chip + clearable), merging
+      // with any other active column filters.
+      const table = this.$refs.refTable
+      if (table) {
+        table.reRenderFilters({
+          ...(table.filterValues || {}),
+          [fieldName]: { textValue: '', selectValue: value, fieldName }
+        })
+      }
+    },
     handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
