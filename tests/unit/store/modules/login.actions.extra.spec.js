@@ -176,6 +176,7 @@ describe('login store (actions extra coverage)', () => {
     expect(result).toBe(true)
     expect(commit).toHaveBeenCalledWith('SET_AGENTIC_AI_ENABLED', true)
     expect(commit).toHaveBeenCalledWith('SET_AGENTIC_AI_EXECUTION_MODE', 'FullAuto')
+    expect(getAgenticAIStatus).toHaveBeenCalledWith({ snackbar: { hideError: true } })
   })
 
   it('getAgenticAIEnabled keeps execution mode unchanged when backend does not provide it', async () => {
