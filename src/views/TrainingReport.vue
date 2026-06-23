@@ -159,7 +159,7 @@ export default {
       callForLanguages: 'trainingLibraryHelpers/callForLanguages'
     }),
     callForCustomFields() {
-      getTargetUserCustomFieldsByCompanyId().then((response) => {
+      getTargetUserCustomFieldsByCompanyId({ snackbar: { hideError: true } }).then((response) => {
         this.customFields = response?.data?.data
       })
     },

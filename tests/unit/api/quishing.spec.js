@@ -545,7 +545,8 @@ describe('quishing API', () => {
     it('should call getCampaignManagerJobFormDetails', async () => {
       await quishingApi.getCampaignManagerJobFormDetails()
       expect(testRequest.get).toHaveBeenCalledWith(
-        '/quishing-simulator/quishing-campaign-job/form-details'
+        '/quishing-simulator/quishing-campaign-job/form-details',
+        {}
       )
     })
 

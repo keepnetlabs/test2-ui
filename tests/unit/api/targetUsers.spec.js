@@ -378,7 +378,7 @@ describe('targetUsers API', () => {
   describe('custom field operations', () => {
     it('should call getTargetUserCustomFieldsByCompanyId', async () => {
       await targetUsersApi.getTargetUserCustomFieldsByCompanyId()
-      expect(testRequest.get).toHaveBeenCalledWith('/custom-fields/company')
+      expect(testRequest.get).toHaveBeenCalledWith('/custom-fields/company', {})
     })
 
     it('should call createTargetUserCustomField', async () => {

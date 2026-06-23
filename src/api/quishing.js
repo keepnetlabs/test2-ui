@@ -528,8 +528,8 @@ const getCampaignManagerLandingPageTemplatePreviewContent = (
     `quishing-simulator/quishing-campaign-job-report/summary/${campaignResourceId}/${instanceGroup}/landing-page-template/${id}`
   )
 }
-const getCampaignManagerJobFormDetails = () => {
-  return testRequest.get('/quishing-simulator/quishing-campaign-job/form-details')
+const getCampaignManagerJobFormDetails = (config = {}) => {
+  return testRequest.get('/quishing-simulator/quishing-campaign-job/form-details', { ...config })
 }
 const searchCampaignJobUserEmailOpened = (payload = {}, id = '', instanceGroup = '') => {
   return testRequest.post(

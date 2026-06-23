@@ -622,8 +622,8 @@ export function getCampaignJobEmailActivity(resourceId = '') {
   return testRequest.get(`/phishing-simulator/phishing-campaign-job/email-activity/${resourceId}`)
 }
 
-export function getCampaignManagerJobFormDetails() {
-  return testRequest.get('/phishing-simulator/phishing-campaign-job/form-details')
+export function getCampaignManagerJobFormDetails(config = {}) {
+  return testRequest.get('/phishing-simulator/phishing-campaign-job/form-details', { ...config })
 }
 
 export function getCampaignJobSummary(id = '', instanceGroup = '') {
