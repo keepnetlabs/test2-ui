@@ -119,10 +119,21 @@ export default {
   computed: {
     ...mapGetters({
       hasAgenticAILicense: "login/getHasAgenticAILicense"
-    })
+    }),
+    hasAgenticAIPermission() {
+      return this.$store.getters["permissions/getAgenticAISettingsGetPermissions"];
+    },
+    // The Agentic AI widget needs both the company license AND the role permission
+    // (companies/agentic-ai|GET). Without the permission the card's data calls 403,
+    // so custom roles that lack it should not see the card at all.
+    canShowAgenticAIWidget() {
+      return this.hasAgenticAILicense && this.hasAgenticAIPermission;
+    }
   },
   data() {
-    const hasAgenticAILicense = this.$store.getters["login/getHasAgenticAILicense"];
+    const canShowAgenticAIWidget =
+      this.$store.getters["login/getHasAgenticAILicense"] &&
+      this.$store.getters["permissions/getAgenticAISettingsGetPermissions"];
     return {
       activeBreakpoint: "lg",
       initialLayout: [],
@@ -388,7 +399,7 @@ export default {
           i: createRandomCryptStringNumber(),
           key: "AgenticAIStatusWidget",
           title: "Agentic AI Status",
-          isAllowed: hasAgenticAILicense
+          isAllowed: canShowAgenticAIWidget
         },
         TopPhishingSimulationReporters: {
           x: 0,
@@ -670,7 +681,7 @@ export default {
         {
           name: "Agentic AI Status",
           key: "AgenticAIStatusWidget",
-          isAllowed: hasAgenticAILicense
+          isAllowed: canShowAgenticAIWidget
         }
       ],
       style:
@@ -687,9 +698,9 @@ export default {
         this.handleAddShadows();
       }
     },
-    hasAgenticAILicense(val) {
-      this.syncAgenticAIWidgetAvailability(val);
-      if (val && this.layout.length) {
+    hasAgenticAILicense() {
+      this.syncAgenticAIWidgetAvailability(this.canShowAgenticAIWidget);
+      if (this.canShowAgenticAIWidget && this.layout.length) {
         this.ensureAgenticAIWidget(this.layout);
       }
     }
@@ -708,14 +719,14 @@ export default {
             }
             const widget = { ...this.allWidgets[item.key], ...item };
             const isAgenticWidgetWithoutLicense =
-              item.key === "AgenticAIStatusWidget" && !this.hasAgenticAILicense;
+              item.key === "AgenticAIStatusWidget" && !this.canShowAgenticAIWidget;
             if (widget.isAllowed && !isAgenticWidgetWithoutLicense) {
               this.removeAvailableWidget(item);
               acc.push(widget);
             }
             return acc;
           }, []);
-          if (this.hasAgenticAILicense) {
+          if (this.canShowAgenticAIWidget) {
             this.ensureAgenticAIWidget(this.layout);
           }
           this.finalizeLoadedWidgetLayout();
@@ -953,7 +964,7 @@ export default {
     },
 
     ensureAgenticAIWidget(layoutArray) {
-      if (!this.hasAgenticAILicense) return;
+      if (!this.canShowAgenticAIWidget) return;
 
       if (
         !layoutArray.some((widget) => widget.key === "AgenticAIStatusWidget")
@@ -972,7 +983,7 @@ export default {
       }
     },
 
-    syncAgenticAIWidgetAvailability(isAllowed = this.hasAgenticAILicense) {
+    syncAgenticAIWidgetAvailability(isAllowed = this.canShowAgenticAIWidget) {
       if (this.allWidgets?.AgenticAIStatusWidget) {
         this.allWidgets.AgenticAIStatusWidget.isAllowed = isAllowed;
       }
@@ -1400,7 +1411,7 @@ export default {
           isDashboardWidget: true
         }
       ];
-      if (this.hasAgenticAILicense) {
+      if (this.canShowAgenticAIWidget) {
         widgets.unshift({
           x: 8,
           y: 0,

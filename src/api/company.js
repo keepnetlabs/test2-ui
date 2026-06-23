@@ -257,8 +257,8 @@ export function resetAgenticAISettings() {
   return testRequest.post('/companies/agentic-ai-settings/reset')
 }
 
-export function getAgenticAIStatus() {
-  return testRequest.get('/companies/agentic-ai')
+export function getAgenticAIStatus(config = {}) {
+  return testRequest.get('/companies/agentic-ai', { ...config })
 }
 
 export function toggleAgenticAIStatus(payload = {}) {
@@ -277,7 +277,11 @@ export function getAgenticAIActivitiesStats() {
 }
 
 export function searchAgenticAIActivities(payload = {}) {
-  return testRequest.post('/agentic-ai/activities/search', payload)
+  // View-only listing in the activities drawer; it degrades to an empty state on
+  // failure, so suppress the global error toast (e.g. 403 for roles without access).
+  return testRequest.post('/agentic-ai/activities/search', payload, {
+    snackbar: { hideError: true }
+  })
 }
 
 export function createAgenticAIActivity(payload = {}) {
