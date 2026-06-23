@@ -74,7 +74,8 @@ export default {
       getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions',
       getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions',
       getLandingPageTemplatesSearchPermissions:
-        'permissions/getLandingPageTemplatesSearchPermissions'
+        'permissions/getLandingPageTemplatesSearchPermissions',
+      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions'
     })
   },
   methods: {
@@ -82,6 +83,9 @@ export default {
       this.tab = tabStatus
     },
     getAIAllySettings() {
+      // Skip the AI Ally probe for roles without the companies/ai permission;
+      // the feature stays off and we avoid a 403 error toast.
+      if (!this.getAIAllySettingsGetPermissions) return
       getAIAllySettings().then((res) => {
         this.aiAllySettings = res?.data?.data || {
           psEmailTemplateGenerationAssistant: false,

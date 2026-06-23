@@ -165,7 +165,7 @@ describe('targetUsers API (extra coverage)', () => {
   describe('getTargetUserCustomFieldsByCompanyId', () => {
     it('calls GET custom-fields/company', async () => {
       await getTargetUserCustomFieldsByCompanyId()
-      expect(testRequest.get).toHaveBeenCalledWith('/custom-fields/company')
+      expect(testRequest.get).toHaveBeenCalledWith('/custom-fields/company', {})
     })
   })
 

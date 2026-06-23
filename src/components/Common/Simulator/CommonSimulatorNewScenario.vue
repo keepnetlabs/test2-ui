@@ -682,7 +682,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCurrentCompany: 'login/getCurrentCompany'
+      getCurrentCompany: 'login/getCurrentCompany',
+      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions'
     }),
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
@@ -1174,6 +1175,9 @@ export default {
       }
     },
     fetchAIAllySettings() {
+      // Skip the AI Ally probe for roles without the companies/ai permission;
+      // the feature stays off and we avoid a 403 error toast.
+      if (!this.getAIAllySettingsGetPermissions) return
       getAIAllySettings().then((res) => {
         this.aiAllySettings = res?.data?.data || {
           psEmailTemplateGenerationAssistant: false,
