@@ -108,7 +108,9 @@ describe('CommonSimulatorEmailTemplatePreviewDialog.vue', () => {
   })
 
   it('opens template in new window on handleExternalLink', () => {
-    const ctx = { templateHTML: '<p>Hello</p>' }
+    // handleExternalLink opens the currently displayed body (displayedTemplateHtml);
+    // for a non-barrel template this equals the lure templateHTML.
+    const ctx = { displayedTemplateHtml: '<p>Hello</p>' }
     CommonSimulatorEmailTemplatePreviewDialog.methods.handleExternalLink.call(ctx)
     expect(openHtmlInNewWindow).toHaveBeenCalledWith('<p>Hello</p>')
   })

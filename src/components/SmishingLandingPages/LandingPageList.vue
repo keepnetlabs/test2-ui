@@ -50,8 +50,11 @@
         :is-assisted-by-a-i="landingPageParams.isAssistedByAI"
         :is-owner="previewRow && previewRow.isOwner !== false"
         is-smishing-prop
+        :can-fix-domain="true"
+        :template-resource-id="previewRow && previewRow.resourceId"
         @edit="handleEditFromPreview"
         @duplicate="handleDuplicateFromPreview"
+        @domain-fixed="onDomainFixed"
       />
     </SmishingPreviewDrawer>
     <DataTable
@@ -480,6 +483,12 @@ export default {
       this.previewRow = null
       if (row) {
         this.handleEdit(row, true)
+      }
+    },
+    onDomainFixed(info = {}) {
+      // The template's domain was updated globally → reflect the new clean URL immediately.
+      if (info.urlTemplate && this.landingPageParams) {
+        this.landingPageParams.urlTemplate = info.urlTemplate
       }
     },
     handlePreview(row) {

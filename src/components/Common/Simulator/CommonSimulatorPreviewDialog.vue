@@ -164,6 +164,14 @@
                     emailTemplateParams.type || "Email"
                   }}</span>
                 </div>
+                <ElTabs
+                  v-if="isBarrelTemplate"
+                  v-model="barrelPreviewMode"
+                  class="k-sub-tab barrel-mode-tabs mb-2"
+                >
+                  <ElTabPane label="Lure Email" name="lure" />
+                  <ElTabPane label="Payload Email" name="payload" />
+                </ElTabs>
                 <div
                   v-if="isPhishing || isQuishing"
                   class="email-template-preview__header d-flex align-center justify-space-between mb-4"
@@ -255,7 +263,7 @@
                       </span>
                       <span
                         class="template-preview__text--body text-primary-color"
-                        >{{ emailTemplateParams.subject }}</span
+                        >{{ displayedSubject }}</span
                       >
                       <RedFlagTooltip
                         v-if="
@@ -433,14 +441,14 @@
                 </div>
               </div>
               <div
-                v-if="emailTemplateParams.attachment"
+                v-if="displayedAttachment"
                 class="attachment-wrapper mt-2 position-relative"
               >
                 <div class="attachment blue-attach mb-0">
                   <AttachmentsPreview
                     :deletable="false"
-                    :att="emailTemplateParams.attachment"
-                    :redFlags="redFlags"
+                    :att="displayedAttachment"
+                    :redFlags="isBarrelPayloadMode ? null : redFlags"
                     :isEmailTemplate="true"
                   />
                 </div>
@@ -449,7 +457,7 @@
               <KEmailPreview
                 v-if="!!emailTemplate"
                 ref="refPreview"
-                :html="emailTemplate"
+                :html="displayedEmailTemplate"
                 :isRedFlaggedTemplate="isFlaggedStylesEnabled"
               />
             </div>
@@ -562,7 +570,10 @@ import {
 import { PREVIEW_DIALOG_TYPES } from "@/components/Common/Simulator/utils";
 import { qrCodeString } from "@/components/GrapesJs/Newsletter/mergedTexts/qrCode";
 import { QUISHING_EMAIL_TEMPLATE_TYPES } from "@/components/QuishingEmailTemplates/utils";
-import { defaultRedFlags } from "@/components/PhishingScenarios/utils";
+import {
+  defaultRedFlags,
+  BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
+} from "@/components/PhishingScenarios/utils";
 import QuishingService from "@/api/quishing";
 import { checkRedFlags } from "@/api/phishingsimulator";
 import { checkQuishingRedFlags } from "@/api/quishing";
@@ -672,7 +683,10 @@ export default {
       isRedFlagsLoading: false,
       isShowRedFlags: false,
       isFlaggedStylesEnabled: false,
-      lastRedFlags: {}
+      lastRedFlags: {},
+      isBarrelTemplate: false,
+      barrelPreviewMode: "lure",
+      payloadEmailTemplate: null
     };
   },
   computed: {
@@ -718,6 +732,32 @@ export default {
     isPhishing() {
       return this.type === PREVIEW_DIALOG_TYPES.PHISHING;
     },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === "payload";
+    },
+    // Subject shown: payload subject in payload mode, lure subject otherwise.
+    displayedSubject() {
+      return this.isBarrelPayloadMode
+        ? this.emailTemplateParams.barrelPayload?.subject || ""
+        : this.emailTemplateParams.subject;
+    },
+    // Body shown in KEmailPreview: the (possibly red-flag-styled) payload body in payload
+    // mode, the lure body otherwise. Both are stored/mutable so red-flag styling persists.
+    displayedEmailTemplate() {
+      return this.isBarrelPayloadMode ? this.payloadEmailTemplate : this.emailTemplate;
+    },
+    // Red-flag state cached per language AND per lure/payload mode.
+    redFlagCacheKey() {
+      return `${this.languagePreview}__${this.barrelPreviewMode}`;
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.emailTemplateParams.barrelPayload?.phishingFileName;
+        return name ? { name } : null;
+      }
+      return this.emailTemplateParams.attachment;
+    },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false;
       return (
@@ -757,6 +797,21 @@ export default {
       return this.selectedRow && this.selectedRow.isOwner === false;
     }
   },
+  watch: {
+    // Switching the Lure/Payload tab drops any active red-flag overlay; the user re-enables
+    // it per tab. Both bodies are cleaned so neither shows stale flag styling on return.
+    barrelPreviewMode() {
+      if (this.isShowRedFlags) {
+        this.isShowRedFlags = false;
+        this.isFlaggedStylesEnabled = false;
+        this.redFlags = structuredClone(defaultRedFlags);
+        this.emailTemplate = this._removeFlaggedStylesFromTemplate(this.emailTemplate || "");
+        this.payloadEmailTemplate = this._removeFlaggedStylesFromTemplate(
+          this.payloadEmailTemplate || ""
+        );
+      }
+    }
+  },
   created() {
     if (!this.languages || this.languages.length === 0) {
       this.callForLanguages();
@@ -767,6 +822,14 @@ export default {
     clearTimeout(this.timeoutId);
   },
   methods: {
+    // Active body = whichever of lure/payload is currently shown.
+    getActiveBodyHtml() {
+      return this.isBarrelPayloadMode ? this.payloadEmailTemplate : this.emailTemplate;
+    },
+    setActiveBodyHtml(value) {
+      if (this.isBarrelPayloadMode) this.payloadEmailTemplate = value;
+      else this.emailTemplate = value;
+    },
     callForData() {
       this.setLoading(true);
       const params = [this.selectedRow.resourceId];
@@ -799,6 +862,14 @@ export default {
             languageTypeName
           } = emailTemplate || {};
 
+          // Barrel templates carry a second body (payload) per language under barrelPayload.
+          // Phishing-only; gate on actual payload content so the toggle only appears when the
+          // scenario/campaign response truly carries a payload (graceful no-op otherwise).
+          const primaryBarrelPayload = emailTemplate?.barrelPayload;
+          this.isBarrelTemplate =
+            this.isPhishing &&
+            !!(primaryBarrelPayload &&
+              (primaryBarrelPayload.template || primaryBarrelPayload.subject));
           this.emailTemplateParams = {
             resourceId,
             fromName,
@@ -806,6 +877,7 @@ export default {
             ccAddresses,
             name,
             subject,
+            barrelPayload: primaryBarrelPayload || {},
             difficulty: difficulties.find(
               (item) => item.value === difficultyResourceId
             )?.text,
@@ -825,6 +897,7 @@ export default {
               fromAddress,
               subject,
               template,
+              barrelPayload: primaryBarrelPayload || {},
               languageTypeResourceId,
               languageTypeName:
                 this.languages.find(
@@ -848,6 +921,7 @@ export default {
                   fromAddress: item.fromAddress,
                   subject: item.subject,
                   template: item.template,
+                  barrelPayload: item.barrelPayload || {},
                   languageTypeResourceId: item.languageTypeResourceId,
                   languageTypeName:
                     this.languages.find(
@@ -867,6 +941,7 @@ export default {
           if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
             template = template?.replaceAll("{QRCODEURLIMAGE}", qrCodeString);
           this.emailTemplate = template;
+          this.payloadEmailTemplate = primaryBarrelPayload?.template || "";
 
           const {
             name: landingPageName,
@@ -1024,7 +1099,7 @@ export default {
         });
     },
     handleExternalLink() {
-      openHtmlInNewWindow(this.emailTemplate);
+      openHtmlInNewWindow(this.displayedEmailTemplate);
     },
     handleEdit() {
       this.$emit("on-edit-template");
@@ -1039,11 +1114,11 @@ export default {
       // Eski languagePreview için red flags'leri kaydet (sadece red flags aktif ise)
       if (this.languagePreview && this.isShowRedFlags) {
         // Eğer red flags cached varsa, template'i güncelle
-        if (this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview].flags = structuredClone(
+        if (this.lastRedFlags[this.redFlagCacheKey]) {
+          this.lastRedFlags[this.redFlagCacheKey].flags = structuredClone(
             this.redFlags
           );
-          this.lastRedFlags[this.languagePreview].textfieldValues = {
+          this.lastRedFlags[this.redFlagCacheKey].textfieldValues = {
             fromName: this.emailTemplateParams.fromName,
             fromAddress: this.emailTemplateParams.fromAddress,
             subject: this.emailTemplateParams.subject,
@@ -1065,22 +1140,24 @@ export default {
         fromName: findedTemplate.fromName,
         fromAddress: findedTemplate.fromAddress,
         subject: findedTemplate.subject,
-        template: findedTemplate.template
+        template: findedTemplate.template,
+        barrelPayload: findedTemplate.barrelPayload || {}
       };
       this.emailTemplate = findedTemplate.template;
+      this.payloadEmailTemplate = findedTemplate.barrelPayload?.template || "";
 
       // Yeni dil için red flags durumunu kontrol et
       if (
-        this.lastRedFlags[newLanguageId] &&
-        this.lastRedFlags[newLanguageId].flags
+        this.lastRedFlags[`${newLanguageId}__${this.barrelPreviewMode}`] &&
+        this.lastRedFlags[`${newLanguageId}__${this.barrelPreviewMode}`].flags
       ) {
         // Yeni dilde red flags cached varsa template'i restore et ama form alanlarındaki flags'leri reset et
         // Cached template'i restore et
         if (
-          this.lastRedFlags[newLanguageId].templates &&
-          this.lastRedFlags[newLanguageId].templates[0]
+          this.lastRedFlags[`${newLanguageId}__${this.barrelPreviewMode}`].templates &&
+          this.lastRedFlags[`${newLanguageId}__${this.barrelPreviewMode}`].templates[0]
         ) {
-          this.emailTemplate = this.lastRedFlags[newLanguageId].templates[0];
+          this.setActiveBodyHtml(this.lastRedFlags[`${newLanguageId}__${this.barrelPreviewMode}`].templates[0]);
         }
         // Form alanlarında gösterilmemesi için flags'leri reset et
         this.redFlags = structuredClone(defaultRedFlags);
@@ -1108,21 +1185,19 @@ export default {
       if (this.isShowRedFlags) {
         // Bu dil için red flags daha önce çağrıldı mı kontrol et
         if (
-          this.lastRedFlags[this.languagePreview] &&
-          this.lastRedFlags[this.languagePreview].flags
+          this.lastRedFlags[this.redFlagCacheKey] &&
+          this.lastRedFlags[this.redFlagCacheKey].flags
         ) {
           // Var olan red flags'leri restore et
           this.redFlags = structuredClone(
-            this.lastRedFlags[this.languagePreview].flags
+            this.lastRedFlags[this.redFlagCacheKey].flags
           );
           // Cached template'i restore et
           if (
-            this.lastRedFlags[this.languagePreview].templates &&
-            this.lastRedFlags[this.languagePreview].templates[0]
+            this.lastRedFlags[this.redFlagCacheKey].templates &&
+            this.lastRedFlags[this.redFlagCacheKey].templates[0]
           ) {
-            this.emailTemplate = this.lastRedFlags[
-              this.languagePreview
-            ].templates[0];
+            this.setActiveBodyHtml(this.lastRedFlags[this.redFlagCacheKey].templates[0]);
           }
           this.updateTemplateWithFlaggedStyles();
           return;
@@ -1137,8 +1212,11 @@ export default {
             (lang) => lang.languageTypeName === langName || lang.text === langName
           ));
         const payload = {
-          template: this.emailTemplate || "",
-          subject: this.emailTemplateParams.subject || "",
+          // Lure/non-barrel keeps the original behavior; payload mode analyzes the payload body.
+          template: this.isBarrelPayloadMode
+            ? this.getActiveBodyHtml() || ""
+            : this.emailTemplate || "",
+          subject: this.displayedSubject || "",
           fromName: this.emailTemplateParams.fromName || "",
           fromEmail: this.emailTemplateParams.fromAddress || "",
           cc: this.emailTemplateParams.ccAddresses || [],
@@ -1164,15 +1242,15 @@ export default {
               attachmentFileName: attachmentFileName
             };
 
-            // Update template HTML and store red flags data
-            this.emailTemplate = template;
-            this.lastRedFlags[this.languagePreview] = {
+            // Update the active body and store red flags data
+            this.setActiveBodyHtml(template);
+            this.lastRedFlags[this.redFlagCacheKey] = {
               flags: structuredClone(redFlags),
               templates: [template],
               textfieldValues: {
                 fromName: this.emailTemplateParams.fromName,
                 fromAddress: this.emailTemplateParams.fromAddress,
-                subject: this.emailTemplateParams.subject,
+                subject: this.displayedSubject,
                 attachmentFileName: this.emailTemplateParams.attachment?.name
               }
             };
@@ -1212,16 +1290,16 @@ export default {
       } else {
         // CSS stillerini template'den kaldır
         // Önce bu dil için red flags'leri templates array'ine kaydet
-        if (!this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview] = {};
+        if (!this.lastRedFlags[this.redFlagCacheKey]) {
+          this.lastRedFlags[this.redFlagCacheKey] = {};
         }
-        this.lastRedFlags[this.languagePreview].flags = structuredClone(
+        this.lastRedFlags[this.redFlagCacheKey].flags = structuredClone(
           this.redFlags
         );
-        this.lastRedFlags[this.languagePreview].textfieldValues = {
+        this.lastRedFlags[this.redFlagCacheKey].textfieldValues = {
           fromName: this.emailTemplateParams.fromName,
           fromAddress: this.emailTemplateParams.fromAddress,
-          subject: this.emailTemplateParams.subject,
+          subject: this.displayedSubject,
           attachmentFileName: this.emailTemplateParams.attachment?.name
         };
 
@@ -1262,19 +1340,16 @@ export default {
     },
 
     updateTemplateWithFlaggedStyles() {
-      if (!this.emailTemplate) return;
+      const body = this.getActiveBodyHtml();
+      if (!body) return;
 
       if (this.isFlaggedStylesEnabled) {
-        this.emailTemplate = this._addFlaggedStylesToTemplate(
-          this.emailTemplate
-        );
+        this.setActiveBodyHtml(this._addFlaggedStylesToTemplate(body));
       } else {
-        this.emailTemplate = this._removeFlaggedStylesFromTemplate(
-          this.emailTemplate
-        );
-        if (this.lastRedFlags[this.languagePreview]) {
-          this.lastRedFlags[this.languagePreview].templates =
-            this.lastRedFlags[this.languagePreview].templates || [];
+        this.setActiveBodyHtml(this._removeFlaggedStylesFromTemplate(body));
+        if (this.lastRedFlags[this.redFlagCacheKey]) {
+          this.lastRedFlags[this.redFlagCacheKey].templates =
+            this.lastRedFlags[this.redFlagCacheKey].templates || [];
         }
       }
     },

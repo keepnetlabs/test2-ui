@@ -144,7 +144,10 @@ const login = {
       // default to false until backend says true
       commit("SET_AGENTIC_AI_ENABLED", false);
       if (!state.hasAgenticAILicense) return Promise.resolve(false);
-      return getAgenticAIStatus()
+      // Background app-load probe: the action already falls back to disabled on
+      // failure, so suppress the global error toast (e.g. 403 for custom roles
+      // that have the license but not the companies/agentic-ai permission).
+      return getAgenticAIStatus({ snackbar: { hideError: true } })
         .then((response) => {
           const data = response?.data?.data;
           const enabled = !!data?.agenticAIEnabled;

@@ -251,7 +251,8 @@ export const COLUMNS = {
       { text: 'Click Only', value: 'Click-Only' },
       { text: 'Data Submission', value: 'Data Submission' },
       { text: 'Attachment', value: 'Attachment' },
-      { text: 'MFA', value: 'MFA' }
+      { text: 'MFA', value: 'MFA' },
+      { text: 'Double Barrel', value: 'Double Barrel' }
     ],
     width: 160
   },

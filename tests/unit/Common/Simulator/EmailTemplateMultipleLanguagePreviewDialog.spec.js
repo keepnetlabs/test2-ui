@@ -105,6 +105,14 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
       isShowRedFlags: true,
       redFlags: { subject: { isRedFlagged: true } },
       templateHTML: '<p>EN</p>',
+      payloadTemplateHTML: null,
+      // non-barrel lure flow
+      barrelPreviewMode: 'lure',
+      isBarrelPayloadMode: false,
+      displayedSubject: 'Subj',
+      redFlagCacheKey: 'en__lure',
+      getActiveBodyHtml: EmailTemplateMultipleLanguagePreviewDialog.methods.getActiveBodyHtml,
+      setActiveBodyHtml: EmailTemplateMultipleLanguagePreviewDialog.methods.setActiveBodyHtml,
       emailTemplateParams: {
         fromName: 'A',
         fromAddress: 'a@test.com',
@@ -125,7 +133,7 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
 
     EmailTemplateMultipleLanguagePreviewDialog.methods.handleLanguageChange.call(ctx, 'tr')
 
-    expect(ctx.lastRedFlags.en).toBeTruthy()
+    expect(ctx.lastRedFlags['en__lure']).toBeTruthy()
     expect(ctx.activeLanguage).toBe('tr')
     expect(ctx.templateHTML).toBe('<p>TR</p>')
     expect(ctx.isShowRedFlags).toBe(false)
@@ -136,7 +144,7 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
   it('compareRedFlags returns true when nothing changed and object when changed', () => {
     const baseCtx = {
       lastRedFlags: {
-        en: {
+        en__lure: {
           templates: ['<p>Hello</p>'],
           textfieldValues: {
             fromName: 'A',
@@ -147,6 +155,7 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
         }
       },
       activeLanguage: 'en',
+      redFlagCacheKey: 'en__lure',
       emailTemplateParams: {
         fromName: 'A',
         fromAddress: 'a@test.com',
@@ -249,10 +258,15 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
     const methods = EmailTemplateMultipleLanguagePreviewDialog.methods
     const ctx = {
       templateHTML: '<html><body><p>A</p></body></html>',
+      payloadTemplateHTML: null,
       isFlaggedStylesEnabled: true,
       activeLanguage: 'en',
+      isBarrelPayloadMode: false,
+      redFlagCacheKey: 'en__lure',
+      getActiveBodyHtml: methods.getActiveBodyHtml,
+      setActiveBodyHtml: methods.setActiveBodyHtml,
       lastRedFlags: {
-        en: { templates: [] }
+        en__lure: { templates: [] }
       },
       _addFlaggedStylesToTemplate: methods._addFlaggedStylesToTemplate,
       _removeFlaggedStylesFromTemplate: methods._removeFlaggedStylesFromTemplate,
@@ -271,6 +285,6 @@ describe('EmailTemplateMultipleLanguagePreviewDialog.vue', () => {
     ctx.isFlaggedStylesEnabled = false
     methods.updateTemplateWithFlaggedStyles.call(ctx)
     expect(ctx.templateHTML).not.toContain('<script>')
-    expect(ctx.lastRedFlags.en.templates.length).toBeGreaterThan(0)
+    expect(ctx.lastRedFlags['en__lure'].templates.length).toBeGreaterThan(0)
   })
 })

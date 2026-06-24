@@ -877,9 +877,16 @@ describe('Company API', () => {
   })
 
   describe('getAgenticAIStatus', () => {
-    it('should call GET endpoint', async () => {
+    it('should call GET endpoint with empty config by default', async () => {
       await CompanyAPI.getAgenticAIStatus()
-      expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai')
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai', {})
+    })
+
+    it('should forward hideError config to suppress the global error toast', async () => {
+      await CompanyAPI.getAgenticAIStatus({ snackbar: { hideError: true } })
+      expect(testRequest.get).toHaveBeenCalledWith('/companies/agentic-ai', {
+        snackbar: { hideError: true }
+      })
     })
 
     it('should return thenable', () => {
@@ -897,6 +904,42 @@ describe('Company API', () => {
 
     it('should return thenable', () => {
       const result = CompanyAPI.toggleAgenticAIStatus({})
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('getAgenticAIActivitiesStats', () => {
+    it('should call GET with hideError config to suppress the global error toast', async () => {
+      await CompanyAPI.getAgenticAIActivitiesStats()
+      expect(testRequest.get).toHaveBeenCalledWith('/agentic-ai/activities/stats', {
+        snackbar: { hideError: true }
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.getAgenticAIActivitiesStats()
+      expect(typeof result.then).toBe('function')
+    })
+  })
+
+  describe('searchAgenticAIActivities', () => {
+    it('should POST with payload and hideError config to suppress the global error toast', async () => {
+      const payload = { pageNumber: 1 }
+      await CompanyAPI.searchAgenticAIActivities(payload)
+      expect(testRequest.post).toHaveBeenCalledWith('/agentic-ai/activities/search', payload, {
+        snackbar: { hideError: true }
+      })
+    })
+
+    it('should default payload to empty object', async () => {
+      await CompanyAPI.searchAgenticAIActivities()
+      expect(testRequest.post).toHaveBeenCalledWith('/agentic-ai/activities/search', {}, {
+        snackbar: { hideError: true }
+      })
+    })
+
+    it('should return thenable', () => {
+      const result = CompanyAPI.searchAgenticAIActivities()
       expect(typeof result.then).toBe('function')
     })
   })

@@ -121,24 +121,30 @@
         <span v-else class="text-primary-color ml-2 fs-3-4">{{ frequencyDisabledText }}</span>
       </template>
     </AlertBox>
+    <!-- Optional section rendered directly below Frequency (e.g. Double Barrel
+         settings for phishing campaigns). Opt-in slot — other campaign types
+         that reuse this component leave it empty and are unaffected. -->
+    <slot name="afterFrequency" :is-dec-selected="isSelectedEmailDeliveryIsDec" />
     <InputSchedule
       v-model="inputScheduleFormData"
       :isEditOrDuplicate="isEdit || isDuplicate"
       ref="inputSchedule"
       :isPhishing="type === SCENARIO_TYPES.PHISHING"
     />
-    <InputDistribution
-      v-model="inputDistributionFormData"
-      :distribution-delay-time-items="getDistributionDelayTimeItems"
-      :selected-time-zone-text="selectedTimeZoneText"
-      @call-for-calculate-sending-info="callForCalculateSendingInfo"
-    />
-    <div
-      v-if="getDistributionTextRenderStatus"
-      class="campaign-manager-advanced-settings__distribution-text mt-6"
-    >
-      {{ getDistributionText }}
-    </div>
+    <template v-if="!hideDistribution">
+      <InputDistribution
+        v-model="inputDistributionFormData"
+        :distribution-delay-time-items="getDistributionDelayTimeItems"
+        :selected-time-zone-text="selectedTimeZoneText"
+        @call-for-calculate-sending-info="callForCalculateSendingInfo"
+      />
+      <div
+        v-if="getDistributionTextRenderStatus"
+        class="campaign-manager-advanced-settings__distribution-text mt-6"
+      >
+        {{ getDistributionText }}
+      </div>
+    </template>
   </v-form>
 </template>
 
@@ -247,6 +253,13 @@ export default {
       type: String,
       default:
         "When sending in the target users' preferred language, only the 'One Time' frequency is available."
+    },
+    // Opt-in: hide the Distribution (batching/interval) section. Double Barrel campaigns
+    // drive delivery through their own lure/payload schedule, so batch distribution does
+    // not apply. Default false keeps every other campaign type unchanged.
+    hideDistribution: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -327,6 +340,10 @@ export default {
     isSelectedEmailDeliveryIsSmtp() {
       if (!this.emailDelivery) return false
       return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP
+    },
+    isSelectedEmailDeliveryIsDec() {
+      if (!this.emailDelivery) return false
+      return this.emailDelivery.type === EMAIL_DELIVERY_TYPES.DIRECT_EMAIL
     },
     getSmtpInputErrorMessage() {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''

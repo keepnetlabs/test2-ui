@@ -79,6 +79,46 @@ describe('CommonSimulatorFastLaunch.vue (extra branch coverage)', () => {
       const result = CommonSimulatorFastLaunch.computed.getFormDataForCampaignSummary.call(ctx)
       expect(result.templateType).toBe('Individual Printout')
     })
+
+    const barrelCtx = (scenario) => ({
+      step: 2,
+      selectedScenario: scenario,
+      emailTemplateParams: { type: 'Email' },
+      emailTemplate: '<p>x</p>',
+      smtpSettingResourceId: 'smtp-1',
+      $refs: {
+        refFastLaunch: {
+          formData: {},
+          selectedTargetGroups: [{ name: 'G', userCount: 1, resourceId: 'tg-1' }],
+          $refs: {
+            refCampaignManagerCampaignInfo: { formData: { name: 'Campaign' } }
+          }
+        }
+      }
+    })
+
+    it('getFormDataForCampaignSummary exposes barrel defaults for a Double Barrel scenario', () => {
+      const result = CommonSimulatorFastLaunch.computed.getFormDataForCampaignSummary.call(
+        barrelCtx({ resourceId: 'sc-1', name: 'X', method: 'Double Barrel' })
+      )
+      expect(result.isBarrelCampaign).toBe(true)
+      // Fast Launch sends no barrel options, so the summary mirrors backend defaults.
+      expect(result.barrelOptions).toEqual({
+        delayMinutes: 60,
+        orderType: 1,
+        skipPayloadIfReported: true,
+        responsiveDelivery: false,
+        urgentFlagType: 2
+      })
+    })
+
+    it('getFormDataForCampaignSummary omits barrel data for a non-barrel scenario', () => {
+      const result = CommonSimulatorFastLaunch.computed.getFormDataForCampaignSummary.call(
+        barrelCtx({ resourceId: 'sc-1', name: 'X', method: 'Click-Only' })
+      )
+      expect(result.isBarrelCampaign).toBe(false)
+      expect(result.barrelOptions).toBeUndefined()
+    })
   })
 
   describe('methods', () => {

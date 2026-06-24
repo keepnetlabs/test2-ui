@@ -396,6 +396,14 @@
                         <v-icon color="#2196f3" small> mdi-eye </v-icon>
                       </v-btn>
                     </div>
+                    <ElTabs
+                      v-if="isBarrelTemplate && !!templateHTML"
+                      v-model="barrelPreviewMode"
+                      class="k-sub-tab barrel-mode-tabs mb-2"
+                    >
+                      <ElTabPane label="Lure Email" name="lure" />
+                      <ElTabPane label="Payload Email" name="payload" />
+                    </ElTabs>
                     <div class="template-preview__text pl-2" v-if="!!templateHTML">
                       <div>
                         <span class="template-preview__text--title fw-600 text-primary-color"
@@ -428,7 +436,7 @@
                           >Subject:
                         </span>
                         <span class="template-preview__text--body fw-400 text-primary-color">{{
-                          templateSubject
+                          displayedSubject
                         }}</span>
                       </div>
                       <div v-if="!isQuishingTypeIndividualPrintOut">
@@ -456,7 +464,7 @@
                         }}</span>
                       </div>
                       <div
-                        v-if="phishingFile && phishingFile.length"
+                        v-if="displayedPhishingFile && displayedPhishingFile.length"
                         class="attachment-wrapper d-flex align-center"
                         style="position: relative;"
                       >
@@ -464,7 +472,7 @@
                         <div class="attachment blue-attach mb-0">
                           <AttachmentsPreview
                             :deletable="false"
-                            :att="phishingFile[0]"
+                            :att="displayedPhishingFile[0]"
                             :isEmailTemplate="true"
                           />
                         </div>
@@ -474,8 +482,8 @@
                   <hr v-if="!!templateHTML" />
                   <k-email-preview
                     v-if="templateHTML"
-                    :key="templateHTML"
-                    :html="templateHTML"
+                    :key="displayedTemplateHtml"
+                    :html="displayedTemplateHtml"
                     is-extra-height
                   />
                 </template>
@@ -506,7 +514,8 @@ import {
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHODS,
   MERGED_TEXTS,
-  EMAIL_TEMPLATE_DETAIL_ACTION_TYPES
+  EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
+  BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
 } from '@/components/PhishingScenarios/utils'
 import useDebounce from '@/hooks/useDebounce'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -619,6 +628,11 @@ export default {
       bodyData: this.defaultBodyData || getDefaultEmailTemplatePayload(this.categoryResourceId),
       loadingTemplatePreview: false,
       templateHTML: null,
+      isBarrelTemplate: false,
+      barrelPreviewMode: 'lure',
+      templateBarrelSubject: '',
+      templateBarrelHTML: '',
+      templateBarrelPhishingFileName: '',
       activeTemplateHTML: null,
       isTemplateDetails: null,
       selectedTemplateHeader: null,
@@ -669,6 +683,25 @@ export default {
     },
     isPhishing() {
       return this.type === SCENARIO_TYPES.PHISHING
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
+    // Inline preview body/subject: payload in payload mode, lure otherwise.
+    displayedSubject() {
+      return this.isBarrelPayloadMode ? this.templateBarrelSubject : this.templateSubject
+    },
+    displayedTemplateHtml() {
+      return this.isBarrelPayloadMode ? this.templateBarrelHTML : this.templateHTML
+    },
+    // Attachment shown: the payload's own attachment in payload mode, lure attachment otherwise.
+    displayedPhishingFile() {
+      if (this.isBarrelPayloadMode) {
+        return this.templateBarrelPhishingFileName
+          ? [{ name: this.templateBarrelPhishingFileName }]
+          : []
+      }
+      return this.phishingFile
     },
     isQuishingTypeEmail() {
       if (!this.isQuishing) return false
@@ -1318,6 +1351,17 @@ export default {
           this.templateSubject = data?.subject || ''
           this.templateFromEmail = data?.fromAddress || ''
           this.templateCCAddresses = data?.ccAddresses || ''
+          // Barrel: detect (category, falling back to payload presence) and seed the primary
+          // language's payload body. Reset to the Lure tab whenever a new template is loaded.
+          const primaryBarrelPayload = data?.barrelPayload
+          this.isBarrelTemplate =
+            data?.categoryResourceId === BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID ||
+            !!(primaryBarrelPayload &&
+              (primaryBarrelPayload.template || primaryBarrelPayload.subject))
+          this.barrelPreviewMode = 'lure'
+          this.templateBarrelSubject = primaryBarrelPayload?.subject || ''
+          this.templateBarrelHTML = primaryBarrelPayload?.template || ''
+          this.templateBarrelPhishingFileName = primaryBarrelPayload?.phishingFileName || ''
           this.phishingFile = data?.phishingFileName
             ? [
                 {
@@ -1342,7 +1386,8 @@ export default {
             fromName: data?.fromName,
             subject: data?.subject,
             fromAddress: data?.fromAddress,
-            ccAddresses: data?.ccAddresses
+            ccAddresses: data?.ccAddresses,
+            barrelPayload: primaryBarrelPayload || {}
           })
           this.languagePreview = this.selectedTemplateLanguages[0].value
           if (!data?.languages?.length) return
@@ -1355,6 +1400,7 @@ export default {
               subject: item?.subject,
               fromAddress: item?.fromAddress,
               ccAddresses: item?.ccAddresses,
+              barrelPayload: item?.barrelPayload || {},
               resourceId: item?.resourceId
             })
             this.selectedTemplateLanguages.push({
@@ -1383,6 +1429,9 @@ export default {
       this.templateSubject = findedTemplate?.subject || ''
       this.templateFromEmail = findedTemplate?.fromAddress || ''
       this.templateCCAddresses = findedTemplate?.ccAddresses || ''
+      this.templateBarrelSubject = findedTemplate?.barrelPayload?.subject || ''
+      this.templateBarrelHTML = findedTemplate?.barrelPayload?.template || ''
+      this.templateBarrelPhishingFileName = findedTemplate?.barrelPayload?.phishingFileName || ''
       if (!this.isEditMode) return
       if (languagePreview) this.handleSaveOldEditLanguage(languagePreview)
       this.editData.template = this.templateHTML

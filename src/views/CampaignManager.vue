@@ -241,6 +241,24 @@ export default {
           this.isItemTableShowing = false;
           this.isFrequencyTableShowing = false;
           this.$router.replace("/phishing-simulator/campaign-manager");
+        } else if (val?.status === "create") {
+          // Opened from the command palette: show the add-campaign modal.
+          if (!this.isShowAddOrEditCampaignManagerModal) {
+            this.toggleAddCampaignManagerModal();
+          }
+          this.$router.replace("/phishing-simulator/campaign-manager");
+        } else if (val?.filterStatus) {
+          // From the command palette: apply a transient Status filter. Clear
+          // the query only after the filter is applied (in the same tick) so
+          // the cleared-query re-trigger can't race ahead of applyStatusFilter.
+          const statuses = String(val.filterStatus).split(",");
+          this.$nextTick(() => {
+            const table = this.$refs.campaignManagerParentTable;
+            if (table && table.applyStatusFilter) {
+              table.applyStatusFilter(statuses);
+            }
+            this.$router.replace("/phishing-simulator/campaign-manager");
+          });
         }
       },
       deep: true,

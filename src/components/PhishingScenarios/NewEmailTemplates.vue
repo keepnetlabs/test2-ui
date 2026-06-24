@@ -153,7 +153,35 @@
                           </div>
                         </div>
                       </div>
+                      <ElTabs
+                        v-if="isBarrelTemplate"
+                        v-model="barrelEditMode"
+                        class="k-sub-tab barrel-mode-tabs mb-3"
+                      >
+                        <ElTabPane label="Lure Email" name="lure" />
+                        <ElTabPane label="Payload Email" name="payload" />
+                      </ElTabs>
+                      <AlertBox
+                        v-if="isBarrelTemplate"
+                        class="bg-aqua-light mb-4 barrel-info-alert"
+                        icon-color="#2196F3"
+                        icon-name="mdi-information"
+                        :text="
+                          isBarrelPayloadMode
+                            ? 'Payload email may contain links and the {PHISHINGURL} tag. Sender (From / CC) is inherited from the Lure email.'
+                            : 'Lure email must not contain links or the {PHISHINGURL} tag.'
+                        "
+                        :slots="{ primaryAction: false, secondaryAction: false }"
+                      />
+                      <div
+                        v-if="isBarrelTemplate && barrelError"
+                        class="mb-4"
+                        style="font-size: 12px; color: #d32f2f;"
+                      >
+                        {{ barrelError }}
+                      </div>
                       <EmailTemplate
+                        v-show="!isBarrelPayloadMode"
                         ref="refEmailTemplate"
                         class="email-template-languages-settings-template-preview-container"
                         :is-ai-assistant="true"
@@ -172,6 +200,8 @@
                         :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
                         :ai-assistant-total-right="aiAssistantTotalRights"
                         :isAttachmentError="isAttachmentError"
+                        :hide-phishing-url-merge-tag="isBarrelTemplate"
+                        :use-lure-suggestions="isBarrelTemplate"
                         :is-edit="!!isEdit"
                         :is-show-red-flags="isShowRedFlags"
                         :red-flags="redFlags"
@@ -248,6 +278,54 @@
                           />
                         </template>
                       </EmailTemplate>
+                      <div
+                        v-if="isBarrelTemplate && barrelPayloadEditorMounted"
+                        v-show="isBarrelPayloadMode"
+                        class="barrel-payload-panel"
+                      >
+                        <EmailTemplate
+                          ref="refEmailTemplatePayload"
+                          class="email-template-languages-settings-template-preview-container barrel-payload-editor"
+                          :is-phishing-template="true"
+                          :isEmailTemplate="true"
+                          :show-edit-button="true"
+                          :show-subject-field="true"
+                          :hideNotificationTemplateSenderFields="true"
+                          :is-ai-assistant="true"
+                          :isAIAllyEnabled="isAIAllyEnabled"
+                          :ai-assistant.sync="barrelPayloadAiAssistant"
+                          :ai-assistant-remaining-right.sync="aiAssistantRemainingRights"
+                          :ai-assistant-total-right="aiAssistantTotalRights"
+                          :prompt.sync="barrelPayloadAi.prompt"
+                          :toneResourceId.sync="barrelPayloadAi.toneResourceId"
+                          :localizationResourceId.sync="barrelPayloadAi.localizationResourceId"
+                          :language-type-resource-id="getSelectedLanguagePayload.languageTypeResourceId"
+                          :from-name="getSelectedLanguagePayload.fromName"
+                          :from-address="getSelectedLanguagePayload.fromAddress"
+                          :language-options="languageOptions"
+                          :selected-method="getSelectedMethod"
+                          :is-attachment-based-scenario="false"
+                          :show-attachment-upload="true"
+                          :attachmentFiles.sync="getSelectedBarrelPayload.attachmentFiles"
+                          :importedEmailAttachments.sync="getSelectedBarrelPayload.importedEmailAttachments"
+                          :extensions="['doc', 'docx', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx']"
+                          :size="5"
+                          fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 5MB"
+                          :is-show-red-flags="false"
+                          :red-flags="null"
+                          :is-red-flags-loading="false"
+                          :is-plain-text.sync="barrelPayloadIsPlainText"
+                          :is-edit="!!isEdit"
+                          :edit-items-disabled="editItemsDisabled"
+                          :active-block-manager-components="activeBlockManagerComponents"
+                          :method-type-id="getMethodTypeId"
+                          :subject.sync="getSelectedBarrelPayload.subject"
+                          :template.sync="getSelectedBarrelPayload.template"
+                          @setAttachmentFile="setBarrelPayloadAttachmentFile"
+                          @handleAttachmentRemove="handleBarrelPayloadAttachmentRemove"
+                          @handleDeleteAttachment="handleBarrelPayloadDeleteAttachment"
+                        />
+                      </div>
                     </FormGroup>
                   </v-form>
                 </v-list-item-content>
@@ -383,7 +461,8 @@ import {
   getEmailTemplateMethodItems,
   EMAIL_TEMPLATE_DETAIL_ACTION_TYPES,
   EMAIL_TEMPLATE_DIFFICULTY_ITEMS,
-  MERGED_TEXTS
+  MERGED_TEXTS,
+  BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
 } from './utils'
 import InputLanguagesSettings from '@/components/Common/Inputs/InputLanguagesSettings.vue'
 import InputLanguagePreview from '../Common/Inputs/InputLanguagePreview.vue'
@@ -391,6 +470,7 @@ import { scrollToEmailTemplateContent } from '@/components/Company Settings/util
 import useSetAttachmentFile from '@/hooks/useSetAttachmentFile'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppDialog from '@/components/AppDialog'
+import AlertBox from '@/components/AlertBox'
 import AppDialogFooterWithClose from '@/components/SmallComponents/AppDialogFooterWithClose'
 import useIsTestEnvironment from '@/hooks/useIsTestEnvironment'
 export default {
@@ -412,6 +492,7 @@ export default {
     InputEntityName,
     InputDescription,
     AppDialog,
+    AlertBox,
     AppDialogFooterWithClose
   },
   mixins: [useSetAttachmentFile, useIsTestEnvironment],
@@ -464,6 +545,9 @@ export default {
     if (this.selectedMethodText) {
       if (this.selectedMethodText === 'MFA') {
         methodItems = methodItems.filter((mItem) => mItem.name !== 'Attachment')
+      } else if (this.selectedMethodText === 'Double Barrel') {
+        // Scenario method label is "Double Barrel"; map it to the Barrel template category.
+        categoryResourceId = BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
       } else {
         categoryResourceId = methodItems.find((mItem) => mItem.name === this.selectedMethodText)
           ?.resourceId
@@ -513,6 +597,26 @@ export default {
         attachmentFilesFromApi: []
       },
       languagesPayload: [],
+      barrelEditMode: 'lure',
+      // The payload editor's email preview is an auto-sizing iframe; mounting it
+      // while hidden (display:none) measures a 0/wrong height that never recovers
+      // when shown. Mount it lazily the first time the Payload tab is opened (so
+      // it sizes while visible), then keep it mounted via v-show.
+      barrelPayloadEditorMounted: false,
+      // Tracks the two-pass barrel translation. Backend exposes a single polling
+      // job, so we translate the lure body first, then chain the payload body and
+      // reuse the same poll loop. null for non-barrel templates (legacy behaviour).
+      barrelTranslationPhase: null,
+      // Source payload body ({ subject, template }) captured at translation start so the
+      // chained payload pass uses the right source regardless of active-language changes.
+      barrelPayloadTranslationSource: null,
+      // Independent AI Ally state for the payload editor (separate from the lure so the
+      // two panels don't share open/format state). Kept out of barrelPayload so it never
+      // leaks into the saved {subject, template} payload.
+      barrelPayloadAiAssistant: false,
+      barrelPayloadIsPlainText: true,
+      barrelPayloadAi: { prompt: '', toneResourceId: '', localizationResourceId: '' },
+      barrelError: '',
       initialDisabledLanguageIds: [],
       aiAssistantRemainingRights: 0,
       aiAssistantTotalRights: 0,
@@ -587,6 +691,17 @@ export default {
     isAttachmentBasedTemplate() {
       return this.formValues.categoryResourceId === '7dLrW2kdBTDs'
     },
+    isBarrelTemplate() {
+      return this.formValues.categoryResourceId === BARREL_EMAIL_TEMPLATE_CATEGORY_RESOURCE_ID
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelEditMode === 'payload'
+    },
+    // Active language's barrel payload ({ subject, template }). Every language item is
+    // seeded with barrelPayload at creation, so this is a pure read (no side effects).
+    getSelectedBarrelPayload() {
+      return this.getSelectedLanguagePayload.barrelPayload || {}
+    },
     getMethodTypeId() {
       return this.methodItems?.find(
         (item) => item.resourceId === this.formValues.categoryResourceId
@@ -660,6 +775,22 @@ export default {
         if (!val || this.isDefault) return
         this.setLanguageItems()
       }
+    },
+    barrelEditMode(mode) {
+      // Lazily mount the payload editor the first time its tab is opened so its
+      // preview iframe measures height while visible (see barrelPayloadEditorMounted).
+      if (mode === 'payload') this.barrelPayloadEditorMounted = true
+    },
+    'formValues.categoryResourceId'() {
+      // Reset to lure editor whenever category changes (e.g. away from Barrel)
+      this.barrelEditMode = 'lure'
+      // Switching TO Double Barrel after the lure was already authored/localized leaves
+      // the payload bodies empty. Seed each empty payload from that language's lure (same
+      // template for both initially) — the lure is already in the right language, so this
+      // is a copy, not a translation call.
+      if (this.isBarrelTemplate) {
+        this.$nextTick(() => this.seedBarrelPayloadFromLureIfNeeded())
+      }
     }
   },
   created() {
@@ -711,6 +842,7 @@ export default {
           prompt: this.formValues.prompt,
           toneResourceId: this.formValues.toneResourceId,
           localizationResourceId: this.formValues.localizationResourceId,
+          barrelPayload: this.barrelPayloadFromApi(this.formValues.barrelPayload),
           isTranslated: true
         })
         this.selectedLanguages.push({
@@ -739,6 +871,7 @@ export default {
               toneResourceId: item.toneResourceId,
               localizationResourceId: item.localizationResourceId,
               resourceId: item.resourceId,
+              barrelPayload: this.barrelPayloadFromApi(item.barrelPayload),
               isTranslated: true
             })
           })
@@ -755,6 +888,11 @@ export default {
             ...this.languagesPayload.map((item) => item.languageTypeResourceId)
           ]
         }
+        // A template opened as Double Barrel may carry empty payload bodies (e.g. it was
+        // authored as Click Only, then the scenario method switched to Double Barrel). The
+        // category watcher does not fire for the mount-time value, so seed the payloads
+        // from each language's (already-localized) lure here.
+        this.seedBarrelPayloadFromLureIfNeeded()
       })
     }
     if (!(this.isEdit || this.isDuplicate)) {
@@ -779,6 +917,25 @@ export default {
       this.getSelectedLanguagePayload.isTranslated = true
       this.selectedLanguagePayloadItemBeforeSave.template = template
       this.selectedLanguagePayloadItemBeforeSave.subject = subject
+      // Coherence: once the lure is AI-generated, suggest a matching payload prompt (only
+      // when the user hasn't written one) so the payload continues the SAME scenario —
+      // now WITH the call-to-action/link the lure deliberately omits. Anchored on the
+      // lure subject (clean theme), not the lure prompt (which instructs "no links").
+      if (this.isBarrelTemplate && !(this.barrelPayloadAi.prompt || '').trim()) {
+        this.barrelPayloadAi.prompt = this.buildBarrelPayloadPrompt(subject)
+      }
+    },
+    // Builds a suggested AI prompt for the Double Barrel payload that follows up on the
+    // lure scenario and explicitly asks for the link/CTA the lure omits.
+    buildBarrelPayloadPrompt(lureSubject) {
+      const theme = (lureSubject || '').trim()
+      const reference = theme ? `the lure email "${theme}"` : 'the previous lure email'
+      return (
+        `Write the follow-up "payload" email for the same scenario as ${reference}. ` +
+        'Reference that the recipient was already contacted, and now ask them to take ' +
+        'action by clicking a link ({PHISHINGURL}). Keep the same sender persona and tone ' +
+        'as the lure. Unlike the lure, this email MUST include the call-to-action link.'
+      )
     },
     handleRelocalizeReplace({ language }) {
       const payload = this.languagesPayload.find(
@@ -792,6 +949,15 @@ export default {
           languageName: language.text
         }
       ]
+      // Barrel: re-localizing a language must also re-translate its payload body so it
+      // doesn't go stale. Capture the target language's payload (fallback to active).
+      this.barrelTranslationPhase = this.isBarrelTemplate ? 'lure' : null
+      const targetBarrelPayload = payload.barrelPayload || {}
+      const activeBarrelPayload = this.getSelectedBarrelPayload || {}
+      this.barrelPayloadTranslationSource = {
+        template: targetBarrelPayload.template || activeBarrelPayload.template || '',
+        subject: targetBarrelPayload.subject || activeBarrelPayload.subject || ''
+      }
       this.isGenerateWithAi = true
       this.isGenerateWithAIDisabled = true
       this.$refs.refEmailTemplate.isEmailGenerating = true
@@ -1003,6 +1169,7 @@ export default {
           prompt: '',
           toneResourceId: '',
           localizationResourceId: '',
+          barrelPayload: this.emptyBarrelPayload(),
           detailActionType: EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.ADD,
           isTranslated: false
         }
@@ -1061,6 +1228,10 @@ export default {
       if (!isFormValid || !this.formValues.languageTypeResourceId) {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
+        this.isSubmitDisabled = false
+        return
+      }
+      if (!this.validateBarrelTemplate()) {
         this.isSubmitDisabled = false
         return
       }
@@ -1162,6 +1333,10 @@ export default {
         this.isSubmitDisabled = false
         return
       }
+      if (!this.validateBarrelTemplate()) {
+        this.isSubmitDisabled = false
+        return
+      }
       if (this.isShowRedFlags) {
         this.isShowRedFlags = false
         this.isFlaggedStylesEnabled = false
@@ -1216,6 +1391,34 @@ export default {
         this.blockManagerComponents = response.data.data['mergeTags']
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })
+    },
+    validateBarrelTemplate() {
+      this.barrelError = ''
+      if (!this.isBarrelTemplate) return true
+      const linkRegex = /<a[\s>]/i
+      // Lure body must not contain links or the {PHISHINGURL} merge tag
+      const lureViolation = this.languagesPayload.find((lang) => {
+        const lure = lang?.template || ''
+        return linkRegex.test(lure) || lure.includes('{PHISHINGURL}')
+      })
+      if (lureViolation) {
+        this.activeLanguage = lureViolation.languageTypeResourceId
+        this.barrelEditMode = 'lure'
+        this.barrelError = 'Lure email body must not contain links or the {PHISHINGURL} tag.'
+        return false
+      }
+      // Payload subject and body are required for every language
+      const payloadViolation = this.languagesPayload.find((lang) => {
+        const bp = lang?.barrelPayload || {}
+        return !bp.subject || !bp.subject.trim() || !bp.template || !bp.template.trim()
+      })
+      if (payloadViolation) {
+        this.activeLanguage = payloadViolation.languageTypeResourceId
+        this.barrelEditMode = 'payload'
+        this.barrelError = 'Payload subject and body are required for every language.'
+        return false
+      }
+      return true
     },
     setEmptyLanguagesPayload() {
       const preferredLanguagePayload = this.getPreferredLanguagePayload()
@@ -1336,6 +1539,89 @@ export default {
           this.$refs.refEmailTemplate.isEmailGenerating = false
         })
     },
+    // Seeds barrel payload bodies from each language's lure when the template becomes
+    // Double Barrel after the lure was already authored/localized (e.g. created as Click
+    // Only, then switched to Barrel). The lure is already in the correct language, so this
+    // is a plain copy (no translation call) and only fills payloads that are still empty —
+    // never overwriting a payload the user has already diverged.
+    // Factory for a per-language barrel payload. Carries its own attachment state so the
+    // payload editor's :attachmentFiles.sync binding always has arrays to write to.
+    // Mirrors the lure attachment model: attachmentFiles[0] is the tracked phishing file
+    // (the "clicked = phished" file), importedEmailAttachments are decoy attachments.
+    emptyBarrelPayload(over = {}) {
+      return {
+        subject: '',
+        template: '',
+        attachmentFiles: [],
+        importedEmailAttachments: [],
+        attachmentFilesFromApi: [],
+        isPhishingFileModified: false,
+        isAddedNewPhishingFile: false,
+        phishingFileName: '',
+        ...over
+      }
+    },
+    // Build a barrel payload from an API response payload object, restoring its attachments
+    // the same way the lure does on edit (phishing file -> attachmentFiles[0], decoys ->
+    // importedEmailAttachments).
+    barrelPayloadFromApi(bp = {}) {
+      const decoys = (bp.attachments || []).map((item) => ({ ...item, isDeletable: true }))
+      const phishingFiles = bp.phishingFileName
+        ? [{ fileName: bp.phishingFileName, url: bp.phishingFileUrl }]
+        : []
+      return this.emptyBarrelPayload({
+        subject: bp.subject || '',
+        template: bp.template || '',
+        attachmentFiles: phishingFiles,
+        importedEmailAttachments: decoys,
+        attachmentFilesFromApi: JSON.parse(JSON.stringify(decoys)),
+        phishingFileName: bp.phishingFileName || ''
+      })
+    },
+    // Payload-editor attachment handlers — same behaviour as the lure handlers but scoped to
+    // the ACTIVE language's barrelPayload instead of the shared formValues, so each language
+    // keeps its own payload attachment.
+    setBarrelPayloadAttachmentFile(file) {
+      const bp = this.getSelectedBarrelPayload
+      if (!bp) return
+      const files = Array.isArray(file) ? file : [file]
+      bp.attachmentFiles = files.filter(Boolean)
+      bp.isPhishingFileModified = true
+      bp.isAddedNewPhishingFile = true
+    },
+    handleBarrelPayloadDeleteAttachment() {
+      const bp = this.getSelectedBarrelPayload
+      if (!bp) return
+      bp.attachmentFiles = []
+      bp.isAddedNewPhishingFile = false
+    },
+    handleBarrelPayloadAttachmentRemove({ item } = {}) {
+      const bp = this.getSelectedBarrelPayload
+      if (!bp) return
+      const name = item?.fileName || item?.name
+      bp.attachmentFiles = (bp.attachmentFiles || []).filter(
+        (att) => (att?.fileName || att?.name) !== name
+      )
+      bp.importedEmailAttachments = (bp.importedEmailAttachments || []).filter(
+        (att) => (att?.fileName || att?.name) !== name
+      )
+      if (!bp.attachmentFiles.length) bp.isAddedNewPhishingFile = false
+    },
+    seedBarrelPayloadFromLureIfNeeded() {
+      if (!this.isBarrelTemplate) return
+      this.languagesPayload.forEach((p) => {
+        const lureBody = (p.template || '').trim()
+        const payloadEmpty = !((p.barrelPayload && p.barrelPayload.template) || '').trim()
+        if (!lureBody || !payloadEmpty) return
+        if (!p.barrelPayload) {
+          this.$set(p, 'barrelPayload', this.emptyBarrelPayload())
+        }
+        p.barrelPayload.template = p.template
+        if (!(p.barrelPayload.subject || '').trim()) {
+          p.barrelPayload.subject = p.subject || ''
+        }
+      })
+    },
     handleGenerateWithAI() {
       this.isGenerateWithAi = true
       this.isGenerateWithAIDisabled = true
@@ -1354,22 +1640,39 @@ export default {
             return !(payload && payload.isTranslated)
           })
         : this.selectedLanguages
+      const lureLanguages = languagesToLocalize.map((item) => ({
+        languageResourceId: item.value,
+        languageName: item.text
+      }))
+      // Barrel templates carry a second (payload) body. Translate the lure first, then
+      // chain the payload pass once the lure poll completes (single backend job). The
+      // chained pass mirrors the languages the lure actually localized — computed from
+      // the poll's successLanguages — so it covers fresh templates whose payload still
+      // holds the default body. Capture the payload source now so the chain is immune to
+      // active-language changes during polling.
+      this.barrelTranslationPhase = this.isBarrelTemplate ? 'lure' : null
+      const activeBarrelPayload = this.getSelectedBarrelPayload || {}
+      this.barrelPayloadTranslationSource = {
+        template: activeBarrelPayload.template || '',
+        subject: activeBarrelPayload.subject || ''
+      }
       scrollToEmailTemplateContent()
       generateEmailTemplateTranslation({
-        languages: languagesToLocalize.map((item) => ({
-          languageResourceId: item.value,
-          languageName: item.text
-        })),
+        languages: lureLanguages,
         template,
         subject
-      }).then((response) => {
-        if (!response?.data?.data?.isSuccess) {
-          this.resetGenerateWithAIDisabled()
-          return
-        }
-        this.isEverythingLocalized = false
-        this.askForEmailTemplateTranslation()
       })
+        .then((response) => {
+          if (!response?.data?.data?.isSuccess) {
+            this.resetGenerateWithAIDisabled()
+            return
+          }
+          this.isEverythingLocalized = false
+          this.askForEmailTemplateTranslation()
+        })
+        .catch(() => {
+          this.resetGenerateWithAIDisabled()
+        })
     },
     askForEmailTemplateTranslation(count = 0, maxCount = null, timeoutId = 0) {
       if (this.isEverythingLocalized) return
@@ -1379,12 +1682,17 @@ export default {
       const calculatedMax = Math.max((languagesLength || 1) * 20, 20)
       const effectiveMax = typeof maxCount === 'number' && maxCount > 0 ? maxCount : calculatedMax
       if (count >= effectiveMax) {
-        this.resetGenerateWithAIDisabled(timeoutId)
+        const isPayloadPass = this.barrelTranslationPhase === 'payload'
         this.languagesPayload.forEach((lPayload) => {
-          if (!lPayload.isTranslated) {
+          if (isPayloadPass) {
+            if (lPayload.barrelPayload && !lPayload.barrelPayload.template) {
+              lPayload.barrelPayload.template = '<div style="height:300px"></div>'
+            }
+          } else if (!lPayload.isTranslated) {
             lPayload.template = '<div style="height:300px"></div>'
           }
         })
+        this.resetGenerateWithAIDisabled(timeoutId)
         return
       }
       if (this.timeoutId) clearTimeout(this.timeoutId)
@@ -1409,7 +1717,8 @@ export default {
               }
             })
 
-            if (this.isDefault) {
+            const isPayloadPass = this.barrelTranslationPhase === 'payload'
+            if (this.isDefault && !isPayloadPass) {
               this.selectedLanguagePayloadItemBeforeSave.template = data[0]?.template
               this.selectedLanguagePayloadItemBeforeSave.subject = data[0]?.subject
             }
@@ -1421,9 +1730,29 @@ export default {
                 (language) => language.languageTypeResourceId === item.languageResourceId
               )
               if (!languagePayload) return
-              languagePayload.template = item.template
-              languagePayload.subject = item.subject || languagePayload.subject
-              languagePayload.isTranslated = true
+              if (isPayloadPass) {
+                if (!languagePayload.barrelPayload) {
+                  this.$set(languagePayload, 'barrelPayload', this.emptyBarrelPayload())
+                }
+                languagePayload.barrelPayload.template = item.template
+                languagePayload.barrelPayload.subject =
+                  item.subject || languagePayload.barrelPayload.subject
+              } else {
+                languagePayload.template = item.template
+                languagePayload.subject = item.subject || languagePayload.subject
+                languagePayload.isTranslated = true
+                // First-open default localization: lure and payload hold the SAME default
+                // body, so the single localized result applies to both — fill the payload
+                // in this one pass instead of firing a second translate call.
+                if (this.isDefault && this.isBarrelTemplate) {
+                  if (!languagePayload.barrelPayload) {
+                    this.$set(languagePayload, 'barrelPayload', this.emptyBarrelPayload())
+                  }
+                  languagePayload.barrelPayload.template = item.template
+                  languagePayload.barrelPayload.subject =
+                    item.subject || languagePayload.barrelPayload.subject
+                }
+              }
               this.$nextTick(() => {
                 const modalContent = document.querySelector('.k-overlay__container')
                 if (modalContent) {
@@ -1444,6 +1773,54 @@ export default {
                 }
               })
             })
+            // Barrel: after a MANUAL lure localization completes, chain the payload pass
+            // through the same single backend poll job (lure and payload may differ once
+            // edited). Skipped on first-open default localization (this.isDefault), where
+            // the payload was already filled in the single pass above. Mirror EXACTLY the
+            // languages whose lure just succeeded (this poll's successLanguages) so a
+            // fresh template's default payload still localizes and lure-errored languages
+            // are not left half-translated.
+            const barrelPayloadSource = this.barrelPayloadTranslationSource
+            const payloadLanguages =
+              this.barrelTranslationPhase === 'lure' && !this.isDefault
+                ? successLanguages
+                    .map((item) => {
+                      const lang = this.selectedLanguages.find(
+                        (l) => l.value === item.languageResourceId
+                      )
+                      return lang
+                        ? { languageResourceId: lang.value, languageName: lang.text }
+                        : null
+                    })
+                    .filter(Boolean)
+                : []
+            const hasPayloadToTranslate =
+              this.isBarrelTemplate &&
+              (barrelPayloadSource?.template || '').trim() &&
+              payloadLanguages.length
+            if (hasPayloadToTranslate) {
+              this.barrelTranslationPhase = 'payload'
+              clearTimeout(timeoutId)
+              generateEmailTemplateTranslation({
+                languages: payloadLanguages,
+                template: barrelPayloadSource.template,
+                subject: barrelPayloadSource.subject
+              })
+                .then((response) => {
+                  if (!response?.data?.data?.isSuccess) {
+                    this.resetGenerateWithAIDisabled(timeoutId)
+                    return
+                  }
+                  this.isEverythingLocalized = false
+                  this.askForEmailTemplateTranslation()
+                })
+                .catch(() => {
+                  this.resetGenerateWithAIDisabled(timeoutId)
+                })
+              return
+            }
+            // Final completion (non-barrel, payload pass done, or no payload to translate)
+            this.barrelTranslationPhase = null
             // Show success snackbar with dynamic message based on language count
             this.showLocalizationSuccessMessage(data)
             this.resetGenerateWithAIDisabled(timeoutId)
@@ -1463,6 +1840,8 @@ export default {
       this.$refs.refEmailTemplate.isEmailGenerating = false
       this.isSubmitDisabled = false
       this.isDefault = false
+      this.barrelTranslationPhase = null
+      this.barrelPayloadTranslationSource = null
       clearTimeout(timeoutId)
     },
     handleActiveLanguageChange(value) {

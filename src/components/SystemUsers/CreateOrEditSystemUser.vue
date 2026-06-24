@@ -205,8 +205,26 @@ export default {
     let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
     let tokenData = jwt_decode(token)
     this.role = tokenData?.role || ''
+    document.addEventListener('visibilitychange', this.handleVisibilityChange)
+  },
+  beforeDestroy() {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange)
   },
   methods: {
+    async refreshIpRestrictions() {
+      try {
+        const response = await getCompanyIpRestrictions()
+        this.hasIpRestrictions = this.hasCompanyIpRestrictions(response?.data?.data)
+      } catch {}
+    },
+    handleVisibilityChange() {
+      // The admin may configure IP Restrictions in the tab opened from the hint
+      // link. Re-check when they return so the toggle enables without a reload.
+      // Once configured there is nothing left to detect, so stop polling.
+      if (document.visibilityState === 'visible' && !this.hasIpRestrictions) {
+        this.refreshIpRestrictions()
+      }
+    },
     setRoleItems(availableRoles = []) {
       this.roleItems = availableRoles.map((item) => {
         return {

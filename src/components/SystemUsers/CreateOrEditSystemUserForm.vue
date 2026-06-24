@@ -122,7 +122,15 @@
               Allow this system user to sign in outside the company's allowed IP ranges.
             </span>
             <span v-if="!hasIpRestrictions" class="system-user-authentication-overrides__warning">
-              IP restriction is not configured for this company.
+              IP restriction isn't configured yet.
+              <router-link
+                to="/company/company-settings?tab=ip-restrictions"
+                target="_blank"
+                rel="noopener"
+                class="system-user-authentication-overrides__warning-link"
+              >
+                Set it up →
+              </router-link>
             </span>
           </div>
           <v-switch

@@ -327,6 +327,28 @@ export default {
       next()
     }
   },
+  watch: {
+    '$route.query': {
+      handler(val) {
+        if (val?.status === 'create') {
+          // From the command palette: open the new-investigation modal.
+          this.isShowNewInvestigationModal = true
+          this.$router.replace('/incident-responder/investigations')
+        } else if (val?.filterStatus) {
+          // From the command palette: apply a transient Status filter. Clear
+          // the query only after the filter is applied (in the same tick) so
+          // the cleared-query re-trigger can't race ahead of applyStatusFilter.
+          const statuses = String(val.filterStatus).split(',')
+          this.$nextTick(() => {
+            this.applyStatusFilter(statuses)
+            this.$router.replace('/incident-responder/investigations')
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   created() {
     if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
       this.$router.push('/incident-responder')
@@ -369,6 +391,24 @@ export default {
     }
   },
   methods: {
+    // Applies a Status filter programmatically (e.g. from the command palette),
+    // reusing the manual-filter path. Transient: updates payload + reloads but
+    // never persists to the saved-filter localStorage.
+    applyStatusFilter(statusValues = []) {
+      if (!Array.isArray(statusValues) || !statusValues.length) {
+        return
+      }
+      const fieldName = 'status'
+      const value = statusValues.join(',')
+      this.columnFilterChanged({ Value: value, FieldName: fieldName, Operator: 'Include' })
+      const table = this.$refs.investigationTable
+      if (table) {
+        table.reRenderFilters({
+          ...(table.filterValues || {}),
+          [fieldName]: { textValue: '', selectValue: value, fieldName }
+        })
+      }
+    },
     callForData() {
       this.loading = true
       this.$store

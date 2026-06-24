@@ -26,6 +26,7 @@ describe('PhishingSimulator.vue', () => {
   it('getAIAllySettings sets default flags when api has no data', async () => {
     getAIAllySettings.mockResolvedValueOnce({ data: {} })
     const ctx = {
+      getAIAllySettingsGetPermissions: true,
       aiAllySettings: { psEmailTemplateGenerationAssistant: true, landingPageTemplateGenerationAssistant: true }
     }
 
@@ -48,6 +49,7 @@ describe('PhishingSimulator.vue', () => {
       }
     })
     const ctx = {
+      getAIAllySettingsGetPermissions: true,
       aiAllySettings: { psEmailTemplateGenerationAssistant: false, landingPageTemplateGenerationAssistant: false }
     }
 
@@ -58,6 +60,18 @@ describe('PhishingSimulator.vue', () => {
       psEmailTemplateGenerationAssistant: true,
       landingPageTemplateGenerationAssistant: true
     })
+  })
+
+  it('getAIAllySettings does not call the API when companies/ai permission is missing', async () => {
+    const ctx = {
+      getAIAllySettingsGetPermissions: false,
+      aiAllySettings: { psEmailTemplateGenerationAssistant: false, landingPageTemplateGenerationAssistant: false }
+    }
+
+    PhishingSimulator.methods.getAIAllySettings.call(ctx)
+    await flushPromises()
+
+    expect(getAIAllySettings).not.toHaveBeenCalled()
   })
 
   it('created calls initial loaders and sets tab to emailTemplates when scenarios permission is missing', () => {

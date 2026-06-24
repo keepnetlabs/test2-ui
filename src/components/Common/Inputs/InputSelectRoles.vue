@@ -18,6 +18,7 @@
       persistent-hint
       :placeholder="placeholder"
       @input="$emit('input', $event)"
+      @blur="$emit('blur', $event)"
     />
   </FormGroup>
 </template>

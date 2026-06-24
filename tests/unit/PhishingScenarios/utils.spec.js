@@ -7,10 +7,31 @@ import {
   defaultRedFlags,
   getDefaultEmailTemplatePayload,
   getDefaultLandingPageTemplatePayload,
-  getEmailTemplateMethodItems
+  getEmailTemplateMethodItems,
+  isDoubleBarrelScenario
 } from '@/components/PhishingScenarios/utils'
 
 describe('PhishingScenarios utils', () => {
+  describe('isDoubleBarrelScenario', () => {
+    it('matches the "Double Barrel" / "DoubleBarrel" method label tolerantly', () => {
+      expect(isDoubleBarrelScenario({ method: 'Double Barrel' })).toBe(true)
+      expect(isDoubleBarrelScenario({ method: 'DoubleBarrel' })).toBe(true)
+      expect(isDoubleBarrelScenario({ method: 'double_barrel' })).toBe(true)
+    })
+
+    it('matches an explicit method type id of 6', () => {
+      expect(isDoubleBarrelScenario({ methodTypeId: 6 })).toBe(true)
+      expect(isDoubleBarrelScenario({ methodType: '6' })).toBe(true)
+    })
+
+    it('returns false for other methods and missing input', () => {
+      expect(isDoubleBarrelScenario({ method: 'Click-Only' })).toBe(false)
+      expect(isDoubleBarrelScenario({ methodTypeId: 1 })).toBe(false)
+      expect(isDoubleBarrelScenario({})).toBe(false)
+      expect(isDoubleBarrelScenario(null)).toBe(false)
+    })
+  })
+
   it('exposes scenario method and difficulty constants', () => {
     expect(SCENARIO_METHOD_TYPES.CLICK_ONLY).toBe('Click-Only')
     expect(SCENARIO_METHOD_TYPES.MFA).toBe('MFA')
@@ -60,8 +81,13 @@ describe('PhishingScenarios utils', () => {
   it('returns method items used for email templates', () => {
     const methodItems = getEmailTemplateMethodItems()
 
-    expect(methodItems).toHaveLength(3)
-    expect(methodItems.map((x) => x.name)).toEqual(['Click Only', 'Data Submission', 'Attachment'])
+    expect(methodItems).toHaveLength(4)
+    expect(methodItems.map((x) => x.name)).toEqual([
+      'Click Only',
+      'Data Submission',
+      'Attachment',
+      'Double Barrel'
+    ])
     expect(methodItems.find((x) => x.name === 'MFA')).toBeUndefined()
   })
 

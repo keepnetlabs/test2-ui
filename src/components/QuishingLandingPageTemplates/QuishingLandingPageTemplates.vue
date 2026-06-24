@@ -22,6 +22,7 @@
       :type="PREVIEW_DIALOG_TYPES.QUISHING"
       :api-func="getLandingPageTemplate"
       :languages="languageOptions"
+      :can-fix-domain="true"
       @on-close="togglePreviewDialog"
       @on-edit="handleEditFromPreview"
       @on-duplicate="handleDuplicateFromPreview"

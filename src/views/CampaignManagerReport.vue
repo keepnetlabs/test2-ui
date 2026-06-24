@@ -46,13 +46,16 @@ import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
 import KContainer from '@/components/KContainer/KContainer'
 import CampaignManagerReportReplied from '@/components/CampaignManagerReport/Replied/CampaignManagerReportReplied.vue'
+import { SCENARIO_METHOD_TYPE } from '@/components/PhishingScenarios/utils'
 
 export default {
   name: 'CampaignManagerReport',
   components: { KContainer },
   provide() {
     return {
-      campaignDurationExpired: () => this.campaignDurationExpired
+      campaignDurationExpired: () => this.campaignDurationExpired,
+      // Reactive object; tables inject this to show the barrel "Email Role" column.
+      reportBarrelState: this.reportBarrelState
     }
   },
   data() {
@@ -62,6 +65,7 @@ export default {
       isLoading: true,
       tab: labels.Summary,
       apiResponse: {},
+      reportBarrelState: { isBarrel: false },
       campaignDurationExpired: false,
       multipleType: [],
       tabItems: [
@@ -155,12 +159,12 @@ export default {
   },
   methods: {
     callForCustomFields() {
-      getTargetUserCustomFieldsByCompanyId().then((response) => {
+      getTargetUserCustomFieldsByCompanyId({ snackbar: { hideError: true } }).then((response) => {
         this.customFields = response?.data?.data
       })
     },
     callForFormDetails() {
-      getCampaignManagerJobFormDetails().then((response) => {
+      getCampaignManagerJobFormDetails({ snackbar: { hideError: true } }).then((response) => {
         this.formDetails = response?.data?.data
       })
     },
@@ -169,6 +173,8 @@ export default {
       getCampaignJobSummary(this.id, this.instanceGroup)
         .then((response) => {
           this.apiResponse = response
+          // Double Barrel campaigns return a barrelOptions object; null otherwise.
+          this.reportBarrelState.isBarrel = !!response?.data?.data?.barrelOptions
           const trackingReplyInfo = response?.data?.data?.campaignInfo?.trackingReplyInfo
           if (!trackingReplyInfo || trackingReplyInfo === 'Off') {
             this.tabItems.splice(
@@ -181,11 +187,11 @@ export default {
           const firstScenario = scenarios[0]
           if (!firstScenario || !scenarios.length) return
           if (scenarios.length === 1) {
-            const scenarioMethodType = firstScenario.scenarioInfo?.methodTypeId
-            if (scenarioMethodType === 1) {
+            const scenarioMethodType = String(firstScenario.scenarioInfo?.methodTypeId)
+            if (scenarioMethodType === SCENARIO_METHOD_TYPE.CLICK_ONLY) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               this.tabItems.splice(tabIndex, 1)
-            } else if (scenarioMethodType === 3) {
+            } else if (scenarioMethodType === SCENARIO_METHOD_TYPE.ATTACHMENT) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex !== -1) {
                 this.tabItems[tabIndex] = {
@@ -202,7 +208,12 @@ export default {
               if (clickedTabIndex !== -1) {
                 this.tabItems.splice(clickedTabIndex, 1)
               }
-            } else if (scenarioMethodType === 4) {
+            } else if (
+              scenarioMethodType === SCENARIO_METHOD_TYPE.MFA ||
+              scenarioMethodType === SCENARIO_METHOD_TYPE.DOUBLE_BARREL
+            ) {
+              // MFA and Double Barrel keep the standard tabs and add the extra tab(s)
+              // via setTabStatus rather than replacing/removing any.
               this.setMultipleType(scenarios)
               this.setTabStatus()
             }
@@ -218,18 +229,24 @@ export default {
     setMultipleType(scenarios = []) {
       let isClickedOnly, isSubmittedData, isAttachment, isMfa
       const setMethodValues = (method = '') => {
-        if (method === '1') {
+        if (method === SCENARIO_METHOD_TYPE.CLICK_ONLY) {
           isClickedOnly = true
-        } else if (method === '2') {
+        } else if (method === SCENARIO_METHOD_TYPE.DATA_SUBMISSION) {
           isSubmittedData = true
           this.renderClickedTab = true
-        } else if (method === '3') {
+        } else if (method === SCENARIO_METHOD_TYPE.ATTACHMENT) {
           isAttachment = true
+        } else if (method === SCENARIO_METHOD_TYPE.DOUBLE_BARREL) {
+          // Double Barrel: the payload can drive click / data-submission / attachment
+          // activity, so keep the Clicked and SubmittedData tabs and add OpenedAttachment.
+          isAttachment = true
+          isSubmittedData = true
+          this.renderClickedTab = true
         }
       }
       scenarios.forEach((scenario) => {
         const method = scenario.scenarioInfo.methodTypeId.toString()
-        if (method === '4') {
+        if (method === SCENARIO_METHOD_TYPE.MFA) {
           isMfa = true
           setMethodValues(scenario.landingPageTemplateInfo?.methodTypeId.toString())
         } else {

@@ -206,6 +206,18 @@ export default {
       if (val === 'agentic-ai-settings' && this.hasAgenticAILicense) {
         this.$store.dispatch('login/getAgenticAIEnabled')
       }
+    },
+    // Deep-link support: react to `?tab=` changes that arrive while this view
+    // is already mounted (e.g. the command palette jumping straight to a
+    // settings tab). Fresh mounts are handled by created()/changeTabByRoute;
+    // OAuth callback queries only land on a full reload, so they stay there.
+    '$route.query.tab'(tabName) {
+      if (!tabName || tabName === this.tab) return
+      if (tabName === 'agentic-ai-settings' && !this.hasAgenticAILicense) return
+      this.tab = tabName
+      this.$nextTick(() => {
+        this.$router.replace(this.$route.fullPath.replace(`tab=${tabName}`, ''))
+      })
     }
   },
   computed: {

@@ -258,7 +258,8 @@ export const COMMON_SIMULATOR_COLUMNS = {
     filterableItems: [
       { text: 'Click Only', value: 'WNZt0sCVCWB3' },
       { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-      { text: 'Attachment', value: '7dLrW2kdBTDs' }
+      { text: 'Attachment', value: '7dLrW2kdBTDs' },
+      { text: 'Double Barrel', value: 'BrLr4x7Km2Nw' }
     ]
   },
   QUISHING_CATEGORY_NAME: {

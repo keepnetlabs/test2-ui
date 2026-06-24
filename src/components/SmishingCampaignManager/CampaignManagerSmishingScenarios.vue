@@ -202,6 +202,8 @@
                       :isMethodMfa="isMethodMfa"
                       :landing-page-params="landingPageParams"
                       :landing-page-templates="landingPageTemplates"
+                      :can-fix-domain="true"
+                      @domain-fixed="onDomainFixed"
                     />
                     <div v-else class="template-preview pt-0">
                       <div class="template-preview__icon">
@@ -584,6 +586,12 @@ export default {
       }
       return item?.description || '\xa0'
     },
+    onDomainFixed(info = {}) {
+      // Template domain updated globally → reflect the new clean URL immediately.
+      if (info.urlTemplate && this.landingPageParams) {
+        this.landingPageParams.urlTemplate = info.urlTemplate
+      }
+    },
     callForSelectedPhishingScenario(resourceId = '') {
       SmishingService.getSmishingScenario(resourceId).then((response) => {
         const {
@@ -623,12 +631,14 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            languageTypeResourceId
+            languageTypeResourceId,
+            resourceId: landingPageResourceId
           } = landingPageTemplate || {}
           this.landingPageParams = {
             name: landingPageName,
             description,
             urlTemplate,
+            resourceId: landingPageResourceId,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
             languageTypeResourceId,

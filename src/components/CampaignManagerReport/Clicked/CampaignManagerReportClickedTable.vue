@@ -126,6 +126,7 @@ import {
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 import useDefaultTableFunctions from '@/hooks/useDefaultTableFunctions'
+import barrelEmailRoleColumnMixin from '@/components/CampaignManagerReport/barrelEmailRoleColumnMixin'
 import { createCustomFieldColumns } from '@/utils/helperFunctions'
 import CampaignManagerReportActivityColumn from '@/components/CampaignManagerReport/CampaignManagerReportActivityColumn.vue'
 import CampaignManagerReportGroupsColumn from '@/components/CampaignManagerReport/CampaignManagerReportGroupsColumn.vue'
@@ -148,7 +149,12 @@ export default {
     DefaultButtonRowAction,
     CampaignManagerReportBotActivityAlertBox
   },
-  mixins: [useLoading, useDefaultTableFunctions, useSandboxTableActionLabel],
+  mixins: [
+    useLoading,
+    useDefaultTableFunctions,
+    useSandboxTableActionLabel,
+    barrelEmailRoleColumnMixin
+  ],
   props: {
     id: {
       type: String

@@ -19,6 +19,30 @@ describe('LandingPageTemplateModalPreview.vue', () => {
     localStorage.clear()
   })
 
+  describe('domain-fix wand gating + channel', () => {
+    const ctx = (over) => ({ canFixDomain: true, templateResourceId: 'lp-9', ...over })
+    it('enables the wand only when canFixDomain and a templateResourceId are present', () => {
+      expect(computed.domainFixResourceId.call(ctx())).toBe('lp-9')
+      expect(computed.domainFixResourceId.call(ctx({ canFixDomain: false }))).toBeNull()
+      expect(computed.domainFixResourceId.call(ctx({ templateResourceId: '' }))).toBeNull()
+    })
+    it('routes the fix to the channel-appropriate API (Smishing via isSmishingProp, not type)', () => {
+      // library path: lowercase PREVIEW_DIALOG_TYPES.QUISHING ('quishing')
+      expect(computed.domainFixChannel.call({ type: PREVIEW_DIALOG_TYPES.QUISHING })).toBe('quishing')
+      // explicit prop (shared dialog forwards is-quishing-prop)
+      expect(computed.domainFixChannel.call({ isQuishingProp: true, type: 'phishing' })).toBe('quishing')
+      // smishing list passes type=PHISHING + isSmishingProp
+      expect(computed.domainFixChannel.call({ type: 'phishing', isSmishingProp: true })).toBe('smishing')
+      expect(computed.domainFixChannel.call({ type: 'phishing' })).toBe('phishing')
+    })
+    it('routes capitalized SCENARIO_TYPES type to the right channel (regression: case-insensitive)', () => {
+      // Quishing campaign + new-scenario callers pass the capitalized 'Quishing' value — must NOT
+      // fall through to the phishing endpoint (was the bug: case-sensitive type compare).
+      expect(computed.domainFixChannel.call({ type: 'Quishing' })).toBe('quishing')
+      expect(computed.domainFixChannel.call({ type: 'Smishing' })).toBe('smishing')
+    })
+  })
+
   it('computes template presence and template type flags', () => {
     expect(computed.hasLandingPageTemplate.call({ landingPageTemplates: [{ content: 'x' }] })).toBe(
       true

@@ -1,0 +1,101 @@
+import { isTestEnvironment } from '@/utils/isTestEnvironment'
+
+/**
+ * Tenants allowlisted to see Incident Responder AI analysis fields even without
+ * the Agentic AI license.
+ *
+ * @deprecated Temporary fallback that predates the backend
+ * `hasAgenticAILicense` flag. Once every AI-enabled tenant is provisioned with
+ * the license, delete this list (and {@link isAllowedByLegacyFallback}) and
+ * gate `showAIAnalyze` on the license alone.
+ */
+export const AI_ANALYZE_COMPANIES = [
+  'Bolearis',
+  'TIP Group',
+  'Sunexpress',
+  'ETİ',
+  'Axa Sigorta',
+  'Vodafone TR',
+  'System',
+  'Aksigorta',
+  'Sahibinden',
+  'BDO UK',
+  'KITH',
+  'Keepnet Labs LTS',
+  'Binalyze'
+]
+
+/** @deprecated Part of the legacy allowlist fallback. See {@link AI_ANALYZE_COMPANIES}. */
+const TURKEY_COUNTRY_NAMES = ['turkey', 'türkiye', 'turkiye']
+/** @deprecated Part of the legacy allowlist fallback. See {@link AI_ANALYZE_COMPANIES}. */
+const TURKEY_COUNTRY_CODES = ['tr', 'tur', 'tr-tr']
+
+/**
+ * Legacy, non-license-based gate for AI analysis fields.
+ *
+ * No longer part of the live gate: AI analysis now follows the Agentic AI
+ * license, exactly like Company Settings gates the Agentic AI tab. Granting
+ * access here on company/country alone made AI surfaces (Incident Responder
+ * columns, email details AI tab) appear for unlicensed allowlisted tenants
+ * while Company Settings hid the Agentic AI tab for the very same company.
+ * Exported and retained only for reference / quick rollback.
+ *
+ * @deprecated See {@link AI_ANALYZE_COMPANIES}.
+ * @param {object} store - Vuex store.
+ * @returns {boolean}
+ */
+export function isAllowedByLegacyFallback(store) {
+  if (isTestEnvironment()) return true
+
+  const companyName = store.state.auth.selectedCompanyName || ''
+  const isAllowedCompany = AI_ANALYZE_COMPANIES.some(
+    (name) => name.toLowerCase() === companyName.toLowerCase()
+  )
+  if (isAllowedCompany) return true
+
+  const company = store.state.dashboard?.selectedCompanyObject || {}
+  const countryName = (company.countryName || '').toLowerCase()
+  const countryCode = (company.countryCode || '').toLowerCase()
+  return (
+    TURKEY_COUNTRY_NAMES.includes(countryName) ||
+    TURKEY_COUNTRY_CODES.includes(countryCode)
+  )
+}
+
+/**
+ * Mixin exposing a single `showAIAnalyze` computed that gates every Incident
+ * Responder AI analysis field — the email details AI tab and the reported
+ * emails AI columns.
+ *
+ * AI fields are shown when the tenant holds the Agentic AI license. Until that
+ * license is fully rolled out, a deprecated allowlist fallback
+ * ({@link isAllowedByLegacyFallback}) keeps a fixed set of tenants enabled.
+ */
+export default {
+  computed: {
+    /**
+     * Whether the tenant holds the Agentic AI settings permission. This is the
+     * hard gate for every AI analysis surface: without it no AI tab, column, or
+     * data-driven fallback may appear, because the backend returns
+     * `{ status: "NotAnalyzed" }` and the user cannot run analysis anyway.
+     */
+    hasAgenticAIPermission() {
+      return !!this.$store.getters[
+        'permissions/getAgenticAISettingsGetPermissions'
+      ]
+    },
+    showAIAnalyze() {
+      // Gate AI analysis exactly like Company Settings gates the Agentic AI tab
+      // (CompanySettings.vue → v-if="hasAgenticAILicense"): the Agentic AI
+      // license is authoritative, so visibility stays consistent across the app.
+      // The Agentic AI settings permission is also required because without it
+      // the backend returns `{ status: "NotAnalyzed" }` and the "Run AI Analysis"
+      // screen is a dead end. The legacy company/country allowlist
+      // (isAllowedByLegacyFallback) is retained for reference but intentionally
+      // no longer consulted — it surfaced AI for unlicensed allowlisted tenants
+      // while Company Settings hid the Agentic AI tab for the same company.
+      if (!this.hasAgenticAIPermission) return false
+      return !!this.$store.getters['login/getHasAgenticAILicense']
+    }
+  }
+}

@@ -685,7 +685,8 @@ describe('phishingsimulator API', () => {
     it('should call getCampaignManagerJobFormDetails', async () => {
       await phishingApi.getCampaignManagerJobFormDetails()
       expect(testRequest.get).toHaveBeenCalledWith(
-        '/phishing-simulator/phishing-campaign-job/form-details'
+        '/phishing-simulator/phishing-campaign-job/form-details',
+        {}
       )
     })
 

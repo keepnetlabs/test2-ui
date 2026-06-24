@@ -40,7 +40,7 @@ describe('PhishingScenarios utils', () => {
       Operator: '='
     })
 
-    expect(getEmailTemplateMethodItems()).toHaveLength(3)
+    expect(getEmailTemplateMethodItems()).toHaveLength(4)
     expect(EMAIL_TEMPLATE_DETAIL_ACTION_TYPES.EDIT).toBe(1)
     expect(EMAIL_TEMPLATE_DIFFICULTY_ITEMS).toHaveLength(3)
     expect(defaultRedFlags).toHaveProperty('subject')
