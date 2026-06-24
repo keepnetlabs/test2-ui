@@ -142,7 +142,7 @@
                     hide-details="auto"
                     item-text="displayName"
                     item-value="value"
-                    placeholder="Central (no region)"
+                    placeholder="UK South (London)"
                     no-data-text="No regions are configured yet."
                     :menu-props="{ offsetY: true }"
                     class="company-data-residency-region-select"
@@ -829,7 +829,7 @@ export default {
       const preset = this.pickPresetRegionDisplayFromExtend(this.selectedExtend)
       if (preset) return preset
       const code = this.editCompanyRegionCode
-      if (!code) return 'Central (no region)'
+      if (!code) return 'UK South (London)'
       const match = (this.sovereigntyRegionsList || []).find((r) => r.code === code)
       if (match && (match.displayName || match.code)) {
         return match.displayName || match.code
@@ -838,7 +838,7 @@ export default {
     },
     dataResidencyRegionItems() {
       const central = {
-        displayName: 'Central (no region)',
+        displayName: 'UK South (London)',
         value: ''
       }
       const fromApi = (this.sovereigntyRegionsList || []).map((r) => ({

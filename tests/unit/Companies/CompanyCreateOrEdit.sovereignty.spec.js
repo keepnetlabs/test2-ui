@@ -198,10 +198,10 @@ describe('CompanyCreateOrEdit.vue (data residency)', () => {
   })
 
   describe('dataResidencyRegionItems', () => {
-    it('always starts with the "Central (no region)" option', () => {
+    it('always starts with the "UK South (London)" option', () => {
       const wrapper = createWrapper()
       expect(wrapper.vm.dataResidencyRegionItems[0]).toEqual({
-        displayName: 'Central (no region)',
+        displayName: 'UK South (London)',
         value: ''
       })
     })
@@ -215,7 +215,7 @@ describe('CompanyCreateOrEdit.vue (data residency)', () => {
         ]
       })
       expect(wrapper.vm.dataResidencyRegionItems).toEqual([
-        { displayName: 'Central (no region)', value: '' },
+        { displayName: 'UK South (London)', value: '' },
         { displayName: 'Canada Central (Toronto)', value: 'canadacentral' },
         { displayName: 'EU West', value: 'eu-west' }
       ])
@@ -360,9 +360,9 @@ describe('CompanyCreateOrEdit.vue (data residency)', () => {
       expect(wrapper.vm.editDataResidencyDisplayLabel).toBe('')
     })
 
-    it('returns "Central (no region)" when edit company has no region', () => {
+    it('returns "UK South (London)" when edit company has no region', () => {
       const wrapper = createWrapper({ edit: true, selectedExtend: { regionCode: '' } })
-      expect(wrapper.vm.editDataResidencyDisplayLabel).toBe('Central (no region)')
+      expect(wrapper.vm.editDataResidencyDisplayLabel).toBe('UK South (London)')
     })
 
     it('uses preset display label when present', () => {
