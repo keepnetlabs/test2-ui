@@ -190,7 +190,9 @@ export default {
             if (scenarioMethodType === 1) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               this.tabItems.splice(tabIndex, 1)
-            } else if (scenarioMethodType === 3) {
+            } else if (scenarioMethodType === 3 || scenarioMethodType === 6) {
+              // 3 = Attachment, 6 = Double Barrel. The Double Barrel payload is an
+              // attachment, so it surfaces the same OpenedAttachment tab as Attachment.
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex !== -1) {
                 this.tabItems[tabIndex] = {
@@ -228,7 +230,8 @@ export default {
         } else if (method === '2') {
           isSubmittedData = true
           this.renderClickedTab = true
-        } else if (method === '3') {
+        } else if (method === '3' || method === '6') {
+          // 3 = Attachment, 6 = Double Barrel (attachment-based payload).
           isAttachment = true
         }
       }
