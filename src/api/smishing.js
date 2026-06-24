@@ -84,9 +84,11 @@ function createLandingPageTemplate(payload) {
   })
 }
 
-function updateLandingPageTemplate(resourceId, payload) {
+function updateLandingPageTemplate(resourceId, payload, { silent = false } = {}) {
+  // `silent` omits the global success snackbar (preview "fix domain" wand shows its own inline
+  // note and would otherwise stack a snackbar under the drawer). Error snackbars still surface.
   return testRequest.put(`/smishing-simulator/landing-page-template/${resourceId}`, payload, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: silent ? undefined : COMMON_SNACKBAR
   })
 }
 
@@ -444,7 +446,7 @@ function postExcludedIPAddresses(payload = {}) {
 }
 
 // --- External SMS moderation/enhancement (Cloudflare Worker) ---
-const TXT_ENHANCE_URL = 'https://txt-enhance.keepnet-labs-ltd-business-profile4086.workers.dev/'
+const TXT_ENHANCE_URL = 'https://txt-enhance.keepnetlabs.com/'
 
 function checkSmishingTextRisk(text) {
   return axios.post(TXT_ENHANCE_URL, { method: 'check', text }, { timeout: 100000 })

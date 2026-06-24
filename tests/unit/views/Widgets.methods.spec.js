@@ -151,6 +151,41 @@ describe('views/Widgets.vue methods', () => {
     expect(ctx.callForPostWidgets).toHaveBeenCalled()
   })
 
+  describe('getDefaultLayoutObject executive widget gating', () => {
+    const makeCtx = (permissions) => ({
+      permissions,
+      hasAgenticAILicense: false,
+      removeAvailableWidget: jest.fn(),
+      $moment: () => ({
+        subtract: () => ({ format: () => '2024-01-01' }),
+        format: () => '2024-01-01'
+      })
+    })
+    const EXECUTIVE_KEYS = [
+      'IndustryPhishingRiskScoreWidget',
+      'ImpactOfPhishingAwarenessTrainingWidget',
+      'RepeatOffendersUsersRateWidget'
+    ]
+
+    it('excludes executive widgets when executiveReports permission is false', () => {
+      const ctx = makeCtx({ executiveReports: false })
+      const keys = Widgets.methods.getDefaultLayoutObject.call(ctx).map((w) => w.key)
+      EXECUTIVE_KEYS.forEach((key) => expect(keys).not.toContain(key))
+    })
+
+    it('includes executive widgets when executiveReports permission is true', () => {
+      const ctx = makeCtx({ executiveReports: true })
+      const keys = Widgets.methods.getDefaultLayoutObject.call(ctx).map((w) => w.key)
+      EXECUTIVE_KEYS.forEach((key) => expect(keys).toContain(key))
+    })
+
+    it('excludes executive widgets when permissions object is missing', () => {
+      const ctx = makeCtx(undefined)
+      const keys = Widgets.methods.getDefaultLayoutObject.call(ctx).map((w) => w.key)
+      EXECUTIVE_KEYS.forEach((key) => expect(keys).not.toContain(key))
+    })
+  })
+
   it('ensureAgenticAIWidget does nothing outside test environment', () => {
     const layout = [{ key: 'RecentCampaigns' }]
     const ctx = {
@@ -170,7 +205,7 @@ describe('views/Widgets.vue methods', () => {
     const layout = [{ key: 'RecentCampaigns', x: 1, y: 1 }]
     const ctx = {
       isTestEnvironment: true,
-      hasAgenticAILicense: true,
+      canShowAgenticAIWidget: true,
       removeAvailableWidget: jest.fn(),
       availableWidgets: [{ key: 'AgenticAIStatusWidget' }, { key: 'RecentCampaigns' }],
       allWidgets: {

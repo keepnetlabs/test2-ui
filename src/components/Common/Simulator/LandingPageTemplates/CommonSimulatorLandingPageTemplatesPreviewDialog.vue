@@ -49,8 +49,11 @@
           :disable-edit="disableEdit"
           :is-owner="isOwnerProp"
           :is-assisted-by-a-i="landingPageParams.isAssistedByAI"
+          :can-fix-domain="canFixDomain"
+          :template-resource-id="selectedRow && selectedRow.resourceId"
           @edit="handleEdit"
           @duplicate="handleDuplicate"
+          @domain-fixed="callForData"
         />
       </div>
     </VNavigationDrawer>
@@ -90,6 +93,15 @@ export default {
       default: getLandingPageTemplate
     },
     isNested: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Opt-in passthrough: show the "fix domain" wand in the blocklist warning. Enable only
+     * from editable phishing contexts (new scenario, landing page library) — leave off for
+     * report summaries, since fixing updates the landing page template globally.
+     */
+    canFixDomain: {
       type: Boolean,
       default: false
     },

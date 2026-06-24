@@ -201,10 +201,17 @@ describe('CommonSimulatorPreviewDialog.vue', () => {
       languagePreview: 'en',
       isShowRedFlags: true,
       isFlaggedStylesEnabled: true,
+      // non-barrel lure flow
+      barrelPreviewMode: 'lure',
+      isBarrelPayloadMode: false,
+      redFlagCacheKey: 'en__lure',
+      payloadEmailTemplate: null,
+      getActiveBodyHtml: CommonSimulatorPreviewDialog.methods.getActiveBodyHtml,
+      setActiveBodyHtml: CommonSimulatorPreviewDialog.methods.setActiveBodyHtml,
       redFlags: { subject: { isRedFlagged: true } },
       lastRedFlags: {
-        en: {},
-        tr: {
+        en__lure: {},
+        tr__lure: {
           flags: { subject: { isRedFlagged: true } },
           templates: ['<p>TR cached</p>']
         }

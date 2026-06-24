@@ -109,6 +109,18 @@
     line-height: 1.4;
   }
 
+  &__warning-link {
+    margin-left: 4px;
+    color: #2196f3;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   &__switch {
     flex: 0 0 auto;
     margin-top: 0 !important;

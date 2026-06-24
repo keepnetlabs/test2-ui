@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     callForCustomFields() {
-      getTargetUserCustomFieldsByCompanyId().then((response) => {
+      getTargetUserCustomFieldsByCompanyId({ snackbar: { hideError: true } }).then((response) => {
         this.customFields = response?.data?.data
       })
     }

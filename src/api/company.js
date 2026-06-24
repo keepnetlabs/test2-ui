@@ -257,8 +257,8 @@ export function resetAgenticAISettings() {
   return testRequest.post('/companies/agentic-ai-settings/reset')
 }
 
-export function getAgenticAIStatus() {
-  return testRequest.get('/companies/agentic-ai')
+export function getAgenticAIStatus(config = {}) {
+  return testRequest.get('/companies/agentic-ai', { ...config })
 }
 
 export function toggleAgenticAIStatus(payload = {}) {
@@ -271,11 +271,17 @@ export function saveAgenticAISettings(payload = {}) {
   return updateAgenticAISettings(payload)
 }
 export function getAgenticAIActivitiesStats() {
-  return testRequest.get('/agentic-ai/activities/stats')
+  // Dashboard background stat fetch: the widget keeps default 0 values on failure,
+  // so suppress the global error toast (e.g. 403 for roles without Agentic AI access).
+  return testRequest.get('/agentic-ai/activities/stats', { snackbar: { hideError: true } })
 }
 
 export function searchAgenticAIActivities(payload = {}) {
-  return testRequest.post('/agentic-ai/activities/search', payload)
+  // View-only listing in the activities drawer; it degrades to an empty state on
+  // failure, so suppress the global error toast (e.g. 403 for roles without access).
+  return testRequest.post('/agentic-ai/activities/search', payload, {
+    snackbar: { hideError: true }
+  })
 }
 
 export function createAgenticAIActivity(payload = {}) {

@@ -117,6 +117,44 @@ describe('GrapesNewsletterModal.vue (mirrored spec)', () => {
     )
   })
 
+  it('setMergedTextsForLinks removes {PHISHINGURL} when hidePhishingUrlMergeTag (Double Barrel lure)', () => {
+    const ctx = {
+      isAttachmentBasedTemplate: false,
+      hidePhishingUrlMergeTag: true,
+      blockManagerComponents: {
+        '{PHISHINGURL}': { label: 'Phishing URL', attributes: { isUrl: true } },
+        '{TRAININGURL}': { label: 'Training URL', attributes: { isUrl: true } }
+      },
+      urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
+    }
+
+    GrapesNewsletterModal.methods.setMergedTextsForLinks.call(ctx)
+
+    expect(ctx.urlMergedTexts).not.toContainEqual(
+      expect.objectContaining({ value: '{PHISHINGURL}' })
+    )
+    expect(ctx.urlMergedTexts).toContainEqual(
+      expect.objectContaining({ value: '{TRAININGURL}', name: 'Training URL' })
+    )
+  })
+
+  it('setMergedTextsForLinks keeps {PHISHINGURL} when neither attachment-based nor hidePhishingUrlMergeTag', () => {
+    const ctx = {
+      isAttachmentBasedTemplate: false,
+      hidePhishingUrlMergeTag: false,
+      blockManagerComponents: {
+        '{PHISHINGURL}': { label: 'Phishing URL', attributes: { isUrl: true } }
+      },
+      urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
+    }
+
+    GrapesNewsletterModal.methods.setMergedTextsForLinks.call(ctx)
+
+    expect(ctx.urlMergedTexts).toContainEqual(
+      expect.objectContaining({ value: '{PHISHINGURL}', name: 'Phishing URL' })
+    )
+  })
+
   it('setTraits delegates to getTraits with current urlMergedTexts', () => {
     const ctx = {
       urlMergedTexts: [{ value: '{A}', name: 'A' }],

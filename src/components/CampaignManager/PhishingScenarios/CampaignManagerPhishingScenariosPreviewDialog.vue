@@ -11,6 +11,14 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
+      <ElTabs
+        v-if="isBarrelTemplate"
+        v-model="barrelPreviewMode"
+        class="k-sub-tab barrel-mode-tabs mb-2"
+      >
+        <ElTabPane label="Lure Email" name="lure" />
+        <ElTabPane label="Payload Email" name="payload" />
+      </ElTabs>
       <KEmailPreview
         v-if="!!getTemplatePreviewContent"
         :html="getTemplatePreviewContent"
@@ -60,7 +68,8 @@ export default {
   data() {
     return {
       labels,
-      selectedLandingPageTab: '1'
+      selectedLandingPageTab: '1',
+      barrelPreviewMode: 'lure'
     }
   },
   computed: {
@@ -69,9 +78,23 @@ export default {
         return this.emailTemplateParams?.name || ''
       return this.landingPageParams?.name || ''
     },
+    // Barrel email templates carry a payload body; show the Lure/Payload toggle only on the
+    // email tab and only when a payload is actually present (graceful no-op otherwise).
+    isBarrelTemplate() {
+      const bp = this.emailTemplateParams?.barrelPayload
+      return (
+        (this.tab === 'email' || this.tab === 'individual-printout') &&
+        !!(bp && (bp.template || bp.subject))
+      )
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
     getTemplatePreviewContent() {
       if (this.tab === 'email' || this.tab === 'individual-printout') {
-        return this.emailTemplate
+        return this.isBarrelPayloadMode
+          ? this.emailTemplateParams?.barrelPayload?.template || ''
+          : this.emailTemplate
       } else {
         return this.getCurrentLandingPageTemplate
       }

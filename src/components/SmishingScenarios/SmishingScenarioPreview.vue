@@ -82,7 +82,9 @@
             :landing-page-templates="landingPageTemplates"
             :is-phishing-scenario="false"
             :is-smishing="true"
+            :can-fix-domain="true"
             show-landing-url-open-button
+            @domain-fixed="onDomainFixed"
           />
         </ElTabPane>
       </ElTabs>
@@ -158,6 +160,12 @@ export default {
     clearTimeout(this.timeoutId)
   },
   methods: {
+    onDomainFixed(info = {}) {
+      // Template domain updated globally → reflect the new clean URL immediately.
+      if (info.urlTemplate && this.landingPageParams) {
+        this.landingPageParams.urlTemplate = info.urlTemplate
+      }
+    },
     callForData() {
       this.setLoading(true)
       SmishingService.previewSmishingScenario(this.selectedRow.resourceId)
@@ -179,13 +187,15 @@ export default {
             landingPages,
             urlTemplate,
             difficultyTypeId,
-            methodTypeId
+            methodTypeId,
+            resourceId: landingPageResourceId
           } = landingPageTemplate || []
 
           this.landingPageParams = {
             name: landingPageName,
             description,
             urlTemplate,
+            resourceId: landingPageResourceId,
             difficulty: difficulties[difficultyTypeId - 1]?.text || '',
             method: methods[methodTypeId - 1]?.text || '',
             isAttachmentBasedTemplate: methodTypeId === 3,

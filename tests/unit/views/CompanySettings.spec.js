@@ -35,6 +35,44 @@ describe('CompanySettings.vue', () => {
     expect(dispatch).not.toHaveBeenCalled()
   })
 
+  it('route-query watcher deep-links to a new tab and strips the query', () => {
+    const replace = jest.fn()
+    const ctx = {
+      tab: 'privacy',
+      hasAgenticAILicense: true,
+      $route: { fullPath: '/company/company-settings?tab=smtp-settings' },
+      $router: { replace },
+      $nextTick: cb => cb()
+    }
+    CompanySettings.watch['$route.query.tab'].call(ctx, 'smtp-settings')
+    expect(ctx.tab).toBe('smtp-settings')
+    expect(replace).toHaveBeenCalledWith('/company/company-settings?')
+  })
+
+  it('route-query watcher no-ops on empty, unchanged, or unlicensed tab', () => {
+    const replace = jest.fn()
+    const base = () => ({
+      tab: 'privacy',
+      hasAgenticAILicense: false,
+      $route: { fullPath: '/company/company-settings' },
+      $router: { replace },
+      $nextTick: cb => cb()
+    })
+    // empty
+    let ctx = base()
+    CompanySettings.watch['$route.query.tab'].call(ctx, undefined)
+    expect(ctx.tab).toBe('privacy')
+    // unchanged
+    ctx = base()
+    CompanySettings.watch['$route.query.tab'].call(ctx, 'privacy')
+    expect(ctx.tab).toBe('privacy')
+    // agentic without license
+    ctx = base()
+    CompanySettings.watch['$route.query.tab'].call(ctx, 'agentic-ai-settings')
+    expect(ctx.tab).toBe('privacy')
+    expect(replace).not.toHaveBeenCalled()
+  })
+
   it('created picks first permitted tab and calls changeTabByRoute', () => {
     const changeTabByRoute = jest.fn()
     const ctx = {

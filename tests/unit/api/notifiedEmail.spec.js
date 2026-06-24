@@ -38,6 +38,39 @@ describe('notifiedEmail API', () => {
     })
   })
 
+  describe('AI analysis operations', () => {
+    it('should call getNotifiedEmailAiAnalysis without loading', async () => {
+      await notifiedEmailApi.getNotifiedEmailAiAnalysis('email-123')
+      expect(testRequest.get).toHaveBeenCalledWith('notified-emails/email-123/ai-analysis', {
+        loading: false
+      })
+    })
+
+    it('should call getNotifiedEmailAiAnalysis with loading enabled', async () => {
+      await notifiedEmailApi.getNotifiedEmailAiAnalysis('email-123', true)
+      expect(testRequest.get).toHaveBeenCalledWith('notified-emails/email-123/ai-analysis', {
+        loading: true
+      })
+    })
+
+    it('should call reAnalyzeNotifiedEmailAiAnalysis with empty body', async () => {
+      await notifiedEmailApi.reAnalyzeNotifiedEmailAiAnalysis('email-123')
+      expect(testRequest.post).toHaveBeenCalledWith(
+        'notified-emails/email-123/ai-analysis/re-analyze',
+        {},
+        { loading: false }
+      )
+    })
+
+    it('should propagate reAnalyzeNotifiedEmailAiAnalysis errors', async () => {
+      const error = new Error('Re-analyze failed')
+      testRequest.post.mockRejectedValueOnce(error)
+      await expect(
+        notifiedEmailApi.reAnalyzeNotifiedEmailAiAnalysis('id-1')
+      ).rejects.toThrow('Re-analyze failed')
+    })
+  })
+
   describe('attachment and file operations', () => {
     it('should call downloadAttachment', async () => {
       const payload = { attachmentIds: ['att-1'] }
@@ -208,6 +241,8 @@ describe('notifiedEmail API', () => {
     it('should have all notified email functions', () => {
       expect(typeof notifiedEmailApi.getNotifiedEmail).toBe('function')
       expect(typeof notifiedEmailApi.getNotifiedEmailForEdit).toBe('function')
+      expect(typeof notifiedEmailApi.getNotifiedEmailAiAnalysis).toBe('function')
+      expect(typeof notifiedEmailApi.reAnalyzeNotifiedEmailAiAnalysis).toBe('function')
       expect(typeof notifiedEmailApi.downloadAttachment).toBe('function')
       expect(typeof notifiedEmailApi.downloadMsgFiles).toBe('function')
       expect(typeof notifiedEmailApi.exportNotifiedEmails).toBe('function')

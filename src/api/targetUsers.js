@@ -77,8 +77,8 @@ export function deleteTargetGroup(resourceId) {
   })
 }
 
-export function getTargetUserCustomFieldsByCompanyId() {
-  return testRequest.get(`/custom-fields/company`)
+export function getTargetUserCustomFieldsByCompanyId(config = {}) {
+  return testRequest.get(`/custom-fields/company`, { ...config })
 }
 
 export function bulkUpdateOfCustomFields(payload) {

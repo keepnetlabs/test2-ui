@@ -53,6 +53,39 @@
           AI analysis unavailable
         </div>
         <div class="email-details-ai-analyze__empty-text">{{ loadError }}</div>
+        <v-btn
+          color="#1e88e5"
+          dark
+          depressed
+          class="email-details-ai-analyze__cta-btn mt-3"
+          @click="runAnalysis"
+          :loading="isRunningAnalysis"
+        >
+          <v-icon left>mdi-refresh</v-icon>
+          Re-Analyze
+        </v-btn>
+      </div>
+      <div
+        v-else-if="analysisFailed"
+        class="email-details-ai-analyze__empty"
+      >
+        <div class="email-details-ai-analyze__empty-title">
+          AI analysis failed
+        </div>
+        <div class="email-details-ai-analyze__empty-text">
+          {{ failureReason }}
+        </div>
+        <v-btn
+          color="#1e88e5"
+          dark
+          depressed
+          class="email-details-ai-analyze__cta-btn mt-3"
+          @click="runAnalysis"
+          :loading="isRunningAnalysis"
+        >
+          <v-icon left>mdi-refresh</v-icon>
+          Re-Analyze
+        </v-btn>
       </div>
       <div v-else-if="!report" class="email-details-ai-analyze__empty">
         <div class="email-details-ai-analyze__empty-title">
@@ -564,7 +597,15 @@ import {
   getTimeZoneForMoment
 } from "@/utils/functions";
 import axios from "axios";
-import AuthenticationService from "@/services/authentication";
+import {
+  getNotifiedEmailAiAnalysis,
+  reAnalyzeNotifiedEmailAiAnalysis
+} from "@/api/notifiedEmail";
+
+const POLL_INTERVAL_MS = 4000;
+const POLL_TIMEOUT_MS = 180000;
+const TERMINAL_STATUSES = ["completed", "failed"];
+
 export default {
   name: "EmailDetailsAIAnalyze",
   components: {
@@ -614,6 +655,11 @@ export default {
       isLoadingReport: true,
       isRunningAnalysis: false,
       loadError: "",
+      analysisStatus: "",
+      failureReason: "",
+      pollTimer: null,
+      pollStartedAt: 0,
+      isPollInFlight: false,
       report: null,
       reportCreatedAt: null,
       urlEvidenceImageUrls: {},
@@ -719,6 +765,9 @@ export default {
     };
   },
   computed: {
+    analysisFailed() {
+      return (this.analysisStatus || "").toLowerCase() === "failed";
+    },
     confidenceLevel() {
       if (this.report?.executive_summary?.evidence_strength) {
         return this.report.executive_summary.evidence_strength;
@@ -847,10 +896,12 @@ export default {
   methods: {
     async runAnalysis() {
       if (!this.id) return;
+      this.stopPolling();
       this.revokeUrlEvidenceImageUrls();
       this.isRunningAnalysis = true;
       this.isLoadingReport = true;
       this.loadError = "";
+      this.failureReason = "";
       this.report = null;
       this.reportCreatedAt = null;
       this.isMetadataExpanded = true;
@@ -858,76 +909,149 @@ export default {
       this.openEvidenceSteps = [];
       this.$emit("update:loading", true);
       try {
-        const accessToken = AuthenticationService.getToken();
-        const apiBaseUrl =
-          APP_CONFIG?.VUE_APP_ROOT_API || "https://test-api.devkeepnet.com";
-        const body = {
-          id: this.id,
-          accessToken,
-          apiBaseUrl
-        };
-        const isLocalhost = globalThis.location.hostname.includes("localhost");
-        const url = isLocalhost
-          ? "http://localhost:4111/email-ir/analyze"
-          : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";
-        const response = await axios.post(url, body, {
-          headers: { "Content-Type": "application/json" }
-        });
-        const payload = response?.data || {};
-        this.report = payload.report || payload.data?.report || null;
-        this.reportCreatedAt = new Date();
-        this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
-        this.loadUrlEvidenceImages();
+        const response = await reAnalyzeNotifiedEmailAiAnalysis(this.id);
+        const data = response?.data?.data;
+        if (!data) {
+          this.loadError = "Unable to run AI analysis at this time.";
+          return;
+        }
+        const status = this.applyAnalysisData(data);
+        if (this.shouldPoll(status)) {
+          this.startPolling();
+        }
       } catch (error) {
-        console.error("Error running AI analysis:", error);
+        console.error("Error triggering AI re-analysis:", error);
         this.loadError = "Unable to run AI analysis at this time.";
         this.report = null;
         this.revokeUrlEvidenceImageUrls();
       } finally {
         this.isRunningAnalysis = false;
-        this.isLoadingReport = false;
-        this.$emit("update:loading", false);
+        if (!this.pollTimer) {
+          this.isLoadingReport = false;
+          this.$emit("update:loading", false);
+        }
       }
     },
     async fetchReport() {
       if (!this.id) return;
+      this.stopPolling();
       this.revokeUrlEvidenceImageUrls();
       this.isLoadingReport = true;
       this.loadError = "";
+      this.failureReason = "";
+      this.report = null;
       this.reportCreatedAt = null;
       this.isMetadataExpanded = true;
       this.isAgentDeterminationExpanded = false;
       this.openEvidenceSteps = [];
       this.$emit("update:loading", true);
       try {
-        const accessToken = AuthenticationService.getToken();
-        const apiBaseUrl =
-          APP_CONFIG?.VUE_APP_ROOT_API || "https://test-api.devkeepnet.com";
-        const body = {
-          id: this.id,
-          accessToken,
-          apiBaseUrl
-        };
-        const isLocalhost = globalThis.location.hostname.includes("localhost");
-        const url = isLocalhost
-          ? "http://localhost:4111/email-ir/analyze"
-          : "https://agentic-ai-agent.keepnetlabs.com/email-ir/analyze";
-        const response = await axios.post(url, body, {
-          headers: { "Content-Type": "application/json" }
-        });
-        const payload = response?.data || {};
-        this.report = payload.report || payload.data?.report || null;
-        this.reportCreatedAt = new Date();
-        this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
-        this.loadUrlEvidenceImages();
+        const response = await getNotifiedEmailAiAnalysis(this.id);
+        const data = response?.data?.data;
+        if (!data) {
+          this.loadError = "Unable to load AI analysis report at this time.";
+          return;
+        }
+        const status = this.applyAnalysisData(data);
+        if (this.shouldPoll(status)) {
+          this.startPolling();
+        }
       } catch (error) {
         console.error("Error fetching AI analyze report:", error);
         this.loadError = "Unable to load AI analysis report at this time.";
         this.report = null;
         this.revokeUrlEvidenceImageUrls();
       } finally {
+        if (!this.pollTimer) {
+          this.isLoadingReport = false;
+          this.$emit("update:loading", false);
+        }
+      }
+    },
+    readAnalysisField(data, key) {
+      if (!data) return undefined;
+      const pascalKey = key.charAt(0).toUpperCase() + key.slice(1);
+      return data[key] !== undefined ? data[key] : data[pascalKey];
+    },
+    applyAnalysisData(data) {
+      const rawStatus =
+        this.readAnalysisField(data, "status") || "NotAnalyzed";
+      this.analysisStatus = rawStatus;
+      const normalized = (rawStatus || "").toLowerCase();
+
+      if (normalized === "completed") {
+        this.report = this.readAnalysisField(data, "report") || null;
+        this.failureReason = "";
+        this.reportCreatedAt =
+          this.readAnalysisField(data, "finishedDate") ||
+          this.readAnalysisField(data, "createTime") ||
+          new Date();
+        this.openEvidenceSteps = this.getDefaultOpenEvidenceSteps();
+        this.loadUrlEvidenceImages();
+      } else if (normalized === "failed") {
+        this.report = null;
+        this.failureReason =
+          this.readAnalysisField(data, "failureReason") ||
+          "AI analysis could not be completed.";
+        this.revokeUrlEvidenceImageUrls();
+      }
+
+      return normalized;
+    },
+    isTerminalStatus(status) {
+      return TERMINAL_STATUSES.includes((status || "").toLowerCase());
+    },
+    shouldPoll(status) {
+      const normalized = (status || "").toLowerCase();
+      return normalized === "pending" || normalized === "running";
+    },
+    startPolling() {
+      this.stopPolling();
+      this.isPollInFlight = false;
+      this.isLoadingReport = true;
+      this.$emit("update:loading", true);
+      this.pollStartedAt = Date.now();
+      this.pollTimer = setInterval(() => {
+        this.pollOnce();
+      }, POLL_INTERVAL_MS);
+    },
+    stopPolling() {
+      if (this.pollTimer) {
+        clearInterval(this.pollTimer);
+        this.pollTimer = null;
+      }
+    },
+    async pollOnce() {
+      if (!this.id) {
+        this.stopPolling();
+        return;
+      }
+      if (this.isPollInFlight) return;
+      if (Date.now() - this.pollStartedAt > POLL_TIMEOUT_MS) {
+        this.stopPolling();
         this.isLoadingReport = false;
+        if (!this.report) {
+          this.loadError =
+            "AI analysis is taking longer than expected. Please try again in a moment.";
+        }
         this.$emit("update:loading", false);
+        return;
+      }
+      this.isPollInFlight = true;
+      try {
+        const response = await getNotifiedEmailAiAnalysis(this.id);
+        const data = response?.data?.data;
+        if (!data) return;
+        const status = this.applyAnalysisData(data);
+        if (this.isTerminalStatus(status)) {
+          this.stopPolling();
+          this.isLoadingReport = false;
+          this.$emit("update:loading", false);
+        }
+      } catch (error) {
+        console.error("Error polling AI analysis:", error);
+      } finally {
+        this.isPollInFlight = false;
       }
     },
     getConfidenceLevelColor(level) {
@@ -1187,6 +1311,7 @@ export default {
     this.fetchReport();
   },
   beforeDestroy() {
+    this.stopPolling();
     this.revokeUrlEvidenceImageUrls();
   },
   watch: {

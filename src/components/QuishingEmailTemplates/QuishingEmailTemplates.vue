@@ -126,7 +126,7 @@ export default {
     },
     isIndividualPrintoutTemplate() {
       return (
-        this?.selectedEmailTemplate?.quishingType.toLowerCase() ===
+        this?.selectedEmailTemplate?.quishingType?.toLowerCase() ===
         QUISHING_EMAIL_TEMPLATE_TYPES.INDIVIDUAL_PRINTOUT.toLowerCase()
       )
     },

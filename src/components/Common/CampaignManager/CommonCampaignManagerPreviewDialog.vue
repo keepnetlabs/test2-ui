@@ -98,6 +98,14 @@
                     emailTemplateParams.type || 'Email'
                   }}</span>
                 </div>
+                <ElTabs
+                  v-if="isBarrelTemplate"
+                  v-model="barrelPreviewMode"
+                  class="k-sub-tab barrel-mode-tabs mb-2"
+                >
+                  <ElTabPane label="Lure Email" name="lure" />
+                  <ElTabPane label="Payload Email" name="payload" />
+                </ElTabs>
                 <div
                   v-if="isPhishing"
                   class="email-template-preview__header d-flex align-center justify-space-between mb-4"
@@ -128,7 +136,7 @@
                 <div v-if="!isQuishingTypeIndividualPrintOut">
                   <span class="template-preview__text--title text-primary-color">Subject: </span>
                   <span class="template-preview__text--body text-primary-color">{{
-                    emailTemplateParams.subject
+                    getPreviewSubject
                   }}</span>
                 </div>
 
@@ -172,19 +180,24 @@
                 </div>
               </div>
               <div
-                v-if="emailTemplateParams.attachment"
+                v-if="getPreviewAttachment"
                 class="attachment-wrapper mt-2 position-relative"
               >
                 <div class="attachment blue-attach mb-0">
                   <AttachmentsPreview
                     :deletable="false"
-                    :att="emailTemplateParams.attachment"
+                    :att="getPreviewAttachment"
                     :isEmailTemplate="true"
                   />
                 </div>
               </div>
               <hr class="mt-4 ml-n4 mr-n4 mb-2" v-if="!!emailTemplate" />
-              <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
+              <KEmailPreview
+                v-if="!!emailTemplate"
+                :key="isBarrelTemplate ? `${languagePreview}__${barrelPreviewMode}` : undefined"
+                ref="refPreview"
+                :html="getEmailPreviewHtml"
+              />
             </div>
           </ElTabPane>
           <ElTabPane
@@ -301,6 +314,9 @@ export default {
       timeoutId: '',
       selectedScenario: null,
       phishingScenarios: [],
+      isBarrelTemplate: false,
+      barrelPreviewMode: 'lure',
+      payloadEmailTemplate: '',
       isMethodMfa: false,
       isIndividualPrintoutButtonDisabled: false,
       isTrainingScenario: false,
@@ -369,6 +385,27 @@ export default {
     templateLanguageLabel() {
       const count = this.selectedTemplateLanguages.length
       return `Template Language${count > 1 ? 's' : ''} (${count})`
+    },
+    isBarrelPayloadMode() {
+      return this.isBarrelTemplate && this.barrelPreviewMode === 'payload'
+    },
+    // In payload mode show the payload body/subject; otherwise the lure (default).
+    getEmailPreviewHtml() {
+      return this.isBarrelPayloadMode ? this.payloadEmailTemplate : this.emailTemplate
+    },
+    getPreviewSubject() {
+      return this.isBarrelPayloadMode
+        ? this.emailTemplateParams?.barrelPayload?.subject || ''
+        : this.emailTemplateParams.subject
+    },
+    // In payload mode show the payload's own attachment (its phishing file); otherwise the
+    // lure attachment. Mirrors the lure's single-attachment display.
+    getPreviewAttachment() {
+      if (this.isBarrelPayloadMode) {
+        const name = this.emailTemplateParams?.barrelPayload?.phishingFileName
+        return name ? { name } : null
+      }
+      return this.emailTemplateParams.attachment
     }
   },
   created() {
@@ -429,6 +466,13 @@ export default {
       if (this.type === PREVIEW_DIALOG_TYPES.QUISHING)
         template = template.replaceAll('{QRCODEURLIMAGE}', qrCodeString)
       this.emailTemplate = template
+      // Double Barrel templates carry a second body (payload) under barrelPayload;
+      // surface the Lure/Payload toggle (phishing only) when a payload is present.
+      const primaryBarrelPayload = phishingScenarioPreviewDto?.[templateKey]?.barrelPayload || {}
+      this.isBarrelTemplate =
+        this.isPhishing && !!(primaryBarrelPayload.template || primaryBarrelPayload.subject)
+      this.barrelPreviewMode = 'lure'
+      this.payloadEmailTemplate = primaryBarrelPayload.template || ''
       this.isTrainingScenario =
         this.getTrainingSearchPermission && !!phishingScenarioPreviewDto?.trainingDetail
       this.trainingParams = phishingScenarioPreviewDto?.trainingDetail
@@ -450,7 +494,8 @@ export default {
             }
           : null,
         type: phishingScenarioPreviewDto?.[templateKey]?.type || '',
-        isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI
+        isAssistedByAI: phishingScenarioPreviewDto?.[templateKey]?.isAssistedByAI,
+        barrelPayload: primaryBarrelPayload
       }
       // Reset arrays before populating with new scenario data
       this.selectedTemplateLanguages = []
@@ -479,6 +524,7 @@ export default {
               fromAddress: item.fromAddress,
               subject: item.subject,
               ccAddresses: item.ccAddresses,
+              barrelPayload: item.barrelPayload || {},
               languageTypeResourceId: item.languageTypeResourceId
             })
             const language = this.globalLanguages.find(
@@ -667,9 +713,12 @@ export default {
         fromName: findedTemplate.fromName,
         fromAddress: findedTemplate.fromAddress,
         subject: findedTemplate.subject,
-        template: findedTemplate.template
+        template: findedTemplate.template,
+        barrelPayload: findedTemplate.barrelPayload || {}
       }
       this.emailTemplate = findedTemplate.template
+      // Keep the payload body in sync with the selected language for the Payload tab.
+      this.payloadEmailTemplate = findedTemplate.barrelPayload?.template || ''
     },
     handleExternalLink() {
       openHtmlInNewWindow(this.emailTemplate)

@@ -399,31 +399,49 @@ export default {
         frequency = 0,
         scheduleTypeId
       } = campaignInfo
+      // Double Barrel delivery options belong with Email Delivery (send order,
+      // delay, urgent flag, skip/responsive delivery are all delivery behaviour).
+      const barrelOptions = this.campaignSummary?.barrelOptions
+      const humanize = (val) =>
+        typeof val === 'string' ? val.replace(/([a-z])([A-Z])/g, '$1 $2') : val
+      const barrelRows = barrelOptions
+        ? {
+            'Barrel Send Order': humanize(barrelOptions.orderType),
+            'Barrel Delay': `${barrelOptions.delayMinutes} minutes`,
+            'Skip Payload If Reported': barrelOptions.skipPayloadIfReported ? 'Yes' : 'No',
+            'Responsive Delivery': barrelOptions.responsiveDelivery ? 'Yes' : 'No',
+            'Barrel Urgent Flag': humanize(barrelOptions.urgentFlagType)
+          }
+        : {}
       if (scheduleTypeId !== undefined && scheduleTypeId === 2) {
         return {
           'Delivery Start - End': `Saved for later`,
           Duration: `${emailDeliveryDuration || 0}`,
-          'Delivery Status': ''
+          'Delivery Status': '',
+          ...barrelRows
         }
       }
       if (!emailDeliveryStartDate && !emailDeliveryEndDate) {
         return {
           'Scheduled Date': scheduledDate || '-',
           Duration: `${emailDeliveryDuration || 0}`,
-          'Delivery Status': ''
+          'Delivery Status': '',
+          ...barrelRows
         }
       }
       if (!campaignInfo?.emailDeliveryStartDate && frequency !== 0) {
         return {
           'Scheduled Date': scheduledDate || '-',
           Duration: `${emailDeliveryDuration || 0}`,
-          'Delivery Status': ''
+          'Delivery Status': '',
+          ...barrelRows
         }
       }
       return {
         'Delivery Start - End': `${emailDeliveryStartDate || ''} - ${emailDeliveryEndDate || ''}`,
         Duration: `${emailDeliveryDuration || 0}`,
-        'Delivery Status': ''
+        'Delivery Status': '',
+        ...barrelRows
       }
     },
     getEmailDeliveryHelperData() {

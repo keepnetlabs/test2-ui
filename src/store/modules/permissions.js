@@ -1354,7 +1354,8 @@ const store = {
         mostPhishedUsersCard: getters?.getPhishingSimulatorLeftMenuPermissions,
         phishingCampaignTrendsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
         mostEngagedCampaignsCard: getters?.getPhishingSimulatorLeftMenuPermissions,
-        topPhishingSimulationReportersCard: getters?.getPhishingSimulatorLeftMenuPermissions
+        topPhishingSimulationReportersCard: getters?.getPhishingSimulatorLeftMenuPermissions,
+        executiveReports: getters?.getExecutiveReportsSearchPermissions
       }
     },
     getEtsQuickScanPermissionSearch(state) {

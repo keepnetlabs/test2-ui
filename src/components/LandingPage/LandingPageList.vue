@@ -31,6 +31,7 @@
       :status="isTemplateDetails"
       :selected-row="selectedLandingPageTemplate"
       :languages="languageFilterOptions"
+      :can-fix-domain="true"
       @on-close="isTemplateDetails = false"
       @on-edit="handleEditFromPreview"
       @on-duplicate="handleDuplicateFromPreview"

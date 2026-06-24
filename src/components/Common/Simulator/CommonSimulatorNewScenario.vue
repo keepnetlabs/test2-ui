@@ -48,6 +48,7 @@
           is-nested
           :is-smishing="type === SCENARIO_TYPES.SMISHING"
           :should-control-html-overflow="false"
+          :can-fix-domain="true"
           @on-close="showLandingPagePreviewDialog = false"
         />
         <VNavigationDrawer
@@ -151,17 +152,6 @@
                       initial-placeholder="Enter a name"
                     />
                   </form-group>
-                  <FormGroup title="Description" sub-title="Describe the scenario briefly">
-                    <InputDescription
-                      v-model.trim="formValues.description"
-                      id="input--new-phishing-scenarios-description"
-                      entityName="description"
-                      initialPlaceholder="Enter description"
-                      rows="2"
-                      height="100"
-                      :maxLength="300"
-                    />
-                  </FormGroup>
                   <FormGroup
                     v-if="isPhishing"
                     has-hint
@@ -216,6 +206,7 @@
                     :loading="rolesLoading"
                     title="Roles"
                     sub-title="Select the roles for this phishing scenario"
+                    @blur="handleRolesBlur"
                   />
 
                   <FormGroup
@@ -232,6 +223,25 @@
                       required
                       :items="languageOptions"
                       :menu-props="{ offsetY: true }"
+                    />
+                  </FormGroup>
+                  <FormGroup title="Description" sub-title="Describe the scenario briefly">
+                    <InputAIDescription
+                      v-model.trim="formValues.description"
+                      id="input--new-phishing-scenarios-description"
+                      entity-name="description"
+                      initial-placeholder="Enter description"
+                      rows="2"
+                      height="100"
+                      :max-length="300"
+                      hint="AI needs a few words to create a meaningful description."
+                      :show-generated-by-ai="hasGenerated"
+                      :is-generating="isGenerateLoading"
+                      :show-generate-button="true"
+                      :has-generated="hasGenerated"
+                      :is-generate-disabled="isGenerateDisabled"
+                      :tooltip-message="generateTooltipMessage"
+                      @generate="handleGenerate"
                     />
                   </FormGroup>
                   <FormGroup title="Tags" sub-title="Define tags for the scenario">
@@ -447,12 +457,20 @@
             :step.sync="step"
             :disabled-statuses="{
               nextButton:
-                isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode,
+                isGenerateLoading ||
+                isSubmitDisabled ||
+                isEmailTemplateInEditMode ||
+                isLandingPageTemplateInEditMode,
               submitButton:
-                isSubmitDisabled || isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+                isGenerateLoading ||
+                isSubmitDisabled ||
+                isEmailTemplateInEditMode ||
+                isLandingPageTemplateInEditMode
             }"
             :disabledNextButtonTooltipText="
-              isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
+              isGenerateLoading
+                ? 'Please wait for the AI description to finish generating.'
+                : isEmailTemplateInEditMode || isLandingPageTemplateInEditMode
                 ? 'Please save or discard your changes to the template before proceeding.'
                 : ''
             "
@@ -491,13 +509,15 @@ import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
-import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputAIDescription from '@/components/Common/Inputs/InputAIDescription'
+import useAIDescriptionGeneration from '@/hooks/useAIDescriptionGeneration'
 import StepperFooter from '@/components/Stepper/StepperFooter'
 import { getAvailableForValueFromList } from '@/utils/helperFunctions'
 import {
   SCENARIO_DIFFICULTIES,
   SCENARIO_METHOD_TYPES,
-  SCENARIO_METHODS
+  SCENARIO_METHODS,
+  SCENARIO_METHOD_TYPE
 } from '@/components/PhishingScenarios/utils'
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
@@ -540,9 +560,10 @@ export default {
     InputSelectLanguage,
     InputTag,
     InputEntityName,
-    InputDescription,
+    InputAIDescription,
     InputSelectRoles
   },
+  mixins: [useAIDescriptionGeneration],
   props: {
     status: {
       type: Boolean,
@@ -609,6 +630,9 @@ export default {
       isInitial: true,
       emailDifficultyChipColor: '#217124',
       isFetched: false,
+      isGenerateLoading: false,
+      hasGenerated: false,
+      hasGenerationError: false,
       selectedTab: '1',
       summaryData: {},
       languageOptions: [],
@@ -658,7 +682,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getCurrentCompany: 'login/getCurrentCompany'
+      getCurrentCompany: 'login/getCurrentCompany',
+      getAIAllySettingsGetPermissions: 'permissions/getAIAllySettingsGetPermissions'
     }),
     getEmailTemplatePreviewLanguageHint() {
       return `This template is available in ${this.selectedTemplateLanguages.length} language${
@@ -681,6 +706,55 @@ export default {
     },
     isQuishing() {
       return this.type === SCENARIO_TYPES.QUISHING
+    },
+    isGenerateDisabled() {
+      // If a meaningful description already exists, allow improving it
+      if (this.formValues.description && this.formValues.description.trim().length > 5) {
+        return this.isGenerateLoading
+      }
+      // Scenario name is always required
+      if (!this.formValues.name || this.isGenerateLoading) {
+        return true
+      }
+      // Phishing additionally needs Category and Roles (the fields that feed the prompt)
+      if (this.isPhishing) {
+        return !this.formValues.categoryId || !this.formValues.roleResourceIds?.length
+      }
+      // Quishing additionally needs the Quishing Type
+      if (this.isQuishing) {
+        return !this.quishingType
+      }
+      return false
+    },
+    generateTooltipMessage() {
+      if (this.isPhishing) {
+        return 'To generate an AI-powered description, complete key fields like Scenario Name, Category, and Roles.'
+      }
+      if (this.isQuishing) {
+        return 'To generate an AI-powered description, complete key fields like Scenario Name and Quishing Type.'
+      }
+      return 'To generate an AI-powered description, enter the scenario name first.'
+    },
+    // Base readiness shared by the reactive auto-trigger and the roles-blur trigger:
+    // new scenario, name filled, description still empty, not already generated/erroring.
+    autoGenerateBaseReady() {
+      return !!(
+        !this.isEdit &&
+        this.formValues.name &&
+        !this.formValues.description &&
+        !this.hasGenerated &&
+        !this.hasGenerationError &&
+        !this.isGenerateLoading
+      )
+    },
+    // Reactive auto-trigger (the mixin watches this). Quishing uses it directly because
+    // its fields are single-selects. Phishing is intentionally excluded here and fires on
+    // the Roles select blur instead, so ALL selected roles are captured — otherwise the
+    // first selected role would trigger generation prematurely.
+    canAutoGenerateDescription() {
+      if (!this.autoGenerateBaseReady) return false
+      if (this.isQuishing) return !!this.quishingType
+      return false
     },
     isQuishingTypeIndividualPrintOut() {
       if (!this.isQuishing) return false
@@ -767,7 +841,20 @@ export default {
       ).text
     },
     getMethodTypes() {
-      return this.scenarioDetailsLookup?.methodTypes || []
+      const methodTypes = this.scenarioDetailsLookup?.methodTypes || []
+      if (this.isPhishing) {
+        // Client fallback: ensure Double Barrel is selectable for phishing even if the
+        // form-details endpoint does not return it yet. Deduped to avoid double entries.
+        if (!methodTypes.some((mType) => mType.value === SCENARIO_METHOD_TYPE.DOUBLE_BARREL)) {
+          return [
+            ...methodTypes,
+            { text: 'Double Barrel', value: SCENARIO_METHOD_TYPE.DOUBLE_BARREL }
+          ]
+        }
+        return methodTypes
+      }
+      // Double Barrel is a phishing-only technique: never show it for quishing.
+      return methodTypes.filter((mType) => mType.value !== SCENARIO_METHOD_TYPE.DOUBLE_BARREL)
     },
     isMethodMfa() {
       return this.formValues.methodTypeId === '4'
@@ -832,14 +919,15 @@ export default {
     },
     getSelectedMethod() {
       if (!this.formValues?.methodTypeId) return ''
-      if (
-        SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text ===
-        SCENARIO_METHOD_TYPES.MFA
-      ) {
+      // Double Barrel (6) has no SCENARIO_METHODS index entry; return '' so the landing
+      // page list is not filtered by method (Contains '' matches all).
+      const selectedMethod = SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1]
+      if (!selectedMethod) return ''
+      if (selectedMethod.text === SCENARIO_METHOD_TYPES.MFA) {
         return this.selectedEmailTemplate.categoryName === labels.ClickOnly
           ? SCENARIO_METHOD_TYPES.CLICK_ONLY
           : this.selectedEmailTemplate.categoryName
-      } else return SCENARIO_METHODS[Number(this.formValues?.methodTypeId) - 1].text
+      } else return selectedMethod.text
     },
     getStep2Title() {
       return this.isQuishingTypeIndividualPrintOut
@@ -929,10 +1017,10 @@ export default {
       )
     },
     getMethodText() {
+      // Use getMethodTypes (not the raw lookup) so the client-injected Double Barrel
+      // fallback resolves to a method label too.
       return (
-        this.scenarioDetailsLookup?.methodTypes?.find(
-          (item) => item.value === this.formValues.methodTypeId
-        )?.text || ''
+        this.getMethodTypes?.find((item) => item.value === this.formValues.methodTypeId)?.text || ''
       )
     },
     getCurrentLandingPageTemplate() {
@@ -1040,7 +1128,56 @@ export default {
     // Mixin tarafından HTML overflow kontrolü yapılıyor
   },
   methods: {
+    // Phishing auto-generation fires when the Roles select loses focus, i.e. after the
+    // user has finished choosing roles, so every selected role reaches the prompt.
+    handleRolesBlur() {
+      if (
+        this.isPhishing &&
+        this.autoGenerateBaseReady &&
+        this.formValues.categoryId &&
+        this.formValues.roleResourceIds &&
+        this.formValues.roleResourceIds.length
+      ) {
+        this.handleGenerate()
+      }
+    },
+    async handleGenerate() {
+      if (this.isGenerateDisabled || this.isGenerateLoading) {
+        return
+      }
+      this.isGenerateLoading = true
+      this.hasGenerationError = false
+
+      try {
+        const generatedDescription = await this.generateAIDescription({
+          type: this.isQuishing ? 'quishing' : 'phishing',
+          name: this.formValues.name,
+          category: this.isQuishing ? this.quishingType : this.categoryText,
+          // All selected roles (phishing only; empty for quishing) — not just the first
+          role: this.selectedRoleNames.join(', '),
+          description: this.formValues.description,
+          fields: {
+            method: this.getSelectedMethodText
+          }
+        })
+
+        if (generatedDescription) {
+          this.formValues.description = generatedDescription
+          this.hasGenerated = true
+        } else {
+          this.hasGenerated = false
+        }
+      } catch (error) {
+        console.error('Failed to generate AI description:', error)
+        this.hasGenerationError = true
+      } finally {
+        this.isGenerateLoading = false
+      }
+    },
     fetchAIAllySettings() {
+      // Skip the AI Ally probe for roles without the companies/ai permission;
+      // the feature stays off and we avoid a 403 error toast.
+      if (!this.getAIAllySettingsGetPermissions) return
       getAIAllySettings().then((res) => {
         this.aiAllySettings = res?.data?.data || {
           psEmailTemplateGenerationAssistant: false,

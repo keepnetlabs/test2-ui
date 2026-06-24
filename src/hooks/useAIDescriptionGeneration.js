@@ -50,19 +50,36 @@ export default {
     },
 
     /**
-     * Generates AI description by calling the Cloudflare Worker API
+     * Generates AI description by calling the Cloudflare Worker API.
+     *
+     * The same worker is shared across content domains. The `type` field tells
+     * the worker which prompt to use (e.g. 'training', 'phishing', 'quishing',
+     * 'smishing'). Any extra domain-specific fields can be passed via `fields`
+     * and are forwarded as-is in the payload.
+     *
      * @param {Object} options - Options for generation
-     * @param {string} options.name - Training/content name
-     * @param {string} options.category - Category of the content
-     * @param {string} options.role - Target audience role
-     * @param {string} options.description - Existing description (for improvement)
+     * @param {string} [options.name] - Content name
+     * @param {string} [options.category] - Category of the content
+     * @param {string} [options.role] - Target audience role
+     * @param {string} [options.description] - Existing description (for improvement)
+     * @param {string} [options.type] - Content type discriminator for prompt selection
+     * @param {Object} [options.fields] - Extra domain-specific fields to include in the payload
      * @returns {Promise<string>} Generated or improved description
      */
-    async generateAIDescription({ name = '', category = '', role = '', description = '' } = {}) {
+    async generateAIDescription({
+      name = '',
+      category = '',
+      role = '',
+      description = '',
+      type = 'training',
+      fields = {}
+    } = {}) {
       const payload = {
+        type,
         name: name.trim(),
         category: category.trim(),
-        role: role.trim()
+        role: role.trim(),
+        ...fields
       }
 
       // Include existing description if we're improving it

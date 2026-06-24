@@ -119,10 +119,21 @@ export default {
   computed: {
     ...mapGetters({
       hasAgenticAILicense: "login/getHasAgenticAILicense"
-    })
+    }),
+    hasAgenticAIPermission() {
+      return this.$store.getters["permissions/getAgenticAISettingsGetPermissions"];
+    },
+    // The Agentic AI widget needs both the company license AND the role permission
+    // (companies/agentic-ai|GET). Without the permission the card's data calls 403,
+    // so custom roles that lack it should not see the card at all.
+    canShowAgenticAIWidget() {
+      return this.hasAgenticAILicense && this.hasAgenticAIPermission;
+    }
   },
   data() {
-    const hasAgenticAILicense = this.$store.getters["login/getHasAgenticAILicense"];
+    const canShowAgenticAIWidget =
+      this.$store.getters["login/getHasAgenticAILicense"] &&
+      this.$store.getters["permissions/getAgenticAISettingsGetPermissions"];
     return {
       activeBreakpoint: "lg",
       initialLayout: [],
@@ -388,7 +399,7 @@ export default {
           i: createRandomCryptStringNumber(),
           key: "AgenticAIStatusWidget",
           title: "Agentic AI Status",
-          isAllowed: hasAgenticAILicense
+          isAllowed: canShowAgenticAIWidget
         },
         TopPhishingSimulationReporters: {
           x: 0,
@@ -427,7 +438,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: "Simulation Coverage",
           key: "SimulationCoverageWidget",
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "pie",
           dateInterval: "month",
@@ -451,7 +462,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: "Training Completion",
           key: "TrainingCompletionWidget",
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "bar",
           dateInterval: "month",
@@ -481,7 +492,7 @@ export default {
           i: createRandomCryptStringNumber(),
           title: "Industry Phishing Risk Score",
           key: "IndustryPhishingRiskScoreWidget",
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -519,7 +530,7 @@ export default {
             key: "ImpactOfPhishingAwarenessTrainingWidget",
             resourceId: "9c29GEAMmurS"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -550,7 +561,7 @@ export default {
             key: "RepeatOffendersUsersRateWidget",
             resourceId: "mpdEh10N5E4d"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -645,32 +656,32 @@ export default {
         {
           name: "Simulation Coverage",
           key: "SimulationCoverageWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Training Completion",
           key: "TrainingCompletionWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Industry Phishing Risk Score",
           key: "IndustryPhishingRiskScoreWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Impact of Phishing Awareness Training",
           key: "ImpactOfPhishingAwarenessTrainingWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Phishing Simulation Repeat Offenders Rate",
           key: "RepeatOffendersUsersRateWidget",
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           name: "Agentic AI Status",
           key: "AgenticAIStatusWidget",
-          isAllowed: hasAgenticAILicense
+          isAllowed: canShowAgenticAIWidget
         }
       ],
       style:
@@ -687,9 +698,9 @@ export default {
         this.handleAddShadows();
       }
     },
-    hasAgenticAILicense(val) {
-      this.syncAgenticAIWidgetAvailability(val);
-      if (val && this.layout.length) {
+    hasAgenticAILicense() {
+      this.syncAgenticAIWidgetAvailability(this.canShowAgenticAIWidget);
+      if (this.canShowAgenticAIWidget && this.layout.length) {
         this.ensureAgenticAIWidget(this.layout);
       }
     }
@@ -708,14 +719,14 @@ export default {
             }
             const widget = { ...this.allWidgets[item.key], ...item };
             const isAgenticWidgetWithoutLicense =
-              item.key === "AgenticAIStatusWidget" && !this.hasAgenticAILicense;
+              item.key === "AgenticAIStatusWidget" && !this.canShowAgenticAIWidget;
             if (widget.isAllowed && !isAgenticWidgetWithoutLicense) {
               this.removeAvailableWidget(item);
               acc.push(widget);
             }
             return acc;
           }, []);
-          if (this.hasAgenticAILicense) {
+          if (this.canShowAgenticAIWidget) {
             this.ensureAgenticAIWidget(this.layout);
           }
           this.finalizeLoadedWidgetLayout();
@@ -738,7 +749,7 @@ export default {
             this.availableWidgets.push({
               name: "Phishing Simulation Repeat Offenders Rate",
               key: "RepeatOffendersUsersRateWidget",
-              isAllowed: true
+              isAllowed: this?.permissions?.executiveReports
             });
           }
         }
@@ -953,7 +964,7 @@ export default {
     },
 
     ensureAgenticAIWidget(layoutArray) {
-      if (!this.hasAgenticAILicense) return;
+      if (!this.canShowAgenticAIWidget) return;
 
       if (
         !layoutArray.some((widget) => widget.key === "AgenticAIStatusWidget")
@@ -972,7 +983,7 @@ export default {
       }
     },
 
-    syncAgenticAIWidgetAvailability(isAllowed = this.hasAgenticAILicense) {
+    syncAgenticAIWidgetAvailability(isAllowed = this.canShowAgenticAIWidget) {
       if (this.allWidgets?.AgenticAIStatusWidget) {
         this.allWidgets.AgenticAIStatusWidget.isAllowed = isAllowed;
       }
@@ -1093,7 +1104,7 @@ export default {
             resourceId: "uyzuHENtMZU0"
           },
           isDashboardWidget: true,
-          isAllowed: true
+          isAllowed: this?.permissions?.executiveReports
         },
         {
           x: 0,
@@ -1116,7 +1127,7 @@ export default {
             key: "ImpactOfPhishingAwarenessTrainingWidget",
             resourceId: "9c29GEAMmurS"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -1389,7 +1400,7 @@ export default {
             key: "RepeatOffendersUsersRateWidget",
             resourceId: "mpdEh10N5E4d"
           },
-          isAllowed: true,
+          isAllowed: this?.permissions?.executiveReports,
           parentKey: "Phishing Metrics",
           chartType: "stackedBar",
           dateInterval: "month",
@@ -1400,7 +1411,7 @@ export default {
           isDashboardWidget: true
         }
       ];
-      if (this.hasAgenticAILicense) {
+      if (this.canShowAgenticAIWidget) {
         widgets.unshift({
           x: 8,
           y: 0,

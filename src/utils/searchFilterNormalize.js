@@ -5,6 +5,8 @@ export function resolveApiDurationFieldName(fieldName) {
   if (fieldName == null) return fieldName
   const n = String(fieldName)
   if (n === PROPERTY_STORE.TOTAL_DURATION || n === 'TotalDuration') return 'DurationMinutes'
+  // Double Barrel: API expects PascalCase BarrelEmailRole for sort/filter on the wire.
+  if (n === 'barrelEmailRole') return 'BarrelEmailRole'
   return fieldName
 }
 

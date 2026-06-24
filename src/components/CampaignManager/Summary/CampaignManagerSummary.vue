@@ -234,6 +234,11 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
 import { EMAIL_DELIVERY_TYPES } from '@/components/CampaignManager/AdvancedSettings/utils'
+import {
+  BARREL_ORDER_TYPES,
+  BARREL_URGENT_FLAG_TYPES,
+  BARREL_DELAY_MINUTE_OPTIONS
+} from '@/components/PhishingScenarios/utils'
 import AlertBox from '@/components//AlertBox'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
@@ -757,6 +762,18 @@ export default {
         selectedEmailDelivery.type === EMAIL_DELIVERY_TYPES.SMTP ? 'SMTP' : 'DEC'
       } - ${selectedEmailDelivery.name}`
       obj.frequency = this.formData.frequency
+      if (this.formData.isBarrelCampaign && this.formData.barrelOptions) {
+        const bo = this.formData.barrelOptions
+        obj['Send Order'] = (BARREL_ORDER_TYPES.find((o) => o.value === bo.orderType) || {}).text
+        obj['Delay Between Emails'] =
+          (BARREL_DELAY_MINUTE_OPTIONS.find((o) => o.value === bo.delayMinutes) || {}).text ||
+          `${bo.delayMinutes} minutes`
+        obj['Urgent Flag'] = (
+          BARREL_URGENT_FLAG_TYPES.find((o) => o.value === bo.urgentFlagType) || {}
+        ).text
+        obj['Skip Payload If Reported'] = bo.skipPayloadIfReported ? 'On' : 'Off'
+        obj['Responsive Delivery'] = bo.responsiveDelivery ? 'On' : 'Off'
+      }
       return obj
     },
     getOtherSettingsItems() {

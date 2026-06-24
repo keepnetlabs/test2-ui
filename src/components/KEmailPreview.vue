@@ -45,7 +45,10 @@ export default {
       isBodyHeightUsed: false,
       stopCalculateFrame: false,
       isInitialResize: true,
-      numberHeight: this.isLandingPage ? 660 : 300
+      numberHeight: this.isLandingPage ? 660 : 300,
+      resizeObserver: null,
+      lastObservedWidth: 0,
+      settleTimeouts: []
     }
   },
   watch: {
@@ -56,12 +59,44 @@ export default {
   },
   mounted() {
     globalThis.addEventListener('message', this.handleWindowMessage)
+    this.observeIframeVisibility()
   },
   beforeDestroy() {
     cancelAnimationFrame(this.animationFrame)
     globalThis.removeEventListener('message', this.handleWindowMessage)
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
+    if (this.settleTimeouts.length) {
+      this.settleTimeouts.forEach((t) => clearTimeout(t))
+      this.settleTimeouts = []
+    }
   },
   methods: {
+    // When the iframe lives inside a v-show/display:none container (e.g. the Double Barrel
+    // payload editor while the Lure tab is shown), it has zero layout width. Any height
+    // measured then is meaningless and gets locked via stopCalculateFrame, leaving empty
+    // space + a scrollbar once the panel is finally shown. Watch for the hidden→visible
+    // (0 → >0 width) transition and re-measure at the real width. Height changes we make
+    // ourselves don't alter width, so this never loops.
+    observeIframeVisibility() {
+      const iframe = this.$refs.iframe
+      if (!iframe || typeof globalThis.ResizeObserver !== 'function') return
+      this.lastObservedWidth = iframe.clientWidth || 0
+      this.resizeObserver = new globalThis.ResizeObserver(() => {
+        const width = iframe.clientWidth || 0
+        if (width > 0 && this.lastObservedWidth === 0) {
+          this.stopCalculateFrame = false
+          this.isInitialResize = true
+          cancelAnimationFrame(this.animationFrame)
+          this.animationFrame = null
+          this.resizeIframe()
+        }
+        this.lastObservedWidth = width
+      })
+      this.resizeObserver.observe(iframe)
+    },
     handleLoad() {
       if (handleIsSafari()) {
         setTimeout(() => {
@@ -88,6 +123,12 @@ export default {
     },
     resizeIframe() {
       const iframe = this.$refs.iframe
+      // A display:none ancestor gives the iframe zero layout width; body.scrollHeight is
+      // then wildly wrong and would get locked. Bail without measuring or locking —
+      // observeIframeVisibility() re-measures once the iframe is actually shown.
+      if (iframe && iframe.clientWidth === 0) {
+        return
+      }
       if (
         iframe &&
         iframe.contentWindow &&
@@ -126,6 +167,7 @@ export default {
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)
+          this.scheduleSettleRemeasure()
         }
         if (!this.stopCalculateFrame) {
           this.numberHeight = height
@@ -135,6 +177,50 @@ export default {
           this.height = iframe.contentWindow.document.body ? height + 18 + 'px' : iframe.height
           this.animationFrame = globalThis.requestAnimationFrame(() => this.resizeIframe())
         }
+      }
+    },
+    // After locking the height, web fonts / late images can reflow the email taller,
+    // leaving the content higher than the locked iframe (a thin scrollbar). Re-measure at
+    // a few increasing delays and GROW the height to fit. Monotonic by design (only ever
+    // increases): it can never clip content, never shrinks, and never touches templates
+    // that already fit. The multiple passes catch assets that settle late, so the height
+    // ends up fitting the full content — which is also what makes scrolling="no" safe
+    // (nothing left to clip). body.scrollHeight still reports the true content height even
+    // when scrolling is disabled, so the measurement stays correct.
+    scheduleSettleRemeasure() {
+      ;[250, 800, 1600].forEach((delay) => {
+        this.settleTimeouts.push(setTimeout(() => this.growToFitContent(), delay))
+      })
+    },
+    growToFitContent() {
+      const iframe = this.$refs.iframe
+      if (
+        !iframe ||
+        !iframe.contentWindow ||
+        !iframe.contentWindow.document ||
+        !iframe.contentWindow.document.body ||
+        iframe.clientWidth === 0
+      ) {
+        return
+      }
+      let desired = iframe.contentWindow.document.body.scrollHeight + 18
+      if (
+        globalThis.navigator &&
+        globalThis.navigator.userAgent &&
+        globalThis.navigator.userAgent.toLowerCase().includes('windows')
+      ) {
+        desired += 20
+      }
+      if (handleIsSafari()) {
+        desired += 30
+      }
+      const current =
+        typeof this.height === 'string'
+          ? Number.parseInt(this.height.replace('px', ''), 10) || 0
+          : Number(this.height) || 0
+      if (desired > current) {
+        this.height = desired + 'px'
+        this.numberHeight = desired
       }
     },
     setDefaultHeight(height) {

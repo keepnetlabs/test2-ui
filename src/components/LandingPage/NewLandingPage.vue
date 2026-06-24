@@ -246,6 +246,8 @@
                           :path-types="getPathTypes"
                           :domain-records="getDomainRecordTypes"
                           :url-schema-types="getUrlSchemaTypes"
+                          :content-text="randomDomainContentText"
+                          :suggest-language="randomDomainLanguage"
                           :is-edit="isEdit"
                           :is-duplicate="isDuplicate"
                           :show-captcha-option="!isInvisibleCaptchaDisabled"
@@ -601,6 +603,7 @@ import {
   syncCustomScriptsForPage
 } from "@/components/LandingPage/utils";
 import { getAvailableForValueFromList } from "@/utils/helperFunctions";
+import { buildContentText } from "@/utils/randomDomain";
 import InputPhishingMethod from "@/components/Common/Inputs/InputPhishingMethod.vue";
 import InputLanguagesSettings from "@/components/Common/Inputs/InputLanguagesSettings.vue";
 import InputLanguagePreview from "@/components/Common/Inputs/InputLanguagePreview.vue";
@@ -1911,6 +1914,27 @@ export default {
     },
     getDomainRecordTypes() {
       return this.landingPageData?.domainRecords || [];
+    },
+    randomDomainContentText() {
+      const fv = this.formValues || {};
+      // The live editor binds to getSelectedLanguagePayload.landingPages, not formValues.landingPages
+      // (the latter only resyncs on language switch / submit), so read content from there.
+      const landingPages =
+        this.getSelectedLanguagePayload?.landingPages || fv.landingPages || [];
+      return buildContentText({
+        name: fv.name,
+        description: fv.description,
+        tags: fv.tags,
+        landingPages
+      });
+    },
+    randomDomainLanguage() {
+      // Language NAME of the currently edited language, as an AI hint. getLanguageObject falls
+      // back to the raw resourceId when it can't resolve a name — never send that.
+      if (!this.activeLanguage) return "";
+      const obj = this.getLanguageObject(this.activeLanguage);
+      const text = obj && obj.text;
+      return text && text !== this.activeLanguage ? text : "";
     },
     getExtensionTypes() {
       return this.landingPageData?.extensionTypes || [];
