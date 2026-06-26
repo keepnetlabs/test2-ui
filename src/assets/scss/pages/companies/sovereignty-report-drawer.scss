@@ -242,6 +242,94 @@
     letter-spacing: 0.2px;
 }
 
+/* Migration (latest data-region migration job) */
+.sovereignty-report-drawer__migration-card {
+    border: 1px solid #ebeef5;
+    border-radius: 8px;
+    background: white;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sovereignty-report-drawer__migration-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.sovereignty-report-drawer__migration-target {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #383b41;
+    word-break: break-all;
+}
+
+.sovereignty-report-drawer__migration-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 3px 10px 3px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+
+    &--completed {
+        background: rgba(67, 160, 71, 0.15);
+        color: #2e7031;
+    }
+
+    &--failed {
+        background: rgba(245, 108, 108, 0.15);
+        color: #b3261e;
+    }
+
+    &--in-progress {
+        background: rgba(33, 150, 243, 0.12);
+        color: #1565c0;
+    }
+
+    &--queued,
+    &--unknown {
+        background: rgba(56, 59, 65, 0.06);
+        color: rgba(56, 59, 65, 0.72);
+    }
+}
+
+.sovereignty-report-drawer__migration-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+    border-radius: 6px;
+    background: #f7f9fc;
+}
+
+.sovereignty-report-drawer__stat-value--danger {
+    color: #b3261e;
+}
+
+.sovereignty-report-drawer__migration-failure {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid rgba(245, 108, 108, 0.4);
+    border-radius: 6px;
+    background: #fdecea;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #b3261e;
+    word-break: break-word;
+}
+
 /* Database checks */
 .sovereignty-report-drawer__db-grid {
     display: grid;

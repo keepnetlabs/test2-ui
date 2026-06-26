@@ -202,6 +202,76 @@
             </div>
           </section>
 
+          <section v-if="latestMigration" class="sovereignty-report-drawer__section">
+            <h3 class="sovereignty-report-drawer__section-title">Migration</h3>
+            <article class="sovereignty-report-drawer__migration-card">
+              <header class="sovereignty-report-drawer__migration-head">
+                <div class="sovereignty-report-drawer__migration-target">
+                  <VIcon size="18" color="#2196f3">mdi-database-arrow-right</VIcon>
+                  <span>{{ latestMigration.toRegion || '—' }}</span>
+                </div>
+                <span
+                  class="sovereignty-report-drawer__migration-chip"
+                  :class="`sovereignty-report-drawer__migration-chip--${migrationStatusMeta.variant}`"
+                >
+                  <VIcon size="14" :color="migrationStatusMeta.iconColor">
+                    {{ migrationStatusMeta.icon }}
+                  </VIcon>
+                  {{ migrationStatusMeta.label }}
+                </span>
+              </header>
+
+              <dl class="sovereignty-report-drawer__db-meta">
+                <div class="sovereignty-report-drawer__db-meta-line">
+                  <dt>Started (UTC)</dt>
+                  <dd>{{ latestMigration.startedAtUtc || '—' }}</dd>
+                </div>
+                <div class="sovereignty-report-drawer__db-meta-line">
+                  <dt>Finished (UTC)</dt>
+                  <dd>{{ latestMigration.finishedAtUtc || '—' }}</dd>
+                </div>
+                <div
+                  v-if="latestMigration.jobResourceId"
+                  class="sovereignty-report-drawer__db-meta-line"
+                >
+                  <dt>Job ID</dt>
+                  <dd class="sovereignty-report-drawer__meta-value--mono">
+                    {{ latestMigration.jobResourceId }}
+                  </dd>
+                </div>
+              </dl>
+
+              <div class="sovereignty-report-drawer__migration-stats">
+                <div class="sovereignty-report-drawer__stat">
+                  <span class="sovereignty-report-drawer__stat-value">
+                    {{ formatNumber(latestMigration.processedRowCount) }}
+                  </span>
+                  <span class="sovereignty-report-drawer__stat-label">Processed</span>
+                </div>
+                <div class="sovereignty-report-drawer__stat">
+                  <span class="sovereignty-report-drawer__stat-value">
+                    {{ formatNumber(latestMigration.totalRowCount) }}
+                  </span>
+                  <span class="sovereignty-report-drawer__stat-label">Total rows</span>
+                </div>
+                <div v-if="latestMigration.failedRowCount > 0" class="sovereignty-report-drawer__stat">
+                  <span class="sovereignty-report-drawer__stat-value sovereignty-report-drawer__stat-value--danger">
+                    {{ formatNumber(latestMigration.failedRowCount) }}
+                  </span>
+                  <span class="sovereignty-report-drawer__stat-label">Failed</span>
+                </div>
+              </div>
+
+              <footer
+                v-if="migrationStatusMeta.variant === 'failed' && latestMigration.failureReason"
+                class="sovereignty-report-drawer__migration-failure"
+              >
+                <VIcon size="16" color="#f56c6c">mdi-alert-circle</VIcon>
+                <span>{{ latestMigration.failureReason }}</span>
+              </footer>
+            </article>
+          </section>
+
           <section v-if="databaseChecks.length" class="sovereignty-report-drawer__section">
             <h3 class="sovereignty-report-drawer__section-title">
               Database checks
@@ -484,6 +554,30 @@ export default {
     },
     auditMetadata() {
       return this.report?.auditMetadata || null
+    },
+    latestMigration() {
+      return this.report?.latestMigration || null
+    },
+    migrationStatusMeta() {
+      const migration = this.latestMigration
+      // Native migration enum: 0 Queued, 1 InProgress, 2 Completed, 3 Failed.
+      const status = Number(migration?.status)
+      const byStatus = {
+        0: { variant: 'queued', icon: 'mdi-clock-outline', iconColor: '#9e9e9e' },
+        1: { variant: 'in-progress', icon: 'mdi-progress-clock', iconColor: '#2196f3' },
+        2: { variant: 'completed', icon: 'mdi-check-circle', iconColor: '#43a047' },
+        3: { variant: 'failed', icon: 'mdi-close-circle', iconColor: '#f56c6c' }
+      }
+      const meta = byStatus[status] || {
+        variant: 'unknown',
+        icon: 'mdi-help-circle-outline',
+        iconColor: '#9e9e9e'
+      }
+      return {
+        ...meta,
+        status,
+        label: migration?.statusName || 'Unknown'
+      }
     },
     databaseChecks() {
       if (!Array.isArray(this.report?.databaseChecks)) return []
