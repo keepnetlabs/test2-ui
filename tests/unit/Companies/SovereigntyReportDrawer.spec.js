@@ -418,6 +418,60 @@ describe('SovereigntyReportDrawer.vue', () => {
     })
   })
 
+  describe('latestMigration', () => {
+    it('returns null when report has no latestMigration', () => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { verdict: 'PASS' }
+      expect(wrapper.vm.latestMigration).toBeNull()
+    })
+
+    it('returns the latestMigration object when present', () => {
+      const wrapper = createWrapper()
+      const migration = { status: 2, statusName: 'Completed', toRegion: 'canadacentral' }
+      wrapper.vm.report = { latestMigration: migration }
+      expect(wrapper.vm.latestMigration).toEqual(migration)
+    })
+  })
+
+  describe('migrationStatusMeta', () => {
+    const metaFor = (status, statusName) => {
+      const wrapper = createWrapper()
+      wrapper.vm.report = { latestMigration: { status, statusName } }
+      return wrapper.vm.migrationStatusMeta
+    }
+
+    it('maps Queued (0) to the grey/clock theme', () => {
+      const meta = metaFor(0, 'Queued')
+      expect(meta).toMatchObject({ variant: 'queued', icon: 'mdi-clock-outline', status: 0, label: 'Queued' })
+    })
+
+    it('maps InProgress (1) to the blue theme', () => {
+      const meta = metaFor(1, 'InProgress')
+      expect(meta).toMatchObject({ variant: 'in-progress', icon: 'mdi-progress-clock', status: 1 })
+    })
+
+    it('maps Completed (2) to the green/check theme', () => {
+      const meta = metaFor(2, 'Completed')
+      expect(meta).toMatchObject({ variant: 'completed', icon: 'mdi-check-circle', status: 2 })
+    })
+
+    it('maps Failed (3) to the red theme', () => {
+      const meta = metaFor(3, 'Failed')
+      expect(meta).toMatchObject({ variant: 'failed', icon: 'mdi-close-circle', status: 3 })
+    })
+
+    it('falls back to an unknown theme for unrecognized status', () => {
+      const meta = metaFor(99, 'Weird')
+      expect(meta).toMatchObject({ variant: 'unknown', icon: 'mdi-help-circle-outline' })
+      expect(meta.label).toBe('Weird')
+    })
+
+    it('uses statusName for the label and defaults to "Unknown" when absent', () => {
+      expect(metaFor(2, 'Completed').label).toBe('Completed')
+      expect(metaFor(2, undefined).label).toBe('Unknown')
+    })
+  })
+
   describe('resetState', () => {
     it('clears all state fields', () => {
       const wrapper = createWrapper()
